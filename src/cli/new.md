@@ -32,6 +32,5 @@ Program/
 │   └── Main.rux
 ├── Temp/
 ├── Rux.toml
-├── .gitignore
-└── .git/
+└── .gitignore
 ```
