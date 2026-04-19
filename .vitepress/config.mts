@@ -98,6 +98,7 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: "Overview", link: "/cli/" },
+            { text: "Global Options", link: "/cli/global" },
             { text: "rux add", link: "/cli/add" },
             { text: "rux build", link: "/cli/build" },
             { text: "rux clean", link: "/cli/clean" },
@@ -189,7 +190,7 @@ export default defineConfig({
       message:
         'Released under the <a href="https://github.com/rux-lang/Rux/blob/main/LICENSE">MIT License</a>',
       copyright:
-        'Copyright © 2025 <a href="https://github.com/musicvano">Ivan Muzyka</a>',
+        'Copyright © 2026 <a href="https://github.com/musicvano">Ivan Muzyka</a>',
     },
   },
 

@@ -1,34 +1,34 @@
 # `rux new`
 
-Create a new Rux project in a new directory.
+Create a new Rux package in a new directory.
 
-```bash
-rux new <name> [--lib] [--bin] [--path <dir>] [--vcs <none|git>]
+```sh
+rux new [name] [options]
 ```
 
 ## Options
 
-| Flag           | Description                           |
+| Optin          | Description                           |
 | -------------- | ------------------------------------- |
-| `--lib`        | Create a library project              |
 | `--bin`        | Create a binary application (default) |
+| `--lib`        | Create a library project              |
 | `--path <dir>` | Create in a specific directory        |
-| `--vcs none`   | Disable VCS (no Git initialization)F  |
 
 ## Example
 
-```bash
+```sh
+rux new Program
 rux new Program --bin
 ```
 
-Creates:
+Creates such folders and files:
 
 ```
 Program/
 ├── Bin/
 │   ├── Debug/
 │   └── Release/
-├── Src/
+├── Source/
 │   └── Main.rux
 ├── Temp/
 ├── Rux.toml

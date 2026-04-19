@@ -8,54 +8,59 @@ The reference describes the command line interface (CLI) of `rux` that is the **
 - Dependency resolver
 - Build system
 
-All developer workflows — from project creation to publishing — are handled via `rux`.
+All developer workflows from package creation to publishing are handled via `rux`.
 
 ## Command Syntax
 
-```bash
-rux <command> [options] [args]
+```sh
+rux [command] [options] [-- args...]
 ```
 
 Example:
 
-```bash
-rux
+```sh
 rux version
 rux help
 rux help new
 rux new App --bin
 rux build --release
 rux run
-rux run arg1 arg2 ...
+rux run -- arg1 arg2 ...
 rux fmt
 ```
 
 ## Command Summary
 
-| Command                         | Description                                       |
-| ------------------------------- | ------------------------------------------------- |
-| [`rux add`](/cli/add)           | Add a dependency to the manifest                  |
-| [`rux build`](/cli/build)       | Compile the current project                       |
-| [`rux clean`](/cli/clean)       | Remove build artifacts                            |
-| [`rux doc`](/cli/doc)           | Generate project documentation                    |
-| [`rux fmt`](/cli/fmt)           | Format source files and manifests                 |
-| [`rux help`](/cli/help)         | Show help information                             |
-| [`rux init`](/cli/init)         | Initialize a Rux project in the current directory |
-| [`rux install`](/cli/install)   | Download and build dependencies                   |
-| [`rux new`](/cli/new)           | Create a new Rux project                          |
-| [`rux remove`](/cli/remove)     | Remove a dependency from the manifest             |
-| [`rux run`](/cli/run)           | Build and run the main executable                 |
-| [`rux test`](/cli/test)         | Run all test targets                              |
-| [`rux up`](/cli/up)             | Update Rux toolchain                              |
-| [`rux version`](/cli/version)   | Show detailed version information                 |
-| [`rux -h`](/cli/help)           | Show help information                             |
-| [`rux -v`](/cli/version)        | Show brief version information                    |
-| [`rux --help`](/cli/help)       | Alias for `rux -h`                                |
-| [`rux --version`](/cli/version) | Alias for `rux -v`                                |
+| Command                       | Description                                       |
+| ----------------------------- | ------------------------------------------------- |
+| [`rux add`](/cli/add)         | Add a dependency to the manifest                  |
+| [`rux build`](/cli/build)     | Build the current package                         |
+| [`rux clean`](/cli/clean)     | Remove build artifacts                            |
+| [`rux doc`](/cli/doc)         | Generate project documentation                    |
+| [`rux fmt`](/cli/fmt)         | Format source files and manifests                 |
+| [`rux help`](/cli/help)       | Show help information                             |
+| [`rux init`](/cli/init)       | Initialize a Rux project in the current directory |
+| [`rux install`](/cli/install) | Download and build dependencies                   |
+| [`rux new`](/cli/new)         | Create a new Rux project                          |
+| [`rux remove`](/cli/remove)   | Remove a dependency from the manifest             |
+| [`rux run`](/cli/run)         | Build and run the main executable                 |
+| [`rux test`](/cli/test)       | Run all test targets                              |
+| [`rux up`](/cli/up)           | Update Rux toolchain                              |
+| [`rux version`](/cli/version) | Show version information                          |
+
+## Global options
+
+| Option                                                          | Description              |
+| --------------------------------------------------------------- | ------------------------ |
+| [`--color`](/cli/global#color)                                  | Control colored output   |
+| [`-h`](/cli/global#help), [`--help`](/cli/global#help)          | Show help information    |
+| [`-q`](/cli/global#quiet), [`--quiet`](/cli/global#quiet)       | Do not show log messages |
+| [`-v`](/cli/global#verbose), [`--verbose`](/cli/global#verbose) | Use verbose output       |
+| [`-V`](/cli/global#version), [`--version`](/cli/global#version) | Show version information |
 
 ## Example Workflow
 
-```bash
+```sh
 rux new App --bin
 cd App
 rux add Json@0.1.3

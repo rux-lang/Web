@@ -1,7 +1,20 @@
 # `rux test`
 
-Run unit and integration tests.
+Run package unit tests.
 
-```bash
-rux test [--release] [--filter <pattern>]
+```sh
+rux test [option]
+```
+
+## Options
+
+| Option      | Description                |
+| ----------- | -------------------------- |
+| `--release` | Build with release profile |
+
+## Examples
+
+```sh
+rux test
+rux test --release
 ```

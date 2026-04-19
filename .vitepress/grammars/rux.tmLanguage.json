@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
   "name": "Rux",
-  "fileTypes": ["rx"],
+  "fileTypes": ["rux"],
   "scopeName": "source.rux",
   "patterns": [
     {
@@ -140,9 +140,9 @@
           }
         },
         {
-          "comment": "Booleans",
+          "comment": "Language constants",
           "name": "constant.language.bool.rux",
-          "match": "\\b(true|false)\\b"
+          "match": "\\b(true|false|null)\\b"
         }
       ]
     },
@@ -159,12 +159,21 @@
           "end": "(?<=\\})",
           "patterns": [
             {
-              "begin": "\\s+([a-zA-Z_][a-zA-Z0-9_]*)(\\()",
+              "begin": "\\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\\s*(<)\\s*([A-Za-z_][A-Za-z0-9_]*(?:\\s*,\\s*[A-Za-z_][A-Za-z0-9_]*)*)\\s*(>))?(\\()",
               "beginCaptures": {
                 "1": {
                   "name": "entity.name.function.rux"
                 },
                 "2": {
+                  "name": "punctuation.definition.generic.begin.rux"
+                },
+                "3": {
+                  "name": "entity.name.type.rux"
+                },
+                "4": {
+                  "name": "punctuation.definition.generic.end.rux"
+                },
+                "5": {
                   "name": "punctuation.section.parameters.begin.rux"
                 }
               },
@@ -176,18 +185,23 @@
               },
               "patterns": [
                 {
-                  "match": "([A-Za-z_][A-Za-z0-9_]*)(\\s*:\\s*)\\**(\\s*const)?\\s*([A-Za-z_][A-Za-z0-9_<>]*)",
+                  "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\b(?=\\s*(?:,|:))",
                   "captures": {
                     "1": {
                       "name": "variable.parameter.rux"
-                    },
-                    "2": {
+                    }
+                  }
+                },
+                {
+                  "match": "(:\\s*)\\**(\\s*const)?\\s*([A-Za-z_][A-Za-z0-9_<>]*)",
+                  "captures": {
+                    "1": {
                       "name": "punctuation.separator.type.rux"
                     },
-                    "3": {
+                    "2": {
                       "name": "storage.modifier.rux"
                     },
-                    "4": {
+                    "3": {
                       "name": "entity.name.type.rux"
                     }
                   }
@@ -263,7 +277,7 @@
         {
           "comment": "Storage modifier",
           "name": "storage.modifier.rux",
-          "match": "\\b(const|let|var|use|as)\\b"
+          "match": "\\b(const|let|var|as)\\b"
         },
         {
           "comment": "Class keyword",
@@ -282,13 +296,13 @@
         },
         {
           "comment": "logical operators",
-          "name": "keyword.operator.logical.rust",
+          "name": "keyword.operator.logical.rux",
           "match": "(\\^|\\||\\|\\||&&|<<|>>|!)(?!=)"
         },
         {
           "comment": "Other keywords",
           "name": "keyword.other.rux",
-          "match": "\\b(as|async|use)\\b"
+          "match": "\\b(as|async|import|export)\\b"
         }
       ]
     },

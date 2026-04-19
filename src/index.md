@@ -100,7 +100,7 @@ head:
 ::: code-group
 
 ```rux [Rux]
-use System::Print;
+import System::Print;
 
 func Main(): int32
 {
@@ -289,21 +289,22 @@ func Min<T>(x, y: T): T
 ### Raw pointers 🤯
 
 ```rux
-var ptr: **char;
-var ptr: *const char
-const ptr: *char;
-const ptr: *const char;
-var data: *int64;
+var ptr: *int32 = null;
+var ptr: *const int32 = null;
+const ptr: *int32;
+const ptr: *const int32;
+var data: **int64;
 ```
 
 ### Module System
 
 ```rux
 // Import from modules
-use Math;
-use Math::*;
-use Math::Sin;
-use Math::Sin as Sinf;
+import Math;
+import Math::*;
+import Math::Sin;
+import Math::{Sin, Cos};
+import Math::Sin as Sinf;
 ```
 
 ## Community

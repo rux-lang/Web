@@ -1,9 +1,22 @@
 # `rux init`
 
-Initialize a new project in the **current** directory (useful for existing code).
+Initialize a new package in the current directory (useful for existing code).
 
-```bash
-rux init [--lib|--bin]
+```sh
+rux init [option]
 ```
 
-If a `Rux.toml` does not exist, it will be created.
+If file `Rux.toml` does not exist, it will be created.
+
+## Options
+
+| Option  | Description              |
+| ------- | ------------------------ |
+| `--bin` | Create a binary package  |
+| `--lib` | Create a library package |
+
+## Examples
+
+```sh
+rux init --bin
+```

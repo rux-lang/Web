@@ -1,16 +1,13 @@
 # `rux install`
 
-Handles dependency resolution and installation for the current project.
+Download and build all required dependencies defined in `Rux.toml`.
 
-```bash
-rux install [--lock]
+```sh
+rux install
 ```
-
-Downloads and builds all required dependencies defined in `Rux.toml`. If `Rux.lock` exists, exact versions are used.
 
 ## Examples
 
-```bash
+```sh
 rux install
-rux install --lock
 ```

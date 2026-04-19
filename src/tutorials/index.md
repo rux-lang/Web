@@ -37,7 +37,7 @@ Rux.Tutorials/
 
 1. **Clone the repository:**
 
-   ```bash
+   ```sh
    git clone https://github.com/rux-lang/Rux.Tutorials.git
    cd Rux.Tutorials
    ```
@@ -45,14 +45,14 @@ Rux.Tutorials/
 2. **Navigate to a specific tutorial:**
    Each tutorial folder contains a self-contained project.
 
-   ```bash
+   ```sh
    cd Rux.Tutorials/HelloWorld
    ```
 
 3. **Open the project:**
    Open the folder in Visual Studio Code via `File > Open Folder...`.
 
-   ```bash
+   ```sh
    code .
    ```
 
@@ -62,7 +62,7 @@ Rux.Tutorials/
 5. **Compile and run:**
    Follow the instructions and run the project to test it.
 
-   ```bash
+   ```sh
    rux build
    rux run
    ```

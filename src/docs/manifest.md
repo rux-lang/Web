@@ -1,6 +1,6 @@
 # Manifest Specification
 
-**Version:** Draft 0.1.0 (November 2025)  
+**Version:** Draft 0.1.0 (April 2026)  
 **Applies to:** Rux ≥0.1.0  
 **File name:** `Rux.toml`  
 **Format:** [TOML v1.0.0](https://toml.io/en/)  
@@ -39,7 +39,7 @@ License = "MIT"
 Authors = ["Your Name <name@mail.com>"]
 Repository = "https://github.com/yourname/app"
 Homepage = "https://app.com"
-Edition = "2025"
+Edition = "2026"
 Readme = "README.md"
 Keywords = ["demo", "example"]
 Categories = ["cli"]
@@ -67,7 +67,7 @@ Specifies build parameters and compiler options.
 
 ```toml
 [Build]
-Target = "x86_64"
+Target = "x86"
 OptLevel = "Release"
 Output = "Bin/App"
 EmitIr = false
@@ -78,7 +78,7 @@ Flags = ["--warn-unused", "--color=always"]
 
 | Field      | Type             | Description                                              |
 | ---------- | ---------------- | -------------------------------------------------------- |
-| `Target`   | string           | Compilation target triple (e.g., `"x86"`, `"x86_64"`).   |
+| `Target`   | string           | Compilation target triple (e.g., `"x86"`, `"x64"`).      |
 | `OptLevel` | string/int       | Optimization level (`"Debug"`, `"Release"`, or numeric). |
 | `Output`   | string           | Path to output binary or library.                        |
 | `EmitIr`   | bool             | Whether to emit intermediate representation.             |
@@ -152,7 +152,7 @@ Fmt = "rux fmt"
 
 Scripts can be executed via:
 
-```bash
+```sh
 rux script Build
 rux script Test
 rux script Fmt

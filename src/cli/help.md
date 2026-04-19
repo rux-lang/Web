@@ -2,7 +2,7 @@
 
 Show help information for the CLI.
 
-```bash
+```sh
 rux help
 rux -h
 rux --help
@@ -10,24 +10,16 @@ rux --help
 
 Show help information for a specific command.
 
-```bash
-rux help <command>
+```sh
+rux help [command]
 ```
 
-## Options
-
-| Flag                          | Description            |
-| ----------------------------- | ---------------------- |
-| `--color [auto \| on \| off]` | Control colored output |
+When used as a global option, `-h` and `--help` print the help screen and exit without running a command.
 
 ## Examples
 
-```bash
+```sh
 rux help
-...
-```
-
-```bash
 rux help build
-...
+rux help run
 ```

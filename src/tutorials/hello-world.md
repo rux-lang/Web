@@ -6,7 +6,7 @@ Let's create a simple Rux console application that prints "Hello World!" on the 
 
 We a going to create the first application of every programmer. Let's run the Rux toolchain.
 
-```bash
+```sh
 rux new HelloWorld
 cd HelloWorld
 code .
@@ -17,7 +17,7 @@ code .
 Insert this snippet into the `Main.rux` file
 
 ```rux
-use System::Print;
+import System::Print;
 
 func Main(): int32
 {
@@ -28,7 +28,7 @@ func Main(): int32
 
 ## Building and Running
 
-```bash
+```sh
 rux build
 rux run
 ```

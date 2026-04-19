@@ -1,9 +1,20 @@
 # `rux doc`
 
-Generate project documentation (HTML or Markdown).
+Generate documentation for the package.
 
-```bash
-rux doc [--open]
+```sh
+rux doc [options]
 ```
 
+## Options
+
+| Option   | Description                             |
+| -------- | --------------------------------------- |
+| `--open` | Open documentation after the generation |
+
 ## Examples
+
+```sh
+rux doc
+rux doc --open
+```
