@@ -28,7 +28,7 @@ Program/
 ├── Bin/
 │   ├── Debug/
 │   └── Release/
-├── Source/
+├── Src/
 │   └── Main.rux
 ├── Temp/
 ├── Rux.toml

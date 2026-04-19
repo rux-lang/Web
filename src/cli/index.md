@@ -36,12 +36,12 @@ rux fmt
 | [`rux add`](/cli/add)         | Add a dependency to the manifest                  |
 | [`rux build`](/cli/build)     | Build the current package                         |
 | [`rux clean`](/cli/clean)     | Remove build artifacts                            |
-| [`rux doc`](/cli/doc)         | Generate project documentation                    |
+| [`rux doc`](/cli/doc)         | Generate package documentation                    |
 | [`rux fmt`](/cli/fmt)         | Format source files and manifests                 |
 | [`rux help`](/cli/help)       | Show help information                             |
-| [`rux init`](/cli/init)       | Initialize a Rux project in the current directory |
+| [`rux init`](/cli/init)       | Initialize a Rux package in the current directory |
 | [`rux install`](/cli/install) | Download and build dependencies                   |
-| [`rux new`](/cli/new)         | Create a new Rux project                          |
+| [`rux new`](/cli/new)         | Create a new Rux package                          |
 | [`rux remove`](/cli/remove)   | Remove a dependency from the manifest             |
 | [`rux run`](/cli/run)         | Build and run the main executable                 |
 | [`rux test`](/cli/test)       | Run all test targets                              |
