@@ -90,7 +90,7 @@
         {
           "comment": "Decimal integers and floats",
           "name": "constant.numeric.decimal.rux",
-          "match": "\\b\\d[\\d_]*(\\.?)[\\d_]*(?:(E|e)([+-]?)([\\d_]+))?(float|float8|float16|float32|float80|float64|float128|float256|float512|int|int8|int16|int32|int64|int128|int256|int512|uint|uint8|uint16|uint32|uint64|uint128|uint256|uint512)?\\b",
+          "match": "\\b\\d[\\d_]*(\\.?)[\\d_]*(?:(E|e)([+-]?)([\\d_]+))?(f8|f16|f32|f80|f64|f128|f256|f512|i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512)?\\b",
           "captures": {
             "1": {
               "name": "punctuation.separator.dot.decimal.rux"
@@ -112,7 +112,7 @@
         {
           "comment": "Hexadecimal integers",
           "name": "constant.numeric.hex.rux",
-          "match": "\\b0x[\\da-fA-F_]+(int|int8|int16|int32|int64|int128|int256|int512|uint|uint8|uint16|uint32|uint64|ui128|uint256|uint512)?\\b",
+          "match": "\\b0x[\\da-fA-F_]+(i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512)?\\b",
           "captures": {
             "1": {
               "name": "entity.name.type.numeric.rux"
@@ -122,7 +122,7 @@
         {
           "comment": "Octal integers",
           "name": "constant.numeric.oct.rux",
-          "match": "\\b0o[0-7_]+(int|int8|int16|int32|int64|int128|int256|int512|uint|uint8|uint16|uint32|uint64|uint128|uint256|uint512)?\\b",
+          "match": "\\b0o[0-7_]+(i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512)?\\b",
           "captures": {
             "1": {
               "name": "entity.name.type.numeric.rux"
@@ -132,7 +132,7 @@
         {
           "comment": "Binary integers",
           "name": "constant.numeric.bin.rux",
-          "match": "\\b0b[01_]+(int|int8|int16|int32|int64|int128|int256|int512|uint|uint8|uint16|uint32|uint64|uint128|uint256|uint512)?\\b",
+          "match": "\\b0b[01_]+(i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512)?\\b",
           "captures": {
             "1": {
               "name": "entity.name.type.numeric.rux"
@@ -253,6 +253,9 @@
                   "include": "#constants"
                 },
                 {
+                  "include": "#types"
+                },
+                {
                   "include": "#keywords"
                 },
                 {
@@ -272,12 +275,12 @@
         {
           "comment": "Control flow keywords",
           "name": "keyword.control.rux",
-          "match": "\\b(await|break|continue|do|else|for|if|loop|match|return|try|while|yield)\\b"
+          "match": "\\b(break|continue|do|else|for|if|return|while)\\b"
         },
         {
           "comment": "Storage modifier",
           "name": "storage.modifier.rux",
-          "match": "\\b(const|let|var|as)\\b"
+          "match": "\\b(const|let|var)\\b"
         },
         {
           "comment": "Class keyword",
@@ -295,7 +298,7 @@
           "match": "\\b(struct)\\b"
         },
         {
-          "comment": "logical operators",
+          "comment": "Logical operators",
           "name": "keyword.operator.logical.rux",
           "match": "(\\^|\\||\\|\\||&&|<<|>>|!)(?!=)"
         },
@@ -344,7 +347,7 @@
           "name": "punctuation.section.parameters.begin.rux"
         },
         {
-          "comment": "Cloase parenthesis",
+          "comment": "Close parenthesis",
           "match": "\\)",
           "name": "punctuation.section.parameters.end.rux"
         },
