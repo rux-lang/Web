@@ -291,7 +291,8 @@ func Min<T>(x, y: T): T
 ```rux
 var ptr: *int32 = null;
 var ptr: *const int32 = null;
-const ptr: *int32;
+var value: float64 = 3.14;
+const ptr: *float = @value;
 const ptr: *const int32;
 var data: **int64;
 ```
