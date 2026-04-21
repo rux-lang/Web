@@ -80,7 +80,10 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: "Overview", link: "/docs/" },
-            { text: "Primitive Types", link: "/docs/primitive-types" },
+            { text: "Integer Types", link: "/docs/int" },
+            { text: "Float Types", link: "/docs/float" },
+            { text: "Bool Types", link: "/docs/bool" },
+            { text: "Char Types", link: "/docs/char" },
             { text: "Manifest Specification", link: "/docs/manifest" },
           ],
         },
