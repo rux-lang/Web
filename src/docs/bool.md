@@ -23,9 +23,9 @@ Rux provides seven fixed-width boolean types, each occupying a specific number o
 All boolean types store only `true` or `false`, regardless of their underlying width. The extra bits in wider types are zeroed and reserved.
 
 ```rux
-let a: bool8  = true
-let b: bool32 = false
-let c: bool64 = true
+let a: bool8 = true;
+let b: bool32 = false;
+let c: bool64 = true;
 ```
 
 ## Default Bool Type (`bool`)
@@ -33,8 +33,8 @@ let c: bool64 = true
 The plain `bool` keyword is an alias for `bool8` — the most commonly used boolean type in everyday programming.
 
 ```rux
-let isActive: bool = true
-let isDone: bool   = false
+let isActive: bool = true;
+let isDone: bool = false;
 let flag = true;
 ```
 
@@ -52,15 +52,15 @@ There are exactly two boolean literals in Rux:
 Both literals are lowercase keywords. They are compatible with any bool type and will be implicitly widened to the target type upon assignment.
 
 ```rux
-let x: bool    = true
-let y: bool32  = false
-let z: bool128 = true
+let x: bool = true;
+let y: bool32 = false;
+let z: bool128 = true;
 ```
 
 Boolean literals cannot be used directly as integer values. The following is a compile-time error:
 
 ```rux
-let n: int32 = true  // error: cannot assign bool to int32
+let n: int32 = true;  // error: cannot assign bool to int32
 ```
 
 ## Type Conversion
@@ -70,9 +70,9 @@ Rux does not allow implicit conversions between boolean types and numeric types.
 ### Bool to Integer
 
 ```rux
-let flag: bool = true
-let n: int32 = flag as int32   // n == 1
-let m: int32 = false as int32  // m == 0
+let flag: bool = true;
+let n: int32 = flag as int32;   // n == 1
+let m: int32 = false as int32;  // m == 0
 ```
 
 `true` converts to `1` and `false` converts to `0` for any integer type.
@@ -80,9 +80,9 @@ let m: int32 = false as int32  // m == 0
 ### Integer to Bool
 
 ```rux
-let n: int = 1
-let flag: bool = n as bool   // true  (non-zero)
-let zero: bool = 0 as bool   // false (zero)
+let n: int = 1;
+let flag: bool = n as bool;  // true  (non-zero)
+let zero: bool = 0 as bool;  // false (zero)
 ```
 
 Any non-zero integer value converts to `true`; zero converts to `false`.
@@ -92,9 +92,9 @@ Any non-zero integer value converts to `true`; zero converts to `false`.
 Conversion between boolean widths is allowed with `as`:
 
 ```rux
-let a: bool8  = true
-let b: bool32 = a as bool32
-let c: bool8  = b as bool8
+let a: bool8 = true;
+let b: bool32 = a as bool32;
+let c: bool8  = b as bool8;
 ```
 
 Narrowing conversions preserve the logical value (`true`/`false`); the extra bits are discarded or zeroed accordingly.
@@ -114,12 +114,12 @@ These operators work on single boolean values and short-circuit where applicable
 | `!`      | Logical NOT | Inverts the boolean value                |
 
 ```rux
-let a: bool = true
-let b: bool = false
+let a: bool = true;
+let b: bool = false;
 
-let andResult: bool = a && b   // false
-let orResult:  bool = a || b   // true
-let notResult: bool = !a       // false
+let andResult: bool = a && b;  // false
+let orResult:  bool = a || b;  // true
+let notResult: bool = !a;      // false
 ```
 
 Short-circuit evaluation applies: in `a && b`, if `a` is `false`, `b` is never evaluated. In `a || b`, if `a` is `true`, `b` is never evaluated.
@@ -136,13 +136,13 @@ Wider boolean types (`bool32`, `bool64`, etc.) also support bitwise operations. 
 | `~`      | Bitwise NOT |
 
 ```rux
-let a: bool32 = true
-let b: bool32 = false
+let a: bool32 = true;
+let b: bool32 = false;
 
-let c: bool32 = a & b   // false
-let d: bool32 = a | b   // true
-let e: bool32 = a ^ b   // true
-let f: bool32 = ~a      // false
+let c: bool32 = a & b;  // false
+let d: bool32 = a | b;  // true
+let e: bool32 = a ^ b;  // true
+let f: bool32 = ~a;     // false
 ```
 
 For plain `bool` / `bool8`, prefer `&&`, `||`, and `!` over their bitwise equivalents in general logic to benefit from short-circuit evaluation and clearer intent.
@@ -152,11 +152,11 @@ For plain `bool` / `bool8`, prefer `&&`, `||`, and `!` over their bitwise equiva
 Boolean types support equality checks:
 
 ```rux
-let a: bool = true
-let b: bool = true
+let a: bool = true;
+let b: bool = true;
 
-let eq:  bool = a == b   // true
-let neq: bool = a != b   // false
+let eq:  bool = a == b;  // true
+let neq: bool = a != b;  // false
 ```
 
 Booleans do not support ordering operators (`<`, `>`, `<=`, `>=`). If ordered comparison is needed, convert to an integer first.
@@ -180,18 +180,18 @@ func PackFlags(): bool32 { ... }
 if (isReady == true) { ... }
 
 // Preferred
-if isReady { ... }
-if !isReady { ... }
+if (isReady) { ... }
+if (!isReady) { ... }
 ```
 
 **Avoid casting integers to bool without intention.** While `n as bool` is legal, it can mask logic errors. Prefer explicit comparisons when deriving a boolean from a numeric value.
 
 ```rux
 // Fragile
-let flag: bool = count as bool
+let flag: bool = count as bool;
 
 // Clearer
-let flag: bool = count > 0
+let flag: bool = count > 0;
 ```
 
 **Use `&&` and `||` over `&` and `|` when short-circuiting matters.** If the right-hand operand has side effects or is expensive to compute, logical operators avoid unnecessary evaluation.
@@ -205,13 +205,13 @@ if (IsEnabled() && Load()) { ... }
 
 ```rux
 // Clear
-let isConnected: bool = true
-let hasPermission: bool = false
-func CanProceed() -> bool { ... }
+let isConnected: bool = true;
+let hasPermission: bool = false;
+func CanProceed(): bool { ... }
 
 // Unclear
-let connection: bool = true
-let permission: bool = false
+let connection: bool = true;
+let permission: bool = false;
 ```
 
 ## Notes

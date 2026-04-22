@@ -33,9 +33,9 @@ supplement (U+0000–U+00FF). Code points above U+00FF cannot be represented and
 a compile-time error if a literal or conversion exceeds this range.
 
 ```rux
-let a: char8 = 'A'       // U+0041  ✓
-let yen: char8 = '¥'     // U+00A5  ✓
-// let euro: char8 = '€' // U+20AC  ✗  compile error: out of range for char8
+let a: char8 = 'A';     // U+0041  ✓
+let yen: char8 = '¥';   // U+00A5  ✓
+let euro: char8 = '€';  // U+20AC  ✗  compile error: out of range for char8
 ```
 
 ### `char16`
@@ -45,8 +45,8 @@ encompasses the vast majority of characters used in modern scripts including Lat
 CJK Unified Ideographs, Arabic, Hebrew, and most emoji in common use.
 
 ```rux
-let kanji: char16 = '字'   // U+5B57  ✓
-let emoji: char16 = '★'   // U+2605  ✓
+let kanji: char16 = '字';  // U+5B57
+let emoji: char16 = '★';  // U+2605
 ```
 
 ### `char32`
@@ -57,8 +57,9 @@ math alphanumeric symbols, etc.). This is the recommended type for general Unico
 processing.
 
 ```rux
-let flag: char32 = '🏴'    // U+1F3F4  ✓
-let math: char32 = '𝕳'    // U+1D573  ✓
+let flag: char32 = '🏴';   // U+1F3F4
+let math: char32 = '𝕳';    // U+1D573
+let octopus: char = '🐙';  // U+1F419
 ```
 
 ### `char64`, `char128`, `char256`, `char512`
@@ -74,7 +75,7 @@ These types behave as unsigned integers for arithmetic and comparison but are **
 from integer types — implicit conversion to `u64`, `u128`, etc. is not permitted.
 
 ```rux
-let raw: char64 = 0x0001_F600 as char64
+let raw = 0x0001f600 as char64;
 ```
 
 > **Note:** The compiler may emit a warning when assigning a plain integer literal to
@@ -85,7 +86,7 @@ let raw: char64 = 0x0001_F600 as char64
 The unqualified keyword `char` is an alias for `char32`.
 
 ```rux
-let c: char = 'Ω'   // equivalent to char32
+let c: char = 'Σ';  // equivalent to char32
 ```
 
 This choice ensures that `char` can represent any valid Unicode scalar value without truncation.
@@ -104,7 +105,6 @@ A character literal is written with **single quotes**:
 '\t'        // escape sequence — horizontal tab
 '\\'        // escape sequence — backslash
 '\''        // escape sequence — single quote
-'\"'        // escape sequence — double quote (allowed inside char literals)
 '\0'        // escape sequence — null character (U+0000)
 '\u{1F600}' // Unicode escape — U+1F600 😀
 ```
@@ -131,11 +131,11 @@ The compiler infers the minimum char type that can hold a given literal, but wid
 annotated type when one is present:
 
 ```rux
-let a          = 'A'    // inferred: char8  (U+0041 fits in one byte)
-let b          = '字'   // inferred: char16 (U+5B57 fits in two bytes)
-let c          = '🔥'   // inferred: char32 (U+1F525 requires four bytes)
-let d: char32  = 'A'    // explicit: char32, no truncation concern
-let e: char16  = '🔥'   // compile error: U+1F525 > U+FFFF
+let a          = 'A';   // inferred: char8  (U+0041 fits in one byte)
+let b          = '字';  // inferred: char16 (U+5B57 fits in two bytes)
+let c          = '🔥';  // inferred: char32 (U+1F525 requires four bytes)
+let d: char32  = 'A';   // explicit: char32, no truncation concern
+let e: char16  = '🔥';  // compile error: U+1F525 > U+FFFF
 ```
 
 ## Type Conversion
@@ -145,21 +145,20 @@ let e: char16  = '🔥'   // compile error: U+1F525 > U+FFFF
 A narrower char type widens implicitly to any wider char type:
 
 ```rux
-let c8:  char8  = 'Z'
-let c16: char16 = c8   // implicit widening — always valid
-let c32: char32 = c16  // implicit widening — always valid
+let c8:  char8  = 'Z';
+let c16: char16 = c8;   // implicit widening — always valid
+let c32: char32 = c16;  // implicit widening — always valid
 ```
 
 ### Narrowing (checked, requires `as`)
 
 Narrowing conversions require an explicit `as` cast. A runtime check validates that the value fits
-the target type; if it does not, the program panics (unless the `as?` checked form is used):
+the target type; if it does not, the program trow exception (unless the `as?` checked form is used):
 
 ```rux
-let wide: char32 = '🔥'            // U+1F525
-let narrow: char16 = wide as char16 // panic at runtime: value > U+FFFF
-
-let safe: char16? = wide as? char16 // returns null instead of panicking
+let wide: char32 = '🔥';             // U+1F525
+let narrow: char16 = wide as char16; // except at runtime: value > U+FFFF
+let safe: char16? = wide as? char16; // returns null instead of exception
 ```
 
 ### Conversion to/from Integer Types
@@ -168,9 +167,9 @@ Char types are **not** integers, but explicit conversions between char types and
 backing integer type are supported via `as`:
 
 ```rux
-let c: char32 = '★'
-let n: u32    = c as u32     // 0x00002605
-let back: char32 = n as char32
+let c: char32 = '★';
+let n: uint32 = c as uint32;  // 0x00002605
+let back: char32 = n as char32;
 ```
 
 Converting an integer value that is not a valid Unicode scalar (e.g. a surrogate code point
@@ -179,20 +178,20 @@ constant, or a runtime panic when it is dynamic. Use `as?` to get `null` instead
 
 ### Conversion to/from String
 
-A single character can be converted to a one-character `String` using `String.from()` or string
+A single character can be converted to a one-character `String` using `String.From()` or string
 interpolation:
 
 ```rux
-let c: char = '€'
-let s: String = String.from(c)   // "€"
-let t: String = "{c}"            // "€"  (interpolation)
+let c: char = '€';
+let s: String = String.From(c);  // "€"
+let t: String = "{c}";           // "€"  (interpolation)
 ```
 
 Extracting a `char` from a string uses indexing by code-point position (not byte offset):
 
 ```rux
-let s = "Hello"
-let h: char = s[0]   // 'H'
+let s = "Hello";
+let h: char = s[0];  // 'H'
 ```
 
 ## Encoding
@@ -205,7 +204,7 @@ declared width stored in **little-endian** byte order on all platforms. There is
 surrogate pair, and no multi-byte encoding — a `char32` holding U+1F525 is simply the four-byte
 little-endian integer `0x0001F525`.
 
-String types (`str`, `String`) use **UTF-8** encoding internally. Converting a `char32` to a
+Type `String` use **UTF-8** encoding internally. Converting a `char32` to a
 `String` always produces valid UTF-8; the compiler handles the encoding automatically.
 
 ### Surrogates
@@ -227,7 +226,7 @@ all. If you need to process raw UTF-8 bytes, use `u8` arrays, not `char8` slices
 
 `s[i]` on a `String` indexes by **Unicode scalar position**, not byte position. The index of a
 character can therefore differ significantly from its byte offset in the underlying UTF-8 buffer.
-For byte-level access use `s.bytes[i]`.
+For byte-level access use `s.Bytes[i]`.
 
 ### Assuming `char` == one glyph
 
@@ -242,9 +241,9 @@ Char types do not support arithmetic operators directly. To compute character ra
 cast to the backing integer type first:
 
 ```rux
-let c: char = 'a'
-// let next = c + 1        // compile error: operator '+' not defined for char
-let next: char = (c as u32 + 1) as char   // 'b'
+let c: char = 'a';
+let next = c + 1;  // compile error: operator '+' not defined for char
+let next: char = (c as uint32 + 1) as char;  // 'b'
 ```
 
 ### Narrowing without checking
@@ -278,8 +277,6 @@ func ToChar8(c: char32) -> char8? {
 - All char types are **`Copy`** and **`Eq`** by default. Ordering (`Ord`) is defined as
   numeric order of the underlying scalar value (i.e. code-point order, not locale-aware
   collation).
-- Future language versions may introduce a `Grapheme` type for grapheme-cluster-level
-  abstraction; `char` will remain a scalar-value type.
 - The `char` keyword is **reserved** and cannot be used as an identifier, even in contexts
   where it would not be ambiguous.
 - In FFI (`extern`) contexts, `char8` maps to C's `unsigned char`, `char16` to `char16_t`,

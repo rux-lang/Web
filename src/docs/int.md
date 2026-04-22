@@ -76,18 +76,18 @@ Unsigned integers represent non-negative values only. They wrap modulo 2<sup>n</
 When an integer literal is written without an explicit type annotation, Rux infers its type as `int`:
 
 ```rux
-let x = 42            // x : int
-let y = -7            // y : int
-const MaxRetries = 5  // MaxRetries : int
+let x = 42;            // x : int
+let y = -7;            // y : int
+const MaxRetries = 5;  // MaxRetries : int
 ```
 
 `int` is the default because it maps to the most efficient native integer on the target platform and is the type expected by most standard library functions. Override the default with an explicit type annotation or a type suffix on the literal:
 
 ```rux
-let a: int32 = 42    // explicit annotation — int32
-let b = 42i32        // type suffix         — int32, same effect
-let c: uint8 = 255   // explicit annotation — uint8
-let d = 255u8        // type suffix         — uint8, same effect
+let a: int32 = 42;    // explicit annotation — int32
+let b = 42i32;        // type suffix         — int32, same effect
+let c: uint8 = 255;   // explicit annotation — uint8
+let d = 255u8;        // type suffix         — uint8, same effect
 ```
 
 If a literal value does not fit in the annotated type, the compiler emits an error at compile time.
@@ -99,10 +99,10 @@ If a literal value does not fit in the annotated type, the compiler emits an err
 Standard base-10 notation with no prefix.
 
 ```rux
-let a = 0
-let b = 42
-let c = 1000000
-let d = -17
+let a = 0;
+let b = 42;
+let c = 1000000;
+let d = -17;
 ```
 
 ### Hexadecimal
@@ -110,10 +110,10 @@ let d = -17
 Prefix `0x`. Digits `a`–`f` are accepted in both upper and lower case.
 
 ```rux
-let color = 0xFF8800
-let mask  = 0x0000FFFF
-let max8  = 0x00ef
-let addr  = 0x0080a3ef
+let color = 0xFF8800;
+let mask  = 0x0000FFFF;
+let max8  = 0x00ef;
+let addr  = 0x0080a3ef;
 ```
 
 ### Binary
@@ -121,9 +121,9 @@ let addr  = 0x0080a3ef
 Prefix `0b`. Only digits `0` and `1` are valid.
 
 ```rux
-let flags  = 0b10100011
-let enable = 0b1
-let byte   = 0b11111111
+let flags  = 0b10100011;
+let enable = 0b1;
+let byte   = 0b11111111;
 ```
 
 ### Octal
@@ -131,8 +131,8 @@ let byte   = 0b11111111
 Prefix `0o`. Digits `0`–`7` are valid.
 
 ```rux
-let perms = 0o755
-let mask  = 0o077
+let perms = 0o755;
+let mask  = 0o077;
 ```
 
 ### Digit Separators
@@ -140,10 +140,10 @@ let mask  = 0o077
 An underscore `_` may appear anywhere inside a numeric literal — after the prefix or between any two digits — to improve readability. Underscores have no effect on the value.
 
 ```rux
-let million = 1_000_000
-let ipv4    = 0xC0_A8_00_01    // 192.168.0.1
-let bitmask = 0b0000_1111_0000_1111
-let big     = 9_223_372_036_854_775_807
+let million = 1_000_000;
+let ipv4    = 0xC0_A8_00_01;    // 192.168.0.1
+let bitmask = 0b0000_1111_0000_1111;
+let big     = 9_223_372_036_854_775_807;
 ```
 
 ### Type Suffixes
@@ -177,35 +177,35 @@ A type suffix attached directly to a numeric literal fixes its type at the call 
 | `u`    | `uint`    |
 
 ```rux
-let a = 255u8          // uint8  — pixel channel value
-let b = 1_000i32       // int32
-let c = 0xDEAD_BEEFu32 // uint32 — hex with suffix
-let d = 0b1010_1010u8  // uint8  — binary with suffix
-let e = 0o755u16       // uint16 — octal with suffix
-let f = 9_223_372_036_854_775_807i64  // int64 maximum
-let g = 42i            // int    — explicit platform-dependent signed
-let h = 42u            // uint   — explicit platform-dependent unsigned
+let a = 255u8;          // uint8  — pixel channel value
+let b = 1_000i32;       // int32
+let c = 0xDEAD_BEEFu32; // uint32 — hex with suffix
+let d = 0b1010_1010u8;  // uint8  — binary with suffix
+let e = 0o755u16;       // uint16 — octal with suffix
+let f = 9_223_372_036_854_775_807i64;  // int64 maximum
+let g = 42i;            // int    — explicit platform-dependent signed
+let h = 42u;            // uint   — explicit platform-dependent unsigned
 ```
 
 Digit separators and suffixes may be combined freely:
 
 ```rux
-let mask = 0xFF_00_FF_00u32   // 4 278 255 360
+let mask = 0xFF_00_FF_00u32;   // 4 278 255 360
 ```
 
 If the literal value does not fit in the suffixed type, the compiler emits an error:
 
 ```rux
-let bad = 256u8    // error: value 256 does not fit in uint8 (range 0–255)
-let ok  = 255u8    // fine
+let bad = 256u8;    // error: value 256 does not fit in uint8 (range 0–255)
+let ok  = 255u8;    // fine
 ```
 
 A suffixed literal and an explicit type annotation must agree. Providing both when they conflict is a compile-time error:
 
 ```rux
-let x: uint16 = 100u8    // error: suffix type uint8 conflicts with annotation uint16
-let y: uint8  = 100u8    // fine — suffix and annotation agree
-let z: uint8  = 100      // fine — unsuffixed literal, annotation wins
+let x: uint16 = 100u8;    // error: suffix type uint8 conflicts with annotation uint16
+let y: uint8  = 100u8;    // fine — suffix and annotation agree
+let z: uint8  = 100;      // fine — unsuffixed literal, annotation wins
 ```
 
 ## Type Conversion
@@ -217,12 +217,12 @@ Rux is strongly typed. There are no implicit numeric conversions — every conve
 Converting to a wider type preserves the value exactly. Signed-to-signed widens using sign extension; unsigned-to-unsigned widens using zero extension.
 
 ```rux
-let a = 100i8
-let b = a as int32    // 100  — sign-extended from int8 to int32
-let c = b as int64    // 100  — sign-extended from int32 to int64
+let a = 100i8;
+let b = a as int32;    // 100  — sign-extended from int8 to int32
+let c = b as int64;    // 100  — sign-extended from int32 to int64
 
-let x = 200u8
-let y = x as uint32   // 200  — zero-extended from uint8 to uint32
+let x = 200u8;
+let y = x as uint32;   // 200  — zero-extended from uint8 to uint32
 ```
 
 ### Narrowing (truncating)
@@ -230,23 +230,23 @@ let y = x as uint32   // 200  — zero-extended from uint8 to uint32
 Converting to a narrower type keeps only the low-order bits of the target width. No panic is raised; the resulting value may differ from the original.
 
 ```rux
-let big   = 300i32
-let small = big as int8       // 300 & 0xFF = 44
+let big   = 300i32;
+let small = big as int8;    // 300 & 0xFF = 44
 
-let wide = 0xDEAD_BEEFu32
-let byte = wide as uint8      // 0xEF = 239
+let wide  = 0xDEAD_BEEFu32;
+let byte  = wide as uint8;  // 0xEF = 239
 ```
 
-### Signed ↔ Unsigned
+### Conversion Between Signed and Unsigned
 
 Casting between signed and unsigned types of the same width reinterprets the bit pattern without truncation. Positive values that fit in both types are preserved. Negative signed values become large unsigned values and vice versa.
 
 ```rux
-let s = -1i8
-let u = s as uint8    // 255  (0xFF reinterpreted as unsigned)
+let s = -1i8;
+let u = s as uint8;  // 255  (0xFF reinterpreted as unsigned)
 
-let v = 200u8
-let w = v as int8     // -56  (0xC8 reinterpreted as two's complement)
+let v = 200u8;
+let w = v as int8;   // -56  (0xC8 reinterpreted as two's complement)
 ```
 
 ### Combined widening and sign-family change
@@ -254,8 +254,8 @@ let w = v as int8     // -56  (0xC8 reinterpreted as two's complement)
 When both widening and a sign-family change are needed, a single `as` cast handles both steps: the value is first sign- or zero-extended to the target width, then reinterpreted.
 
 ```rux
-let s: int8   = -1
-let u: uint32 = s as uint32  // 0xFFFFFFFF = 4 294 967 295
+let s: int8   = -1;
+let u: uint32 = s as uint32;  // 0xFFFFFFFF = 4294967295
 ```
 
 ## Arithmetic Operations
@@ -270,31 +270,31 @@ let u: uint32 = s as uint32  // 0xFFFFFFFF = 4 294 967 295
 | `**`     | Exponentiation | n/a                 |
 
 ```rux
-let a = 10
-let b = 3
+let a = 10;
+let b = 3;
 
-let sum  = a + b   // 13
-let diff = a - b   // 7
-let prod = a * b   // 30
-let quot = a / b   // 3   (truncates toward zero)
-let rem  = a % b   // 1
-let pow  = a ** b  // 1000
+let sum  = a + b;   // 13
+let diff = a - b;   // 7
+let prod = a * b;   // 30
+let quot = a / b;   // 3   (truncates toward zero)
+let rem  = a % b;   // 1
+let pow  = a ** b;  // 1000
 
-var x = 10
-x += 5  // 15
-x -= 3  // 12
-x *= 2  // 24
-x /= 4  // 6
-x %= 4  // 2
+var x = 10;
+x += 5;  // 15
+x -= 3;  // 12
+x *= 2;  // 24
+x /= 4;  // 6
+x %= 4;  // 2
 ```
 
 **Division and remainder** truncate toward zero. The remainder `a % b` carries the sign of the dividend `a`.
 
 ```rux
-let q1 =  7 /  2  //  3
-let q2 = -7 /  2  // -3
-let r1 =  7 %  2  //  1
-let r2 = -7 %  2  // -1
+let q1 =  7 /  2;  //  3
+let q2 = -7 /  2;  // -3
+let r1 =  7 %  2;  //  1
+let r2 = -7 %  2;  // -1
 ```
 
 **Overflow behaviour:** In debug builds, integer overflow causes a runtime panic. In release builds, both signed and unsigned integers wrap around in two's complement fashion (modulo 2<sup>n</sup>). Write overflow-sensitive code defensively and test it in debug mode before shipping a release build.
@@ -313,25 +313,24 @@ let r2 = -7 %  2  // -1
 All comparison operators return a `bool`. Both operands must have the same integer type; comparing integers of different types is a compile-time error and requires an explicit `as` cast.
 
 ```rux
-let a = 10
-let b = 20
+let a = 10;
+let b = 20;
 
-let eq  = a == b  // false
-let neq = a != b  // true
-let lt  = a < b   // true
-let lte = a <= b  // true
-let gt  = a > b   // false
-let gte = a >= b  // false
+let eq  = a == b;  // false
+let neq = a != b;  // true
+let lt  = a < b;   // true
+let lte = a <= b;  // true
+let gt  = a > b;   // false
+let gte = a >= b;  // false
 ```
 
 **Comparing signed and unsigned types:** Mixing a signed and an unsigned type in the same comparison is a compile-time error. Cast one operand explicitly and consider which semantics are correct for values near the type boundaries.
 
 ```rux
-let s: int32  = -1
-let u: uint32 = 1
-
-let bad = s < u  // error: type mismatch
-let ok  = (s as int64) < (u as int64) // safe widening comparison
+let s: int32  = -1;
+let u: uint32 = 1;
+let bad = s < u;  // error: type mismatch
+let ok  = (s as int64) < (u as int64); // safe widening comparison
 ```
 
 ## Bitwise Operations
@@ -344,33 +343,31 @@ let ok  = (s as int64) < (u as int64) // safe widening comparison
 | `~`      | Bitwise NOT | n/a                 |
 
 ```rux
-let a = 0b1100_1010u8  // uint8 = 202
-let b = 0b1010_1100u8  // uint8 = 172
+let a = 0b1100_1010u8;  // uint8 = 202
+let b = 0b1010_1100u8;  // uint8 = 172
 
-let and_val = a & b    // 0b1000_1000 = 136
-let or_val  = a | b    // 0b1110_1110 = 238
-let xor_val = a ^ b    // 0b0110_0110 = 102
-let not_val = ~a       // 0b0011_0101 =  53
+let and_val = a & b;    // 0b1000_1000 = 136
+let or_val  = a | b;    // 0b1110_1110 = 238
+let xor_val = a ^ b;    // 0b0110_0110 = 102
+let not_val = ~a;       // 0b0011_0101 =  53
 ```
 
 **Bitwise NOT on signed types:** `~` flips every bit. For a signed integer in two's complement this equals `-(x + 1)`.
 
 ```rux
-let x: int8 = 5
-let y = ~x   // -6
+let x: int8 = 5;
+let y = ~x;  // -6
 ```
 
 **Common bit-manipulation patterns:**
 
 ```rux
-var flags: uint32 = 0
-
-flags |= 1 << 3     // set bit 3
-flags &= ~(1 << 3)  // clear bit 3
-flags ^= 1 << 2     // toggle bit 2
-
-let is_set    = (flags & (1 << 3)) != 0  // test bit 3
-let low_nibble = flags & 0x0F            // mask low 4 bits
+var flags: uint32 = 0;
+flags |= 1 << 3;     // set bit 3
+flags &= ~(1 << 3);  // clear bit 3
+flags ^= 1 << 2;     // toggle bit 2
+let is_set    = (flags & (1 << 3)) != 0;  // test bit 3
+let low_nibble = flags & 0x0F;            // mask low 4 bits
 ```
 
 ## Shift Operations
@@ -383,28 +380,27 @@ let low_nibble = flags & 0x0F            // mask low 4 bits
 Left shift fills vacated bits on the right with zeros. For unsigned types, right shift fills vacated bits on the left with zeros (**logical shift**). For signed types, right shift fills vacated bits with the sign bit (**arithmetic shift**), preserving the sign of the value.
 
 ```rux
-let u: uint8 = 0b0001_0100  // 20
-let s: int8  = -8           // 0b1111_1000
-
-let ul = u << 2  // 0b0101_0000 = 80 (left shift)
-let ur = u >> 2  // 0b0000_0101 =  5 (logical right shift — zero-filled)
-let sr = s >> 2  // 0b1111_1110 = -2 (arithmetic right shift — sign-filled)
+let u: uint8 = 0b00010100;  // 20
+let s: int8  = -8;          // 0b11111000
+let ul = u << 2;  // 0b01010000 = 80 (left shift)
+let ur = u >> 2;  // 0b00000101 =  5 (logical right shift — zero-filled)
+let sr = s >> 2;  // 0b11111110 = -2 (arithmetic right shift — sign-filled)
 ```
 
 **Shift amount rules:** The shift amount must be a non-negative integer. A shift amount of zero is a no-op. Shifting by an amount greater than or equal to the bit width of the type is a compile-time or runtime error; it does not silently produce zero.
 
 ```rux
-let x: uint32 = 1
-let a = x << 31  // 0x80000000 — valid
-let b = x << 32  // error: shift amount >= bit width
+let x: uint32 = 1;
+let a = x << 31;  // 0x80000000 — valid
+let b = x << 32;  // error: shift amount >= bit width
 ```
 
 **Left shift as fast multiplication, right shift as fast division** (powers of two):
 
 ```rux
-let val  = 5
-let mul8 = val << 3  // 40 (5 × 8)
-let div4 = val >> 2  //  1 (5 ÷ 4, truncated)
+let val  = 5;
+let mul8 = val << 3;  // 40 (5 × 8)
+let div4 = val >> 2;  //  1 (5 ÷ 4, truncated)
 ```
 
 ## Recommendations
