@@ -81,11 +81,13 @@ let y = -7            // y : int
 const MaxRetries = 5  // MaxRetries : int
 ```
 
-`int` is the default because it maps to the most efficient native integer on the target platform and is the type expected by most standard library functions. Override the default with an explicit annotation:
+`int` is the default because it maps to the most efficient native integer on the target platform and is the type expected by most standard library functions. Override the default with an explicit type annotation or a type suffix on the literal:
 
 ```rux
-let a: int32 = 42    // explicitly int32
-let b: uint8 = 255   // explicitly uint8
+let a: int32 = 42    // explicit annotation — int32
+let b = 42i32        // type suffix         — int32, same effect
+let c: uint8 = 255   // explicit annotation — uint8
+let d = 255u8        // type suffix         — uint8, same effect
 ```
 
 If a literal value does not fit in the annotated type, the compiler emits an error at compile time.
@@ -144,6 +146,68 @@ let bitmask = 0b0000_1111_0000_1111
 let big     = 9_223_372_036_854_775_807
 ```
 
+### Type Suffixes
+
+A type suffix attached directly to a numeric literal fixes its type at the call site without requiring a separate annotation. The suffix is written immediately after the last digit (or digit separator) with no whitespace.
+
+**Signed suffixes:**
+
+| Suffix | Type     |
+| ------ | -------- |
+| `i8`   | `int8`   |
+| `i16`  | `int16`  |
+| `i32`  | `int32`  |
+| `i64`  | `int64`  |
+| `i128` | `int128` |
+| `i256` | `int256` |
+| `i512` | `int512` |
+| `i`    | `int`    |
+
+**Unsigned suffixes:**
+
+| Suffix | Type      |
+| ------ | --------- |
+| `u8`   | `uint8`   |
+| `u16`  | `uint16`  |
+| `u32`  | `uint32`  |
+| `u64`  | `uint64`  |
+| `u128` | `uint128` |
+| `u256` | `uint256` |
+| `u512` | `uint512` |
+| `u`    | `uint`    |
+
+```rux
+let a = 255u8          // uint8  — pixel channel value
+let b = 1_000i32       // int32
+let c = 0xDEAD_BEEFu32 // uint32 — hex with suffix
+let d = 0b1010_1010u8  // uint8  — binary with suffix
+let e = 0o755u16       // uint16 — octal with suffix
+let f = 9_223_372_036_854_775_807i64  // int64 maximum
+let g = 42i            // int    — explicit platform-dependent signed
+let h = 42u            // uint   — explicit platform-dependent unsigned
+```
+
+Digit separators and suffixes may be combined freely:
+
+```rux
+let mask = 0xFF_00_FF_00u32   // 4 278 255 360
+```
+
+If the literal value does not fit in the suffixed type, the compiler emits an error:
+
+```rux
+let bad = 256u8    // error: value 256 does not fit in uint8 (range 0–255)
+let ok  = 255u8    // fine
+```
+
+A suffixed literal and an explicit type annotation must agree. Providing both when they conflict is a compile-time error:
+
+```rux
+let x: uint16 = 100u8    // error: suffix type uint8 conflicts with annotation uint16
+let y: uint8  = 100u8    // fine — suffix and annotation agree
+let z: uint8  = 100      // fine — unsuffixed literal, annotation wins
+```
+
 ## Type Conversion
 
 Rux is strongly typed. There are no implicit numeric conversions — every conversion between integer types must be written explicitly using the `as` keyword.
@@ -153,24 +217,24 @@ Rux is strongly typed. There are no implicit numeric conversions — every conve
 Converting to a wider type preserves the value exactly. Signed-to-signed widens using sign extension; unsigned-to-unsigned widens using zero extension.
 
 ```rux
-let a: int8  = 100
-let b: int32 = a as int32   // 100  — sign-extended
-let c: int64 = b as int64   // 100  — sign-extended
+let a = 100i8
+let b = a as int32    // 100  — sign-extended from int8 to int32
+let c = b as int64    // 100  — sign-extended from int32 to int64
 
-let x: uint8  = 200
-let y: uint32 = x as uint32 // 200  — zero-extended
+let x = 200u8
+let y = x as uint32   // 200  — zero-extended from uint8 to uint32
 ```
 
 ### Narrowing (truncating)
 
-Converting to a narrower type keeps only the low-order bits of the target width. No exception is raised; the resulting value may differ from the original.
+Converting to a narrower type keeps only the low-order bits of the target width. No panic is raised; the resulting value may differ from the original.
 
 ```rux
-let big:   int32 = 300
-let small: int8  = big as int8     // 300 & 0xFF = 44
+let big   = 300i32
+let small = big as int8       // 300 & 0xFF = 44
 
-let wide:  uint32 = 0xDEADBEEF
-let byte:  uint8  = wide as uint8  // 0xEF = 239
+let wide = 0xDEAD_BEEFu32
+let byte = wide as uint8      // 0xEF = 239
 ```
 
 ### Signed ↔ Unsigned
@@ -178,11 +242,11 @@ let byte:  uint8  = wide as uint8  // 0xEF = 239
 Casting between signed and unsigned types of the same width reinterprets the bit pattern without truncation. Positive values that fit in both types are preserved. Negative signed values become large unsigned values and vice versa.
 
 ```rux
-let s: int8  = -1
-let u: uint8 = s as uint8  // 255 (0xFF reinterpreted as unsigned)
+let s = -1i8
+let u = s as uint8    // 255  (0xFF reinterpreted as unsigned)
 
-let v: uint8 = 200
-let w: int8  = v as int8   // -56 (0xC8 reinterpreted as two's complement)
+let v = 200u8
+let w = v as int8     // -56  (0xC8 reinterpreted as two's complement)
 ```
 
 ### Combined widening and sign-family change
@@ -280,13 +344,13 @@ let ok  = (s as int64) < (u as int64) // safe widening comparison
 | `~`      | Bitwise NOT | n/a                 |
 
 ```rux
-let a: uint8 = 0b1100_1010  // 202
-let b: uint8 = 0b1010_1100  // 172
+let a = 0b1100_1010u8  // uint8 = 202
+let b = 0b1010_1100u8  // uint8 = 172
 
-let and_val = a & b  // 0b1000_1000 = 136
-let or_val  = a | b  // 0b1110_1110 = 238
-let xor_val = a ^ b  // 0b0110_0110 = 102
-let not_val = ~a     // 0b0011_0101 =  53
+let and_val = a & b    // 0b1000_1000 = 136
+let or_val  = a | b    // 0b1110_1110 = 238
+let xor_val = a ^ b    // 0b0110_0110 = 102
+let not_val = ~a       // 0b0011_0101 =  53
 ```
 
 **Bitwise NOT on signed types:** `~` flips every bit. For a signed integer in two's complement this equals `-(x + 1)`.
@@ -343,7 +407,7 @@ let mul8 = val << 3  // 40 (5 × 8)
 let div4 = val >> 2  //  1 (5 ÷ 4, truncated)
 ```
 
-## Best Practices and Recommendations
+## Recommendations
 
 **Choose fixed-width types for data interchange.** When reading or writing binary data — network packets, file formats, hardware registers — always use explicitly sized types (`uint32`, `int64`, etc.) so the layout is unambiguous regardless of the target platform.
 
