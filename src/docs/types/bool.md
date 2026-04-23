@@ -167,21 +167,21 @@ Booleans do not support ordering operators (`<`, `>`, `<=`, `>=`). If ordered co
 
 ```rux
 // Preferred
-func IsValid(value: int): bool { ... }
+func IsValid(value: int) -> bool { ... }
 
 // Only when size matters
-func PackFlags(): bool32 { ... }
+func PackFlags() -> bool32 { ... }
 ```
 
 **Do not compare booleans to literals redundantly.** Comparing a `bool` to `true` or `false` adds noise with no benefit.
 
 ```rux
 // Avoid
-if (isReady == true) { ... }
+if isReady == true { ... }
 
 // Preferred
-if (isReady) { ... }
-if (!isReady) { ... }
+if isReady { ... }
+if !isReady { ... }
 ```
 
 **Avoid casting integers to bool without intention.** While `n as bool` is legal, it can mask logic errors. Prefer explicit comparisons when deriving a boolean from a numeric value.
@@ -198,7 +198,7 @@ let flag: bool = count > 0;
 
 ```rux
 // Safe — Load() is only called when IsEnabled() returns true
-if (IsEnabled() && Load()) { ... }
+if IsEnabled() && Load() { ... }
 ```
 
 **Name boolean variables and functions affirmatively.** Names that read as yes/no questions improve readability.
@@ -207,7 +207,7 @@ if (IsEnabled() && Load()) { ... }
 // Clear
 let isConnected: bool = true;
 let hasPermission: bool = false;
-func CanProceed(): bool { ... }
+func CanProceed() -> bool { ... }
 
 // Unclear
 let connection: bool = true;

@@ -397,7 +397,7 @@ let a = x << 31;  // 0x80000000 — valid
 let b = x << 32;  // error: shift amount >= bit width
 ```
 
-**Left shift as fast multiplication, right shift as fast division** (powers of two):
+**Left shift as fast multiplication, right shift as fast division** (powers of two).
 
 ```rux
 let val  = 5;

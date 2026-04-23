@@ -381,7 +381,7 @@ Float.approx_eq_eps(0.1 + 0.2, 0.3, 1e-12)  // custom epsilon
 Because `NaN` violates total order, Rux's `Ord` trait is **not** implemented for float types by default. Use `Float.total_cmp()` for sorting, which implements IEEE 754 `totalOrder`:
 
 ```rux
-let mut values: [float64] = [3.0, Float.nan, 1.0, Float.inf, -1.0]
+let mut values: float64[] = [3.0, Float.NaN, 1.0, Float.Inf, -1.0]
 values.sort_by(Float.total_cmp)
 // result: [-1.0, 1.0, 3.0, +Inf, NaN]
 ```
@@ -494,9 +494,9 @@ inf * 0.0     // → NaN  ← be careful
 The default rounding mode is **round-to-nearest, ties-to-even** (IEEE 754 `roundTiesToEven`). Alternate rounding modes can be set per-scope:
 
 ```rux
-import float.rounding
+import Float::Rounding
 
-float.rounding.with_mode(.toward_zero) {
+Float.Rounding.with_mode(.toward_zero) {
     // all float ops in this block use truncation
     let x = 3.9f32 as int32  // → 3
 }

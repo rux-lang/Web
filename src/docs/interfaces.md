@@ -10,7 +10,7 @@ interface Printable {
 }
 
 interface Comparable {
-    func CompareTo(other: self): int32;
+    func CompareTo(other: self) -> int32;
 }
 ```
 

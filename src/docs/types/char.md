@@ -153,7 +153,7 @@ let c32: char32 = c16;  // implicit widening — always valid
 ### Narrowing (checked, requires `as`)
 
 Narrowing conversions require an explicit `as` cast. A runtime check validates that the value fits
-the target type; if it does not, the program trow exception (unless the `as?` checked form is used):
+the target type; if it does not, the program trow exception (unless the `as?` checked form is used).
 
 ```rux
 let wide: char32 = '🔥';             // U+1F525
@@ -187,7 +187,7 @@ let s: String = String.From(c);  // "€"
 let t: String = "{c}";           // "€"  (interpolation)
 ```
 
-Extracting a `char` from a string uses indexing by code-point position (not byte offset):
+Extracting a `char` from a string uses indexing by code-point position (not byte offset).
 
 ```rux
 let s = "Hello";
