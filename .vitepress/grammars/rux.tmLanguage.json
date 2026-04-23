@@ -220,9 +220,12 @@
             },
             {
               "comment": "Return type",
-              "match": "\\s*:\\s*([A-Za-z_][A-Za-z0-9_<>]*)",
+              "match": "\\s*(->)\\s*([A-Za-z_][A-Za-z0-9_<>]*)",
               "captures": {
                 "1": {
+                  "name": "punctuation.separator.arrow.rux"
+                },
+                "2": {
                   "name": "storage.type.return.rux"
                 }
               }
@@ -296,6 +299,16 @@
           "comment": "Struct keyword",
           "name": "keyword.declaration.struct.rux storage.type.rux",
           "match": "\\b(struct)\\b"
+        },
+        {
+          "comment": "Union keyword",
+          "name": "keyword.declaration.union.rux storage.type.rux",
+          "match": "\\b(union)\\b"
+        },
+        {
+          "comment": "Type keyword",
+          "name": "keyword.declaration.type.rux storage.type.rux",
+          "match": "\\b(type)\\b"
         },
         {
           "comment": "Logical operators",
@@ -427,6 +440,30 @@
             },
             "2": {
               "name": "entity.name.type.enum.rux"
+            }
+          }
+        },
+        {
+          "comment": "Union declarations",
+          "match": "\\b(union)\\s+(_?[A-Z][A-Za-z0-9_]*)\\b",
+          "captures": {
+            "1": {
+              "name": "keyword.declaration.union.rux storage.type.rux"
+            },
+            "2": {
+              "name": "entity.name.type.union.rux"
+            }
+          }
+        },
+        {
+          "comment": "Type alias declarations",
+          "match": "\\b(type)\\s+(_?[A-Z][A-Za-z0-9_]*)\\b",
+          "captures": {
+            "1": {
+              "name": "keyword.declaration.type.rux storage.type.rux"
+            },
+            "2": {
+              "name": "entity.name.type.alias.rux"
             }
           }
         }

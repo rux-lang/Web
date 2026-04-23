@@ -1,6 +1,8 @@
 # Error Handling
 
-_(This section will be expanded as the error-handling model is finalized)_
+::: tip
+This section will be expanded as the error-handling model is finalized
+:::
 
 Rux favors explicit error handling over exceptions. The standard approach uses return-type encoding with a `Result` type:
 

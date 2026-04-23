@@ -79,157 +79,41 @@ export default defineConfig({
           text: "Rux Reference",
           collapsed: false,
           items: [
-            {
-              text: "Table of Contents",
-              link: "/docs/",
-            },
-            {
-              text: "Introduction",
-              link: "/docs/introduction",
-            },
+            { text: "Table of Contents", link: "/docs/" },
+            { text: "Introduction", link: "/docs/introduction" },
             {
               text: "Lexical Structure",
               collapsed: true,
               items: [
-                {
-                  text: "Source Files",
-                  link: "/docs/lexical/sources",
-                },
-                {
-                  text: "Comments",
-                  link: "/docs/lexical/comments",
-                },
-                {
-                  text: "Keywords",
-                  link: "/docs/lexical/keywords",
-                },
-                {
-                  text: "Identifiers",
-                  link: "/docs/lexical/identifiers",
-                },
-                {
-                  text: "Literals",
-                  link: "/docs/lexical/literals",
-                },
-                {
-                  text: "Operators",
-                  link: "/docs/lexical/operators",
-                },
+                { text: "Source Files", link: "/docs/lexical/sources" },
+                { text: "Comments", link: "/docs/lexical/comments" },
+                { text: "Keywords", link: "/docs/lexical/keywords" },
+                { text: "Identifiers", link: "/docs/lexical/identifiers" },
+                { text: "Literals", link: "/docs/lexical/literals" },
+                { text: "Operators", link: "/docs/lexical/operators" },
               ],
             },
             {
               text: "Types",
               collapsed: true,
               items: [
-                {
-                  text: "Integer Types",
-                  link: "/docs/types/int",
-                },
-                {
-                  text: "Floating-Point Types",
-                  link: "/docs/types/float",
-                },
-                {
-                  text: "Boolean Types",
-                  link: "/docs/types/bool",
-                },
-                {
-                  text: "Character Types",
-                  link: "/docs/types/char",
-                },
-                {
-                  text: "Composite Types",
-                  link: "/docs/types/composite",
-                },
-                {
-                  text: "Type Aliases",
-                  link: "/docs/types/aliase",
-                },
+                { text: "Integer Types", link: "/docs/types/int" },
+                { text: "Floating-Point Types", link: "/docs/types/float" },
+                { text: "Boolean Types", link: "/docs/types/bool" },
+                { text: "Character Types", link: "/docs/types/char" },
+                { text: "Composite Types", link: "/docs/types/composite" },
+                { text: "Type Aliases", link: "/docs/types/alias" },
               ],
             },
-            {
-              text: "Variables and Constants",
-              collapsed: true,
-              items: [
-                {
-                  text: "let Bindings",
-                  link: "/docs/variables/let",
-                },
-                {
-                  text: "Mutability",
-                  link: "/docs/variables/var",
-                },
-                {
-                  text: "Constants",
-                  link: "/docs/variables/const",
-                },
-              ],
-            },
-            {
-              text: "Functions",
-              collapsed: true,
-              items: [
-                {
-                  text: "Function Declarations",
-                  link: "/docs/functions/declaration",
-                },
-                {
-                  text: "Parameters and Return Types",
-                  link: "/docs/functions/parameters",
-                },
-                { text: "The Main Entry Point", link: "/docs/functions/main" },
-              ],
-            },
-            {
-              text: "Control Flow",
-              collapsed: true,
-              items: [
-                { text: "if / else", link: "/docs/control/if" },
-                { text: "while", link: "/docs/control/while" },
-                { text: "for / in", link: "/docs/control/for" },
-                { text: "match", link: "/docs/control/match" },
-                { text: "break", link: "/docs/control/break" },
-                { text: "continue", link: "/docs/control/continue" },
-                { text: "return", link: "/docs/control/return" },
-              ],
-            },
+            { text: "Variables", link: "/docs/variables" },
+            { text: "Constants", link: "/docs/constants" },
+            { text: "Statements", link: "/docs/statements" },
+            { text: "Functions", link: "/docs/functions" },
             { text: "Structs", link: "/docs/structs" },
             { text: "Enums", link: "/docs/enums" },
             { text: "Unions", link: "/docs/unions" },
-            {
-              text: "Interfaces",
-              collapsed: true,
-              items: [
-                { text: "interface", link: "/docs/interfaces/interface" },
-                { text: "implementation", link: "/docs/interfaces/impl" },
-              ],
-            },
-            {
-              text: "Modules",
-              collapsed: true,
-              items: [
-                { text: "mod", link: "/docs/modules/mod" },
-                { text: "import", link: "/docs/modules/import" },
-                { text: "pub", link: "/docs/modules/pub" },
-              ],
-            },
-            {
-              text: "Operators",
-              collapsed: true,
-              items: [
-                { text: "Arithmetic", link: "/docs/operators/arithmetic" },
-                { text: "Bitwise", link: "/docs/operators/bitwise" },
-                { text: "Logical", link: "/docs/operators/logical" },
-                { text: "Comparison", link: "/docs/operators/comparison" },
-                { text: "Assignment", link: "/docs/operators/assignment" },
-                { text: "Type Operators", link: "/docs/operators/type" },
-                {
-                  text: "Operator Precedence",
-                  link: "/docs/operators/precedence",
-                },
-              ],
-            },
-            { text: "Pattern Matching", link: "/docs/match" },
+            { text: "Interfaces", link: "/docs/interfaces" },            
+            { text: "Modules", link: "/docs/modules" },            
             { text: "Error Handling", link: "/docs/error" },
             { text: "Extern and FFI", link: "/docs/extern" },
             {

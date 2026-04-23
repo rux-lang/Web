@@ -19,7 +19,7 @@ Insert this snippet into the `Main.rux` file
 ```rux
 import System::Print;
 
-func Main(): int32 {
+func Main() -> int32 {
 	Print("Hello World!");
 	return 0;
 }

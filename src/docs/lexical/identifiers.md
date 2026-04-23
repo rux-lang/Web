@@ -3,14 +3,18 @@
 An identifier begins with a Unicode letter or underscore (`_`) and continues with any combination of letters, digits, and underscores.
 
 ```
-identifier ::= (letter | '_') (letter | digit | '_')*
+Identifier ::= (Letter | '_') (Letter | Digit | '_')*
 ```
 
-Rux is **case-sensitive**. By convention:
+Rux is **case-sensitive**. By convention it is recommended to use **camelCase** and **PascalCase**.
 
-| Item                  | Convention           | Example                  |
-| --------------------- | -------------------- | ------------------------ |
-| Types, structs, enums | PascalCase           | `HttpResponse`           |
-| Functions, variables  | PascalCase           | `ParseInput`, `userName` |
-| Constants             | SCREAMING_SNAKE_CASE | `MAX_SIZE`               |
-| Modules               | PascalCase           | `mod Http`               |
+| Item      | Example                                  |
+| --------- | ---------------------------------------- |
+| Types     | `Handle`, `HResult`, `Primitive`         |
+| Structs   | `HttpRequest`, `HttpResponse`, `Order`   |
+| Fiels     | `red`, `green`, `blue`, `alpha`          |
+| Enums     | `DayOfWeek`, `MonthOfYear`, `AppState`   |
+| Functions | `ParseInput`, `ReadFile`, `CloseWindow`  |
+| Variables | `userId`, `userName`, `fileName`         |
+| Constants | `MaxSize`, `MaxConnections`, `SizeLimit` |
+| Modules   | `Http`, `Json`, `OpenGL`, `Vulkan`       |

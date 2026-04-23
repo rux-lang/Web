@@ -102,7 +102,7 @@ head:
 ```rux [Rux]
 import System::Print;
 
-func Main(): int32 {
+func Main() -> int32 {
 	Print("Hello World!");
 	return 0;
 }
@@ -273,12 +273,12 @@ const value: int = 30;
 
 ```rux
 // Regular function
-func Add(x, y: int32): int32 {
+func Add(x, y: int32) -> int32 {
     return x + y;
 }
 
 // Generic function
-func Min<T>(x, y: T): T {
+func Min<T>(x, y: T) -> T {
     return x < y ? x : y;
 }
 ```
@@ -301,7 +301,7 @@ var data: **int64;
 import Math;
 import Math::*;
 import Math::Sin;
-import Math::{Sin, Cos};
+import Math::{ Sin, Cos };
 import Math::Sin as Sinf;
 ```
 

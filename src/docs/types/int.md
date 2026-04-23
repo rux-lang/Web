@@ -107,13 +107,22 @@ let d = -17;
 
 ### Hexadecimal
 
-Prefix `0x`. Digits `a`–`f` are accepted in both upper and lower case.
+Prefix `0x`. Digits `a`, `b`, `c`, `d`, `e`, `f` are accepted in both upper and lower case.
 
 ```rux
 let color = 0xFF8800;
 let mask  = 0x0000FFFF;
 let max8  = 0x00ef;
 let addr  = 0x0080a3ef;
+```
+
+### Octal
+
+Prefix `0o`. Digits `0`–`7` are valid.
+
+```rux
+let perms = 0o755;
+let mask  = 0o077;
 ```
 
 ### Binary
@@ -126,16 +135,7 @@ let enable = 0b1;
 let byte   = 0b11111111;
 ```
 
-### Octal
-
-Prefix `0o`. Digits `0`–`7` are valid.
-
-```rux
-let perms = 0o755;
-let mask  = 0o077;
-```
-
-### Digit Separators
+<!-- ### Digit Separators
 
 An underscore `_` may appear anywhere inside a numeric literal — after the prefix or between any two digits — to improve readability. Underscores have no effect on the value.
 
@@ -144,7 +144,7 @@ let million = 1_000_000;
 let ipv4    = 0xC0_A8_00_01;    // 192.168.0.1
 let bitmask = 0b0000_1111_0000_1111;
 let big     = 9_223_372_036_854_775_807;
-```
+``` -->
 
 ### Type Suffixes
 
@@ -179,19 +179,21 @@ A type suffix attached directly to a numeric literal fixes its type at the call 
 ```rux
 let a = 255u8;          // uint8  — pixel channel value
 let b = 1_000i32;       // int32
-let c = 0xDEAD_BEEFu32; // uint32 — hex with suffix
-let d = 0b1010_1010u8;  // uint8  — binary with suffix
+let c = 0xDEADBEEFu32;  // uint32 — hex with suffix
+let d = 0b10101010u8;   // uint8  — binary with suffix
 let e = 0o755u16;       // uint16 — octal with suffix
-let f = 9_223_372_036_854_775_807i64;  // int64 maximum
+let f = 9223372036854775807i64;  // int64 maximum
 let g = 42i;            // int    — explicit platform-dependent signed
 let h = 42u;            // uint   — explicit platform-dependent unsigned
 ```
 
+<!--
 Digit separators and suffixes may be combined freely:
 
 ```rux
 let mask = 0xFF_00_FF_00u32;   // 4 278 255 360
 ```
+-->
 
 If the literal value does not fit in the suffixed type, the compiler emits an error:
 
@@ -343,8 +345,8 @@ let ok  = (s as int64) < (u as int64); // safe widening comparison
 | `~`      | Bitwise NOT | n/a                 |
 
 ```rux
-let a = 0b1100_1010u8;  // uint8 = 202
-let b = 0b1010_1100u8;  // uint8 = 172
+let a = 0b11001010u8;  // uint8 = 202
+let b = 0b10101100u8;  // uint8 = 172
 
 let and_val = a & b;    // 0b1000_1000 = 136
 let or_val  = a | b;    // 0b1110_1110 = 238

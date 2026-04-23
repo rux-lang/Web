@@ -1,4 +1,20 @@
-# impl
+# Interfaces
+
+## Interface Declaration
+
+An interface declares a set of method signatures that a type must satisfy.
+
+```rux
+interface Printable {
+    func Print();
+}
+
+interface Comparable {
+    func CompareTo(other: self): int32;
+}
+```
+
+## Interface Implementation
 
 `impl` attaches methods to a type, optionally satisfying one or more interfaces.
 
@@ -8,7 +24,7 @@ struct Circle {
 }
 
 impl Circle {
-    func Area(): float64 {
+    func Area() -> float64 {
         return PI * self.radius * self.radius;
     }
 }
