@@ -1,4 +1,4 @@
-# Bool Types
+# Boolean Types
 
 ## Overview
 

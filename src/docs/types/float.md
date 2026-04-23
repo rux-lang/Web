@@ -1,4 +1,4 @@
-# Float Types
+# Floating-Point Types
 
 ## Overview
 

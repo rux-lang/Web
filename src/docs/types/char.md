@@ -1,11 +1,11 @@
-# Char Types
+# Character Types
+
+## Overview
 
 Rux provides a family of fixed-width character types designed to represent Unicode code points and
 arbitrary-width text units with explicit, predictable storage sizes. Unlike many languages that
 offer a single character type, Rux exposes the full spectrum from narrow ASCII-range characters
 up to extended private-use and future [Unicode](https://en.wikipedia.org/wiki/Unicode) planes.
-
-## Overview
 
 A character value in Rux is an integer-backed scalar that holds a single Unicode code point (or
 raw code unit, depending on the type). All char types are **unsigned**, **non-nullable**, and
