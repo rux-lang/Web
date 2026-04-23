@@ -3,8 +3,7 @@
 `match` performs exhaustive pattern matching. The compiler requires all cases to be covered.
 
 ```rux
-match status
-{
+match status {
     200 => Print("OK"),
     404 => Print("Not Found"),
     500 => Print("Server Error"),

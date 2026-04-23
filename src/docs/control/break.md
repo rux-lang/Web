@@ -1,8 +1,7 @@
 # break
 
 ```rux
-while true
-{
+while true {
     let input = ReadLine();
     if (input == "quit")
         break;

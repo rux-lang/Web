@@ -3,8 +3,7 @@
 Every binary package must define a `Main` function with no parameters:
 
 ```rux
-func Main()
-{
+func Main() {
     Print("Hello, World!");
 }
 ```

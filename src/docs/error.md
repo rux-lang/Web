@@ -1,0 +1,15 @@
+# Error Handling
+
+_(This section will be expanded as the error-handling model is finalized)_
+
+Rux favors explicit error handling over exceptions. The standard approach uses return-type encoding with a `Result` type:
+
+```rux
+// Planned API
+func ReadFile(path: str) -> Result<String, IoError> { ... }
+
+match ReadFile("config.toml") {
+    Result.Ok(contents) => ParseConfig(contents),
+    Result.Err(err)     => Print("Failed:", err),
+}
+```

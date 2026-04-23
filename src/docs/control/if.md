@@ -1,16 +1,11 @@
 # if / else
 
 ```rux
-if (x > 0)
-{
+if x > 0 {
     Print("positive");
-}
-else if (x < 0)
-{
+} else if x < 0 {
     Print("negative");
-}
-else
-{
+} else {
     Print("zero");
 }
 ```

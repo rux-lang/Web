@@ -3,8 +3,7 @@
 Functions are declared with the `func` keyword.
 
 ```rux
-func Greet()
-{
+func Greet() {
     Print("Hello!");
 }
 ```

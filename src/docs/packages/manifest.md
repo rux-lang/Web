@@ -1,13 +1,8 @@
-# Manifest Specification
-
-**Version:** Draft 0.1.0 (April 2026)  
-**Applies to:** Rux ≥0.1.0  
-**File name:** `Rux.toml`  
-**Format:** [TOML v1.0.0](https://toml.io/en/)  
-**Convention:** PascalCase keys (case-sensitive parsing)
+# Package Manifest
 
 ## Overview
 
+Every Rux package is described by a `Rux.toml` file at the project root.
 The `Rux.toml` file defines metadata, build configuration, and dependency information for a Rux project. It is required in every Rux project directory that participates in the build system or workspace.
 
 ```toml
@@ -18,7 +13,7 @@ Authors = ["Your Name <name@mail.com>"]
 Description = "Example Rux project"
 ```
 
-The file must be encoded in **UTF-8** and adhere to **TOML 1.0.0** syntax.
+The file must be encoded in **UTF-8** and adhere to [TOML 1.0.0](https://toml.io) syntax.
 
 ## Conventions
 
@@ -101,6 +96,7 @@ Std = "1.0"
 Json = "2.1"
 Http = { Version = "1.4", Source = "https://ruxpkg.dev" }
 Utils = { Path = "../utils" }
+Network = "*"
 
 [DevDependencies]
 TestLib = "0.3"
@@ -108,6 +104,8 @@ TestLib = "0.3"
 [BuildDependencies]
 CC = "1.2"
 ```
+
+A dependency version of `"*"` resolves to the latest available release.
 
 ### Dependency specification forms
 

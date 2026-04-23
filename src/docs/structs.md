@@ -3,14 +3,12 @@
 Structs group related data into a named type.
 
 ```rux
-struct Point
-{
+struct Point {
     x: float64;
     y: float64;
 }
 
-struct Person
-{
+struct Person {
     name: String;
     age:  uint32;
 }
