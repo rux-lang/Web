@@ -39,3 +39,4 @@
     - 15.4. [Dependencies](packages/dependencies)
 16. [Appendix](appendix/tokens)
     - 16.1. [Token Reference](appendix/tokens)
+    - 16.2. [Rux Compiled Unit](appendix/rcu)

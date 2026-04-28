@@ -131,6 +131,7 @@ export default defineConfig({
               collapsed: true,
               items: [
                 { text: "Token Reference", link: "/docs/appendix/tokens" },
+                { text: "Rux Compiled Unit", link: "/docs/appendix/rcu" },
               ],
             },
           ],
