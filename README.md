@@ -4,7 +4,7 @@ Built with [VitePress](https://vitepress.dev)
 
 ## ⚙️ Project Structure
 
-Inside of the project, you'll see the following folders and files:
+Inside the project you'll see the following folders and files:
 
 ```
 .
