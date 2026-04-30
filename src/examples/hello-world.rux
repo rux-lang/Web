@@ -1,0 +1,22 @@
+import System::Print;
+
+func Main() -> int32 {
+	let greetings = [
+		"Hello World",
+		"你好，世界",
+		"नमस्ते दुनिया",
+		"Hola Mundo",
+		"Bonjour le monde",
+		"مرحبا يا عالم",
+		"হ্যালো বিশ্ব",
+		"Привет мир",
+		"Olá Mundo",
+		"سلام دنیا",
+		"Привіт світ",
+		"🐯🐶🐱🐭"
+	];
+	for greeting in greetings {
+		Print(greeting);
+	}
+	return 0;
+}

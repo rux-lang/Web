@@ -95,171 +95,17 @@ head:
 
 ## Examples
 
-### Hello World
-
 ::: code-group
 
-```rux [Rux]
-import System::Print;
-
-func Main() -> int32 {
-	Print("Hello World!");
-	return 0;
-}
-```
-
-```c [C]
-#include <stdio.h>
-
-int main() {
-    printf("Hello, World!\n");
-    return 0;
-}
-```
-
-```cpp [C++]
-#include <iostream>
-
-int main() {
-    std::cout << "Hello World!" << std::endl;
-    return 0;
-}
-```
-
-```cs [C#]
-using System;
-
-namespace HelloWorld
-{
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello World!");
-        }
-    }
-}
-```
-
-```go [Go]
-package main
-
-import "fmt"
-
-func main() {
-    fmt.Println("Hello, World!")
-}
-```
-
-```java [Java]
-public class HelloWorld {
-    public static void main(String[] args) {
-        System.out.println("Hello, World!");
-    }
-}
-```
-
-```rs [Rust]
-fn main() {
-    println!("Hello, world!");
-}
-```
+<<< @/examples/hello-world.rux [📦 Hello World]
+<<< @/examples/factorial.rux [📦 Factorial]
+<<< @/examples/functions.rux [📦 Functions]
+<<< @/examples/integers.rux [📦 Integers]
+<<< @/examples/floats.rux [📦 Floats]
+<<< @/examples/booleans.rux [📦 Booleans]
+<<< @/examples/characters.rux [📦 Characters]
 
 :::
-
-## Other features
-
-### Wide Range of Primitive Data Types
-
-#### Signed Integer Types
-
-```rux
-let value: int8;    // 1 byte
-let value: int16;   // 2 bytes
-let value: int32;   // 4 bytes
-let value: int64;   // 8 bytes
-let value: int128;  // 16 bytes
-let value: int256;  // 32 bytes
-let value: int512;  // 64 bytes
-```
-
-#### Unsigned Integer Types
-
-```rux
-let value: uint8;    // 1 byte
-let value: uint16;   // 2 bytes
-let value: uint32;   // 4 bytes
-let value: uint64;   // 8 bytes
-let value: uint128;  // 16 bytes
-let value: uint256;  // 32 bytes
-let value: uint512;  // 64 bytes
-```
-
-#### Floating-Point Types
-
-```rux
-let value: float8;    // 1 byte
-let value: float16;   // 2 bytes
-let value: float32;   // 4 bytes
-let value: float64;   // 8 bytes
-let value: float80;   // 10 bytes
-let value: float128;  // 16 bytes
-let value: float256;  // 32 bytes
-let value: float512;  // 64 bytes
-```
-
-#### Boolean Types
-
-```rux
-let value: bool8;    // 1 byte
-let value: bool16;   // 2 bytes
-let value: bool32;   // 4 bytes
-let value: bool64;   // 8 bytes
-let value: bool128;  // 16 bytes
-let value: bool256;  // 32 bytes
-let value: bool512;  // 64 bytes
-```
-
-#### Character Types
-
-```rux
-let value: char8;    // 1 byte
-let value: char16;   // 2 bytes
-let value: char32;   // 4 bytes
-let value: char64;   // 8 bytes
-let value: char128;  // 16 bytes
-let value: char256;  // 32 bytes
-let value: char512;  // 64 bytes
-```
-
-#### Platform Dependent Types
-
-Size depends on CPU architecture to provide the best performance
-
-```rux
-let value: int;     // 4 or 8 bytes
-let value: uint;    // 4 or 8 bytes
-let value: float;   // 8 bytes
-let value: bool;    // 1 byte
-let value: char;    // 4 bytes
-```
-
-### Support Unicode Strings
-
-```rux
-let message = "Hello World";
-let message = "你好，世界";
-let message = "नमस्ते दुनिया";
-let message = "Hola Mundo";
-let message = "Bonjour le monde";
-let message = "مرحبا يا عالم";
-let message = "হ্যালো বিশ্ব";
-let message = "Привет мир";
-let message = "Olá Mundo";
-let message = "سلام دنیا";
-let message = "Привіт світ";
-let animals = "🐯🐶🐱🐭"
-```
 
 ### Control Mutability
 
@@ -267,20 +113,6 @@ let animals = "🐯🐶🐱🐭"
 var value: int = 10;
 let value: int = 20;
 const value: int = 30;
-```
-
-### Generic Functions
-
-```rux
-// Regular function
-func Add(x, y: int32) -> int32 {
-    return x + y;
-}
-
-// Generic function
-func Min<T>(x, y: T) -> T {
-    return x < y ? x : y;
-}
 ```
 
 ### Raw pointers 🤯

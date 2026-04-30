@@ -1,0 +1,12 @@
+// Floating-Point Types
+let value: float8;    // 1 byte
+let value: float16;   // 2 bytes
+let value: float32;   // 4 bytes
+let value: float64;   // 8 bytes
+let value: float80;   // 10 bytes
+let value: float128;  // 16 bytes
+let value: float256;  // 32 bytes
+let value: float512;  // 64 bytes
+
+// Platform-dependent floating-point types
+let value: float;     // 4 or 8 bytes

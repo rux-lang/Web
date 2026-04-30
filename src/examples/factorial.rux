@@ -1,0 +1,16 @@
+import System::PrintLn;
+
+func Factorial(n: int32) -> int256 {
+    let result: int256 = 1;
+    for i in 2..n {
+        result *= i;
+    }
+    return result;
+}
+
+func Main() -> int32 {
+    let number = 10;
+    let fact = Factorial(number);
+    PrintLn("Factorial of {} is {}", number, fact);
+    return 0;
+}

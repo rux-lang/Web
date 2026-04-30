@@ -1,0 +1,11 @@
+// Character Types
+let value: char8;    // 1 byte
+let value: char16;   // 2 bytes
+let value: char32;   // 4 bytes
+let value: char64;   // 8 bytes
+let value: char128;  // 16 bytes
+let value: char256;  // 32 bytes
+let value: char512;  // 64 bytes
+
+// Universal character type
+let value: char;     // 4 bytes
