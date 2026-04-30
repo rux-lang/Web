@@ -74,7 +74,7 @@ export default defineConfig({
           },
         ],
       },
-      { text: "Blog", link: "/blog/getting-started" },
+      { text: "Blog", link: "/blog/release-v0.1.0" },
       { text: "FAQ", link: "/faq" },
     ],
 
@@ -179,14 +179,50 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: "Overview", link: "/tutorials/" },
-            { text: "Hello World", link: "/tutorials/hello-world" },
+            {
+              text: "Installation",
+              collapsed: true,
+              items: [
+                {
+                  text: "Windows",
+                  link: "/tutorials/install/windows",
+                },
+              ],
+            },
+            {
+              text: "Code Editors",
+              collapsed: true,
+              items: [
+                {
+                  text: "Visual Studio Code",
+                  link: "/tutorials/editors/vscode",
+                },
+              ],
+            },
+            {
+              text: "Getting Started",
+              collapsed: true,
+              items: [
+                {
+                  text: "Hello World",
+                  link: "/tutorials/getting-started/hello-world",
+                },
+              ],
+            },
           ],
         },
       ],
       "/blog/": [
         {
+          text: "2026",
+          collapsed: true,
+          items: [
+            { text: "Rux 0.1.0 — It Compiles!", link: "/blog/release-v0.1.0" },
+          ],
+        },
+        {
           text: "2025",
-          collapsed: false,
+          collapsed: true,
           items: [{ text: "Getting Started", link: "/blog/getting-started" }],
         },
       ],
