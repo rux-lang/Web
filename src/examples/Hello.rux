@@ -1,5 +1,6 @@
-import System::Print;
+import System::PrintLine;
 
+// Entry point of the program
 func Main() -> int32 {
 	let greetings = [
 		"Hello World",
@@ -16,7 +17,7 @@ func Main() -> int32 {
 		"🐯🐶🐱🐭"
 	];
 	for greeting in greetings {
-		Print(greeting);
+		PrintLine(greeting);
 	}
 	return 0;
 }

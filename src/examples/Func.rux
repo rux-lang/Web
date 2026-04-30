@@ -1,0 +1,28 @@
+import System::Print;
+
+// Regular function
+func Add(x, y: int32) -> int32 {
+    return x + y;
+}
+
+// Function with conditional logic
+func Max(a, b: int32) -> int32 {
+    if a > b {
+        return a;
+    } else {
+        return b;
+    }
+}
+
+// Generic function
+func Div<T>(x, y: T) -> T {
+    return x / y;
+}
+
+func Main() -> int32 {
+    let sum = Add(5, 10);
+    let quotient = Div(10.0, 2.0);
+    let max = Max(5, 10);
+    Print("Sum: {}, Quotient: {}, Max: {}", sum, quotient, max);
+    return 0;
+}

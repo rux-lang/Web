@@ -1,4 +1,4 @@
-// Signed Integer Types
+// Signed integer types
 let value: int8;    // 1 byte
 let value: int16;   // 2 bytes
 let value: int32;   // 4 bytes
@@ -7,7 +7,7 @@ let value: int128;  // 16 bytes
 let value: int256;  // 32 bytes
 let value: int512;  // 64 bytes
 
-// Unsigned Integer Types
+// Unsigned integer types
 let value: uint8;    // 1 byte
 let value: uint16;   // 2 bytes
 let value: uint32;   // 4 bytes
@@ -16,6 +16,14 @@ let value: uint128;  // 16 bytes
 let value: uint256;  // 32 bytes
 let value: uint512;  // 64 bytes
 
-// Platform-Dependent Integer Types
+// Platform-dependent integer types
 let value: int;      // 4 or 8 bytes
 let value: uint;     // 4 or 8 bytes
+
+// Integer literals
+let value = 42;       // decimal
+let value = 0x2A;     // hexadecimal
+let value = 0o52;     // octal
+let value = 0b101010; // binary
+let value = 32i8;     // int8
+let value = 1000u64;  // uint64

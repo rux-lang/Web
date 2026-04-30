@@ -1,4 +1,9 @@
 import { defineConfig } from "vitepress";
+import {
+  groupIconMdPlugin,
+  groupIconVitePlugin,
+  localIconLoader,
+} from "vitepress-plugin-group-icons";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -112,8 +117,8 @@ export default defineConfig({
             { text: "Structs", link: "/docs/structs" },
             { text: "Enums", link: "/docs/enums" },
             { text: "Unions", link: "/docs/unions" },
-            { text: "Interfaces", link: "/docs/interfaces" },            
-            { text: "Modules", link: "/docs/modules" },            
+            { text: "Interfaces", link: "/docs/interfaces" },
+            { text: "Modules", link: "/docs/modules" },
             { text: "Error Handling", link: "/docs/error" },
             { text: "Extern and FFI", link: "/docs/extern" },
             {
@@ -226,7 +231,7 @@ export default defineConfig({
     externalLinkIcon: true,
 
     editLink: {
-      pattern: "https://github.com/rux-lang/Rux.Web/edit/main/docs/:path",
+      pattern: "https://github.com/rux-lang/Web/edit/main/docs/:path",
       text: "Edit this page on GitHub",
     },
 
@@ -253,5 +258,18 @@ export default defineConfig({
       dark: "github-dark",
     },
     languages: [ruxGrammar],
+    config(md) {
+      md.use(groupIconMdPlugin);
+    },
+  },
+
+  vite: {
+    plugins: [
+      groupIconVitePlugin({
+        customIcon: {
+          rux: localIconLoader(import.meta.url, "../src/public/icons/code.svg"),
+        },
+      }),
+    ],
   },
 });

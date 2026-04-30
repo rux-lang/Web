@@ -1,0 +1,18 @@
+// Variable
+var value: int = 10;
+
+// Allowed, as 'var' is mutable
+value = 15;
+
+// Immutable variable
+let value: int = 20;
+
+// Not allowed, as 'let' is immutable
+// This will cause a compile-time error
+value = 25; 
+
+// Compile-time constant
+const value: int = 30;
+
+// Not allowed and will cause a compile-time error
+value = 35;

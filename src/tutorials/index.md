@@ -1,13 +1,13 @@
 # Tutorials
 
-Welcome to the Rux tutorials! This collection contains solutions designed to help learn and practice Rux programming through hands-on exercises and examples. [GitHub repository](https://github.com/rux-lang/Rux.Tutorials) serves as a centralized learning resource featuring multiple programming tasks, each organized as a separate folder. The tutorials are designed to progressively build your understanding of Rux concepts and best practices.
+Welcome to the Rux tutorials! This collection contains solutions designed to help learn and practice Rux programming through hands-on exercises and examples. [GitHub repository](https://github.com/rux-lang/Tutorials) serves as a centralized learning resource featuring multiple programming tasks, each organized as a separate folder. The tutorials are designed to progressively build your understanding of Rux concepts and best practices.
 
 ## Repository Structure
 
 Each tutorial is contained in its own directory with a complete project:
 
 ```
-Rux.Tutorials/
+Tutorials/
 ├── HelloWorld/
 │   ├── Src/
 │   │    └── Main.rux
@@ -38,15 +38,15 @@ Rux.Tutorials/
 1. **Clone the repository:**
 
    ```sh
-   git clone https://github.com/rux-lang/Rux.Tutorials.git
-   cd Rux.Tutorials
+   git clone https://github.com/rux-lang/Tutorials.git
+   cd Tutorials
    ```
 
 2. **Navigate to a specific tutorial:**
    Each tutorial folder contains a self-contained project.
 
    ```sh
-   cd Rux.Tutorials/HelloWorld
+   cd Tutorials/HelloWorld
    ```
 
 3. **Open the project:**
@@ -77,7 +77,7 @@ Rux.Tutorials/
 
 ## Contributing
 
-If you find issues or have suggestions for improvements, please describe the problem in [GitHub Issues](https://github.com/rux-lang/Rux.Tutorials/issues).
+If you find issues or have suggestions for improvements, please describe the problem in [GitHub Issues](https://github.com/rux-lang/Tutorials/issues).
 
 ## License
 

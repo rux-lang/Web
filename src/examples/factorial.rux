@@ -1,5 +1,6 @@
-import System::PrintLn;
+import System::Print;
 
+/// Computes the factorial of a number using an iterative approach
 func Factorial(n: int32) -> int256 {
     let result: int256 = 1;
     for i in 2..n {
@@ -8,9 +9,10 @@ func Factorial(n: int32) -> int256 {
     return result;
 }
 
+/// Entry point of the program
 func Main() -> int32 {
     let number = 10;
     let fact = Factorial(number);
-    PrintLn("Factorial of {} is {}", number, fact);
+    Print("Factorial of {} is {}\n", number, fact);
     return 0;
 }

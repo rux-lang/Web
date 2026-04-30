@@ -4,7 +4,7 @@ Let's create a simple Rux console application that prints "Hello World!" on the 
 
 ## Creating Project
 
-We a going to create the first application of every programmer. Let's run the Rux toolchain.
+We are going to create the first application of every programmer. Let's run the Rux toolchain.
 
 ```sh
 rux new HelloWorld

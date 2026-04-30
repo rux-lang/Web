@@ -1,4 +1,4 @@
-// Character Types
+// Character types
 let value: char8;    // 1 byte
 let value: char16;   // 2 bytes
 let value: char32;   // 4 bytes
@@ -9,3 +9,9 @@ let value: char512;  // 64 bytes
 
 // Universal character type
 let value: char;     // 4 bytes
+
+// Character literals
+let value = 'A';     // char
+let value = '😊';    // char
+let value = '\n';    // newline
+let value = '\t';    // tab

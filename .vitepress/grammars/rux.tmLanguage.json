@@ -318,7 +318,7 @@
         {
           "comment": "Other keywords",
           "name": "keyword.other.rux",
-          "match": "\\b(as|async|import|export)\\b"
+          "match": "\\b(as|async|import|export|in)\\b"
         }
       ]
     },
