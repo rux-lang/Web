@@ -144,7 +144,8 @@ let million = 1_000_000;
 let ipv4    = 0xC0_A8_00_01;    // 192.168.0.1
 let bitmask = 0b0000_1111_0000_1111;
 let big     = 9_223_372_036_854_775_807;
-``` -->
+```
+-->
 
 ### Type Suffixes
 
@@ -235,7 +236,7 @@ Converting to a narrower type keeps only the low-order bits of the target width.
 let big   = 300i32;
 let small = big as int8;    // 300 & 0xFF = 44
 
-let wide  = 0xDEAD_BEEFu32;
+let wide  = 0xDEADBEEFu32;
 let byte  = wide as uint8;  // 0xEF = 239
 ```
 

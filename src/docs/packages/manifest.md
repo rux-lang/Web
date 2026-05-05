@@ -10,7 +10,7 @@ The `Rux.toml` file defines metadata, build configuration, and dependency inform
 Name = "App"
 Version = "0.1.0"
 Authors = ["Your Name <name@mail.com>"]
-Description = "Example Rux project"
+Description = "My first Rux application"
 ```
 
 The file must be encoded in **UTF-8** and adhere to [TOML 1.0.0](https://toml.io) syntax.
@@ -51,7 +51,7 @@ Categories = ["cli"]
 | `Authors`     | array of strings | ❌       | Author names and emails                                      |
 | `Repository`  | string           | ❌       | VCS repository URL                                           |
 | `Homepage`    | string           | ❌       | Project website                                              |
-| `Edition`     | string           | ❌       | Language edition (e.g., `"2025"`)                            |
+| `Edition`     | string           | ❌       | Language edition (e.g., `"2026"`)                            |
 | `Readme`      | string           | ❌       | Path to readme file                                          |
 | `Keywords`    | array of strings | ❌       | Search keywords                                              |
 | `Categories`  | array of strings | ❌       | Registry categories                                          |
@@ -81,8 +81,7 @@ Flags = ["--warn-unused", "--color=on"]
 
 ## `[Dependencies]` Sections
 
-Defines packages this project depends on.  
-Rux supports several dependency tables:
+The section defines packages this project depends on. Rux supports several dependency tables:
 
 - `[Dependencies]` – runtime dependencies
 - `[DevDependencies]` – for testing and tooling
@@ -94,8 +93,8 @@ Rux supports several dependency tables:
 [Dependencies]
 Std = "1.0"
 Json = "2.1"
-Http = { Version = "1.4", Source = "https://ruxpkg.dev" }
-Utils = { Path = "../utils" }
+Http = { Version = "1.4", Source = "https://pkg.rux-lang.dev" }
+Utils = { Path = "../Utils" }
 Network = "*"
 
 [DevDependencies]
@@ -109,11 +108,11 @@ A dependency version of `"*"` resolves to the latest available release.
 
 ### Dependency specification forms
 
-| Form          | Example                                              | Description                           |
-| ------------- | ---------------------------------------------------- | ------------------------------------- |
-| Simple string | `Json = "2.1"`                                       | Version from the default registry     |
-| Inline table  | `{ Version = "1.4", Source = "https://ruxpkg.dev" }` | Custom source or path                 |
-| Local path    | `{ Path = "../lib" }`                                | Local dependency relative to manifest |
+| Form          | Example                                                    | Description                           |
+| ------------- | ---------------------------------------------------------- | ------------------------------------- |
+| Simple string | `Json = "2.1"`                                             | Version from the default registry     |
+| Inline table  | `{ Version = "1.4", Source = "https://pkg.rux-lang.dev" }` | Custom source or path                 |
+| Local path    | `{ Path = "../Lib" }`                                      | Local dependency relative to manifest |
 
 ### Inline fields
 
@@ -195,13 +194,13 @@ Example:
 [[Package]]
 Name = "Json"
 Version = "2.1.3"
-Source = "https://ruxpkg.dev"
+Source = "https://pkg.rux-lang.dev"
 Checksum = "8dcb2a7f..."
 
 [[Package]]
 Name = "Http"
 Version = "1.4.0"
-Source = "https://ruxpkg.dev"
+Source = "https://pkg.rux-lang.dev"
 Checksum = "ab2cc1c..."
 ```
 
@@ -237,10 +236,10 @@ This file must not be manually edited.
 [Package]
 Name = "App"
 Version = "0.1.0"
-Description = "A demo Rux application"
+Description = "The best application ever"
 License = "MIT"
 Authors = ["Your Name <name@mail.com>"]
-Edition = "2025"
+Edition = "2026"
 
 [Build]
 Target = "x86_64"
@@ -250,7 +249,7 @@ Output = "Bin"
 [Dependencies]
 Std = "1.0"
 Json = "2.1"
-Http = { Version = "1.4", Source = "https://ruxpkg.dev" }
+Http = { Version = "1.4", Source = "https://pkg.rux-lang.dev" }
 
 [DevDependencies]
 TestLib = "0.3"
