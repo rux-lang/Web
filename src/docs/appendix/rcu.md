@@ -5,7 +5,7 @@ sidebar_label: RCU File Format
 slug: /rcu-format
 --- -->
 
-# Rux Compiled Unit File Format
+# Rux Compiled Unit
 
 **Version 0.1.0** · Windows x64 (x86-64, little-endian)
 

@@ -32,8 +32,8 @@ The following table lists every token kind recognized by the Rux lexer.
 | `ReturnKeyword`    | `return`    |
 | `MatchKeyword`     | `match`     |
 | `FuncKeyword`      | `func`      |
+| `VarKeyword`       | `var`       |
 | `LetKeyword`       | `let`       |
-| `MutKeyword`       | `mut`       |
 | `ConstKeyword`     | `const`     |
 | `TypeKeyword`      | `type`      |
 | `StructKeyword`    | `struct`    |
@@ -41,7 +41,6 @@ The following table lists every token kind recognized by the Rux lexer.
 | `UnionKeyword`     | `union`     |
 | `InterfaceKeyword` | `interface` |
 | `ImplKeyword`      | `impl`      |
-| `ModKeyword`       | `mod`       |
 | `UseKeyword`       | `use`       |
 | `PubKeyword`       | `pub`       |
 | `ExternKeyword`    | `extern`    |

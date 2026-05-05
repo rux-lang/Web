@@ -1,9 +1,9 @@
 # Rux Language Reference
 
 ::: info
-**Version:** Draft 0.1.0 (April 2026)  
+**Version:** Draft 0.1.1 (April 2026)  
 **Status:** Early Development 🚧  
-**Licence:** MIT  
+**License:** MIT  
 :::
 
 1. [Introduction](introduction)
@@ -25,13 +25,13 @@
 5. [Constants](constants)
 6. [Statements](statements)
 7. [Functions](functions)
-8. [Structs](structs)
-9. [Enums](enums)
+8. [Structures](structures)
+9. [Enumerations](enumerations)
 10. [Unions](unions)
 11. [Interfaces](interfaces)
 12. [Modules](modules)
 13. [Error Handling](error)
-14. [Extern and FFI](extern)
+14. [Foreign Function Interface](extern)
 15. [Package System](packages/manifest)
     - 15.1. [Package Manifest](packages/manifest)
     - 15.2. [Package Types](packages/types)

@@ -50,21 +50,28 @@ A documentation comment starts with `///` and extends to the end of the line. It
 
 ```rux
 /// Returns the absolute value of x
-func Abs(x: float64) -> float64 { ... }
+func Abs(x: float64) -> float64
+{
+    // Code here
+}
 ```
 
 ```rux
 /// Parses a source file and returns a syntax tree
 /// @param path: Path to the .rux source file
 /// @return The root AST node, or null on parse failure
-func Parse(path: String) -> *Node { ... }
+func Parse(path: String) -> *Node
+{
+    // Code here
+}
 ```
 
 Documentation comments can be used on any declaration: functions, types, structs, enums, constants, and modules.
 
 ```rux
 /// Represents a 2D point in space
-struct Point {
+struct Point
+{
     /// The horizontal coordinate
     x: float64;
 
@@ -86,9 +93,12 @@ Tag `@param name: description` documents a function parameter. Use one `@param` 
 ```rux
 /// Raises base to the power of exp
 /// @param base: The number to raise
-/// @param exp: The exponent, must be non-negative
+/// @param exp: The exponent
 /// @return: The result of base raised to the power of exp
-func Pow(base: float64, exp: uint32) -> float64 { ... }
+func Pow(base: float64, exp: float64) -> float64
+{
+    // Code here
+}
 ```
 
 ### Tag `@return`
@@ -99,7 +109,10 @@ Tag `@return: description` documents the return value of a function. Omit this t
 /// Finds the first element matching the predicate
 /// @param predicate: A function that returns true for the desired element
 /// @return: The matched element, or null if none was found
-func Find(predicate: func(T) -> bool) -> *T { ... }
+func Find(predicate: func(T) -> bool) -> *T
+{
+    // Code here
+}
 ```
 
 ### Tag `@throws`
@@ -112,7 +125,10 @@ Tag `@throws type: description` documents an error or exception that the functio
 /// @return: The file contents as a UTF-8 string
 /// @throws IoException: If the file does not exist or cannot be read
 /// @throws EncodingException: If the file contents are not valid UTF-8
-func ReadFile(path: String) -> String { ... }
+func ReadFile(path: String) -> String
+{
+    // Code here
+}
 ```
 
 ### Combined example
@@ -123,5 +139,8 @@ func ReadFile(path: String) -> String { ... }
 /// @param b: The divisor
 /// @return: The result of dividing a by b
 /// @throws DivideByZeroException: If b is zero
-func Divide(a: int64, b: int64) -> int64 { ... }
+func Divide(a: int64, b: int64) -> int64
+{
+    // Code here
+}
 ```

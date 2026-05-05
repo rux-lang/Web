@@ -1,27 +1,29 @@
-# Structs
+# Structures
 
 Structs group related data into a named type.
 
 ```rux
-struct Point {
+struct Point
+{
     x: float64;
     y: float64;
 }
 
-struct Person {
-    name: String;
+struct Person
+{
+    name: char[];
     age:  uint32;
 }
 ```
 
-**Construction:**
+Construction:
 
 ```rux
 let p = Point { x: 1.0, y: 2.0 };
 let alice = Person { name: "Alice", age: 30 };
 ```
 
-**Field access:**
+Field access:
 
 ```rux
 Print(p.x)

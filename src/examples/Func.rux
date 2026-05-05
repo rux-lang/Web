@@ -1,4 +1,4 @@
-import System::Print;
+import Std::Io::Print;
 
 // Regular function
 func Add(x, y: int32) -> int32 {
@@ -19,7 +19,7 @@ func Div<T>(x, y: T) -> T {
     return x / y;
 }
 
-func Main() -> int32 {
+func Main() -> int {
     let sum = Add(5, 10);
     let quotient = Div(10.0, 2.0);
     let max = Max(5, 10);

@@ -8,9 +8,13 @@ Rux favors explicit error handling over exceptions. The standard approach uses r
 
 ```rux
 // Planned API
-func ReadFile(path: str) -> Result<String, IoError> { ... }
+func ReadFile(path: str) -> Result<String, IoError>
+{
+    // Implementation
+}
 
-match ReadFile("config.toml") {
+match ReadFile("config.toml")
+{
     Result.Ok(contents) => ParseConfig(contents),
     Result.Err(err)     => Print("Failed:", err),
 }
