@@ -1,7 +1,7 @@
 # Rux Language Reference
 
 ::: info
-**Version:** Draft 0.1.1 (April 2026)  
+**Version:** Draft 0.1.1 (May 2026)  
 **Status:** Early Development 🚧  
 **License:** MIT  
 :::
