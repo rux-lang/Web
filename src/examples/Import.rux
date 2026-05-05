@@ -1,0 +1,17 @@
+// Import package
+import Math;
+
+// Import a package with an alias
+import Math as Calc;
+
+// Import all items from a package
+import Math::*;
+
+// Import specific items from a package
+import Math::Sin;
+
+// Import multiple specific items from a package
+import Math::{ Sin, Cos };
+
+// Import specific item from a package with an alias
+import Math::Cos as Cosine;

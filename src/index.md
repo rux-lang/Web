@@ -106,7 +106,7 @@ head:
 <<< @/examples/Char.rux
 <<< @/examples/Pointer.rux
 <<< @/examples/Mut.rux
-<<< @/examples/Module.rux
+<<< @/examples/Import.rux
 
 :::
 

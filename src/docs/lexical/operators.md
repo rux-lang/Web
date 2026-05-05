@@ -13,22 +13,22 @@
 
 ## Bitwise Operators
 
-| Operator | Operation           |
-| -------- | ------------------- |
-| `&`      | Bitwise AND         |
-| `\|`     | Bitwise OR          |
-| `^`      | Bitwise XOR         |
-| `~`      | Bitwise NOT (unary) |
-| `<<`     | Left shift          |
-| `>>`     | Right shift         |
+| Operator | Operation   |
+| -------- | ----------- |
+| `&`      | Bitwise AND |
+| `\|`     | Bitwise OR  |
+| `^`      | Bitwise XOR |
+| `~`      | Bitwise NOT |
+| `<<`     | Left shift  |
+| `>>`     | Right shift |
 
 ## Logical Operators
 
-| Operator | Operation                   |
-| -------- | --------------------------- |
-| `&&`     | Logical AND (short-circuit) |
-| `\|\|`   | Logical OR (short-circuit)  |
-| `!`      | Logical NOT (unary)         |
+| Operator | Operation   |
+| -------- | ----------- |
+| `&&`     | Logical AND |
+| `\|\|`   | Logical OR  |
+| `!`      | Logical NOT |
 
 ## Comparison Operators
 
@@ -66,7 +66,8 @@
 
 ```rux
 let n: int64 = bigValue as int64;
-if shape is Circle {
+if shape is Circle
+{
     Print("It's a circle");
 }
 ```

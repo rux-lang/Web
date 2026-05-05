@@ -5,7 +5,7 @@ var ptr: *int32 = null;
 var ptr: *const int32 = null;
 
 // Floating-point value
-var value: float64 = 3.14;
+var value: float64 = 3.1415;
 
 // Constant pointer to a value
 const ptr: *float = @value;
@@ -14,4 +14,4 @@ const ptr: *float = @value;
 const ptr: *const int32;
 
 // Pointer to a pointer 🤯
-var data: **int64;
+var data: **int64 = null;
