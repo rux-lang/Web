@@ -1,11 +1,5 @@
 # Rux Language Reference
 
-::: info
-**Version:** Draft 0.1.1 (May 2026)  
-**Status:** Early Development 🚧  
-**License:** MIT  
-:::
-
 1. [Introduction](introduction)
 2. [Lexical Structure](lexical/sources)
    - 2.1. [Source Files](lexical/sources)

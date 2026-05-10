@@ -107,6 +107,7 @@ export default defineConfig({
                 { text: "Boolean Types", link: "/docs/types/bool" },
                 { text: "Character Types", link: "/docs/types/char" },
                 { text: "Composite Types", link: "/docs/types/composite" },
+                { text: "Slices", link: "/docs/types/slices" },
                 { text: "Type Aliases", link: "/docs/types/alias" },
               ],
             },
@@ -197,6 +198,10 @@ export default defineConfig({
                   text: "Visual Studio Code",
                   link: "/tutorials/editors/vscode",
                 },
+                {
+                  text: "Sublime Text",
+                  link: "/tutorials/editors/sublime",
+                },
               ],
             },
             {
@@ -217,6 +222,7 @@ export default defineConfig({
           text: "2026",
           collapsed: true,
           items: [
+            { text: "Rux 0.2.0 — A Real Language", link: "/blog/release-v0.2.0" },
             { text: "Rux 0.1.0 — It Compiles!", link: "/blog/release-v0.1.0" },
           ],
         },

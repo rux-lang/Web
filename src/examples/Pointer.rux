@@ -8,7 +8,7 @@ var ptr: *const int32 = null;
 var value: float64 = 3.1415;
 
 // Constant pointer to a value
-const ptr: *float = @value;
+const ptr: *float = &value;
 
 // Constant pointer to a constant value
 const ptr: *const int32;

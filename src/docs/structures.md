@@ -3,16 +3,14 @@
 Structs group related data into a named type.
 
 ```rux
-struct Point
-{
+struct Point {
     x: float64;
     y: float64;
 }
 
-struct Person
-{
-    name: char[];
-    age:  uint32;
+struct Person {
+    name: char8[];
+    age: uint32;
 }
 ```
 
@@ -30,4 +28,4 @@ Print(p.x)
 Print(alice.name)
 ```
 
-<!-- **Methods** are attached via `impl` (see [Section 10.2](#102-impl)). -->
+**Methods** are attached via `extend`.
