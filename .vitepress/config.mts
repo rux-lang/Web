@@ -67,7 +67,7 @@ export default defineConfig({
       {
         text: "Download",
         items: [
-          { text: "0.1.0", link: "https://github.com/rux-lang/Rux/releases" },
+          { text: "0.2.0", link: "https://github.com/rux-lang/Rux/releases" },
           {
             text: "Changelog",
             link: "https://github.com/rux-lang/Rux/blob/main/CHANGELOG.md",
