@@ -5,29 +5,29 @@
 Integer literals may use decimal, hexadecimal `0x`, binary `0b`, or octal `0o` bases.
 
 ```rux
-42          // decimal
-0xFF        // hexadecimal
-0o77        // octal
-0b10101010  // binary
+42         // decimal
+0xFF       // hexadecimal
+0o77       // octal
+0b10101010 // binary
 ```
 
-There are suffixes `u8`-`u512`, `i8`-`i512` to specify integer types.
+There are suffixes `i8`, `i16`, `i32`, `i64`, `i128`, `i256`, `i512`, `u8`, `u16`, `u32`, `u64`, `u128`, `u256`, `u512` to specify integer types.
 
 ```rux
-255u8    // uint8
-255u16   // uint16
-255u32   // uint32
-255u64   // uint64
-255u128  // uint128
-255u256  // uint256
-255u512  // uint512
--128i8   // int8
--128u16  // int16
--128u32  // int32
--128u64  // int64
--128u128 // int128
--128u256 // int256
--128u512 // int512
+-16i8   // int8
+-16u16  // int16
+-16u32  // int32
+-16u64  // int64
+-16u128 // int128
+-16u256 // int256
+-16u512 // int512
+255u8   // uint8
+255u16  // uint16
+255u32  // uint32
+255u64  // uint64
+255u128 // uint128
+255u256 // uint256
+255u512 // uint512
 ```
 
 ```rux

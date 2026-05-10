@@ -40,7 +40,7 @@ The following table lists every token kind recognized by the Rux lexer.
 | `EnumKeyword`      | `enum`      |
 | `UnionKeyword`     | `union`     |
 | `InterfaceKeyword` | `interface` |
-| `ImplKeyword`      | `impl`      |
+| `ExtendKeyword`    | `extend`    |
 | `UseKeyword`       | `use`       |
 | `PubKeyword`       | `pub`       |
 | `ExternKeyword`    | `extern`    |

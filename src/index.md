@@ -23,11 +23,11 @@ features:
   - icon:
       src: /icons/rocket.svg
     title: Compiled for Speed
-    details: Rux compiles directly to native machine code using optimizations. No virtual machine, no interpreter, no runtime surprises — just raw performance. Rux generates binaries like C, C++, Rust, and Zig.
+    details: Rux compiles directly to native machine code — no virtual machine, no interpreter, no hidden runtime. Output binaries are lean and self-contained, running on Windows with no additional frameworks or redistributables required.
   - icon:
       src: /icons/block.svg
     title: Strongly Typed
-    details: No implicit conversions, no hidden boxing, no “maybe copy”. Rux’s type system ensures correctness without verbosity — similar to Rust’s safety, but with a cleaner syntax and simpler rules.
+    details: No implicit conversions, no hidden boxing. Built-in types span integers from 8-bits to 512-bits, multi-width characters (char8, char16, char32), slices, fixed arrays, tuples, structs, enums, and unions — all resolved at compile time.
   - icon:
       src: /icons/shield.svg
     title: Safety Without Sacrifice
@@ -39,7 +39,7 @@ features:
   - icon:
       src: /icons/binary.svg
     title: Low-Level Control
-    details: When you care about bytes and cycles, Rux gives you direct access. Explicit memory layout, fixed-width data types, and pointer arithmetic when needed. Like Zig or C, but with strong typing and clear mutability rules.
+    details: Raw pointer arithmetic, inline assembly, sizeof, unions for memory reinterpretation, and direct FFI and Windows API — Rux gives you full hardware access when you need it. The type system stays in control; you stay in charge.
   - icon:
       src: /icons/code.svg
     title: Simple Syntax
@@ -47,7 +47,7 @@ features:
   - icon:
       src: /icons/fast.svg
     title: Fast Compilation and Tooling
-    details: Nobody likes waiting on builds. Rux features an incremental compiler with near-instant rebuilds and dependency-free binaries. You get Go-like build speed with Rust-like optimization quality — the best of both worlds.
+    details: Compile at up to 150K LOC under 20 MB of RAM. The entire toolchain — compiler, package manager, formatter, and test runner — ships as a single binary under 3 MB with zero dependencies. One download, everything included.
   - icon:
       src: /icons/platform.svg
     title: Cross-Platform
@@ -120,6 +120,7 @@ head:
 
 ## Blog
 
+- [Rux 0.2.0 — A Real Language, Allegedly](/blog/release-v0.2.0) — May 10, 2026
 - [Rux 0.1.0 — 🎉 It Compiles!](/blog/release-v0.1.0) — April 30, 2026
 - [Getting Started](/blog/getting-started) — October 12, 2025
 

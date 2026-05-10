@@ -1,12 +1,12 @@
 import Std::Io::Print;
 
 // Regular function
-func Add(x, y: int32) -> int32 {
+func Add(x: int32, y: int32) -> int32 {
     return x + y;
 }
 
 // Function with conditional logic
-func Max(a, b: int32) -> int32 {
+func Max(a: int32, b: int32) -> int32 {
     if a > b {
         return a;
     } else {
@@ -15,7 +15,7 @@ func Max(a, b: int32) -> int32 {
 }
 
 // Generic function
-func Div<T>(x, y: T) -> T {
+func Div<T>(x: T, y: T) -> T {
     return x / y;
 }
 

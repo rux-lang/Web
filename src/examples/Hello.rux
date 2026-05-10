@@ -1,8 +1,7 @@
 import Std::Io::PrintLine;
 
 // Entry point of the program
-func Main() -> int
-{
+func Main() -> int {
 	let greetings = [
 		"Hello World",
 		"你好，世界",
@@ -17,7 +16,8 @@ func Main() -> int
 		"Привіт світ",
 		"🐯🐶🐱🐭"
 	];
-	for greeting in greetings
+	for greeting in greetings {
 		PrintLine(greeting);
+	}
 	return 0;
 }

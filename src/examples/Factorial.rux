@@ -1,9 +1,8 @@
 import Std::Io::Print;
 
 /// Computes the factorial of a number using an iterative approach
-func Factorial(n: int32) -> int256
-{
-    let result: int256 = 1;
+func Factorial(n: uint) -> uint {
+    let result: uint = 1;
     for i in 2..=n {
         result *= i;
     }
@@ -11,8 +10,7 @@ func Factorial(n: int32) -> int256
 }
 
 /// Entry point of the program
-func Main() -> int
-{
+func Main() -> int {
     let number = 10;
     let fact = Factorial(number);
     Print("Factorial of {} is {}\n", number, fact);

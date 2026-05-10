@@ -7,7 +7,7 @@ slug: /rcu-format
 
 # Rux Compiled Unit
 
-**Version 0.1.0** · Windows x64 (x86-64, little-endian)
+Windows x64 (x86-64, little-endian)
 
 ## Overview
 
@@ -97,14 +97,11 @@ Additional architectures may be assigned in future minor versions.
 
 ### File Flags
 
-Bits 4–7 are reserved and must be `0`.
+Bits 1–7 are reserved and must be `0`.
 
-| Bit | Constant         | Set when…                                                                |
-| --- | ---------------- | ------------------------------------------------------------------------ |
-| 0   | `F_HAS_METADATA` | The Rux Metadata block is present at `metadata_offset`                   |
-| 1   | `F_PIC`          | All code in the file is position-independent                             |
-| 2   | `F_DEBUG`        | The file was compiled with debug information enabled                     |
-| 3   | `F_STRIPPED`     | The Symbol Table contains only globally-visible symbols (locals removed) |
+| Bit | Constant         | Set when…                                              |
+| --- | ---------------- | ------------------------------------------------------ |
+| 0   | `F_HAS_METADATA` | The Rux Metadata block is present at `metadata_offset` |
 
 ### Version Compatibility
 
@@ -121,7 +118,7 @@ The Section Table begins immediately at file offset 32 and contains `section_cou
 | 12     | 4    | `u32`     | `flags`        | Section flags — see [Section Flags](#section-flags)                              |
 | 16     | 4    | `u32`     | `raw_offset`   | File offset to section raw data; `0` for `SEC_BSS`                               |
 | 20     | 4    | `u32`     | `raw_size`     | Byte size of raw data stored in the file; `0` for `SEC_BSS`                      |
-| 24     | 4    | `u32`     | `virtual_size` | Byte size the section occupies in memory; equals `raw_size` except for `SEC_BSS` |
+| 24     | 4    | `u32`     | `virtual_size` | Byte size the section occupies in memory; equals `raw_size` for non-empty sections; `1` when `raw_size` is `0` |
 | 28     | 2    | `u16`     | `alignment`    | Required alignment in bytes; must be a power of two in the range 1–4096          |
 | 30     | 2    | `u16`     | `reloc_count`  | Number of relocation entries for this section                                    |
 | 32     | 4    | `u32`     | `reloc_offset` | File offset to this section's relocation array; `0` if `reloc_count == 0`        |
@@ -151,16 +148,15 @@ The Section Table begins immediately at file offset 32 and contains `section_cou
 
 ### Standard Sections
 
-The Rux compiler emits the following sections. User code never names sections explicitly; the compiler assigns data to the appropriate section automatically.
+The Rux compiler always emits exactly three sections in fixed order. User code never names sections explicitly; the compiler assigns data to the appropriate section automatically.
 
-| Name      | Type         | Flags                             | Alignment | Contents                          |
-| --------- | ------------ | --------------------------------- | --------- | --------------------------------- |
-| `.text`   | `SEC_TEXT`   | `SF_ALLOC \| SF_EXEC \| SF_READ`  | 16        | Function machine code             |
-| `.rodata` | `SEC_RODATA` | `SF_ALLOC \| SF_READ`             | 8         | String literals, float constants  |
-| `.data`   | `SEC_DATA`   | `SF_ALLOC \| SF_READ \| SF_WRITE` | 8         | Initialized global variables      |
-| `.bss`    | `SEC_BSS`    | `SF_ALLOC \| SF_READ \| SF_WRITE` | 8         | Zero-initialized global variables |
+| Index | Name      | Type         | Flags                             | Alignment | Contents                         |
+| ----- | --------- | ------------ | --------------------------------- | --------- | -------------------------------- |
+| 0     | `.text`   | `SEC_TEXT`   | `SF_ALLOC \| SF_EXEC \| SF_READ`  | 16        | Function machine code            |
+| 1     | `.rodata` | `SEC_RODATA` | `SF_ALLOC \| SF_READ`             | 8         | String literals, float constants |
+| 2     | `.data`   | `SEC_DATA`   | `SF_ALLOC \| SF_READ \| SF_WRITE` | 8         | Initialized global variables     |
 
-The `.bss` section is omitted from the file if no zero-initialized globals are declared. Similarly, `.rodata` and `.data` are omitted when empty.
+Sections with no generated content are written with `raw_size = 0`; their `virtual_size` is `1`.
 
 ## Symbol Table
 
@@ -377,35 +373,39 @@ Off   Hex                                           ASCII
 
 ### File Layout Summary
 
+The compiler always emits three sections. `.rodata` and `.data` are empty here (no string literals or global variables), so their `raw_size = 0` and `virtual_size = 1`.
+
 ```
-File offset   Region                      Size
-  0x0000      File Header                 32 bytes
-  0x0020      Section Table  (1 entry)    40 bytes
-  0x0048      Symbol Table   (2 entries)  40 bytes
-  0x0070      .text raw data              31 bytes  (alignment 16 → offset 0x70 = 112, 112 % 16 = 0 ✓)
+File offset   Region                       Size
+  0x0000      File Header                  32 bytes
+  0x0020      Section Table  (3 entries)   120 bytes
+  0x0098      Symbol Table   (2 entries)   40 bytes
+  0x00C0      .text raw data               31 bytes  (alignment 16 → offset 0xC0 = 192, 192 % 16 = 0 ✓)
               [1 byte zero padding]
-  0x0090      .text relocations (1 entry) 16 bytes  (alignment 4 → offset 0x90 = 144, 144 % 4 = 0 ✓)
-  0x00A0      String Table                37 bytes
+  0x00E0      .text relocations (1 entry)  16 bytes  (alignment 4  → offset 0xE0 = 224, 224 % 4  = 0 ✓)
+  0x00F0      .rodata raw data              0 bytes  (alignment 8  → offset 0xF0 = 240, 240 % 8  = 0 ✓)
+  0x00F0      .data raw data                0 bytes  (alignment 8  → offset 0xF0 = 240, no padding)
+  0x00F0      String Table                 37 bytes
               [3 bytes zero padding for 8-byte alignment]
-  0x00C8      Rux Metadata                64 bytes  (alignment 8 → offset 0xC8 = 200, 200 % 8 = 0 ✓)
-  0x0108      End of file
+  0x0118      Rux Metadata                 64 bytes  (alignment 8  → offset 0x118 = 280, 280 % 8  = 0 ✓)
+  0x0158      End of file
 ```
 
 ### File Header Bytes
 
 ```
 Offset  Bytes                           Field
-  0     52 43 55 00                     magic        "RCU\0"
-  4     01 00                           version      0x0100 → v1.0
-  6     01                              arch         0x01 → x86-64
-  7     01                              flags        F_HAS_METADATA
-  8     01 00                           section_count 1
+  0     52 43 55 00                     magic         "RCU\0"
+  4     01 00                           version       0x0100 → v1.0
+  6     01                              arch          0x01 → x86-64
+  7     01                              flags         F_HAS_METADATA
+  8     03 00                           section_count 3
  10     00 00                           _reserved
  12     02 00 00 00                     symbol_count  2
- 16     A0 00 00 00                     string_table_off  0x00A0
+ 16     F0 00 00 00                     string_table_off  0x00F0
  20     25 00 00 00                     string_table_size 37
- 24     C8 00 00 00                     metadata_offset   0x00C8
- 28     xx xx xx xx                     checksum     (CRC-32C computed last)
+ 24     18 01 00 00                     metadata_offset   0x0118
+ 28     xx xx xx xx                     checksum      (CRC-32C computed last)
 ```
 
 ## Incremental Compilation

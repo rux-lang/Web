@@ -37,6 +37,6 @@ All commands are run from the root of the project, from a terminal:
 | `npm run build`   | Build your production site to `./.vitepress/dist/` |
 | `npm run preview` | Preview your build locally, before deploying       |
 
-## 👀 Want to learn more?
+## License
 
-Check out [VitePress Guide](https://vitepress.dev/guide/what-is-vitepress), read [VitePress Reference](https://vitepress.dev/reference/site-config), or jump into the [Getting Started](https://vitepress.dev/guide/getting-started).
+[MIT](LICENSE)
