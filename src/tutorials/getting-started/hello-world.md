@@ -17,12 +17,19 @@ code .
 Insert this snippet into the `Main.rux` file
 
 ```rux
-import System::Print;
+import Std::Io::Print;
 
 func Main() -> int {
-	Print("Hello World!");
+	Print("Hello, World!");
 	return 0;
 }
+```
+
+## Install libraries
+
+```sh
+rux add Std
+rux install
 ```
 
 ## Building and Running
