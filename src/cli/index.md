@@ -45,7 +45,7 @@ rux fmt
 | [`rux remove`](/cli/remove)   | Remove a dependency from the manifest             |
 | [`rux run`](/cli/run)         | Build and run the main executable                 |
 | [`rux test`](/cli/test)       | Run all test targets                              |
-| [`rux up`](/cli/up)           | Update Rux toolchain                              |
+| [`rux update`](/cli/update)   | Update dependencies                               |
 | [`rux version`](/cli/version) | Show version information                          |
 
 ## Global options
