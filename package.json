@@ -4,7 +4,7 @@
   "homepage": "https://rux-lang.dev",
   "description": "Website for Rux programming language",
   "license": "MIT",
-  "author": "Ivan Muzyka",
+  "author": "Rux Contributors <info@rux-lang.dev>",
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",

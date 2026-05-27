@@ -12,7 +12,7 @@ Rux is **case-sensitive**. By convention it is recommended to use **camelCase** 
 | --------- | ---------------------------------------- |
 | Types     | `Handle`, `HResult`, `Primitive`         |
 | Structs   | `HttpRequest`, `HttpResponse`, `Order`   |
-| Fiels     | `red`, `green`, `blue`, `alpha`          |
+| Fields    | `red`, `green`, `blue`, `alpha`          |
 | Enums     | `DayOfWeek`, `MonthOfYear`, `AppState`   |
 | Functions | `ParseInput`, `ReadFile`, `CloseWindow`  |
 | Variables | `userId`, `userName`, `fileName`         |

@@ -163,7 +163,10 @@ Formats `fmt` using `args` (see [`Format`](#format)) and writes the result to st
 ```rux
 import Std::Io::*;
 
-Print("Hello, {}!\n", name);
+func Main() -> int {
+    Print("Hello, World!\n");
+    return 0;
+}
 ```
 
 ## Format

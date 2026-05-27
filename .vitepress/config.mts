@@ -169,7 +169,7 @@ export default defineConfig({
             { text: "rux remove", link: "/cli/remove" },
             { text: "rux run", link: "/cli/run" },
             { text: "rux test", link: "/cli/test" },
-            { text: "rux up", link: "/cli/up" },
+            { text: "rux update", link: "/cli/update" },
             { text: "rux version", link: "/cli/version" },
           ],
         },
@@ -222,7 +222,10 @@ export default defineConfig({
           text: "2026",
           collapsed: true,
           items: [
-            { text: "Rux 0.2.0 — A Real Language", link: "/blog/release-v0.2.0" },
+            {
+              text: "Rux 0.2.0 — A Real Language",
+              link: "/blog/release-v0.2.0",
+            },
             { text: "Rux 0.1.0 — It Compiles!", link: "/blog/release-v0.1.0" },
           ],
         },
@@ -237,10 +240,36 @@ export default defineConfig({
     socialLinks: [
       {
         icon: "github",
-        link: "https://github.com/rux-lang",
+        link: "https://github.com/rux-lang/Rux",
         ariaLabel: "GitHub",
       },
-      { icon: "x", link: "https://x.com/ruxlang", ariaLabel: "X" },
+      {
+        icon: {
+          svg: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M19.2,1.2c2.65,0,4.8,2.15,4.8,4.8v9.6c0,2.65-2.15,4.8-4.8,4.8h-3.1l-3.25,3.25c-.43.43-1.11.47-1.58.1l-.11-.1-3.25-3.25h-3.1c-2.56,0-4.67-2.01-4.79-4.56v-.24s0-9.6,0-9.6C0,3.35,2.15,1.2,4.8,1.2h14.4ZM14.4,12h-7.2c-.66,0-1.2.54-1.2,1.2s.54,1.2,1.2,1.2h7.2c.66,0,1.2-.54,1.2-1.2s-.54-1.2-1.2-1.2M16.8,7.2H7.2c-.66,0-1.2.54-1.2,1.2s.54,1.2,1.2,1.2h9.6c.66,0,1.2-.54,1.2-1.2s-.54-1.2-1.2-1.2" /></svg>',
+        },
+        link: "https://github.com/rux-lang/Rux/discussions",
+        ariaLabel: "Discussions",
+      },
+      {
+        icon: "discord",
+        link: "https://discord.com/invite/uvSHjtZSVG",
+        ariaLabel: "Discord",
+      },
+      {
+        icon: "reddit",
+        link: "https://www.reddit.com/r/ruxlang",
+        ariaLabel: "Reddit",
+      },
+      {
+        icon: "youtube",
+        link: "https://www.youtube.com/@ruxlang",
+        ariaLabel: "YouTube",
+      },
+      {
+        icon: "x",
+        link: "https://x.com/ruxlang",
+        ariaLabel: "X",
+      },
       {
         icon: "bluesky",
         link: "https://ruxlang.bsky.social",
@@ -255,18 +284,6 @@ export default defineConfig({
         icon: "telegram",
         link: "https://t.me/ruxlang",
         ariaLabel: "Telegram",
-      },
-      {
-        icon: "discord",
-        link: "https://discord.com/invite/uvSHjtZSVG",
-        ariaLabel: "Discord",
-      },
-      {
-        icon: {
-          svg: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path stroke="none" d="M19.2,1.2c2.65,0,4.8,2.15,4.8,4.8v9.6c0,2.65-2.15,4.8-4.8,4.8h-3.1l-3.25,3.25c-.43.43-1.11.47-1.58.1l-.11-.1-3.25-3.25h-3.1c-2.56,0-4.67-2.01-4.79-4.56v-.24s0-9.6,0-9.6C0,3.35,2.15,1.2,4.8,1.2h14.4ZM14.4,12h-7.2c-.66,0-1.2.54-1.2,1.2s.54,1.2,1.2,1.2h7.2c.66,0,1.2-.54,1.2-1.2s-.54-1.2-1.2-1.2M16.8,7.2H7.2c-.66,0-1.2.54-1.2,1.2s.54,1.2,1.2,1.2h9.6c.66,0,1.2-.54,1.2-1.2s-.54-1.2-1.2-1.2" /></svg>',
-        },
-        link: "https://github.com/rux-lang/Rux/discussions",
-        ariaLabel: "Discussions",
       },
     ],
 
@@ -289,7 +306,7 @@ export default defineConfig({
       message:
         'Released under the <a href="https://github.com/rux-lang/Rux/blob/main/LICENSE">MIT License</a>',
       copyright:
-        'Copyright © 2026 <a href="https://github.com/musicvano">Ivan Muzyka</a>',
+        'Copyright © 2026 <a href="https://github.com/rux-lang">Rux Contributors</a>',
     },
   },
 
