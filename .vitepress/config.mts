@@ -292,7 +292,7 @@ export default defineConfig({
     externalLinkIcon: true,
 
     editLink: {
-      pattern: "https://github.com/rux-lang/Web/edit/main/docs/:path",
+      pattern: "https://github.com/rux-lang/Web/edit/dev/src/:path",
       text: "Edit this page on GitHub",
     },
 
