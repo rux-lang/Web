@@ -1,5 +1,8 @@
 # Visual Studio Code
 
+> [!WARNING] IN DEVELOPMENT
+> Rux is currently undergoing rapid changes which might cause this extension to contain outdated information.
+
 [Visual Studio Code](https://code.visualstudio.com) is the recommended editor for Rux. The official [Rux Language](https://marketplace.visualstudio.com/items?itemName=rux-lang.vscode-rux) extension adds syntax highlighting for `.rux` source files.
 
 ## Installing the Extension

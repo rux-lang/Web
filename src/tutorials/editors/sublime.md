@@ -1,5 +1,8 @@
 # Sublime Text
 
+> [!WARNING] IN DEVELOPMENT
+> Rux is currently undergoing rapid changes which might cause this extension to contain outdated information.
+
 The official [Rux](https://packagecontrol.io/packages/Rux) package for [Sublime Text](https://www.sublimetext.com) adds syntax highlighting for `.rux` source files.
 
 ## Installing the Package
