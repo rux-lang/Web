@@ -13,7 +13,7 @@ Rux is a **fast, compiled, strongly typed, multi-paradigm, general-purpose** pro
 ## Hello, World
 
 ```rux
-import Std::Io:Print;
+import Std::Io::Print;
 
 func Main() -> int {
     Print("Hello, World!");
