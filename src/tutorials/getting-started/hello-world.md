@@ -1,7 +1,7 @@
 # Hello World
 
 > [!WARNING] IN DEVELOPMENT
-> Rux is currently undergoing rapid changes which might cause this turtorial to contain outdated information.
+> Rux is currently undergoing rapid changes which might cause this tutorials to contain outdated information.
 
 Let's create a simple Rux console application that prints "Hello World!" on the screen.
 
