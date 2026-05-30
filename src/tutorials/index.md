@@ -1,5 +1,11 @@
 # Tutorials
 
+> [!WARNING] IN DEVELOPMENT
+> Rux is currently undergoing rapid changes which might cause the following tutorials to contain outdated information.
+
+> [!IMPORTANT]
+> Support for Linux and MacOS is currently a work in progress.
+
 Welcome to the Rux tutorials! This collection contains solutions designed to help learn and practice Rux programming through hands-on exercises and examples. [GitHub repository](https://github.com/rux-lang/Tutorials) serves as a centralized learning resource featuring multiple programming tasks, each organized as a separate folder. The tutorials are designed to progressively build your understanding of Rux concepts and best practices.
 
 ## Repository Structure
