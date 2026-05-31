@@ -22,6 +22,10 @@ The following packages are currently under development:
 
 | Package | Repository | Description |
 | ------- | ---------- | ----------- |
+| `Illumos` | [github.com/rux-lang/Illumos](https://github.com/rux-lang/Illumos) | !!! |
+| `Linux` | [github.com/rux-lang/Linux](https://github.com/rux-lang/Linux) | Linux API bindings |
+| `MacOS` | [github.com/rux-lang/MacOS](https://github.com/rux-lang/MacOS) | MacOS API bindings |
+| `Pux` | [github.com/Natuworkguy/Pux-module](https://github.com/Natuworkguy/Pux-module) | Pygame bindings |
 | `Std` | [github.com/rux-lang/Std](https://github.com/rux-lang/Std) | Rux standard library |
 | `Windows` | [github.com/rux-lang/Windows](https://github.com/rux-lang/Windows) | Windows API bindings |
 
