@@ -17,18 +17,15 @@ Tutorials/
 ├── HelloWorld/
 │   ├── Src/
 │   │    └── Main.rux
-│   ├── Rux.toml
-│   ├── README.md
-│   └── .gitignore
-├── ArraySort/
+│   └── Rux.toml
+├── Factorial/
 │   ├── Src/
 │   │    └── Main.rux
-│   ├── Rux.toml
-│   ├── README.md
-│   └── .gitignore
+│   └── Rux.toml
 ├── ...
 ├── README.md
-└── LICENSE
+├── LICENSE
+└── .gitignore
 ```
 
 ## Getting Started

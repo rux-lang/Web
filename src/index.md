@@ -120,6 +120,7 @@ head:
 
 ## Blog
 
+- [Programming Language Without LLVM](/blog/language-without-llvm) — June 1, 2026
 - [Rux 0.2.0 — A Real Language, Allegedly](/blog/release-v0.2.0) — May 10, 2026
 - [Rux 0.1.0 — 🎉 It Compiles!](/blog/release-v0.1.0) — April 30, 2026
 - [Getting Started](/blog/getting-started) — October 12, 2025

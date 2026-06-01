@@ -67,14 +67,14 @@ export default defineConfig({
       {
         text: "Download",
         items: [
-          { text: "0.2.0", link: "https://github.com/rux-lang/Rux/releases" },
+          { text: "0.2.2", link: "https://github.com/rux-lang/Rux/releases" },
           {
             text: "Changelog",
             link: "https://github.com/rux-lang/Rux/blob/main/CHANGELOG.md",
           },
         ],
       },
-      { text: "Blog", link: "/blog/release-v0.2.0" },
+      { text: "Blog", link: "/blog/language-without-llvm" },
       { text: "FAQ", link: "/faq" },
     ],
 
@@ -224,6 +224,10 @@ export default defineConfig({
           text: "2026",
           collapsed: true,
           items: [
+            {
+              text: "Programming Language Without LLVM",
+              link: "/blog/language-without-llvm",
+            },
             {
               text: "Rux 0.2.0 — A Real Language",
               link: "/blog/release-v0.2.0",
