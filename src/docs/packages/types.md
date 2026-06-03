@@ -1,5 +1,9 @@
 # Package Types
 
+::: tip
+These package types can be changed in the final edition.
+:::
+
 | Type           | Value      | Description                                              |
 | -------------- | ---------- | -------------------------------------------------------- |
 | Executable     | `"exe"`    | Produces an executable, must define `Main()`             |

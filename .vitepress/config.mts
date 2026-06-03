@@ -67,7 +67,7 @@ export default defineConfig({
       {
         text: "Download",
         items: [
-          { text: "0.2.2", link: "https://github.com/rux-lang/Rux/releases" },
+          { text: "0.3.0", link: "https://github.com/rux-lang/Rux/releases" },
           {
             text: "Changelog",
             link: "https://github.com/rux-lang/Rux/blob/main/CHANGELOG.md",
@@ -126,7 +126,6 @@ export default defineConfig({
               text: "Attributes",
               collapsed: true,
               items: [
-                { text: "Overview", link: "/docs/attributes/" },
                 { text: "Import", link: "/docs/attributes/import" },
                 { text: "Target", link: "/docs/attributes/target" },
                 { text: "Warn", link: "/docs/attributes/warn" },

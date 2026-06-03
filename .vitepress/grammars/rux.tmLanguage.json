@@ -4,33 +4,15 @@
   "fileTypes": ["rux"],
   "scopeName": "source.rux",
   "patterns": [
-    {
-      "include": "#block-comments"
-    },
-    {
-      "include": "#comments"
-    },
-    {
-      "include": "#attributes"
-    },
-    {
-      "include": "#constants"
-    },
-    {
-      "include": "#functions"
-    },
-    {
-      "include": "#types"
-    },
-    {
-      "include": "#keywords"
-    },
-    {
-      "include": "#punctuation"
-    },
-    {
-      "include": "#strings"
-    }
+    { "include": "#block-comments" },
+    { "include": "#comments" },
+    { "include": "#attributes" },
+    { "include": "#constants" },
+    { "include": "#functions" },
+    { "include": "#types" },
+    { "include": "#keywords" },
+    { "include": "#punctuation" },
+    { "include": "#strings" }
   ],
   "repository": {
     "attributes": {
@@ -40,41 +22,29 @@
           "name": "meta.attribute.rux",
           "begin": "@\\[",
           "beginCaptures": {
-            "0": {
-              "name": "punctuation.definition.attribute.begin.rux"
-            }
+            "0": { "name": "punctuation.definition.attribute.begin.rux" }
           },
           "end": "\\]",
           "endCaptures": {
-            "0": {
-              "name": "punctuation.definition.attribute.end.rux"
-            }
+            "0": { "name": "punctuation.definition.attribute.end.rux" }
           },
           "patterns": [
             {
               "comment": "Attribute name",
               "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\b(?=\\s*\\()",
               "captures": {
-                "1": {
-                  "name": "entity.name.function.attribute.rux"
-                }
+                "1": { "name": "entity.name.function.attribute.rux" }
               }
             },
             {
               "comment": "Attribute argument key",
               "match": "\\b([a-z_][a-zA-Z0-9_]*)\\b(?=\\s*:)",
               "captures": {
-                "1": {
-                  "name": "variable.parameter.rux"
-                }
+                "1": { "name": "variable.parameter.rux" }
               }
             },
-            {
-              "include": "#strings"
-            },
-            {
-              "include": "#constants"
-            },
+            { "include": "#strings" },
+            { "include": "#constants" },
             {
               "comment": "Attribute punctuation",
               "match": "[(),:]",
@@ -96,22 +66,14 @@
           "name": "comment.block.documentation.rux",
           "begin": "/\\*\\*",
           "end": "\\*/",
-          "patterns": [
-            {
-              "include": "#block-comments"
-            }
-          ]
+          "patterns": [{ "include": "#block-comments" }]
         },
         {
           "comment": "Block comments",
           "name": "comment.block.rux",
           "begin": "/\\*(?!\\*)",
           "end": "\\*/",
-          "patterns": [
-            {
-              "include": "#block-comments"
-            }
-          ]
+          "patterns": [{ "include": "#block-comments" }]
         }
       ]
     },
@@ -122,9 +84,7 @@
           "name": "comment.line.documentation.rux",
           "match": "(///).*$",
           "captures": {
-            "1": {
-              "name": "punctuation.definition.comment.rux"
-            }
+            "1": { "name": "punctuation.definition.comment.rux" }
           }
         },
         {
@@ -132,9 +92,7 @@
           "name": "comment.line.double-slash.rux",
           "match": "(//).*$",
           "captures": {
-            "1": {
-              "name": "punctuation.definition.comment.rux"
-            }
+            "1": { "name": "punctuation.definition.comment.rux" }
           }
         }
       ]
@@ -144,70 +102,50 @@
         {
           "comment": "Decimal integers and floats",
           "name": "constant.numeric.decimal.rux",
-          "match": "\\b\\d[\\d_]*(\\.?)[\\d_]*(?:(E|e)([+-]?)([\\d_]+))?(f8|f16|f32|f80|f64|f128|f256|f512|i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512)?\\b",
+          "match": "\\b\\d[\\d_]*(\\.?)[\\d_]*(?:(E|e)([+-]?)([\\d_]+))?(f8|f16|f32|f80|f64|f128|f256|f512|i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512|i|u)?\\b",
           "captures": {
-            "1": {
-              "name": "punctuation.separator.dot.decimal.rux"
-            },
-            "2": {
-              "name": "keyword.operator.exponent.rux"
-            },
-            "3": {
-              "name": "keyword.operator.exponent.sign.rux"
-            },
-            "4": {
-              "name": "constant.numeric.decimal.exponent.mantissa.rux"
-            },
-            "5": {
-              "name": "entity.name.type.numeric.rux"
-            }
+            "1": { "name": "punctuation.separator.dot.decimal.rux" },
+            "2": { "name": "keyword.operator.exponent.rux" },
+            "3": { "name": "keyword.operator.exponent.sign.rux" },
+            "4": { "name": "constant.numeric.decimal.exponent.mantissa.rux" },
+            "5": { "name": "entity.name.type.numeric.rux" }
           }
         },
         {
           "comment": "Hexadecimal integers",
           "name": "constant.numeric.hex.rux",
-          "match": "\\b0x[\\da-fA-F_]+(i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512)?\\b",
+          "match": "\\b0x[\\da-fA-F_]+(i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512|i|u)?\\b",
           "captures": {
-            "1": {
-              "name": "entity.name.type.numeric.rux"
-            }
+            "1": { "name": "entity.name.type.numeric.rux" }
           }
         },
         {
           "comment": "Octal integers",
           "name": "constant.numeric.oct.rux",
-          "match": "\\b0o[0-7_]+(i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512)?\\b",
+          "match": "\\b0o[0-7_]+(i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512|i|u)?\\b",
           "captures": {
-            "1": {
-              "name": "entity.name.type.numeric.rux"
-            }
+            "1": { "name": "entity.name.type.numeric.rux" }
           }
         },
         {
           "comment": "Binary integers",
           "name": "constant.numeric.bin.rux",
-          "match": "\\b0b[01_]+(i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512)?\\b",
+          "match": "\\b0b[01_]+(i8|i16|i32|i64|i128|i256|i512|u8|u16|u32|u64|u128|u256|u512|i|u)?\\b",
           "captures": {
-            "1": {
-              "name": "entity.name.type.numeric.rux"
-            }
+            "1": { "name": "entity.name.type.numeric.rux" }
           }
         },
         {
           "comment": "Language constants",
-          "name": "constant.language.bool.rux",
+          "name": "constant.language.rux",
           "match": "\\b(true|false|null)\\b"
         },
         {
           "comment": "Compile-time intrinsic constants",
-          "match": "(#)(package|module|file|function|line|column|date|time)\\b",
+          "match": "(#)(module|file|function|line|column|date|time)\\b",
           "captures": {
-            "1": {
-              "name": "punctuation.definition.constant.rux"
-            },
-            "2": {
-              "name": "constant.language.compiletime.rux"
-            }
+            "1": { "name": "punctuation.definition.constant.rux" },
+            "2": { "name": "constant.language.compiletime.rux" }
           }
         }
       ]
@@ -218,70 +156,44 @@
           "name": "meta.function.definition.rux",
           "begin": "\\bfunc\\b",
           "beginCaptures": {
-            "0": {
-              "name": "keyword.other.rux"
-            }
+            "0": { "name": "keyword.other.rux" }
           },
           "end": "(?<=\\})|(?<=;)",
           "patterns": [
             {
               "begin": "\\s+([a-zA-Z_][a-zA-Z0-9_]*)(?:\\s*(<)\\s*([A-Za-z_][A-Za-z0-9_]*(?:\\s*,\\s*[A-Za-z_][A-Za-z0-9_]*)*)\\s*(>))?(\\()",
               "beginCaptures": {
-                "1": {
-                  "name": "entity.name.function.rux"
-                },
-                "2": {
-                  "name": "punctuation.definition.generic.begin.rux"
-                },
-                "3": {
-                  "name": "entity.name.type.rux"
-                },
-                "4": {
-                  "name": "punctuation.definition.generic.end.rux"
-                },
-                "5": {
-                  "name": "punctuation.section.parameters.begin.rux"
-                }
+                "1": { "name": "entity.name.function.rux" },
+                "2": { "name": "punctuation.definition.generic.begin.rux" },
+                "3": { "name": "entity.name.type.rux" },
+                "4": { "name": "punctuation.definition.generic.end.rux" },
+                "5": { "name": "punctuation.section.parameters.begin.rux" }
               },
               "end": "\\)",
               "endCaptures": {
-                "0": {
-                  "name": "punctuation.section.parameters.end.rux"
-                }
+                "0": { "name": "punctuation.section.parameters.end.rux" }
               },
               "patterns": [
                 {
                   "match": "\\b([A-Za-z_][A-Za-z0-9_]*)\\b(?=\\s*(?:,|:))",
                   "captures": {
-                    "1": {
-                      "name": "variable.parameter.rux"
-                    }
+                    "1": { "name": "variable.parameter.rux" }
                   }
                 },
                 {
                   "match": "(:\\s*)\\**(\\s*const)?\\s*([A-Za-z_][A-Za-z0-9_<>]*)",
                   "captures": {
-                    "1": {
-                      "name": "punctuation.separator.type.rux"
-                    },
-                    "2": {
-                      "name": "storage.modifier.rux"
-                    },
-                    "3": {
-                      "name": "entity.name.type.rux"
-                    }
+                    "1": { "name": "punctuation.separator.type.rux" },
+                    "2": { "name": "storage.modifier.rux" },
+                    "3": { "name": "entity.name.type.rux" }
                   }
                 },
                 {
                   "match": ",",
                   "name": "punctuation.separator.parameter.rux"
                 },
-                {
-                  "include": "#constants"
-                },
-                {
-                  "include": "#types"
-                }
+                { "include": "#constants" },
+                { "include": "#types" }
               ]
             },
             {
@@ -289,18 +201,12 @@
               "name": "meta.return.type.tuple.rux",
               "begin": "\\s*(->)\\s*(\\()",
               "beginCaptures": {
-                "1": {
-                  "name": "punctuation.separator.arrow.rux"
-                },
-                "2": {
-                  "name": "punctuation.section.tuple.begin.rux"
-                }
+                "1": { "name": "punctuation.separator.arrow.rux" },
+                "2": { "name": "punctuation.section.tuple.begin.rux" }
               },
               "end": "\\)",
               "endCaptures": {
-                "0": {
-                  "name": "punctuation.section.tuple.end.rux"
-                }
+                "0": { "name": "punctuation.section.tuple.end.rux" }
               },
               "patterns": [
                 {
@@ -311,9 +217,7 @@
                   "match": "\\bconst\\b",
                   "name": "storage.modifier.rux"
                 },
-                {
-                  "include": "#types"
-                },
+                { "include": "#types" },
                 {
                   "match": "\\b[A-Za-z_][A-Za-z0-9_<>]*\\b",
                   "name": "storage.type.return.rux"
@@ -328,18 +232,10 @@
               "comment": "Return type",
               "match": "\\s*(->)\\s*(\\**)(\\s*const)?\\s*([A-Za-z_][A-Za-z0-9_<>]*)",
               "captures": {
-                "1": {
-                  "name": "punctuation.separator.arrow.rux"
-                },
-                "2": {
-                  "name": "keyword.operator.pointer.rux"
-                },
-                "3": {
-                  "name": "storage.modifier.rux"
-                },
-                "4": {
-                  "name": "storage.type.return.rux"
-                }
+                "1": { "name": "punctuation.separator.arrow.rux" },
+                "2": { "name": "keyword.operator.pointer.rux" },
+                "3": { "name": "storage.modifier.rux" },
+                "4": { "name": "storage.type.return.rux" }
               }
             },
             {
@@ -347,38 +243,21 @@
               "name": "meta.block.rux",
               "begin": "\\{",
               "beginCaptures": {
-                "0": {
-                  "name": "punctuation.section.block.begin.rux"
-                }
+                "0": { "name": "punctuation.section.block.begin.rux" }
               },
               "end": "\\}",
               "endCaptures": {
-                "0": {
-                  "name": "punctuation.section.block.end.rux"
-                }
+                "0": { "name": "punctuation.section.block.end.rux" }
               },
               "patterns": [
-                {
-                  "include": "#block-comments"
-                },
-                {
-                  "include": "#comments"
-                },
-                {
-                  "include": "#constants"
-                },
-                {
-                  "include": "#types"
-                },
-                {
-                  "include": "#keywords"
-                },
-                {
-                  "include": "#punctuation"
-                },
-                {
-                  "include": "#strings"
-                }
+                { "include": "#block-comments" },
+                { "include": "#comments" },
+                { "include": "#attributes" },
+                { "include": "#constants" },
+                { "include": "#types" },
+                { "include": "#keywords" },
+                { "include": "#punctuation" },
+                { "include": "#strings" }
               ]
             }
           ]
@@ -388,19 +267,29 @@
     "keywords": {
       "patterns": [
         {
+          "comment": "Comparison operators",
+          "name": "keyword.operator.comparison.rux",
+          "match": "(==|!=|<=|>=)"
+        },
+        {
+          "comment": "Fat arrow",
+          "name": "keyword.operator.arrow.fat.rux",
+          "match": "=>"
+        },
+        {
+          "comment": "Assignment operators",
+          "name": "keyword.operator.assignment.rux",
+          "match": "(<<=|>>=|\\+=|-=|\\*=|/=|%=|&=|\\|=|\\^=|=)"
+        },
+        {
           "comment": "Control flow keywords",
           "name": "keyword.control.rux",
           "match": "\\b(break|continue|do|else|for|if|in|loop|match|return|while)\\b"
         },
         {
-          "comment": "Storage modifier",
+          "comment": "Storage modifiers",
           "name": "storage.modifier.rux",
-          "match": "\\b(const|let|var)\\b"
-        },
-        {
-          "comment": "Class keyword",
-          "name": "keyword.declaration.class.rux storage.type.rux",
-          "match": "\\b(class)\\b"
+          "match": "\\b(const|let|pub|var)\\b"
         },
         {
           "comment": "Interface keyword",
@@ -428,22 +317,37 @@
           "match": "\\b(type)\\b"
         },
         {
-          "comment": "Logical operators",
+          "comment": "Logical and bitwise operators",
           "name": "keyword.operator.logical.rux",
-          "match": "(\\^|\\||\\|\\||&&|<<|>>|!)(?!=)"
+          "match": "(&&|\\|\\||\\^|\\||<<|>>|!|~)"
+        },
+        {
+          "comment": "Self and super",
+          "name": "variable.language.rux",
+          "match": "\\b(self|super)\\b"
+        },
+        {
+          "comment": "Type operator keywords",
+          "name": "keyword.operator.type.rux",
+          "match": "\\b(as|is)\\b"
         },
         {
           "comment": "Other keywords",
           "name": "keyword.other.rux",
-          "match": "\\b(as|async|extend|extern|import|export|module)\\b"
+          "match": "\\b(asm|async|extend|extern|import|export|module)\\b"
         }
       ]
     },
     "punctuation": {
       "patterns": [
         {
+          "comment": "Increment and decrement",
+          "match": "(\\+\\+|--)",
+          "name": "keyword.operator.arithmetic.rux"
+        },
+        {
           "comment": "Arithmetic operators",
-          "match": "\\+|-(?!>)|\\*|/|%",
+          "match": "(\\+|-(?!>)|\\*|/|%)",
           "name": "keyword.operator.arithmetic.rux"
         },
         {
@@ -460,6 +364,16 @@
           "comment": "Comma",
           "match": ",",
           "name": "punctuation.separator.parameter.rux"
+        },
+        {
+          "comment": "Spread / variadic",
+          "match": "\\.\\.\\.",
+          "name": "keyword.operator.spread.rux"
+        },
+        {
+          "comment": "Inclusive range operator",
+          "match": "\\.\\.=",
+          "name": "keyword.operator.range.rux"
         },
         {
           "comment": "Range operator",
@@ -529,13 +443,48 @@
       ]
     },
     "strings": {
-      "name": "string.quoted.double.rux",
-      "begin": "\"",
-      "end": "\"",
       "patterns": [
         {
-          "name": "constant.character.escape.rux",
-          "match": "\\\\."
+          "comment": "Prefixed string literals (c8, c16, c32)",
+          "name": "string.quoted.double.rux",
+          "begin": "(c8|c16|c32)\"",
+          "beginCaptures": {
+            "1": { "name": "storage.type.string.rux" }
+          },
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.rux", "match": "\\\\." }
+          ]
+        },
+        {
+          "comment": "Standard string literal",
+          "name": "string.quoted.double.rux",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            { "name": "constant.character.escape.rux", "match": "\\\\." }
+          ]
+        },
+        {
+          "comment": "Prefixed character literals (c8, c16, c32)",
+          "name": "string.quoted.single.rux",
+          "begin": "(c8|c16|c32)'",
+          "beginCaptures": {
+            "1": { "name": "storage.type.string.rux" }
+          },
+          "end": "'",
+          "patterns": [
+            { "name": "constant.character.escape.rux", "match": "\\\\." }
+          ]
+        },
+        {
+          "comment": "Character literal",
+          "name": "string.quoted.single.rux",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            { "name": "constant.character.escape.rux", "match": "\\\\." }
+          ]
         }
       ]
     },
@@ -570,48 +519,32 @@
           "comment": "Struct declarations",
           "match": "\\b(struct)\\s+(_?[A-Z][A-Za-z0-9_]*)\\b",
           "captures": {
-            "1": {
-              "name": "keyword.declaration.struct.rux storage.type.rux"
-            },
-            "2": {
-              "name": "entity.name.type.struct.rux"
-            }
+            "1": { "name": "keyword.declaration.struct.rux storage.type.rux" },
+            "2": { "name": "entity.name.type.struct.rux" }
           }
         },
         {
           "comment": "Enum declarations",
           "match": "\\b(enum)\\s+([A-Za-z0-9_]*)\\b",
           "captures": {
-            "1": {
-              "name": "keyword.declaration.enum.rux storage.type.rux"
-            },
-            "2": {
-              "name": "entity.name.type.enum.rux"
-            }
+            "1": { "name": "keyword.declaration.enum.rux storage.type.rux" },
+            "2": { "name": "entity.name.type.enum.rux" }
           }
         },
         {
           "comment": "Union declarations",
           "match": "\\b(union)\\s+(_?[A-Z][A-Za-z0-9_]*)\\b",
           "captures": {
-            "1": {
-              "name": "keyword.declaration.union.rux storage.type.rux"
-            },
-            "2": {
-              "name": "entity.name.type.union.rux"
-            }
+            "1": { "name": "keyword.declaration.union.rux storage.type.rux" },
+            "2": { "name": "entity.name.type.union.rux" }
           }
         },
         {
           "comment": "Type alias declarations",
           "match": "\\b(type)\\s+(_?[A-Z][A-Za-z0-9_]*)\\b",
           "captures": {
-            "1": {
-              "name": "keyword.declaration.type.rux storage.type.rux"
-            },
-            "2": {
-              "name": "entity.name.type.alias.rux"
-            }
+            "1": { "name": "keyword.declaration.type.rux storage.type.rux" },
+            "2": { "name": "entity.name.type.alias.rux" }
           }
         }
       ]

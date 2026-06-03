@@ -1,5 +1,10 @@
 # Package Manifest
 
+::: tip
+This edition of the manifest file is not final.
+:::
+
+
 ## Overview
 
 Every Rux package is described by a `Rux.toml` file at the project root.

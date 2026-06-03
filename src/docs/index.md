@@ -26,7 +26,7 @@
 12. [Modules](modules)
 13. [Error Handling](error)
 14. [Foreign Function Interface](extern)
-15. [Attributes](attributes)
+15. [Attributes](attributes/import)
     - 15.1. [Import](attributes/import)
     - 15.2. [Target](attributes/target)
     - 15.3. [Warn](attributes/warn)

@@ -1,5 +1,10 @@
 # Character Types
 
+::: tip
+`char64`, `char128`, `char256`, and `char512` are not implemented in the current release.
+:::
+
+
 ## Overview
 
 Rux provides a family of fixed-width character types designed to represent Unicode code points and

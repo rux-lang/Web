@@ -1,5 +1,9 @@
 # Floating-Point Types
 
+::: tip
+`float8`, `float16`, `float80`, `float128`, `float256`, and `float512` are not implemented in the current release.
+:::
+
 ## Overview
 
 Rux provides a comprehensive set of [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754)-compliant floating-point primitive types, spanning from compact 8-bit representations to extended 512-bit precision. All float types are value types stored on the stack by default; heap allocation occurs only when boxed or placed inside a reference type.

@@ -1,5 +1,9 @@
 # Integer Types
 
+::: tip
+`int128`, `int256`, `int512`, `uint128`, `uint256`, and `uint512` are not implemented in the current release.
+:::
+
 ## Overview
 
 Integers are the most fundamental numeric type in Rux. All integer types represent exact whole numbers with no fractional component, stored in [binary](https://en.wikipedia.org/wiki/Binary_number) using a fixed number of bits.
