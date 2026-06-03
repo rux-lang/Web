@@ -123,6 +123,17 @@ export default defineConfig({
             { text: "Error Handling", link: "/docs/error" },
             { text: "Extern and FFI", link: "/docs/extern" },
             {
+              text: "Attributes",
+              collapsed: true,
+              items: [
+                { text: "Overview", link: "/docs/attributes/" },
+                { text: "Import", link: "/docs/attributes/import" },
+                { text: "Target", link: "/docs/attributes/target" },
+                { text: "Warn", link: "/docs/attributes/warn" },
+                { text: "Error", link: "/docs/attributes/error" },
+              ],
+            },
+            {
               text: "Package System",
               collapsed: true,
               items: [
