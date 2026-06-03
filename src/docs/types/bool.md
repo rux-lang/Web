@@ -1,5 +1,9 @@
 # Boolean Types
 
+::: tip
+`bool64`, `bool128`, `bool256`, and `bool512` are not implemented in the current release.
+:::
+
 ## Overview
 
 Boolean types in Rux represent truth values: `true` or `false`. They are used in conditions, logical expressions, flags, and control flow. Rux provides a family of explicitly sized boolean types — `bool8` through `bool512` — as well as a default `bool` alias for the most common use case.

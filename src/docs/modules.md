@@ -2,17 +2,27 @@
 
 ## Module Declaration
 
-Modules organize code into named namespaces. A module is a separate source file.
+Modules organize code into named namespaces. A module is declared with the `module` keyword and can appear anywhere in a source file. Multiple modules can exist in one file, and modules can be nested.
 
 ```rux
-// File Math.rux
+module Math {
+    pub func Sqrt(x: float64) -> float64 {
+        // Code here
+    }
 
-func Sqrt(x: float64) -> float64 {
-    // Code here
+    pub func Abs(x: float64) -> float64 {
+        // Code here
+    }
 }
+```
 
-func Abs(x: float64) -> float64 {
-    // Code here
+Nested modules can be declared inline or using path notation:
+
+```rux
+module Std::Io {
+    pub func Print(s: String) {
+        // Code here
+    }
 }
 ```
 

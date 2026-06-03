@@ -1,15 +1,19 @@
-# `@[Error("message")]`
+# Error
 
 Emits a compiler **error** at every call site of the annotated function. The build fails at any point where the function is called. Use this to intentionally block usage of a function — for example, to enforce that a stub or platform-unsupported path is never called.
 
-**Syntax**
+## Syntax
 
 ```rux
-@[Error("<message>")]
-func FunctionName(params) -> ReturnType { ... }
+@[Error("Function is not implemented")]
+func DoSomething() {
+    // Implementation
+}
 ```
 
-**Example — unsupported platform stub**
+## Examples
+
+### Unsupported platform stub
 
 ```rux
 @[Target("Windows")]
@@ -31,7 +35,7 @@ Calling `OpenDisplay()` on a Linux build produces:
 error: OpenDisplay is not supported on Linux in this build
 ```
 
-**Example — removed API**
+### Removed API
 
 ```rux
 @[Error("Connect() was removed; use ConnectAsync() instead")]

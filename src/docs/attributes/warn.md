@@ -1,15 +1,19 @@
-# `@[Warn("Message")]`
+# Warn
 
 Emits a compiler **warning** at every call site of the annotated function. The function remains callable; the warning is informational.
 
-**Syntax**
+## Syntax
 
 ```rux
-@[Warn("<Message>")]
-func FunctionName(params) -> ReturnType { ... }
+@[Warn("Message")]
+func DoSomething() {
+    // Implementation
+}
 ```
 
-**Example — deprecation notice**
+## Examples
+
+### Deprecation notice
 
 ```rux
 @[Warn("Use NewApi() instead; OldApi() will be removed in v2.0")]
@@ -23,7 +27,7 @@ func Main() -> int {
 }
 ```
 
-**Example — unsafe operation advisory**
+### Unsafe operation advisory
 
 ```rux
 @[Warn("This function bypasses bounds checking; ensure the index is valid")]
