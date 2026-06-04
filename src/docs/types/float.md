@@ -140,17 +140,6 @@ let planck   = 6.626e-34;  // 6.626 × 10⁻³⁴
 let big      = 1.5E+10;
 ```
 
-<!--
-### Hexadecimal Float Literals
-
-Rux supports C99-style hex float literals for exact bit-pattern specification:
-
-```rux
-let exact: float32 = 0x1.8p+1  // 3.0 exactly
-let half:  float64 = 0x1.0p-1  // 0.5 exactly
-```
--->
-
 ### Literal Suffixes
 
 | Suffix   | Type       |
@@ -169,21 +158,6 @@ let a = 1.0f32;   // float32
 let b = 1.0f16;   // float16
 let c = 1.0f128;  // float128
 ```
-
-<!--
-### Special Value Literals
-
-```rux
-let inf:     float64 = Float.inf;
-let neg_inf: float64 = Float.neg_inf;
-let nan:     float64 = Float.nan;
-
-// Checking special values
-Float.is_nan(nan)        // true
-Float.is_infinite(inf)   // true
-Float.is_finite(1.0)     // true
-```
--->
 
 ## Type Conversion
 
@@ -223,21 +197,6 @@ let g: float64 = n as float64;  // widening int→float, implicit
 
 > ⚠️ Casting `NaN` or `Inf` to an integer type produces **implementation-defined behavior** and will trigger a runtime panic in debug builds.
 
-<!--
-### Conversion Methods
-
-```rux
-let x: float32 = 1.5;
-x.to_float64();   // → float64
-x.to_float128();  // → float128
-x.to_int32();     // truncating
-x.to_bits();      // → uint32  (raw bit pattern, no conversion)
-
-// From raw bits
-let y = float32.from_bits(0x3FC0_0000u32);  // → 1.5
-```
--->
-
 ## Arithmetic Operations
 
 All standard arithmetic operators are defined for float types. Mixed-type expressions require explicit casts.
@@ -275,42 +234,6 @@ let pow  = a ** b;  // 1000.0
 ```
 
 > Division by zero does **not** throw exception; it produces `Inf` or `NaN` per IEEE 754.
-
-<!--
-### Standard Math Functions
-
-The `math` module provides a full set of floating-point functions:
-
-```rux
-import math
-
-math.sqrt(2.0)        // → 1.4142135...
-math.cbrt(27.0)       // → 3.0
-math.abs(-3.14)       // → 3.14
-math.floor(2.9)       // → 2.0
-math.ceil(2.1)        // → 3.0
-math.round(2.5)       // → 3.0  (round half to even)
-math.trunc(2.9)       // → 2.0
-math.fma(2.0, 3.0, 1.0)  // fused multiply-add: 2*3+1 = 7.0
-
-// Trigonometry
-math.sin(math.PI)     // → ~0.0
-math.cos(0.0)         // → 1.0
-math.tan(math.PI / 4.0)  // → ~1.0
-math.atan2(1.0, 1.0)  // → ~0.785
-
-// Exponential / Logarithm
-math.exp(1.0)         // → e  (~2.718)
-math.ln(math.E)       // → 1.0
-math.log2(8.0)        // → 3.0
-math.log10(1000.0)    // → 3.0
-
-// Hyperbolic
-math.sinh(1.0)
-math.cosh(1.0)
-math.tanh(1.0)
-```
--->
 
 ### Compound Assignment
 
@@ -352,44 +275,14 @@ n <  1.0  // false
 n >  1.0  // false
 ```
 
-Always use `Float.IsNaN()` to check for `NaN`:
+Always use `IsNaN()` to check for `NaN`:
 
 ```rux
-if Float.IsNaN(value)
+if IsNaN(value)
 {
     // Handle NaN case
 }
 ```
-
-<!--
-### Approximate Equality
-
-Avoid `==` for floating-point values computed through arithmetic. Use epsilon-based comparison:
-
-```rux
-import math
-
-fn approx_eq(a: float64, b: float64, epsilon: float64) -> bool {
-    math.abs(a - b) < epsilon
-}
-
-approx_eq(0.1 + 0.2, 0.3, 1e-10)  // true
-
-// Or use the built-in:
-Float.approx_eq(0.1 + 0.2, 0.3)          // uses default epsilon (1e-9)
-Float.approx_eq_eps(0.1 + 0.2, 0.3, 1e-12)  // custom epsilon
-```
-
-### Ordering and Sorting
-
-Because `NaN` violates total order, Rux's `Ord` trait is **not** implemented for float types by default. Use `Float.total_cmp()` for sorting, which implements IEEE 754 `totalOrder`:
-
-```rux
-let mut values: float64[] = [3.0, Float.NaN, 1.0, Float.Inf, -1.0]
-values.sort_by(Float.total_cmp)
-// result: [-1.0, 1.0, 3.0, +Inf, NaN]
-```
--->
 
 ## Best Practices, Common Pitfalls & Recommendations
 
@@ -404,23 +297,31 @@ values.sort_by(Float.total_cmp)
 
 ```rux
 // ❌ Unreliable
-if (0.1 + 0.2 == 0.3) { ... }
+let value = 0.1 + 0.2;
+if (value == 0.3) {
+
+}
 
 // ✅ Reliable
-if (Float.approx_eq(0.1 + 0.2, 0.3)) { ... }
+let value = 0.1 + 0.2;
+if (Abs(value - 0.3) < epsilon) {
+
+}
 ```
 
 ### ✅ Always Handle NaN Explicitly
 
 ```rux
 // ❌ Silently wrong — NaN comparisons always return false
-if (result < threshold) { ... }
+if (result < threshold) {
+
+}
 
 // ✅ Explicit
 if (Float.IsNaN(result)) {
     HandleError()
 } else if (result < threshold) {
-    ...
+
 }
 ```
 
@@ -450,7 +351,7 @@ Use compensated summation (Kahan) or higher-precision intermediates when needed.
 
 ```rux
 // ❌ Ambiguous — requires reading the annotation
-let x: float32 = 1.0;
+let x = 1.0;
 
 // ✅ Self-documenting
 let x = 1.0f32;
@@ -473,11 +374,11 @@ Be explicit when mixing types to document intent.
 ### ⚠️ Infinity Propagates
 
 ```rux
-let inf = Float.Inf;
-inf + 1.0     // → Inf
-inf * -1.0    // → -Inf
-inf - inf     // → NaN  ← be careful
-inf * 0.0     // → NaN  ← be careful
+let inf = 1.0 / 0.0;
+inf + 1.0     // Inf
+inf * -1.0    // -Inf
+inf - inf     // NaN, be careful
+inf * 0.0     // NaN, be careful
 ```
 
 ### ⚠️ Performance of Wide Floats
@@ -491,59 +392,4 @@ inf * 0.0     // → NaN  ← be careful
 - `float16` through `float128` are fully IEEE 754-2019 compliant.
 - `float80` follows the Intel 80-bit extended format (not a standard IEEE 754 binary format).
 - `float8` follows the **E4M3** variant (4 exponent bits, 3 mantissa bits) common in ML frameworks; behavior at the boundary differs slightly from standard IEEE 754 subnormals.
-- `float256` and `float512` are Rux extensions beyond the IEEE 754-2019 standard; they use the same structural rules (sign, biased exponent, significand) but are not standardized externally.
-
-### Rounding Mode
-
-The default rounding mode is **round-to-nearest, ties-to-even** (IEEE 754 `roundTiesToEven`). Alternate rounding modes can be set per-scope:
-
-```rux
-import Float::Rounding
-
-Float.Rounding.with_mode(.toward_zero) {
-    // all float ops in this block use truncation
-    let x = 3.9f32 as int32  // → 3
-}
-```
-
-<!--
-### Signaling vs. Quiet NaN
-
-Rux uses quiet NaN (`qNaN`) by default. Signaling NaN (`sNaN`) can be constructed explicitly and may trigger a floating-point exception if the FPU is configured to do so:
-
-```rux
-let qnan = Float.nan            // quiet NaN
-let snan = Float.signaling_nan  // signaling NaN (use with care)
-```
-
-### Compiler Optimization and `fast-math`
-
-The Rux compiler does **not** enable `fast-math` optimizations by default, preserving IEEE 754 guarantees. Fast-math relaxations can be opted into at the crate or function level:
-
-```rux
-#[allow(fast_math)]
-fn fast_dot(a: [float32], b: [float32]) -> float32 {
-    // reassociation, fused ops, no-NaN assumptions enabled here
-}
-```
-
-> ⚠️ `fast_math` may produce non-reproducible results across platforms and compiler versions.
-
-### Subnormal Numbers
-
-Subnormal (denormalized) numbers are supported on all float types ≥ `float16`. Flushing subnormals to zero (`FTZ`) can be enabled for performance:
-
-```rux
-import float.config
-float.config.set_flush_to_zero(true)
-```
-
-### Endianness
-
-Float memory layout uses the target platform's native endianness. Use `Float.to_le_bytes()` / `Float.to_be_bytes()` for portable serialization:
-
-```rux
-let bytes = (3.14f32).to_le_bytes()  // [uint8; 4]
-let back  = float32.from_le_bytes(bytes)  // → 3.14
-```
--->
+- `float256` and `float512` are Rux extensions beyond the IEEE 754-2019 standard; they use the same structural rules (sign, biased exponent, significant) but are not standardized externally.
