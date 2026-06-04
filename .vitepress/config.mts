@@ -197,8 +197,30 @@ export default defineConfig({
               collapsed: true,
               items: [
                 {
+                  text: "Linux",
+                  collapsed: true,
+                  items: [
+                    {
+                      text: "Fedora",
+                      link: "/tutorials/install/Linux/fedora",
+                    },
+                    {
+                      text: "OpenSUSE",
+                      link: "/tutorials/install/Linux/opensuse",
+                    },
+                    {
+                      text: "Arch",
+                      link: "/tutorials/install/Linux/arch",
+                    },
+                  ],
+                },
+                {
                   text: "Windows",
                   link: "/tutorials/install/windows",
+                },
+                {
+                  text: "Build From Source",
+                  link: "/tutorials/install/build",
                 },
               ],
             },
