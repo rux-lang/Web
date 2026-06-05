@@ -9,7 +9,7 @@ hero:
   image:
     src: /images/mascot.svg
     alt: Rux mascot
-  tagline: Fast, compiled, strongly typed, multi-paradigm, general-purpose
+  tagline: Fast, compiled, strongly typed, multi-paradigm
   actions:
     - theme: brand
       text: Get Started
@@ -60,7 +60,7 @@ head:
       content: Rux Programming Language
   - - meta
     - itemprop: description
-      content: Fast, compiled, strongly typed, multi-paradigm, general-purpose
+      content: Fast, compiled, strongly typed, multi-paradigm
   - - meta
     - itemprop: image
       content: https://rux-lang.dev/images/rux-social-wide.jpg
@@ -75,7 +75,7 @@ head:
       content: Rux Programming Language
   - - meta
     - property: og:description
-      content: Fast, compiled, strongly typed, multi-paradigm, general-purpose
+      content: Fast, compiled, strongly typed, multi-paradigm
   - - meta
     - property: og:image
       content: https://rux-lang.dev/images/rux-social-wide.jpg
@@ -87,7 +87,7 @@ head:
       content: Rux Programming Language
   - - meta
     - name: twitter:description
-      content: Fast, compiled, strongly typed, multi-paradigm, general-purpose
+      content: Fast, compiled, strongly typed, multi-paradigm
   - - meta
     - name: twitter:image
       content: https://rux-lang.dev/images/rux-social-wide.jpg
