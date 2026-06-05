@@ -8,7 +8,7 @@ next: false
 
 ## What is Rux?
 
-Rux is a fast, compiled, strongly typed, multi-paradigm, general-purpose programming language designed for clarity, safety, and performance. It compiles to native machine code and targets systems programming use cases.
+Rux is a fast, compiled, strongly typed, multi-paradigm programming language designed for clarity, safety, and performance. It compiles to native machine code and targets systems programming use cases.
 
 ## What is the current status of Rux?
 

@@ -20,7 +20,7 @@ ruxGrammar.aliases = ["rux"];
 export default defineConfig({
   title: "Rux Programming Language",
   description:
-    "Fast, compiled, strongly typed, multi-paradigm, general-purpose",
+    "Fast, compiled, strongly typed, multi-paradigm",
   srcDir: "./src",
   cleanUrls: true,
   lastUpdated: true,
