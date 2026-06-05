@@ -288,7 +288,7 @@ export default defineConfig({
       },
       {
         icon: "bluesky",
-        link: "https://ruxlang.bsky.social",
+        link: "https://bsky.app/profile/rux-lang.dev",
         ariaLabel: "Bluesky",
       },
       {
