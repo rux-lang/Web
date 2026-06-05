@@ -76,7 +76,6 @@ export default defineConfig({
       },
       { text: "Blog", link: "/blog/language-without-llvm" },
       { text: "FAQ", link: "/faq" },
-      { text: "Playground", link: "/playground" },
     ],
 
     sidebar: {
@@ -193,36 +192,13 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: "Overview", link: "/tutorials/" },
-            { text: "Try on Playground", link: "/tutorials/try-on-playground" },
             {
               text: "Installation",
               collapsed: true,
               items: [
                 {
-                  text: "Linux",
-                  collapsed: true,
-                  items: [
-                    {
-                      text: "Fedora",
-                      link: "/tutorials/install/Linux/fedora",
-                    },
-                    {
-                      text: "OpenSUSE",
-                      link: "/tutorials/install/Linux/opensuse",
-                    },
-                    {
-                      text: "Arch",
-                      link: "/tutorials/install/Linux/arch",
-                    },
-                  ],
-                },
-                {
                   text: "Windows",
                   link: "/tutorials/install/windows",
-                },
-                {
-                  text: "Build From Source",
-                  link: "/tutorials/install/build",
                 },
               ],
             },
