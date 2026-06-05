@@ -76,6 +76,7 @@ export default defineConfig({
       },
       { text: "Blog", link: "/blog/language-without-llvm" },
       { text: "FAQ", link: "/faq" },
+      { text: "Playground", link: "/playground" },
     ],
 
     sidebar: {
@@ -192,6 +193,7 @@ export default defineConfig({
           collapsed: false,
           items: [
             { text: "Overview", link: "/tutorials/" },
+            { text: "Try on Playground", link: "/tutorials/try-on-playground" },
             {
               text: "Installation",
               collapsed: true,

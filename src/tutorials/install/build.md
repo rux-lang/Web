@@ -54,7 +54,7 @@ cmake --build .
 
 ### Windows
 
-- Open Enviorement Variables
+- Open Environment Variables
 - Add the build path to the global Path
 
 ### Linux
