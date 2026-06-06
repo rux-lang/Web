@@ -44,7 +44,7 @@ We've been building a compiled, systems-capable programming language called **Ru
 
 ## What is Rux?
 
-Rux is a fast, compiled, strongly typed, multi-paradigm general-purpose language. The compiler is written from scratch in C++26, with no LLVM backend — it has its own pipeline from source all the way to native binaries via a custom object file format (RCU) and linker.
+Rux is a fast, compiled, strongly typed, multi-paradigm language. The compiler is written from scratch in C++26, with no LLVM backend — it has its own pipeline from source all the way to native binaries via a custom object file format (RCU) and linker.
 
 The full pipeline looks like this:
 
