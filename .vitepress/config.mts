@@ -19,8 +19,7 @@ ruxGrammar.aliases = ["rux"];
 // https://vitepress.dev/reference/site-config
 export default defineConfig({
   title: "Rux Programming Language",
-  description:
-    "Fast, compiled, strongly typed, multi-paradigm",
+  description: "Fast, compiled, strongly typed, multi-paradigm",
   srcDir: "./src",
   cleanUrls: true,
   lastUpdated: true,
@@ -76,7 +75,7 @@ export default defineConfig({
       },
       { text: "Blog", link: "/blog/language-without-llvm" },
       { text: "FAQ", link: "/faq" },
-      { text: "Playground", link: "/playground" },
+      { text: "Playground", link: "https://ruxplayground.dpdns.org" },
     ],
 
     sidebar: {
