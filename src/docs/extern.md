@@ -5,33 +5,45 @@ The `extern` keyword declares functions that are defined outside Rux — typical
 ```rux
 extern func malloc(size: uint) -> *opaque;
 extern func free(ptr: *opaque);
-extern func sin(angle: float) -> float;
 ```
-
-Calling `extern` functions is inherently **unsafe**, as Rux cannot verify their behavior.
 
 ## Import Attribute
 
-The `@[Import]` attribute links an `extern` declaration to a specific dynamic library (`.dll`, `.so`, `.dylib`). The OS loader resolves the library by name at runtime.
+The `@[Import]` attribute links an `extern` declaration to a specific dynamic library (`.dll`, `.so`, `.dylib`). The operating system loader resolves the library by name at runtime.
 
 ```rux
 @[Import(lib: "libm.so")]
+extern func cos(angle: float64) -> float64;
+
+@[Import(lib: "libm.so")]
 extern func sin(angle: float64) -> float64;
+
+@[Import(lib: "libm.so")]
+extern func sqrt(value: float64) -> float64;
 ```
 
-Multiple declarations from the same library can be grouped in an `extern` block:
+Multiple declarations from the same library can be grouped in one `extern` block.
 
 ```rux
 @[Import(lib: "Kernel32.dll")]
 extern {
-    func GetStdHandle(handle: uint32) -> *opaque;
+    func CreateFileW(
+        fileName: *const char16,
+        desiredAccess: uint32,
+        shareMode: uint32,
+        securityAttributes: *SecurityAttributes,
+        creationDisposition: uint32,
+        flagsAndAttributes: uint32,
+        templateFile: *opaque
+    ) -> *opaque;
+
     func WriteFile(
         handle: *opaque,
         buffer: *const opaque,
         numberOfBytesToWrite: uint32,
-        lpNumberOfBytesWritten: *uint64,
-        overlapped: int,
-    ) -> bool;
+        numberOfBytesWritten: *uint32,
+        overlapped: *Overlapped,
+    ) -> bool32;
 }
 ```
 
