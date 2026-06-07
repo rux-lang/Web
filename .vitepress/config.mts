@@ -345,7 +345,7 @@ export default defineConfig({
       message:
         'Released under the <a href="https://github.com/rux-lang/Rux/blob/main/LICENSE">MIT License</a>',
       copyright:
-        'Copyright © 2026 <a href="https://github.com/rux-lang">Rux Contributors</a>',
+        'Copyright © 2025-2026 <a href="https://github.com/musicvano">Ivan Muzyka</a>',
     },
   },
 
