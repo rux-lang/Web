@@ -24,6 +24,10 @@ The following packages are currently under development:
 | ------- | ---------- | ----------- |
 | `Std` | [github.com/rux-lang/Std](https://github.com/rux-lang/Std) | Rux standard library |
 | `Windows` | [github.com/rux-lang/Windows](https://github.com/rux-lang/Windows) | Windows API bindings |
+| `Linux` | [github.com/rux-lang/Windows](https://github.com/rux-lang/Linux) | Linux API bindings |
+| `MacOS` | [github.com/rux-lang/Windows](https://github.com/rux-lang/MacOS) | MacOS API bindings |
+| `BSD` | [github.com/rux-lang/Windows](https://github.com/rux-lang/MacOS) | BSD API bindings |
+| `Illumos` | [github.com/rux-lang/Windows](https://github.com/rux-lang/MacOS) | Illumos API bindings |
 
 ## Using Packages
 
