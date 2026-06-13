@@ -11,7 +11,7 @@ let name: char8[] = "Rux";
 
 ## Mutable Variables
 
-To allow reassignment the variable use `var`.
+To allow reassignment of the variable, use `var`.
 
 ```rux
 let count = 0;     // immutable

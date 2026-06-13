@@ -108,6 +108,7 @@ export default defineConfig({
                 { text: "Character Types", link: "/docs/types/char" },
                 { text: "Composite Types", link: "/docs/types/composite" },
                 { text: "Slices", link: "/docs/types/slices" },
+                { text: "Tuples", link: "/docs/types/tuples" },
                 { text: "Type Aliases", link: "/docs/types/alias" },
               ],
             },
