@@ -22,4 +22,6 @@ When used as a global option, `-h` and `--help` print the help screen and exit w
 rux help
 rux help build
 rux help run
+rux run --help
+rux build --help
 ```
