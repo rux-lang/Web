@@ -57,6 +57,17 @@
 | `<<=`    | `x = x << rhs`   |
 | `>>=`    | `x = x >> rhs`   |
 
+## Range Operators
+| Operator | Equivalent to                                 |
+| -------- | --------------------------------------------- |
+| `a..b`   | Range from `a` (inclusive) to `b` (exclusive) |
+| `a..=b`  | Same as `a..b` but `b` is inclusive           |
+
+## Function Operators
+| Operator | Equivalen to                                    |
+| -------- | ----------------------------------------------- |
+| `a...`   | [Spread Operator](../functions#spread-operator) |
+
 ## Type Operators
 
 | Operator | Meaning                                         |
