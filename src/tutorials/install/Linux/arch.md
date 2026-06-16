@@ -1,33 +1,31 @@
 # Installation on Arch Based Distros
 
-This guide explains how to install the Rux compiler on Arch Based Distros using [AUR](https://aur.archlinux.org/), a community driven software repository for Arch based distros.
+This guide explains how to install the Rux compiler on Arch Based Distros using the [AUR](https://aur.archlinux.org/), a community driven software repository for Arch based distros.
 
 ## Supported Distros
 
 - All Arch Based Distros
 
-## Install yay
+## Installation steps
+
+*Skip this step and use `yay -S rux-git` or `paru -S rux-git` if you have [`yay`](https://github.com/jguer/yay)/[`paru`](https://github.com/Morganamilo/paru) already installed.*
+
+To compile and install Rux, you will use `makepkg` and `git` to build the package from source.
 
 Install base development tools and Git
 ```sh
 sudo pacman -S --needed base-devel git
 ```
 
-Clone the yay repository
+Clone the AUR repository
 ```sh
-git clone https://aur.archlinux.org/yay.git
+git clone https://aur.archlinux.org/rux-git.git
 ```
 
-Build and install yay
+Build and install the Rux CLI tool
 ```sh
-cd yay
+cd rux-git
 makepkg -si
-```
-
-## Install the Rux Compiler
-
-```sh
-sudo yay -S rux-git
 ```
 
 ## Verify the Installation
