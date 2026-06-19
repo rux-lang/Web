@@ -14,6 +14,16 @@ Instructions on how to build the Rux compiler from source
 - Cmake Version 3.30+
 - GCC14+ or Clang 18+ or MSVC 2022+
 
+### Linux Prerequisites
+
+When **building with Clang** on Linux, install the appropriate packages for your distribution:
+
+- Arch Linux : `sudo pacman -S libc++ libc++abi`
+- Debian : `sudo apt install libc++-dev libc++abi-dev`
+- Fedora : `sudo dnf install libcxx-devel libcxxabi-devel`
+
+> **Note:** Building with GCC requires no additional packages.
+
 ## Clone the Git Hub Repository
 
 There are two branches of the Rux compiler currently available,
