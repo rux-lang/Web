@@ -1,4 +1,4 @@
-# Import
+# `Import`
 
 Specifies the shared (dynamic) library from which an `extern` function is imported at link time.
 
@@ -24,7 +24,7 @@ extern func WriteFile(
     handle: *opaque,
     buffer: *const opaque,
     numberOfBytesToWrite: uint32,
-    lpNumberOfBytesWritten: *uint64,
+    numberOfBytesWritten: *uint64,
     overlapped: int,
 ) -> bool;
 
@@ -46,3 +46,9 @@ extern func sqrt(x: float64) -> float64;
 @[Import(lib: "libm.so")]
 extern func pow(base: float64, exp: float64) -> float64;
 ```
+
+## See Also
+
+- [Import Attribute](/docs/ffi/import) — using `@[Import]` in the FFI workflow
+- [`extern` Declarations](/docs/ffi/extern) — the declarations this attribute links
+- [`@[Target]`](/docs/attributes/target) — choosing a library per platform

@@ -110,21 +110,6 @@ func Find(predicate: func(T) -> bool) -> *T {
 }
 ```
 
-### Tag `@throws`
-
-Tag `@throws type: description` documents an error or exception that the function may throw or propagate. Use one `@throws` tag per error type.
-
-```rux
-/// Reads the entire contents of a file as a string
-/// @param path: Path to the file to read
-/// @return: The file contents as a UTF-8 string
-/// @throws IoException: If the file does not exist or cannot be read
-/// @throws EncodingException: If the file contents are not valid UTF-8
-func ReadFile(path: String) -> String {
-    // Code here
-}
-```
-
 ### Combined example
 
 ```rux
@@ -132,7 +117,6 @@ func ReadFile(path: String) -> String {
 /// @param a: The dividend
 /// @param b: The divisor
 /// @return: The result of dividing a by b
-/// @throws DivideByZeroException: If b is zero
 func Divide(a: int64, b: int64) -> int64 {
     // Code here
 }

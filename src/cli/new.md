@@ -8,9 +8,9 @@ rux new [name] [options]
 
 ## Options
 
-| Optin          | Description                           |
+| Option         | Description                           |
 | -------------- | ------------------------------------- |
-| `--bin`        | Create a binary application (default) |
+| `--bin`        | Create a runnable program (default)   |
 | `--lib`        | Create a library project              |
 | `--path <dir>` | Create in a specific directory        |
 

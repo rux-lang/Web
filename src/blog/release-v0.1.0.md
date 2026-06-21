@@ -82,7 +82,7 @@ rux version
 
 If you see a version number, congratulations — you are now a Rux developer. Go update your resume.
 
-Full installation guide: [Installation on Windows](/tutorials/install/windows).
+Full installation guide: [Installation on Windows](/start/install/windows).
 
 ## Setting Up VS Code
 
@@ -94,7 +94,7 @@ ext install rux-lang.vscode-rux
 
 Your Rux code will now look beautiful — even when it doesn't compile yet.
 
-Full setup guide: [Visual Studio Code](/tutorials/editors/vscode).
+Full setup guide: [Visual Studio Code](/start/editors/vscode).
 
 ## Creating Your First Project
 

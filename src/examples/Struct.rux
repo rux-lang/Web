@@ -1,0 +1,25 @@
+import Std::Math::Sqrt;
+
+struct Vector {
+    x: float64;
+    y: float64;
+    z: float64;
+}
+
+extend Vector {
+    func New(x: float64, y: float64, z: float64) -> Vector {
+        return Vector { x: x, y: y, z: z };
+    }
+
+    func Length(self) -> float64 {
+        return Sqrt(self.x * self.x + self.y * self.y + self.z * self.z);
+    }
+
+    func *(self, other: Vector) -> float64 {
+        return self.x * other.x + self.y * other.y + self.z * other.z;
+    }
+
+    func +(self, other: Vector) -> Vector {
+        return Vector { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z };
+    }
+}

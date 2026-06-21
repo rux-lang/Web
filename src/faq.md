@@ -4,42 +4,111 @@ prev: false
 next: false
 ---
 
-# FAQ
+# Frequently Asked Questions
 
 ## What is Rux?
 
-Rux is a fast, compiled, strongly typed, multi-paradigm programming language designed for clarity, safety, and performance. It compiles to native machine code and targets systems programming use cases.
+Rux is a compiled, strongly typed, multi-paradigm programming language. It
+compiles directly to native machine code and is being designed for systems
+programming, command-line tools, libraries, and other performance-sensitive
+software.
 
 ## What is the current status of Rux?
 
-Rux is in early development. The latest release is **v0.2.0**, which added control flow, slices, tuples, enums, interfaces, modules, and packages. The language is under active development and new features are added with each release.
+Rux is experimental and under active development. The latest stable release is
+**v0.3.0**, released on June 1, 2026.
 
-## What platforms does Rux support?
+Version 0.3.0 added broader platform support, target-specific compilation
+attributes, Unicode escapes, a macOS linker backend, Windows DLL output, new
+package-manager commands, and compiler fixes. Language features and tooling may
+still change between releases.
 
-Currently Rux targets **Windows x86-64**. The compiler produces native `.exe` binaries linked against the Windows x64 ABI. Support for additional platforms is planned for future releases.
+See the [release history](https://github.com/rux-lang/Rux/blob/dev/CHANGELOG.md)
+and [GitHub releases](https://github.com/rux-lang/Rux/releases) for details.
+
+## Which platforms are supported?
+
+The compiler is continuously tested on:
+
+- DragonFly BSD x86-64
+- FreeBSD x86-64
+- Illumos x86-64
+- Linux x86-64
+- macOS
+- NetBSD x86-64
+- OpenBSD x86-64
+- Windows x86-64
+
+Generated programs currently use x86-64 code generation. On Apple Silicon, the
+compiler itself can run natively on ARM64, but generated macOS programs are
+x86-64 and require Rosetta 2. Rux emits PE32+ on Windows, ELF64 on supported
+Unix-like systems, and Mach-O on macOS.
+
+## Does Rux support cross-compilation?
+
+The current compiler primarily builds native programs for its host platform.
+`rux check --target <triple>` can validate target-specific source selection
+without producing a binary, but general cross-platform binary generation is
+not yet available.
+
+Target-specific declarations and dependencies can be selected with
+[`@[Target(...)]`](/docs/attributes/target) and target sections in `Rux.toml`.
 
 ## How do I install Rux?
 
-On Windows, the easiest way is via [Scoop](https://scoop.sh):
+On Windows, install Rux through the official Scoop bucket:
 
 ```sh
 scoop bucket add rux-lang https://github.com/rux-lang/Scoop
 scoop install rux
 ```
 
-Full instructions: [Installation on Windows](/tutorials/install/windows).
+Linux package instructions are available for
+[Fedora-based distributions](/start/install/fedora),
+[openSUSE](/start/install/opensuse), and
+[Arch Linux](/start/install/arch).
 
-## What language is Rux written in?
+You can also [build the compiler from source](/start/build) with
+CMake and a C++26-capable compiler.
 
-The Rux compiler is written in C++.
+## How do I create and run a project?
+
+The `rux` executable contains the compiler and project tooling:
+
+```sh
+rux new Hello
+cd Hello
+rux run
+```
+
+A package contains a `Rux.toml` manifest and source files under `Src/`. See
+[Directory Layout](/docs/packages/dirs) and the [CLI Reference](/cli/) for the
+available commands.
+
+## What language is the compiler written in?
+
+The Rux compiler is written in modern C++ and built with CMake. The current
+source requires a C++26-capable compiler.
 
 ## Does Rux use LLVM?
 
-No. Rux has its own frontend (lexer, parser, semantic analysis) and backend (HIR, LIR, x86-64 assembler, linker). It does not depend on LLVM or any external compiler infrastructure.
+No. Rux implements its own compilation pipeline:
 
-## What is the entry point of a Rux program?
+1. Lexer and parser
+2. Semantic analysis
+3. High-level intermediate representation (HIR)
+4. Low-level intermediate representation (LIR)
+5. x86-64 machine-code generation
+6. Rux Compiled Unit emission
+7. Native linking
 
-Every executable package must define a `Main` function with no parameters that returns an integer:
+The compiler does not depend on LLVM or an external system linker to produce
+normal Rux executables.
+
+## What is the entry point of an executable?
+
+An executable package must define a function named `Main`. The conventional
+signature takes no parameters and returns `int`:
 
 ```rux
 func Main() -> int {
@@ -47,54 +116,142 @@ func Main() -> int {
 }
 ```
 
+The returned integer becomes the process exit code. Library and Windows DLL
+packages do not use the normal executable entry point; a Windows DLL may
+optionally define `DllMain`.
+
 ## What is the difference between `let` and `var`?
 
-`let` declares an immutable binding — it cannot be reassigned after initialization. `var` declares a mutable variable that can be reassigned:
+`let` creates an immutable binding. `var` creates a mutable binding:
 
 ```rux
-let x = 10;   // immutable
-var y = 10;   // mutable
-y = 20;       // OK
+let name = "Rux";
+
+var count = 1;
+count += 1;
 ```
+
+Reassigning a `let` binding is a compile-time error. See
+[Variables](/docs/variables/overview).
 
 ## Does Rux have a garbage collector?
 
-No. Rux compiles to native machine code with no hidden runtime overhead. Memory management is explicit, similar to C and C++.
+No. Generated programs do not include a garbage collector or virtual machine.
+Rux exposes low-level pointers and foreign-function interfaces for explicit
+resource management.
+
+Higher-level ownership and resource-management facilities are still evolving,
+so memory-intensive application development should be considered
+experimental.
 
 ## Does Rux have exceptions?
 
-No. Rux uses explicit error handling through return-type encoding with a `Result` type. Errors are values that must be handled at the call site — the compiler does not unwind the stack automatically.
+Rux does not currently implement stack-unwinding exceptions. Error handling is
+explicit and remains an evolving part of the language and standard library.
 
-## Can I call C/C++ functions from Rux?
+See [Error Handling](/docs/error/overview) for the current documented approach.
 
-Yes. The `extern` keyword declares functions defined outside Rux, typically in C libraries or the Windows API:
+## Can Rux call native functions?
+
+Yes. `extern` declarations describe functions and variables supplied by the
+operating system or a native library:
 
 ```rux
-extern func malloc(size: uint) -> *opaque;
-extern func free(ptr: *opaque);
+extern func GetStdHandle(handle: int) -> int;
 ```
 
-See [Foreign Function Interface](/docs/extern) for the full syntax.
+Windows supports imported DLL symbols. Native external-symbol support on the
+ELF and Mach-O backends is currently more limited. See the
+[Foreign Function Interface](/docs/ffi/overview).
+
+## Can Rux build libraries?
+
+Rux packages can be initialized as executable or library packages:
+
+```sh
+rux new App --bin
+rux new Utility --lib
+```
+
+Version 0.3.0 also supports Windows PE32+ DLL output by setting the package type
+to `Dll` in `Rux.toml`. Shared-library support on other platforms is still
+developing.
 
 ## Is there a standard library?
 
-The official standard library is under development at [github.com/rux-lang/Std](https://github.com/rux-lang/Std). Windows API bindings are being developed separately at [github.com/rux-lang/Windows](https://github.com/rux-lang/Windows).
+The standard library is developed separately in the
+[`rux-lang/Std`](https://github.com/rux-lang/Std) repository. Platform packages
+are also maintained separately, including
+[`rux-lang/Windows`](https://github.com/rux-lang/Windows),
+[`rux-lang/Linux`](https://github.com/rux-lang/Linux),
+[`rux-lang/BSD`](https://github.com/rux-lang/BSD), and
+[`rux-lang/Illumos`](https://github.com/rux-lang/Illumos).
 
-## Does Rux have a package manager?
+These libraries are early-stage and do not yet provide the breadth or stability
+of a mature standard library.
 
-Yes, it is built into the `rux` CLI. Use `rux add` to add a dependency to your project and `rux install` to download it. Packages are resolved from the official registry at [github.com/rux-lang/Registry](https://github.com/rux-lang/Registry).
+## Does Rux include a package manager?
 
-## Which editors are supported?
+Yes. Package management is integrated into the `rux` CLI. Common commands
+include:
 
-- **Visual Studio Code** — via the [Rux Language](https://marketplace.visualstudio.com/items?itemName=rux-lang.vscode-rux) extension (recommended)
-- **Sublime Text** — via the [Rux](https://packagecontrol.io/packages/Rux) package on Package Control
+```sh
+rux add Std
+rux install
+rux list
+rux update
+rux remove Std
+```
 
-Both extensions provide syntax highlighting for `.rux` source files.
+Registry packages are indexed by the official registry at
+[`rux-lang.dev/packages`](https://rux-lang.dev/packages). Local path and
+target-specific dependencies are also supported. See the
+[Package System](/docs/packages/manifest).
 
-## What object file format does the Rux compiler produce?
+## What other commands does the CLI provide?
 
-The compiler emits `.rcu` files — **Rux Compiled Units**. This is a custom binary object file format specific to Rux, designed to be simple and fast to parse. The Rux linker collects `.rcu` files and links them into a Windows PE executable. See [Rux Compiled Unit](/docs/appendix/rcu) for the full specification.
+The CLI includes commands for creating, initializing, building, checking,
+running, cleaning, formatting, and managing packages. Use:
 
-## Under which license is Rux published?
+```sh
+rux help
+rux help build
+```
 
-Rux is licensed under the [MIT License](https://github.com/rux-lang/Rux/blob/main/LICENSE).
+Some newer command surfaces, including parts of documentation generation and
+test execution, are still under implementation. Consult the
+[CLI Reference](/cli/) and the help output of your installed version.
+
+## Which editors support Rux?
+
+Syntax support is available for:
+
+- [Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=rux-lang.vscode-rux)
+- [Sublime Text](https://packagecontrol.io/packages/Rux)
+- [Zed](https://github.com/rux-lang/Zed)
+
+Editor integrations are developed independently from the compiler, so feature
+coverage varies.
+
+## What is an RCU file?
+
+An `.rcu` file is a **Rux Compiled Unit**, the compiler's native object format.
+It stores machine code, data, symbols, and relocations before the Rux linker
+combines units into a platform executable or library.
+
+See the [Rux Compiled Unit specification](/docs/appendix/rcu).
+
+## Is Rux open source?
+
+Yes. The compiler is published under the
+[MIT License](https://github.com/rux-lang/Rux/blob/main/LICENSE). Development
+happens in the open at
+[`github.com/rux-lang/Rux`](https://github.com/rux-lang/Rux).
+
+## How can I contribute?
+
+Read the
+[contribution guide](https://github.com/rux-lang/Rux/blob/dev/CONTRIBUTING.md),
+build the `dev` branch, run the test suite, and open an issue or pull request.
+Compiler, documentation, package, and editor contributions are all maintained
+through the [Rux GitHub organization](https://github.com/rux-lang).

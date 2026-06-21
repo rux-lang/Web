@@ -1,0 +1,21 @@
+import Std::{ Format, String };
+
+interface Display {
+    func ToString() -> String;
+}
+
+struct Circle {
+    radius: float64;
+}
+
+extend Circle {
+    func Area(self) -> float64 {
+        return Pi * self.radius * self.radius;
+    }
+}
+
+extend Circle: Display {
+    func ToString(self) -> String {
+        return Format("Circle: radius = {}", self.radius);
+    }
+}

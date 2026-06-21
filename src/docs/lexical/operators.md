@@ -57,17 +57,6 @@
 | `<<=`    | `x = x << rhs`   |
 | `>>=`    | `x = x >> rhs`   |
 
-## Range Operators
-| Operator | Equivalent to                                 |
-| -------- | --------------------------------------------- |
-| `a..b`   | Range from `a` (inclusive) to `b` (exclusive) |
-| `a..=b`  | Same as `a..b` but `b` is inclusive           |
-
-## Function Operators
-| Operator | Equivalen to                                    |
-| -------- | ----------------------------------------------- |
-| `a...`   | [Spread Operator](../functions#spread-operator) |
-
 ## Type Operators
 
 | Operator | Meaning                                         |
@@ -90,17 +79,17 @@ From highest to lowest precedence:
 | Level       | Operators                                                |
 | ----------- | -------------------------------------------------------- |
 | 1 (highest) | Unary `!` `~` `-`                                        |
-| 2           | `**`                                                     |
-| 3           | `*` `/` `%`                                              |
-| 4           | `+` `-`                                                  |
-| 5           | `<<` `>>`                                                |
-| 6           | `&`                                                      |
-| 7           | `^`                                                      |
-| 8           | `\|`                                                     |
-| 9           | `==` `!=` `<` `<=` `>` `>=`                              |
-| 10          | `&&`                                                     |
-| 11          | `\|\|`                                                   |
-| 12          | `as` `is`                                                |
+| 2           | `as` `is`                                                |
+| 3           | `**`                                                     |
+| 4           | `*` `/` `%`                                              |
+| 5           | `+` `-`                                                  |
+| 6           | `<<` `>>`                                                |
+| 7           | `&`                                                      |
+| 8           | `^`                                                      |
+| 9           | `\|`                                                     |
+| 10          | `==` `!=` `<` `<=` `>` `>=`                              |
+| 11          | `&&`                                                     |
+| 12          | `\|\|`                                                   |
 | 13 (lowest) | `=` `+=` `-=` `*=` `/=` `%=` `&=` `\|=` `^=` `<<=` `>>=` |
 
 Use parentheses to override precedence explicitly.

@@ -1,13 +1,6 @@
-<!-- ---
-title: RCU — Rux Compiled Unit File Format
-description: Binary specification for .rcu object files produced by the Rux compiler. Covers file layout, all binary structures, relocation processing, and incremental-compilation metadata.
-sidebar_label: RCU File Format
-slug: /rcu-format
---- -->
-
 # Rux Compiled Unit
 
-Windows x64 (x86-64, little-endian)
+_Binary specification for the `.rcu` object files emitted by the Rux compiler. Target platform: Windows x64 (x86-64, little-endian)._
 
 ## Overview
 

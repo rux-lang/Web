@@ -25,6 +25,7 @@ The following table lists every token kind recognized by the Rux lexer.
 | `IfKeyword`        | `if`        |
 | `ElseKeyword`      | `else`      |
 | `WhileKeyword`     | `while`     |
+| `LoopKeyword`      | `loop`      |
 | `ForKeyword`       | `for`       |
 | `InKeyword`        | `in`        |
 | `BreakKeyword`     | `break`     |
@@ -32,6 +33,7 @@ The following table lists every token kind recognized by the Rux lexer.
 | `ReturnKeyword`    | `return`    |
 | `MatchKeyword`     | `match`     |
 | `FuncKeyword`      | `func`      |
+| `AsmKeyword`       | `asm`       |
 | `VarKeyword`       | `var`       |
 | `LetKeyword`       | `let`       |
 | `ConstKeyword`     | `const`     |
@@ -41,14 +43,14 @@ The following table lists every token kind recognized by the Rux lexer.
 | `UnionKeyword`     | `union`     |
 | `InterfaceKeyword` | `interface` |
 | `ExtendKeyword`    | `extend`    |
-| `UseKeyword`       | `use`       |
+| `ModuleKeyword`    | `module`    |
+| `ImportKeyword`    | `import`    |
 | `PubKeyword`       | `pub`       |
 | `ExternKeyword`    | `extern`    |
 | `AsKeyword`        | `as`        |
 | `IsKeyword`        | `is`        |
 | `NullKeyword`      | `null`      |
 | `SelfKeyword`      | `self`      |
-| `SuperKeyword`     | `super`     |
 
 ## Punctuation
 

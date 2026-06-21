@@ -15,12 +15,12 @@ There are suffixes `i8`, `i16`, `i32`, `i64`, `i128`, `i256`, `i512`, `u8`, `u16
 
 ```rux
 -16i8   // int8
--16u16  // int16
--16u32  // int32
--16u64  // int64
--16u128 // int128
--16u256 // int256
--16u512 // int512
+-16i16  // int16
+-16i32  // int32
+-16i64  // int64
+-16i128 // int128
+-16i256 // int256
+-16i512 // int512
 255u8   // uint8
 255u16  // uint16
 255u32  // uint32
@@ -64,11 +64,11 @@ false
 
 ## Character Literals
 
-A character literal contains exactly one character (or one escape sequence) is `char` type and enclosed in single quotes:
+A character literal contains exactly one character (or one escape sequence) enclosed in single quotes. Its default type is `char`:
 
 ```rux
 'A'
-'∀',
+'∀'
 '🍏'
 '🍉'
 '😁'

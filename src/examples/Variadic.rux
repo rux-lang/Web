@@ -1,0 +1,16 @@
+import Std::Io::Print;
+
+func Sum(values: int...) -> int {
+    var total = 0;
+    for v in values {
+        total += v;
+    }
+    return total;
+}
+
+func Main() -> int {
+    Print("Sum of 1, 2, 3 is {}\n", Sum(1, 2, 3)); // 6
+    Print("Sum of 10, 20 is {}\n", Sum(10, 20));   // 30
+    Print("Sum with no arguments is {}\n", Sum()); // 0
+    return 0;
+}

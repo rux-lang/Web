@@ -4,7 +4,7 @@ import Std::Io::Print;
 func Factorial(n: uint) -> uint {
     var result: uint = 1;
     for i in 2..=n {
-        result *= i as uint;
+        result *= i;
     }
     return result;
 }

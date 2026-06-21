@@ -1,4 +1,4 @@
-# Warn
+# `Warn`
 
 Emits a compiler **warning** at every call site of the annotated function. The function remains callable; the warning is informational.
 
@@ -35,3 +35,8 @@ func UncheckedGet(arr: *int32, index: uint) -> int32 {
     return *(arr + index);
 }
 ```
+
+## See Also
+
+- [`@[Error]`](/docs/attributes/error) — block usage outright instead of warning
+- [Attributes](/docs/attributes/overview) — the full attribute set

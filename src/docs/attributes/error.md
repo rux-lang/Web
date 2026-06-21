@@ -1,4 +1,4 @@
-# Error
+# `Error`
 
 Emits a compiler **error** at every call site of the annotated function. The build fails at any point where the function is called. Use this to intentionally block usage of a function — for example, to enforce that a stub or platform-unsupported path is never called.
 
@@ -45,3 +45,9 @@ func Connect(host: char8[], port: uint16) -> bool {
 ```
 
 Any call to `Connect()` is a compile-time error, ensuring all callers are migrated before the code can build.
+
+## See Also
+
+- [`@[Warn]`](/docs/attributes/warn) — flag usage without breaking the build
+- [`@[Target]`](/docs/attributes/target) — pair with `@[Error]` for unsupported-platform stubs
+- [Attributes](/docs/attributes/overview) — the full attribute set

@@ -2,7 +2,7 @@
 
 Built with [VitePress](https://vitepress.dev)
 
-## ⚙️ Project Structure
+## Project Structure
 
 Inside the project you'll see the following folders and files:
 
@@ -26,7 +26,7 @@ Images can be added to `src/public/images/` and embedded in Markdown with a rela
 
 Static assets, like favicons, can be placed in the `src/public/` directory.
 
-## 🔨 Commands
+## Commands
 
 All commands are run from the root of the project, from a terminal:
 

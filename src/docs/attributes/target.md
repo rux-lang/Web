@@ -1,4 +1,4 @@
-# Target
+# `Target`
 
 Limits a declaration to a specific operating system. The compiler ignores the annotated item when building for any other target.
 
@@ -79,3 +79,9 @@ extern func clock_gettime(clockid: int32, tp: *opaque) -> int32;
 @[Import(lib: "Kernel32.dll")]
 extern func GetTickCount64() -> uint64;
 ```
+
+## See Also
+
+- [`@[Import]`](/docs/attributes/import) — frequently stacked with `@[Target]` for native calls
+- [Assembler Functions](/docs/functions/assembler) — another inherently platform-specific construct
+- [Dependencies](/docs/packages/dependencies) — per-target dependency sections
