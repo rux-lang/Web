@@ -57,9 +57,9 @@ rux install
 ```rux
 import Std::Io::PrintLine;
 
-func Main() -> int32 {
-    PrintLine("Hello from Rux");
-    return 0i32;
+func Main() -> int {
+    PrintLine("Hello, Rux!");
+    return 0;
 }
 ```
 
