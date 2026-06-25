@@ -1,3 +1,45 @@
+---
+title: CLI Reference
+description: Reference for the rux command line interface — the primary tool for Rux projects, integrating the compiler, package manager, formatter, dependency resolver, and build system.
+head:
+  - - meta
+    - itemprop: name
+      content: Rux CLI Reference
+  - - meta
+    - itemprop: description
+      content: Reference for the rux command line interface — the primary tool for Rux projects, integrating the compiler, package manager, formatter, dependency resolver, and build system.
+  - - meta
+    - itemprop: image
+      content: https://rux-lang.dev/images/og-cli.jpg
+  - - meta
+    - property: og:url
+      content: https://rux-lang.dev/cli/
+  - - meta
+    - property: og:type
+      content: website
+  - - meta
+    - property: og:title
+      content: Rux CLI Reference
+  - - meta
+    - property: og:description
+      content: Reference for the rux command line interface — the primary tool for Rux projects, integrating the compiler, package manager, formatter, dependency resolver, and build system.
+  - - meta
+    - property: og:image
+      content: https://rux-lang.dev/images/og-cli.jpg
+  - - meta
+    - name: twitter:card
+      content: summary_large_image
+  - - meta
+    - name: twitter:title
+      content: Rux CLI Reference
+  - - meta
+    - name: twitter:description
+      content: Reference for the rux command line interface — the primary tool for Rux projects, integrating the compiler, package manager, formatter, dependency resolver, and build system.
+  - - meta
+    - name: twitter:image
+      content: https://rux-lang.dev/images/og-cli.jpg
+---
+
 # CLI Reference
 
 The reference describes the command line interface (CLI) of `rux` that is the **primary tool** for interacting with Rux projects. It integrates all necessary components:

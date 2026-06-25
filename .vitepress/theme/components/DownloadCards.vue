@@ -7,61 +7,140 @@ const RELEASES = "https://github.com/rux-lang/Rux/releases";
 // asset, so these links never go stale as new versions ship.
 const LATEST = `${RELEASES}/latest/download`;
 
-// Curated per-OS install methods. Unlike the live status matrix (which is fully
-// API-driven), downloads reflect what actually ships for each platform today:
-// direct binaries where they exist, package managers otherwise, source as the
-// universal fallback.
+// Live CI status feed: the API stores the latest build/test conclusion per OS,
+// fed by GitHub Actions webhooks. In dev we go through the Vite proxy so
+// requests stay same-origin.
+const API_BASE = import.meta.env.DEV ? "/api/registry" : "https://api.rux-lang.dev";
+const API_URL = `${API_BASE}/workflows`;
+
+// Curated per-OS install methods. Downloads reflect what actually ships for
+// each platform today: direct binaries where they exist, package managers
+// otherwise, source as the universal fallback. Each card also surfaces the live
+// build/test conclusion for its platform via the CI status feed below.
 const platforms = [
   {
-    name: "Windows",
-    icon: "windows",
-    color: "#0078d4",
-    note: "Windows 10 or later, 64-bit.",
+    name: "BSD",
+    icon: "freebsd",
+    color: "#ab2b28",
+    note: "FreeBSD 15.1, OpenBSD 7.9, NetBSD 10.1, and DragonFly 6.4 (x64)",
+    statusMatch: ["freebsd", "openbsd", "netbsd", "dragonfly", "bsd"],
     files: [
-      { label: "Installer", ext: ".msi", href: `${LATEST}/rux-windows.msi` },
-      { label: "Zip", ext: ".zip", href: `${LATEST}/rux-windows.zip` },
+      { label: "Download", ext: ".tar.gz", href: `${LATEST}/rux-bsd.tar.gz`, disabled: true },
     ],
-    command: "scoop bucket add rux-lang https://github.com/rux-lang/Scoop\nscoop install rux",
-    commandLabel: "Or install with Scoop",
-    guide: "/start/install/windows",
+    guide: "/start/build",
+    guideLabel: "Build from source",
+  },
+  {
+    name: "illumos",
+    icon: "illumos",
+    color: "#ff5b0f",
+    note: "illumos, OmniOS r151058, and Solaris 11.4 (x64)",
+    statusMatch: ["illumos", "omnios", "solaris"],
+    files: [
+      { label: "Download", ext: ".tar.gz", href: `${LATEST}/rux-illumos.tar.gz`, disabled: true },
+    ],
+    guide: "/start/build",
+    guideLabel: "Build from source",
+  },
+  {
+    name: "Linux",
+    icon: "linux",
+    color: "#d9a400",
+    note: "Ubuntu 26.04, Debian 13, Fedora 43, Arch, openSUSE Leap 16 (x64)",
+    statusMatch: ["linux", "ubuntu", "arch", "fedora", "debian"],
+    files: [
+      { label: "Download", ext: ".tar.gz", href: `${LATEST}/rux-linux.tar.gz` },
+    ],
+    command: "curl -fsSL https://rux-lang.dev/install.sh | sh",
+    commandLabel: "Or install with the script",
+    guide: "/start/install/linux",
   },
   {
     name: "macOS",
     icon: "macos",
     color: "var(--vp-c-text-1)",
-    note: "Apple Silicon and Intel. No native package yet — build from source.",
+    note: "macOS 26 (x64)",
+    statusMatch: ["macos", "mac os", "darwin", "apple"],
+    files: [
+      { label: "Download", ext: ".tar.gz", href: `${LATEST}/rux-macos.tar.gz`, disabled: true },
+    ],
     guide: "/start/build",
     guideLabel: "Build from source",
   },
   {
-    name: "Arch Linux",
-    icon: "linux",
-    color: "#d9a400",
-    note: "All Arch-based distributions, via the AUR.",
-    command: "yay -S rux-git",
-    commandLabel: "Install from the AUR",
-    guide: "/start/install/arch",
-  },
-  {
-    name: "Fedora",
-    icon: "linux",
-    color: "#d9a400",
-    note: "Fedora, Alma Linux, and CentOS, via Copr.",
-    command: "sudo dnf copr enable zapaxe/Rux-Lang\nsudo dnf install rux",
-    commandLabel: "Install with dnf",
-    guide: "/start/install/fedora",
-  },
-  {
-    name: "openSUSE",
-    icon: "linux",
-    color: "#d9a400",
-    note: "openSUSE Tumbleweed, via Copr.",
-    command:
-      "sudo zypper addrepo https://copr.fedorainfracloud.org/coprs/zapaxe/Rux-Lang/repo/opensuse-tumbleweed/zapaxe-Rux-Lang-opensuse-tumbleweed.repo\nsudo zypper install rux",
-    commandLabel: "Install with zypper",
-    guide: "/start/install/opensuse",
+    name: "Windows",
+    icon: "windows",
+    color: "#0078d4",
+    note: "Windows 11, Windows Server 2025 (x64)",
+    statusMatch: ["windows"],
+    files: [
+      { label: "Download", ext: ".zip", href: `${LATEST}/rux-windows.zip` },
+      { label: "Download", ext: ".msi", href: `${LATEST}/rux-windows.msi` },
+    ],
+    command: "scoop bucket add rux-lang https://github.com/rux-lang/Scoop\nscoop install rux",
+    commandLabel: "Or install with Scoop",
+    guide: "/start/install/windows",
   },
 ];
+
+const STATUS_TEXT = {
+  success: "Success",
+  failure: "Failed",
+  skipped: "Not run",
+  unknown: "Not run",
+};
+
+function toConclusion(value) {
+  switch (value) {
+    case "success":
+      return "success";
+    case "skipped":
+      return "skipped";
+    case null:
+    case undefined:
+    case "":
+      return "unknown";
+    default:
+      // failure, cancelled, timed_out, action_required, neutral, …
+      return "failure";
+  }
+}
+
+function relativeTime(iso) {
+  if (!iso) return null;
+  const diff = Date.now() - new Date(iso).getTime();
+  const min = Math.round(diff / 60000);
+  if (min < 1) return "just now";
+  if (min < 60) return `${min} minute${min === 1 ? "" : "s"} ago`;
+  const hr = Math.round(min / 60);
+  if (hr < 24) return `${hr} hour${hr === 1 ? "" : "s"} ago`;
+  const day = Math.round(hr / 24);
+  if (day < 30) return `${day} day${day === 1 ? "" : "s"} ago`;
+  return new Date(iso).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+// Live CI status, keyed by the workflow's OS name. Each download card looks up
+// its matching workflow via `statusMatch` keywords; if nothing reports for a
+// platform (or the request fails) the card simply omits the status block.
+const workflows = ref([]);
+function ciFor(platform) {
+  const keys = platform.statusMatch ?? [];
+  const w = workflows.value.find((entry) => {
+    const n = (entry.name ?? "").toLowerCase();
+    return keys.some((k) => n.includes(k));
+  });
+  if (!w) return null;
+  return {
+    build: toConclusion(w.buildConclusion),
+    buildAt: w.buildCompleted,
+    tests: toConclusion(w.testConclusion),
+    testsAt: w.testCompleted,
+  };
+}
 
 // Best-effort live version badge. api.github.com is CORS-enabled and public, so
 // the browser can read the latest release tag directly; if the request fails
@@ -76,6 +155,15 @@ onMounted(async () => {
     }
   } catch {
     /* ignore — badge stays hidden */
+  }
+
+  try {
+    const r = await fetch(API_URL);
+    if (r.ok) {
+      workflows.value = await r.json();
+    }
+  } catch {
+    /* ignore — status block stays hidden */
   }
 });
 
@@ -120,17 +208,28 @@ async function copy(text, key) {
       <p class="dl-note">{{ p.note }}</p>
 
       <div v-if="p.files" class="dl-files">
-        <a
-          v-for="f in p.files"
-          :key="f.href"
-          class="dl-btn"
-          :href="f.href"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <span class="dl-btn-label">{{ f.label }}</span>
-          <span class="dl-btn-ext">{{ f.ext }}</span>
-        </a>
+        <template v-for="f in p.files" :key="f.href">
+          <a
+            v-if="!f.disabled"
+            class="dl-btn"
+            :href="f.href"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <span class="dl-btn-label">{{ f.label }}</span>
+            <span class="dl-btn-ext">{{ f.ext }}</span>
+          </a>
+          <span
+            v-else
+            class="dl-btn dl-btn-disabled"
+            role="button"
+            aria-disabled="true"
+            :title="`${p.name} binaries are coming soon — build from source for now`"
+          >
+            <span class="dl-btn-label">{{ f.label }}</span>
+            <span class="dl-btn-ext">{{ f.ext }}</span>
+          </span>
+        </template>
       </div>
 
       <div v-if="p.command" class="dl-cmd-block">
@@ -145,6 +244,34 @@ async function copy(text, key) {
           >
             {{ copied === p.name ? "Copied" : "Copy" }}
           </button>
+        </div>
+      </div>
+
+      <div v-if="ciFor(p)" class="dl-ci">
+        <div
+          v-for="stage in [
+            { label: 'Build', conclusion: ciFor(p).build, at: ciFor(p).buildAt },
+            { label: 'Tests', conclusion: ciFor(p).tests, at: ciFor(p).testsAt },
+          ]"
+          :key="stage.label"
+          class="dl-ci-row"
+          :class="`is-${stage.conclusion}`"
+        >
+          <span class="dl-ci-stage">
+            {{ stage.label }}
+            <small v-if="relativeTime(stage.at)">{{ relativeTime(stage.at) }}</small>
+          </span>
+          <strong class="dl-ci-result">
+            <svg
+              v-if="stage.conclusion === 'success'"
+              class="dl-ci-icon"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <path d="M20 6 9 17l-5-5" />
+            </svg>
+            {{ STATUS_TEXT[stage.conclusion] }}
+          </strong>
         </div>
       </div>
 
@@ -301,6 +428,17 @@ async function copy(text, key) {
   box-shadow: 0 6px 18px rgba(124, 58, 237, 0.35);
 }
 
+.dl-files .dl-btn-disabled,
+.dl-files .dl-btn-disabled:hover {
+  background: var(--vp-c-bg-soft);
+  color: var(--vp-c-text-3);
+  border: 1px solid var(--vp-c-divider);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+  filter: none;
+}
+
 .dl-btn-ext {
   font-family: var(--vp-font-family-mono);
   font-size: 12px;
@@ -360,6 +498,70 @@ async function copy(text, key) {
 .dl-copy:hover {
   color: var(--vp-c-brand-1);
   border-color: var(--vp-c-brand-1);
+}
+
+.dl-ci {
+  margin-top: 18px;
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.dl-ci-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+}
+
+.dl-ci-row + .dl-ci-row {
+  border-top: 1px solid var(--vp-c-divider);
+}
+
+.dl-ci-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  color: var(--vp-c-text-1);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.dl-ci-stage small {
+  color: var(--vp-c-text-3);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.dl-ci-result {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dl-ci-icon {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.dl-ci-row.is-success .dl-ci-result {
+  color: #28c840;
+}
+
+.dl-ci-row.is-failure .dl-ci-result {
+  color: var(--vp-c-danger-1, #f43f5e);
+}
+
+.dl-ci-row.is-skipped .dl-ci-result,
+.dl-ci-row.is-unknown .dl-ci-result {
+  color: var(--vp-c-text-3);
 }
 
 .dl-guide {

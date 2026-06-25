@@ -1,7 +1,6 @@
 // Shared OS editorial metadata: logo SVGs, brand colors, and target
-// architecture/binary format. Used by both the live status matrix
-// (StatusMatrix.vue) and the download page (DownloadCards.vue) so the two stay
-// visually consistent and there is a single source of truth for OS branding.
+// architecture/binary format. Used by the download page (DownloadCards.vue) as
+// the single source of truth for OS branding.
 
 export const ICONS = {
   windows: `<svg viewBox="0 0 24 24"><path d="M0 0h11.377v11.372H0V0Zm12.623 0H24v11.372H12.623V0ZM0 12.623h11.377V24H0V12.623Zm12.623 0H24V24H12.623V12.623Z"/></svg>`,

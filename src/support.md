@@ -1,9 +1,46 @@
 ---
 title: Support
-description: Support Rux with donations, sponsorship, code, and documentation
+description: Support Rux with donations, sponsorship, code, and documentation. Help fund the compiler, standard library, tooling, and docs of this free, open-source language.
 sidebar: false
 prev: false
 next: false
+head:
+  - - meta
+    - itemprop: name
+      content: Support Rux
+  - - meta
+    - itemprop: description
+      content: Support Rux with donations, sponsorship, code, and documentation. Help fund the compiler, standard library, tooling, and docs of this free, open-source language.
+  - - meta
+    - itemprop: image
+      content: https://rux-lang.dev/images/og-support.jpg
+  - - meta
+    - property: og:url
+      content: https://rux-lang.dev/support
+  - - meta
+    - property: og:type
+      content: website
+  - - meta
+    - property: og:title
+      content: Support Rux
+  - - meta
+    - property: og:description
+      content: Support Rux with donations, sponsorship, code, and documentation. Help fund the compiler, standard library, tooling, and docs of this free, open-source language.
+  - - meta
+    - property: og:image
+      content: https://rux-lang.dev/images/og-support.jpg
+  - - meta
+    - name: twitter:card
+      content: summary_large_image
+  - - meta
+    - name: twitter:title
+      content: Support Rux
+  - - meta
+    - name: twitter:description
+      content: Support Rux with donations, sponsorship, code, and documentation. Help fund the compiler, standard library, tooling, and docs of this free, open-source language.
+  - - meta
+    - name: twitter:image
+      content: https://rux-lang.dev/images/og-support.jpg
 ---
 
 <script setup>

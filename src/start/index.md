@@ -1,3 +1,45 @@
+---
+title: Get Started
+description: Get started with Rux in minutes — try it in your browser on the Playground, install the toolchain on Linux or Windows, set up your editor, and write your first program.
+head:
+  - - meta
+    - itemprop: name
+      content: Get Started with Rux
+  - - meta
+    - itemprop: description
+      content: Get started with Rux in minutes — try it in your browser on the Playground, install the toolchain on Linux or Windows, set up your editor, and write your first program.
+  - - meta
+    - itemprop: image
+      content: https://rux-lang.dev/images/og-start.jpg
+  - - meta
+    - property: og:url
+      content: https://rux-lang.dev/start
+  - - meta
+    - property: og:type
+      content: website
+  - - meta
+    - property: og:title
+      content: Get Started with Rux
+  - - meta
+    - property: og:description
+      content: Get started with Rux in minutes — try it in your browser on the Playground, install the toolchain on Linux or Windows, set up your editor, and write your first program.
+  - - meta
+    - property: og:image
+      content: https://rux-lang.dev/images/og-start.jpg
+  - - meta
+    - name: twitter:card
+      content: summary_large_image
+  - - meta
+    - name: twitter:title
+      content: Get Started with Rux
+  - - meta
+    - name: twitter:description
+      content: Get started with Rux in minutes — try it in your browser on the Playground, install the toolchain on Linux or Windows, set up your editor, and write your first program.
+  - - meta
+    - name: twitter:image
+      content: https://rux-lang.dev/images/og-start.jpg
+---
+
 # Get Started
 
 ::: warning
@@ -15,10 +57,10 @@ The quickest way to get a feel for Rux is the [Rux Playground](/playground) — 
 When you're ready to build real projects, install the Rux toolchain — the compiler, package manager, formatter, and test runner, all in a single small binary.
 
 ::: info
-Support for Linux and macOS is still a work in progress. Windows is the most complete path today; on other platforms you can [build from source](/start/build).
+Windows and Linux ship prebuilt binaries today. macOS, BSD, and illumos are still in development — on those platforms you can [build from source](/start/build).
 :::
 
-1. [Install](/start/install/arch) for your platform or [build from source](/start/build) — it's rather simple.
+1. [Install](/start/install/linux) for your platform or [build from source](/start/build) — it's rather simple.
 2. **[Set up your editor](/start/editors/vscode)** — add syntax highlighting for `.rux` files.
 3. **[Work through the examples](/start/examples)** — write your first program and explore worked projects you can clone and run.
 

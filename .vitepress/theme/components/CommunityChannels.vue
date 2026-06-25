@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { computed } from "vue";
 
 const props = defineProps({
   section: { type: String, required: true },
@@ -182,7 +182,7 @@ const sections = {
       description: "News, showcases, and community discussion.",
     },
     {
-      id: "telegram-chat",
+      id: "telegramChat",
       icon: "telegram",
       name: "Telegram Chat",
       handle: "@rux_lang",
@@ -215,7 +215,7 @@ const sections = {
       description: "Threaded discussions that are easy to catch up on.",
     },
     {
-      id: "fb-group",
+      id: "facebookGroup",
       icon: "group",
       name: "Facebook Group",
       handle: "groups/ruxlang",
@@ -268,130 +268,54 @@ const sections = {
 
 const channels = computed(() => sections[props.section] ?? []);
 
-/* Live counts from APIs that are public and CORS-enabled. YouTube uses a
-   manually maintained count; channels without either simply show no stat. */
-const stats = ref({
-  youtube: "2.26K subscribers",
-  x: "76 followers",
-  telegram: "73 subscribers",
+/* Prepared, manually maintained counts. These are intentionally static — no
+   data is fetched at runtime. Update the numbers here when they change.
+   Channels without an entry simply show no stat. */
+const stats = {
+  // Updates
+  youtube: "2.37K subscribers",
+  x: "83 followers",
+  bluesky: "23 followers",
+  mastodon: "10 followers",
+  telegram: "76 subscribers",
   devto: "1 post",
   twitch: "1 follower",
-  linkedin: "4 followers",
+  linkedin: "5 followers",
+  facebook: "2 followers",
+  tiktok: "1 follower",
+  instagram: "2 followers",
+  threads: "1 follower",
+  // Discuss
   discussions: "13 topics",
-});
-
-function formatCount(value) {
-  return new Intl.NumberFormat("en", {
-    notation: "compact",
-    maximumFractionDigits: 1,
-  }).format(value);
-}
-
-async function fetchJson(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Request failed with status ${response.status}`);
-  }
-  return response.json();
-}
-
-// Both GitHub cards share one request.
-let ruxRepoPromise = null;
-function fetchRuxRepo() {
-  ruxRepoPromise ??= fetchJson("https://api.github.com/repos/rux-lang/Rux");
-  return ruxRepoPromise;
-}
-
-const statLoaders = {
-  github: async () => {
-    const repo = await fetchRuxRepo();
-    return `${formatCount(repo.stargazers_count)} stars`;
-  },
-  issues: async () => {
-    const repo = await fetchRuxRepo();
-    return `${formatCount(repo.open_issues_count)} open`;
-  },
-  discord: async () => {
-    const invite = await fetchJson(
-      "https://discord.com/api/v9/invites/uvSHjtZSVG?with_counts=true",
-    );
-    return `${formatCount(invite.approximate_member_count)} members`;
-  },
-  bluesky: async () => {
-    const profile = await fetchJson(
-      "https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=rux-lang.dev",
-    );
-    return `${formatCount(profile.followersCount)} followers`;
-  },
-  mastodon: async () => {
-    const account = await fetchJson(
-      "https://mastodon.social/api/v1/accounts/lookup?acct=ruxlang",
-    );
-    return `${formatCount(account.followers_count)} followers`;
-  },
-  reddit: async () => {
-    const about = await fetchJson(
-      "https://www.reddit.com/r/ruxlang/about.json",
-    );
-    return `${formatCount(about.data.subscribers)} members`;
-  },
+  discord: "194 members",
+  reddit: "47 members",
+  telegramChat: "2 members",
+  whatsapp: "2 members",
+  matrix: "1 member",
+  zulip: "1 member",
+  facebookGroup: "2 members",
+  // Contribute
+  github: "404 stars",
+  issues: "17 issues",
+  website: "12 issues",
 };
-
-const pendingIds = ref([]);
-
-onMounted(() => {
-  const withLoaders = channels.value.filter(
-    (channel) => statLoaders[channel.id],
-  );
-  pendingIds.value = withLoaders.map((channel) => channel.id);
-  for (const channel of withLoaders) {
-    statLoaders[channel.id]()
-      .then((text) => (stats.value = { ...stats.value, [channel.id]: text }))
-      .catch(() => {
-        // Stats are decorative; leave the card without a count.
-      })
-      .finally(() => {
-        pendingIds.value = pendingIds.value.filter((id) => id !== channel.id);
-      });
-  }
-});
 </script>
 
 <template>
   <div class="channel-grid">
-    <a
-      v-for="channel in channels"
-      :key="channel.id"
-      class="channel-card"
-      :href="channel.href"
-      :target="channel.id === 'email' ? undefined : '_blank'"
-      rel="noopener"
-    >
-      <span
-        v-if="channel.id !== 'email'"
-        class="channel-arrow"
-        v-html="icons.arrow"
-      ></span>
+    <a v-for="channel in channels" :key="channel.id" class="channel-card" :href="channel.href"
+      :target="channel.id === 'email' ? undefined : '_blank'" rel="noopener">
+      <span v-if="channel.id !== 'email'" class="channel-arrow" v-html="icons.arrow"></span>
       <div class="channel-header">
-        <span
-          class="channel-icon"
-          :style="{ color: channel.color }"
-          v-html="icons[channel.icon ?? channel.id]"
-        ></span>
+        <span class="channel-icon" :style="{ color: channel.color }" v-html="icons[channel.icon ?? channel.id]"></span>
         <div class="channel-title">
           <span class="channel-name">{{ channel.name }}</span>
           <span class="channel-handle">{{ channel.handle }}</span>
         </div>
       </div>
       <p class="channel-description">{{ channel.description }}</p>
-      <div
-        v-if="stats[channel.id] || pendingIds.includes(channel.id)"
-        class="channel-footer"
-      >
-        <span v-if="stats[channel.id]" class="channel-stat">{{
-          stats[channel.id]
-        }}</span>
-        <span v-else class="channel-stat channel-stat-loading"></span>
+      <div v-if="stats[channel.id]" class="channel-footer">
+        <span class="channel-stat">{{ stats[channel.id] }}</span>
       </div>
     </a>
   </div>
@@ -511,22 +435,5 @@ onMounted(() => {
   font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
-}
-
-.channel-stat-loading {
-  width: 4.5rem;
-  height: 1.25rem;
-  animation: channel-pulse 1.2s ease-in-out infinite;
-}
-
-@keyframes channel-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.4;
-  }
 }
 </style>

@@ -1,67 +1,109 @@
+---
+title: Rux Language Reference
+description: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and the package system.
+head:
+  - - meta
+    - itemprop: name
+      content: Rux Language Reference
+  - - meta
+    - itemprop: description
+      content: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and the package system.
+  - - meta
+    - itemprop: image
+      content: https://rux-lang.dev/images/og-docs.jpg
+  - - meta
+    - property: og:url
+      content: https://rux-lang.dev/docs/
+  - - meta
+    - property: og:type
+      content: website
+  - - meta
+    - property: og:title
+      content: Rux Language Reference
+  - - meta
+    - property: og:description
+      content: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and the package system.
+  - - meta
+    - property: og:image
+      content: https://rux-lang.dev/images/og-docs.jpg
+  - - meta
+    - name: twitter:card
+      content: summary_large_image
+  - - meta
+    - name: twitter:title
+      content: Rux Language Reference
+  - - meta
+    - name: twitter:description
+      content: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and the package system.
+  - - meta
+    - name: twitter:image
+      content: https://rux-lang.dev/images/og-docs.jpg
+---
+
 # Rux Language Reference
 
 1. [Introduction](introduction)
 2. [Lexical Structure](lexical/sources)
-    - 2.1. [Source Files](lexical/sources)
-    - 2.2. [Comments](lexical/comments)
-    - 2.3. [Keywords](lexical/keywords)
-    - 2.4. [Identifiers](lexical/identifiers)
-    - 2.5. [Literals](lexical/literals)
-    - 2.6. [Operators and Punctuation](lexical/operators)
+   - 2.1. [Source Files](lexical/sources)
+   - 2.2. [Comments](lexical/comments)
+   - 2.3. [Keywords](lexical/keywords)
+   - 2.4. [Identifiers](lexical/identifiers)
+   - 2.5. [Literals](lexical/literals)
+   - 2.6. [Operators and Punctuation](lexical/operators)
 3. [Signed Integers](signed/int)
-    - 3.1. [`int`](signed/int)
-    - 3.2. [`int8`](signed/int8)
-    - 3.3. [`int16`](signed/int16)
-    - 3.4. [`int32`](signed/int32)
-    - 3.5. [`int64`](signed/int64)
-    - 3.6. [`int128`](signed/int128)
-    - 3.7. [`int256`](signed/int256)
-    - 3.8. [`int512`](signed/int512)
+   - 3.1. [`int`](signed/int)
+   - 3.2. [`int8`](signed/int8)
+   - 3.3. [`int16`](signed/int16)
+   - 3.4. [`int32`](signed/int32)
+   - 3.5. [`int64`](signed/int64)
+   - 3.6. [`int128`](signed/int128)
+   - 3.7. [`int256`](signed/int256)
+   - 3.8. [`int512`](signed/int512)
 4. [Unsigned Integers](unsigned/uint)
-    - 4.1. [`uint`](unsigned/uint)
-    - 4.2. [`uint8`](unsigned/uint8)
-    - 4.3. [`uint16`](unsigned/uint16)
-    - 4.4. [`uint32`](unsigned/uint32)
-    - 4.5. [`uint64`](unsigned/uint64)
-    - 4.6. [`uint128`](unsigned/uint128)
-    - 4.7. [`uint256`](unsigned/uint256)
-    - 4.8. [`uint512`](unsigned/uint512)
+   - 4.1. [`uint`](unsigned/uint)
+   - 4.2. [`uint8`](unsigned/uint8)
+   - 4.3. [`uint16`](unsigned/uint16)
+   - 4.4. [`uint32`](unsigned/uint32)
+   - 4.5. [`uint64`](unsigned/uint64)
+   - 4.6. [`uint128`](unsigned/uint128)
+   - 4.7. [`uint256`](unsigned/uint256)
+   - 4.8. [`uint512`](unsigned/uint512)
 5. [Floating-Point](floating/float)
-    - 5.1. [`float`](floating/float)
-    - 5.2. [`float8`](floating/float8)
-    - 5.3. [`float16`](floating/float16)
-    - 5.4. [`float32`](floating/float32)
-    - 5.5. [`float64`](floating/float64)
-    - 5.6. [`float80`](floating/float80)
-    - 5.7. [`float128`](floating/float128)
-    - 5.8. [`float256`](floating/float256)
-    - 5.9. [`float512`](floating/float512)
+   - 5.1. [`float`](floating/float)
+   - 5.2. [`float8`](floating/float8)
+   - 5.3. [`float16`](floating/float16)
+   - 5.4. [`float32`](floating/float32)
+   - 5.5. [`float64`](floating/float64)
+   - 5.6. [`float80`](floating/float80)
+   - 5.7. [`float128`](floating/float128)
+   - 5.8. [`float256`](floating/float256)
+   - 5.9. [`float512`](floating/float512)
 6. [Booleans](boolean/bool)
-    - 6.1. [`bool`](boolean/bool)
-    - 6.2. [`bool8`](boolean/bool8)
-    - 6.3. [`bool16`](boolean/bool16)
-    - 6.4. [`bool32`](boolean/bool32)
-    - 6.5. [`bool64`](boolean/bool64)
-    - 6.6. [`bool128`](boolean/bool128)
-    - 6.7. [`bool256`](boolean/bool256)
-    - 6.8. [`bool512`](boolean/bool512)
+   - 6.1. [`bool`](boolean/bool)
+   - 6.2. [`bool8`](boolean/bool8)
+   - 6.3. [`bool16`](boolean/bool16)
+   - 6.4. [`bool32`](boolean/bool32)
+   - 6.5. [`bool64`](boolean/bool64)
+   - 6.6. [`bool128`](boolean/bool128)
+   - 6.7. [`bool256`](boolean/bool256)
+   - 6.8. [`bool512`](boolean/bool512)
 7. [Characters](character/char)
-    - 7.1. [`char`](character/char)
-    - 7.2. [`char8`](character/char8)
-    - 7.3. [`char16`](character/char16)
-    - 7.4. [`char32`](character/char32)
-    - 7.5. [`char64`](character/char64)
-    - 7.6. [`char128`](character/char128)
-    - 7.7. [`char256`](character/char256)
-    - 7.8. [`char512`](character/char512)
+   - 7.1. [`char`](character/char)
+   - 7.2. [`char8`](character/char8)
+   - 7.3. [`char16`](character/char16)
+   - 7.4. [`char32`](character/char32)
+   - 7.5. [`char64`](character/char64)
+   - 7.6. [`char128`](character/char128)
+   - 7.7. [`char256`](character/char256)
+   - 7.8. [`char512`](character/char512)
 8. [Variables](variables/overview)
-    - 8.1. [Overview](variables/overview)
-    - 8.2. [Immutable](variables/let)
-    - 8.3. [Mutable](variables/var)
-    - 8.4. [Mutability of Structs](variables/mutability)
+   - 8.1. [Overview](variables/overview)
+   - 8.2. [Immutable](variables/let)
+   - 8.3. [Mutable](variables/var)
+   - 8.4. [Mutability of Structs](variables/mutability)
 9. [Constants](constants/overview)
-    - 9.1. [Overview](constants/overview)
-    - 9.2. [Intrinsic Constants](constants/intrinsic)
+   - 9.1. [Overview](constants/overview)
+   - 9.2. [Intrinsic Constants](constants/intrinsic)
 10. [Operations](operations/overview)
     - 10.1. [Overview](operations/overview)
     - 10.2. [Arithmetic Operations](operations/arithmetic)

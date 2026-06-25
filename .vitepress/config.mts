@@ -63,7 +63,7 @@ export default defineConfig({
       },
       { text: "Playground", link: "/playground" },
       { text: "Packages", link: "/packages" },
-      { text: "Blog", link: "/blog/language-without-llvm" },
+      { text: "Blog", link: "/blog/release-v0.3.0" },
       { text: "Community", link: "/community" },
       { text: "Support", link: "/support" },
       { text: "Download", link: "/download" },
@@ -85,10 +85,10 @@ export default defineConfig({
               text: "Install",
               collapsed: true,
               items: [
-                { text: "Arch Linux", link: "/start/install/arch" },
-                { text: "Fedora", link: "/start/install/fedora" },
+                { text: "BSD", link: "/start/install/bsd" },
+                { text: "illumos", link: "/start/install/illumos" },
+                { text: "Linux", link: "/start/install/linux" },
                 { text: "macOS", link: "/start/install/macos" },
-                { text: "openSUSE", link: "/start/install/opensuse" },
                 { text: "Windows", link: "/start/install/windows" },
               ],
             },
@@ -1251,6 +1251,10 @@ export default defineConfig({
           text: "2026",
           collapsed: true,
           items: [
+            {
+              text: "Rux 0.3.0 — Laying the Cross-Platform Groundwork",
+              link: "/blog/release-v0.3.0",
+            },
             {
               text: "Programming Language Without LLVM",
               link: "/blog/language-without-llvm",

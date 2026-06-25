@@ -8,7 +8,7 @@ head:
       content: Rux is a new systems programming language built from scratch without LLVM, featuring a custom compiler pipeline, object format, linker, and package manager.
   - - meta
     - itemprop: image
-      content: https://rux-lang.dev/images/rux-social-wide.jpg
+      content: https://rux-lang.dev/images/og-blog.jpg
   - - meta
     - property: og:url
       content: https://rux-lang.dev/blog/language-without-llvm
@@ -23,7 +23,7 @@ head:
       content: Rux is a new systems programming language built from scratch without LLVM, featuring a custom compiler pipeline, object format, linker, and package manager.
   - - meta
     - property: og:image
-      content: https://rux-lang.dev/images/rux-social-wide.jpg
+      content: https://rux-lang.dev/images/og-blog.jpg
   - - meta
     - name: twitter:card
       content: summary_large_image
@@ -35,7 +35,7 @@ head:
       content: Rux is a new systems programming language built from scratch without LLVM, featuring a custom compiler pipeline, object format, linker, and package manager.
   - - meta
     - name: twitter:image
-      content: https://rux-lang.dev/images/rux-social-wide.jpg
+      content: https://rux-lang.dev/images/og-blog.jpg
 ---
 
 # Programming Language Without LLVM

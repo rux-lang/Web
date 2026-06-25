@@ -63,7 +63,7 @@ head:
       content: Fast, compiled, strongly typed, multi-paradigm language
   - - meta
     - itemprop: image
-      content: https://rux-lang.dev/images/rux-social-wide.jpg
+      content: https://rux-lang.dev/images/og-rux.jpg
   - - meta
     - property: og:url
       content: https://rux-lang.dev
@@ -78,7 +78,7 @@ head:
       content: Fast, compiled, strongly typed, multi-paradigm language
   - - meta
     - property: og:image
-      content: https://rux-lang.dev/images/rux-social-wide.jpg
+      content: https://rux-lang.dev/images/og-rux.jpg
   - - meta
     - name: twitter:card
       content: summary_large_image
@@ -90,7 +90,7 @@ head:
       content: Fast, compiled, strongly typed, multi-paradigm language
   - - meta
     - name: twitter:image
-      content: https://rux-lang.dev/images/rux-social-wide.jpg
+      content: https://rux-lang.dev/images/og-rux.jpg
 ---
 
 ## Up and Running in Seconds
@@ -110,7 +110,7 @@ head:
     <div class="t-line t-l3"><span class="t-prompt">$</span><span class="t-cmd t-cmd-3">rux add Std</span></div>
     <div class="t-line t-l4"><span class="t-prompt">$</span><span class="t-cmd t-cmd-4">rux install</span></div>
     <div class="t-line t-l5"><span class="t-prompt">$</span><span class="t-cmd t-cmd-5">rux run</span></div>
-    <div class="t-line t-out t-o1">Compiling App v0.1.0 — finished in 38ms</div>
+    <div class="t-line t-out t-o1">Compiling App — finished in 38ms</div>
     <div class="t-line t-out t-o2">Hello World</div>
     <div class="t-line t-ready"><span class="t-prompt">$</span><span class="t-cursor"></span></div>
   </div>
@@ -179,6 +179,11 @@ head:
 ## From the Blog
 
 <div class="home-blog">
+  <a class="home-blog-card" href="/blog/release-v0.3.0">
+    <span class="home-blog-date">June 23, 2026</span>
+    <span class="home-blog-title">Rux 0.3.0 — Laying the Cross-Platform Groundwork</span>
+    <span class="home-blog-more">Read post →</span>
+  </a>
   <a class="home-blog-card" href="/blog/language-without-llvm">
     <span class="home-blog-date">June 1, 2026</span>
     <span class="home-blog-title">Programming Language Without LLVM</span>
@@ -192,11 +197,6 @@ head:
   <a class="home-blog-card" href="/blog/release-v0.1.0">
     <span class="home-blog-date">April 30, 2026</span>
     <span class="home-blog-title">Rux 0.1.0 — 🎉 It Compiles!</span>
-    <span class="home-blog-more">Read post →</span>
-  </a>
-  <a class="home-blog-card" href="/blog/getting-started">
-    <span class="home-blog-date">October 12, 2025</span>
-    <span class="home-blog-title">Getting Started</span>
     <span class="home-blog-more">Read post →</span>
   </a>
 </div>

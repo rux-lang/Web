@@ -1,28 +1,35 @@
 # Install on Windows
 
-This guide explains how to install the Rux compiler on Windows using [Scoop](https://scoop.sh), a command-line package manager for Windows.
+This guide explains how to install the Rux compiler on Windows, either with the MSI installer or using [Scoop](https://scoop.sh), a command-line package manager for Windows.
 
 ## Prerequisites
 
-- Windows 10 or later (64-bit)
-- PowerShell 5.1 or later
+- Windows 11
+- Windows Server 2025
 
-## Install Scoop
+## Install with the MSI Installer
 
-If you don't have Scoop installed yet, open **PowerShell** and run:
+The MSI installer is the simplest option if you prefer a graphical installer.
+
+1. Download `rux-windows.msi` from the [Download](/download) page or the [latest release](https://github.com/rux-lang/Rux/releases/latest).
+2. Double-click the downloaded `.msi` file to launch the installer.
+3. Follow the setup wizard to complete the installation.
+
+The installer places the `rux` executable on your system `PATH`, so you can run it from any new terminal window once setup finishes.
+
+::: tip
+You can also install silently from a terminal — useful for scripted or unattended setups:
 
 ```sh
-Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+msiexec /i rux-windows.msi /quiet
 ```
+:::
 
-To verify Scoop is installed correctly:
+To update later, download the newer `.msi` and run it again; to remove Rux, uninstall it from **Settings → Apps → Installed apps**.
 
-```sh
-scoop --version
-```
+## Install with Scoop
 
-## Add the Rux Bucket
+### Add the Rux Bucket
 
 Scoop uses buckets to organize packages. Add the official Rux bucket:
 
@@ -30,7 +37,7 @@ Scoop uses buckets to organize packages. Add the official Rux bucket:
 scoop bucket add rux-lang https://github.com/rux-lang/Scoop
 ```
 
-## Install the Rux Compiler
+### Install the Rux Compiler
 
 ```sh
 scoop install rux
@@ -44,9 +51,9 @@ rux version
 
 You should see the installed Rux compiler version.
 
-## Updating
+## Updating with Scoop
 
-To update the Rux compiler to the latest version:
+To update a Scoop installation to the latest version:
 
 ```sh
 scoop update rux
