@@ -10,17 +10,22 @@ import {
 } from "vue";
 import ruxGrammar from "../../grammars/rux.tmLanguage.json";
 import helloExample from "../../../src/examples/Hello.rux?raw";
+import greetExample from "../../../src/examples/Greet.rux?raw";
 import factorialExample from "../../../src/examples/Factorial.rux?raw";
-import funcExample from "../../../src/examples/Func.rux?raw";
+import variadicExample from "../../../src/examples/Variadic.rux?raw";
 
-// The Rux Playground backend (https://github.com/rux-lang/Playground).
-const API_BASE = "https://ruxplayground.dpdns.org";
+// In dev, go through the Vite proxy (see vite.server.proxy in config.mts) so
+// requests are same-origin and not subject to the API's CORS allowlist.
+const API_BASE = import.meta.env.DEV
+  ? "/api/playground"
+  : "https://api.rux-lang.dev/playground";
 const MAX_CODE_LENGTH = 4096;
 
 const examples = [
   { label: "Hello World", code: helloExample },
+  { label: "Greet", code: greetExample },
   { label: "Factorial", code: factorialExample },
-  { label: "Functions", code: funcExample },
+  { label: "Variadic", code: variadicExample },
 ];
 
 const selectedExample = ref(0);
@@ -45,8 +50,6 @@ const workspace = ref(null);
 
 const editorPct = ref(58);
 const outputPct = computed(() => 100 - editorPct.value);
-
-/* ── highlighting ─────────────────────────────────────────────────── */
 
 const highlighter = shallowRef(null);
 
@@ -84,8 +87,6 @@ onMounted(async () => {
   }
 });
 
-/* ── editor behavior ──────────────────────────────────────────────── */
-
 function syncScroll() {
   const textarea = editorTextarea.value;
   if (!textarea) {
@@ -121,8 +122,6 @@ function downloadSource() {
   link.click();
   URL.revokeObjectURL(link.href);
 }
-
-/* ── output helpers ───────────────────────────────────────────────── */
 
 function setRunning(label) {
   busy.value = true;
@@ -166,8 +165,6 @@ function combineStreams(data) {
   return out;
 }
 
-/* ── run ──────────────────────────────────────────────────────────── */
-
 async function run() {
   if (busy.value || !code.value.trim()) {
     return;
@@ -194,8 +191,6 @@ async function run() {
     busy.value = false;
   }
 }
-
-/* ── assembly ─────────────────────────────────────────────────────── */
 
 function asmText(data, full) {
   const note =
@@ -243,8 +238,6 @@ function toggleAsmView() {
   showFullAsm.value = !showFullAsm.value;
   outputText.value = asmText(asmData.value, showFullAsm.value);
 }
-
-/* ── pane resizing ────────────────────────────────────────────────── */
 
 let dragging = false;
 let dragStartX = 0;
@@ -520,8 +513,6 @@ onBeforeUnmount(() => {
   overflow: hidden;
 }
 
-/* ── pane header ──────────────────────────────────────────────────── */
-
 .pg-pane-header {
   display: flex;
   align-items: center;
@@ -649,8 +640,6 @@ onBeforeUnmount(() => {
   height: 15px;
 }
 
-/* ── editor ───────────────────────────────────────────────────────── */
-
 .pg-editor {
   display: flex;
   flex: 1;
@@ -749,8 +738,6 @@ onBeforeUnmount(() => {
   background-color: var(--vp-c-brand-soft);
 }
 
-/* ── resize handle ────────────────────────────────────────────────── */
-
 .pg-resize {
   width: 1px;
   background-color: var(--vp-c-divider);
@@ -773,8 +760,6 @@ onBeforeUnmount(() => {
   background-color: var(--vp-c-brand-1);
   width: 2px;
 }
-
-/* ── output ───────────────────────────────────────────────────────── */
 
 .pg-status {
   display: flex;
@@ -856,8 +841,6 @@ onBeforeUnmount(() => {
 .pg-output.error {
   color: var(--vp-c-danger-1);
 }
-
-/* ── mobile ───────────────────────────────────────────────────────── */
 
 @media (max-width: 768px) {
   .pg-workspace {

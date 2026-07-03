@@ -1381,6 +1381,12 @@ export default defineConfig({
           secure: true,
           rewrite: (p) => p.replace(/^\/api\/registry/, ""),
         },
+        // The playground talks to the WebApi running locally during development.
+        "/api/playground": {
+          target: "http://localhost:5214",
+          changeOrigin: true,
+          rewrite: (p) => p.replace(/^\/api\/playground/, "/playground"),
+        },
       },
     },
   },
