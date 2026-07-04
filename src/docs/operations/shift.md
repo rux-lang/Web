@@ -10,10 +10,10 @@ Shift operations move the bits of an integer value left or right. They are prima
 | `>>`     | Right shift | `>>=`               |
 
 ```rux
-let value: uint8 = 0b0001_0100;  // 20
+let value: uint8 = 0b00010100;  // 20
 
-let left = value << 2;   // 0b0101_0000 = 80
-let right = value >> 2;  // 0b0000_0101 = 5
+let left = value << 2;   // 0b01010000 = 80
+let right = value >> 2;  // 0b00000101 = 5
 ```
 
 The result has the type of the left operand. The shift amount must be a non-negative integer.
@@ -33,8 +33,8 @@ Bits shifted beyond the width of the left operand are discarded. Use a type wide
 Right-shifting an unsigned integer performs a logical shift. The vacated high-order bits are filled with zeros:
 
 ```rux
-let value: uint8 = 0b1000_0000;
-let result = value >> 2;  // 0b0010_0000
+let value: uint8 = 0b10000000;
+let result = value >> 2;  // 0b00100000
 ```
 
 Unsigned integers are usually the clearest choice for masks and bit fields.
@@ -44,8 +44,8 @@ Unsigned integers are usually the clearest choice for masks and bit fields.
 Right-shifting a signed integer performs an arithmetic shift. The vacated high-order bits are filled with the sign bit:
 
 ```rux
-let value: int8 = -8;     // 0b1111_1000
-let result = value >> 2;  // 0b1111_1110 = -2
+let value: int8 = -8;     // 0b11111000
+let result = value >> 2;  // 0b11111110 = -2
 ```
 
 Cast to an unsigned type first when a zero-filling right shift is required.

@@ -12,13 +12,13 @@ Bitwise operations work on the individual bits of an integer value. They are the
 | `~`      | Bitwise NOT | —                   |
 
 ```rux
-let a: uint8 = 0b0000_1100; // 12
-let b: uint8 = 0b0000_1010; // 10
+let a: uint8 = 0b00001100; // 12
+let b: uint8 = 0b00001010; // 10
 
-let and = a & b;  // 0b0000_1000 = 8   — bits set in both
-let or  = a | b;  // 0b0000_1110 = 14  — bits set in either
-let xor = a ^ b;  // 0b0000_0110 = 6   — bits set in exactly one
-let not = ~a;     // 0b1111_0011 = 243 — every bit inverted
+let and = a & b;  // 0b00001000 = 8   — bits set in both
+let or  = a | b;  // 0b00001110 = 14  — bits set in either
+let xor = a ^ b;  // 0b00000110 = 6   — bits set in exactly one
+let not = ~a;     // 0b11110011 = 243 — every bit inverted
 ```
 
 `&`, `|`, and `^` are binary; `~` is unary. The result has the type of the operand(s).
