@@ -37,4 +37,4 @@ func Main() -> int {
 - **New to Rux?** Follow the [Get Started guide](/start/) or try it in the browser on the [Playground](/playground) — nothing to install.
 - **Looking something up?** This reference is organized bottom-up: [lexical structure](/docs/lexical/sources), [primitive types](/docs/signed/int), [variables](/docs/variables/overview) and [statements](/docs/statements/overview), then [functions](/docs/functions/overview), [user-defined types](/docs/structs/overview), [modules](/docs/modules/overview), and the [package system](/docs/packages/types).
 - **Calling native code?** See the [Foreign Function Interface](/docs/ffi/overview) and the [attributes](/docs/attributes/overview) that control linking and targets.
-- **Want to contribute?** Bug reports, feature requests, documentation improvements, and pull requests are all welcome across the [project's repositories](https://github.com/rux-lang).
+- **Want to contribute?** Bug reports, support, feature requests, documentation improvements, and pull requests are all welcome across the [project's repositories](https://github.com/rux-lang).
