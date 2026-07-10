@@ -1,17 +1,18 @@
 # Windows Package
 
+::: warning Unstable API
+The package is under active development and its API is **not yet stable**. Names, signatures, and behavior may change between releases, and this documentation will be updated to match.
+:::
+
 Direct Win32 API bindings for Rux programs.
 
 **Module:** `Windows`
 
+**Source:** [github.com/rux-lang/Windows](https://github.com/rux-lang/Windows)
+
 The package imports a focused set of functions from `kernel32.dll`, covering
 console and file I/O, heap and memory operations, processes, time, filesystem
 operations, text conversion, directory enumeration, and dynamic libraries.
-
-::: warning Unstable API
-The Windows package is under active development and its API is not yet stable.
-Pin a package version when reproducible builds are required.
-:::
 
 ## Requirements
 

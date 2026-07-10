@@ -1,17 +1,18 @@
 # Linux Package
 
+::: warning Unstable API
+The package is under active development and its API is **not yet stable**. Names, signatures, and behavior may change between releases, and this documentation will be updated to match.
+:::
+
 Direct Linux x86-64 system-call bindings for Rux programs.
 
 **Module:** `Linux`
 
+**Source:** [github.com/rux-lang/Linux](https://github.com/rux-lang/Linux)
+
 The package calls the kernel without going through libc. It provides raw
 zero-to-six-argument syscall entry points, typed wrappers for a focused set of
 common operations, and the constants and structures those wrappers need.
-
-::: warning Unstable API
-The Linux package is under active development and its API is not yet stable.
-Pin a package version when reproducible builds are required.
-:::
 
 ## Requirements
 

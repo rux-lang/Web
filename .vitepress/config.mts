@@ -57,8 +57,20 @@ export default defineConfig({
         items: [
           { text: "Get Started", link: "/start/" },
           { text: "Rux Reference", link: "/docs/" },
-          { text: "API Reference", link: "/api/" },
           { text: "CLI Reference", link: "/cli/" },
+          {
+            // Title for the section.
+            text: "API Reference",
+            items: [
+              { text: "BSD", link: "/api/bsd/" },
+              { text: "Illumos", link: "/api/illumos/" },
+              { text: "Linux", link: "/api/linux/" },
+              { text: "MacOS", link: "/api/macos/" },
+              { text: "Math", link: "/api/math/" },
+              { text: "Std", link: "/api/std/" },
+              { text: "Windows", link: "/api/windows/" },
+            ],
+          },
         ],
       },
       { text: "Playground", link: "/playground" },
@@ -422,799 +434,857 @@ export default defineConfig({
           text: "API Reference",
           collapsed: false,
           items: [
-            { text: "Overview", link: "/api/" },
+            { text: "Std Package", link: "/api/std/" },
+            { text: "Math Package", link: "/api/math/" },
+            { text: "BSD Package", link: "/api/bsd/" },
+            { text: "Illumos Package", link: "/api/illumos/" },
+            { text: "Linux Package", link: "/api/linux/" },
+            { text: "MacOS Package", link: "/api/macos/" },
+            { text: "Windows Package", link: "/api/windows/" },
+          ],
+        },
+      ],
+      "/api/std/": [
+        {
+          text: "Std Package",
+          collapsed: false,
+          items: [
+            { text: "Overview", link: "/api/std/" },
             {
-              text: "Std Package",
+              text: "Std",
               collapsed: true,
               items: [
-                { text: "Overview", link: "/api/std/" },
+                { text: "Assert", link: "/api/std/assert" },
+                { text: "Display", link: "/api/std/display" },
+                { text: "Exit", link: "/api/std/exit" },
+                { text: "Fatal", link: "/api/std/fatal" },
+                { text: "Floating-Point Helpers", link: "/api/std/float" },
+                { text: "Format", link: "/api/std/format" },
                 {
-                  text: "Std",
+                  text: "String",
                   collapsed: true,
                   items: [
-                    { text: "Assert", link: "/api/std/assert" },
-                    { text: "Display", link: "/api/std/display" },
-                    { text: "Exit", link: "/api/std/exit" },
-                    { text: "Fatal", link: "/api/std/fatal" },
-                    { text: "Floating-Point Helpers", link: "/api/std/float" },
-                    { text: "Format", link: "/api/std/format" },
+                    { text: "Overview", link: "/api/std/string/" },
                     {
-                      text: "String",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/std/string/" },
-                        {
-                          text: "Capitalize",
-                          link: "/api/std/string/capitalize",
-                        },
-                        {
-                          text: "CapitalizeInPlace",
-                          link: "/api/std/string/capitalizeinplace",
-                        },
-                        { text: "Clone", link: "/api/std/string/clone" },
-                        { text: "Data", link: "/api/std/string/data" },
-                        { text: "EndsWith", link: "/api/std/string/endswith" },
-                        { text: "From", link: "/api/std/string/from" },
-                        { text: "IsEmpty", link: "/api/std/string/isempty" },
-                        { text: "Length", link: "/api/std/string/length" },
-                        { text: "New", link: "/api/std/string/new" },
-                        { text: "Repeat", link: "/api/std/string/repeat" },
-                        { text: "Split", link: "/api/std/string/split" },
-                        {
-                          text: "StartsWith",
-                          link: "/api/std/string/startswith",
-                        },
-                        {
-                          text: "TitleCase",
-                          link: "/api/std/string/titlecase",
-                        },
-                        {
-                          text: "TitleCaseInPlace",
-                          link: "/api/std/string/titlecaseinplace",
-                        },
-                        { text: "ToLower", link: "/api/std/string/tolower" },
-                        {
-                          text: "ToLowerInPlace",
-                          link: "/api/std/string/tolowerinplace",
-                        },
-                        { text: "ToString", link: "/api/std/string/tostring" },
-                        { text: "ToUpper", link: "/api/std/string/toupper" },
-                        {
-                          text: "ToUpperInPlace",
-                          link: "/api/std/string/toupperinplace",
-                        },
-                        { text: "Trim", link: "/api/std/string/trim" },
-                        {
-                          text: "TrimInPlace",
-                          link: "/api/std/string/triminplace",
-                        },
-                        { text: "+", link: "/api/std/string/plus" },
-                      ],
+                      text: "Capitalize",
+                      link: "/api/std/string/capitalize",
                     },
                     {
-                      text: "StringBuilder",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/std/stringbuilder/" },
-                        {
-                          text: "Append",
-                          link: "/api/std/stringbuilder/append",
-                        },
-                        {
-                          text: "Capacity",
-                          link: "/api/std/stringbuilder/capacity",
-                        },
-                        { text: "Clear", link: "/api/std/stringbuilder/clear" },
-                        {
-                          text: "IntoString",
-                          link: "/api/std/stringbuilder/intostring",
-                        },
-                        {
-                          text: "IsEmpty",
-                          link: "/api/std/stringbuilder/isempty",
-                        },
-                        {
-                          text: "Length",
-                          link: "/api/std/stringbuilder/length",
-                        },
-                        { text: "New", link: "/api/std/stringbuilder/new" },
-                        {
-                          text: "Reserve",
-                          link: "/api/std/stringbuilder/reserve",
-                        },
-                        {
-                          text: "Shrink",
-                          link: "/api/std/stringbuilder/shrink",
-                        },
-                        {
-                          text: "ToString",
-                          link: "/api/std/stringbuilder/tostring",
-                        },
-                        {
-                          text: "WithCapacity",
-                          link: "/api/std/stringbuilder/withcapacity",
-                        },
-                      ],
+                      text: "CapitalizeInPlace",
+                      link: "/api/std/string/capitalizeinplace",
                     },
+                    { text: "Clone", link: "/api/std/string/clone" },
+                    { text: "Data", link: "/api/std/string/data" },
+                    { text: "EndsWith", link: "/api/std/string/endswith" },
+                    { text: "From", link: "/api/std/string/from" },
+                    { text: "IsEmpty", link: "/api/std/string/isempty" },
+                    { text: "Length", link: "/api/std/string/length" },
+                    { text: "New", link: "/api/std/string/new" },
+                    { text: "Repeat", link: "/api/std/string/repeat" },
+                    { text: "Split", link: "/api/std/string/split" },
+                    {
+                      text: "StartsWith",
+                      link: "/api/std/string/startswith",
+                    },
+                    {
+                      text: "TitleCase",
+                      link: "/api/std/string/titlecase",
+                    },
+                    {
+                      text: "TitleCaseInPlace",
+                      link: "/api/std/string/titlecaseinplace",
+                    },
+                    { text: "ToLower", link: "/api/std/string/tolower" },
+                    {
+                      text: "ToLowerInPlace",
+                      link: "/api/std/string/tolowerinplace",
+                    },
+                    { text: "ToString", link: "/api/std/string/tostring" },
+                    { text: "ToUpper", link: "/api/std/string/toupper" },
+                    {
+                      text: "ToUpperInPlace",
+                      link: "/api/std/string/toupperinplace",
+                    },
+                    { text: "Trim", link: "/api/std/string/trim" },
+                    {
+                      text: "TrimInPlace",
+                      link: "/api/std/string/triminplace",
+                    },
+                    { text: "+", link: "/api/std/string/plus" },
                   ],
                 },
                 {
-                  text: "Std::Base64",
+                  text: "StringBuilder",
                   collapsed: true,
                   items: [
-                    { text: "Overview", link: "/api/std/base64/" },
+                    { text: "Overview", link: "/api/std/stringbuilder/" },
                     {
-                      text: "DecodeBase64",
-                      link: "/api/std/base64/decodebase64",
+                      text: "Append",
+                      link: "/api/std/stringbuilder/append",
                     },
                     {
-                      text: "EncodeBase64",
-                      link: "/api/std/base64/encodebase64",
+                      text: "Capacity",
+                      link: "/api/std/stringbuilder/capacity",
                     },
-                  ],
-                },
-                {
-                  text: "Std::Hash",
-                  collapsed: true,
-                  items: [
-                    { text: "Overview", link: "/api/std/hash/" },
-                    { text: "Blake2", link: "/api/std/hash/blake2" },
-                    { text: "Blake3", link: "/api/std/hash/blake3" },
-                    { text: "Md5", link: "/api/std/hash/md5" },
-                    { text: "Sha0", link: "/api/std/hash/sha0" },
-                    { text: "Sha1", link: "/api/std/hash/sha1" },
-                    { text: "Sha256", link: "/api/std/hash/sha256" },
-                    { text: "Sha512", link: "/api/std/hash/sha512" },
-                  ],
-                },
-                {
-                  text: "Std::HashMap",
-                  collapsed: true,
-                  items: [
-                    { text: "Overview", link: "/api/std/hashmap/" },
-                    { text: "Cap", link: "/api/std/hashmap/cap" },
-                    { text: "Clear", link: "/api/std/hashmap/clear" },
-                    { text: "Contains", link: "/api/std/hashmap/contains" },
-                    { text: "Free", link: "/api/std/hashmap/free" },
-                    { text: "Get", link: "/api/std/hashmap/get" },
-                    { text: "Init", link: "/api/std/hashmap/init" },
-                    { text: "Keys", link: "/api/std/hashmap/keys" },
-                    { text: "Len", link: "/api/std/hashmap/len" },
-                    { text: "Remove", link: "/api/std/hashmap/remove" },
-                    { text: "Set", link: "/api/std/hashmap/set" },
-                    { text: "Values", link: "/api/std/hashmap/values" },
-                  ],
-                },
-                {
-                  text: "Std::HashSet",
-                  collapsed: true,
-                  items: [
-                    { text: "Overview", link: "/api/std/hashset/" },
-                    { text: "Cap", link: "/api/std/hashset/cap" },
-                    { text: "Clear", link: "/api/std/hashset/clear" },
-                    { text: "Contains", link: "/api/std/hashset/contains" },
-                    { text: "Free", link: "/api/std/hashset/free" },
-                    { text: "Init", link: "/api/std/hashset/init" },
-                    { text: "Insert", link: "/api/std/hashset/insert" },
-                    { text: "Keys", link: "/api/std/hashset/keys" },
-                    { text: "Len", link: "/api/std/hashset/len" },
-                    { text: "Remove", link: "/api/std/hashset/remove" },
-                  ],
-                },
-                {
-                  text: "Std::Hex",
-                  collapsed: true,
-                  items: [
-                    { text: "Overview", link: "/api/std/hex/" },
-                    { text: "Decode", link: "/api/std/hex/decode" },
-                    { text: "DecodeBytes", link: "/api/std/hex/decodebytes" },
-                    { text: "Encode", link: "/api/std/hex/encode" },
-                    { text: "EncodeBytes", link: "/api/std/hex/encodebytes" },
-                  ],
-                },
-                {
-                  text: "Std::Io",
-                  collapsed: true,
-                  items: [
-                    { text: "Print", link: "/api/std/io/print" },
-                    { text: "PrintLine", link: "/api/std/io/printline" },
-                    { text: "ReadLine", link: "/api/std/io/readline" },
-                  ],
-                },
-                {
-                  text: "Std::Math",
-                  collapsed: true,
-                  items: [
-                    { text: "Overview", link: "/api/std/math/" },
-                    { text: "Abs", link: "/api/std/math/abs" },
-                    { text: "Add", link: "/api/std/math/add" },
-                    { text: "Ceil", link: "/api/std/math/ceil" },
-                    { text: "Cos", link: "/api/std/math/cos" },
-                    { text: "Floor", link: "/api/std/math/floor" },
-                    { text: "Pow", link: "/api/std/math/pow" },
-                    { text: "Round", link: "/api/std/math/round" },
-                    { text: "Sin", link: "/api/std/math/sin" },
-                    { text: "Sqrt", link: "/api/std/math/sqrt" },
-                    { text: "Tan", link: "/api/std/math/tan" },
-                  ],
-                },
-                {
-                  text: "Std::Memory",
-                  collapsed: true,
-                  items: [
-                    { text: "Alloc", link: "/api/std/memory/alloc" },
-                    { text: "Compare", link: "/api/std/memory/compare" },
-                    { text: "Copy", link: "/api/std/memory/copy" },
-                    { text: "Free", link: "/api/std/memory/free" },
-                    { text: "Realloc", link: "/api/std/memory/realloc" },
-                    { text: "Set", link: "/api/std/memory/set" },
-                    { text: "Zero", link: "/api/std/memory/zero" },
-                  ],
-                },
-                {
-                  text: "Std::Random",
-                  collapsed: true,
-                  items: [
-                    { text: "Overview", link: "/api/std/random/" },
-                    { text: "RandomBool", link: "/api/std/random/randombool" },
+                    { text: "Clear", link: "/api/std/stringbuilder/clear" },
                     {
-                      text: "RandomFloat",
-                      link: "/api/std/random/randomfloat",
-                    },
-                    { text: "RandomInt", link: "/api/std/random/randomint" },
-                    { text: "RandomUInt", link: "/api/std/random/randomuint" },
-                  ],
-                },
-                {
-                  text: "Std::Sort",
-                  collapsed: true,
-                  items: [
-                    { text: "Overview", link: "/api/std/sort/" },
-                    { text: "Crumsort", link: "/api/std/sort/crumsort" },
-                    { text: "Piposort", link: "/api/std/sort/piposort" },
-                    { text: "Quadsort", link: "/api/std/sort/quadsort" },
-                    { text: "Sort", link: "/api/std/sort/sort" },
-                  ],
-                },
-                {
-                  text: "Std::Time",
-                  collapsed: true,
-                  items: [
-                    { text: "Overview", link: "/api/std/time/" },
-                    { text: "LocalTime", link: "/api/std/time/localtime" },
-                    {
-                      text: "SleepMinutes",
-                      link: "/api/std/time/sleepminutes",
-                    },
-                    { text: "SleepMs", link: "/api/std/time/sleepms" },
-                    {
-                      text: "SleepSeconds",
-                      link: "/api/std/time/sleepseconds",
-                    },
-                    { text: "SystemTime", link: "/api/std/time/systemtime" },
-                    { text: "TickMs", link: "/api/std/time/tickms" },
-                    { text: "UtcTime", link: "/api/std/time/utctime" },
-                  ],
-                },
-                {
-                  text: "Std::UUID",
-                  collapsed: true,
-                  items: [
-                    { text: "Overview", link: "/api/std/uuid/" },
-                    { text: "IsValidUuid", link: "/api/std/uuid/isvaliduuid" },
-                    { text: "UuidNil", link: "/api/std/uuid/uuidnil" },
-                    { text: "UuidParse", link: "/api/std/uuid/uuidparse" },
-                    {
-                      text: "UuidToString",
-                      link: "/api/std/uuid/uuidtostring",
-                    },
-                    { text: "UuidV4", link: "/api/std/uuid/uuidv4" },
-                    { text: "UuidV4Bytes", link: "/api/std/uuid/uuidv4bytes" },
-                  ],
-                },
-              ],
-            },
-            {
-              text: "BSD Package",
-              collapsed: true,
-              items: [
-                { text: "Overview", link: "/api/bsd/" },
-                {
-                  text: "BSD",
-                  collapsed: true,
-                  items: [
-                    {
-                      text: "I/O",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/bsd/io" },
-                        { text: "Close", link: "/api/bsd/close" },
-                        { text: "Read", link: "/api/bsd/read" },
-                        { text: "Write", link: "/api/bsd/write" },
-                      ],
+                      text: "IntoString",
+                      link: "/api/std/stringbuilder/intostring",
                     },
                     {
-                      text: "Memory",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/bsd/memory" },
-                        { text: "Brk", link: "/api/bsd/brk" },
-                        { text: "Mmap", link: "/api/bsd/mmap" },
-                        { text: "Munmap", link: "/api/bsd/munmap" },
-                      ],
+                      text: "IsEmpty",
+                      link: "/api/std/stringbuilder/isempty",
                     },
                     {
-                      text: "Process",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/bsd/process" },
-                        { text: "Exit", link: "/api/bsd/exit" },
-                        { text: "GetPid", link: "/api/bsd/getpid" },
-                      ],
+                      text: "Length",
+                      link: "/api/std/stringbuilder/length",
+                    },
+                    { text: "New", link: "/api/std/stringbuilder/new" },
+                    {
+                      text: "Reserve",
+                      link: "/api/std/stringbuilder/reserve",
                     },
                     {
-                      text: "Raw Syscalls",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/bsd/syscalls" },
-                        { text: "Errno", link: "/api/bsd/errno" },
-                        { text: "IsError", link: "/api/bsd/iserror" },
-                      ],
+                      text: "Shrink",
+                      link: "/api/std/stringbuilder/shrink",
                     },
                     {
-                      text: "Time",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/bsd/time" },
-                        {
-                          text: "ClockGettime",
-                          link: "/api/bsd/clockgettime",
-                        },
-                        { text: "Nanosleep", link: "/api/bsd/nanosleep" },
-                      ],
+                      text: "ToString",
+                      link: "/api/std/stringbuilder/tostring",
                     },
                     {
-                      text: "Types and Constants",
-                      link: "/api/bsd/types",
+                      text: "WithCapacity",
+                      link: "/api/std/stringbuilder/withcapacity",
                     },
                   ],
                 },
               ],
             },
             {
-              text: "Illumos Package",
+              text: "Std::Base64",
               collapsed: true,
               items: [
-                { text: "Overview", link: "/api/illumos/" },
+                { text: "Overview", link: "/api/std/base64/" },
                 {
-                  text: "Illumos",
-                  collapsed: true,
-                  items: [
-                    {
-                      text: "I/O",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/illumos/io" },
-                        { text: "Close", link: "/api/illumos/close" },
-                        { text: "Read", link: "/api/illumos/read" },
-                        { text: "Write", link: "/api/illumos/write" },
-                      ],
-                    },
-                    {
-                      text: "Memory",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/illumos/memory" },
-                        { text: "Brk", link: "/api/illumos/brk" },
-                        { text: "Mmap", link: "/api/illumos/mmap" },
-                        { text: "Munmap", link: "/api/illumos/munmap" },
-                      ],
-                    },
-                    {
-                      text: "Process",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/illumos/process" },
-                        { text: "Exit", link: "/api/illumos/exit" },
-                        { text: "GetPid", link: "/api/illumos/getpid" },
-                      ],
-                    },
-                    {
-                      text: "Raw Syscalls",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/illumos/syscalls" },
-                        { text: "Errno", link: "/api/illumos/errno" },
-                        { text: "IsError", link: "/api/illumos/iserror" },
-                      ],
-                    },
-                    {
-                      text: "Time",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/illumos/time" },
-                        {
-                          text: "ClockGetTime",
-                          link: "/api/illumos/clockgettime",
-                        },
-                        { text: "Nanosleep", link: "/api/illumos/nanosleep" },
-                      ],
-                    },
-                    {
-                      text: "Types and Constants",
-                      link: "/api/illumos/types",
-                    },
-                  ],
+                  text: "DecodeBase64",
+                  link: "/api/std/base64/decodebase64",
+                },
+                {
+                  text: "EncodeBase64",
+                  link: "/api/std/base64/encodebase64",
                 },
               ],
             },
             {
-              text: "Linux Package",
+              text: "Std::Hash",
               collapsed: true,
               items: [
-                { text: "Overview", link: "/api/linux/" },
+                { text: "Overview", link: "/api/std/hash/" },
+                { text: "Blake2", link: "/api/std/hash/blake2" },
+                { text: "Blake3", link: "/api/std/hash/blake3" },
+                { text: "Md5", link: "/api/std/hash/md5" },
+                { text: "Sha0", link: "/api/std/hash/sha0" },
+                { text: "Sha1", link: "/api/std/hash/sha1" },
+                { text: "Sha256", link: "/api/std/hash/sha256" },
+                { text: "Sha512", link: "/api/std/hash/sha512" },
+              ],
+            },
+            {
+              text: "Std::HashMap",
+              collapsed: true,
+              items: [
+                { text: "Overview", link: "/api/std/hashmap/" },
+                { text: "Cap", link: "/api/std/hashmap/cap" },
+                { text: "Clear", link: "/api/std/hashmap/clear" },
+                { text: "Contains", link: "/api/std/hashmap/contains" },
+                { text: "Free", link: "/api/std/hashmap/free" },
+                { text: "Get", link: "/api/std/hashmap/get" },
+                { text: "Init", link: "/api/std/hashmap/init" },
+                { text: "Keys", link: "/api/std/hashmap/keys" },
+                { text: "Len", link: "/api/std/hashmap/len" },
+                { text: "Remove", link: "/api/std/hashmap/remove" },
+                { text: "Set", link: "/api/std/hashmap/set" },
+                { text: "Values", link: "/api/std/hashmap/values" },
+              ],
+            },
+            {
+              text: "Std::HashSet",
+              collapsed: true,
+              items: [
+                { text: "Overview", link: "/api/std/hashset/" },
+                { text: "Cap", link: "/api/std/hashset/cap" },
+                { text: "Clear", link: "/api/std/hashset/clear" },
+                { text: "Contains", link: "/api/std/hashset/contains" },
+                { text: "Free", link: "/api/std/hashset/free" },
+                { text: "Init", link: "/api/std/hashset/init" },
+                { text: "Insert", link: "/api/std/hashset/insert" },
+                { text: "Keys", link: "/api/std/hashset/keys" },
+                { text: "Len", link: "/api/std/hashset/len" },
+                { text: "Remove", link: "/api/std/hashset/remove" },
+              ],
+            },
+            {
+              text: "Std::Hex",
+              collapsed: true,
+              items: [
+                { text: "Overview", link: "/api/std/hex/" },
+                { text: "Decode", link: "/api/std/hex/decode" },
+                { text: "DecodeBytes", link: "/api/std/hex/decodebytes" },
+                { text: "Encode", link: "/api/std/hex/encode" },
+                { text: "EncodeBytes", link: "/api/std/hex/encodebytes" },
+              ],
+            },
+            {
+              text: "Std::Io",
+              collapsed: true,
+              items: [
+                { text: "Print", link: "/api/std/io/print" },
+                { text: "PrintLine", link: "/api/std/io/printline" },
+                { text: "ReadLine", link: "/api/std/io/readline" },
+              ],
+            },
+            {
+              text: "Std::Math",
+              collapsed: true,
+              items: [
+                { text: "Overview", link: "/api/std/math/" },
+                { text: "Abs", link: "/api/std/math/abs" },
+                { text: "Add", link: "/api/std/math/add" },
+                { text: "Ceil", link: "/api/std/math/ceil" },
+                { text: "Cos", link: "/api/std/math/cos" },
+                { text: "Floor", link: "/api/std/math/floor" },
+                { text: "Pow", link: "/api/std/math/pow" },
+                { text: "Round", link: "/api/std/math/round" },
+                { text: "Sin", link: "/api/std/math/sin" },
+                { text: "Sqrt", link: "/api/std/math/sqrt" },
+                { text: "Tan", link: "/api/std/math/tan" },
+              ],
+            },
+            {
+              text: "Std::Memory",
+              collapsed: true,
+              items: [
+                { text: "Alloc", link: "/api/std/memory/alloc" },
+                { text: "Compare", link: "/api/std/memory/compare" },
+                { text: "Copy", link: "/api/std/memory/copy" },
+                { text: "Free", link: "/api/std/memory/free" },
+                { text: "Realloc", link: "/api/std/memory/realloc" },
+                { text: "Set", link: "/api/std/memory/set" },
+                { text: "Zero", link: "/api/std/memory/zero" },
+              ],
+            },
+            {
+              text: "Std::Random",
+              collapsed: true,
+              items: [
+                { text: "Overview", link: "/api/std/random/" },
+                { text: "RandomBool", link: "/api/std/random/randombool" },
                 {
-                  text: "Linux",
+                  text: "RandomFloat",
+                  link: "/api/std/random/randomfloat",
+                },
+                { text: "RandomInt", link: "/api/std/random/randomint" },
+                { text: "RandomUInt", link: "/api/std/random/randomuint" },
+              ],
+            },
+            {
+              text: "Std::Sort",
+              collapsed: true,
+              items: [
+                { text: "Overview", link: "/api/std/sort/" },
+                { text: "Crumsort", link: "/api/std/sort/crumsort" },
+                { text: "Piposort", link: "/api/std/sort/piposort" },
+                { text: "Quadsort", link: "/api/std/sort/quadsort" },
+                { text: "Sort", link: "/api/std/sort/sort" },
+              ],
+            },
+            {
+              text: "Std::Time",
+              collapsed: true,
+              items: [
+                { text: "Overview", link: "/api/std/time/" },
+                { text: "LocalTime", link: "/api/std/time/localtime" },
+                {
+                  text: "SleepMinutes",
+                  link: "/api/std/time/sleepminutes",
+                },
+                { text: "SleepMs", link: "/api/std/time/sleepms" },
+                {
+                  text: "SleepSeconds",
+                  link: "/api/std/time/sleepseconds",
+                },
+                { text: "SystemTime", link: "/api/std/time/systemtime" },
+                { text: "TickMs", link: "/api/std/time/tickms" },
+                { text: "UtcTime", link: "/api/std/time/utctime" },
+              ],
+            },
+            {
+              text: "Std::UUID",
+              collapsed: true,
+              items: [
+                { text: "Overview", link: "/api/std/uuid/" },
+                { text: "IsValidUuid", link: "/api/std/uuid/isvaliduuid" },
+                { text: "UuidNil", link: "/api/std/uuid/uuidnil" },
+                { text: "UuidParse", link: "/api/std/uuid/uuidparse" },
+                {
+                  text: "UuidToString",
+                  link: "/api/std/uuid/uuidtostring",
+                },
+                { text: "UuidV4", link: "/api/std/uuid/uuidv4" },
+                { text: "UuidV4Bytes", link: "/api/std/uuid/uuidv4bytes" },
+              ],
+            },
+          ],
+        },
+      ],
+      "/api/math/": [
+        {
+          text: "Math Package",
+          collapsed: false,
+          items: [
+            { text: "Overview", link: "/api/math/" },
+            { text: "Abs", link: "/api/math/abs" },
+            { text: "ArcCos", link: "/api/math/arccos" },
+            { text: "ArcCot", link: "/api/math/arccot" },
+            { text: "ArcSin", link: "/api/math/arcsin" },
+            { text: "ArcTan", link: "/api/math/arctan" },
+            { text: "Cbrt", link: "/api/math/cbrt" },
+            { text: "Ceil", link: "/api/math/ceil" },
+            { text: "Cos", link: "/api/math/cos" },
+            { text: "Cosh", link: "/api/math/cosh" },
+            { text: "Cotan", link: "/api/math/cotan" },
+            { text: "Cotanh", link: "/api/math/cotanh" },
+            { text: "DegToRad", link: "/api/math/degtorad" },
+            { text: "Exp", link: "/api/math/exp" },
+            { text: "Exp2", link: "/api/math/exp2" },
+            { text: "Floor", link: "/api/math/floor" },
+            { text: "Hypot", link: "/api/math/hypot" },
+            { text: "Log", link: "/api/math/log" },
+            { text: "Log10", link: "/api/math/log10" },
+            { text: "Log2", link: "/api/math/log2" },
+            { text: "Max", link: "/api/math/max" },
+            { text: "Min", link: "/api/math/min" },
+            { text: "Mod", link: "/api/math/mod" },
+            { text: "Pow", link: "/api/math/pow" },
+            { text: "RadToDeg", link: "/api/math/radtodeg" },
+            { text: "Round", link: "/api/math/round" },
+            { text: "Sin", link: "/api/math/sin" },
+            { text: "Sinh", link: "/api/math/sinh" },
+            { text: "Sqrt", link: "/api/math/sqrt" },
+            { text: "Tan", link: "/api/math/tan" },
+            { text: "Tanh", link: "/api/math/tanh" },
+            { text: "Trunc", link: "/api/math/trunc" },
+          ],
+        },
+      ],
+      "/api/bsd/": [
+        {
+          text: "BSD Package",
+          collapsed: false,
+          items: [
+            { text: "Overview", link: "/api/bsd/" },
+            {
+              text: "BSD",
+              collapsed: true,
+              items: [
+                {
+                  text: "I/O",
                   collapsed: true,
                   items: [
+                    { text: "Overview", link: "/api/bsd/io" },
+                    { text: "Close", link: "/api/bsd/close" },
+                    { text: "Read", link: "/api/bsd/read" },
+                    { text: "Write", link: "/api/bsd/write" },
+                  ],
+                },
+                {
+                  text: "Memory",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/bsd/memory" },
+                    { text: "Brk", link: "/api/bsd/brk" },
+                    { text: "Mmap", link: "/api/bsd/mmap" },
+                    { text: "Munmap", link: "/api/bsd/munmap" },
+                  ],
+                },
+                {
+                  text: "Process",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/bsd/process" },
+                    { text: "Exit", link: "/api/bsd/exit" },
+                    { text: "GetPid", link: "/api/bsd/getpid" },
+                  ],
+                },
+                {
+                  text: "Raw Syscalls",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/bsd/syscalls" },
+                    { text: "Errno", link: "/api/bsd/errno" },
+                    { text: "IsError", link: "/api/bsd/iserror" },
+                  ],
+                },
+                {
+                  text: "Time",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/bsd/time" },
                     {
-                      text: "I/O",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/linux/io" },
-                        { text: "Close", link: "/api/linux/close" },
-                        { text: "Read", link: "/api/linux/read" },
-                        { text: "Write", link: "/api/linux/write" },
-                      ],
+                      text: "ClockGettime",
+                      link: "/api/bsd/clockgettime",
                     },
+                    { text: "Nanosleep", link: "/api/bsd/nanosleep" },
+                  ],
+                },
+                {
+                  text: "Types and Constants",
+                  link: "/api/bsd/types",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      "/api/illumos/": [
+        {
+          text: "Illumos Package",
+          collapsed: false,
+          items: [
+            { text: "Overview", link: "/api/illumos/" },
+            {
+              text: "Illumos",
+              collapsed: true,
+              items: [
+                {
+                  text: "I/O",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/illumos/io" },
+                    { text: "Close", link: "/api/illumos/close" },
+                    { text: "Read", link: "/api/illumos/read" },
+                    { text: "Write", link: "/api/illumos/write" },
+                  ],
+                },
+                {
+                  text: "Memory",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/illumos/memory" },
+                    { text: "Brk", link: "/api/illumos/brk" },
+                    { text: "Mmap", link: "/api/illumos/mmap" },
+                    { text: "Munmap", link: "/api/illumos/munmap" },
+                  ],
+                },
+                {
+                  text: "Process",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/illumos/process" },
+                    { text: "Exit", link: "/api/illumos/exit" },
+                    { text: "GetPid", link: "/api/illumos/getpid" },
+                  ],
+                },
+                {
+                  text: "Raw Syscalls",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/illumos/syscalls" },
+                    { text: "Errno", link: "/api/illumos/errno" },
+                    { text: "IsError", link: "/api/illumos/iserror" },
+                  ],
+                },
+                {
+                  text: "Time",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/illumos/time" },
                     {
-                      text: "Memory",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/linux/memory" },
-                        { text: "Brk", link: "/api/linux/brk" },
-                        { text: "Mmap", link: "/api/linux/mmap" },
-                        { text: "Munmap", link: "/api/linux/munmap" },
-                      ],
+                      text: "ClockGetTime",
+                      link: "/api/illumos/clockgettime",
                     },
+                    { text: "Nanosleep", link: "/api/illumos/nanosleep" },
+                  ],
+                },
+                {
+                  text: "Types and Constants",
+                  link: "/api/illumos/types",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      "/api/linux/": [
+        {
+          text: "Linux Package",
+          collapsed: false,
+          items: [
+            { text: "Overview", link: "/api/linux/" },
+            {
+              text: "Linux",
+              collapsed: true,
+              items: [
+                {
+                  text: "I/O",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/linux/io" },
+                    { text: "Close", link: "/api/linux/close" },
+                    { text: "Read", link: "/api/linux/read" },
+                    { text: "Write", link: "/api/linux/write" },
+                  ],
+                },
+                {
+                  text: "Memory",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/linux/memory" },
+                    { text: "Brk", link: "/api/linux/brk" },
+                    { text: "Mmap", link: "/api/linux/mmap" },
+                    { text: "Munmap", link: "/api/linux/munmap" },
+                  ],
+                },
+                {
+                  text: "Process",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/linux/process" },
+                    { text: "Exit", link: "/api/linux/exit" },
+                    { text: "GetPid", link: "/api/linux/getpid" },
+                  ],
+                },
+                {
+                  text: "Raw Syscalls",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/linux/syscalls" },
+                    { text: "Errno", link: "/api/linux/errno" },
+                    { text: "IsError", link: "/api/linux/iserror" },
+                  ],
+                },
+                {
+                  text: "Time",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/linux/time" },
                     {
-                      text: "Process",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/linux/process" },
-                        { text: "Exit", link: "/api/linux/exit" },
-                        { text: "GetPid", link: "/api/linux/getpid" },
-                      ],
+                      text: "ClockGetTime",
+                      link: "/api/linux/clockgettime",
                     },
-                    {
-                      text: "Raw Syscalls",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/linux/syscalls" },
-                        { text: "Errno", link: "/api/linux/errno" },
-                        { text: "IsError", link: "/api/linux/iserror" },
-                      ],
-                    },
-                    {
-                      text: "Time",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/linux/time" },
-                        {
-                          text: "ClockGetTime",
-                          link: "/api/linux/clockgettime",
-                        },
-                        { text: "Nanosleep", link: "/api/linux/nanosleep" },
-                      ],
-                    },
-                    {
-                      text: "Types and Constants",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/linux/types" },
-                        { text: "Constants", link: "/api/linux/constants" },
-                        { text: "Timespec", link: "/api/linux/timespec" },
-                      ],
-                    },
+                    { text: "Nanosleep", link: "/api/linux/nanosleep" },
+                  ],
+                },
+                {
+                  text: "Types and Constants",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/linux/types" },
+                    { text: "Constants", link: "/api/linux/constants" },
+                    { text: "Timespec", link: "/api/linux/timespec" },
                   ],
                 },
               ],
             },
+          ],
+        },
+      ],
+      "/api/macos/": [
+        {
+          text: "MacOS Package",
+          collapsed: false,
+          items: [
+            { text: "Overview", link: "/api/macos/" },
             {
-              text: "MacOS Package",
+              text: "MacOS",
               collapsed: true,
               items: [
-                { text: "Overview", link: "/api/macos/" },
                 {
-                  text: "MacOS",
+                  text: "Console and I/O",
                   collapsed: true,
                   items: [
+                    { text: "Overview", link: "/api/macos/console" },
                     {
-                      text: "Console and I/O",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/macos/console" },
-                        {
-                          text: "GetStdHandle",
-                          link: "/api/macos/getstdhandle",
-                        },
-                        { text: "ReadFile", link: "/api/macos/readfile" },
-                        { text: "WriteFile", link: "/api/macos/writefile" },
-                      ],
+                      text: "GetStdHandle",
+                      link: "/api/macos/getstdhandle",
                     },
-                    {
-                      text: "Heap and Memory",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/macos/heap" },
-                        {
-                          text: "GetProcessHeap",
-                          link: "/api/macos/getprocessheap",
-                        },
-                        { text: "HeapAlloc", link: "/api/macos/heapalloc" },
-                        { text: "HeapFree", link: "/api/macos/heapfree" },
-                        { text: "Munmap", link: "/api/macos/munmap" },
-                      ],
-                    },
-                    {
-                      text: "Process",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/macos/process" },
-                        {
-                          text: "ExitProcess",
-                          link: "/api/macos/exitprocess",
-                        },
-                      ],
-                    },
-                    { text: "Types", link: "/api/macos/types" },
+                    { text: "ReadFile", link: "/api/macos/readfile" },
+                    { text: "WriteFile", link: "/api/macos/writefile" },
                   ],
                 },
+                {
+                  text: "Heap and Memory",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/macos/heap" },
+                    {
+                      text: "GetProcessHeap",
+                      link: "/api/macos/getprocessheap",
+                    },
+                    { text: "HeapAlloc", link: "/api/macos/heapalloc" },
+                    { text: "HeapFree", link: "/api/macos/heapfree" },
+                    { text: "Munmap", link: "/api/macos/munmap" },
+                  ],
+                },
+                {
+                  text: "Process",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/macos/process" },
+                    {
+                      text: "ExitProcess",
+                      link: "/api/macos/exitprocess",
+                    },
+                  ],
+                },
+                { text: "Types", link: "/api/macos/types" },
               ],
             },
+          ],
+        },
+      ],
+      "/api/windows/": [
+        {
+          text: "Windows Package",
+          collapsed: false,
+          items: [
+            { text: "Overview", link: "/api/windows/" },
             {
-              text: "Windows Package",
+              text: "Windows",
               collapsed: true,
               items: [
-                { text: "Overview", link: "/api/windows/" },
+                { text: "CodePage", link: "/api/windows/codepage" },
                 {
-                  text: "Windows",
+                  text: "Console",
                   collapsed: true,
                   items: [
-                    { text: "CodePage", link: "/api/windows/codepage" },
+                    { text: "Overview", link: "/api/windows/console" },
                     {
-                      text: "Console",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/console" },
-                        {
-                          text: "AllocConsole",
-                          link: "/api/windows/allocconsole",
-                        },
-                        { text: "Beep", link: "/api/windows/beep" },
-                        {
-                          text: "GetStdHandle",
-                          link: "/api/windows/getstdhandle",
-                        },
-                        {
-                          text: "ReadConsoleA",
-                          link: "/api/windows/readconsolea",
-                        },
-                        {
-                          text: "WriteConsoleA",
-                          link: "/api/windows/writeconsolea",
-                        },
-                        {
-                          text: "WriteConsoleW",
-                          link: "/api/windows/writeconsolew",
-                        },
-                      ],
+                      text: "AllocConsole",
+                      link: "/api/windows/allocconsole",
+                    },
+                    { text: "Beep", link: "/api/windows/beep" },
+                    {
+                      text: "GetStdHandle",
+                      link: "/api/windows/getstdhandle",
                     },
                     {
-                      text: "Dynamic Libraries",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/libraries" },
-                        {
-                          text: "FreeLibrary",
-                          link: "/api/windows/freelibrary",
-                        },
-                        {
-                          text: "GetProcAddress",
-                          link: "/api/windows/getprocaddress",
-                        },
-                        {
-                          text: "LoadLibraryA",
-                          link: "/api/windows/loadlibrarya",
-                        },
-                      ],
+                      text: "ReadConsoleA",
+                      link: "/api/windows/readconsolea",
                     },
                     {
-                      text: "File Enumeration",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/enumeration" },
-                        { text: "FindClose", link: "/api/windows/findclose" },
-                        {
-                          text: "FindFirstFileA",
-                          link: "/api/windows/findfirstfilea",
-                        },
-                        {
-                          text: "FindNextFileA",
-                          link: "/api/windows/findnextfilea",
-                        },
-                      ],
+                      text: "WriteConsoleA",
+                      link: "/api/windows/writeconsolea",
                     },
                     {
-                      text: "File I/O",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/files" },
-                        {
-                          text: "CreateFileA",
-                          link: "/api/windows/createfilea",
-                        },
-                        {
-                          text: "GetFileSizeEx",
-                          link: "/api/windows/getfilesizeex",
-                        },
-                        { text: "ReadFile", link: "/api/windows/readfile" },
-                        {
-                          text: "SetFilePointerEx",
-                          link: "/api/windows/setfilepointerex",
-                        },
-                        { text: "WriteFile", link: "/api/windows/writefile" },
-                      ],
+                      text: "WriteConsoleW",
+                      link: "/api/windows/writeconsolew",
                     },
-                    {
-                      text: "Filesystem",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/filesystem" },
-                        { text: "CopyFileA", link: "/api/windows/copyfilea" },
-                        {
-                          text: "CreateDirectoryA",
-                          link: "/api/windows/createdirectorya",
-                        },
-                        {
-                          text: "DeleteFileA",
-                          link: "/api/windows/deletefilea",
-                        },
-                        {
-                          text: "GetCurrentDirectoryA",
-                          link: "/api/windows/getcurrentdirectorya",
-                        },
-                        {
-                          text: "GetFileAttributesA",
-                          link: "/api/windows/getfileattributesa",
-                        },
-                        { text: "MoveFileA", link: "/api/windows/movefilea" },
-                        {
-                          text: "RemoveDirectoryA",
-                          link: "/api/windows/removedirectorya",
-                        },
-                        {
-                          text: "SetCurrentDirectoryA",
-                          link: "/api/windows/setcurrentdirectorya",
-                        },
-                        {
-                          text: "SetFileAttributesA",
-                          link: "/api/windows/setfileattributesa",
-                        },
-                      ],
-                    },
-                    {
-                      text: "Handles and Errors",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/handles" },
-                        {
-                          text: "CloseHandle",
-                          link: "/api/windows/closehandle",
-                        },
-                        {
-                          text: "GetLastError",
-                          link: "/api/windows/getlasterror",
-                        },
-                      ],
-                    },
-                    {
-                      text: "Heap",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/heap" },
-                        {
-                          text: "GetProcessHeap",
-                          link: "/api/windows/getprocessheap",
-                        },
-                        { text: "HeapAlloc", link: "/api/windows/heapalloc" },
-                        { text: "HeapFree", link: "/api/windows/heapfree" },
-                        {
-                          text: "HeapReAlloc",
-                          link: "/api/windows/heaprealloc",
-                        },
-                      ],
-                    },
-                    {
-                      text: "Memory Operations",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/memory" },
-                        {
-                          text: "RtlCompareMemory",
-                          link: "/api/windows/rtlcomparememory",
-                        },
-                        {
-                          text: "RtlCopyMemory",
-                          link: "/api/windows/rtlcopymemory",
-                        },
-                        {
-                          text: "RtlFillMemory",
-                          link: "/api/windows/rtlfillmemory",
-                        },
-                        {
-                          text: "RtlZeroMemory",
-                          link: "/api/windows/rtlzeromemory",
-                        },
-                      ],
-                    },
-                    {
-                      text: "Process and Thread",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/process" },
-                        {
-                          text: "ExitProcess",
-                          link: "/api/windows/exitprocess",
-                        },
-                        {
-                          text: "GetCurrentProcessId",
-                          link: "/api/windows/getcurrentprocessid",
-                        },
-                        {
-                          text: "GetCurrentThreadId",
-                          link: "/api/windows/getcurrentthreadid",
-                        },
-                        { text: "Sleep", link: "/api/windows/sleep" },
-                      ],
-                    },
-                    {
-                      text: "Text Conversion",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/conversion" },
-                        {
-                          text: "MultiByteToWideChar",
-                          link: "/api/windows/multibytetowidechar",
-                        },
-                        {
-                          text: "WideCharToMultiByte",
-                          link: "/api/windows/widechartomultibyte",
-                        },
-                      ],
-                    },
-                    {
-                      text: "Time",
-                      collapsed: true,
-                      items: [
-                        { text: "Overview", link: "/api/windows/time" },
-                        {
-                          text: "GetLocalTime",
-                          link: "/api/windows/getlocaltime",
-                        },
-                        {
-                          text: "GetSystemTime",
-                          link: "/api/windows/getsystemtime",
-                        },
-                        {
-                          text: "GetTickCount64",
-                          link: "/api/windows/gettickcount64",
-                        },
-                      ],
-                    },
-                    { text: "Types and Constants", link: "/api/windows/types" },
                   ],
                 },
+                {
+                  text: "Dynamic Libraries",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/libraries" },
+                    {
+                      text: "FreeLibrary",
+                      link: "/api/windows/freelibrary",
+                    },
+                    {
+                      text: "GetProcAddress",
+                      link: "/api/windows/getprocaddress",
+                    },
+                    {
+                      text: "LoadLibraryA",
+                      link: "/api/windows/loadlibrarya",
+                    },
+                  ],
+                },
+                {
+                  text: "File Enumeration",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/enumeration" },
+                    { text: "FindClose", link: "/api/windows/findclose" },
+                    {
+                      text: "FindFirstFileA",
+                      link: "/api/windows/findfirstfilea",
+                    },
+                    {
+                      text: "FindNextFileA",
+                      link: "/api/windows/findnextfilea",
+                    },
+                  ],
+                },
+                {
+                  text: "File I/O",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/files" },
+                    {
+                      text: "CreateFileA",
+                      link: "/api/windows/createfilea",
+                    },
+                    {
+                      text: "GetFileSizeEx",
+                      link: "/api/windows/getfilesizeex",
+                    },
+                    { text: "ReadFile", link: "/api/windows/readfile" },
+                    {
+                      text: "SetFilePointerEx",
+                      link: "/api/windows/setfilepointerex",
+                    },
+                    { text: "WriteFile", link: "/api/windows/writefile" },
+                  ],
+                },
+                {
+                  text: "Filesystem",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/filesystem" },
+                    { text: "CopyFileA", link: "/api/windows/copyfilea" },
+                    {
+                      text: "CreateDirectoryA",
+                      link: "/api/windows/createdirectorya",
+                    },
+                    {
+                      text: "DeleteFileA",
+                      link: "/api/windows/deletefilea",
+                    },
+                    {
+                      text: "GetCurrentDirectoryA",
+                      link: "/api/windows/getcurrentdirectorya",
+                    },
+                    {
+                      text: "GetFileAttributesA",
+                      link: "/api/windows/getfileattributesa",
+                    },
+                    { text: "MoveFileA", link: "/api/windows/movefilea" },
+                    {
+                      text: "RemoveDirectoryA",
+                      link: "/api/windows/removedirectorya",
+                    },
+                    {
+                      text: "SetCurrentDirectoryA",
+                      link: "/api/windows/setcurrentdirectorya",
+                    },
+                    {
+                      text: "SetFileAttributesA",
+                      link: "/api/windows/setfileattributesa",
+                    },
+                  ],
+                },
+                {
+                  text: "Handles and Errors",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/handles" },
+                    {
+                      text: "CloseHandle",
+                      link: "/api/windows/closehandle",
+                    },
+                    {
+                      text: "GetLastError",
+                      link: "/api/windows/getlasterror",
+                    },
+                  ],
+                },
+                {
+                  text: "Heap",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/heap" },
+                    {
+                      text: "GetProcessHeap",
+                      link: "/api/windows/getprocessheap",
+                    },
+                    { text: "HeapAlloc", link: "/api/windows/heapalloc" },
+                    { text: "HeapFree", link: "/api/windows/heapfree" },
+                    {
+                      text: "HeapReAlloc",
+                      link: "/api/windows/heaprealloc",
+                    },
+                  ],
+                },
+                {
+                  text: "Memory Operations",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/memory" },
+                    {
+                      text: "RtlCompareMemory",
+                      link: "/api/windows/rtlcomparememory",
+                    },
+                    {
+                      text: "RtlCopyMemory",
+                      link: "/api/windows/rtlcopymemory",
+                    },
+                    {
+                      text: "RtlFillMemory",
+                      link: "/api/windows/rtlfillmemory",
+                    },
+                    {
+                      text: "RtlZeroMemory",
+                      link: "/api/windows/rtlzeromemory",
+                    },
+                  ],
+                },
+                {
+                  text: "Process and Thread",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/process" },
+                    {
+                      text: "ExitProcess",
+                      link: "/api/windows/exitprocess",
+                    },
+                    {
+                      text: "GetCurrentProcessId",
+                      link: "/api/windows/getcurrentprocessid",
+                    },
+                    {
+                      text: "GetCurrentThreadId",
+                      link: "/api/windows/getcurrentthreadid",
+                    },
+                    { text: "Sleep", link: "/api/windows/sleep" },
+                  ],
+                },
+                {
+                  text: "Text Conversion",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/conversion" },
+                    {
+                      text: "MultiByteToWideChar",
+                      link: "/api/windows/multibytetowidechar",
+                    },
+                    {
+                      text: "WideCharToMultiByte",
+                      link: "/api/windows/widechartomultibyte",
+                    },
+                  ],
+                },
+                {
+                  text: "Time",
+                  collapsed: true,
+                  items: [
+                    { text: "Overview", link: "/api/windows/time" },
+                    {
+                      text: "GetLocalTime",
+                      link: "/api/windows/getlocaltime",
+                    },
+                    {
+                      text: "GetSystemTime",
+                      link: "/api/windows/getsystemtime",
+                    },
+                    {
+                      text: "GetTickCount64",
+                      link: "/api/windows/gettickcount64",
+                    },
+                  ],
+                },
+                { text: "Types and Constants", link: "/api/windows/types" },
               ],
             },
           ],

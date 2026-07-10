@@ -1,18 +1,19 @@
 # BSD Package
 
+::: warning Unstable API
+The package is under active development and its API is **not yet stable**. Names, signatures, and behavior may change between releases, and this documentation will be updated to match.
+:::
+
 Direct x86-64 syscall bindings for FreeBSD, OpenBSD, NetBSD, and DragonFly BSD.
 
 **Module:** `BSD`
+
+**Source:** [github.com/rux-lang/BSD](https://github.com/rux-lang/BSD)
 
 The package provides raw zero-to-six-argument syscall entry points, typed
 wrappers for common I/O, process, memory, and time operations, and the constants
 and structures those wrappers require. It calls the kernel without libc and
 uses compiler-provided thunks where the supported BSD variants differ.
-
-::: warning Unstable API
-The BSD package is under active development and its API is not yet stable. Pin
-a package version when reproducible builds are required.
-:::
 
 ## Requirements
 

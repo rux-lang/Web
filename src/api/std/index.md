@@ -1,17 +1,17 @@
 # Std Package
 
-The **Std** package is the Rux standard library — the core set of types and
-functions available to every program. It is developed at
-[github.com/rux-lang/Std](https://github.com/rux-lang/Std) and is organized into
-modules: a core `Std` module of types and functions available everywhere, plus
-submodules such as `Std::Io`, `Std::Memory`, and `Std::Math`.
-
 ::: warning Unstable API
-The standard library is under active development and its API is **not yet
-stable**. Names, signatures, and behavior may change between releases, and this
-documentation will be updated to match. Pin a specific version of `Std` if you
-need a stable surface, and expect to revisit your code when upgrading.
+The package is under active development and its API is **not yet stable**. Names, signatures, and behavior may change between releases, and this documentation will be updated to match.
 :::
+
+**Module:** `Std`
+
+**Source:** [github.com/rux-lang/Std](https://github.com/rux-lang/Std)
+
+The **Std** package is the Rux standard library — the core set of types and
+functions available to every program. It is organized into modules: a core
+`Std` module of types and functions available everywhere, plus submodules such
+as `Std::Io`, `Std::Memory`, and `Std::Math`.
 
 ## Installation
 

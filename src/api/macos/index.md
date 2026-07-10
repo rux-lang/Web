@@ -1,18 +1,19 @@
 # MacOS Package
 
+::: warning Unstable API
+The package is under active development and its API is **not yet stable**. Names, signatures, and behavior may change between releases, and this documentation will be updated to match.
+:::
+
 Low-level macOS x64 system bindings for Rux programs.
 
 **Module:** `MacOS`
+
+**Source:** [github.com/rux-lang/MacOS](https://github.com/rux-lang/MacOS)
 
 The package exposes a focused compatibility API for process termination,
 standard input and output, and virtual-memory allocation. Its Win32-style
 function names are resolved by the Rux Mach-O linker to thunks backed by macOS
 BSD syscalls; they do not load or emulate Windows system libraries.
-
-::: warning Unstable API
-The MacOS package is under active development and its API is not yet stable.
-Pin a package version when reproducible builds are required.
-:::
 
 ## Requirements
 
@@ -56,12 +57,12 @@ owns those responsibilities.
 
 ## Reference
 
-| Topic                          | Contents                                      |
-| ------------------------------ | --------------------------------------------- |
-| [`Types`](types)               | `StdHandle` standard-device identifiers.      |
-| [`Console and I/O`](console)   | Standard handles, byte input, and byte output.|
-| [`Heap and memory`](heap)      | Allocate and unmap virtual memory.             |
-| [`Process`](process)           | Terminate the process.                         |
+| Topic                        | Contents                                       |
+| ---------------------------- | ---------------------------------------------- |
+| [`Types`](types)             | `StdHandle` standard-device identifiers.       |
+| [`Console and I/O`](console) | Standard handles, byte input, and byte output. |
+| [`Heap and memory`](heap)    | Allocate and unmap virtual memory.             |
+| [`Process`](process)         | Terminate the process.                         |
 
 ## Example
 

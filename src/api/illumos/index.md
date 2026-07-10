@@ -1,17 +1,18 @@
 # Illumos Package
 
+::: warning Unstable API
+The package is under active development and its API is **not yet stable**. Names, signatures, and behavior may change between releases, and this documentation will be updated to match.
+:::
+
 Direct Illumos x86-64 system-call bindings for Rux programs.
 
 **Module:** `Illumos`
 
+**Source:** [github.com/rux-lang/Illumos](https://github.com/rux-lang/Illumos)
+
 The package provides raw zero-to-six-argument syscall entry points, typed
 wrappers for common I/O, process, memory, and time operations, and the constants
 and structures those wrappers require. It calls the kernel without libc.
-
-::: warning Unstable API
-The Illumos package is under active development and its API is not yet stable.
-Pin a package version when reproducible builds are required.
-:::
 
 ## Requirements
 
