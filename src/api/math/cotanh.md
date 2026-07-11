@@ -27,9 +27,9 @@ representable. A NaN argument propagates.
 ## Example
 
 ```rux
-import Math;
+import Math::Cotanh;
 
-let a = Math::Cotanh(1.0);   // 1.3130352854993312
+let a = Cotanh(1.0); // 1.3130352854993312
 ```
 
 ## See also

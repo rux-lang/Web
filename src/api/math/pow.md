@@ -35,11 +35,11 @@ IEEE-754's special cases, of which the ones most likely to be surprising are:
 ## Example
 
 ```rux
-import Math;
+import Math::Pow;
 
-let a = Math::Pow(2.0, 10.0);    // 1024.0
-let b = Math::Pow(9.0, 0.5);     // 3.0
-let c = Math::Pow(-8.0, 1.0 / 3.0); // NaN -- exponent is not an integer
+let a = Pow(2.0, 10.0);       // 1024.0
+let b = Pow(9.0, 0.5);        // 3.0
+let c = Pow(-8.0, 1.0 / 3.0); // NaN -- exponent is not an integer
 ```
 
 ## See also

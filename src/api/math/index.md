@@ -13,13 +13,13 @@ The package provides mathematical constants and floating-point functions.
 Every function is provided for both `float64` and `float32`. Pass `float64` arguments to get a `float64` result, or `float32` for a `float32` result — each overload rounds only once, so the `float32` result is as accurate as the `float64` computation allows.
 
 ```rux
-import Math;
+import Math::{ Pi, Pow, Sin, Sqrt };
 import Std::Io::PrintLine;
 
 func Main() -> int {
-    PrintLine(Math::Sqrt(2.0));           // 1.4142135623730951
-    PrintLine(Math::Pow(2.0, 10.0));      // 1024
-    PrintLine(Math::Sin(Math::Pi / 2.0)); // 1
+    PrintLine(Sqrt(2.0));      // 1.4142135623730951
+    PrintLine(Pow(2.0, 10.0)); // 1024
+    PrintLine(Sin(Pi / 2.0));  // 1
     return 0;
 }
 ```
@@ -52,7 +52,9 @@ rux install
 | `DegPerRad` | `float64` | 57.2957795130823208768 | 180 / `Pi`, degrees per radian.                    |
 
 ```rux
-let circumference = 2.0 * Math::Pi * radius;
+import Math::Pi;
+
+let circumference = 2.0 * Pi * radius;
 ```
 
 ## Functions

@@ -28,10 +28,10 @@ The smaller of `a` and `b`. A NaN loses to anything else — `Min(NaN, y)` is
 ## Example
 
 ```rux
-import Math;
+import Math::Min;
 
-let a = Math::Min(3.0, 7.0);    // 3.0
-let b = Math::Min(0.0, -0.0);   // -0.0
+let a = Min(3.0, 7.0);  // 3.0
+let b = Min(0.0, -0.0); // -0.0
 ```
 
 ## See also

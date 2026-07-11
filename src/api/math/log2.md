@@ -26,10 +26,10 @@ propagates.
 ## Example
 
 ```rux
-import Math;
+import Math::Log2;
 
-let a = Math::Log2(8.0);    // 3.0
-let b = Math::Log2(1.0);    // 0.0
+let a = Log2(8.0); // 3.0
+let b = Log2(1.0); // 0.0
 ```
 
 ## See also

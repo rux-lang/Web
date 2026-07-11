@@ -26,10 +26,10 @@ angle has that cosine; a NaN argument also propagates.
 ## Example
 
 ```rux
-import Math;
+import Math::ArcCos;
 
-let a = Math::ArcCos(1.0);    // 0.0
-let b = Math::ArcCos(-1.0);   // 3.141592653589793 (Pi)
+let a = ArcCos(1.0);  // 0.0
+let b = ArcCos(-1.0); // 3.141592653589793 (Pi)
 ```
 
 ## See also

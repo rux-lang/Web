@@ -25,10 +25,10 @@ so `Cos(±Inf)` is a NaN; a NaN argument also propagates.
 ## Example
 
 ```rux
-import Math;
+import Math::{ Cos, Pi };
 
-let a = Math::Cos(0.0);          // 1.0
-let b = Math::Cos(Math::Pi);     // -1.0
+let a = Cos(0.0); // 1.0
+let b = Cos(Pi);  // -1.0
 ```
 
 ## See also

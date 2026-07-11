@@ -27,10 +27,10 @@ propagates.
 ## Example
 
 ```rux
-import Math;
+import Math::Tanh;
 
-let a = Math::Tanh(0.0);   // 0.0
-let b = Math::Tanh(1.0);   // 0.7615941559557649
+let a = Tanh(0.0); // 0.0
+let b = Tanh(1.0); // 0.7615941559557649
 ```
 
 ## See also

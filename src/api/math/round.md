@@ -26,11 +26,11 @@ number. A tie rounds away from zero: `Round(2.5)` is `3.0` and
 ## Example
 
 ```rux
-import Math;
+import Math::Round;
 
-let a = Math::Round(2.5);    // 3.0
-let b = Math::Round(-2.5);   // -3.0
-let c = Math::Round(2.4);    // 2.0
+let a = Round(2.5);  // 3.0
+let b = Round(-2.5); // -3.0
+let c = Round(2.4);  // 2.0
 ```
 
 ## See also

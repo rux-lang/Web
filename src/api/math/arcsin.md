@@ -26,10 +26,10 @@ sine; a NaN argument also propagates.
 ## Example
 
 ```rux
-import Math;
+import Math::ArcSin;
 
-let a = Math::ArcSin(1.0);   // 1.5707963267948966 (HalfPi)
-let b = Math::ArcSin(0.0);   // 0.0
+let a = ArcSin(1.0); // 1.5707963267948966 (HalfPi)
+let b = ArcSin(0.0); // 0.0
 ```
 
 ## See also

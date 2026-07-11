@@ -30,10 +30,10 @@ infinite or a NaN.
 ## Example
 
 ```rux
-import Math;
+import Math::Mod;
 
-let a = Math::Mod(5.5, 2.0);    // 1.5
-let b = Math::Mod(-5.5, 2.0);   // -1.5
+let a = Mod(5.5, 2.0);  // 1.5
+let b = Mod(-5.5, 2.0); // -1.5
 ```
 
 ## See also

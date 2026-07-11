@@ -25,10 +25,10 @@ func Log(x: float32) -> float32;
 ## Example
 
 ```rux
-import Math;
+import Math::{ E, Log };
 
-let a = Math::Log(Math::E);   // 1.0
-let b = Math::Log(1.0);       // 0.0
+let a = Log(E);   // 1.0
+let b = Log(1.0); // 0.0
 ```
 
 ## See also

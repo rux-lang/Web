@@ -26,10 +26,10 @@ any other negative `x` is a NaN.
 ## Example
 
 ```rux
-import Math;
+import Math::Sqrt;
 
-let a = Math::Sqrt(144.0);   // 12.0
-let b = Math::Sqrt(-1.0);    // NaN
+let a = Sqrt(144.0); // 12.0
+let b = Sqrt(-1.0);  // NaN
 ```
 
 ## See also

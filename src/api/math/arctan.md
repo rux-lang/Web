@@ -25,10 +25,10 @@ The angle in `(-HalfPi, HalfPi)` whose tangent is `x`, defined for every real
 ## Example
 
 ```rux
-import Math;
+import Math::ArcTan;
 
-let a = Math::ArcTan(1.0);   // 0.7853981633974483 (QuarterPi)
-let b = Math::ArcTan(0.0);   // 0.0
+let a = ArcTan(1.0); // 0.7853981633974483 (QuarterPi)
+let b = ArcTan(0.0); // 0.0
 ```
 
 ## See also

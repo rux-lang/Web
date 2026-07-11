@@ -25,10 +25,10 @@ The hyperbolic cosine of `x`, always at least `1.0`. `Cosh(±Inf)` is `+Inf`.
 ## Example
 
 ```rux
-import Math;
+import Math::Cosh;
 
-let a = Math::Cosh(0.0);   // 1.0
-let b = Math::Cosh(1.0);   // 1.5430806348152437
+let a = Cosh(0.0); // 1.0
+let b = Cosh(1.0); // 1.5430806348152437
 ```
 
 ## See also

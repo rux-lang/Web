@@ -26,10 +26,10 @@ argument propagates.
 ## Example
 
 ```rux
-import Math;
+import Math::Sinh;
 
-let a = Math::Sinh(0.0);   // 0.0
-let b = Math::Sinh(1.0);   // 1.1752011936438014
+let a = Sinh(0.0); // 0.0
+let b = Sinh(1.0); // 1.1752011936438014
 ```
 
 ## See also

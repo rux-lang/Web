@@ -26,10 +26,10 @@ zero all fall out of the multiplication unchanged.
 ## Example
 
 ```rux
-import Math;
+import Math::{ HalfPi, Pi, RadToDeg };
 
-let degrees = Math::RadToDeg(Math::Pi);       // 180.0
-let ninety = Math::RadToDeg(Math::HalfPi);    // 90.0
+let degrees = RadToDeg(Pi);    // 180.0
+let ninety = RadToDeg(HalfPi); // 90.0
 ```
 
 ## See also

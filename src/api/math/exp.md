@@ -26,10 +26,10 @@ large positive `x` and underflows to `+0.0` for large negative `x`.
 ## Example
 
 ```rux
-import Math;
+import Math::Exp;
 
-let a = Math::Exp(1.0);    // 2.718281828459045 (e)
-let b = Math::Exp(0.0);    // 1.0
+let a = Exp(1.0); // 2.718281828459045 (e)
+let b = Exp(0.0); // 1.0
 ```
 
 ## See also

@@ -25,10 +25,10 @@ func Exp2(x: float32) -> float32;
 ## Example
 
 ```rux
-import Math;
+import Math::Exp2;
 
-let a = Math::Exp2(10.0);   // 1024.0
-let b = Math::Exp2(-1.0);   // 0.5
+let a = Exp2(10.0); // 1024.0
+let b = Exp2(-1.0); // 0.5
 ```
 
 ## See also

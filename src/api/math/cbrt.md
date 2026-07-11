@@ -26,10 +26,10 @@ themselves, and `Cbrt(±0.0)` preserves the sign of the zero.
 ## Example
 
 ```rux
-import Math;
+import Math::Cbrt;
 
-let a = Math::Cbrt(27.0);    // 3.0
-let b = Math::Cbrt(-8.0);    // -2.0
+let a = Cbrt(27.0); // 3.0
+let b = Cbrt(-8.0); // -2.0
 ```
 
 ## See also

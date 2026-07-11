@@ -58,19 +58,7 @@ export default defineConfig({
           { text: "Get Started", link: "/start/" },
           { text: "Rux Reference", link: "/docs/" },
           { text: "CLI Reference", link: "/cli/" },
-          {
-            // Title for the section.
-            text: "API Reference",
-            items: [
-              { text: "BSD", link: "/api/bsd/" },
-              { text: "Illumos", link: "/api/illumos/" },
-              { text: "Linux", link: "/api/linux/" },
-              { text: "MacOS", link: "/api/macos/" },
-              { text: "Math", link: "/api/math/" },
-              { text: "Std", link: "/api/std/" },
-              { text: "Windows", link: "/api/windows/" },
-            ],
-          },
+          { text: "API Reference", link: "/api/" },
         ],
       },
       { text: "Playground", link: "/playground" },
@@ -432,22 +420,67 @@ export default defineConfig({
       "/api/": [
         {
           text: "API Reference",
-          collapsed: false,
+          collapsed: true,
           items: [
-            { text: "Std Package", link: "/api/std/" },
-            { text: "Math Package", link: "/api/math/" },
-            { text: "BSD Package", link: "/api/bsd/" },
-            { text: "Illumos Package", link: "/api/illumos/" },
-            { text: "Linux Package", link: "/api/linux/" },
-            { text: "MacOS Package", link: "/api/macos/" },
-            { text: "Windows Package", link: "/api/windows/" },
+            { text: "Table of Contents", link: "/api/" },
+            { text: "Introduction", link: "/api/introduction" },
           ],
         },
-      ],
-      "/api/std/": [
         {
-          text: "Std Package",
-          collapsed: false,
+          text: "Math",
+          collapsed: true,
+          items: [
+            { text: "Overview", link: "/api/math/" },
+            { text: "Abs", link: "/api/math/abs" },
+            { text: "ArcCos", link: "/api/math/arccos" },
+            { text: "ArcCot", link: "/api/math/arccot" },
+            { text: "ArcSin", link: "/api/math/arcsin" },
+            { text: "ArcTan", link: "/api/math/arctan" },
+            { text: "Cbrt", link: "/api/math/cbrt" },
+            { text: "Ceil", link: "/api/math/ceil" },
+            { text: "Cos", link: "/api/math/cos" },
+            { text: "Cosh", link: "/api/math/cosh" },
+            { text: "Cotan", link: "/api/math/cotan" },
+            { text: "Cotanh", link: "/api/math/cotanh" },
+            { text: "DegToRad", link: "/api/math/degtorad" },
+            { text: "Exp", link: "/api/math/exp" },
+            { text: "Exp2", link: "/api/math/exp2" },
+            { text: "Floor", link: "/api/math/floor" },
+            { text: "Hypot", link: "/api/math/hypot" },
+            { text: "Log", link: "/api/math/log" },
+            { text: "Log10", link: "/api/math/log10" },
+            { text: "Log2", link: "/api/math/log2" },
+            { text: "Max", link: "/api/math/max" },
+            { text: "Min", link: "/api/math/min" },
+            { text: "Mod", link: "/api/math/mod" },
+            { text: "Pow", link: "/api/math/pow" },
+            { text: "RadToDeg", link: "/api/math/radtodeg" },
+            { text: "Round", link: "/api/math/round" },
+            { text: "Sin", link: "/api/math/sin" },
+            { text: "Sinh", link: "/api/math/sinh" },
+            { text: "Sqrt", link: "/api/math/sqrt" },
+            { text: "Tan", link: "/api/math/tan" },
+            { text: "Tanh", link: "/api/math/tanh" },
+            { text: "Trunc", link: "/api/math/trunc" },
+          ],
+        },
+        {
+          text: "Memory",
+          collapsed: true,
+          items: [
+            { text: "Overview", link: "/api/memory/" },
+            { text: "Alloc", link: "/api/memory/alloc" },
+            { text: "Compare", link: "/api/memory/compare" },
+            { text: "Copy", link: "/api/memory/copy" },
+            { text: "Free", link: "/api/memory/free" },
+            { text: "Realloc", link: "/api/memory/realloc" },
+            { text: "Set", link: "/api/memory/set" },
+            { text: "Zero", link: "/api/memory/zero" },
+          ],
+        },
+        {
+          text: "Std",
+          collapsed: true,
           items: [
             { text: "Overview", link: "/api/std/" },
             {
@@ -736,51 +769,9 @@ export default defineConfig({
             },
           ],
         },
-      ],
-      "/api/math/": [
         {
-          text: "Math Package",
-          collapsed: false,
-          items: [
-            { text: "Overview", link: "/api/math/" },
-            { text: "Abs", link: "/api/math/abs" },
-            { text: "ArcCos", link: "/api/math/arccos" },
-            { text: "ArcCot", link: "/api/math/arccot" },
-            { text: "ArcSin", link: "/api/math/arcsin" },
-            { text: "ArcTan", link: "/api/math/arctan" },
-            { text: "Cbrt", link: "/api/math/cbrt" },
-            { text: "Ceil", link: "/api/math/ceil" },
-            { text: "Cos", link: "/api/math/cos" },
-            { text: "Cosh", link: "/api/math/cosh" },
-            { text: "Cotan", link: "/api/math/cotan" },
-            { text: "Cotanh", link: "/api/math/cotanh" },
-            { text: "DegToRad", link: "/api/math/degtorad" },
-            { text: "Exp", link: "/api/math/exp" },
-            { text: "Exp2", link: "/api/math/exp2" },
-            { text: "Floor", link: "/api/math/floor" },
-            { text: "Hypot", link: "/api/math/hypot" },
-            { text: "Log", link: "/api/math/log" },
-            { text: "Log10", link: "/api/math/log10" },
-            { text: "Log2", link: "/api/math/log2" },
-            { text: "Max", link: "/api/math/max" },
-            { text: "Min", link: "/api/math/min" },
-            { text: "Mod", link: "/api/math/mod" },
-            { text: "Pow", link: "/api/math/pow" },
-            { text: "RadToDeg", link: "/api/math/radtodeg" },
-            { text: "Round", link: "/api/math/round" },
-            { text: "Sin", link: "/api/math/sin" },
-            { text: "Sinh", link: "/api/math/sinh" },
-            { text: "Sqrt", link: "/api/math/sqrt" },
-            { text: "Tan", link: "/api/math/tan" },
-            { text: "Tanh", link: "/api/math/tanh" },
-            { text: "Trunc", link: "/api/math/trunc" },
-          ],
-        },
-      ],
-      "/api/bsd/": [
-        {
-          text: "BSD Package",
-          collapsed: false,
+          text: "BSD",
+          collapsed: true,
           items: [
             { text: "Overview", link: "/api/bsd/" },
             {
@@ -845,11 +836,9 @@ export default defineConfig({
             },
           ],
         },
-      ],
-      "/api/illumos/": [
         {
-          text: "Illumos Package",
-          collapsed: false,
+          text: "Illumos",
+          collapsed: true,
           items: [
             { text: "Overview", link: "/api/illumos/" },
             {
@@ -914,11 +903,9 @@ export default defineConfig({
             },
           ],
         },
-      ],
-      "/api/linux/": [
         {
-          text: "Linux Package",
-          collapsed: false,
+          text: "Linux",
+          collapsed: true,
           items: [
             { text: "Overview", link: "/api/linux/" },
             {
@@ -988,11 +975,9 @@ export default defineConfig({
             },
           ],
         },
-      ],
-      "/api/macos/": [
         {
-          text: "MacOS Package",
-          collapsed: false,
+          text: "MacOS",
+          collapsed: true,
           items: [
             { text: "Overview", link: "/api/macos/" },
             {
@@ -1042,11 +1027,9 @@ export default defineConfig({
             },
           ],
         },
-      ],
-      "/api/windows/": [
         {
-          text: "Windows Package",
-          collapsed: false,
+          text: "Windows",
+          collapsed: true,
           items: [
             { text: "Overview", link: "/api/windows/" },
             {

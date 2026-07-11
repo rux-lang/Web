@@ -28,10 +28,10 @@ The larger of `a` and `b`. A NaN loses to anything else — `Max(NaN, y)` is
 ## Example
 
 ```rux
-import Math;
+import Math::Max;
 
-let a = Math::Max(3.0, 7.0);    // 7.0
-let b = Math::Max(0.0, -0.0);   // 0.0
+let a = Max(3.0, 7.0);  // 7.0
+let b = Max(0.0, -0.0); // 0.0
 ```
 
 ## See also

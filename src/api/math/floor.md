@@ -26,10 +26,10 @@ a NaN passes through unchanged.
 ## Example
 
 ```rux
-import Math;
+import Math::Floor;
 
-let a = Math::Floor(3.7);    // 3.0
-let b = Math::Floor(-3.2);   // -4.0
+let a = Floor(3.7);  // 3.0
+let b = Floor(-3.2); // -4.0
 ```
 
 ## See also

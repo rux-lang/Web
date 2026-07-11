@@ -27,10 +27,10 @@ expected of a pole.
 ## Example
 
 ```rux
-import Math;
+import Math::{ QuarterPi, Tan };
 
-let a = Math::Tan(0.0);              // 0.0
-let b = Math::Tan(Math::QuarterPi);  // 1.0
+let a = Tan(0.0);       // 0.0
+let b = Tan(QuarterPi); // 1.0
 ```
 
 ## See also

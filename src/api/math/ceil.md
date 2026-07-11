@@ -27,10 +27,10 @@ NaN passes through unchanged.
 ## Example
 
 ```rux
-import Math;
+import Math::Ceil;
 
-let a = Math::Ceil(3.2);     // 4.0
-let b = Math::Ceil(-3.7);    // -3.0
+let a = Ceil(3.2);  // 4.0
+let b = Ceil(-3.7); // -3.0
 ```
 
 ## See also

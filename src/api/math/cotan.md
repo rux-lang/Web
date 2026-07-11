@@ -28,9 +28,9 @@ NaN; a NaN argument also propagates.
 ## Example
 
 ```rux
-import Math;
+import Math::{ Cotan, QuarterPi };
 
-let a = Math::Cotan(Math::QuarterPi);   // 1.0
+let a = Cotan(QuarterPi); // 1.0
 ```
 
 ## See also

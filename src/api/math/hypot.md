@@ -29,9 +29,9 @@ otherwise a NaN in either argument produces a NaN.
 ## Example
 
 ```rux
-import Math;
+import Math::Hypot;
 
-let a = Math::Hypot(3.0, 4.0);   // 5.0
+let a = Hypot(3.0, 4.0); // 5.0
 ```
 
 ## See also

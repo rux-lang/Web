@@ -26,10 +26,10 @@ than a pole. A NaN argument propagates.
 ## Example
 
 ```rux
-import Math;
+import Math::ArcCot;
 
-let a = Math::ArcCot(0.0);   // 1.5707963267948966 (HalfPi)
-let b = Math::ArcCot(1.0);   // 0.7853981633974483 (QuarterPi)
+let a = ArcCot(0.0); // 1.5707963267948966 (HalfPi)
+let b = ArcCot(1.0); // 0.7853981633974483 (QuarterPi)
 ```
 
 ## See also

@@ -26,10 +26,10 @@ payload but a cleared sign.
 ## Example
 
 ```rux
-import Math;
+import Math::Abs;
 
-let a = Math::Abs(-3.5);   // 3.5
-let b = Math::Abs(-0.0);   // 0.0
+let a = Abs(-3.5); // 3.5
+let b = Abs(-0.0); // 0.0
 ```
 
 ## See also

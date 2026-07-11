@@ -26,10 +26,10 @@ Infinities and NaNs pass through unchanged.
 ## Example
 
 ```rux
-import Math;
+import Math::Trunc;
 
-let a = Math::Trunc(3.9);    // 3.0
-let b = Math::Trunc(-3.9);   // -3.0
+let a = Trunc(3.9);  // 3.0
+let b = Trunc(-3.9); // -3.0
 ```
 
 ## See also
