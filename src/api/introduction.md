@@ -19,6 +19,7 @@ The packages come in two layers, and the one you should reach for first is the p
 | [`Math`](math/)     | Constants and floating-point functions, for both `float64` and `float32`.              |
 | [`Memory`](memory/) | Allocate, resize, and release raw blocks, and fill, copy, and compare their bytes.     |
 | [`Std`](std/)       | The standard library: strings, formatting, console I/O, time, hashing, and containers. |
+| [`Text`](text/)     | Strings and fundamental text manipulation: an immutable string and a builder for one.  |
 
 **Platform-dependent packages** are the layer below — thin, direct declarations of one operating system's own entry points, with no portability layer and no safety net. A program that calls them is a program for that platform. Reach for them when the cross-platform packages have no answer, and guard every call with the [`Target`](/docs/attributes/target) attribute.
 
@@ -58,6 +59,7 @@ Illumos, Linux, macOS, and Windows are supported. **BSD is not implemented yet.*
 | [`Math`](math/)       | ✓       | ✓       | ✓     | ✓     | ✓       |
 | [`Memory`](memory/)   | Planned | ✓       | ✓     | ✓     | ✓       |
 | [`Std`](std/)         | Planned | ✓       | ✓     | ✓     | ✓       |
+| [`Text`](text/)       | Planned | ✓       | ✓     | ✓     | ✓       |
 | [`BSD`](bsd/)         | Planned | —       | —     | —     | —       |
 | [`Illumos`](illumos/) | —       | ✓       | —     | —     | —       |
 | [`Linux`](linux/)     | —       | —       | ✓     | —     | —       |
@@ -80,7 +82,7 @@ Edge cases are where a reference earns its keep, so they are stated on the page 
 
 ## Where to Go Next
 
-- **Looking for a function?** Start from a package overview — [`Math`](math/), [`Memory`](memory/), or [`Std`](std/) — each of which lists its full contents in one table.
+- **Looking for a function?** Start from a package overview — [`Math`](math/), [`Memory`](memory/), [`Std`](std/), or [`Text`](text/) — each of which lists its full contents in one table.
 - **Working close to the metal?** The platform-dependent packages mirror their operating systems closely: [`Illumos`](illumos/), [`Linux`](linux/), [`MacOS`](macos/), and [`Windows`](windows/).
 - **Writing platform-specific code?** See the [`Target`](/docs/attributes/target) attribute and the [Foreign Function Interface](/docs/ffi/overview).
 - **Learning the language?** The [Rux Language Reference](/docs/) covers the syntax and the type system these packages are built on.
