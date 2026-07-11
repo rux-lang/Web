@@ -427,6 +427,23 @@ export default defineConfig({
           ],
         },
         {
+          text: "Format",
+          collapsed: true,
+          items: [
+            { text: "Overview", link: "/api/format/" },
+            { text: "IsFinite", link: "/api/format/isfinite" },
+            { text: "IsInfinite", link: "/api/format/isinfinite" },
+            { text: "IsNan", link: "/api/format/isnan" },
+            { text: "Stringable", link: "/api/format/stringable" },
+            { text: "ToString", link: "/api/format/tostring" },
+            { text: "WriteBool", link: "/api/format/writebool" },
+            { text: "WriteChar", link: "/api/format/writechar" },
+            { text: "WriteFloat", link: "/api/format/writefloat" },
+            { text: "WriteInt", link: "/api/format/writeint" },
+            { text: "WriteUint", link: "/api/format/writeuint" },
+          ],
+        },
+        {
           text: "Math",
           collapsed: true,
           items: [

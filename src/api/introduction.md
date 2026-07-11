@@ -16,6 +16,7 @@ The packages come in two layers, and the one you should reach for first is the p
 
 | Package             | Description                                                                            |
 | ------------------- | -------------------------------------------------------------------------------------- |
+| [`Format`](format/) | Values as text: a conversion for every primitive, and an interface for your own types. |
 | [`Math`](math/)     | Constants and floating-point functions, for both `float64` and `float32`.              |
 | [`Memory`](memory/) | Allocate, resize, and release raw blocks, and fill, copy, and compare their bytes.     |
 | [`Std`](std/)       | The standard library: strings, formatting, console I/O, time, hashing, and containers. |
@@ -56,6 +57,7 @@ Illumos, Linux, macOS, and Windows are supported. **BSD is not implemented yet.*
 
 | Package               | BSD     | Illumos | Linux | MacOS | Windows |
 | --------------------- | ------- | ------- | ----- | ----- | ------- |
+| [`Format`](format/)   | Planned | ✓       | ✓     | ✓     | ✓       |
 | [`Math`](math/)       | ✓       | ✓       | ✓     | ✓     | ✓       |
 | [`Memory`](memory/)   | Planned | ✓       | ✓     | ✓     | ✓       |
 | [`Std`](std/)         | Planned | ✓       | ✓     | ✓     | ✓       |
@@ -82,7 +84,7 @@ Edge cases are where a reference earns its keep, so they are stated on the page 
 
 ## Where to Go Next
 
-- **Looking for a function?** Start from a package overview — [`Math`](math/), [`Memory`](memory/), [`Std`](std/), or [`Text`](text/) — each of which lists its full contents in one table.
+- **Looking for a function?** Start from a package overview — [`Format`](format/), [`Math`](math/), [`Memory`](memory/), [`Std`](std/), or [`Text`](text/) — each of which lists its full contents in one table.
 - **Working close to the metal?** The platform-dependent packages mirror their operating systems closely: [`Illumos`](illumos/), [`Linux`](linux/), [`MacOS`](macos/), and [`Windows`](windows/).
 - **Writing platform-specific code?** See the [`Target`](/docs/attributes/target) attribute and the [Foreign Function Interface](/docs/ffi/overview).
 - **Learning the language?** The [Rux Language Reference](/docs/) covers the syntax and the type system these packages are built on.
