@@ -444,6 +444,16 @@ export default defineConfig({
           ],
         },
         {
+          text: "Io",
+          collapsed: true,
+          items: [
+            { text: "Overview", link: "/api/io/" },
+            { text: "Print", link: "/api/io/print" },
+            { text: "PrintLine", link: "/api/io/printline" },
+            { text: "ReadLine", link: "/api/io/readline" },
+          ],
+        },
+        {
           text: "Math",
           collapsed: true,
           items: [
