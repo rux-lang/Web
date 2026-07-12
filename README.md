@@ -1,6 +1,6 @@
 # Rux Website
 
-Built with [VitePress](https://vitepress.dev)
+The official website for the [Rux](https://rux-lang.dev) programming language, built with [VitePress](https://vitepress.dev).
 
 ## Project Structure
 
@@ -20,23 +20,23 @@ Inside the project you'll see the following folders and files:
 └── package.json
 ```
 
-VitePress looks for `.md` files in the `src/` and `src/docs/` directories. Each file is exposed as a route based on its file name.
-
-Images can be added to `src/public/images/` and embedded in Markdown with a relative link.
-
-Static assets, like favicons, can be placed in the `src/public/` directory.
+VitePress processes `.md` files recursively under `src/`. Each file is exposed as a route based on its path and file name. Images can be added to `src/public/images/` and referenced in Markdown from `/images/`. Other static assets, such as favicons, can be placed in `src/public/`.
 
 ## Commands
 
 All commands are run from the root of the project, from a terminal:
 
-| Command           | Action                                             |
-| :---------------- | :------------------------------------------------- |
-| `npm install`     | Installs dependencies                              |
-| `npm run dev`     | Starts local dev server at `localhost:5173`        |
-| `npm run build`   | Build your production site to `./.vitepress/dist/` |
-| `npm run preview` | Preview your build locally, before deploying       |
+| Command           | Action                                           |
+| :---------------- | :----------------------------------------------- |
+| `npm install`     | Installs dependencies                            |
+| `npm run dev`     | Starts local dev server at `localhost:5173`      |
+| `npm run build`   | Builds the production site in `.vitepress/dist/` |
+| `npm run preview` | Previews the production build locally            |
+
+## Contributing
+
+Pull requests should target `dev`, not `main`. CI rejects pull requests opened against `main`.
 
 ## License
 
-[MIT](LICENSE)
+Licensed under the [MIT License](LICENSE.md).
