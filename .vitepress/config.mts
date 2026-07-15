@@ -1520,9 +1520,10 @@ export default defineConfig({
       // directly. The proxy runs server-side, where CORS doesn't apply.
       proxy: {
         "/api/registry": {
-          target: "https://api.rux-lang.dev",
+          // Point at the WebApi running locally during development so the
+          // packages page loads from http://localhost:5214/packages.
+          target: "http://localhost:5214",
           changeOrigin: true,
-          secure: true,
           rewrite: (p) => p.replace(/^\/api\/registry/, ""),
         },
         // The playground talks to the WebApi running locally during development.

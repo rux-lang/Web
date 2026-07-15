@@ -9,8 +9,10 @@ import {
 } from "vue";
 
 // In dev, go through the Vite proxy (see vite.server.proxy in config.mts) so
-// requests are same-origin and not subject to the API's CORS allowlist.
-const API_URL = import.meta.env.DEV
+// requests are same-origin and not subject to the API's CORS allowlist. Dev also
+// skips Cloudflare human verification — the local API bypasses it too.
+const DEV = import.meta.env.DEV;
+const API_URL = DEV
   ? "/api/registry/packages"
   : "https://api.rux-lang.dev/packages";
 // Cloudflare test sitekey (always passes); replace with the real one in production.
@@ -44,6 +46,18 @@ async function copyInstallCommand(pkg) {
   } catch {
     // Clipboard is unavailable (insecure context or denied permission).
   }
+}
+
+// The API stores the bare repository URL plus a folder (empty for a package at
+// the repository root). Link into the subfolder for monorepo packages; HEAD
+// keeps the link on the repository's default branch without hardcoding it.
+function repoHref(pkg) {
+  return pkg.folder ? `${pkg.repository}/tree/HEAD/${pkg.folder}` : pkg.repository;
+}
+
+function repoLabel(pkg) {
+  const base = pkg.repository.replace(/^https?:\/\//, "");
+  return pkg.folder ? `${base}/${pkg.folder}` : base;
 }
 
 function formatDate(iso) {
@@ -86,6 +100,9 @@ function loadTurnstileScript() {
 }
 
 async function renderTurnstile() {
+  if (DEV) {
+    return;
+  }
   try {
     await loadTurnstileScript();
   } catch (e) {
@@ -135,7 +152,7 @@ async function readErrorMessage(response) {
 }
 
 async function publishPackage() {
-  if (!turnstileToken.value) {
+  if (!DEV && !turnstileToken.value) {
     submitError.value = "Please complete the verification challenge first.";
     return;
   }
@@ -147,7 +164,9 @@ async function publishPackage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         repository: form.repository.trim(),
-        turnstileToken: turnstileToken.value,
+        // In dev the API bypasses verification; send a placeholder so the
+        // required field passes model validation.
+        turnstileToken: DEV ? "dev" : turnstileToken.value,
       }),
     });
     if (!response.ok) {
@@ -200,11 +219,11 @@ onMounted(async () => {
         is detected from the repository. Supported hosts: GitHub, GitLab,
         Bitbucket, Codeberg.
       </p>
-      <div ref="turnstileContainer" class="turnstile-widget"></div>
+      <div v-show="!DEV" ref="turnstileContainer" class="turnstile-widget"></div>
       <div v-if="submitError" class="registry-error form-error">
         {{ submitError }}
       </div>
-      <button type="submit" class="publish-submit" :disabled="submitting || !turnstileToken">
+      <button type="submit" class="publish-submit" :disabled="submitting || (!DEV && !turnstileToken)">
         {{ submitting ? "Publishing…" : "Publish" }}
       </button>
     </form>
@@ -246,8 +265,8 @@ onMounted(async () => {
           </div>
           <p class="package-description">{{ pkg.description }}</p>
           <div class="package-meta">
-            <a class="package-repo" :href="pkg.repository" target="_blank" rel="noopener noreferrer">
-              {{ pkg.repository.replace(/^https?:\/\//, "") }}
+            <a class="package-repo" :href="repoHref(pkg)" target="_blank" rel="noopener noreferrer">
+              {{ repoLabel(pkg) }}
             </a>
             <span class="package-date">Published {{ formatDate(pkg.created) }}</span>
           </div>
