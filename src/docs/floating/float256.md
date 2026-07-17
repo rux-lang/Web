@@ -13,7 +13,7 @@
 | Literal suffix    | `f256` |
 | Hardware support  | Always software-emulated |
 
-`float256` is an octuple-precision float. It is a Rux extension beyond IEEE 754-2019, but follows the same structural rules (sign, biased exponent, significand) and round-to-nearest behaviour. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error. It is always software-emulated — expect large slowdowns versus [`float64`](./float64), so profile before using it in hot paths.
+`float256` is an octuple-precision float. It is a Rux extension beyond IEEE 754, but follows the same structural rules (sign, biased exponent, significand) and round-to-nearest behaviour. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error. It is always software-emulated — expect large slowdowns versus [`float64`](./float64), so profile before using it in hot paths.
 
 ## Literals
 

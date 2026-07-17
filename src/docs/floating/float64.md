@@ -9,7 +9,7 @@
 | Literal suffix    | `f64` |
 | Hardware support  | Native on all supported targets |
 
-`float64` is the default floating-point type in Rux — [`float`](./float) is a built-in alias for it. It is fully [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754)-2019 compliant. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error.
+`float64` is the default floating-point type in Rux — [`float`](./float) is a built-in alias for it. It is fully [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) compliant. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error.
 
 ## Literals
 

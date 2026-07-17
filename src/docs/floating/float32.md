@@ -9,7 +9,7 @@
 | Literal suffix    | `f32` |
 | Hardware support  | Native on all supported targets |
 
-`float32` is the standard single-precision float, fully [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754)-2019 compliant. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error.
+`float32` is the standard single-precision float, fully [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) compliant. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error.
 
 ## Literals
 

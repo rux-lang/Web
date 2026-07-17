@@ -13,7 +13,7 @@
 | Literal suffix    | `f512`                                                  |
 | Hardware support  | Always software-emulated                                |
 
-`float512` is the maximum-precision float in Rux. It is a Rux extension beyond IEEE 754-2019, but follows the same structural rules (sign, biased exponent, significand) and round-to-nearest behaviour. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error. It is always software-emulated — expect large slowdowns versus [`float64`](./float64), so it is not recommended for hot paths.
+`float512` is the maximum-precision float in Rux. It is a Rux extension beyond IEEE 754, but follows the same structural rules (sign, biased exponent, significand) and round-to-nearest behaviour. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error. It is always software-emulated — expect large slowdowns versus [`float64`](./float64), so it is not recommended for hot paths.
 
 ## Literals
 

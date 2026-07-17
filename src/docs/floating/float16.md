@@ -13,7 +13,7 @@
 | Literal suffix    | `f16` |
 | Hardware support  | Native on GPUs and recent CPUs; emulated elsewhere |
 
-`float16` is a half-precision float, fully [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754)-2019 compliant. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error. Arithmetic may be emulated in software on CPU targets that lack native FP16 instructions.
+`float16` is a half-precision float, fully [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) compliant. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error. Arithmetic may be emulated in software on CPU targets that lack native FP16 instructions.
 
 ## Literals
 

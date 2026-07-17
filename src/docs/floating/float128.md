@@ -13,7 +13,7 @@
 | Literal suffix    | `f128` |
 | Hardware support  | Software-emulated on most hardware |
 
-`float128` is a quadruple-precision float, fully [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754)-2019 compliant. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error. It is software-emulated on most hardware — expect large slowdowns versus [`float64`](./float64), so profile before using it in hot paths.
+`float128` is a quadruple-precision float, fully [IEEE 754](https://en.wikipedia.org/wiki/IEEE_754) compliant. Special values (`Inf`, `-Inf`, `NaN`) are supported, and division by zero produces `Inf` or `NaN` rather than a fatal error. It is software-emulated on most hardware — expect large slowdowns versus [`float64`](./float64), so profile before using it in hot paths.
 
 ## Literals
 
