@@ -32,7 +32,7 @@ to a fraction of the full range and interpolated between the bounds.
 ## Example
 
 ```rux
-import Std::Random;
+import Rux::Random;
 
 let t = Random::RandomFloat64(0.0, 1.0, seed);     // unit interval
 ```

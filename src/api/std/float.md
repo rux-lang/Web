@@ -29,9 +29,9 @@ Returns `true` if `value` is positive or negative infinity.
 ## Example
 
 ```rux
-import Std::{ IsNan, IsInfinite };
-import Std::Io::PrintLine;
-import Std::Math;
+import Rux::{ IsNan, IsInfinite };
+import Io::PrintLine;
+import Math;
 
 func Main() -> int {
     let r = Math::Sqrt(-1.0);

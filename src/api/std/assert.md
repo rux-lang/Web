@@ -47,7 +47,7 @@ conditions. For unconditional termination, see [`Fatal`](fatal).
 ## Example
 
 ```rux
-import Std::Assert;
+import Rux::Assert;
 
 func Divide(a: int, b: int) -> int {
     Assert(b != 0, "divisor must be non-zero");

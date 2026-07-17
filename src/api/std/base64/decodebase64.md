@@ -37,7 +37,7 @@ Validate untrusted input before decoding.
 ## Example
 
 ```rux
-import Std::Base64;
+import Rux::Base64;
 
 let b64 = "UnV4";
 let decoded = Base64::DecodeBase64(b64.data, b64.length);   // "Rux"

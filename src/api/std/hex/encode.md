@@ -24,7 +24,7 @@ byte. Encoding an empty slice returns an empty string.
 ## Example
 
 ```rux
-import Std::Hex;
+import Rux::Hex;
 
 let s = Hex::Encode("AB");       // "4142"
 ```

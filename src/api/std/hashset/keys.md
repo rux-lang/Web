@@ -23,8 +23,8 @@ the caller** — release it with [`Free`](../memory/free) when done.
 ## Example
 
 ```rux
-import Std::HashSet::*;
-import Std::Memory::Free as FreeMem;
+import Rux::HashSet::*;
+import Memory::Free as FreeMem;
 
 let keys = set.Keys();
 if keys != null {

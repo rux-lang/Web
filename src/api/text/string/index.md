@@ -74,7 +74,7 @@ Each returns a **new** `String` and leaves the receiver unchanged.
 ## Example
 
 ```rux
-import Std::Io::PrintLine;
+import Io::PrintLine;
 import Text::String;
 
 func Main() -> int {

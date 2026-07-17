@@ -13,7 +13,7 @@ The package provides strings and fundamental text manipulation — an immutable 
 Both types hold a heap block they own, and every block comes from the [`Memory`](/api/memory/) package, which is what this one is built on. The bytes are whatever was put there — the package reads them as UTF-8 only where it has to, and says so where it does.
 
 ```rux
-import Std::Io::PrintLine;
+import Io::PrintLine;
 import Text::{ String, StringBuilder };
 
 func Main() -> int {

@@ -19,7 +19,7 @@ is unchanged. To also release the memory, use [`Free`](free).
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 map.Clear();                 // count is now 0, capacity unchanged
 ```

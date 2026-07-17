@@ -1,4 +1,4 @@
-import Std::Io::Print;
+import Io::Print;
 
 func Sum(values: int...) -> int {
     var total = 0;

@@ -34,7 +34,7 @@ Always pair initialization with [`Free`](free) to release the set's memory.
 ## Example
 
 ```rux
-import Std::HashSet::*;
+import Rux::HashSet::*;
 
 var a: HashSet;
 Init(&a);

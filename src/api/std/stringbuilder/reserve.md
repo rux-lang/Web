@@ -25,7 +25,7 @@ ahead of a batch of appends avoids repeated reallocations.
 ## Example
 
 ```rux
-import Std::StringBuilder;
+import Rux::StringBuilder;
 
 var sb = StringBuilder::New();
 sb.Reserve(256);             // one allocation instead of several

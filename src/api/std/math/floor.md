@@ -25,7 +25,7 @@ precision (e.g. `Floor(2.9)` is `2.0`, `Floor(-2.1)` is `-3.0`).
 ## Example
 
 ```rux
-import Std::Math;
+import Rux::Math;
 
 let f = Math::Floor(2.9);            // 2.0
 ```

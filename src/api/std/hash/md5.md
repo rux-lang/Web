@@ -34,8 +34,8 @@ use it for signatures, passwords, or tamper detection against an adversary. Use
 ## Example
 
 ```rux
-import Std::Hash::Md5;
-import Std::Io::PrintLine;
+import Hash::Md5;
+import Io::PrintLine;
 
 func Main() -> int {
     PrintLine(Md5::Hash("hello"));

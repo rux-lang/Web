@@ -35,8 +35,8 @@ it for security. Prefer [`Sha256`](sha256), [`Blake2`](blake2), or
 ## Example
 
 ```rux
-import Std::Hash::Sha0;
-import Std::Io::PrintLine;
+import Hash::Sha0;
+import Io::PrintLine;
 
 func Main() -> int {
     PrintLine(Sha0::Hash("hello"));

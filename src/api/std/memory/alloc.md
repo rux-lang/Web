@@ -36,7 +36,7 @@ The returned memory is uninitialized and the caller owns it. Always check for
 ## Example
 
 ```rux
-import Std::Memory::*;
+import Memory::*;
 
 func Main() -> int {
     let buffer = Alloc(1024);

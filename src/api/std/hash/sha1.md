@@ -36,8 +36,8 @@ for compatibility with legacy systems, never for new security work. Prefer
 ## Example
 
 ```rux
-import Std::Hash::Sha1;
-import Std::Io::PrintLine;
+import Hash::Sha1;
+import Io::PrintLine;
 
 func Main() -> int {
     PrintLine(Sha1::Hash("hello"));

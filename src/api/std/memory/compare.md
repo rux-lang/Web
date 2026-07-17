@@ -37,7 +37,7 @@ with `Compare(a, b, n) == n`.
 ## Example
 
 ```rux
-import Std::Memory::*;
+import Memory::*;
 
 func Equal(a: *opaque, b: *opaque, n: uint) -> bool {
     return Compare(a, b, n) == n;

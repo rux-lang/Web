@@ -68,7 +68,7 @@ handy for inserting a blank line.
 ## Example
 
 ```rux
-import Std::Io::*;
+import Io::*;
 
 func Main() -> int {
     PrintLine("Hello, World!");

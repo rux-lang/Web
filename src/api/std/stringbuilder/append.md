@@ -29,8 +29,8 @@ slice or string is a no-op.
 ## Example
 
 ```rux
-import Std::StringBuilder;
-import Std::String;
+import Rux::StringBuilder;
+import Rux::String;
 
 var sb = StringBuilder::New();
 sb.Append("count: ");        // char8[]

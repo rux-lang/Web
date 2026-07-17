@@ -24,7 +24,7 @@ the set never holds duplicates. It grows automatically as it fills.
 ## Example
 
 ```rux
-import Std::HashSet::*;
+import Rux::HashSet::*;
 
 var set: HashSet;
 Init(&set);

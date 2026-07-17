@@ -29,7 +29,7 @@ code, use the `+` operator directly.
 ## Example
 
 ```rux
-import Std::Math;
+import Rux::Math;
 
 let total = Math::Add(2, 3);         // 5
 ```

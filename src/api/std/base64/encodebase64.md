@@ -25,7 +25,7 @@ with `=` as needed. Encoding zero bytes returns an empty string.
 ## Example
 
 ```rux
-import Std::Base64;
+import Rux::Base64;
 
 let s = "Rux";
 let encoded = Base64::EncodeBase64(s.data, s.length);   // "UnV4"

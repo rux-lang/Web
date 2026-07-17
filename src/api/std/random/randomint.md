@@ -42,7 +42,7 @@ overview](/api/std/random/) for how to vary the seed.
 ## Example
 
 ```rux
-import Std::Random;
+import Rux::Random;
 
 let roll = Random::RandomInt(1, 7, seed);    // 1..6 inclusive
 ```

@@ -102,8 +102,8 @@ each segment.
 ## Example
 
 ```rux
-import Std::Io::*;
-import Std::String;
+import Io::*;
+import Text::String;
 
 func Main() -> int {
     let title = String::From("  the rux language  ").Trim().TitleCase();

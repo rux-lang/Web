@@ -32,7 +32,7 @@ non-negative ones. See the [module overview](/api/std/sort/).
 ## Example
 
 ```rux
-import Std::Sort;
+import Rux::Sort;
 
 var data: uint64[4] = { 30u64, 10u64, 20u64, 5u64 };
 Sort::SortUint64(data.data, data.length);

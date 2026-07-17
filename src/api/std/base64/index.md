@@ -8,8 +8,8 @@ Encodes binary data to ASCII text and back using the standard Base64 alphabet
 (`A`–`Z`, `a`–`z`, `0`–`9`, `+`, `/`) with `=` padding.
 
 ```rux
-import Std::Base64;
-import Std::Io::PrintLine;
+import Rux::Base64;
+import Io::PrintLine;
 
 func Main() -> int {
     let text = "Hello";

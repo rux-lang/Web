@@ -32,8 +32,8 @@ tree.
 ## Example
 
 ```rux
-import Std::Exit;
-import Std::Io::PrintLine;
+import Rux::Exit;
+import Io::PrintLine;
 
 func Main() -> int {
     if !LoadConfig() {

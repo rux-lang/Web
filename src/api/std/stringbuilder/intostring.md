@@ -32,8 +32,8 @@ the returned `String` — don't assume the builder still references it.
 ## Example
 
 ```rux
-import Std::Io::*;
-import Std::StringBuilder;
+import Io::*;
+import Text::StringBuilder;
 
 func Main() -> int {
     var sb = StringBuilder::New();

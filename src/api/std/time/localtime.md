@@ -28,7 +28,7 @@ returns a zeroed `SystemTime`. See the [module overview](/api/std/time/).
 ## Example
 
 ```rux
-import Std::Time;
+import Rux::Time;
 
 let now = Time::LocalTime();
 ```

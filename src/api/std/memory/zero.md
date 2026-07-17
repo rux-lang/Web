@@ -26,7 +26,7 @@ Sets `size` bytes starting at `ptr` to `0`. Equivalent to
 ## Example
 
 ```rux
-import Std::Memory::*;
+import Memory::*;
 
 let buffer = Alloc(1024);
 if buffer == null {

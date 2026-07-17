@@ -5,8 +5,8 @@ Generate, format, and validate version-4 UUIDs.
 **Module:** `Std::UUID`
 
 ```rux
-import Std::UUID;
-import Std::Io::PrintLine;
+import Uuid;
+import Io::PrintLine;
 
 func Main() -> int {
     let id = UUID::UuidV4();

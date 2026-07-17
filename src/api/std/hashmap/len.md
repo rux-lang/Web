@@ -17,7 +17,7 @@ func Len(self) -> uint;
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 if map.Len() == 0u {
     // map is empty

@@ -14,7 +14,7 @@ Every function is provided for both `float64` and `float32`. Pass `float64` argu
 
 ```rux
 import Math::{ Pi, Pow, Sin, Sqrt };
-import Std::Io::PrintLine;
+import Io::PrintLine;
 
 func Main() -> int {
     PrintLine(Sqrt(2.0));      // 1.4142135623730951

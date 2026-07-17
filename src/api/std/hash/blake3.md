@@ -28,8 +28,8 @@ BLAKE3 is a modern, very fast, secure cryptographic hash. Call it as
 ## Example
 
 ```rux
-import Std::Hash::Blake3;
-import Std::Io::PrintLine;
+import Hash::Blake3;
+import Io::PrintLine;
 
 func Main() -> int {
     PrintLine(Blake3::Hash("hello"));

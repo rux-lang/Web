@@ -30,7 +30,7 @@ The randomness is **not** cryptographically secure — see the
 ## Example
 
 ```rux
-import Std::UUID;
+import Rux::UUID;
 
 let raw = UUID::UuidV4Bytes();          // 16 bytes
 let text = UUID::UuidToString(raw.Data() as *const uint8, raw.Length());

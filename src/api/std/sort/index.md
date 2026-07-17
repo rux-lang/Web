@@ -8,8 +8,8 @@ Sorts a contiguous array in ascending order, given a pointer to its first elemen
 and the element count. Each algorithm comes in an `int` form and a `uint64` form.
 
 ```rux
-import Std::Sort;
-import Std::Io::PrintLine;
+import Algorithms::Sort;
+import Io::PrintLine;
 
 func Main() -> int {
     var nums: int[5] = { 5, 2, 8, 1, 9 };

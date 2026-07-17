@@ -14,7 +14,7 @@ Every conversion produces a [`Text::String`](/api/text/string/), which is what t
 
 ```rux
 import Format::ToString;
-import Std::Io::PrintLine;
+import Io::PrintLine;
 
 func Main() -> int {
     var count = ToString(42);    // "42"

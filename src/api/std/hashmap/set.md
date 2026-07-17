@@ -26,7 +26,7 @@ inserts are amortized O(1).
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 var map: HashMap;
 Init(&map);

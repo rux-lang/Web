@@ -29,8 +29,8 @@ The randomness is **not** cryptographically secure — see the
 ## Example
 
 ```rux
-import Std::UUID;
-import Std::Io::PrintLine;
+import Rux::UUID;
+import Io::PrintLine;
 
 func Main() -> int {
     PrintLine(UUID::UuidV4());

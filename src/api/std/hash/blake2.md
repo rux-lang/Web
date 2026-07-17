@@ -28,8 +28,8 @@ offering comparable security. Call it as `Blake2::Hash(...)`.
 ## Example
 
 ```rux
-import Std::Hash::Blake2;
-import Std::Io::PrintLine;
+import Hash::Blake2;
+import Io::PrintLine;
 
 func Main() -> int {
     PrintLine(Blake2::Hash("hello"));

@@ -15,9 +15,9 @@ varying values, change the seed each call — for example by seeding from
 :::
 
 ```rux
-import Std::Random;
-import Std::Time;
-import Std::Io::PrintLine;
+import Random;
+import Time;
+import Io::PrintLine;
 
 func Main() -> int {
     var seed = Time::TickMs();

@@ -25,7 +25,7 @@ func Pow(base: float32, exponent: float32) -> float32;
 ## Example
 
 ```rux
-import Std::Math;
+import Rux::Math;
 
 let a = Math::Pow(2.0, 10.0);        // 1024.0
 let b = Math::Pow(9.0, 0.5);         // 3.0 (square root)

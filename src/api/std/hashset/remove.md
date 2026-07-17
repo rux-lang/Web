@@ -27,7 +27,7 @@ Removes `key` and repairs the probe sequence so later lookups stay correct.
 ## Example
 
 ```rux
-import Std::HashSet::*;
+import Rux::HashSet::*;
 
 if set.Remove(7) {
     // 7 was in the set and is now gone

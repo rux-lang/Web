@@ -23,7 +23,7 @@ After `Free`, the set must be re-initialized with [`Init`](init) before reuse.
 ## Example
 
 ```rux
-import Std::HashSet::*;
+import Rux::HashSet::*;
 
 var set: HashSet;
 Init(&set);

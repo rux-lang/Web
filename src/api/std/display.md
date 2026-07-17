@@ -22,7 +22,7 @@ through the variadic `Display...` parameter.
 Implement the interface with an `extend ... : Display` block:
 
 ```rux
-import Std::Display;
+import Rux::Display;
 
 struct Point {
     x: int;

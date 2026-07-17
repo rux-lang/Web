@@ -1,4 +1,4 @@
-import Std::Io::Print;
+import Io::Print;
 
 // Entry point of the program
 func Main() -> int {

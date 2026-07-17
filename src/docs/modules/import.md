@@ -5,13 +5,13 @@
 ```rux
 import Math::Sqrt;                    // a single name
 import Http::{ Request, Response };   // several names from one module
-import Std::Io::*;                    // every public name from a module
+import Io::*;                         // every public name from a module
 ```
 
 The braced form lists several names from the same module in one statement:
 
 ```rux
-import Std::Io::{ Print, PrintLine };
+import Io::{ Print, PrintLine };
 ```
 
 Without an import, refer to an item by its qualified path using the `::` separator:

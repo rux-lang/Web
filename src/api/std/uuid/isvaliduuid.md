@@ -32,7 +32,7 @@ input.
 ## Example
 
 ```rux
-import Std::UUID;
+import Rux::UUID;
 
 if UUID::IsValidUuid(text) {
     let bytes = UUID::UuidParse(text);

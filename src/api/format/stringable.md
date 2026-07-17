@@ -47,7 +47,7 @@ Building the text with a [`StringBuilder`](/api/text/stringbuilder/) and the [`W
 ## Example
 
 ```rux
-import Std::Io::PrintLine;
+import Io::PrintLine;
 
 var origin = Point{ x: 0, y: 0 };
 var text = origin.ToString(); // "(0, 0)"

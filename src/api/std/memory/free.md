@@ -29,7 +29,7 @@ freed, or freeing the same pointer twice, is undefined behavior.
 ## Example
 
 ```rux
-import Std::Memory::*;
+import Memory::*;
 
 let buffer = Alloc(256);
 if buffer == null {

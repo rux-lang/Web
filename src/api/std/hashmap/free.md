@@ -25,7 +25,7 @@ After `Free`, the map must be re-initialized with [`Init`](init) before reuse.
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 var map: HashMap;
 Init(&map);

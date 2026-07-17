@@ -20,7 +20,7 @@ most code converts to a `String` instead.
 ## Example
 
 ```rux
-import Std::StringBuilder;
+import Rux::StringBuilder;
 
 var sb = StringBuilder::WithCapacity(1024);
 sb.Append("short");

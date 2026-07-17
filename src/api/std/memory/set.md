@@ -27,7 +27,7 @@ block must be at least `size` bytes. To fill with zeros, prefer
 ## Example
 
 ```rux
-import Std::Memory::*;
+import Memory::*;
 
 let buffer = Alloc(256);
 Set(buffer, 256, 0xFF);     // fill every byte with 0xFF

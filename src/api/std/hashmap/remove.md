@@ -29,7 +29,7 @@ referenced is the caller's to free.
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 if map.Remove(42) {
     // entry existed and is now gone

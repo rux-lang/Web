@@ -25,7 +25,7 @@ precision. Halfway cases round away from zero (e.g. `Round(2.5)` is `3.0`).
 ## Example
 
 ```rux
-import Std::Math;
+import Rux::Math;
 
 let r = Math::Round(2.5);            // 3.0
 let s = Math::Round(2.4);            // 2.0

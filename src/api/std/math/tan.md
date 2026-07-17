@@ -25,7 +25,7 @@ without bound near odd multiples of `Pi/2`.
 ## Example
 
 ```rux
-import Std::Math;
+import Rux::Math;
 
 let y = Math::Tan(Math::Pi / 4.0);   // ~1.0
 ```

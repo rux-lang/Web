@@ -8,8 +8,8 @@ Converts binary data to a lowercase hex string (two characters per byte) and
 back. Decoding accepts both uppercase and lowercase digits.
 
 ```rux
-import Std::Hex;
-import Std::Io::PrintLine;
+import Hex;
+import Io::PrintLine;
 
 func Main() -> int {
     let encoded = Hex::Encode("Rux");

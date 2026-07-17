@@ -1,4 +1,4 @@
-import Std::Io::Print;
+import Io::Print;
 
 // Regular function
 func Add(x: int32, y: int32) -> int32 {

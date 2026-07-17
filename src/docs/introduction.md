@@ -22,7 +22,7 @@ These goals rest on a few guiding principles: performance matters, developer exp
 ## Hello, World
 
 ```rux
-import Std::Io::Print;
+import Io::Print;
 
 func Main() -> int {
     Print("Hello, World!");

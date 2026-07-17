@@ -19,7 +19,7 @@ The old bytes are not wiped; they are simply overwritten as you append again.
 ## Example
 
 ```rux
-import Std::StringBuilder;
+import Rux::StringBuilder;
 
 var sb = StringBuilder::WithCapacity(128);
 for i in 0..3 {

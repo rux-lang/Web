@@ -25,9 +25,9 @@ rux install
 Import the modules, types, or functions you need:
 
 ```rux
-import Std::Io::*;
-import Std::Memory::*;
-import Std::Math;
+import Io::Print;
+import Memory::Alloc;
+import Math::Sin;
 ```
 
 ## Contents

@@ -48,8 +48,8 @@ A set must be initialized with [`Init`](init) before use and released with
 ## Example
 
 ```rux
-import Std::HashSet::*;
-import Std::Io::PrintLine;
+import HashSet::*;
+import Io::PrintLine;
 
 func Main() -> int {
     var seen: HashSet;

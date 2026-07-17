@@ -22,8 +22,8 @@ sentinel where a UUID is expected but none applies.
 ## Example
 
 ```rux
-import Std::UUID;
-import Std::Io::PrintLine;
+import UUID;
+import Io::PrintLine;
 
 func Main() -> int {
     PrintLine(UUID::UuidNil());   // 00000000-0000-0000-0000-000000000000

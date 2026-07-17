@@ -30,7 +30,7 @@ builder still grows automatically if you exceed the reserved size.
 ## Example
 
 ```rux
-import Std::StringBuilder;
+import Rux::StringBuilder;
 
 // Building a 16-row table — reserve once.
 var sb = StringBuilder::WithCapacity(1024);

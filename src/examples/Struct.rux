@@ -1,4 +1,4 @@
-import Std::Math::Sqrt;
+import Math::Sqrt;
 
 struct Vector {
     x: float64;

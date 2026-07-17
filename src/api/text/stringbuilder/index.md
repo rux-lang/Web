@@ -63,7 +63,7 @@ Take the result with [`IntoString`](intostring) once the builder is finished wit
 ## Example
 
 ```rux
-import Std::Io::PrintLine;
+import Io::PrintLine;
 import Text::{ String, StringBuilder };
 
 func Main() -> int {

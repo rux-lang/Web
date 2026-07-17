@@ -22,7 +22,7 @@ is the headroom available for appends before the next reallocation.
 ## Example
 
 ```rux
-import Std::StringBuilder;
+import Rux::StringBuilder;
 
 var sb = StringBuilder::WithCapacity(64);
 sb.Append("hi");

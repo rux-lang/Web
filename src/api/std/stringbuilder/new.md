@@ -24,7 +24,7 @@ If you already know roughly how many bytes you'll write, use
 ## Example
 
 ```rux
-import Std::StringBuilder;
+import Rux::StringBuilder;
 
 var sb = StringBuilder::New();
 sb.Append("ready");

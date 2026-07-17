@@ -26,7 +26,7 @@ This method is also `StringBuilder`'s [`Display`](../display) implementation.
 ## Example
 
 ```rux
-import Std::StringBuilder;
+import Rux::StringBuilder;
 
 var sb = StringBuilder::New();
 sb.Append("partial");

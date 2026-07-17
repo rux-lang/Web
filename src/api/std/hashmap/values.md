@@ -25,7 +25,7 @@ the two calls.
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 let values = map.Values();
 if values != null {

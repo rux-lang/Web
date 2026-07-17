@@ -27,7 +27,7 @@ No-op on macOS — see the [module overview](/api/std/time/).
 ## Example
 
 ```rux
-import Std::Time;
+import Rux::Time;
 
 Time::SleepSeconds(3u32);
 ```

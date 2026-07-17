@@ -29,8 +29,8 @@ Returns `0` on macOS, where the clock is not yet implemented — see the
 ## Example
 
 ```rux
-import Std::Time;
-import Std::Io::PrintLine;
+import Time;
+import Io::PrintLine;
 
 func Main() -> int {
     let start = Time::TickMs();

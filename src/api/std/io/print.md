@@ -68,7 +68,7 @@ To write a line and move to the next one, use [`PrintLine`](printline).
 ## Example
 
 ```rux
-import Std::Io::*;
+import Io::*;
 
 func Main() -> int {
     Print("Hello, ");

@@ -33,7 +33,7 @@ The `*int` form compares values as unsigned — see the
 ## Example
 
 ```rux
-import Std::Sort;
+import Rux::Sort;
 
 Sort::Piposort(items.data, items.length);
 ```

@@ -28,7 +28,7 @@ happens to be `null`.
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 if map.Contains(42) {
     // key exists, regardless of its value

@@ -36,7 +36,7 @@ A value in the half-open range `[min, max)` — `min` is possible, `max` is not.
 ## Example
 
 ```rux
-import Std::Random;
+import Rux::Random;
 
 let index = Random::RandomUInt(0u, count, seed);   // pick an array slot
 ```

@@ -21,7 +21,7 @@ code .
 Replace the contents of `Src/Main.rux` with:
 
 ```rux
-import Std::Io::Print;
+import Io::Print;
 
 func Main() -> int {
 	Print("Hello, World!");

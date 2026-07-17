@@ -17,7 +17,7 @@ func Length(self) -> uint;
 ## Example
 
 ```rux
-import Std::StringBuilder;
+import Rux::StringBuilder;
 
 var sb = StringBuilder::New();
 sb.Append("hello");

@@ -1,4 +1,5 @@
-import Std::{ Format, String };
+import Format::Format;
+import Text::String;
 
 interface Display {
     func ToString() -> String;

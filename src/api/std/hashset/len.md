@@ -17,7 +17,7 @@ func Len(self) -> uint;
 ## Example
 
 ```rux
-import Std::HashSet::*;
+import Rux::HashSet::*;
 
 if set.Len() == 0u {
     // set is empty

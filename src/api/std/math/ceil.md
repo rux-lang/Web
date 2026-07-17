@@ -25,7 +25,7 @@ precision (e.g. `Ceil(2.1)` is `3.0`, `Ceil(-2.9)` is `-2.0`).
 ## Example
 
 ```rux
-import Std::Math;
+import Rux::Math;
 
 let c = Math::Ceil(2.1);             // 3.0
 ```

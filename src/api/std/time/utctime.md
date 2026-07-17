@@ -27,8 +27,8 @@ Returns a zeroed `SystemTime` on macOS — see the [module overview](/api/std/ti
 ## Example
 
 ```rux
-import Std::Time;
-import Std::Io::PrintLine;
+import Time;
+import Io::PrintLine;
 
 func Main() -> int {
     let now = Time::UtcTime();

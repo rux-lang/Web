@@ -45,7 +45,7 @@ returning an error; for debug-only invariants, use `Assert`.
 ## Example
 
 ```rux
-import Std::Fatal;
+import Rux::Fatal;
 
 func Main() -> int {
     let config = LoadConfig();

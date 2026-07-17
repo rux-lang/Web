@@ -14,7 +14,7 @@ Every function is implemented per target, so a call compiles down to the platfor
 
 ```rux
 import Memory::{ Alloc, Free, Set };
-import Std::Io::PrintLine;
+import Io::PrintLine;
 
 func Main() -> int {
     let buffer = Alloc(1024);

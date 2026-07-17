@@ -30,7 +30,7 @@ ambiguous — it can mean a blank line, end-of-input, or a read error.
 ## Example
 
 ```rux
-import Std::Io::*;
+import Io::*;
 
 func Main() -> int {
     Print("What is your name? ");

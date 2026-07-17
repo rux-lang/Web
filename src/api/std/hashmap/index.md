@@ -57,8 +57,8 @@ Keys are limited to `int`; there is no built-in string-keyed map.
 ## Example
 
 ```rux
-import Std::HashMap::*;
-import Std::Io::PrintLine;
+import HashMap::*;
+import Io::PrintLine;
 
 func Main() -> int {
     var scores: HashMap;

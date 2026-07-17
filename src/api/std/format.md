@@ -39,8 +39,8 @@ is truncated. For building large strings incrementally, use
 ## Example
 
 ```rux
-import Std::Format;
-import Std::Io::PrintLine;
+import Rux::Format;
+import Io::PrintLine;
 
 func Main() -> int {
     let x = 3;

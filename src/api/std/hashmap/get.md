@@ -33,7 +33,7 @@ null".
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 let value = map.Get(42);
 if value != null {

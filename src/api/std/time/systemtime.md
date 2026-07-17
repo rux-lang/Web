@@ -40,8 +40,8 @@ value struct — read the fields directly to format or compute with the date.
 ## Example
 
 ```rux
-import Std::Time;
-import Std::Io::PrintLine;
+import Time;
+import Io::PrintLine;
 
 func Main() -> int {
     let t = Time::UtcTime();

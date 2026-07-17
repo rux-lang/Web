@@ -1,4 +1,4 @@
-import Std::Io::PrintLine;
+import Io::PrintLine;
 
 // Entry point of the program
 func Main() -> int {

@@ -5,8 +5,8 @@ Sleeping, monotonic timing, and wall-clock time.
 **Module:** `Std::Time`
 
 ```rux
-import Std::Time;
-import Std::Io::PrintLine;
+import Time;
+import Io::PrintLine;
 
 func Main() -> int {
     let start = Time::TickMs();

@@ -24,7 +24,7 @@ the low bit of the mixed seed.
 ## Example
 
 ```rux
-import Std::Random;
+import Rux::Random;
 
 if Random::RandomBool(seed) {
     // heads

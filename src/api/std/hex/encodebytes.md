@@ -25,7 +25,7 @@ form of [`Encode`](encode), for when you have a raw buffer rather than a slice.
 ## Example
 
 ```rux
-import Std::Hex;
+import Rux::Hex;
 
 let s = Hex::EncodeBytes(buffer, 16u);
 ```

@@ -41,7 +41,7 @@ until `Realloc` succeeds to avoid leaking it.
 ## Example
 
 ```rux
-import Std::Memory::*;
+import Memory::*;
 
 var buffer = Alloc(1024);
 

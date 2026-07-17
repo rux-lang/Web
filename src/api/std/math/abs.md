@@ -25,7 +25,7 @@ the argument.
 ## Example
 
 ```rux
-import Std::Math;
+import Rux::Math;
 
 let d = Math::Abs(-3.5);             // 3.5
 ```

@@ -18,7 +18,7 @@ func Cap(self) -> uint;
 ## Example
 
 ```rux
-import Std::HashSet::*;
+import Rux::HashSet::*;
 
 // After Init, Cap() is the default of 16.
 ```

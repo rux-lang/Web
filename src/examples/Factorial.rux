@@ -1,4 +1,4 @@
-import Std::Io::Print;
+import Io::Print;
 
 /// Computes the factorial of a number using an iterative approach
 func Factorial(n: int) -> int {

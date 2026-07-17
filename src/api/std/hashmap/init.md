@@ -35,7 +35,7 @@ Always pair initialization with [`Free`](free) to release the map's memory.
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 var a: HashMap;
 Init(&a);                    // default capacity

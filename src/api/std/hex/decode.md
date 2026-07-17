@@ -36,7 +36,7 @@ The input must have an even length, and every character must be a valid hex digi
 ## Example
 
 ```rux
-import Std::Hex;
+import Rux::Hex;
 
 let bytes = Hex::Decode("527578");   // "Rux"
 ```

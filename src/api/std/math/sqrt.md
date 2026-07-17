@@ -25,7 +25,7 @@ a negative `x`, the result is NaN — test it with [`IsNan`](../float).
 ## Example
 
 ```rux
-import Std::Math;
+import Rux::Math;
 
 let r = Math::Sqrt(144.0);           // 12.0
 ```

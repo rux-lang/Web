@@ -24,7 +24,7 @@ The cosine of `x`, in the range `[-1, 1]`, in the same precision as the argument
 ## Example
 
 ```rux
-import Std::Math;
+import Rux::Math;
 
 let y = Math::Cos(0.0);              // 1.0
 ```

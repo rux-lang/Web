@@ -25,8 +25,8 @@ between the two calls.
 ## Example
 
 ```rux
-import Std::HashMap::*;
-import Std::Memory::Free as FreeMem;
+import Rux::HashMap::*;
+import Memory::Free as FreeMem;
 
 let keys = map.Keys();
 if keys != null {

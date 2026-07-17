@@ -31,7 +31,7 @@ copy through a temporary buffer instead.
 ## Example
 
 ```rux
-import Std::Memory::*;
+import Memory::*;
 
 let src = Alloc(64);
 let dst = Alloc(64);

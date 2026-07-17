@@ -24,7 +24,7 @@ behavior.
 ## Example
 
 ```rux
-import Std::HashMap::*;
+import Rux::HashMap::*;
 
 // After Init, Cap() is the default of 16.
 ```

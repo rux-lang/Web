@@ -17,7 +17,7 @@ func IsEmpty(self) -> bool8;
 ## Example
 
 ```rux
-import Std::StringBuilder;
+import Rux::StringBuilder;
 
 var sb = StringBuilder::New();
 // sb.IsEmpty() == true

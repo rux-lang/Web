@@ -64,8 +64,8 @@ and doubles until it fits, so appending N bytes costs amortized O(N).
 ## Example
 
 ```rux
-import Std::Io::*;
-import Std::StringBuilder;
+import Io::*;
+import Text::StringBuilder;
 
 func Main() -> int {
     var sb = StringBuilder::New();

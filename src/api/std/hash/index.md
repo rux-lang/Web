@@ -9,8 +9,8 @@ a single static `Hash` that takes a message and returns its digest as a
 **lowercase hex string**.
 
 ```rux
-import Std::Hash::Sha256;
-import Std::Io::PrintLine;
+import Hash::Sha256;
+import Io::PrintLine;
 
 func Main() -> int {
     PrintLine(Sha256::Hash("hello"));

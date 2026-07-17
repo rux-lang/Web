@@ -61,7 +61,7 @@ Rux sits somewhere between Rust and a hypothetical "what if C had a modern redes
 A minimal example:
 
 ```rux
-import Std::Io::PrintLine;
+import Io::PrintLine;
 
 func Main() -> int {
     let a = 10;

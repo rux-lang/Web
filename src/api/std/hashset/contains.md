@@ -23,7 +23,7 @@ func Contains(self, key: int) -> bool;
 ## Example
 
 ```rux
-import Std::HashSet::*;
+import Rux::HashSet::*;
 
 if set.Contains(7) {
     // 7 has been inserted

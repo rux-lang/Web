@@ -5,7 +5,7 @@ A *fatal error* aborts the program on an unrecoverable condition rather than ret
 You can trigger one explicitly with [`Fatal`](/api/#fatal) from the `Std` package, which prints a diagnostic message and the call-site location to standard error and exits with code `1`:
 
 ```rux
-import Std::Fatal;
+import Rux::Fatal;
 
 Fatal("unreachable: unknown variant");
 ```

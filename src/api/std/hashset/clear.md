@@ -19,7 +19,7 @@ release the memory, use [`Free`](free).
 ## Example
 
 ```rux
-import Std::HashSet::*;
+import Rux::HashSet::*;
 
 set.Clear();                 // count is now 0, capacity unchanged
 ```

@@ -31,7 +31,7 @@ The input length must be even, and every character must be a valid hex digit
 ## Example
 
 ```rux
-import Std::Hex;
+import Rux::Hex;
 
 let bytes = Hex::DecodeBytes(hexBuffer, hexLen);
 ```
