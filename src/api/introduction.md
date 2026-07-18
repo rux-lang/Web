@@ -20,18 +20,16 @@ The packages come in two layers, and the one you should reach for first is the p
 | [`Io`](io/)         | Standard input and output: print a value or a formatted line, and read a line back.    |
 | [`Math`](math/)     | Constants and floating-point functions, for both `float64` and `float32`.              |
 | [`Memory`](memory/) | Allocate, resize, and release raw blocks, and fill, copy, and compare their bytes.     |
-| [`Std`](std/)       | The standard library: strings, formatting, console I/O, time, hashing, and containers. |
 | [`Text`](text/)     | Strings and fundamental text manipulation: an immutable string and a builder for one.  |
 
 **Platform-dependent packages** are the layer below — thin, direct declarations of one operating system's own entry points, with no portability layer and no safety net. A program that calls them is a program for that platform. Reach for them when the cross-platform packages have no answer, and guard every call with the [`Target`](/docs/attributes/target) attribute.
 
-| Package               | Description                                                |
-| --------------------- | ---------------------------------------------------------- |
-| [`BSD`](bsd/)         | Syscalls for the BSD family. Planned; not implemented yet. |
-| [`Illumos`](illumos/) | Syscalls for illumos and Solaris.                          |
-| [`Linux`](linux/)     | Linux syscalls, invoked directly, without libc.            |
-| [`MacOS`](macos/)     | BSD-layer syscalls for macOS.                              |
-| [`Windows`](windows/) | Win32 bindings, imported from `kernel32.dll` and friends.  |
+| Package               | Description                                               |
+| --------------------- | --------------------------------------------------------- |
+| [`BSD`](bsd/)         | Syscalls for the BSD family.                              |
+| [`Linux`](linux/)     | Linux syscalls, invoked directly, without libc.           |
+| [`MacOS`](macos/)     | BSD-layer syscalls for macOS.                             |
+| [`Windows`](windows/) | Win32 bindings, imported from `kernel32.dll` and friends. |
 
 ## Installation
 
@@ -62,10 +60,8 @@ Illumos, Linux, macOS, and Windows are supported. **BSD is not implemented yet.*
 | [`Io`](io/)           | Planned | ✓       | ✓     | ✓     | ✓       |
 | [`Math`](math/)       | ✓       | ✓       | ✓     | ✓     | ✓       |
 | [`Memory`](memory/)   | Planned | ✓       | ✓     | ✓     | ✓       |
-| [`Std`](std/)         | Planned | ✓       | ✓     | ✓     | ✓       |
 | [`Text`](text/)       | Planned | ✓       | ✓     | ✓     | ✓       |
 | [`BSD`](bsd/)         | Planned | —       | —     | —     | —       |
-| [`Illumos`](illumos/) | —       | ✓       | —     | —     | —       |
 | [`Linux`](linux/)     | —       | —       | ✓     | —     | —       |
 | [`MacOS`](macos/)     | —       | —       | —     | ✓     | —       |
 | [`Windows`](windows/) | —       | —       | —     | —     | ✓       |
