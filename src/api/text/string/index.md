@@ -2,7 +2,7 @@
 
 An immutable, heap-allocated string.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Struct
 
@@ -96,5 +96,5 @@ func Main() -> int {
 
 ## See also
 
-- [`Text`](/api/text/) — the module overview
+- [`Text`](/api/text/) — the package overview
 - [`StringBuilder`](../stringbuilder/) — build a string without allocating on every step

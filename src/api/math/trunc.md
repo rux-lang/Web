@@ -2,7 +2,7 @@
 
 Rounds toward zero.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,13 +28,16 @@ Infinities and NaNs pass through unchanged.
 ```rux
 import Math::Trunc;
 
-let a = Trunc(3.9);  // 3.0
-let b = Trunc(-3.9); // -3.0
+func Main() -> int {
+    let a = Trunc(3.9);  // 3.0
+    let b = Trunc(-3.9); // -3.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Floor`](floor) — round down
 - [`Ceil`](ceil) — round up
 - [`Round`](round) — round to the nearest integer

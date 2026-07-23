@@ -2,7 +2,7 @@
 
 Grows the block to hold at least a given number of bytes.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -29,16 +29,19 @@ Growing may move the block, so a pointer taken from [`Data`](data) beforehand mu
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
+func Main() -> int {
+    var builder = StringBuilder::New();
 
-builder.Grow(20);
-builder.Capacity(); // 32 -- doubled from 16 until it covered 20
-builder.Length();   // 0 -- growing writes nothing
+    builder.Grow(20);
+    builder.Capacity(); // 32 -- doubled from 16 until it covered 20
+    builder.Length();   // 0 -- growing writes nothing
 
-builder.Grow(8);
-builder.Capacity(); // 32 still -- the block never shrinks here
+    builder.Grow(8);
+    builder.Capacity(); // 32 still -- the block never shrinks here
 
-builder.Free();
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also

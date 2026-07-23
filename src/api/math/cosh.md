@@ -2,7 +2,7 @@
 
 Returns the hyperbolic cosine.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -27,13 +27,16 @@ The hyperbolic cosine of `x`, always at least `1.0`. `Cosh(±Inf)` is `+Inf`.
 ```rux
 import Math::Cosh;
 
-let a = Cosh(0.0); // 1.0
-let b = Cosh(1.0); // 1.5430806348152437
+func Main() -> int {
+    let a = Cosh(0.0); // 1.0
+    let b = Cosh(1.0); // 1.5430806348152437
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Sinh`](sinh) — hyperbolic sine
 - [`Tanh`](tanh) — hyperbolic tangent
 - [`Exp`](exp) — the exponential `Cosh` is built on

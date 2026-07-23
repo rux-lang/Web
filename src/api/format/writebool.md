@@ -2,12 +2,15 @@
 
 Appends `true` or `false` to a builder.
 
-**Module:** `Format`
+**Package:** `Format`
 
 ## Signature
 
 ```rux
-func WriteBool(builder: *StringBuilder, value: bool8);
+func WriteBool(
+    builder: *StringBuilder,
+    value: bool8
+);
 ```
 
 ## Parameters
@@ -29,17 +32,20 @@ Writes the word `true` or the word `false`, never `1` or `0`. Nothing else is ap
 import Format::WriteBool;
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-builder.Append("cached: ");
-WriteBool(&builder, true);
+func Main() -> int {
+    var builder = StringBuilder::New();
+    builder.Append("cached: ");
+    WriteBool(@builder, true);
 
-var line = builder.IntoString(); // "cached: true"
+    var line = builder.IntoString(); // "cached: true"
 
-line.Free();
+    line.Free();
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Format`](/api/format/) — the module overview
+- [`Format`](/api/format/) — the package overview
 - [`ToString`](tostring) — the word in a `String` of its own
 - [`Text::StringBuilder`](/api/text/stringbuilder/) — the builder being appended to

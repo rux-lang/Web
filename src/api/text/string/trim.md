@@ -2,7 +2,7 @@
 
 Returns a copy with the surrounding whitespace dropped.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -23,13 +23,16 @@ Whitespace is space, tab, newline, and carriage return, which is exactly what [`
 ```rux
 import Text::String;
 
-var padded = String::From("  Hello, Rux!  \n");
+func Main() -> int {
+    var padded = String::From("  Hello, Rux!  \n");
 
-var text = padded.Trim(); // "Hello, Rux!"
-text.Length();            // 11
+    var text = padded.Trim(); // "Hello, Rux!"
+    text.Length();            // 11
 
-text.Free();
-padded.Free();
+    text.Free();
+    padded.Free();
+    return 0;
+}
 ```
 
 ## See also

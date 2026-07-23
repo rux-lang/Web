@@ -2,7 +2,7 @@
 
 Returns the absolute value.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,11 +28,14 @@ payload but a cleared sign.
 ```rux
 import Math::Abs;
 
-let a = Abs(-3.5); // 3.5
-let b = Abs(-0.0); // 0.0
+func Main() -> int {
+    let a = Abs(-3.5); // 3.5
+    let b = Abs(-0.0); // 0.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Min`](min) / [`Max`](max) — pick the smaller or larger of two values

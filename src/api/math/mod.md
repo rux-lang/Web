@@ -2,7 +2,7 @@
 
 Returns the floating-point remainder of `x / y`.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -32,11 +32,14 @@ infinite or a NaN.
 ```rux
 import Math::Mod;
 
-let a = Mod(5.5, 2.0);  // 1.5
-let b = Mod(-5.5, 2.0); // -1.5
+func Main() -> int {
+    let a = Mod(5.5, 2.0);  // 1.5
+    let b = Mod(-5.5, 2.0); // -1.5
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Trunc`](trunc) — the truncation `Mod` reduces against

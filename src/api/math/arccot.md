@@ -2,7 +2,7 @@
 
 Returns the inverse cotangent, in radians.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,12 +28,15 @@ than a pole. A NaN argument propagates.
 ```rux
 import Math::ArcCot;
 
-let a = ArcCot(0.0); // 1.5707963267948966 (HalfPi)
-let b = ArcCot(1.0); // 0.7853981633974483 (QuarterPi)
+func Main() -> int {
+    let a = ArcCot(0.0); // 1.5707963267948966 (HalfPi)
+    let b = ArcCot(1.0); // 0.7853981633974483 (QuarterPi)
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Cotan`](cotan) — the function `ArcCot` inverts
 - [`ArcTan`](arctan) — `HalfPi - ArcCot(x)`

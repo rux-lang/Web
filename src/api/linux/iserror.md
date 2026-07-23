@@ -2,7 +2,7 @@
 
 Tests whether a raw syscall result encodes a Linux error.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -24,11 +24,14 @@ func IsError(result: int64) -> bool;
 ## Example
 
 ```rux
-import Linux::{ Errno, IsError, Read, Stdin };
+import Linux::{ Errno, IsError, Read, StdIn };
 
-let result = Read(Stdin, buffer, capacity);
-if IsError(result) {
-    let errorNumber = Errno(result);
+func Main() -> int {
+    let result = Read(StdIn, buffer, capacity);
+    if IsError(result) {
+        let errorNumber = Errno(result);
+    }
+    return 0;
 }
 ```
 

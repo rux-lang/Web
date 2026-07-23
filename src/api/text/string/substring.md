@@ -2,12 +2,16 @@
 
 Returns a copy of the bytes in a range.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
 ```rux
-func Substring(self, start: uint, length: uint) -> String;
+func Substring(
+    self,
+    start: uint,
+    length: uint
+) -> String;
 ```
 
 ## Parameters
@@ -30,18 +34,21 @@ Both arguments are in **bytes**, so a range that begins or ends inside a multi-b
 ```rux
 import Text::String;
 
-var text = String::From("Hello, Rux!");
+func Main() -> int {
+    var text = String::From("Hello, Rux!");
 
-var hello = text.Substring(0, 5);  // "Hello"
-var rux = text.Substring(7, 3);    // "Rux"
-var tail = text.Substring(7, 999); // "Rux!" -- clamped to what is there
-var none = text.Substring(99, 3);  // "" -- start is past the end
+    var hello = text.Substring(0, 5);  // "Hello"
+    var rux = text.Substring(7, 3);    // "Rux"
+    var tail = text.Substring(7, 999); // "Rux!" -- clamped to what is there
+    var none = text.Substring(99, 3);  // "" -- start is past the end
 
-none.Free();
-tail.Free();
-rux.Free();
-hello.Free();
-text.Free();
+    none.Free();
+    tail.Free();
+    rux.Free();
+    hello.Free();
+    text.Free();
+    return 0;
+}
 ```
 
 ## See also

@@ -2,17 +2,17 @@
 
 Writes a value to standard output.
 
-**Module:** `Io`
+**Package:** `Io`
 
 ## Signature
 
 ```rux
 // Text
 func Print(value: String);
-func Print(value: char8[]);
+func Print(value: Slice<char8>);
 
 // Formatted
-func Print(format: char8[], args: Stringable...);
+func Print(format: Slice<char8>, args: Stringable...);
 
 // Signed integers
 func Print(value: int8);
@@ -48,7 +48,7 @@ func Print(value: char32);
 | Name     | Type            | Description                                                       |
 | -------- | --------------- | ----------------------------------------------------------------- |
 | `value`  | Any type above  | The value to write.                                               |
-| `format` | `char8[]`       | Format string; each `{}` takes the next argument.                 |
+| `format` | `Slice<char8>`       | Format string; each `{}` takes the next argument.                 |
 | `args`   | `Stringable...` | The values substituted into `format`, in order.                   |
 
 `bool` is an alias for `bool8`, `char` for `char32`, and `float` for `float64`, so a call on an alias reaches the overload for the sized type it names.
@@ -86,7 +86,7 @@ func Main() -> int {
 
 ## See also
 
-- [`Io`](/api/io/) — the module overview
+- [`Io`](/api/io/) — the package overview
 - [`PrintLine`](printline) — the same overloads, with a newline after the value
 - [`ReadLine`](readline) — read a line back from standard input
 - [`Format::ToString`](/api/format/tostring) — the text every non-text overload prints

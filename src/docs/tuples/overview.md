@@ -4,7 +4,7 @@ A tuple groups a fixed number of values — possibly of different types — into
 
 ```rux
 let pair: (int, float64) = (1, 2.5);
-let triple = ("Rux", 3, true);   // (char8[], int, bool)
+let triple = ("Rux", 3, true);   // (Slice<char8>, int, bool)
 ```
 
 When the type can be inferred from the values, the annotation may be omitted, as in `triple` above.

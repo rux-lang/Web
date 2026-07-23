@@ -1,8 +1,8 @@
 # `IsError`
 
-Tests whether a result is in the package's positive errno range.
+Tests whether a raw syscall result is an error.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
@@ -18,16 +18,30 @@ func IsError(result: int64) -> bool;
 
 ## Returns
 
-`bool` - `true` when `result` is from `1` through `4095`; otherwise `false`.
+`bool` - `true` when `result` is a negative errno in the range `-1` through
+`-4095`; otherwise `false`.
 
-::: danger
-This range overlaps legitimate success values. Successful small reads and
-writes return byte counts in this range, and a valid process ID may also fall
-in it. Use the called operation's contract to decide whether `IsError` is
-appropriate.
-:::
+The wrappers report failure as a small negative value, so a non-negative
+result — a byte count, a process ID, a mapped address, or `0` — is always a
+success. `IsError` therefore never misclassifies a legitimate result.
+
+## Example
+
+```rux
+import Bsd::{ IsError, Mmap, MapAnonymous, MapPrivate, ProtectionRead, ProtectionWrite };
+
+func Main() -> int {
+    let result = Mmap(null, 4096u, ProtectionRead | ProtectionWrite,
+        MapPrivate | MapAnonymous, -1i32, 0u64);
+    if IsError(result) {
+        return 1;
+    }
+    return 0;
+}
+```
 
 ## See also
 
-- [`Errno`](errno) - return the positive value
-- [`Raw syscalls`](syscalls) - raw syscall entry points
+- [`Bsd`](/api/bsd/) — the package overview
+- [`Errno`](errno) - extract the positive errno value
+- [`Syscall0`–`Syscall6`](syscalls) - raw syscall entry points

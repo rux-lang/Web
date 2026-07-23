@@ -2,12 +2,14 @@
 
 Allocates an uninitialized block of memory.
 
-**Module:** `Memory`
+**Package:** `Memory`
 
 ## Signature
 
 ```rux
-func Alloc(size: uint) -> *opaque;
+func Alloc(
+    size: uint
+) -> *var opaque;
 ```
 
 ## Parameters
@@ -28,25 +30,26 @@ The block belongs to the caller and must be released exactly once with
 stays valid until it is passed to [`Free`](free) or moved by
 [`Realloc`](realloc).
 
-On BSD the function is not implemented yet and always returns `null`.
-
 ## Example
 
 ```rux
 import Memory::{ Alloc, Free, Zero };
 
-let buffer = Alloc(1024);
-if buffer == null {
-    return 1;
-}
+func Main() -> int {
+    let buffer = Alloc(1024);
+    if buffer == null {
+        return 1;
+    }
 
-Zero(buffer, 1024);
-Free(buffer);
+    Zero(buffer, 1024);
+    Free(buffer);
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Memory`](/api/memory/) — the module overview
+- [`Memory`](/api/memory/) — the package overview
 - [`Free`](free) — release the block when it is no longer needed
 - [`Realloc`](realloc) — resize a block that already exists
 - [`Zero`](zero) — clear the uninitialized bytes

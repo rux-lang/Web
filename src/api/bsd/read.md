@@ -2,7 +2,7 @@
 
 Reads bytes from a file descriptor.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
@@ -20,28 +20,25 @@ func Read(fd: int32, buffer: *opaque, count: uint) -> int64;
 
 ## Returns
 
-`int64` - bytes read on success, `0` at end of file, or the thunk's raw error
-result on failure. A successful call may return fewer than `count` bytes.
+`int64` - bytes read on success, `0` at end of file, or a negative errno value on failure. A successful call may return fewer than `count` bytes.
 
-::: danger Error ambiguity
-A successful byte count from `1` through `4095` also satisfies the current
-[`IsError`](iserror) range check. Do not use `IsError` alone to interpret a
-`Read` result.
-:::
 
 ## Example
 
 ```rux
-import BSD::{ Read, Stdin };
+import Bsd::{ Read, StdIn };
 
-var buffer: char8[256];
-let result = Read(Stdin, buffer.data, 256u);
-if result == 0i64 {
-    // End of file.
+func Main() -> int {
+    var buffer: char8[256];
+    let result = Read(StdIn, buffer.data, 256u);
+    if result == 0i64 {
+        // End of file.
+    }
+    return 0;
 }
 ```
 
 ## See also
 
-- [`I/O`](io) - I/O overview
+- [`Bsd`](/api/bsd/) — the package overview
 - [`Write`](write) - write bytes

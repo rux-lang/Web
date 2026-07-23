@@ -2,7 +2,7 @@
 
 Returns the hyperbolic tangent.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -29,12 +29,15 @@ propagates.
 ```rux
 import Math::Tanh;
 
-let a = Tanh(0.0); // 0.0
-let b = Tanh(1.0); // 0.7615941559557649
+func Main() -> int {
+    let a = Tanh(0.0); // 0.0
+    let b = Tanh(1.0); // 0.7615941559557649
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Sinh`](sinh) / [`Cosh`](cosh) — hyperbolic sine and cosine
 - [`Cotanh`](cotanh) — the reciprocal function, with a pole at zero

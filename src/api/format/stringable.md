@@ -2,7 +2,7 @@
 
 The interface a type implements to convert itself into a `String`.
 
-**Module:** `Format`
+**Package:** `Format`
 
 ## Interface
 
@@ -33,9 +33,9 @@ extend Point : Stringable {
     func ToString(self) -> String {
         var builder = StringBuilder::New();
         builder.Append(c8'(');
-        WriteInt(&builder, self.x as int64);
+        WriteInt(@builder, self.x as int64);
         builder.Append(", ");
-        WriteInt(&builder, self.y as int64);
+        WriteInt(@builder, self.y as int64);
         builder.Append(c8')');
         return builder.IntoString();
     }
@@ -47,18 +47,40 @@ Building the text with a [`StringBuilder`](/api/text/stringbuilder/) and the [`W
 ## Example
 
 ```rux
+import Format::{ Stringable, WriteInt };
+import Text::{ String, StringBuilder };
 import Io::PrintLine;
 
-var origin = Point{ x: 0, y: 0 };
-var text = origin.ToString(); // "(0, 0)"
+struct Point {
+    x: int;
+    y: int;
+}
 
-PrintLine(text);
-text.Free();
+extend Point : Stringable {
+    func ToString(self) -> String {
+        var builder = StringBuilder::New();
+        builder.Append(c8'(');
+        WriteInt(@builder, self.x as int64);
+        builder.Append(", ");
+        WriteInt(@builder, self.y as int64);
+        builder.Append(c8')');
+        return builder.IntoString();
+    }
+}
+
+func Main() -> int {
+    var origin = Point{ x: 0, y: 0 };
+    var text = origin.ToString(); // "(0, 0)"
+
+    PrintLine(text);
+    text.Free();
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Format`](/api/format/) — the module overview
+- [`Format`](/api/format/) — the package overview
 - [`ToString`](tostring) — the conversion the primitives already have
 - [`WriteInt`](writeint) — append into a builder, without a `String` of its own
 - [`Text::StringBuilder`](/api/text/stringbuilder/) — accumulate the text an implementation returns

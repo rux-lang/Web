@@ -2,15 +2,18 @@
 
 Counts matching bytes from the start of two memory ranges.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`RtlCompareMemory`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcomparememory)
 
 ## Signature
 
 ```rux
-func RtlCompareMemory(source1: *const opaque, source2: *const opaque,
-    length: uint) -> uint;
+func RtlCompareMemory(
+    source1: *opaque,
+    source2: *opaque,
+    length: uint
+) -> uint;
 ```
 
 ## Returns
@@ -22,4 +25,4 @@ Both pointers must be readable for `length` bytes.
 
 ## See also
 
-- [`Memory operations`](memory) — raw memory API overview
+- [`Windows`](/api/windows/) — the package overview

@@ -1,11 +1,6 @@
 import Io::Print;
 
 // Regular function
-func Add(x: int32, y: int32) -> int32 {
-    return x + y;
-}
-
-// Function with conditional logic
 func Max(a: int32, b: int32) -> int32 {
     return a > b ? a : b;
 }
@@ -16,9 +11,8 @@ func Div<T>(x: T, y: T) -> T {
 }
 
 func Main() -> int {
-    let sum = Add(5, 10);
-    let quotient = Div(10.0, 2.0);
+    let quotient = Div<float>(10.0, 2.0);
     let max = Max(5, 10);
-    Print("Sum: {}, Quotient: {}, Max: {}", sum, quotient, max);
+    Print("Max: {}, Quotient: {}", max, quotient);
     return 0;
 }

@@ -1,25 +1,27 @@
 # Rux Compiled Unit
 
-_Binary specification for the `.rcu` object files emitted by the Rux compiler. Target platform: Windows x64 (x86-64, little-endian)._
+Binary specification for the `.rcu` object files emitted by the Rux compiler. The same format is used on every supported operating system — FreeBSD, Linux, macOS, and Windows.
 
 ## Overview
 
-A **Rux Compiled Unit (RCU)** (`.rcu`) is the binary object file emitted by the Rux compiler for each compiled `.rux` source file. The Rux linker collects one or more RCU files and links them into a Windows x64 executable (`.exe`).
+A **Rux Compiled Unit (RCU)** (`.rcu`) is the binary object file emitted by the Rux compiler for each compiled `.rux` source file. The Rux linker collects one or more RCU files and links them into a native executable for the target operating system — a PE (`.exe`) on Windows, an ELF binary on Linux and BSD, or a Mach-O binary on macOS.
 
-| Artefact | Role                                                             |
-| -------- | ---------------------------------------------------------------- |
-| `.rux`   | Rux source file (human-readable)                                 |
-| `.rcu`   | Rux Compiled Unit — machine code, symbols, relocations, metadata |
-| `.exe`   | Windows x64 PE executable — output of the Rux linker             |
+| Artefact   | Role                                                                                          |
+| ---------- | --------------------------------------------------------------------------------------------- |
+| `.rux`     | Rux source file (human-readable)                                                              |
+| `.rcu`     | Rux Compiled Unit — machine code, symbols, relocations, metadata                              |
+| executable | Native binary from the Rux linker — PE (`.exe`) on Windows, ELF on Linux/BSD, Mach-O on macOS |
+
+RCU is the object format for the **x86-64** backend only. The AArch64 backend takes a separate route (C generated and compiled through a native Clang toolchain) and does not emit RCU.
 
 ### Design Goals
 
-| Goal                                 | How it is achieved                                                                                                                 |
-| ------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-| **Simple**                           | Fixed-size header and section entries; no indirection chains; fewer tables than COFF or ELF                                        |
-| **Fast to parse**                    | All table offsets are stored directly in the header; the linker can seek straight to any structure                                 |
-| **Linker-ready**                     | Symbols, relocations, and string data are fully self-contained                                                                     |
-| **Incremental-compilation–friendly** | Optional Rux Metadata block stores a SHA-256 source hash and compiler version stamp so unchanged source files are never recompiled |
+| Goal                                 | How it is achieved                                                                                                                                                                              |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Simple**                           | Fixed-size header and section entries; no indirection chains; fewer tables than COFF or ELF                                                                                                     |
+| **Fast to parse**                    | All table offsets are stored directly in the header; the linker can seek straight to any structure                                                                                              |
+| **Linker-ready**                     | Symbols, relocations, and string data are fully self-contained                                                                                                                                  |
+| **Incremental-compilation–friendly** | The Rux Metadata block reserves a SHA-256 source-hash field and compiler version stamp so the build system can skip unchanged sources (see [Incremental Compilation](#incremental-compilation)) |
 
 ### Comparison with Common Formats
 
@@ -82,11 +84,11 @@ The File Header is always 32 bytes and begins at file offset 0.
 
 ### Architecture
 
-| Value  | Constant      | Meaning                         |
-| ------ | ------------- | ------------------------------- |
-| `0x01` | `ARCH_X86_64` | x86-64 (AMD64), Windows x64 ABI |
+| Value  | Constant      | Meaning                       |
+| ------ | ------------- | ----------------------------- |
+| `0x01` | `ARCH_X86_64` | x86-64 (AMD64), little-endian |
 
-Additional architectures may be assigned in future minor versions.
+The `arch` field encodes only the **processor architecture**, not the operating system or ABI. A single RCU file can therefore be linked on any supported OS; the linker chooses the executable format (PE, ELF, or Mach-O) and the calling convention (Win64 or System V AMD64) for the target. Additional architectures may be assigned in future minor versions.
 
 ### File Flags
 
@@ -104,18 +106,18 @@ A reader **must** reject a file whose `magic` bytes do not match `"RCU\0"`. A re
 
 The Section Table begins immediately at file offset 32 and contains `section_count` entries of 40 bytes each.
 
-| Offset | Size | Type      | Field          | Description                                                                      |
-| ------ | ---- | --------- | -------------- | -------------------------------------------------------------------------------- |
-| 0      | 8    | `char[8]` | `name`         | Section name, null-padded ASCII (e.g. `".text\0\0\0"`)                           |
-| 8      | 4    | `u32`     | `type`         | Section type — see [Section Types](#section-types)                               |
-| 12     | 4    | `u32`     | `flags`        | Section flags — see [Section Flags](#section-flags)                              |
-| 16     | 4    | `u32`     | `raw_offset`   | File offset to section raw data; `0` for `SEC_BSS`                               |
-| 20     | 4    | `u32`     | `raw_size`     | Byte size of raw data stored in the file; `0` for `SEC_BSS`                      |
+| Offset | Size | Type      | Field          | Description                                                                                                    |
+| ------ | ---- | --------- | -------------- | -------------------------------------------------------------------------------------------------------------- |
+| 0      | 8    | `char[8]` | `name`         | Section name, null-padded ASCII (e.g. `".text\0\0\0"`)                                                         |
+| 8      | 4    | `u32`     | `type`         | Section type — see [Section Types](#section-types)                                                             |
+| 12     | 4    | `u32`     | `flags`        | Section flags — see [Section Flags](#section-flags)                                                            |
+| 16     | 4    | `u32`     | `raw_offset`   | File offset to section raw data; `0` for `SEC_BSS`                                                             |
+| 20     | 4    | `u32`     | `raw_size`     | Byte size of raw data stored in the file; `0` for `SEC_BSS`                                                    |
 | 24     | 4    | `u32`     | `virtual_size` | Byte size the section occupies in memory; equals `raw_size` for non-empty sections; `1` when `raw_size` is `0` |
-| 28     | 2    | `u16`     | `alignment`    | Required alignment in bytes; must be a power of two in the range 1–4096          |
-| 30     | 2    | `u16`     | `reloc_count`  | Number of relocation entries for this section                                    |
-| 32     | 4    | `u32`     | `reloc_offset` | File offset to this section's relocation array; `0` if `reloc_count == 0`        |
-| 36     | 4    | `u32`     | `_reserved`    | Must be `0x00000000`                                                             |
+| 28     | 2    | `u16`     | `alignment`    | Required alignment in bytes; must be a power of two in the range 1–4096                                        |
+| 30     | 2    | `u16`     | `reloc_count`  | Number of relocation entries for this section                                                                  |
+| 32     | 4    | `u32`     | `reloc_offset` | File offset to this section's relocation array; `0` if `reloc_count == 0`                                      |
+| 36     | 4    | `u32`     | `_reserved`    | Must be `0x00000000`                                                                                           |
 
 ### Section Types
 
@@ -260,6 +262,8 @@ Strings are encoded in UTF-8. The Rux compiler guarantees that symbol names and 
 
 When `header.flags & F_HAS_METADATA` is set, a 64-byte Rux Metadata block is present at `header.metadata_offset`. This block is specific to Rux and carries information used by the build system for incremental compilation and by tooling for diagnostics and introspection.
 
+The current Rux compiler emits this block on **every** unit and always sets `F_HAS_METADATA`. The block remains optional in the format, so readers must still honour the flag rather than assuming its presence.
+
 | Offset | Size | Type     | Field              | Description                                                             |
 | ------ | ---- | -------- | ------------------ | ----------------------------------------------------------------------- |
 | 0      | 4    | `u8[4]`  | `magic`            | Block magic: `4D 45 54 41` (`"META"`)                                   |
@@ -270,6 +274,8 @@ When `header.flags & F_HAS_METADATA` is set, a 64-byte Rux Metadata block is pre
 | 24     | 4    | `u32`    | `rux_version`      | Rux language version: `(major << 16) \| (minor << 8) \| patch`          |
 | 28     | 4    | `u32`    | `compiler_flags`   | Compiler option flags — see [Compiler Flags](#compiler-flags)           |
 | 32     | 32   | `u8[32]` | `source_hash`      | SHA-256 digest of the source `.rux` file; all-zero bytes if unavailable |
+
+> **Current implementation** — the compiler fills in `source_path_off`, `package_name_off`, `build_timestamp`, and `rux_version`, but does **not** yet populate `source_hash` (written as 32 zero bytes) or `compiler_flags` (written as `0`). Both fields are reserved for the incremental-compilation and tooling features below, and the block is emitted now so they can be enabled without a format change.
 
 ### Compiler Flags
 
@@ -309,8 +315,10 @@ func Main() -> int32 {
 
 ### Machine Code — `.text` (31 bytes)
 
+> **Calling convention** — this listing uses the System V AMD64 ABI (Linux, BSD, macOS), where the first two integer arguments arrive in `edi`/`esi`. On Windows (Win64) they would arrive in `ecx`/`edx` with 32 bytes of shadow space, so the exact instruction bytes differ per target — the RCU structures around the code do not.
+
 ```
-; add — section offset 0, size 10 bytes
+; Add — section offset 0, size 10 bytes
 Offset  Bytes             Disassembly
   0     55                push  rbp
   1     48 89 E5          mov   rbp, rsp
@@ -319,35 +327,35 @@ Offset  Bytes             Disassembly
   8     5D                pop   rbp
   9     C3                ret
 
-; main — section offset 10, size 21 bytes
+; Main — section offset 10, size 21 bytes
 Offset  Bytes             Disassembly
  10     55                push  rbp
  11     48 89 E5          mov   rbp, rsp
  14     BF 03 00 00 00    mov   edi, 3          ; first argument
  19     BE 04 00 00 00    mov   esi, 4          ; second argument
- 24     E8 00 00 00 00    call  add             ; ← REL_REL32 relocation at offset 25
+ 24     E8 00 00 00 00    call  Add             ; ← REL_REL32 relocation at offset 25
  29     5D                pop   rbp
  30     C3                ret
 ```
 
-The four zero bytes at offsets `25–28` are the `REL_REL32` placeholder for the `call add` instruction.
+The four zero bytes at offsets `25–28` are the `REL_REL32` placeholder for the `call Add` instruction.
 
 ### Symbol Table (2 entries)
 
 | Index | `name_off`   | `value` | `size` | `section_idx` | `kind`         | `visibility`     | `type_name_off`              |
 | ----- | ------------ | ------- | ------ | ------------- | -------------- | ---------------- | ---------------------------- |
-| 0     | `1` ("add")  | `0`     | `10`   | `0` (`.text`) | `SYM_FUNC` (1) | `VIS_GLOBAL` (1) | `10` ("fn(i32, i32) -> i32") |
-| 1     | `5` ("main") | `10`    | `21`   | `0` (`.text`) | `SYM_FUNC` (1) | `VIS_GLOBAL` (1) | `30` ("-> i32")              |
+| 0     | `1` ("Add")  | `0`     | `10`   | `0` (`.text`) | `SYM_FUNC` (1) | `VIS_GLOBAL` (1) | `10` ("fn(i32, i32) -> i32") |
+| 1     | `5` ("Main") | `10`    | `21`   | `0` (`.text`) | `SYM_FUNC` (1) | `VIS_GLOBAL` (1) | `30` ("-> i32")              |
 
 ### Relocation Table for `.text` (1 entry)
 
 | `section_offset` | `symbol_index` | `type`            | `addend` | Explanation                                                 |
 | ---------------- | -------------- | ----------------- | -------- | ----------------------------------------------------------- |
-| `25`             | `0` (`add`)    | `3` (`REL_REL32`) | `0`      | Fix up 4-byte placeholder at `.text[25..28]` for `call add` |
+| `25`             | `0` (`Add`)    | `3` (`REL_REL32`) | `0`      | Fix up 4-byte placeholder at `.text[25..28]` for `call Add` |
 
 **Linker verification** — assuming `.text` is placed at virtual address `0x1000`:
 
-- `add_va = 0x1000 + 0 = 0x1000`
+- `Add_va = 0x1000 + 0 = 0x1000`
 - `patch_va = 0x1000 + 25 = 0x1019`
 - `patch = (i32)(0x1000 + 0 − (0x1019 + 4)) = (i32)(0x1000 − 0x101D) = −29 = 0xFFFFFFE3`
 - CPU executes `E8 E3 FF FF FF` → jumps to `0x101D + (−29) = 0x1000` ✓
@@ -357,8 +365,8 @@ The four zero bytes at offsets `25–28` are the `REL_REL32` placeholder for the
 ```
 Off   Hex                                           ASCII
  0    00                                            \0 (sentinel)
- 1    61 64 64 00                                   "add\0"
- 5    6D 61 69 6E 00                                "main\0"
+ 1    41 64 64 00                                   "Add\0"
+ 5    4D 61 69 6E 00                                "Main\0"
 10    66 6E 28 69 33 32 2C 20 69 33 32 29 20        "fn(i32, i32) -> i32\0"
       2D 3E 20 69 33 32 00
 30    2D 3E 20 69 33 32 00                          "-> i32\0"
@@ -403,12 +411,14 @@ Offset  Bytes                           Field
 
 ## Incremental Compilation
 
-The Rux build system uses the Rux Metadata block to avoid recompiling unchanged source files:
+The Rux Metadata block is designed to let the build system avoid recompiling unchanged source files:
 
 1. **Source hash check** — compute the SHA-256 of the `.rux` file and compare it to `source_hash` in the metadata. If they match, the source has not changed since the last compilation.
 2. **Compiler version check** — if the installed compiler's `rux_version` differs from the value stored in the metadata, the file must be recompiled regardless of the hash, because language semantics or code-generation may have changed.
 
 If both checks pass the existing `.rcu` is used directly; the source file is not read again.
+
+> **Status** — this describes the intended design. The current compiler writes an all-zero `source_hash`, so the hash-based skip is not yet active. The metadata block is already emitted on every unit, so the mechanism can be turned on later without changing the file format.
 
 ## Checksum — CRC-32C
 
@@ -442,16 +452,16 @@ Writers must compute and store the checksum after writing all other fields. Read
 4. Write regions in order:
    File Header → Section Table → Symbol Table →
    [for each section: raw data (aligned) + relocation array (4-byte aligned)] →
-   String Table (8-byte aligned) → Rux Metadata (optional).
+   String Table (no alignment) → Rux Metadata (8-byte aligned, optional).
 5. Compute CRC-32C over the complete file content (treating offset 28 as zero).
 6. Seek to offset 28 and write the 4-byte checksum.
 
 ### Linker Responsibilities
 
-The Rux linker processes a set of RCU files to produce a Windows x64 PE executable:
+The Rux linker processes a set of RCU files to produce a native executable for the target operating system:
 
 1. Collect and merge all same-named sections (`.text`, `.rodata`, `.data`, `.bss`).
 2. Resolve all symbols: pair each `SYM_EXTERN_*` reference with its `VIS_GLOBAL` or `VIS_WEAK` definition; report an error for any unresolved symbol.
 3. Assign virtual addresses to all merged sections.
 4. Apply all relocations using the formulas in [Relocation Types](#relocation-types).
-5. Emit a PE/COFF image with appropriate headers, a `.idata` import section for external Windows API calls, and the merged section data.
+5. Emit an executable in the target's native format — PE/COFF on Windows, ELF on Linux and BSD, or Mach-O on macOS — with the appropriate headers, an import table for external symbols (for example a PE `.idata` section for Windows API calls, or dynamic-linking entries on ELF and Mach-O), and the merged section data.

@@ -6,11 +6,11 @@ The package is under active development and its API is **not yet stable**. Names
 
 The package provides raw memory management — allocating, resizing, and releasing blocks, and filling, copying, and comparing the bytes inside them.
 
-**Module:** `Memory`
+**Package:** `Memory`
 
-**Source:** [github.com/rux-lang/Memory](https://github.com/rux-lang/Memory)
+**Source:** [github.com/rux-lang/Rux/tree/main/Packages/Memory](https://github.com/rux-lang/Rux/tree/main/Packages/Memory)
 
-Every function is implemented per target, so a call compiles down to the platform's own primitives rather than to a bundled allocator: the Win32 heap and the `Rtl*` intrinsics on Windows, and anonymous `mmap` mappings on Linux, macOS, and illumos. The API is the same on all of them.
+Every function is implemented per target, so a call compiles down to the platform's own primitives rather than to a bundled allocator: the Win32 heap and the `Rtl*` intrinsics on Windows, and anonymous `mmap` mappings on Linux and macOS. The API is the same on all of them.
 
 ```rux
 import Memory::{ Alloc, Free, Set };
@@ -39,7 +39,7 @@ rux install
 
 ## Platform support
 
-Implemented on Illumos, Linux, macOS, and Windows. **BSD is not implemented yet** — every function is a stub that returns `null`, `0`, or does nothing at all, so a program that calls into this package on BSD compiles but does no work.
+Implemented on BSD, Linux, macOS, and Windows.
 
 ## Memory model
 

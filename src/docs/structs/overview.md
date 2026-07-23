@@ -23,7 +23,7 @@ struct Point {
 }
 
 struct Person {
-    name: char8[];
+    name: Slice<char8>;
     age: uint32;
 }
 ```

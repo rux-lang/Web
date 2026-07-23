@@ -2,7 +2,7 @@
 
 Retrieves the calling thread's last-error code.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`GetLastError`](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror)
 
@@ -25,4 +25,4 @@ operation succeeded.
 
 ## See also
 
-- [`Handles and errors`](handles) — Win32 error-handling conventions
+- [`Windows`](/api/windows/) — the package overview

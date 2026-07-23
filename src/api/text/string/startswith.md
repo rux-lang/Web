@@ -2,7 +2,7 @@
 
 Reports whether the string opens with a prefix.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -27,14 +27,17 @@ The comparison is byte for byte and case-sensitive, on the same terms as [`Equal
 ```rux
 import Text::String;
 
-var path = String::From("/usr/local/bin");
-var root = String::From("/usr");
+func Main() -> int {
+    var path = String::From("/usr/local/bin");
+    var root = String::From("/usr");
 
-path.StartsWith(root);          // true
-path.StartsWith(String::New()); // true -- the empty prefix always matches
+    path.StartsWith(root);          // true
+    path.StartsWith(String::New()); // true -- the empty prefix always matches
 
-root.Free();
-path.Free();
+    root.Free();
+    path.Free();
+    return 0;
+}
 ```
 
 ## See also

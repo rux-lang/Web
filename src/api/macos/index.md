@@ -4,28 +4,22 @@
 The package is under active development and its API is **not yet stable**. Names, signatures, and behavior may change between releases, and this documentation will be updated to match.
 :::
 
-Low-level macOS x64 system bindings for Rux programs.
+Direct macOS (Darwin) system-call bindings for Rux programs.
 
-**Module:** `MacOS`
+**Package:** `MacOS`
 
-**Source:** [github.com/rux-lang/MacOS](https://github.com/rux-lang/MacOS)
+**Source:** [github.com/rux-lang/Rux/tree/main/Packages/MacOS](https://github.com/rux-lang/Rux/tree/main/Packages/MacOS)
 
-The package exposes a focused compatibility API for process termination,
-standard input and output, and virtual-memory allocation. Its Win32-style
-function names are resolved by the Rux Mach-O linker to thunks backed by macOS
-BSD syscalls; they do not load or emulate Windows system libraries.
+The package calls the Darwin kernel without going through libc. It provides raw zero-to-six-argument syscall entry points, typed wrappers for a focused set of common operations, and the constants and structures those wrappers need.
 
 ## Requirements
 
 - macOS on x86-64
-- A Rux compiler with the `rux-macos` compatibility thunks
+- A Rux compiler with the macOS syscall support
 
-These bindings are platform-specific. Prefer `Std::Io`, `Std::Memory`, and
-`Std::Exit` for portable application code.
+The package is **x86-64 only** — the syscall entry points are hand-written x86-64 assembly, and there is no Apple Silicon (AArch64) path yet. On any other architecture the package does not apply.
 
 ## Installation
-
-Add the package and install project dependencies:
 
 ```sh
 rux add MacOS
@@ -35,47 +29,63 @@ rux install
 Then import the symbols you need:
 
 ```rux
-import MacOS::{ GetStdHandle, StdHandle, WriteFile };
+import MacOS::{ StdOut, Write };
 ```
 
-## Calling Conventions
+## Result Convention
 
-[`ReadFile`](readfile), [`WriteFile`](writefile), and [`HeapFree`](heapfree)
-return `bool32`: nonzero means success and zero means failure. [`HeapAlloc`](heapalloc)
-returns `null` when allocation fails. [`Munmap`](munmap) follows the raw macOS
-syscall convention and returns `0` on success or a negative error result.
+The wrappers return the kernel result directly: a non-negative value on success — a byte count, a process ID, a mapped address, or `0` — and a **negative errno** (`-1` through `-4095`) on failure. Darwin itself reports errors as a positive errno with the carry flag set; the wrappers normalize that to `-errno` for parity with the Linux and BSD packages. [`IsError`](iserror) tests for the negative range and [`Errno`](errno) turns it back into a positive errno number.
 
-Standard devices are BSD file descriptors encoded as `*opaque`. In particular,
-standard input is descriptor `0`, so its valid handle may compare equal to
-`null`. Do not use a null check to validate a standard handle.
+## Functions
 
-::: warning Raw bindings
-The API does not retry interrupted or partial I/O, provide an error-decoding
-helper, track allocation sizes, or release memory through `HeapFree`. The caller
-owns those responsibilities.
-:::
+### I/O
 
-## Reference
+| Function         | Description                        |
+| ---------------- | ---------------------------------- |
+| [`Read`](read)   | Read bytes from a file descriptor. |
+| [`Write`](write) | Write bytes to a file descriptor.  |
+| [`Close`](close) | Close a file descriptor.           |
 
-| Topic                        | Contents                                       |
-| ---------------------------- | ---------------------------------------------- |
-| [`Types`](types)             | `StdHandle` standard-device identifiers.       |
-| [`Console and I/O`](console) | Standard handles, byte input, and byte output. |
-| [`Heap and memory`](heap)    | Allocate and unmap virtual memory.             |
-| [`Process`](process)         | Terminate the process.                         |
+### Memory
+
+| Function           | Description                      |
+| ------------------ | -------------------------------- |
+| [`Mmap`](mmap)     | Create a virtual-memory mapping. |
+| [`Munmap`](munmap) | Remove a virtual-memory mapping. |
+
+### Process
+
+| Function           | Description                        |
+| ------------------ | ---------------------------------- |
+| [`Exit`](exit)     | Terminate the process immediately. |
+| [`GetPid`](getpid) | Return the calling process ID.     |
+
+### Time
+
+| Function                        | Description                  |
+| ------------------------------- | ---------------------------- |
+| [`GetTimeOfDay`](gettimeofday)  | Read the current wall-clock time. |
+
+### Raw syscalls
+
+| Function                          | Description                                 |
+| --------------------------------- | ------------------------------------------- |
+| [`Syscall0`–`Syscall6`](syscalls) | Invoke an arbitrary syscall by number.      |
+| [`IsError`](iserror)              | Test whether a result is a negative errno.  |
+| [`Errno`](errno)                  | Extract the positive errno from a result.   |
+
+## Types and constants
+
+The standard descriptors, class-qualified syscall numbers, mapping and protection flags, and the [`Timeval`](types) structure are listed on the [types and constants](types) page.
 
 ## Example
 
 ```rux
-import MacOS::{ GetStdHandle, StdHandle, WriteFile };
+import MacOS::{ StdOut, Write };
 
-func Main() -> int32 {
-    let message = c8"Hello, macOS!\n";
-    let output = GetStdHandle(StdHandle::Output);
-    var written: uint32 = 0;
-
-    let ok = WriteFile(output, message.data, message.length as uint32,
-        &written, null);
-    return ok != 0 && written == message.length as uint32 ? 0i32 : 1i32;
+func Main() -> int {
+    let message = "hello from macOS\n";
+    let result = Write(StdOut, message.data, message.length);
+    return result == message.length as int64 ? 0 : 1;
 }
 ```

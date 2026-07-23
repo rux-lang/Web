@@ -2,7 +2,7 @@
 
 Returns the smaller of two values.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -30,12 +30,15 @@ The smaller of `a` and `b`. A NaN loses to anything else — `Min(NaN, y)` is
 ```rux
 import Math::Min;
 
-let a = Min(3.0, 7.0);  // 3.0
-let b = Min(0.0, -0.0); // -0.0
+func Main() -> int {
+    let a = Min(3.0, 7.0);  // 3.0
+    let b = Min(0.0, -0.0); // -0.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Max`](max) — the smaller value's counterpart
 - [`Abs`](abs) — magnitude of a single value

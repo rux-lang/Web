@@ -2,7 +2,7 @@
 
 Returns milliseconds elapsed since system startup.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`GetTickCount64`](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-gettickcount64)
 
@@ -19,4 +19,4 @@ between readings to measure elapsed time.
 
 ## See also
 
-- [`Time`](time) — Windows time API overview
+- [`Windows`](/api/windows/) — the package overview

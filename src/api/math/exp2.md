@@ -2,7 +2,7 @@
 
 Returns 2 raised to a power.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -27,13 +27,16 @@ func Exp2(x: float32) -> float32;
 ```rux
 import Math::Exp2;
 
-let a = Exp2(10.0); // 1024.0
-let b = Exp2(-1.0); // 0.5
+func Main() -> int {
+    let a = Exp2(10.0); // 1024.0
+    let b = Exp2(-1.0); // 0.5
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Exp`](exp) — e raised to a power
 - [`Log2`](log2) — the inverse of `Exp2`
 - [`Pow`](pow) — an arbitrary base raised to a power

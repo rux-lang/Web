@@ -2,13 +2,13 @@
 
 Writes bytes to the end of the builder.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
 ```rux
 func Append(self, ch: char8);
-func Append(self, str: char8[]);
+func Append(self, str: Slice<char8>);
 func Append(self, str: String);
 ```
 
@@ -16,7 +16,7 @@ func Append(self, str: String);
 
 | Name         | Type                            | Description             |
 | ------------ | ------------------------------- | ----------------------- |
-| `ch` / `str` | `char8` / `char8[]` / `String`  | The bytes to write.     |
+| `ch` / `str` | `char8` / `Slice<char8>` / `String`  | The bytes to write.     |
 
 ## Remarks
 
@@ -33,17 +33,20 @@ Growing may move the block, so a pointer taken from [`Data`](data) before an app
 ```rux
 import Text::{ String, StringBuilder };
 
-var name = String::From("Rux");
-var builder = StringBuilder::New();
+func Main() -> int {
+    var name = String::From("Rux");
+    var builder = StringBuilder::New();
 
-builder.Append("Hello, "); // a literal
-builder.Append(name);      // a String, copied
-builder.Append(c8'!');     // a single byte
+    builder.Append("Hello, "); // a literal
+    builder.Append(name);      // a String, copied
+    builder.Append(c8'!');     // a single byte
 
-var greeting = builder.IntoString(); // "Hello, Rux!"
+    var greeting = builder.IntoString(); // "Hello, Rux!"
 
-greeting.Free();
-name.Free();                         // the append did not take it
+    greeting.Free();
+    name.Free();                         // the append did not take it
+    return 0;
+}
 ```
 
 ## See also

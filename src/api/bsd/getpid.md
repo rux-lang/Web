@@ -2,7 +2,7 @@
 
 Returns the calling process ID.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
@@ -14,20 +14,18 @@ func GetPid() -> int64;
 
 `int64` - the process ID assigned by the kernel.
 
-::: warning Error ambiguity
-Process IDs from `1` through `4095` satisfy the current [`IsError`](iserror)
-range check even though they are valid results. Do not validate `GetPid` with
-`IsError`.
-:::
 
 ## Example
 
 ```rux
-import BSD::GetPid;
+import Bsd::GetPid;
 
-let pid = GetPid();
+func Main() -> int {
+    let pid = GetPid();
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Process`](process) - process API overview
+- [`Bsd`](/api/bsd/) — the package overview

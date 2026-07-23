@@ -2,16 +2,20 @@
 
 Writes bytes to a file or I/O device.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`WriteFile`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-writefile)
 
 ## Signature
 
 ```rux
-func WriteFile(file: *opaque, buffer: *const opaque,
-    bytesToWrite: uint32, bytesWritten: *uint32,
-    overlapped: *opaque) -> bool32;
+func WriteFile(
+    file: *opaque,
+    buffer: *opaque,
+    bytesToWrite: uint32,
+    bytesWritten: *uint32,
+    overlapped: *opaque
+) -> bool32;
 ```
 
 ## Parameters
@@ -32,4 +36,4 @@ I/O. A successful device write can report fewer bytes than requested.
 ## See also
 
 - [`ReadFile`](readfile) — read bytes
-- [`File I/O`](files) — file API overview
+- [`Windows`](/api/windows/) — the package overview

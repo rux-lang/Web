@@ -2,7 +2,7 @@
 
 Suspends execution for a relative time interval.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -24,7 +24,7 @@ on failure or interruption.
 
 ## Description
 
-`req.tv_nsec` must be between `0` and `999999999`. When a signal interrupts the
+`req.nanoseconds` must be between `0` and `999999999`. When a signal interrupts the
 sleep, Linux returns a negative `EINTR` result and, when `rem` is non-null,
 writes the unslept duration to `rem`.
 
@@ -33,14 +33,17 @@ writes the unslept duration to `rem`.
 ```rux
 import Linux::{ IsError, Nanosleep, Timespec };
 
-var delay = Timespec { tv_sec: 1i64, tv_nsec: 0i64 };
-if IsError(Nanosleep(&delay, null)) {
-    return 1i32;
+func Main() -> int {
+    var delay = Timespec { seconds: 1i64, nanoseconds: 0i64 };
+    if IsError(Nanosleep(@delay, null)) {
+        return 1;
+    }
+    return 0;
 }
 ```
 
 ## See also
 
-- [`Timespec`](timespec) — time structure
+- [`Timespec`](types) — time structure
 - [`ClockGetTime`](clockgettime) — read a clock
 

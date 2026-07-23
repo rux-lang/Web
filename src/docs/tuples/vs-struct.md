@@ -22,7 +22,7 @@ Nothing at the call site says what each tuple position means. When a tuple would
 
 ```rux
 // Hard to read at the call site — what do the three values mean?
-func Parse(src: char8[]) -> (int, int, bool) { /* … */ }
+func Parse(src: Slice<char8>) -> (int, int, bool) { /* … */ }
 
 // Self-documenting
 struct ParseResult {
@@ -31,7 +31,7 @@ struct ParseResult {
     ok: bool;
 }
 
-func Parse(src: char8[]) -> ParseResult { /* … */ }
+func Parse(src: Slice<char8>) -> ParseResult { /* … */ }
 ```
 
 A struct also lets the type be named, reused, given [methods](/docs/structs/methods), and extended with new fields without rewriting every call site.

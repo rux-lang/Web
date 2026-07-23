@@ -2,7 +2,7 @@
 
 Returns the natural logarithm.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -27,13 +27,16 @@ func Log(x: float32) -> float32;
 ```rux
 import Math::{ E, Log };
 
-let a = Log(E);   // 1.0
-let b = Log(1.0); // 0.0
+func Main() -> int {
+    let a = Log(E);   // 1.0
+    let b = Log(1.0); // 0.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Log2`](log2) — base-2 logarithm
 - [`Log10`](log10) — base-10 logarithm
 - [`Exp`](exp) — the inverse of `Log`

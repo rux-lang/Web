@@ -2,7 +2,7 @@
 
 Reads bytes from a file descriptor.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -37,14 +37,17 @@ a negative result.
 ## Example
 
 ```rux
-import Linux::{ IsError, Read, Stdin };
+import Linux::{ IsError, Read, StdIn };
 
-var buffer: char8[256];
-let result = Read(Stdin, buffer.data, 256u);
-if IsError(result) {
-    return 1i32;
+func Main() -> int {
+    var buffer: char8[256];
+    let result = Read(StdIn, buffer.data, 256u);
+    if IsError(result) {
+        return 1;
+    }
+    let bytesRead = result as uint;
+    return 0;
 }
-let bytesRead = result as uint;
 ```
 
 ## See also

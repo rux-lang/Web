@@ -13,7 +13,7 @@ var counter = 0;   // mutable
 counter += 1;      // OK
 ```
 
-Immutability is the default: prefer `let`, and reach for `var` only when a value genuinely needs to change.
+Immutability is the default: prefer `let`, and reach for `var` only when a value genuinely needs to change. Function parameters follow the same rule — immutable unless declared `var` (see [Mutable Parameters](/docs/functions/declaration#mutable-parameters)).
 
 ## Type Inference and Annotations
 
@@ -21,7 +21,7 @@ When a binding has an initializer, the compiler infers its type. Add an explicit
 
 ```rux
 let pi = 3.14159;            // inferred float64
-let name: char8[] = "Rux";   // explicit annotation
+let name: Slice<char8> = "Rux";   // explicit annotation
 var total: int64 = 0;        // explicit — wider than the default int
 ```
 

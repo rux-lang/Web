@@ -2,7 +2,7 @@
 
 Changes the process program break.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
@@ -18,14 +18,14 @@ func Brk(addr: *opaque) -> int64;
 
 ## Returns
 
-`int64` - the raw BSD syscall result.
+`int64` - `0` on success, or a negative errno value on failure.
 
 ::: danger
 `Brk` changes memory traditionally managed by process allocators. Calling it
 independently of the runtime allocator can corrupt the heap. Prefer
-`Std::Memory` or [`Mmap`](mmap) for application allocations.
+[`Memory`](/api/memory/) or [`Mmap`](mmap) for application allocations.
 :::
 
 ## See also
 
-- [`Memory`](memory) - memory API overview
+- [`Bsd`](/api/bsd/) — the package overview

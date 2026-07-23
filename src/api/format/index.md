@@ -4,13 +4,13 @@
 The package is under active development and its API is **not yet stable**. Names, signatures, and behavior may change between releases, and this documentation will be updated to match.
 :::
 
-The package turns values into text — a [`ToString`](tostring) for every primitive type, a [`Stringable`](stringable) interface for the types you write yourself, and a family of [`Write`](writeint) functions that append into a builder instead of allocating.
+The package converts between values and text — a [`ToString`](tostring) for every primitive type, a [`Stringable`](stringable) interface for the types you write yourself, a family of [`Write`](writeint) functions that append into a builder instead of allocating, and a set of [`Parse`](parseint64) functions that read a value back out of text.
 
-**Module:** `Format`
+**Package:** `Format`
 
-**Source:** [github.com/rux-lang/Format](https://github.com/rux-lang/Format)
+**Source:** [github.com/rux-lang/Rux/tree/main/Packages/Format](https://github.com/rux-lang/Rux/tree/main/Packages/Format)
 
-Every conversion produces a [`Text::String`](/api/text/string/), which is what this package is built on. Nothing here parses text back into a value.
+A conversion to text produces a [`Text::String`](/api/text/string/), which is what this package is built on. The [`Parse`](parseint64) functions go the other way, reading a value out of a `Slice<char8>` or a `String` and allocating nothing.
 
 ```rux
 import Format::ToString;
@@ -38,7 +38,7 @@ rux install
 
 ## Platform support
 
-The package is pure computation over strings, so it runs wherever [`Text`](/api/text/) does: illumos, Linux, macOS, and Windows. **BSD is not implemented yet** — the allocation underneath a `String` fails there, so a program that converts a value on BSD compiles but does not work.
+The package is pure computation over strings, so it runs wherever [`Text`](/api/text/) does: FreeBSD, Linux, macOS, and Windows.
 
 ## Ownership
 
@@ -52,9 +52,9 @@ import Text::StringBuilder;
 
 var builder = StringBuilder::New();
 builder.Append("point ");
-WriteInt(&builder, 3);       // no String allocated
+WriteInt(@builder, 3);       // no String allocated
 builder.Append(", ");
-WriteFloat(&builder, 4.5);
+WriteFloat(@builder, 4.5);
 var line = builder.IntoString(); // "point 3, 4.5"
 
 line.Free();
@@ -77,6 +77,12 @@ Notation follows the printf `%g` rule. Fixed while the decimal exponent stays in
 | Interface                    | Description                                        |
 | ---------------------------- | -------------------------------------------------- |
 | [`Stringable`](stringable)   | What a type implements to convert itself to a `String`. |
+
+## Errors
+
+| Type                       | Description                                                     |
+| -------------------------- | -------------------------------------------------------------- |
+| [`ParseError`](parseerror) | Why a parse failed: empty input, an invalid byte, or overflow. |
 
 ## Functions
 
@@ -106,7 +112,17 @@ Each appends into a [`StringBuilder`](/api/text/stringbuilder/) and allocates no
 | [`IsInfinite`](isinfinite)  | Whether a value is one of the two infinities.        |
 | [`IsFinite`](isfinite)      | Whether a value is an ordinary number.               |
 
+### Parsing
+
+Each reads a value out of a `Slice<char8>` or a `String`, allocating nothing. The `Parse` forms return a [`Result`](/docs/error/result); the `TryParse` forms write through a pointer and return whether it worked.
+
+| Function                             | Description                                          |
+| ------------------------------------ | ---------------------------------------------------- |
+| [`ParseInt64`](parseint64)           | Parse a signed integer, as a `Result`.               |
+| [`ParseFloat64`](parsefloat64)       | Parse a floating-point value, as a `Result`.         |
+| [`TryParseInt64`](tryparseint64)     | Parse a signed integer into an out-parameter.        |
+| [`TryParseFloat64`](tryparsefloat64) | Parse a floating-point value into an out-parameter.  |
+
 ## See also
 
 - [`Text`](/api/text/) — the `String` and `StringBuilder` every conversion here produces
-- [`Std::Format`](/api/std/format) — placeholder substitution, built on conversions like these

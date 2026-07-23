@@ -2,7 +2,7 @@
 
 Returns a copy with ASCII letters uppercased.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,12 +21,15 @@ The fold is **ASCII only**. Every other byte is copied through untouched, so the
 ```rux
 import Text::String;
 
-var text = String::From("Hello, Rux!");
+func Main() -> int {
+    var text = String::From("Hello, Rux!");
 
-var shout = text.ToUpper(); // "HELLO, RUX!"
+    var shout = text.ToUpper(); // "HELLO, RUX!"
 
-shout.Free();
-text.Free();
+    shout.Free();
+    text.Free();
+    return 0;
+}
 ```
 
 ## See also

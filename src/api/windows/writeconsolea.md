@@ -2,16 +2,20 @@
 
 Writes narrow characters to a console screen buffer.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`WriteConsole`](https://learn.microsoft.com/en-us/windows/console/writeconsole)
 
 ## Signature
 
 ```rux
-func WriteConsoleA(consoleOutput: *opaque, buffer: *const char8,
-    numberOfCharsToWrite: uint32, numberOfCharsWritten: *uint32,
-    reserved: *opaque) -> bool32;
+func WriteConsoleA(
+    consoleOutput: *opaque,
+    buffer: *char8,
+    numberOfCharsToWrite: uint32,
+    numberOfCharsWritten: *uint32,
+    reserved: *opaque
+) -> bool32;
 ```
 
 ## Parameters
@@ -32,4 +36,4 @@ redirected output; use [`WriteFile`](writefile) for that case.
 ## See also
 
 - [`WriteConsoleW`](writeconsolew) — write UTF-16 characters
-- [`Console`](console) — console API overview
+- [`Windows`](/api/windows/) — the package overview

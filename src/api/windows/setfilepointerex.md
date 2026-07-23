@@ -2,15 +2,19 @@
 
 Moves the file pointer of an open file.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`SetFilePointerEx`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfilepointerex)
 
 ## Signature
 
 ```rux
-func SetFilePointerEx(file: *opaque, distance: int64, newPos: *int64,
-    moveMethod: SeekOrigin) -> bool32;
+func SetFilePointerEx(
+    file: *opaque,
+    distance: int64,
+    newPos: *int64,
+    moveMethod: SeekOrigin
+) -> bool32;
 ```
 
 ## Parameters
@@ -29,4 +33,4 @@ func SetFilePointerEx(file: *opaque, distance: int64, newPos: *int64,
 ## See also
 
 - [`SeekOrigin`](types#seekorigin) — supported origins
-- [`File I/O`](files) — file API overview
+- [`Windows`](/api/windows/) — the package overview

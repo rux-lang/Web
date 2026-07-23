@@ -2,7 +2,7 @@
 
 Returns the identifier of the calling thread.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`GetCurrentThreadId`](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthreadid)
 
@@ -20,4 +20,4 @@ after the thread terminates.
 ## See also
 
 - [`GetCurrentProcessId`](getcurrentprocessid) — calling process identifier
-- [`Process and thread`](process) — process API overview
+- [`Windows`](/api/windows/) — the package overview

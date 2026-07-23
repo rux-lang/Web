@@ -85,7 +85,7 @@ c32'd' // char32
 
 ## String Literals
 
-String literals are slices of type `char8[]` enclosed in double quotes. Standard escape sequences are supported:
+String literals are slices of type `Slice<char8>` enclosed in double quotes. Standard escape sequences are supported:
 
 ```rux
 "Hello, World!"

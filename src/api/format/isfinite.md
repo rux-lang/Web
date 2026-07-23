@@ -2,7 +2,7 @@
 
 Reports whether a value is an ordinary number.
 
-**Module:** `Format`
+**Package:** `Format`
 
 ## Signature
 
@@ -30,19 +30,22 @@ As with [`IsInfinite`](isinfinite), the width matters, and the overload is chose
 ```rux
 import Format::IsFinite;
 
-IsFinite(0.0);                    // true
-IsFinite(-1.5e300);               // true
-IsFinite(5.0e-324);               // true -- the smallest subnormal is still a number
-IsFinite(1.0 / 0.0);              // false
-IsFinite(0.0 / 0.0);              // false
+func Main() -> int {
+    IsFinite(0.0);                    // true
+    IsFinite(-1.5e300);               // true
+    IsFinite(5.0e-324);               // true -- the smallest subnormal is still a number
+    IsFinite(1.0 / 0.0);              // false
+    IsFinite(0.0 / 0.0);              // false
 
-IsFinite(3.4028235e38f32);        // true  -- the largest finite float32
-IsFinite(1.0e300);                // true  -- as a float64
+    IsFinite(3.4028235e38f32);        // true  -- the largest finite float32
+    IsFinite(1.0e300);                // true  -- as a float64
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Format`](/api/format/) — the module overview
+- [`Format`](/api/format/) — the package overview
 - [`IsNan`](isnan) — whether the value is a NaN
 - [`IsInfinite`](isinfinite) — whether the value is one of the two infinities
 - [`ToString`](tostring) — what each of the three classes prints as

@@ -2,7 +2,7 @@
 
 Identifies a Windows character encoding.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`Code page identifiers`](https://learn.microsoft.com/en-us/windows/win32/intl/code-page-identifiers)
 
@@ -11,8 +11,8 @@ enum CodePage: uint32
 ```
 
 The enum exposes the Windows code-page identifiers accepted by
-[`MultiByteToWideChar`](conversion#multibytetowidechar) and
-[`WideCharToMultiByte`](conversion#widechartomultibyte). Common members are:
+[`MultiByteToWideChar`](multibytetowidechar) and
+[`WideCharToMultiByte`](widechartomultibyte). Common members are:
 
 | Member        | Value   | Encoding                         |
 | ------------- | ------: | -------------------------------- |

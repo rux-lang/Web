@@ -54,16 +54,16 @@ If `line` were a `let`, `line.start.x = 5.0` would be rejected just like a direc
 
 ## Mutating Through a Pointer
 
-A [pointer](/docs/pointers/members) does not bypass immutability. Writing through `*T` still requires the pointed-to value to be mutable, so you can only take a writable pointer to a `var` struct:
+A [pointer](/docs/pointers/members) does not bypass immutability. Only a writable [`*var T`](/docs/pointers/types) pointer can write through to the pointee, and `@` produces one only when the addressed value is itself a `var`. Taking `@` of a `let` yields a read-only `*T`:
 
 ```rux
 var p = Point { x: 0.0, y: 0.0 };
-let ptr = &p;
-ptr.x = 5.0;          // OK — p is var
+let ptr = @p;         // *var Point — p is var
+ptr.x = 5.0;          // OK
 
 let q = Point { x: 0.0, y: 0.0 };
-let qp = &q;
-qp.x = 5.0;           // error: q is immutable
+let qp = @q;          // *Point — q is let, so read-only
+qp.x = 5.0;           // error: cannot assign through a pointer to immutable data
 ```
 
 This is also why an instance method that mutates `self` can only be called on a `var` receiver — see [Methods](/docs/structs/methods).
@@ -72,7 +72,7 @@ This is also why an instance method that mutates `self` can only be called on a 
 
 The same deep rule covers the other [value types](/docs/structs/overview#value-semantics): a [tuple](/docs/tuples/overview) or a fixed-size array (`T[N]`) is mutable only when bound with `var`.
 
-A dynamic [slice](/docs/slices/overview) (`T[]`) is the exception, because it is a **view** rather than a value: a `let` slice fixes the header (its `data` pointer and `length`) while the elements it refers to may still be written through it. Bind the slice with `let` to keep it pointing at the same region; the mutability of the elements depends on the storage they live in.
+A dynamic [slice](/docs/slices/overview) (`Slice<T>`) is the exception, because it is a **view** rather than a value: a `let` slice fixes the header (its `data` pointer and `length`) while the elements it refers to may still be written through it. Bind the slice with `let` to keep it pointing at the same region; the mutability of the elements depends on the storage they live in.
 
 ## See Also
 

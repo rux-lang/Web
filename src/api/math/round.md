@@ -2,7 +2,7 @@
 
 Rounds to the nearest integer value.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,14 +28,17 @@ number. A tie rounds away from zero: `Round(2.5)` is `3.0` and
 ```rux
 import Math::Round;
 
-let a = Round(2.5);  // 3.0
-let b = Round(-2.5); // -3.0
-let c = Round(2.4);  // 2.0
+func Main() -> int {
+    let a = Round(2.5);  // 3.0
+    let b = Round(-2.5); // -3.0
+    let c = Round(2.4);  // 2.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Floor`](floor) — round down
 - [`Ceil`](ceil) — round up
 - [`Trunc`](trunc) — round toward zero

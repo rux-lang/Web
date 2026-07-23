@@ -1,3 +1,4 @@
+import Io::PrintLine;
 import Math::Sqrt;
 
 struct Vector {
@@ -22,4 +23,15 @@ extend Vector {
     func +(self, other: Vector) -> Vector {
         return Vector { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z };
     }
+}
+
+func Main() -> int {
+    let v1 = Vector{ x: 1.0, y: 2.0, z: 3.0 };
+    let v2 = Vector::New(10.0, 20.0, 30.0);
+    let sum = v1 + v2;
+    let prod = v1 * v2;
+    PrintLine("Sum: [{}, {}, {}]", sum.x, sum.y, sum.z);
+    PrintLine("Length: {}", sum.Length());
+    PrintLine("Product: {}", prod);
+    return 0;
 }

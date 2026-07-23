@@ -1,82 +1,87 @@
 # Types and Constants
 
-Types and constants exported by the `BSD` module.
+Types and constants exported by the `Bsd` package.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Standard File Descriptors
 
-| Name     | Type    | Value | Description     |
-| -------- | ------- | ----: | --------------- |
-| `Stdin`  | `int32` | `0`   | Standard input. |
-| `Stdout` | `int32` | `1`   | Standard output.|
-| `Stderr` | `int32` | `2`   | Standard error. |
+| Name     | Type    | Value | Description      |
+| -------- | ------- | ----: | ---------------- |
+| `StdIn`  | `int32` | `0`   | Standard input.  |
+| `StdOut` | `int32` | `1`   | Standard output. |
+| `StdErr` | `int32` | `2`   | Standard error.  |
 
 A process may close or redirect these conventional descriptors.
 
 ## Syscall Numbers
 
-| Name          | Type     | Value |
-| ------------- | -------- | ----: |
-| `SYS_EXIT`    | `uint64` | `1`   |
-| `SYS_READ`    | `uint64` | `3`   |
-| `SYS_WRITE`   | `uint64` | `4`   |
-| `SYS_CLOSE`   | `uint64` | `6`   |
-| `SYS_GETPID`  | `uint64` | `20`  |
-| `SYS_BRK`     | `uint64` | `45`  |
-| `SYS_MUNMAP`  | `uint64` | `73`  |
+These numbers are the same on all four supported BSDs:
 
-The package uses dedicated per-BSD thunks instead of exported syscall numbers
-for `mmap`, `nanosleep`, and `clock_gettime`.
+| Name         | Type     | Value |
+| ------------ | -------- | ----: |
+| `SysExit`    | `uint64` | `1`   |
+| `SysRead`    | `uint64` | `3`   |
+| `SysWrite`   | `uint64` | `4`   |
+| `SysClose`   | `uint64` | `6`   |
+| `SysBrk`     | `uint64` | `17`  |
+| `SysGetPid`  | `uint64` | `20`  |
+| `SysMunmap`  | `uint64` | `73`  |
+
+`SysMmap`, `SysNanosleep`, and `SysClockGetTime` are also exported, but their
+values are selected for the active target, since they differ between FreeBSD,
+OpenBSD, NetBSD, and DragonFly BSD.
 
 ## Memory Protection
 
-| Name         | Type    | Value | Description            |
-| ------------ | ------- | ----: | ---------------------- |
-| `PROT_READ`  | `int32` | `1`   | Pages may be read.     |
-| `PROT_WRITE` | `int32` | `2`   | Pages may be written.  |
-| `PROT_EXEC`  | `int32` | `4`   | Pages may be executed. |
+| Name                 | Type    | Value | Description            |
+| -------------------- | ------- | ----: | ---------------------- |
+| `ProtectionNone`     | `int32` | `0`   | No access.             |
+| `ProtectionRead`     | `int32` | `1`   | Pages may be read.     |
+| `ProtectionWrite`    | `int32` | `2`   | Pages may be written.  |
+| `ProtectionExecute`  | `int32` | `4`   | Pages may be executed. |
 
 ## Mapping Flags
 
-| Name            | Type    | Value  | Description                             |
-| --------------- | ------- | -----: | --------------------------------------- |
-| `MAP_PRIVATE`   | `int32` | `2`    | Create a private copy-on-write mapping. |
-| `MAP_ANONYMOUS` | `int32` | `4096` | Create a mapping not backed by a file.  |
+| Name           | Type    |  Value | Description                             |
+| -------------- | ------- | -----: | --------------------------------------- |
+| `MapShared`    | `int32` | `1`    | Create a shared mapping.                |
+| `MapPrivate`   | `int32` | `2`    | Create a private copy-on-write mapping. |
+| `MapFixed`     | `int32` | `16`   | Place the mapping at the exact address. |
+| `MapAnonymous` | `int32` | `4096` | Create a mapping not backed by a file.  |
 
-OpenBSD uses `32` for its native anonymous-mapping flag. Use
-`MAP_ANONYMOUS` with the package's [`Mmap`](mmap) compatibility wrapper rather
-than passing it to an arbitrary raw OpenBSD syscall.
+These values are shared by all four supported BSDs.
 
 ## Clock IDs
 
-| Name              | Type    | Value | Description                              |
-| ----------------- | ------- | ----: | ---------------------------------------- |
-| `CLOCK_REALTIME`  | `int32` | `0`   | Adjustable wall-clock time.              |
-| `CLOCK_MONOTONIC` | `int32` | `4`   | Monotonic time for interval measurement. |
+| Name             | Type    |   Value | Description                              |
+| ---------------- | ------- | ------: | ---------------------------------------- |
+| `ClockRealtime`  | `int32` | `0`     | Adjustable wall-clock time.              |
+| `ClockMonotonic` | `int32` | `4`/`3` | Monotonic time for interval measurement. |
 
-OpenBSD uses `3` for its native monotonic-clock ID. Use this compatibility
-constant with [`ClockGettime`](clockgettime).
+`ClockMonotonic` is `4` on FreeBSD and DragonFly BSD and `3` on NetBSD and
+OpenBSD; the package selects the right value for the active target. Use these
+constants with [`ClockGetTime`](clockgettime).
 
-## `timespec`
+## `Timespec`
 
 ```rux
-struct timespec {
-    tv_sec:  int64;
-    tv_nsec: int64;
+struct Timespec {
+    seconds: int64;
+    nanoseconds: int64;
 }
 ```
 
-| Field     | Type    | Description                                      |
-| --------- | ------- | ------------------------------------------------ |
-| `tv_sec`  | `int64` | Whole seconds.                                   |
-| `tv_nsec` | `int64` | Nanoseconds within the second, normally 0-999,999,999. |
+| Field         | Type    | Description                                            |
+| ------------- | ------- | ------------------------------------------------------ |
+| `seconds`     | `int64` | Whole seconds.                                         |
+| `nanoseconds` | `int64` | Nanoseconds within the second, normally 0–999,999,999. |
 
-The lowercase type name is part of the current public API. It is used by
-[`Nanosleep`](nanosleep) and [`ClockGettime`](clockgettime).
+Used by [`Nanosleep`](nanosleep) and [`ClockGetTime`](clockgettime).
 
 ## See also
 
-- [`Mmap`](mmap) - use protection and mapping flags
-- [`Time`](time) - use clocks and `timespec`
-- [`Raw syscalls`](syscalls) - use shared syscall numbers
+- [`Bsd`](/api/bsd/) — the package overview
+- [`Mmap`](mmap) — uses the protection and mapping flags
+- [`ClockGetTime`](clockgettime) — uses the clock IDs and `Timespec`
+- [`Syscall0`–`Syscall6`](syscalls) — use the syscall numbers directly

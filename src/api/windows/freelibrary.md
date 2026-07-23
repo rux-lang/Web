@@ -2,7 +2,7 @@
 
 Releases a reference to a loaded DLL.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`FreeLibrary`](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-freelibrary)
 
@@ -27,4 +27,4 @@ become invalid.
 ## See also
 
 - [`LoadLibraryA`](loadlibrarya) — load a module
-- [`Dynamic libraries`](libraries) — library API overview
+- [`Windows`](/api/windows/) — the package overview

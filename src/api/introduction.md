@@ -16,13 +16,15 @@ The packages come in two layers, and the one you should reach for first is the p
 
 | Package             | Description                                                                            |
 | ------------------- | -------------------------------------------------------------------------------------- |
+| [`C`](c/)           | Thin bindings to the platform C standard library: math, I/O, general utilities, time.  |
 | [`Format`](format/) | Values as text: a conversion for every primitive, and an interface for your own types. |
 | [`Io`](io/)         | Standard input and output: print a value or a formatted line, and read a line back.    |
 | [`Math`](math/)     | Constants and floating-point functions, for both `float64` and `float32`.              |
 | [`Memory`](memory/) | Allocate, resize, and release raw blocks, and fill, copy, and compare their bytes.     |
+| [`Rux`](rux/)       | The core language: primitive types, `Result`, `Slice`, ranges, and compiler intrinsics. |
 | [`Text`](text/)     | Strings and fundamental text manipulation: an immutable string and a builder for one.  |
 
-**Platform-dependent packages** are the layer below — thin, direct declarations of one operating system's own entry points, with no portability layer and no safety net. A program that calls them is a program for that platform. Reach for them when the cross-platform packages have no answer, and guard every call with the [`Target`](/docs/attributes/target) attribute.
+**Platform-dependent packages** are the layer below — thin, direct declarations of one operating system's own entry points, with no portability layer and no safety net. A program that calls them is a program for that platform. Reach for them when the cross-platform packages have no answer, and guard every call with [conditional compilation](/docs/comptime/conditional).
 
 | Package               | Description                                               |
 | --------------------- | --------------------------------------------------------- |
@@ -52,19 +54,21 @@ The examples throughout this reference use the third form and call functions unq
 
 ## Platform Support
 
-Illumos, Linux, macOS, and Windows are supported. **BSD is not implemented yet.** The [`BSD`](bsd/) package is still an empty placeholder, so every BSD-targeted function in the cross-platform packages is a stub that returns a zero value or does nothing at all — it compiles, and then it does no work. Treat BSD as planned, not as working.
+FreeBSD, Linux, macOS, and Windows are supported. The cross-platform packages run on all four; the platform-specific packages each target one.
 
-| Package               | BSD     | Illumos | Linux | MacOS | Windows |
-| --------------------- | ------- | ------- | ----- | ----- | ------- |
-| [`Format`](format/)   | Planned | ✓       | ✓     | ✓     | ✓       |
-| [`Io`](io/)           | Planned | ✓       | ✓     | ✓     | ✓       |
-| [`Math`](math/)       | ✓       | ✓       | ✓     | ✓     | ✓       |
-| [`Memory`](memory/)   | Planned | ✓       | ✓     | ✓     | ✓       |
-| [`Text`](text/)       | Planned | ✓       | ✓     | ✓     | ✓       |
-| [`BSD`](bsd/)         | Planned | —       | —     | —     | —       |
-| [`Linux`](linux/)     | —       | —       | ✓     | —     | —       |
-| [`MacOS`](macos/)     | —       | —       | —     | ✓     | —       |
-| [`Windows`](windows/) | —       | —       | —     | —     | ✓       |
+| Package               | FreeBSD | Linux | macOS | Windows |
+| --------------------- | ------- | ----- | ----- | ------- |
+| [`C`](c/)             | ✓       | ✓     | ✓     | ✓       |
+| [`Format`](format/)   | ✓       | ✓     | ✓     | ✓       |
+| [`Io`](io/)           | ✓       | ✓     | ✓     | ✓       |
+| [`Math`](math/)       | ✓       | ✓     | ✓     | ✓       |
+| [`Memory`](memory/)   | ✓       | ✓     | ✓     | ✓       |
+| [`Rux`](rux/)         | ✓       | ✓     | ✓     | ✓       |
+| [`Text`](text/)       | ✓       | ✓     | ✓     | ✓       |
+| [`BSD`](bsd/)         | ✓       | —     | —     | —       |
+| [`Linux`](linux/)     | —       | ✓     | —     | —       |
+| [`MacOS`](macos/)     | —       | —     | ✓     | —       |
+| [`Windows`](windows/) | —       | —     | —     | ✓       |
 
 The platform-dependent packages each build on exactly one platform by design — a `—` means the package does not apply there, not that support is missing. [`Math`](math/) is portable everywhere for a simple reason: it is pure computation, with no platform-specific code in it at all, so it has nothing to port.
 
@@ -82,7 +86,7 @@ Edge cases are where a reference earns its keep, so they are stated on the page 
 
 ## Where to Go Next
 
-- **Looking for a function?** Start from a package overview — [`Format`](format/), [`Io`](io/), [`Math`](math/), [`Memory`](memory/), [`Std`](std/), or [`Text`](text/) — each of which lists its full contents in one table.
-- **Working close to the metal?** The platform-dependent packages mirror their operating systems closely: [`Illumos`](illumos/), [`Linux`](linux/), [`MacOS`](macos/), and [`Windows`](windows/).
-- **Writing platform-specific code?** See the [`Target`](/docs/attributes/target) attribute and the [Foreign Function Interface](/docs/ffi/overview).
+- **Looking for a function?** Start from a package overview — [`Format`](format/), [`Io`](io/), [`Math`](math/), [`Memory`](memory/), or [`Text`](text/) — each of which lists its full contents in one table.
+- **Working close to the metal?** The platform-dependent packages mirror their operating systems closely: [`Linux`](linux/), [`MacOS`](macos/), and [`Windows`](windows/).
+- **Writing platform-specific code?** See [Conditional Compilation](/docs/comptime/conditional) and the [Foreign Function Interface](/docs/ffi/overview).
 - **Learning the language?** The [Rux Language Reference](/docs/) covers the syntax and the type system these packages are built on.

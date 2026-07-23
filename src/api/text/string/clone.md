@@ -2,7 +2,7 @@
 
 Returns an independent copy of the string.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,14 +21,17 @@ Assignment copies the struct, not the block, so two `String` values can name the
 ```rux
 import Text::String;
 
-var original = String::From("Rux");
-var shared = original;         // same block; free one of them, not both
-var copy = original.Clone();   // its own block
+func Main() -> int {
+    var original = String::From("Rux");
+    var shared = original;         // same block; free one of them, not both
+    var copy = original.Clone();   // its own block
 
-copy == original; // true -- Equals compares bytes, not addresses
+    copy == original; // true -- Equals compares bytes, not addresses
 
-copy.Free();
-original.Free();
+    copy.Free();
+    original.Free();
+    return 0;
+}
 ```
 
 ## See also

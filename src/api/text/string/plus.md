@@ -2,20 +2,20 @@
 
 Joins two strings into a new one.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
 ```rux
 func +(self, other: String) -> String;
-func +(self, other: char8[]) -> String;
+func +(self, other: Slice<char8>) -> String;
 ```
 
 ## Parameters
 
 | Name    | Type                  | Description                    |
 | ------- | --------------------- | ------------------------------ |
-| `other` | `String` / `char8[]`  | The bytes to append.           |
+| `other` | `String` / `Slice<char8>`  | The bytes to append.           |
 
 ## Returns
 
@@ -30,16 +30,19 @@ The result owns its block and has to be released with [`Free`](free) — includi
 ```rux
 import Text::String;
 
-var greeting = String::From("Hello");
-var name = String::From("Rux");
+func Main() -> int {
+    var greeting = String::From("Hello");
+    var name = String::From("Rux");
 
-var comma = greeting + ", "; // "Hello, "
-var full = comma + name;     // "Hello, Rux"
+    var comma = greeting + ", "; // "Hello, "
+    var full = comma + name;     // "Hello, Rux"
 
-full.Free();
-comma.Free();                // the intermediate owns a block too
-name.Free();
-greeting.Free();
+    full.Free();
+    comma.Free();                // the intermediate owns a block too
+    name.Free();
+    greeting.Free();
+    return 0;
+}
 ```
 
 ## See also

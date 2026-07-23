@@ -4,9 +4,9 @@ A pointer holds the memory address of a value. The type `*T` is a pointer to a v
 
 ```rux
 var x = 42;
-let p: *int32 = &x;   // p points to x
-let y = *p;           // y == 42 — read through the pointer
-*p = 7;               // write through the pointer; x == 7
+let p: *var int32 = @x;   // writable pointer to x (x is a var)
+let y = *p;               // y == 42 — read through the pointer
+*p = 7;                   // write through the pointer; x == 7
 ```
 
 ## Addresses and Hexadecimal
@@ -17,11 +17,11 @@ Every byte of memory has a numbered location called its **address**. An address 
 decimal 4096  ==  hex 0x1000
 ```
 
-Taking the address of `x` with `&x` yields that number. If you print a pointer you will see a value such as:
+Taking the address of `x` with `@x` yields that number. If you print a pointer you will see a value such as:
 
 ```rux
 var x = 42;
-let p = &x;
+let p = @x;
 Print(p);    // e.g. 0x7ffd3a4b00c0  — x lives at this address
 ```
 
@@ -47,17 +47,19 @@ A pointer is itself a fixed-size value: its size is the target's **address width
 
 ## Address-of and Dereference
 
-The unary `&` operator takes the address of a value, producing a pointer. The unary `*` operator dereferences a pointer, yielding the value it points to.
+The unary `@` operator takes the address of a value, producing a pointer. The unary `*` operator dereferences a pointer, yielding the value it points to.
 
 ```rux
 var count = 0;
-let ptr = &count;     // *int32
+let ptr = @count;     // *var int32 — count is a var, so the pointer is writable
 
 *ptr += 1;            // count == 1
 let current = *ptr;   // current == 1
 ```
 
-`&` requires an addressable operand — a variable, a field, or an element of a slice. Temporary values produced by an expression do not have a stable address, so `&(a + b)` is not allowed.
+`@` infers the pointer's mutability from the place it addresses: `@` on a `var` place yields a writable [`*var T`](/docs/pointers/types), while `@` on a `let` place yields a read-only `*T`. Writing through the pointer therefore works only when the addressed value is itself mutable.
+
+`@` requires an addressable operand — a variable, a field, or an element of a slice. Temporary values produced by an expression do not have a stable address, so `@(a + b)` is not allowed.
 
 ## Topics in This Chapter
 
@@ -65,7 +67,7 @@ Each remaining aspect of pointers has a dedicated page:
 
 | Topic                                                       | Description                                       |
 | ----------------------------------------------------------- | ------------------------------------------------- |
-| [Pointer Types](/docs/pointers/types)                       | `*T`, `*const T`, nesting, and `*opaque`          |
+| [Pointer Types](/docs/pointers/types)                       | `*T`, `*var T`, nesting, and `*opaque`            |
 | [The `null` Pointer](/docs/pointers/null)                   | The zero address and checking for no value        |
 | [Fields and Members](/docs/pointers/members)                | Accessing struct fields through a pointer         |
 | [Pointer Arithmetic](/docs/pointers/arithmetic)             | Advancing a pointer by element size               |

@@ -2,20 +2,20 @@
 
 Creates a string by copying bytes.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
 ```rux
-func From(str: *const char8, length: uint) -> String;
-func From(str: char8[]) -> String;
+func From(str: *char8, length: uint) -> String;
+func From(str: Slice<char8>) -> String;
 ```
 
 ## Parameters
 
 | Name     | Type                     | Description                          |
 | -------- | ------------------------ | ------------------------------------ |
-| `str`    | `*const char8` / `char8[]` | The bytes to copy.                 |
+| `str`    | `*char8` / `Slice<char8>` | The bytes to copy.                 |
 | `length` | `uint`                   | How many bytes to copy, for the raw overload. |
 
 ## Returns
@@ -31,13 +31,16 @@ The result has to be released with [`Free`](free).
 ```rux
 import Text::String;
 
-var literal = String::From("Hello, Rux!");
-literal.Length(); // 11
+func Main() -> int {
+    var literal = String::From("Hello, Rux!");
+    literal.Length(); // 11
 
-var raw = String::From(literal.Data(), 5); // "Hello"
+    var raw = String::From(literal.Data(), 5); // "Hello"
 
-raw.Free();
-literal.Free();
+    raw.Free();
+    literal.Free();
+    return 0;
+}
 ```
 
 ## See also

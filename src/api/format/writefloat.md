@@ -2,13 +2,19 @@
 
 Appends the decimal text of a floating-point value to a builder.
 
-**Module:** `Format`
+**Package:** `Format`
 
 ## Signature
 
 ```rux
-func WriteFloat(builder: *StringBuilder, value: float64);
-func WriteFloat(builder: *StringBuilder, value: float32);
+func WriteFloat(
+    builder: *StringBuilder,
+    value: float64
+);
+func WriteFloat(
+    builder: *StringBuilder,
+    value: float32
+);
 ```
 
 ## Parameters
@@ -34,23 +40,26 @@ A NaN is `NaN` and the infinities are `Inf` and `-Inf`. A negative zero keeps it
 import Format::WriteFloat;
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-WriteFloat(&builder, 0.1);         // "0.1"      -- not 0.1000000000000000055
-builder.Append(c8' ');
-WriteFloat(&builder, 0.1f32);      // "0.1"
-builder.Append(c8' ');
-WriteFloat(&builder, 2.5e-7);      // "2.5e-07"
-builder.Append(c8' ');
-WriteFloat(&builder, 1.0 / 0.0);   // "Inf"
+func Main() -> int {
+    var builder = StringBuilder::New();
+    WriteFloat(@builder, 0.1);         // "0.1"      -- not 0.1000000000000000055
+    builder.Append(c8' ');
+    WriteFloat(@builder, 0.1f32);      // "0.1"
+    builder.Append(c8' ');
+    WriteFloat(@builder, 2.5e-7);      // "2.5e-07"
+    builder.Append(c8' ');
+    WriteFloat(@builder, 1.0 / 0.0);   // "Inf"
 
-var line = builder.IntoString(); // "0.1 0.1 2.5e-07 Inf"
+    var line = builder.IntoString(); // "0.1 0.1 2.5e-07 Inf"
 
-line.Free();
+    line.Free();
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Format`](/api/format/) — the module overview, and what the digit cutoff costs
+- [`Format`](/api/format/) — the package overview, and what the digit cutoff costs
 - [`ToString`](tostring) — the same text in a `String` of its own
 - [`IsNan`](isnan) / [`IsInfinite`](isinfinite) — classify a value before writing it
 - [`Text::StringBuilder`](/api/text/stringbuilder/) — the builder being appended to

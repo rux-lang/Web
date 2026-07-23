@@ -2,12 +2,15 @@
 
 Resizes a block of memory, preserving the bytes that still fit.
 
-**Module:** `Memory`
+**Package:** `Memory`
 
 ## Signature
 
 ```rux
-func Realloc(ptr: *opaque, size: uint) -> *opaque;
+func Realloc(
+    ptr: *opaque,
+    size: uint
+) -> *var opaque;
 ```
 
 ## Parameters
@@ -34,29 +37,30 @@ The return is `null` if the platform could not satisfy the request. In that case
 the original block is **untouched and still valid**, so it must still be freed —
 assigning the result straight back over `ptr` leaks it.
 
-On BSD the function is not implemented yet and always returns `null`.
-
 ## Example
 
 ```rux
 import Memory::{ Alloc, Free, Realloc, Set };
 
-var buffer = Alloc(8);
-Set(buffer, 8, 0xAB);
+func Main() -> int {
+    var buffer = Alloc(8);
+    Set(buffer, 8, 0xAB);
 
-let grown = Realloc(buffer, 64); // the first 8 bytes are still 0xAB
-if grown == null {
-    Free(buffer); // the old block survived the failure
-    return 1;
+    let grown = Realloc(buffer, 64); // the first 8 bytes are still 0xAB
+    if grown == null {
+        Free(buffer); // the old block survived the failure
+        return 1;
+    }
+
+    buffer = grown;
+    Free(buffer);
+    return 0;
 }
-
-buffer = grown;
-Free(buffer);
 ```
 
 ## See also
 
-- [`Memory`](/api/memory/) — the module overview
+- [`Memory`](/api/memory/) — the package overview
 - [`Alloc`](alloc) — allocate the block in the first place
 - [`Free`](free) — release the block when it is no longer needed
 - [`Copy`](copy) — move bytes between blocks by hand

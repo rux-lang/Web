@@ -2,7 +2,7 @@
 
 Invoke an arbitrary Linux x86-64 syscall with zero to six arguments.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signatures
 
@@ -48,15 +48,18 @@ wrapper when the package provides one.
 ```rux
 import Linux::{ IsError, SYS_GETPID, Syscall0 };
 
-let result = Syscall0(SYS_GETPID);
-if !IsError(result) {
-    let pid = result;
+func Main() -> int {
+    let result = Syscall0(SYS_GETPID);
+    if !IsError(result) {
+        let pid = result;
+    }
+    return 0;
 }
 ```
 
 ## See also
 
-- [`Constants`](constants) — exported syscall numbers
+- [`Constants`](types) — exported syscall numbers
 - [`IsError`](iserror) — test the raw result
 - [`Errno`](errno) — decode an error result
 

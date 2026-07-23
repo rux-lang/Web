@@ -2,7 +2,7 @@
 
 Reports whether a value is one of the two infinities.
 
-**Module:** `Format`
+**Package:** `Format`
 
 ## Signature
 
@@ -30,21 +30,24 @@ A NaN answers `false`. Every comparison against a NaN is false, so it fails this
 ```rux
 import Format::IsInfinite;
 
-let inf = 1.0 / 0.0;
+func Main() -> int {
+    let inf = 1.0 / 0.0;
 
-IsInfinite(inf);                    // true
-IsInfinite(-inf);                   // true
-IsInfinite(0.0 / 0.0);              // false -- a NaN is not an infinity
-IsInfinite(1.7976931348623157e308); // false -- the largest finite float64
+    IsInfinite(inf);                    // true
+    IsInfinite(-inf);                   // true
+    IsInfinite(0.0 / 0.0);              // false -- a NaN is not an infinity
+    IsInfinite(1.7976931348623157e308); // false -- the largest finite float64
 
-if IsInfinite(inf) && inf < 0.0 {
-    // the negative one
+    if IsInfinite(inf) && inf < 0.0 {
+        // the negative one
+    }
+    return 0;
 }
 ```
 
 ## See also
 
-- [`Format`](/api/format/) — the module overview
+- [`Format`](/api/format/) — the package overview
 - [`IsNan`](isnan) — whether the value is a NaN
 - [`IsFinite`](isfinite) — whether the value is an ordinary number
 - [`ToString`](tostring) — the infinities convert to the text `Inf` and `-Inf`

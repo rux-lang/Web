@@ -2,7 +2,7 @@
 
 Returns a copy of the contents laid down N times.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -27,13 +27,16 @@ The block is sized up front — it goes through a [`StringBuilder`](../stringbui
 ```rux
 import Text::String;
 
-var dash = String::From("-");
+func Main() -> int {
+    var dash = String::From("-");
 
-var rule = dash.Repeat(20); // "--------------------"
-rule.Length();              // 20
+    var rule = dash.Repeat(20); // "--------------------"
+    rule.Length();              // 20
 
-rule.Free();
-dash.Free();
+    rule.Free();
+    dash.Free();
+    return 0;
+}
 ```
 
 ## See also

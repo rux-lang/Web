@@ -2,14 +2,16 @@
 
 Changes the process current directory.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`SetCurrentDirectoryA`](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setcurrentdirectorya)
 
 ## Signature
 
 ```rux
-func SetCurrentDirectoryA(pathName: *const char8) -> bool32;
+func SetCurrentDirectoryA(
+    pathName: *char8
+) -> bool32;
 ```
 
 `pathName` must be a null-terminated ANSI path. Returns nonzero on success.
@@ -19,4 +21,4 @@ threads and relative-path operations.
 ## See also
 
 - [`GetCurrentDirectoryA`](getcurrentdirectorya) — retrieve the current directory
-- [`Filesystem`](filesystem) — filesystem API overview
+- [`Windows`](/api/windows/) — the package overview

@@ -1,87 +1,99 @@
-# BSD Package
+# Bsd Package
 
 ::: warning Unstable API
 The package is under active development and its API is **not yet stable**. Names, signatures, and behavior may change between releases, and this documentation will be updated to match.
 :::
 
-Direct x86-64 syscall bindings for FreeBSD, OpenBSD, NetBSD, and DragonFly BSD.
+Direct syscall bindings for FreeBSD, OpenBSD, NetBSD, and DragonFly BSD.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
-**Source:** [github.com/rux-lang/BSD](https://github.com/rux-lang/BSD)
+**Source:** [github.com/rux-lang/Rux/tree/main/Packages/Bsd](https://github.com/rux-lang/Rux/tree/main/Packages/Bsd)
 
-The package provides raw zero-to-six-argument syscall entry points, typed
-wrappers for common I/O, process, memory, and time operations, and the constants
-and structures those wrappers require. It calls the kernel without libc and
-uses compiler-provided thunks where the supported BSD variants differ.
+The package provides raw zero-to-six-argument syscall entry points, typed wrappers for common I/O, process, memory, and time operations, and the constants and structures those wrappers require. It calls the kernel without libc and uses compiler-provided thunks where the supported BSD variants differ.
 
 ## Requirements
 
 - FreeBSD, OpenBSD, NetBSD, or DragonFly BSD on x86-64
 - A Rux compiler with the BSD syscall thunks
 
-The syscall ABI is platform- and architecture-specific. Prefer `Std` when it
-provides the operation you need.
+The syscall ABI is platform- and architecture-specific. Prefer the cross-platform packages — [`Io`](/api/io/), [`Memory`](/api/memory/) — when they provide the operation you need.
 
 ## Installation
 
-Add the package and install project dependencies:
-
 ```sh
-rux add BSD
+rux add Bsd
 rux install
 ```
 
 Then import the symbols you need:
 
 ```rux
-import BSD::{ Stdout, Write };
+import Bsd::{ StdOut, Write };
 ```
 
 ## Platform Compatibility
 
-Most exported syscall numbers are shared by the four supported BSD targets.
-`Mmap`, `Nanosleep`, and `ClockGettime` use dedicated compiler thunks because
-their syscall details differ by target.
+The package is **x86-64 only** — the raw syscall entry points are hand-written x86-64 assembly, and there is no AArch64 path yet. On any other architecture the package does not apply.
 
-The exported `MAP_ANONYMOUS` value is `4096` and `CLOCK_MONOTONIC` is `4`,
-matching FreeBSD, NetBSD, and DragonFly BSD. OpenBSD uses `32` and `3`
-respectively. Use these constants with the package's typed wrappers; do not
-assume they are valid inputs to arbitrary raw OpenBSD syscalls.
+Syscall numbers and clock IDs differ between the four supported BSDs, so the package selects the right value for the active target at compile time; `Mmap`, `Munmap`, `Nanosleep`, and `ClockGetTime` route through dedicated per-target paths. `ClockMonotonic` is `4` on FreeBSD and DragonFly BSD and `3` on NetBSD and OpenBSD. The mapping and protection flags are the same on all four.
 
 ## Result Convention
 
-Functions returning `int64` expose the thunk result directly. The package
-treats values from `1` through `4095` as positive errno values; [`IsError`](iserror)
-performs that range check and [`Errno`](errno) returns the value when it falls
-in the range.
+The wrappers return the kernel result directly: a non-negative value on success — a byte count, a process ID, a mapped address, or `0` — and a **negative errno** (`-1` through `-4095`) on failure. [`IsError`](iserror) tests for that negative range and [`Errno`](errno) turns it back into a positive errno number, so a legitimate positive result is never mistaken for an error.
 
-::: danger Ambiguous positive results
-The current convention overlaps legitimate small positive success values,
-including byte counts returned by `Read` and `Write`, and potentially process
-IDs. `IsError` can therefore misclassify success. Interpret each function's
-result according to its own contract instead of applying `IsError` blindly.
-:::
+## Functions
 
-## Reference
+### I/O
 
-| Topic                          | Contents                                         |
-| ------------------------------ | ------------------------------------------------ |
-| [`Types and constants`](types) | Descriptors, syscalls, flags, clocks, `timespec`.|
-| [`I/O`](io)                    | Read, write, and close file descriptors.         |
-| [`Memory`](memory)             | Map, unmap, and change the program break.         |
-| [`Process`](process)           | Process ID and immediate termination.            |
-| [`Time`](time)                 | Read clocks and suspend execution.                |
-| [`Raw syscalls`](syscalls)     | `Syscall0`-`Syscall6` and error helpers.          |
+| Function         | Description                        |
+| ---------------- | ---------------------------------- |
+| [`Read`](read)   | Read bytes from a file descriptor. |
+| [`Write`](write) | Write bytes to a file descriptor.  |
+| [`Close`](close) | Close a file descriptor.           |
+
+### Memory
+
+| Function           | Description                       |
+| ------------------ | --------------------------------- |
+| [`Mmap`](mmap)     | Create a virtual-memory mapping.  |
+| [`Munmap`](munmap) | Remove a virtual-memory mapping.  |
+| [`Brk`](brk)       | Change the process program break. |
+
+### Process
+
+| Function           | Description                        |
+| ------------------ | ---------------------------------- |
+| [`Exit`](exit)     | Terminate the process immediately. |
+| [`GetPid`](getpid) | Return the calling process ID.     |
+
+### Time
+
+| Function                       | Description                      |
+| ------------------------------ | -------------------------------- |
+| [`ClockGetTime`](clockgettime) | Read a BSD clock.                |
+| [`Nanosleep`](nanosleep)       | Suspend for a relative interval. |
+
+### Raw syscalls
+
+| Function                          | Description                                 |
+| --------------------------------- | ------------------------------------------- |
+| [`Syscall0`–`Syscall6`](syscalls) | Invoke an arbitrary syscall by number.      |
+| [`IsError`](iserror)              | Test whether a result is a negative errno.  |
+| [`Errno`](errno)                  | Extract the positive errno from a result.   |
+
+## Types and constants
+
+The standard descriptors, syscall numbers, mapping and protection flags, clock IDs, and the [`Timespec`](types) structure are listed on the [types and constants](types) page.
 
 ## Example
 
 ```rux
-import BSD::{ Stdout, Write };
+import Bsd::{ StdOut, Write };
 
-func Main() -> int32 {
+func Main() -> int {
     let message = "hello from BSD\n";
-    let result = Write(Stdout, message.data, message.length);
-    return result == message.length as int64 ? 0i32 : 1i32;
+    let result = Write(StdOut, message.data, message.length);
+    return result == message.length as int64 ? 0 : 1;
 }
 ```

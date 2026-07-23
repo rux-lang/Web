@@ -2,7 +2,7 @@
 
 Returns the sine of an angle in radians.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,13 +28,16 @@ argument also propagates.
 ```rux
 import Math::{ HalfPi, Sin };
 
-let a = Sin(HalfPi); // 1.0
-let b = Sin(0.0);    // 0.0
+func Main() -> int {
+    let a = Sin(HalfPi); // 1.0
+    let b = Sin(0.0);    // 0.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Cos`](cos) — cosine
 - [`Tan`](tan) — tangent
 - [`ArcSin`](arcsin) — the inverse of `Sin`

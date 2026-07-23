@@ -2,7 +2,7 @@
 
 Reports whether a value is a NaN.
 
-**Module:** `Format`
+**Package:** `Format`
 
 ## Signature
 
@@ -30,18 +30,21 @@ Because every comparison against a NaN is false, a NaN is not infinite and not f
 ```rux
 import Format::IsNan;
 
-let nan = 0.0 / 0.0;
+func Main() -> int {
+    let nan = 0.0 / 0.0;
 
-IsNan(nan);       // true
-IsNan(1.0);       // false
-IsNan(1.0 / 0.0); // false -- an infinity is a value, just not a finite one
+    IsNan(nan);       // true
+    IsNan(1.0);       // false
+    IsNan(1.0 / 0.0); // false -- an infinity is a value, just not a finite one
 
-nan == nan;       // false -- a NaN is the only value not equal to itself
+    nan == nan;       // false -- a NaN is the only value not equal to itself
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Format`](/api/format/) — the module overview
+- [`Format`](/api/format/) — the package overview
 - [`IsInfinite`](isinfinite) — whether the value is one of the two infinities
 - [`IsFinite`](isfinite) — whether the value is an ordinary number
 - [`ToString`](tostring) — a NaN converts to the text `NaN`

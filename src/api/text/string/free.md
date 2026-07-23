@@ -2,7 +2,7 @@
 
 Releases the block the string owns.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -23,11 +23,14 @@ What it cannot see is a block shared by two `String` values, which is what plain
 ```rux
 import Text::String;
 
-var text = String::From("Rux");
+func Main() -> int {
+    var text = String::From("Rux");
 
-text.Free();
-text.IsEmpty(); // true
-text.Free();    // harmless -- there is nothing left to release
+    text.Free();
+    text.IsEmpty(); // true
+    text.Free();    // harmless -- there is nothing left to release
+    return 0;
+}
 ```
 
 ## See also

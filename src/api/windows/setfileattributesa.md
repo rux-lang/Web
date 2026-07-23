@@ -2,22 +2,24 @@
 
 Sets attributes for a file or directory.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`SetFileAttributesA`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileattributesa)
 
 ## Signature
 
 ```rux
-func SetFileAttributesA(fileName: *const char8,
-    fileAttributes: FileAttributes) -> bool32;
+func SetFileAttributesA(
+    fileName: *char8,
+    fileAttributes: uint32
+) -> bool32;
 ```
 
-`fileName` must be a null-terminated ANSI path. Returns nonzero on success or
-zero on failure. `FileAttributes.Normal` must be used alone; other compatible
-attribute flags may be combined where the language permits.
+`fileName` must be a null-terminated ANSI path. `fileAttributes` is a bitmask of
+the Win32 `FILE_ATTRIBUTE_*` values; the normal-file flag must be used alone.
+Returns nonzero on success or zero on failure.
 
 ## See also
 
+- [`Windows`](/api/windows/) — the package overview
 - [`GetFileAttributesA`](getfileattributesa) — retrieve attributes
-- [`FileAttributes`](types#fileattributes) — known flags

@@ -2,12 +2,14 @@
 
 Creates an empty builder with room reserved up front.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
 ```rux
-func WithCapacity(capacity: uint) -> StringBuilder;
+func WithCapacity(
+    capacity: uint
+) -> StringBuilder;
 ```
 
 ## Parameters
@@ -29,14 +31,17 @@ This is worth reaching for when the final size is known: [`String::Repeat`](../s
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::WithCapacity(64);
-builder.Length();   // 0
-builder.Capacity(); // 64
+func Main() -> int {
+    var builder = StringBuilder::WithCapacity(64);
+    builder.Length();   // 0
+    builder.Capacity(); // 64
 
-builder.Append("Rux");
-builder.Capacity(); // 64 still -- the append fit
+    builder.Append("Rux");
+    builder.Capacity(); // 64 still -- the append fit
 
-builder.Free();
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also

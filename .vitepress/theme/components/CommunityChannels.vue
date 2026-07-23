@@ -273,21 +273,21 @@ const channels = computed(() => sections[props.section] ?? []);
    Channels without an entry simply show no stat. */
 const stats = {
   // Updates
-  youtube: "2.54K subscribers",
-  x: "98 followers",
+  youtube: "2.55K subscribers",
+  x: "103 followers",
   bluesky: "25 followers",
   mastodon: "10 followers",
-  telegram: "78 subscribers",
+  telegram: "76 subscribers",
   devto: "1 post",
   twitch: "1 follower",
-  linkedin: "8 followers",
+  linkedin: "10 followers",
   facebook: "3 followers",
   tiktok: "1 follower",
   instagram: "6 followers",
   threads: "2 follower",
   // Discuss
   discussions: "16 topics",
-  discord: "205 members",
+  discord: "203 members",
   reddit: "135 visitors",
   telegramChat: "8 members",
   whatsapp: "2 members",
@@ -295,7 +295,7 @@ const stats = {
   zulip: "1 member",
   facebookGroup: "3 members",
   // Contribute
-  github: "471 stars",
+  github: "487 stars",
   issues: "17 issues",
   website: "12 issues",
 };

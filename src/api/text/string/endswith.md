@@ -2,7 +2,7 @@
 
 Reports whether the string closes with a suffix.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -27,13 +27,16 @@ The comparison is byte for byte and case-sensitive, on the same terms as [`Start
 ```rux
 import Text::String;
 
-var file = String::From("main.rux");
-var ext = String::From(".rux");
+func Main() -> int {
+    var file = String::From("main.rux");
+    var ext = String::From(".rux");
 
-file.EndsWith(ext); // true
+    file.EndsWith(ext); // true
 
-ext.Free();
-file.Free();
+    ext.Free();
+    file.Free();
+    return 0;
+}
 ```
 
 ## See also

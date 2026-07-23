@@ -2,7 +2,7 @@
 
 Forgets the contents but keeps the block.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,15 +21,18 @@ The bytes are not erased, only forgotten — they sit in the block until they ar
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
+func Main() -> int {
+    var builder = StringBuilder::New();
 
-for i in 0..3 {
-    builder.Append("line");
-    // ... use builder.Data() and builder.Length() here
-    builder.Clear(); // ready for the next round, same block
+    for i in 0..3 {
+        builder.Append("line");
+        // ... use builder.Data() and builder.Length() here
+        builder.Clear(); // ready for the next round, same block
+    }
+
+    builder.Free();
+    return 0;
 }
-
-builder.Free();
 ```
 
 ## See also

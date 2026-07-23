@@ -2,14 +2,16 @@
 
 Loads a DLL into the calling process.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`LoadLibraryA`](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya)
 
 ## Signature
 
 ```rux
-func LoadLibraryA(libFileName: *const char8) -> *opaque;
+func LoadLibraryA(
+    libFileName: *char8
+) -> *opaque;
 ```
 
 ## Parameters
@@ -27,4 +29,4 @@ path when the name is configurable to avoid unintended DLL search results.
 ## See also
 
 - [`GetProcAddress`](getprocaddress) — resolve an export
-- [`Dynamic libraries`](libraries) — library API overview
+- [`Windows`](/api/windows/) — the package overview

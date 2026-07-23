@@ -2,7 +2,7 @@
 
 Closes an open kernel object handle.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`CloseHandle`](https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-closehandle)
 
@@ -28,4 +28,4 @@ Do not use the handle after success. Search handles require
 ## See also
 
 - [`GetLastError`](getlasterror) — retrieve failure details
-- [`Handles and errors`](handles) — handle overview
+- [`Windows`](/api/windows/) — the package overview

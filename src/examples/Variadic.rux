@@ -1,5 +1,6 @@
 import Io::Print;
 
+// Function with an arbitrary number of arguments
 func Sum(values: int...) -> int {
     var total = 0;
     for v in values {

@@ -2,7 +2,7 @@
 
 Returns the hyperbolic cotangent.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -29,11 +29,14 @@ representable. A NaN argument propagates.
 ```rux
 import Math::Cotanh;
 
-let a = Cotanh(1.0); // 1.3130352854993312
+func Main() -> int {
+    let a = Cotanh(1.0); // 1.3130352854993312
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Tanh`](tanh) — hyperbolic tangent
 - [`Sinh`](sinh) / [`Cosh`](cosh) — hyperbolic sine and cosine

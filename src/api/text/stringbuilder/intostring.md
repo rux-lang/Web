@@ -2,7 +2,7 @@
 
 Hands the block over to a string, without copying it.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -25,15 +25,18 @@ This is how to take the result once the builder is finished with. Use [`ToString
 ```rux
 import Text::{ String, StringBuilder };
 
-var builder = StringBuilder::WithCapacity(1024);
-builder.Append("Hello, ");
-builder.Append("Rux!");
+func Main() -> int {
+    var builder = StringBuilder::WithCapacity(1024);
+    builder.Append("Hello, ");
+    builder.Append("Rux!");
 
-var greeting = builder.IntoString(); // "Hello, Rux!", the block handed over
-greeting.Length();                   // 11 -- and the block is 11 bytes, not 1024
+    var greeting = builder.IntoString(); // "Hello, Rux!", the block handed over
+    greeting.Length();                   // 11 -- and the block is 11 bytes, not 1024
 
-builder.IsEmpty();                   // true -- it owns nothing now
-greeting.Free();                     // the only Free needed
+    builder.IsEmpty();                   // true -- it owns nothing now
+    greeting.Free();                     // the only Free needed
+    return 0;
+}
 ```
 
 ## See also

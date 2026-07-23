@@ -45,10 +45,10 @@ func Fetch() -> bool {
 
 | Topic                                              | Description                                          |
 | -------------------------------------------------- | --------------------------------------------------- |
-| [Intrinsic Constants](/docs/constants/intrinsic)   | Compiler-provided `#` constants such as `#line`      |
+| [Intrinsic Constants](/docs/constants/intrinsic)   | Compiler-provided values such as `#source.line`      |
 
 ## See Also
 
 - [Immutable Variables (`let`)](/docs/variables/let) — run-time immutable bindings
-- [Intrinsic Constants](/docs/constants/intrinsic) — compile-time `#file`, `#line`, and friends
+- [Intrinsic Constants](/docs/constants/intrinsic) — compile-time `#source.file`, `#source.line`, and friends
 - [Identifiers](/docs/lexical/identifiers) — naming conventions for constants

@@ -2,12 +2,15 @@
 
 Appends the decimal digits of an unsigned integer to a builder.
 
-**Module:** `Format`
+**Package:** `Format`
 
 ## Signature
 
 ```rux
-func WriteUint(builder: *StringBuilder, value: uint64);
+func WriteUint(
+    builder: *StringBuilder,
+    value: uint64
+);
 ```
 
 ## Parameters
@@ -31,19 +34,22 @@ Nothing is allocated beyond whatever growth the builder needs. This is the funct
 import Format::WriteUint;
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-builder.Append("read ");
-WriteUint(&builder, 4096u64);
-builder.Append(" bytes");
+func Main() -> int {
+    var builder = StringBuilder::New();
+    builder.Append("read ");
+    WriteUint(@builder, 4096u64);
+    builder.Append(" bytes");
 
-var line = builder.IntoString(); // "read 4096 bytes"
+    var line = builder.IntoString(); // "read 4096 bytes"
 
-line.Free();
+    line.Free();
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Format`](/api/format/) — the module overview
+- [`Format`](/api/format/) — the package overview
 - [`WriteInt`](writeint) — the same, with a sign for a negative value
 - [`ToString`](tostring) — the digits in a `String` of their own
 - [`Text::StringBuilder`](/api/text/stringbuilder/) — the builder being appended to

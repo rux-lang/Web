@@ -2,7 +2,7 @@
 
 Returns the pointer to the underlying bytes.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -23,12 +23,15 @@ The string is immutable, and the pointer stays valid until the string is passed 
 ```rux
 import Text::String;
 
-var text = String::From("Rux");
+func Main() -> int {
+    var text = String::From("Rux");
 
-let bytes = text.Data();
-let count = text.Length(); // 3 -- the bytes end here, not at a null
+    let bytes = text.Data();
+    let count = text.Length(); // 3 -- the bytes end here, not at a null
 
-text.Free();               // `bytes` is now dangling
+    text.Free();               // `bytes` is now dangling
+    return 0;
+}
 ```
 
 ## See also

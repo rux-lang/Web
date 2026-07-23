@@ -2,7 +2,7 @@
 
 Closes a file descriptor.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
@@ -18,7 +18,7 @@ func Close(fd: int32) -> int64;
 
 ## Returns
 
-`int64` - `0` on success, or the thunk's raw error result on failure.
+`int64` - `0` on success, or a negative errno value on failure.
 
 After success, the descriptor may be reused and must not be closed again.
 
@@ -29,4 +29,4 @@ uncertain and its number may have been reused.
 
 ## See also
 
-- [`I/O`](io) - I/O overview
+- [`Bsd`](/api/bsd/) — the package overview

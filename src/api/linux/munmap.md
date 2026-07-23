@@ -2,7 +2,7 @@
 
 Removes a virtual-memory mapping.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -31,8 +31,11 @@ must be page-aligned; Linux rounds `length` up to a page boundary.
 ```rux
 import Linux::{ IsError, Munmap };
 
-if IsError(Munmap(memory, 4096u)) {
-    return 1i32;
+func Main() -> int {
+    if IsError(Munmap(memory, 4096u)) {
+        return 1;
+    }
+    return 0;
 }
 ```
 

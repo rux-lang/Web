@@ -6,11 +6,11 @@ The package is under active development and its API is **not yet stable**. Names
 
 The package provides standard input and output — a [`Print`](print) and a [`PrintLine`](printline) for every primitive type and for text, and a [`ReadLine`](readline) that reads a line back.
 
-**Module:** `Io`
+**Package:** `Io`
 
-**Source:** [github.com/rux-lang/Io](https://github.com/rux-lang/Io)
+**Source:** [github.com/rux-lang/Rux/tree/main/Packages/Io](https://github.com/rux-lang/Rux/tree/main/Packages/Io)
 
-Every function talks to the process's own standard streams: the standard handles on Windows and macOS, and the standard file descriptors on Linux and illumos. Nothing is buffered on the way — a `Print` is a write.
+Every function talks to the process's own standard streams: the standard handles on Windows and macOS, and the standard file descriptors on Linux. Nothing is buffered on the way — a `Print` is a write.
 
 ```rux
 import Io::{ Print, PrintLine, ReadLine };
@@ -35,7 +35,7 @@ rux install
 
 ## Platform support
 
-Implemented on illumos, Linux, macOS, and Windows. **BSD is not implemented yet** — the package has no BSD backend, so a program that prints or reads there does not build for that target.
+Implemented on BSD, Linux, macOS, and Windows.
 
 ## Values as text
 
@@ -79,4 +79,3 @@ The arguments are [`Stringable`](/api/format/stringable), so a type of your own 
 
 - [`Format`](/api/format/) — the conversions and the `{}` substitution behind every call here
 - [`Text`](/api/text/) — the `String` these functions print and return
-- [`Std::Io`](/api/std/io/print) — the console I/O that ships inside `Std`

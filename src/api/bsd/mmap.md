@@ -2,32 +2,38 @@
 
 Creates a virtual-memory mapping through the target-specific BSD thunk.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
 ```rux
-func Mmap(addr: *opaque, length: uint, prot: int32,
-    flags: int32, fd: int32, offset: uint64) -> int64;
+func Mmap(
+    address: *opaque,
+    length: uint,
+    protection: int32,
+    flags: int32,
+    fd: int32,
+    offset: uint64
+) -> int64;
 ```
 
 ## Parameters
 
-| Name     | Type      | Description                                      |
-| -------- | --------- | ------------------------------------------------ |
-| `addr`   | `*opaque` | Requested address hint, or `null`.               |
-| `length` | `uint`    | Mapping length in bytes.                         |
-| `prot`   | `int32`   | Page protections, such as `PROT_READ`.           |
-| `flags`  | `int32`   | Mapping behavior, such as `MAP_PRIVATE`.          |
-| `fd`     | `int32`   | Backing descriptor, or `-1` for anonymous memory.|
-| `offset` | `uint64`  | Page-aligned offset in the backing object.        |
+| Name         | Type      | Description                                       |
+| ------------ | --------- | ------------------------------------------------- |
+| `address`    | `*opaque` | Requested address hint, or `null`.                |
+| `length`     | `uint`    | Mapping length in bytes.                          |
+| `protection` | `int32`   | Page protections, such as `ProtectionRead`.       |
+| `flags`      | `int32`   | Mapping behavior, such as `MapPrivate`.           |
+| `fd`         | `int32`   | Backing descriptor, or `-1` for anonymous memory. |
+| `offset`     | `uint64`  | Page-aligned offset in the backing object.        |
 
 ## Returns
 
-`int64` - the mapped address encoded as an integer on success, or the thunk's
-raw error result on failure.
+`int64` - the mapped address encoded as an integer on success, or a negative
+errno value on failure.
 
-For private anonymous memory, combine `MAP_PRIVATE | MAP_ANONYMOUS`, pass
+For private anonymous memory, combine `MapPrivate | MapAnonymous`, pass
 `-1i32` for `fd`, and use an offset of `0u64`. The compiler thunk handles the
 target-specific mmap syscall details.
 
@@ -39,15 +45,18 @@ mapping with [`Munmap`](munmap) using its correct base address and length.
 ## Example
 
 ```rux
-import BSD::{ IsError, Mmap, Munmap, MAP_ANONYMOUS, MAP_PRIVATE, PROT_READ, PROT_WRITE };
+import Bsd::{ IsError, Mmap, Munmap, MapAnonymous, MapPrivate, ProtectionRead, ProtectionWrite };
 
-let result = Mmap(null, 4096u, PROT_READ | PROT_WRITE,
-    MAP_PRIVATE | MAP_ANONYMOUS, -1i32, 0u64);
-if IsError(result) {
-    return 1i32;
+func Main() -> int {
+    let result = Mmap(null, 4096u, ProtectionRead | ProtectionWrite,
+        MapPrivate | MapAnonymous, -1i32, 0u64);
+    if IsError(result) {
+        return 1;
+    }
+    let memory = result as *opaque;
+    Munmap(memory, 4096u);
+    return 0;
 }
-let memory = result as *opaque;
-Munmap(memory, 4096u);
 ```
 
 ## See also

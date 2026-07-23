@@ -2,14 +2,17 @@
 
 Generates a simple tone on the speaker.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`Beep`](https://learn.microsoft.com/en-us/windows/win32/api/utilapiset/nf-utilapiset-beep)
 
 ## Signature
 
 ```rux
-func Beep(freq: uint32, duration: uint32) -> bool32;
+func Beep(
+    freq: uint32,
+    duration: uint32
+) -> bool32;
 ```
 
 ## Parameters
@@ -25,4 +28,4 @@ func Beep(freq: uint32, duration: uint32) -> bool32;
 
 ## See also
 
-- [`Console`](console) — console API overview
+- [`Windows`](/api/windows/) — the package overview

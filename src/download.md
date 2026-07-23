@@ -1,6 +1,6 @@
 ---
 title: Download Rux
-description: Download the Rux compiler for Windows, macOS, Linux, BSD, and illumos, or build it from source. Every platform targets x86-64.
+description: Download the Rux compiler for FreeBSD, Linux, macOS, and Windows on x86-64 and AArch64.
 sidebar: false
 prev: false
 next: false
@@ -13,22 +13,20 @@ import DownloadCards from "../.vitepress/theme/components/DownloadCards.vue";
 # Download Rux
 
 <p class="status-lead">
-Get the Rux compiler for your operating system. Windows ships prebuilt
-binaries; other platforms install through their native package manager or
-build from source. Every platform targets x86-64.
+Get the latest Rux compiler for your platform. Prebuilt, tested binaries ship
+for FreeBSD, Linux, macOS, and Windows — each on both x86-64 and AArch64.
+Download an archive, unpack it, and put <code>rux</code> on your <code>PATH</code>.
 </p>
 
 <DownloadCards />
 
-## Build From Source
-
-No prebuilt package for your platform? The Rux toolchain builds anywhere a
-supported C++ compiler and CMake are available. See
-[Build From Source](/start/build) for the full instructions, or browse the
-per-platform [install guides](/start/) for package-manager options.
-
-::: info Targets are x86-64
-Every platform currently targets x86-64. Native ARM64 output is not yet
-supported — the macOS host builds the compiler natively on arm64 but runs the
-x86-64 programs it generates through Rosetta 2.
+::: tip Verify your download
+Every release includes a
+[`SHA256SUMS`](https://github.com/rux-lang/Rux/releases/latest/download/SHA256SUMS)
+file listing the checksum of each binary. Compare it against your download to
+confirm the file arrived intact before running it.
 :::
+
+Prefer a package manager, or want the finer details for your platform? The
+per-platform [install guides](/start/) cover every supported install method
+step by step.

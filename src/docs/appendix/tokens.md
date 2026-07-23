@@ -91,6 +91,7 @@ The following table lists every token kind recognized by the Rux lexer.
 | `Caret`                | `^`    |
 | `LessLess`             | `<<`   |
 | `GreaterGreater`       | `>>`   |
+| `GreaterGreaterGreater` | `>>>` |
 | `AmpAmp`               | `&&`   |
 | `PipePipe`             | `\|\|` |
 | `Bang`                 | `!`    |
@@ -111,6 +112,7 @@ The following table lists every token kind recognized by the Rux lexer.
 | `CaretAssign`          | `^=`   |
 | `LessLessAssign`       | `<<=`  |
 | `GreaterGreaterAssign` | `>>=`  |
+| `GreaterGreaterGreaterAssign` | `>>>=` |
 
 ## Special
 

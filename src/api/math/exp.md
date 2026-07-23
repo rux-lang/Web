@@ -2,7 +2,7 @@
 
 Returns e raised to a power.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,13 +28,16 @@ large positive `x` and underflows to `+0.0` for large negative `x`.
 ```rux
 import Math::Exp;
 
-let a = Exp(1.0); // 2.718281828459045 (e)
-let b = Exp(0.0); // 1.0
+func Main() -> int {
+    let a = Exp(1.0); // 2.718281828459045 (e)
+    let b = Exp(0.0); // 1.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Exp2`](exp2) — 2 raised to a power
 - [`Log`](log) — the inverse of `Exp`
 - [`Pow`](pow) — an arbitrary base raised to a power

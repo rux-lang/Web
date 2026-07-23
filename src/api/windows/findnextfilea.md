@@ -2,15 +2,17 @@
 
 Retrieves the next entry from a file search.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`FindNextFileA`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findnextfilea)
 
 ## Signature
 
 ```rux
-func FindNextFileA(findFile: *opaque,
-    findFileData: *Win32FindDataA) -> bool32;
+func FindNextFileA(
+    findFile: *opaque,
+    findFileData: *Win32FindDataA
+) -> bool32;
 ```
 
 Returns nonzero when another result was written. A zero return with

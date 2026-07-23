@@ -2,7 +2,7 @@
 
 Reads standard input through the next newline, and returns it as a `String`.
 
-**Module:** `Io`
+**Package:** `Io`
 
 ## Signature
 
@@ -69,7 +69,7 @@ func Main() -> int {
 
 ## See also
 
-- [`Io`](/api/io/) — the module overview
+- [`Io`](/api/io/) — the package overview
 - [`Print`](print) — write a prompt before reading
 - [`Text::String`](/api/text/string/) — the type returned, and how to free it
 - [`Text::StringBuilder`](/api/text/stringbuilder/) — what the line is accumulated in

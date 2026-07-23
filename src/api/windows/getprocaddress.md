@@ -2,15 +2,17 @@
 
 Retrieves the address of an exported DLL symbol.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`GetProcAddress`](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getprocaddress)
 
 ## Signature
 
 ```rux
-func GetProcAddress(module_arg: *opaque,
-    procName: *const char8) -> *opaque;
+func GetProcAddress(
+    module_arg: *opaque,
+    procName: *char8
+) -> *opaque;
 ```
 
 ## Parameters

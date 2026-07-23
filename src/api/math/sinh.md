@@ -2,7 +2,7 @@
 
 Returns the hyperbolic sine.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,13 +28,16 @@ argument propagates.
 ```rux
 import Math::Sinh;
 
-let a = Sinh(0.0); // 0.0
-let b = Sinh(1.0); // 1.1752011936438014
+func Main() -> int {
+    let a = Sinh(0.0); // 0.0
+    let b = Sinh(1.0); // 1.1752011936438014
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Cosh`](cosh) — hyperbolic cosine
 - [`Tanh`](tanh) — hyperbolic tangent
 - [`Exp`](exp) — the exponential `Sinh` is built on

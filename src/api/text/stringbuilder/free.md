@@ -2,7 +2,7 @@
 
 Releases the block the builder owns.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -23,14 +23,17 @@ To keep the block and only forget the contents, use [`Clear`](clear).
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-builder.Append("Rux");
+func Main() -> int {
+    var builder = StringBuilder::New();
+    builder.Append("Rux");
 
-builder.Free();
-builder.IsEmpty(); // true
+    builder.Free();
+    builder.IsEmpty(); // true
 
-builder.Append("again"); // fine -- the builder takes a new block
-builder.Free();
+    builder.Append("again"); // fine -- the builder takes a new block
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also

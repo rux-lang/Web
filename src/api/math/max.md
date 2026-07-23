@@ -2,7 +2,7 @@
 
 Returns the larger of two values.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -30,12 +30,15 @@ The larger of `a` and `b`. A NaN loses to anything else — `Max(NaN, y)` is
 ```rux
 import Math::Max;
 
-let a = Max(3.0, 7.0);  // 7.0
-let b = Max(0.0, -0.0); // 0.0
+func Main() -> int {
+    let a = Max(3.0, 7.0);  // 7.0
+    let b = Max(0.0, -0.0); // 0.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Min`](min) — the larger value's counterpart
 - [`Abs`](abs) — magnitude of a single value

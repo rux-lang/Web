@@ -2,7 +2,7 @@
 
 Terminates the process immediately.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
@@ -29,4 +29,4 @@ process must stop immediately.
 
 ## See also
 
-- [`Process`](process) - process API overview
+- [`Bsd`](/api/bsd/) — the package overview

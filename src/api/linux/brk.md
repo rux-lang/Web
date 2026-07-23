@@ -2,7 +2,7 @@
 
 Invokes the kernel's raw program-break operation.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -29,7 +29,7 @@ compare the returned address with the requested address.
 
 ::: danger
 Changing the program break can conflict with the runtime allocator and corrupt
-process memory. Application code should normally use `Std::Memory` or
+process memory. Application code should normally use [`Memory`](/api/memory/) or
 [`Mmap`](mmap) instead.
 :::
 
@@ -38,6 +38,9 @@ process memory. Application code should normally use `Std::Memory` or
 ```rux
 import Linux::Brk;
 
-let currentBreak = Brk(null) as *opaque;
+func Main() -> int {
+    let currentBreak = Brk(null) as *opaque;
+    return 0;
+}
 ```
 

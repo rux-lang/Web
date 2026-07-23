@@ -2,14 +2,17 @@
 
 Fills a memory range with zeros.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`RtlZeroMemory`](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlzeromemory)
 
 ## Signature
 
 ```rux
-func RtlZeroMemory(destination: *opaque, length: uint);
+func RtlZeroMemory(
+    destination: *opaque,
+    length: uint
+);
 ```
 
 `destination` must be writable for `length` bytes.
@@ -17,4 +20,4 @@ func RtlZeroMemory(destination: *opaque, length: uint);
 ## See also
 
 - [`RtlFillMemory`](rtlfillmemory) — fill with another byte value
-- [`Memory operations`](memory) — raw memory API overview
+- [`Windows`](/api/windows/) — the package overview

@@ -2,14 +2,18 @@
 
 Allocates a block from a Win32 heap.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`HeapAlloc`](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapalloc)
 
 ## Signature
 
 ```rux
-func HeapAlloc(heap: *opaque, flags: uint32, bytes: uint) -> *opaque;
+func HeapAlloc(
+    heap: *opaque,
+    flags: uint32,
+    bytes: uint
+) -> *var opaque;
 ```
 
 ## Parameters
@@ -28,4 +32,4 @@ uninitialized unless a zero-memory flag is supplied. Release it with
 
 ## See also
 
-- [`Heap`](heap) — heap API overview
+- [`Windows`](/api/windows/) — the package overview

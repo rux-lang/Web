@@ -1,18 +1,19 @@
-// Variable
-var value: int = 10;
+func Main() -> int {
+    // Compile-time constant
+    const Size: uint = 1024;
+    // Not allowed and will cause a compile-time error
+    Size = 35;      
 
-// Allowed, as 'var' is mutable
-value = 15;
+    // Immutable variable
+    let value = 20;
+    // Not allowed, as 'let' is immutable
+    // This will cause a compile-time error
+    value = 25;     
 
-// Immutable variable
-let value: int = 20;
-
-// Not allowed, as 'let' is immutable
-// This will cause a compile-time error
-value = 25; 
-
-// Compile-time constant
-const value: int = 30;
-
-// Not allowed and will cause a compile-time error
-value = 35;
+    // Variable
+    var steps = 10;
+    // Allowed, as 'var' is mutable
+    steps = 15;
+ 
+    return 0;
+}

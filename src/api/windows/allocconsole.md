@@ -2,7 +2,7 @@
 
 Allocates a console for the calling process.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`AllocConsole`](https://learn.microsoft.com/en-us/windows/console/allocconsole)
 
@@ -24,5 +24,5 @@ the console handles with [`GetStdHandle`](getstdhandle).
 
 ## See also
 
-- [`Console`](console) — console API overview
+- [`Windows`](/api/windows/) — the package overview
 - [`GetStdHandle`](getstdhandle) — retrieve a standard device handle

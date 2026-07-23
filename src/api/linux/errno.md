@@ -2,7 +2,7 @@
 
 Decodes the errno value from a raw syscall result.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -36,9 +36,12 @@ Call [`IsError`](iserror) when you need to distinguish success from failure.
 ```rux
 import Linux::{ Errno, IsError, Write };
 
-let result = Write(fd, data, length);
-if IsError(result) {
-    let errorNumber = Errno(result);
+func Main() -> int {
+    let result = Write(fd, data, length);
+    if IsError(result) {
+        let errorNumber = Errno(result);
+    }
+    return 0;
 }
 ```
 

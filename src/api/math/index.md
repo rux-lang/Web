@@ -6,9 +6,9 @@ The package is under active development and its API is **not yet stable**. Names
 
 The package provides mathematical constants and floating-point functions.
 
-**Module:** `Math`
+**Package:** `Math`
 
-**Source:** [github.com/rux-lang/Math](https://github.com/rux-lang/Math)
+**Source:** [github.com/rux-lang/Rux/tree/main/Packages/Math](https://github.com/rux-lang/Rux/tree/main/Packages/Math)
 
 Every function is provided for both `float64` and `float32`. Pass `float64` arguments to get a `float64` result, or `float32` for a `float32` result — each overload rounds only once, so the `float32` result is as accurate as the `float64` computation allows.
 
@@ -33,23 +33,23 @@ rux install
 
 ## Constants
 
-| Name        | Type      | Value                  | Description                                        |
-| ----------- | --------- | ---------------------- | -------------------------------------------------- |
-| `Pi`        | `float64` | 3.14159265358979323846 | Ratio of a circle's circumference to its diameter. |
-| `Tau`       | `float64` | 6.28318530717958647693 | 2 × `Pi`, a full turn in radians.                  |
-| `HalfPi`    | `float64` | 1.57079632679489661923 | `Pi` / 2.                                          |
-| `QuarterPi` | `float64` | 0.78539816339744830962 | `Pi` / 4.                                          |
-| `InvPi`     | `float64` | 0.31830988618379067154 | 1 / `Pi`.                                          |
-| `InvTau`    | `float64` | 0.15915494309189533577 | 1 / `Tau`.                                         |
-| `E`         | `float64` | 2.71828182845904523536 | Euler's number, the base of the natural logarithm. |
-| `Log2E`     | `float64` | 1.44269504088896340736 | log₂(e).                                           |
-| `Log10E`    | `float64` | 0.43429448190325182765 | log₁₀(e).                                          |
-| `Ln2`       | `float64` | 0.69314718055994530942 | ln(2).                                             |
-| `Ln10`      | `float64` | 2.30258509299404568402 | ln(10).                                            |
-| `Sqrt2`     | `float64` | 1.41421356237309504880 | √2.                                                |
-| `InvSqrt2`  | `float64` | 0.70710678118654752440 | 1 / √2.                                            |
-| `RadPerDeg` | `float64` | 0.01745329251994329577 | `Pi` / 180, radians per degree.                    |
-| `DegPerRad` | `float64` | 57.2957795130823208768 | 180 / `Pi`, degrees per radian.                    |
+| Name        | Type      | Value      | Description                                        |
+| ----------- | --------- | ---------- | -------------------------------------------------- |
+| `Pi`        | `float64` | 3.14159…   | Ratio of a circle's circumference to its diameter. |
+| `Tau`       | `float64` | 6.28318…   | 2 × `Pi`, a full turn in radians.                  |
+| `HalfPi`    | `float64` | 1.57079…   | `Pi` / 2.                                          |
+| `QuarterPi` | `float64` | 0.78539…   | `Pi` / 4.                                          |
+| `InvPi`     | `float64` | 0.31830…   | 1 / `Pi`.                                          |
+| `InvTau`    | `float64` | 0.15915…   | 1 / `Tau`.                                         |
+| `E`         | `float64` | 2.71828…   | Euler's number, the base of the natural logarithm. |
+| `Log2E`     | `float64` | 1.44269…   | log₂(e).                                           |
+| `Log10E`    | `float64` | 0.43429…   | log₁₀(e).                                          |
+| `Ln2`       | `float64` | 0.69314…   | ln(2).                                             |
+| `Ln10`      | `float64` | 2.30258…   | ln(10).                                            |
+| `Sqrt2`     | `float64` | 1.41421…   | √2.                                                |
+| `InvSqrt2`  | `float64` | 0.70710…   | 1 / √2.                                            |
+| `RadPerDeg` | `float64` | 0.01745…   | `Pi` / 180, radians per degree.                    |
+| `DegPerRad` | `float64` | 57.29577…  | 180 / `Pi`, degrees per radian.                    |
 
 ```rux
 import Math::Pi;

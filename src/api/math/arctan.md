@@ -2,7 +2,7 @@
 
 Returns the inverse tangent, in radians.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -27,13 +27,16 @@ The angle in `(-HalfPi, HalfPi)` whose tangent is `x`, defined for every real
 ```rux
 import Math::ArcTan;
 
-let a = ArcTan(1.0); // 0.7853981633974483 (QuarterPi)
-let b = ArcTan(0.0); // 0.0
+func Main() -> int {
+    let a = ArcTan(1.0); // 0.7853981633974483 (QuarterPi)
+    let b = ArcTan(0.0); // 0.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Tan`](tan) — the function `ArcTan` inverts
 - [`ArcSin`](arcsin) / [`ArcCos`](arccos) — the other inverse trigonometric functions
 - [`ArcCot`](arccot) — `HalfPi - ArcTan(x)`

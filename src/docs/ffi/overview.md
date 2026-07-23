@@ -5,12 +5,12 @@ The foreign function interface (FFI) lets Rux call functions defined outside the
 | Topic                                          | Description                                         |
 | ---------------------------------------------- | --------------------------------------------------- |
 | [`extern` Declarations](/docs/ffi/extern)      | Declaring functions defined outside Rux             |
-| [Import Attribute](/docs/ffi/import)           | Linking declarations to a dynamic library           |
+| [Linking Libraries](/docs/ffi/import)          | Binding declarations to a native library with `#Link` |
 
 Pointers are central to passing memory across the boundary — see [Pointers and `extern`](/docs/pointers/extern).
 
 ## See Also
 
 - [Pointers and `extern`](/docs/pointers/extern) — exchanging memory with native code
-- [`@[Import]`](/docs/attributes/import) — the attribute that names the library
-- [`@[Target]`](/docs/attributes/target) — platform-specific `extern` declarations
+- [`#Link`](/docs/attributes/link) — the attribute that names the library
+- [Conditional Compilation](/docs/comptime/conditional) — platform-specific `extern` declarations

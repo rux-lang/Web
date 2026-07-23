@@ -26,4 +26,4 @@ Only [`pub`](/docs/modules/visibility) items can be imported; private items are 
 
 - [Module Declaration](/docs/modules/declaration) — defining the modules you import from
 - [Items Visibility](/docs/modules/visibility) — what `pub` exposes to importers
-- [`@[Target]`](/docs/attributes/target) — platform-specific imports
+- [Conditional Compilation](/docs/comptime/conditional) — platform-specific imports with `when`

@@ -2,7 +2,7 @@
 
 Returns the length of the string in bytes.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,14 +21,17 @@ This counts **bytes, not characters**: a multi-byte UTF-8 sequence counts once p
 ```rux
 import Text::String;
 
-var ascii = String::From("Rux");
-ascii.Length(); // 3
+func Main() -> int {
+    var ascii = String::From("Rux");
+    ascii.Length(); // 3
 
-var utf8 = String::From("héllo");
-utf8.Length();  // 6 -- five characters, six bytes
+    var utf8 = String::From("héllo");
+    utf8.Length();  // 6 -- five characters, six bytes
 
-utf8.Free();
-ascii.Free();
+    utf8.Free();
+    ascii.Free();
+    return 0;
+}
 ```
 
 ## See also

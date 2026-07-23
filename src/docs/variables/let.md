@@ -4,7 +4,7 @@ A variable introduced with `let` is **immutable**: once initialized, it cannot b
 
 ```rux
 let x = 42;                 // type inferred as int
-let name: char8[] = "Rux";  // explicit type annotation
+let name: Slice<char8> = "Rux";  // explicit type annotation
 
 x = 10;   // error: cannot assign to an immutable binding
 ```

@@ -2,7 +2,7 @@
 
 Reports whether a byte is whitespace.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -27,12 +27,15 @@ The test is on one byte, so it says nothing about the whitespace characters that
 ```rux
 import Text::IsSpace;
 
-IsSpace(c8' ');  // true
-IsSpace(c8'\n'); // true
-IsSpace(c8'a');  // false
+func Main() -> int {
+    IsSpace(c8' ');  // true
+    IsSpace(c8'\n'); // true
+    IsSpace(c8'a');  // false
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Text`](/api/text/) — the module overview
+- [`Text`](/api/text/) — the package overview
 - [`String::Trim`](string/trim) — drop the whitespace at both ends of a string

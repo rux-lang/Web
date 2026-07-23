@@ -2,7 +2,7 @@
 
 Converts an angle from radians to degrees.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,13 +28,16 @@ zero all fall out of the multiplication unchanged.
 ```rux
 import Math::{ HalfPi, Pi, RadToDeg };
 
-let degrees = RadToDeg(Pi);    // 180.0
-let ninety = RadToDeg(HalfPi); // 90.0
+func Main() -> int {
+    let degrees = RadToDeg(Pi);    // 180.0
+    let ninety = RadToDeg(HalfPi); // 90.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`DegToRad`](degtorad) — the inverse conversion
 - [`Sin`](sin) / [`Cos`](cos) / [`Tan`](tan) — trigonometric functions that return radians
 - `DegPerRad` — the constant this function multiplies by

@@ -2,7 +2,7 @@
 
 Releases a block of memory back to the platform.
 
-**Module:** `Memory`
+**Package:** `Memory`
 
 ## Signature
 
@@ -26,24 +26,25 @@ block twice, releasing a pointer that [`Realloc`](realloc) has already moved, or
 passing a pointer this package did not produce. After the call the block is gone
 and the pointer must not be read, written, or freed again.
 
-On BSD the function is not implemented yet and does nothing.
-
 ## Example
 
 ```rux
 import Memory::{ Alloc, Free };
 
-let buffer = Alloc(256);
-if buffer == null {
-    return 1;
-}
+func Main() -> int {
+    let buffer = Alloc(256);
+    if buffer == null {
+        return 1;
+    }
 
-Free(buffer);
-Free(null); // harmless
+    Free(buffer);
+    Free(null); // harmless
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Memory`](/api/memory/) — the module overview
+- [`Memory`](/api/memory/) — the package overview
 - [`Alloc`](alloc) — allocate the block in the first place
 - [`Realloc`](realloc) — resize a block instead of releasing it

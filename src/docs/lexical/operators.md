@@ -1,4 +1,4 @@
-# Operators and Punctuation
+# Operators
 
 ## Arithmetic Operators
 
@@ -19,8 +19,9 @@
 | `\|`     | Bitwise OR  |
 | `^`      | Bitwise XOR |
 | `~`      | Bitwise NOT |
-| `<<`     | Left shift  |
-| `>>`     | Right shift |
+| `<<`     | Left shift          |
+| `>>`     | Right shift (arithmetic on signed, logical on unsigned) |
+| `>>>`    | Logical right shift (signed integers only)              |
 
 ## Logical Operators
 
@@ -56,6 +57,23 @@
 | `^=`     | `x = x ^ rhs`    |
 | `<<=`    | `x = x << rhs`   |
 | `>>=`    | `x = x >> rhs`   |
+| `>>>=`   | `x = x >>> rhs`  |
+
+## Memory Operators
+
+| Operator | Meaning                                                 |
+| -------- | ------------------------------------------------------- |
+| `@`      | Address-of: `@value` yields a pointer `*T` to the value |
+| `*`      | Dereference: `*ptr` reads or writes the pointed-to value |
+
+```rux
+var x = 42;
+let p = @x;      // *int32 — address of x
+let y = *p;      // 42     — read through the pointer
+*p = 7;          // write through the pointer; x == 7
+```
+
+The address-of operand must be addressable — a variable, field, or slice element — not a temporary. See [Address-of and Dereference](/docs/pointers/overview#address-of-and-dereference).
 
 ## Type Operators
 
@@ -78,18 +96,18 @@ From highest to lowest precedence:
 
 | Level       | Operators                                                |
 | ----------- | -------------------------------------------------------- |
-| 1 (highest) | Unary `!` `~` `-`                                        |
+| 1 (highest) | Unary `!` `~` `-` `@` `*`                                |
 | 2           | `as` `is`                                                |
 | 3           | `**`                                                     |
 | 4           | `*` `/` `%`                                              |
 | 5           | `+` `-`                                                  |
-| 6           | `<<` `>>`                                                |
+| 6           | `<<` `>>` `>>>`                                          |
 | 7           | `&`                                                      |
 | 8           | `^`                                                      |
 | 9           | `\|`                                                     |
 | 10          | `==` `!=` `<` `<=` `>` `>=`                              |
 | 11          | `&&`                                                     |
 | 12          | `\|\|`                                                   |
-| 13 (lowest) | `=` `+=` `-=` `*=` `/=` `%=` `&=` `\|=` `^=` `<<=` `>>=` |
+| 13 (lowest) | `=` `+=` `-=` `*=` `/=` `%=` `&=` `\|=` `^=` `<<=` `>>=` `>>>=` |
 
 Use parentheses to override precedence explicitly.

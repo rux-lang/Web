@@ -2,7 +2,7 @@
 
 Terminates the calling process and all of its threads.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`ExitProcess`](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-exitprocess)
 
@@ -25,4 +25,4 @@ do not occur. Prefer returning from `Main` for normal termination.
 
 ## See also
 
-- [`Process and thread`](process) — process API overview
+- [`Windows`](/api/windows/) — the package overview

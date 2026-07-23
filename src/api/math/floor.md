@@ -2,7 +2,7 @@
 
 Rounds down to the nearest integer value.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,13 +28,16 @@ a NaN passes through unchanged.
 ```rux
 import Math::Floor;
 
-let a = Floor(3.7);  // 3.0
-let b = Floor(-3.2); // -4.0
+func Main() -> int {
+    let a = Floor(3.7);  // 3.0
+    let b = Floor(-3.2); // -4.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Ceil`](ceil) — round up
 - [`Round`](round) — round to the nearest integer
 - [`Trunc`](trunc) — round toward zero

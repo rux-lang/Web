@@ -2,21 +2,25 @@
 
 Finds the offset at which two blocks of memory first differ.
 
-**Module:** `Memory`
+**Package:** `Memory`
 
 ## Signature
 
 ```rux
-func Compare(lhs: *const opaque, rhs: *const opaque, length: uint) -> uint;
+func Compare(
+    lhs: *opaque,
+    rhs: *opaque,
+    length: uint
+) -> uint;
 ```
 
 ## Parameters
 
-| Name     | Type            | Description                     |
-| -------- | --------------- | ------------------------------- |
-| `lhs`    | `*const opaque` | The first block.                |
-| `rhs`    | `*const opaque` | The second block.               |
-| `length` | `uint`          | The number of bytes to compare. |
+| Name     | Type      | Description                     |
+| -------- | --------- | ------------------------------- |
+| `lhs`    | `*opaque` | The first block.                |
+| `rhs`    | `*opaque` | The second block.               |
+| `length` | `uint`    | The number of bytes to compare. |
 
 ## Returns
 
@@ -34,32 +38,33 @@ The two comparisons that trip people up:
 The comparison stops at `length`, so bytes that differ beyond it are invisible.
 Both blocks must be at least `length` bytes long.
 
-On BSD the function is not implemented yet and always returns `0`.
-
 ## Example
 
 ```rux
 import Memory::{ Alloc, Compare, Free, Set };
 
-let lhs = Alloc(16);
-let rhs = Alloc(16);
-Set(lhs, 16, 0x5A);
-Set(rhs, 16, 0x5A);
+func Main() -> int {
+    let lhs = Alloc(16);
+    let rhs = Alloc(16);
+    Set(lhs, 16, 0x5A);
+    Set(rhs, 16, 0x5A);
 
-Compare(lhs, rhs, 16); // 16 -- equal, so the full length
+    Compare(lhs, rhs, 16); // 16 -- equal, so the full length
 
-let bytes = rhs as *uint8;
-*(bytes + 5) = 0x00;
+    let bytes = rhs as *var uint8;
+    *(bytes + 5) = 0x00;
 
-Compare(lhs, rhs, 16); // 5 -- the first difference
-Compare(lhs, rhs, 5);  // 5 -- equal, the difference is out of range
+    Compare(lhs, rhs, 16); // 5 -- the first difference
+    Compare(lhs, rhs, 5);  // 5 -- equal, the difference is out of range
 
-Free(rhs);
-Free(lhs);
+    Free(rhs);
+    Free(lhs);
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Memory`](/api/memory/) — the module overview
+- [`Memory`](/api/memory/) — the package overview
 - [`Copy`](copy) — make one block equal to another
 - [`Set`](set) — fill a block with a known byte before comparing

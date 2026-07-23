@@ -32,17 +32,17 @@ In the **Status** column, ✓ marks types available in the current release; **Pl
 
 ## Floating-Point
 
-| Type                                  | Size     | Format             | Approx. magnitude         | Suffix | Status  |
-| ------------------------------------- | -------- | ------------------ | ------------------------- | ------ | ------- |
-| [`float`](/docs/floating/float)       | 8 bytes  | alias of `float64` | ±1.8 × 10<sup>308</sup>   | —      | ✓       |
-| [`float8`](/docs/floating/float8)     | 1 byte   | E4M3               | ±4.5 × 10<sup>2</sup>        | `f8`   | Planned |
-| [`float16`](/docs/floating/float16)   | 2 bytes  | IEEE 754 binary16  | ±6.5 × 10<sup>4</sup>     | `f16`  | Planned |
-| [`float32`](/docs/floating/float32)   | 4 bytes  | IEEE 754 binary32  | ±3.4 × 10<sup>38</sup>    | `f32`  | ✓       |
-| [`float64`](/docs/floating/float64)   | 8 bytes  | IEEE 754 binary64  | ±1.8 × 10<sup>308</sup>   | `f64`  | ✓       |
-| [`float80`](/docs/floating/float80)   | 10 bytes | x87 extended       | ±1.2 × 10<sup>4932</sup>     | `f80`  | Planned |
-| [`float128`](/docs/floating/float128) | 16 bytes | IEEE 754 binary128 | ±1.2 × 10<sup>4932</sup>  | `f128` | Planned |
-| [`float256`](/docs/floating/float256) | 32 bytes | Rux extension      | ±1.6 × 10<sup>78913</sup> | `f256` | Planned |
-| [`float512`](/docs/floating/float512) | 64 bytes | Rux extension      | ±2.0 × 10<sup>1262611</sup>  | `f512` | Planned |
+| Type                                  | Size     | Format             | Approx. magnitude           | Suffix | Status  |
+| ------------------------------------- | -------- | ------------------ | --------------------------- | ------ | ------- |
+| [`float`](/docs/floating/float)       | 8 bytes  | alias of `float64` | ±1.8 × 10<sup>308</sup>     | —      | ✓       |
+| [`float8`](/docs/floating/float8)     | 1 byte   | E4M3               | ±4.5 × 10<sup>2</sup>       | `f8`   | Planned |
+| [`float16`](/docs/floating/float16)   | 2 bytes  | IEEE 754 binary16  | ±6.5 × 10<sup>4</sup>       | `f16`  | Planned |
+| [`float32`](/docs/floating/float32)   | 4 bytes  | IEEE 754 binary32  | ±3.4 × 10<sup>38</sup>      | `f32`  | ✓       |
+| [`float64`](/docs/floating/float64)   | 8 bytes  | IEEE 754 binary64  | ±1.8 × 10<sup>308</sup>     | `f64`  | ✓       |
+| [`float80`](/docs/floating/float80)   | 10 bytes | x87 extended       | ±1.2 × 10<sup>4932</sup>    | `f80`  | Planned |
+| [`float128`](/docs/floating/float128) | 16 bytes | IEEE 754 binary128 | ±1.2 × 10<sup>4932</sup>    | `f128` | Planned |
+| [`float256`](/docs/floating/float256) | 32 bytes | Rux extension      | ±1.6 × 10<sup>78913</sup>   | `f256` | Planned |
+| [`float512`](/docs/floating/float512) | 64 bytes | Rux extension      | ±2.0 × 10<sup>1262611</sup> | `f512` | Planned |
 
 ## Boolean
 
@@ -75,4 +75,5 @@ In the **Status** column, ✓ marks types available in the current release; **Pl
 - An unsuffixed integer literal is inferred as [`int`](/docs/signed/int); an unsuffixed floating-point literal is inferred as [`float64`](/docs/floating/float64).
 - [`int`](/docs/signed/int) and [`uint`](/docs/unsigned/uint) track the target's pointer width — `int32`/`uint32` on 32-bit targets, `int64`/`uint64` on 64-bit targets.
 - [`float`](/docs/floating/float) → `float64`, [`bool`](/docs/boolean/bool) → `bool8`, and [`char`](/docs/character/char) → `char32` are compiler-provided aliases (see [Built-in Aliases](/docs/aliases/builtin)).
+- [`byte`](/docs/unsigned/uint8) is a compiler-provided alias for [`uint8`](/docs/unsigned/uint8) — a clearer spelling for raw 8-bit byte values.
 - Rux performs no implicit numeric conversions; every cross-type conversion uses the [`as`](/docs/operations/type-cast) operator.

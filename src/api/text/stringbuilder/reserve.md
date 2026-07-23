@@ -2,7 +2,7 @@
 
 Makes room for more bytes.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -29,13 +29,16 @@ Reserving may move the block, so a pointer taken from [`Data`](data) beforehand 
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-builder.Append("Rux");   // Length is 3
+func Main() -> int {
+    var builder = StringBuilder::New();
+    builder.Append("Rux");   // Length is 3
 
-builder.Reserve(100);    // room for 100 more, so at least 103 in all
-builder.Capacity();      // >= 103, and no append below that reallocates
+    builder.Reserve(100);    // room for 100 more, so at least 103 in all
+    builder.Capacity();      // >= 103, and no append below that reallocates
 
-builder.Free();
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also

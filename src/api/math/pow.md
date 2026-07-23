@@ -2,7 +2,7 @@
 
 Raises a base to an exponent.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -37,13 +37,16 @@ IEEE-754's special cases, of which the ones most likely to be surprising are:
 ```rux
 import Math::Pow;
 
-let a = Pow(2.0, 10.0);       // 1024.0
-let b = Pow(9.0, 0.5);        // 3.0
-let c = Pow(-8.0, 1.0 / 3.0); // NaN -- exponent is not an integer
+func Main() -> int {
+    let a = Pow(2.0, 10.0);       // 1024.0
+    let b = Pow(9.0, 0.5);        // 3.0
+    let c = Pow(-8.0, 1.0 / 3.0); // NaN -- exponent is not an integer
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Sqrt`](sqrt) — the common square-root case
 - [`Cbrt`](cbrt) — real cube roots, including negative arguments

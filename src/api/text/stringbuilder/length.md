@@ -2,7 +2,7 @@
 
 Returns how many bytes have been written.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,13 +21,16 @@ The count is in bytes, so a multi-byte UTF-8 sequence counts once per byte.
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::WithCapacity(64);
-builder.Append("Rux");
+func Main() -> int {
+    var builder = StringBuilder::WithCapacity(64);
+    builder.Append("Rux");
 
-builder.Length();   // 3
-builder.Capacity(); // 64
+    builder.Length();   // 3
+    builder.Capacity(); // 64
 
-builder.Free();
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also

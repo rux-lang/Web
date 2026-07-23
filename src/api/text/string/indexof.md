@@ -2,7 +2,7 @@
 
 Returns the offset of the first occurrence of a substring.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -29,16 +29,19 @@ The scan is the plain one — every starting offset is tried in turn — so the 
 ```rux
 import Text::String;
 
-var text = String::From("Hello, Rux!");
-var needle = String::From("Rux");
-var missing = String::From("C");
+func Main() -> int {
+    var text = String::From("Hello, Rux!");
+    var needle = String::From("Rux");
+    var missing = String::From("C");
 
-text.IndexOf(needle);  // 7
-text.IndexOf(missing); // -1
+    text.IndexOf(needle);  // 7
+    text.IndexOf(missing); // -1
 
-missing.Free();
-needle.Free();
-text.Free();
+    missing.Free();
+    needle.Free();
+    text.Free();
+    return 0;
+}
 ```
 
 ## See also

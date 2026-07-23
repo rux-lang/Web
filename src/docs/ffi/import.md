@@ -1,47 +1,61 @@
-# Import Attribute
+# Linking Libraries
 
-The `@[Import]` attribute links an `extern` declaration to a specific dynamic library (`.dll`, `.so`, `.dylib`). The operating system loader resolves the library by name at runtime.
+The [`#Link`](/docs/attributes/link) attribute binds an [`extern`](/docs/ffi/extern) declaration to a native library (`.dll`, `.so`, `.dylib`). The operating-system loader resolves the library by name at run time.
 
 ```rux
-@[Import(lib: "libm.so")]
-extern func cos(angle: float64) -> float64;
+#Link("libm.so")
+extern func sqrt(x: float64) -> float64;
 
-@[Import(lib: "libm.so")]
-extern func sin(angle: float64) -> float64;
-
-@[Import(lib: "libm.so")]
-extern func sqrt(value: float64) -> float64;
+#Link("libm.so")
+extern func pow(base: float64, exp: float64) -> float64;
 ```
 
-Multiple declarations from the same library can be grouped in one `extern` block.
+A single `#Link` may also annotate a whole [`extern` block](/docs/ffi/extern), applying the library to every function inside it.
+
+## Example: Printing with the Windows API
 
 ```rux
-@[Import(lib: "Kernel32.dll")]
-extern {
-    func CreateFileW(
-        fileName: *const char16,
-        desiredAccess: uint32,
-        shareMode: uint32,
-        securityAttributes: *SecurityAttributes,
-        creationDisposition: uint32,
-        flagsAndAttributes: uint32,
-        templateFile: *opaque
-    ) -> *opaque;
+#Link("Kernel32.dll")
+extern func GetStdHandle(handle: uint32) -> *opaque;
 
-    func WriteFile(
-        handle: *opaque,
-        buffer: *const opaque,
-        numberOfBytesToWrite: uint32,
-        numberOfBytesWritten: *uint32,
-        overlapped: *Overlapped,
-    ) -> bool32;
+#Link("Kernel32.dll")
+extern func WriteFile(
+    handle: *opaque,
+    buffer: *opaque,
+    numberOfBytesToWrite: uint32,
+    numberOfBytesWritten: *var uint32,
+    overlapped: *Overlapped,
+) -> bool32;
+
+func Main() -> int {
+    let text = "Hello, Rux!\n";
+    var written: uint32 = 0;
+    let stdout = GetStdHandle(-11 as uint32); // STD_OUTPUT_HANDLE
+    WriteFile(stdout, text.data, text.length as uint32, @written, null);
+    return 0;
 }
 ```
 
-See [`@[Import]`](/docs/attributes/import) for the full attribute reference.
+## Per-Platform Libraries
+
+Library names differ across systems, so guard the declarations with [conditional compilation](/docs/comptime/conditional) rather than a platform attribute:
+
+```rux
+import Rux::{ #target };
+
+when #target.os == .Windows {
+    #Link("Kernel32.dll")
+    extern func GetTickCount64() -> uint64;
+} else when #target.os == .Linux {
+    #Link("librt.so")
+    extern func clock_gettime(clockid: int32, tp: *opaque) -> int32;
+}
+```
+
+See [`#Link`](/docs/attributes/link) for the full attribute reference, including binding a differently named exported symbol.
 
 ## See Also
 
-- [`extern` Declarations](/docs/ffi/extern) — declaring the foreign functions being linked
-- [`@[Import]`](/docs/attributes/import) — the full attribute reference
-- [`@[Target]`](/docs/attributes/target) — selecting a library per platform
+- [`#Link`](/docs/attributes/link) — the full attribute reference
+- [`extern` Declarations](/docs/ffi/extern) — the declarations this attribute links
+- [Conditional Compilation](/docs/comptime/conditional) — selecting a library per platform

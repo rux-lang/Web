@@ -2,7 +2,7 @@
 
 Returns the text of a value, in a `String` the caller owns.
 
-**Module:** `Format`
+**Package:** `Format`
 
 ## Signature
 
@@ -62,24 +62,27 @@ A `char8` is the exception: it is **one byte of UTF-8, not one character**, and 
 ```rux
 import Format::ToString;
 
-var a = ToString(-42);       // "-42"
-var b = ToString(3.5);       // "3.5"
-var c = ToString(1.0e20);    // "1.0e+20"
-var d = ToString(false);     // "false"
-var e = ToString(c32'€');    // "€", three bytes
-var f = 7.ToString();        // "7", through Stringable
+func Main() -> int {
+    var a = ToString(-42);       // "-42"
+    var b = ToString(3.5);       // "3.5"
+    var c = ToString(1.0e20);    // "1.0e+20"
+    var d = ToString(false);     // "false"
+    var e = ToString(c32'€');    // "€", three bytes
+    var f = 7.ToString();        // "7", through Stringable
 
-f.Free();
-e.Free();
-d.Free();
-c.Free();
-b.Free();
-a.Free();
+    f.Free();
+    e.Free();
+    d.Free();
+    c.Free();
+    b.Free();
+    a.Free();
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Format`](/api/format/) — the module overview
+- [`Format`](/api/format/) — the package overview
 - [`Stringable`](stringable) — put a `ToString` on a type of your own
 - [`WriteInt`](writeint) / [`WriteFloat`](writefloat) — the same text, appended to a builder, with no `String` allocated
 - [`IsNan`](isnan) — ask about a value rather than reading `NaN` back out of its text

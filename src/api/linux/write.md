@@ -2,7 +2,7 @@
 
 Writes bytes to a file descriptor.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -31,12 +31,15 @@ advance the pointer and repeat until all bytes are written or an error occurs.
 ## Example
 
 ```rux
-import Linux::{ IsError, Stdout, Write };
+import Linux::{ IsError, StdOut, Write };
 
-let message = "hello\n";
-let result = Write(Stdout, message.data, message.length);
-if IsError(result) || result != message.length as int64 {
-    return 1i32;
+func Main() -> int {
+    let message = "hello\n";
+    let result = Write(StdOut, message.data, message.length);
+    if IsError(result) || result != message.length as int64 {
+        return 1;
+    }
+    return 0;
 }
 ```
 

@@ -2,7 +2,7 @@
 
 Rounds up to the nearest integer value.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -29,13 +29,16 @@ NaN passes through unchanged.
 ```rux
 import Math::Ceil;
 
-let a = Ceil(3.2);  // 4.0
-let b = Ceil(-3.7); // -3.0
+func Main() -> int {
+    let a = Ceil(3.2);  // 4.0
+    let b = Ceil(-3.7); // -3.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Floor`](floor) — round down
 - [`Round`](round) — round to the nearest integer
 - [`Trunc`](trunc) — round toward zero

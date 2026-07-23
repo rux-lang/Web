@@ -2,7 +2,7 @@
 
 Returns the length of the hypotenuse of a right triangle with legs `x` and `y`.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -31,11 +31,14 @@ otherwise a NaN in either argument produces a NaN.
 ```rux
 import Math::Hypot;
 
-let a = Hypot(3.0, 4.0); // 5.0
+func Main() -> int {
+    let a = Hypot(3.0, 4.0); // 5.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Sqrt`](sqrt) — the square root `Hypot` is built on
 - [`Abs`](abs) — magnitude of a single value

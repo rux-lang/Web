@@ -2,7 +2,7 @@
 
 Retrieves the calling process's default heap.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`GetProcessHeap`](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-getprocessheap)
 
@@ -20,4 +20,4 @@ handle.
 ## See also
 
 - [`HeapAlloc`](heapalloc) — allocate from a heap
-- [`Heap`](heap) — heap API overview
+- [`Windows`](/api/windows/) — the package overview

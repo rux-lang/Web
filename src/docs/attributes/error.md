@@ -1,11 +1,11 @@
 # `Error`
 
-Emits a compiler **error** at every call site of the annotated function. The build fails at any point where the function is called. Use this to intentionally block usage of a function — for example, to enforce that a stub or platform-unsupported path is never called.
+Emits a compiler **error** at every call site of the annotated function. The build fails at any point where the function is called. Use it to intentionally block usage of a function — for example, to enforce that a stub or unsupported path is never called.
 
 ## Syntax
 
 ```rux
-@[Error("Function is not implemented")]
+#Error("Function is not implemented")
 func DoSomething() {
     // Implementation
 }
@@ -13,33 +13,37 @@ func DoSomething() {
 
 ## Examples
 
-### Unsupported platform stub
+### Unsupported-platform stub
+
+Pair `#Error` with [conditional compilation](/docs/comptime/conditional) so a platform that lacks an implementation fails at the call site rather than at link time:
 
 ```rux
-@[Target("Windows")]
-func OpenDisplay() -> *opaque {
-    // real Windows implementation
-    return null;
-}
+import Rux::{ #target };
 
-@[Target("Linux")]
-@[Error("OpenDisplay is not supported on Linux in this build")]
-func OpenDisplay() -> *opaque {
-    return null;
+when #target.os == .Windows {
+    func OpenDisplay() -> *opaque {
+        // real Windows implementation
+        return null;
+    }
+} else {
+    #Error("OpenDisplay is not supported on this platform")
+    func OpenDisplay() -> *opaque {
+        return null;
+    }
 }
 ```
 
-Calling `OpenDisplay()` on a Linux build produces:
+Calling `OpenDisplay()` on a non-Windows build produces:
 
 ```
-error: OpenDisplay is not supported on Linux in this build
+error: OpenDisplay is not supported on this platform
 ```
 
 ### Removed API
 
 ```rux
-@[Error("Connect() was removed; use ConnectAsync() instead")]
-func Connect(host: char8[], port: uint16) -> bool {
+#Error("Connect() was removed; use ConnectAsync() instead")
+func Connect(host: Slice<char8>, port: uint16) -> bool {
     return false;
 }
 ```
@@ -48,6 +52,6 @@ Any call to `Connect()` is a compile-time error, ensuring all callers are migrat
 
 ## See Also
 
-- [`@[Warn]`](/docs/attributes/warn) — flag usage without breaking the build
-- [`@[Target]`](/docs/attributes/target) — pair with `@[Error]` for unsupported-platform stubs
+- [`#Warn`](/docs/attributes/warn) — flag usage without breaking the build
+- [Conditional Compilation](/docs/comptime/conditional) — selecting per-platform implementations
 - [Attributes](/docs/attributes/overview) — the full attribute set

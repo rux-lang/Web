@@ -2,12 +2,16 @@
 
 Fills a block of memory with a repeated byte.
 
-**Module:** `Memory`
+**Package:** `Memory`
 
 ## Signature
 
 ```rux
-func Set(ptr: *opaque, size: uint, value: int32);
+func Set(
+    ptr: *opaque,
+    size: uint,
+    value: int32
+);
 ```
 
 ## Parameters
@@ -28,23 +32,24 @@ with `0xFF`, not with a truncation error.
 A `size` of `0` writes nothing. Writing past the end of the block is undefined
 behavior; `size` must not exceed the size the block was allocated with.
 
-On BSD the function is not implemented yet and does nothing.
-
 ## Example
 
 ```rux
 import Memory::{ Alloc, Free, Set };
 
-let buffer = Alloc(16);
+func Main() -> int {
+    let buffer = Alloc(16);
 
-Set(buffer, 16, 0xA5);  // every byte is 0xA5
-Set(buffer, 16, 0x1FF); // every byte is 0xFF -- only the low 8 bits land
+    Set(buffer, 16, 0xA5);  // every byte is 0xA5
+    Set(buffer, 16, 0x1FF); // every byte is 0xFF -- only the low 8 bits land
 
-Free(buffer);
+    Free(buffer);
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Memory`](/api/memory/) — the module overview
+- [`Memory`](/api/memory/) — the package overview
 - [`Zero`](zero) — the common zero-fill case
 - [`Copy`](copy) — fill a block from another block instead of from a byte

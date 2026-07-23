@@ -2,7 +2,7 @@
 
 Returns the inverse sine, in radians.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,12 +28,15 @@ sine; a NaN argument also propagates.
 ```rux
 import Math::ArcSin;
 
-let a = ArcSin(1.0); // 1.5707963267948966 (HalfPi)
-let b = ArcSin(0.0); // 0.0
+func Main() -> int {
+    let a = ArcSin(1.0); // 1.5707963267948966 (HalfPi)
+    let b = ArcSin(0.0); // 0.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Sin`](sin) — the function `ArcSin` inverts
 - [`ArcCos`](arccos) / [`ArcTan`](arctan) — the other inverse trigonometric functions

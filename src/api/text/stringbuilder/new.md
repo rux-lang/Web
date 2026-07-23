@@ -2,7 +2,7 @@
 
 Creates an empty builder.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,13 +21,16 @@ The first [`Append`](append) takes a block of 16 bytes and doubles from there. R
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-builder.Capacity(); // 0 -- nothing is allocated yet
+func Main() -> int {
+    var builder = StringBuilder::New();
+    builder.Capacity(); // 0 -- nothing is allocated yet
 
-builder.Append("Rux");
-builder.Capacity(); // 16 -- the first append takes a block
+    builder.Append("Rux");
+    builder.Capacity(); // 16 -- the first append takes a block
 
-builder.Free();
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also

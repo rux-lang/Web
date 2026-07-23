@@ -2,7 +2,7 @@
 
 Returns the cube root.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,12 +28,15 @@ themselves, and `Cbrt(±0.0)` preserves the sign of the zero.
 ```rux
 import Math::Cbrt;
 
-let a = Cbrt(27.0); // 3.0
-let b = Cbrt(-8.0); // -2.0
+func Main() -> int {
+    let a = Cbrt(27.0); // 3.0
+    let b = Cbrt(-8.0); // -2.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Sqrt`](sqrt) — square root
 - [`Pow`](pow) — general exponentiation (`Pow(x, 1.0 / 3.0)` is not equivalent for negative `x`)

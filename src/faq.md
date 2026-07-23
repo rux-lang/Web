@@ -66,7 +66,7 @@ The compiler is continuously tested on:
 
 ## Does Rux support cross-compilation?
 
-Not yet. The current compiler primarily builds native programs for its host platform. Target-specific declarations and dependencies can be selected with [`@[Target(...)]`](/docs/attributes/target) and target sections in `Rux.toml`.
+Not yet. The current compiler primarily builds native programs for its host platform. Target-specific declarations can be selected with [conditional compilation](/docs/comptime/conditional) — `when #target.os == .Windows { ... }`.
 
 ## How do I install Rux?
 

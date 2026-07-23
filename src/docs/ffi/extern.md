@@ -17,10 +17,10 @@ extern {
 }
 ```
 
-Foreign functions exchange data through [pointers](/docs/pointers/overview): `*opaque` for handles, `*const T` for read-only buffers, and `*T` for buffers the callee may write to.
+Foreign functions exchange data through [pointers](/docs/pointers/overview): `*opaque` for handles, `*T` for read-only buffers, and `*var T` for buffers the callee may write to.
 
 ## See Also
 
-- [Import Attribute](/docs/ffi/import) — linking an `extern` declaration to a library
+- [Linking Libraries](/docs/ffi/import) — binding an `extern` declaration to a library with `#Link`
 - [Pointers and `extern`](/docs/pointers/extern) — the pointer types crossing the boundary
-- [Pointer Types](/docs/pointers/types) — `*opaque`, `*const T`, and `*T`
+- [Pointer Types](/docs/pointers/types) — `*opaque`, `*T`, and `*var T`

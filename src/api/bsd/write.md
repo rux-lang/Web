@@ -2,12 +2,12 @@
 
 Writes bytes to a file descriptor.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
 ```rux
-func Write(fd: int32, buffer: *const opaque, count: uint) -> int64;
+func Write(fd: int32, buffer: *opaque, count: uint) -> int64;
 ```
 
 ## Parameters
@@ -15,33 +15,31 @@ func Write(fd: int32, buffer: *const opaque, count: uint) -> int64;
 | Name     | Type            | Description                               |
 | -------- | --------------- | ----------------------------------------- |
 | `fd`     | `int32`         | File descriptor to write.                 |
-| `buffer` | `*const opaque` | Source containing at least `count` bytes. |
+| `buffer` | `*opaque` | Source containing at least `count` bytes. |
 | `count`  | `uint`          | Number of bytes requested.                |
 
 ## Returns
 
-`int64` - bytes written on success, or the thunk's raw error result on failure.
+`int64` - bytes written on success, or a negative errno value on failure.
 A successful call may write fewer than `count` bytes.
 
-::: danger Error ambiguity
-A successful byte count from `1` through `4095` also satisfies the current
-[`IsError`](iserror) range check. For fixed output, compare the result with the
-requested count and handle partial writes explicitly.
-:::
 
 ## Example
 
 ```rux
-import BSD::{ Stdout, Write };
+import Bsd::{ StdOut, Write };
 
-let text = "hello\n";
-let result = Write(Stdout, text.data, text.length);
-if result != text.length as int64 {
-    return 1i32;
+func Main() -> int {
+    let text = "hello\n";
+    let result = Write(StdOut, text.data, text.length);
+    if result != text.length as int64 {
+        return 1;
+    }
+    return 0;
 }
 ```
 
 ## See also
 
-- [`I/O`](io) - I/O overview
+- [`Bsd`](/api/bsd/) — the package overview
 - [`Read`](read) - read bytes

@@ -6,9 +6,9 @@ The package is under active development and its API is **not yet stable**. Names
 
 The package provides strings and fundamental text manipulation — an immutable [`String`](string/), and a [`StringBuilder`](stringbuilder/) to accumulate one.
 
-**Module:** `Text`
+**Package:** `Text`
 
-**Source:** [github.com/rux-lang/Text](https://github.com/rux-lang/Text)
+**Source:** [github.com/rux-lang/Rux/tree/main/Packages/Text](https://github.com/rux-lang/Rux/tree/main/Packages/Text)
 
 Both types hold a heap block they own, and every block comes from the [`Memory`](/api/memory/) package, which is what this one is built on. The bytes are whatever was put there — the package reads them as UTF-8 only where it has to, and says so where it does.
 
@@ -42,7 +42,7 @@ rux install
 
 ## Platform support
 
-Every allocation goes through [`Memory`](/api/memory/), so this package runs wherever that one does: illumos, Linux, macOS, and Windows. **BSD is not implemented yet** — [`Memory::Alloc`](/api/memory/alloc) returns `null` there, so a program that builds a string on BSD compiles but does not work.
+Every allocation goes through [`Memory`](/api/memory/), so this package runs wherever that one does: BSD, Linux, macOS, and Windows.
 
 ## Ownership
 

@@ -22,4 +22,4 @@ For conditions a caller is expected to recover from, return a [`Result`](/docs/e
 
 - [The `Result` Type](/docs/error/result) — the recoverable-error alternative
 - [`Fatal`](/api/#fatal) — the standard-library function that triggers a fatal error
-- [Intrinsic Constants](/docs/constants/intrinsic) — the `#file`/`#line` values reported at the call site
+- [Intrinsic Constants](/docs/constants/intrinsic) — the `#source.file`/`#source.line` values reported at the call site

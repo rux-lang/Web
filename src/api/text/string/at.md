@@ -2,7 +2,7 @@
 
 Returns the byte at an index.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -27,13 +27,16 @@ The index is a **byte** offset, not a character offset, so indexing into a multi
 ```rux
 import Text::String;
 
-var text = String::From("Rux");
+func Main() -> int {
+    var text = String::From("Rux");
 
-text.At(0); // 'R'
-text.At(2); // 'x'
-text.At(9); // '\0' -- out of range
+    text.At(0); // 'R'
+    text.At(2); // 'x'
+    text.At(9); // '\0' -- out of range
 
-text.Free();
+    text.Free();
+    return 0;
+}
 ```
 
 ## See also

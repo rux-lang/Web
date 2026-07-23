@@ -2,7 +2,7 @@
 
 Reports whether a substring occurs anywhere in the string.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -27,13 +27,16 @@ This is [`IndexOf`](indexof) with the offset thrown away, and it costs the same 
 ```rux
 import Text::String;
 
-var text = String::From("Hello, Rux!");
-var needle = String::From("Rux");
+func Main() -> int {
+    var text = String::From("Hello, Rux!");
+    var needle = String::From("Rux");
 
-text.Contains(needle); // true
+    text.Contains(needle); // true
 
-needle.Free();
-text.Free();
+    needle.Free();
+    text.Free();
+    return 0;
+}
 ```
 
 ## See also

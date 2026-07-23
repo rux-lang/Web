@@ -2,14 +2,18 @@
 
 Releases a block allocated from a Win32 heap.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`HeapFree`](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapfree)
 
 ## Signature
 
 ```rux
-func HeapFree(heap: *opaque, flags: uint32, mem: *opaque) -> bool32;
+func HeapFree(
+    heap: *opaque,
+    flags: uint32,
+    mem: *opaque
+) -> bool32;
 ```
 
 ## Parameters
@@ -27,4 +31,4 @@ a successful call.
 
 ## See also
 
-- [`Heap`](heap) — heap API overview
+- [`Windows`](/api/windows/) — the package overview

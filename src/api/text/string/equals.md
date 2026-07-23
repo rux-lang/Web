@@ -2,7 +2,7 @@
 
 Reports whether two strings hold the same bytes.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -31,17 +31,20 @@ The comparison is byte for byte. It does not fold case and does not normalize UT
 ```rux
 import Text::String;
 
-var a = String::From("Rux");
-var b = String::From("Rux"); // a separate block, the same bytes
-var c = String::From("rux");
+func Main() -> int {
+    var a = String::From("Rux");
+    var b = String::From("Rux"); // a separate block, the same bytes
+    var c = String::From("rux");
 
-a.Equals(b); // true
-a == b;      // true
-a != c;      // true -- the comparison is case-sensitive
+    a.Equals(b); // true
+    a == b;      // true
+    a != c;      // true -- the comparison is case-sensitive
 
-c.Free();
-b.Free();
-a.Free();
+    c.Free();
+    b.Free();
+    a.Free();
+    return 0;
+}
 ```
 
 ## See also

@@ -2,7 +2,7 @@
 
 Reports whether the string holds no bytes.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -19,13 +19,16 @@ func IsEmpty(self) -> bool;
 ```rux
 import Text::String;
 
-String::New().IsEmpty(); // true
+func Main() -> int {
+    String::New().IsEmpty(); // true
 
-var text = String::From("Rux");
-text.IsEmpty();          // false
+    var text = String::From("Rux");
+    text.IsEmpty();          // false
 
-text.Free();
-text.IsEmpty();          // true -- Free leaves an empty string behind
+    text.Free();
+    text.IsEmpty();          // true -- Free leaves an empty string behind
+    return 0;
+}
 ```
 
 ## See also

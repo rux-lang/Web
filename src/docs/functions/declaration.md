@@ -23,7 +23,7 @@ func Clamp(value: float64, min: float64, max: float64) -> float64 {
     return value;
 }
 
-func MinMax(arr: uint64[]) -> (uint64, uint64) {
+func MinMax(arr: Slice<uint64>) -> (uint64, uint64) {
     var min = arr[0];
     var max = arr[0];
     for val in arr {
@@ -36,12 +36,27 @@ func MinMax(arr: uint64[]) -> (uint64, uint64) {
 
 By convention function names use PascalCase (see [Identifiers](/docs/lexical/identifiers)).
 
+## Mutable Parameters
+
+Like a [`let`](/docs/variables/let) binding, a parameter is **immutable** by default — the body may read it but not reassign it. Prefix the parameter with `var` to make it a mutable local the body can reassign:
+
+```rux
+func Countdown(var n: int32) {
+    while n > 0 {
+        Print(n);
+        n -= 1;        // OK — n is a var parameter
+    }
+}
+```
+
+The `var` governs only the parameter binding inside the function. Arguments are passed by value, so reassigning a `var` parameter never affects the caller's value. To modify the caller's value, take a [pointer parameter](/docs/pointers/members) instead.
+
 ## Default Arguments
 
 A parameter may declare a default value with `=`. A caller can then omit that argument and the default is used in its place. Parameters with defaults come after those without:
 
 ```rux
-func Connect(host: char8[], port: uint16 = 443) {
+func Connect(host: Slice<char8>, port: uint16 = 443) {
     // Code here
 }
 
@@ -49,7 +64,7 @@ Connect("example.com");        // port defaults to 443
 Connect("example.com", 8080);  // port given explicitly
 ```
 
-A default may be a [compile-time intrinsic](/docs/constants/intrinsic) such as `#file` or `#line`, which the compiler substitutes at each call site — the pattern the standard library uses to capture a caller's location.
+A default may be a [compile-time intrinsic](/docs/comptime/context#source) such as `#source.file` or `#source.line`, which the compiler substitutes at each call site — the pattern the standard library uses to capture a caller's location.
 
 ## See Also
 

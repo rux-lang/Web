@@ -65,7 +65,7 @@ Both operands must have the same type. Comparing `int32` with another integer ty
 
 ## Shift and Bitwise
 
-Right shift on a signed value is **arithmetic**: vacated bits are filled with the sign bit, preserving the sign.
+Right shift with `>>` on a signed value is **arithmetic**: vacated bits are filled with the sign bit, preserving the sign. To fill with zeros instead, use the logical right shift [`>>>`](/docs/operations/shift#logical-right-shift), which keeps the same signed type and width.
 
 ```rux
 let s: int32 = -8;

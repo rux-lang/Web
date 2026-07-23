@@ -1,8 +1,8 @@
 # `Errno`
 
-Returns a value that falls in the package's positive errno range.
+Extracts the positive errno from a raw syscall result.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
@@ -18,18 +18,30 @@ func Errno(result: int64) -> int64;
 
 ## Returns
 
-`int64` - `result` unchanged when it is from `1` through `4095`, or `0` for any
-other value.
+`int64` - the positive errno (`1` through `4095`) when `result` is a negative
+errno in the range `-1` through `-4095`, or `0` for any other value, which the
+package treats as success.
 
 `Errno` does not read or modify a global or thread-local errno variable. It
-only applies the same range test as [`IsError`](iserror).
+negates the result when [`IsError`](iserror) reports one, and returns `0`
+otherwise.
 
-::: danger
-Because small positive success results occupy the same range, a nonzero return
-from `Errno` does not by itself prove that the syscall failed.
-:::
+## Example
+
+```rux
+import Bsd::{ Close, Errno };
+
+func Main() -> int {
+    let code = Errno(Close(3));
+    if code != 0i64 {
+        // The close failed with errno `code`.
+    }
+    return 0;
+}
+```
 
 ## See also
 
-- [`IsError`](iserror) - test the same range
-- [`Raw syscalls`](syscalls) - raw syscall entry points
+- [`Bsd`](/api/bsd/) — the package overview
+- [`IsError`](iserror) - test whether a result is an error
+- [`Syscall0`–`Syscall6`](syscalls) - raw syscall entry points

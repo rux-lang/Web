@@ -2,7 +2,7 @@
 
 Copies the contents out into a string.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -23,16 +23,19 @@ Taking a snapshot mid-build is what this is for — the `String` will not follow
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-builder.Append("Rux");
+func Main() -> int {
+    var builder = StringBuilder::New();
+    builder.Append("Rux");
 
-var snapshot = builder.ToString(); // "Rux", its own block
+    var snapshot = builder.ToString(); // "Rux", its own block
 
-builder.Append(" rocks");          // the snapshot does not change
-snapshot.Length();                 // 3
+    builder.Append(" rocks");          // the snapshot does not change
+    snapshot.Length();                 // 3
 
-snapshot.Free();
-builder.Free();                    // both own a block
+    snapshot.Free();
+    builder.Free();                    // both own a block
+    return 0;
+}
 ```
 
 ## See also

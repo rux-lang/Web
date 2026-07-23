@@ -2,7 +2,7 @@
 
 Closes a file-search handle.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`FindClose`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findclose)
 
@@ -18,4 +18,4 @@ early. Search handles must not be passed to `CloseHandle`.
 
 ## See also
 
-- [`File enumeration`](enumeration) — enumeration overview
+- [`Windows`](/api/windows/) — the package overview

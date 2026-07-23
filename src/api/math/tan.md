@@ -2,7 +2,7 @@
 
 Returns the tangent of an angle in radians.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -29,13 +29,16 @@ expected of a pole.
 ```rux
 import Math::{ QuarterPi, Tan };
 
-let a = Tan(0.0);       // 0.0
-let b = Tan(QuarterPi); // 1.0
+func Main() -> int {
+    let a = Tan(0.0);       // 0.0
+    let b = Tan(QuarterPi); // 1.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Sin`](sin) / [`Cos`](cos) — sine and cosine
 - [`Cotan`](cotan) — the reciprocal function, computed directly rather than as `1 / Tan(x)`
 - [`ArcTan`](arctan) — the inverse of `Tan`

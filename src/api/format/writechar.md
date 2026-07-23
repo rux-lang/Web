@@ -2,13 +2,19 @@
 
 Appends the UTF-8 bytes of a character to a builder.
 
-**Module:** `Format`
+**Package:** `Format`
 
 ## Signature
 
 ```rux
-func WriteChar(builder: *StringBuilder, value: char32);
-func WriteChar(builder: *StringBuilder, value: char16);
+func WriteChar(
+    builder: *StringBuilder,
+    value: char32
+);
+func WriteChar(
+    builder: *StringBuilder,
+    value: char16
+);
 ```
 
 ## Parameters
@@ -34,21 +40,24 @@ A value that is not a code point comes out as the **replacement character** U+FF
 import Format::WriteChar;
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-WriteChar(&builder, c32'R');  // one byte
-WriteChar(&builder, c32'é');  // two
-WriteChar(&builder, c32'€');  // three
-builder.Append(c8'!');        // a char8 needs no encoding
+func Main() -> int {
+    var builder = StringBuilder::New();
+    WriteChar(@builder, c32'R');  // one byte
+    WriteChar(@builder, c32'é');  // two
+    WriteChar(@builder, c32'€');  // three
+    builder.Append(c8'!');        // a char8 needs no encoding
 
-var text = builder.IntoString(); // "Ré€!"
-text.Length();                   // 7 bytes, 4 characters
+    var text = builder.IntoString(); // "Ré€!"
+    text.Length();                   // 7 bytes, 4 characters
 
-text.Free();
+    text.Free();
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Format`](/api/format/) — the module overview
+- [`Format`](/api/format/) — the package overview
 - [`ToString`](tostring) — the character in a `String` of its own, and what a `char8` does instead
 - [`Text::StringBuilder::Append`](/api/text/stringbuilder/append) — append bytes that are already UTF-8
 - [`Text::String::Length`](/api/text/string/length) — bytes, not characters

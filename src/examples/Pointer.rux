@@ -1,17 +1,32 @@
-// Example of pointer usage
-var ptr: *int32 = null;
+func Main() -> int {    
+    let x: int = 100;        // Immutable binding
+    let ptrX: *int = @x;     // Immutable pointer to immutable value
+    x = 10;                  // Compilation error
+    *ptrX = 15;              // Compilation error
+    ptrX = null;             // Compilation error
+        
+    var y: int = 200;        // Mutable binding    
+    let ptrY: *var int = @y; // Immutable pointer to mutable value
+    y = 20;                  // OK
+    *ptrY = 25;              // OK
+    ptrY = null;             // Compilation error
+    
+    let z: int = 300;        // Immutable binding    
+    var ptrZ: *int = @z;     // Mutable pointer to immutable value
+    z = 30;                  // Compilation error
+    *ptrZ = 35;              // Compilation error
+    ptrZ = null;             // OK
 
-// Pointer to a constant value
-var ptr: *const int32 = null;
-
-// Floating-point value
-var value: float64 = 3.1415;
-
-// Constant pointer to a value
-const ptr: *float = &value;
-
-// Constant pointer to a constant value
-const ptr: *const int32;
-
-// Pointer to a pointer 🤯
-var data: **int64 = null;
+    var t: int = 400;        // Mutable binding    
+    var ptrT: *var int = @t; // Mutable pointer to mutable value
+    t = 40;                  // OK
+    *ptrT = 45;              // OK
+    ptrT = null;             // OK
+    
+    var data = 3.1415;      // Simplified syntax
+    let pointer = @data;
+    
+    // Mutable pointer-to-pointer
+    var buf: **int64 = null;
+    return 0;
+}

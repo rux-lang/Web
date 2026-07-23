@@ -2,7 +2,7 @@
 
 Closes a file descriptor.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -36,8 +36,11 @@ blindly repeating the call.
 ```rux
 import Linux::{ Close, IsError };
 
-if IsError(Close(fd)) {
-    return 1i32;
+func Main() -> int {
+    if IsError(Close(fd)) {
+        return 1;
+    }
+    return 0;
 }
 ```
 

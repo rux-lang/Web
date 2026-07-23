@@ -2,7 +2,7 @@
 
 Returns the square root.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,13 +28,16 @@ any other negative `x` is a NaN.
 ```rux
 import Math::Sqrt;
 
-let a = Sqrt(144.0); // 12.0
-let b = Sqrt(-1.0);  // NaN
+func Main() -> int {
+    let a = Sqrt(144.0); // 12.0
+    let b = Sqrt(-1.0);  // NaN
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Cbrt`](cbrt) — cube root, defined for negative arguments
 - [`Pow`](pow) — general exponentiation
 - [`Hypot`](hypot) — √(x² + y²) without overflow

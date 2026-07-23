@@ -1,8 +1,8 @@
 import Io::Print;
 
 /// Computes the factorial of a number using an iterative approach
-func Factorial(n: int) -> int {
-    var result: int = 1;
+func Factorial(n: uint) -> uint {
+    var result: uint = 1;
     for i in 2..=n {
         result *= i;
     }
@@ -11,7 +11,7 @@ func Factorial(n: int) -> int {
 
 /// Entry point of the program
 func Main() -> int {
-    let number = 10;
+    let number = 10u;
     let fact = Factorial(number);
     Print("Factorial of {} is {}\n", number, fact);
     return 0;

@@ -2,7 +2,7 @@
 
 A growable buffer for building a string in steps.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Struct
 
@@ -84,5 +84,5 @@ func Main() -> int {
 
 ## See also
 
-- [`Text`](/api/text/) — the module overview
+- [`Text`](/api/text/) — the package overview
 - [`String`](../string/) — the immutable string a builder produces

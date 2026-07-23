@@ -2,7 +2,7 @@
 
 Creates an empty string.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,10 +21,13 @@ It is also what the transformations return when there is nothing to give back â€
 ```rux
 import Text::String;
 
-var empty = String::New();
-empty.IsEmpty(); // true
-empty.Length();  // 0
-empty.Free();    // safe, and not required
+func Main() -> int {
+    var empty = String::New();
+    empty.IsEmpty(); // true
+    empty.Length();  // 0
+    empty.Free();    // safe, and not required
+    return 0;
+}
 ```
 
 ## See also

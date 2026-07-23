@@ -10,7 +10,7 @@ for item in collection {
 
 ## Iterating a Collection
 
-A `for` loop walks a [slice](/docs/slices/overview) element by element, in order. The loop variable holds each element directly — no index bookkeeping is required:
+A `for` loop walks an [array](/docs/arrays/overview) or [slice](/docs/slices/overview) element by element, in order. The loop variable holds each element directly — no index bookkeeping is required:
 
 ```rux
 let nums = [1, 2, 3, 4, 5];
@@ -22,7 +22,7 @@ for n in nums {
 
 ## Iterating a Range
 
-A **range** generates a sequence of integers. `0..10` is half-open — the end is excluded — while `0..=10` includes the end:
+A [range](/docs/ranges/overview) generates a sequence of integers. `0..10` is half-open — the end is excluded — while `0..=10` includes the end:
 
 ```rux
 for i in 0..10 {
@@ -43,5 +43,6 @@ Ranges are the idiomatic way to repeat something a fixed number of times or to w
 ## See Also
 
 - [`while`](/docs/statements/while) — looping on a condition rather than a sequence
-- [Slices](/docs/slices/overview) — the collections `for` iterates over
+- [Ranges](/docs/ranges/overview) — the interval values `for` iterates over
+- [Arrays](/docs/arrays/overview) and [Slices](/docs/slices/overview) — the collections `for` iterates over
 - [`break` / `continue`](/docs/statements/break-continue) — altering loop control flow

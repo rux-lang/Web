@@ -4,10 +4,11 @@ Shift operations move the bits of an integer value left or right. They are prima
 
 ## Operators
 
-| Operator | Operation   | Compound assignment |
-| -------- | ----------- | ------------------- |
-| `<<`     | Left shift  | `<<=`               |
-| `>>`     | Right shift | `>>=`               |
+| Operator | Operation           | Compound assignment |
+| -------- | ------------------- | ------------------- |
+| `<<`     | Left shift          | `<<=`               |
+| `>>`     | Right shift         | `>>=`               |
+| `>>>`    | Logical right shift | `>>>=`              |
 
 ```rux
 let value: uint8 = 0b00010100;  // 20
@@ -16,7 +17,9 @@ let left = value << 2;   // 0b01010000 = 80
 let right = value >> 2;  // 0b00000101 = 5
 ```
 
-The result has the type of the left operand. The shift amount must be a non-negative integer.
+The result has the type of the left operand, preserving its fixed width. The shift amount must be a non-negative integer.
+
+`>>` is **context-sensitive**: it is an arithmetic shift on signed integers and a logical shift on unsigned integers. `>>>` is **always** logical (zero-filling) and applies only to signed integers, giving a signed value a zero-filled right shift without a cast.
 
 ## Left Shift
 
@@ -48,7 +51,19 @@ let value: int8 = -8;     // 0b11111000
 let result = value >> 2;  // 0b11111110 = -2
 ```
 
-Cast to an unsigned type first when a zero-filling right shift is required.
+When a signed value needs a zero-filling right shift, use the logical right shift operator `>>>` below rather than casting to an unsigned type.
+
+## Logical Right Shift
+
+`>>>` always fills the vacated high-order bits with zeros, regardless of the sign bit. It applies **only to signed integers** — it is the zero-filling counterpart to the arithmetic `>>`. The result keeps the left operand's exact type and fixed width, so no cast is required:
+
+```rux
+let value: int8 = -8;      // 0b11111000
+let arith = value >> 2;    // 0b11111110 = -2   arithmetic, sign-filled
+let logic = value >>> 2;   // 0b00111110 = 62   logical, zero-filled
+```
+
+Because an unsigned `>>` is already logical, `>>>` is rejected on unsigned operands — use plain `>>` there. The right operand may be any integer type.
 
 ## Shift Amount
 
@@ -68,7 +83,12 @@ Compound shift assignment updates a mutable left operand:
 var flags: uint32 = 1;
 flags <<= 3;  // flags = flags << 3
 flags >>= 1;  // flags = flags >> 1
+
+var signed: int32 = -16;
+signed >>>= 1;  // signed = signed >>> 1  — zero-filled; target must be signed
 ```
+
+Like `>>>`, the `>>>=` form requires a signed integer target.
 
 ## Building Masks
 

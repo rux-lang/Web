@@ -2,7 +2,7 @@
 
 Terminates the calling thread immediately.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -33,8 +33,11 @@ or using the standard library for normal process termination.
 ```rux
 import Linux::Exit;
 
-if unrecoverable {
-    Exit(1i32);
+func Main() -> int {
+    if unrecoverable {
+        Exit(1i32);
+    }
+    return 0;
 }
 ```
 

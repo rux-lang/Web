@@ -2,7 +2,7 @@
 
 Drops the capacity the builder is not using.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -23,15 +23,18 @@ The resize may move the block, so a pointer taken from [`Data`](data) beforehand
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::WithCapacity(1024);
-builder.Append("Rux");
+func Main() -> int {
+    var builder = StringBuilder::WithCapacity(1024);
+    builder.Append("Rux");
 
-builder.Capacity(); // 1024
-builder.Shrink();
-builder.Capacity(); // 3 -- the 1021 unused bytes are handed back
-builder.Length();   // 3 -- the contents are kept
+    builder.Capacity(); // 1024
+    builder.Shrink();
+    builder.Capacity(); // 3 -- the 1021 unused bytes are handed back
+    builder.Length();   // 3 -- the contents are kept
 
-builder.Free();
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also

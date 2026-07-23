@@ -9,7 +9,7 @@
 | Representation   | Binary, wraps modulo 2<sup>8</sup>  |
 | Hardware support | Native on all supported targets     |
 
-`uint8` is the canonical byte type — an unsigned fixed-width integer whose size is identical on every target platform. It stores non-negative values in plain binary and wraps modulo 2<sup>8</sup> on overflow.
+`uint8` is the canonical byte type — an unsigned fixed-width integer whose size is identical on every target platform. It stores non-negative values in plain binary and wraps modulo 2<sup>8</sup> on overflow. The compiler-provided alias [`byte`](/docs/aliases/builtin) names this exact type and reads more naturally in raw-memory contexts.
 
 ## Literals
 

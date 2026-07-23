@@ -2,7 +2,7 @@
 
 Returns the calling process ID.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -20,6 +20,9 @@ running process.
 ```rux
 import Linux::GetPid;
 
-let pid = GetPid();
+func Main() -> int {
+    let pid = GetPid();
+    return 0;
+}
 ```
 

@@ -2,7 +2,7 @@
 
 Returns a copy with ASCII letters lowercased.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,12 +21,15 @@ The fold is **ASCII only**, on the same terms as [`ToUpper`](toupper): every oth
 ```rux
 import Text::String;
 
-var text = String::From("Hello, Rux!");
+func Main() -> int {
+    var text = String::From("Hello, Rux!");
 
-var quiet = text.ToLower(); // "hello, rux!"
+    var quiet = text.ToLower(); // "hello, rux!"
 
-quiet.Free();
-text.Free();
+    quiet.Free();
+    text.Free();
+    return 0;
+}
 ```
 
 ## See also

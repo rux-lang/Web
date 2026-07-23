@@ -10,7 +10,7 @@ An alias is **transparent**: it names the same type rather than creating a new o
 
 ## What Can Be Aliased
 
-Any type has a name, so any type can be aliased — primitives, [arrays](/docs/slices/overview), [pointers](/docs/pointers/overview), and [function types](/docs/aliases/function-types):
+Any type has a name, so any type can be aliased — primitives, [arrays](/docs/arrays/overview), [pointers](/docs/pointers/overview), and [function types](/docs/aliases/function-types):
 
 ```rux
 type UserId  = uint64;

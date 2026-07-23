@@ -2,7 +2,7 @@
 
 Returns the cosine of an angle in radians.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -27,13 +27,16 @@ so `Cos(±Inf)` is a NaN; a NaN argument also propagates.
 ```rux
 import Math::{ Cos, Pi };
 
-let a = Cos(0.0); // 1.0
-let b = Cos(Pi);  // -1.0
+func Main() -> int {
+    let a = Cos(0.0); // 1.0
+    let b = Cos(Pi);  // -1.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Sin`](sin) — sine
 - [`Tan`](tan) — tangent
 - [`ArcCos`](arccos) — the inverse of `Cos`

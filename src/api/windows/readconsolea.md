@@ -2,16 +2,20 @@
 
 Reads narrow characters from a console input buffer.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`ReadConsole`](https://learn.microsoft.com/en-us/windows/console/readconsole)
 
 ## Signature
 
 ```rux
-func ReadConsoleA(consoleInput: *opaque, buffer: *opaque,
-    numberOfCharsToRead: uint32, numberOfCharsRead: *uint32,
-    inputControl: *opaque) -> bool32;
+func ReadConsoleA(
+    consoleInput: *opaque,
+    buffer: *opaque,
+    numberOfCharsToRead: uint32,
+    numberOfCharsRead: *uint32,
+    inputControl: *opaque
+) -> bool32;
 ```
 
 ## Parameters
@@ -32,4 +36,4 @@ console handle; use [`ReadFile`](readfile) for redirected standard input.
 ## See also
 
 - [`GetStdHandle`](getstdhandle) — retrieve standard input
-- [`Console`](console) — console API overview
+- [`Windows`](/api/windows/) — the package overview

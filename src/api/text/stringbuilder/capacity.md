@@ -2,7 +2,7 @@
 
 Returns how many bytes fit before the block has to grow.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,16 +21,19 @@ Capacity only ever grows on its own — [`Clear`](clear) keeps it, and [`Shrink`
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-builder.Capacity(); // 0
+func Main() -> int {
+    var builder = StringBuilder::New();
+    builder.Capacity(); // 0
 
-builder.Append("Rux");
-builder.Capacity(); // 16 -- the floor the first append takes
+    builder.Append("Rux");
+    builder.Capacity(); // 16 -- the floor the first append takes
 
-builder.Clear();
-builder.Capacity(); // 16 still -- Clear keeps the block
+    builder.Clear();
+    builder.Capacity(); // 16 still -- Clear keeps the block
 
-builder.Free();
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also

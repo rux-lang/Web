@@ -1,47 +1,73 @@
-# Types
+# Types and Constants
 
-Types and constants exported by the `MacOS` module.
+Types and constants exported by the `MacOS` package.
 
-**Module:** `MacOS`
+**Package:** `MacOS`
 
-## `StdHandle`
+## Standard File Descriptors
 
-Identifies one of the process's standard devices.
+| Name     | Type    | Value | Description      |
+| -------- | ------- | ----: | ---------------- |
+| `StdIn`  | `int32` | `0`   | Standard input.  |
+| `StdOut` | `int32` | `1`   | Standard output. |
+| `StdErr` | `int32` | `2`   | Standard error.  |
+
+A process may close or redirect these conventional descriptors.
+
+## Syscall Numbers
+
+Darwin partitions syscall numbers by class: Unix/BSD calls carry the class bits
+`UnixSyscallClass` (`0x02000000`), so each exported number is the class OR'd
+with the bare ordinal.
+
+| Name                | Value                     |
+| ------------------- | ------------------------- |
+| `UnixSyscallClass`  | `0x02000000`              |
+| `SysExit`           | `UnixSyscallClass \| 1`   |
+| `SysRead`           | `UnixSyscallClass \| 3`   |
+| `SysWrite`          | `UnixSyscallClass \| 4`   |
+| `SysClose`          | `UnixSyscallClass \| 6`   |
+| `SysGetPid`         | `UnixSyscallClass \| 20`  |
+| `SysMunmap`         | `UnixSyscallClass \| 73`  |
+| `SysGetTimeOfDay`   | `UnixSyscallClass \| 116` |
+| `SysMmap`           | `UnixSyscallClass \| 197` |
+
+## Memory Protection
+
+| Name                | Type    | Value | Description            |
+| ------------------- | ------- | ----: | ---------------------- |
+| `ProtectionNone`    | `int32` | `0`   | No access.             |
+| `ProtectionRead`    | `int32` | `1`   | Pages may be read.     |
+| `ProtectionWrite`   | `int32` | `2`   | Pages may be written.  |
+| `ProtectionExecute` | `int32` | `4`   | Pages may be executed. |
+
+## Mapping Flags
+
+| Name           | Type    |  Value | Description                             |
+| -------------- | ------- | -----: | --------------------------------------- |
+| `MapShared`    | `int32` | `1`    | Create a shared mapping.                |
+| `MapPrivate`   | `int32` | `2`    | Create a private copy-on-write mapping. |
+| `MapFixed`     | `int32` | `16`   | Place the mapping at the exact address. |
+| `MapAnonymous` | `int32` | `4096` | Create a mapping not backed by a file.  |
+
+## `Timeval`
 
 ```rux
-enum StdHandle: uint32 {
-    Error  = 0xFFFFFFF4,
-    Output = 0xFFFFFFF5,
-    Input  = 0xFFFFFFF6
+struct Timeval {
+    seconds: int64;
+    microseconds: int32;
 }
 ```
 
-| Member   | macOS descriptor | Description     |
-| -------- | ----------------: | --------------- |
-| `Error`  | `2`               | Standard error. |
-| `Output` | `1`               | Standard output.|
-| `Input`  | `0`               | Standard input. |
+| Field          | Type    | Description                                  |
+| -------------- | ------- | -------------------------------------------- |
+| `seconds`      | `int64` | Whole seconds since the Unix epoch.          |
+| `microseconds` | `int32` | Microseconds within the second, 0–999,999.   |
 
-Pass a member to [`GetStdHandle`](getstdhandle). The values mirror the Win32
-standard-handle constants because the Rux linker exposes a compatibility API;
-the returned values are macOS BSD file descriptors encoded as pointers.
-
-::: warning
-The handle for `Input` may compare equal to `null` because descriptor `0` is
-encoded as a pointer. It is still a valid standard-input handle.
-:::
-
-## Example
-
-```rux
-import MacOS::{ GetStdHandle, StdHandle };
-
-let input = GetStdHandle(StdHandle::Input);
-let output = GetStdHandle(StdHandle::Output);
-let error = GetStdHandle(StdHandle::Error);
-```
+Filled by [`GetTimeOfDay`](gettimeofday).
 
 ## See also
 
-- [`Console and I/O`](console) — operations that use standard handles
-
+- [`MacOS`](/api/macos/) — the package overview
+- [`Mmap`](mmap) — uses the protection and mapping flags
+- [`Syscall0`–`Syscall6`](syscalls) — use the class-qualified syscall numbers

@@ -2,7 +2,7 @@
 
 Returns the pointer to the bytes written so far.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -23,14 +23,17 @@ Only the first [`Length`](length) bytes have been written; the rest of the capac
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::New();
-builder.Append("Rux");
+func Main() -> int {
+    var builder = StringBuilder::New();
+    builder.Append("Rux");
 
-let bytes = builder.Data(); // valid for Length() bytes
+    let bytes = builder.Data(); // valid for Length() bytes
 
-builder.Append(" rocks");   // may reallocate -- `bytes` is now suspect
+    builder.Append(" rocks");   // may reallocate -- `bytes` is now suspect
 
-builder.Free();
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also

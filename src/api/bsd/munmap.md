@@ -2,7 +2,7 @@
 
 Removes a virtual-memory mapping.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
@@ -19,11 +19,11 @@ func Munmap(addr: *opaque, length: uint) -> int64;
 
 ## Returns
 
-`int64` - `0` on success, or the thunk's raw error result on failure.
+`int64` - `0` on success, or a negative errno value on failure.
 
 After success, the unmapped range is invalid and must not be accessed.
 
 ## See also
 
-- [`Memory`](memory) - memory API overview
+- [`Bsd`](/api/bsd/) — the package overview
 - [`Mmap`](mmap) - create a mapping

@@ -2,15 +2,19 @@
 
 Resizes a block allocated from a Win32 heap.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`HeapReAlloc`](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heaprealloc)
 
 ## Signature
 
 ```rux
-func HeapReAlloc(heap: *opaque, flags: uint32, mem: *opaque,
-    bytes: uint) -> *opaque;
+func HeapReAlloc(
+    heap: *opaque,
+    flags: uint32,
+    mem: *opaque,
+    bytes: uint
+) -> *var opaque;
 ```
 
 ## Returns
@@ -26,4 +30,4 @@ Do not overwrite the only copy of `mem` before checking the returned pointer.
 
 - [`HeapAlloc`](heapalloc) — allocate a block
 - [`HeapFree`](heapfree) — release a block
-- [`Heap`](heap) — heap API overview
+- [`Windows`](/api/windows/) — the package overview

@@ -2,14 +2,16 @@
 
 Retrieves attributes for a file or directory.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`GetFileAttributesA`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesa)
 
 ## Signature
 
 ```rux
-func GetFileAttributesA(fileName: *const char8) -> uint32;
+func GetFileAttributesA(
+    fileName: *char8
+) -> uint32;
 ```
 
 ## Returns

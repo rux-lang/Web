@@ -1,5 +1,9 @@
 # Items Visibility
 
+::: warning
+`pub` is not implemented in the current release.
+:::
+
 By default, items are private to their module. Use `pub` to make them visible externally.
 
 ```rux

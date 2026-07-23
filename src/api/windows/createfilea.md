@@ -2,17 +2,22 @@
 
 Creates or opens a file or I/O device.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`CreateFileA`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea)
 
 ## Signature
 
 ```rux
-func CreateFileA(fileName: *const char8, desiredAccess: FileAccess,
-    shareMode: FileShare, securityAttributes: *opaque,
-    creationDisposition: CreationDisposition, flagsAndAttributes: uint32,
-    templateFile: *opaque) -> *opaque;
+func CreateFileA(
+    fileName: *char8,
+    desiredAccess: uint32,
+    shareMode: uint32,
+    securityAttributes: *opaque,
+    creationDisposition: uint32,
+    flagsAndAttributes: uint32,
+    templateFile: *opaque
+) -> *opaque;
 ```
 
 ## Parameters
@@ -29,10 +34,10 @@ func CreateFileA(fileName: *const char8, desiredAccess: FileAccess,
 
 ## Returns
 
-`*opaque` — an open handle on success or `INVALID_HANDLE_VALUE` on failure.
+`*opaque` — an open handle on success, or the invalid-handle sentinel (`-1` as a handle) on failure.
 Close a successful result with [`CloseHandle`](closehandle).
 
 ## See also
 
-- [`File I/O`](files) — file API overview
+- [`Windows`](/api/windows/) — the package overview
 - [`Types and constants`](types) — file enums

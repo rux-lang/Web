@@ -2,16 +2,20 @@
 
 Reads bytes from a file or I/O device.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`ReadFile`](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-readfile)
 
 ## Signature
 
 ```rux
-func ReadFile(file: *opaque, buffer: *opaque,
-    numberOfBytesToRead: uint32, numberOfBytesRead: *uint32,
-    overlapped: *opaque) -> bool32;
+func ReadFile(
+    file: *opaque,
+    buffer: *opaque,
+    numberOfBytesToRead: uint32,
+    numberOfBytesRead: *uint32,
+    overlapped: *opaque
+) -> bool32;
 ```
 
 ## Parameters
@@ -33,4 +37,4 @@ bytes can indicate end of file.
 ## See also
 
 - [`WriteFile`](writefile) — write bytes
-- [`File I/O`](files) — file API overview
+- [`Windows`](/api/windows/) — the package overview

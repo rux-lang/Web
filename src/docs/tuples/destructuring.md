@@ -7,7 +7,7 @@ A tuple is most useful when it is produced in one place and unpacked in another.
 The most common use of tuples is returning several values from a function without defining a one-off struct:
 
 ```rux
-func MinMax(arr: uint64[]) -> (uint64, uint64) {
+func MinMax(arr: Slice<uint64>) -> (uint64, uint64) {
     var min = arr[0];
     var max = arr[0];
     for val in arr {

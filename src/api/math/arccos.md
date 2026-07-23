@@ -2,7 +2,7 @@
 
 Returns the inverse cosine, in radians.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -28,12 +28,15 @@ angle has that cosine; a NaN argument also propagates.
 ```rux
 import Math::ArcCos;
 
-let a = ArcCos(1.0);  // 0.0
-let b = ArcCos(-1.0); // 3.141592653589793 (Pi)
+func Main() -> int {
+    let a = ArcCos(1.0);  // 0.0
+    let b = ArcCos(-1.0); // 3.141592653589793 (Pi)
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Cos`](cos) — the function `ArcCos` inverts
 - [`ArcSin`](arcsin) / [`ArcTan`](arctan) — the other inverse trigonometric functions

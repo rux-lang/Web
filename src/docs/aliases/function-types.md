@@ -21,7 +21,7 @@ Once aliased, the signature reads as a single concept. Use it for a parameter th
 ```rux
 type Comparator = func(a: int32, b: int32) -> int32;
 
-func Sort(items: int32[], cmp: Comparator) {
+func Sort(items: Slice<int32>, cmp: Comparator) {
     // ... compares elements with cmp(items[i], items[j]) ...
 }
 ```

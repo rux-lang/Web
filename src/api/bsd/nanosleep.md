@@ -2,41 +2,44 @@
 
 Suspends execution for a relative interval.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signature
 
 ```rux
-func Nanosleep(req: *timespec, rem: *timespec) -> int64;
+func Nanosleep(req: *Timespec, rem: *Timespec) -> int64;
 ```
 
 ## Parameters
 
 | Name  | Type        | Description                                      |
 | ----- | ----------- | ------------------------------------------------ |
-| `req` | `*timespec` | Requested relative duration.                     |
-| `rem` | `*timespec` | Receives remaining time if interrupted, or `null`. |
+| `req` | `*Timespec` | Requested relative duration.                     |
+| `rem` | `*Timespec` | Receives remaining time if interrupted, or `null`. |
 
 ## Returns
 
-`int64` - `0` after the interval elapses, or the thunk's raw error result on
+`int64` - `0` after the interval elapses, or a negative errno value on
 failure or interruption.
 
-`req.tv_nsec` must normally be from `0` through `999999999`. When interrupted,
+`req.nanoseconds` must normally be from `0` through `999999999`. When interrupted,
 a non-null `rem` receives the unslept duration.
 
 ## Example
 
 ```rux
-import BSD::{ Nanosleep, timespec };
+import Bsd::{ Nanosleep, Timespec };
 
-var delay = timespec { tv_sec: 0i64, tv_nsec: 250000000i64 };
-if Nanosleep(&delay, null) != 0i64 {
-    return 1i32;
+func Main() -> int {
+    var delay = Timespec { seconds: 0i64, nanoseconds: 250000000i64 };
+    if Nanosleep(@delay, null) != 0i64 {
+        return 1;
+    }
+    return 0;
 }
 ```
 
 ## See also
 
-- [`Time`](time) - time API overview
-- [`Types and constants`](types) - `timespec`
+- [`Bsd`](/api/bsd/) — the package overview
+- [`Types and constants`](types) - `Timespec`

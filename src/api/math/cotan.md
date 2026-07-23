@@ -2,7 +2,7 @@
 
 Returns the cotangent of an angle in radians.
 
-**Module:** `Math`
+**Package:** `Math`
 
 ## Signature
 
@@ -30,11 +30,14 @@ NaN; a NaN argument also propagates.
 ```rux
 import Math::{ Cotan, QuarterPi };
 
-let a = Cotan(QuarterPi); // 1.0
+func Main() -> int {
+    let a = Cotan(QuarterPi); // 1.0
+    return 0;
+}
 ```
 
 ## See also
 
-- [`Math`](/api/math/) — the module overview
+- [`Math`](/api/math/) — the package overview
 - [`Tan`](tan) — tangent
 - [`ArcCot`](arccot) — the inverse of `Cotan`

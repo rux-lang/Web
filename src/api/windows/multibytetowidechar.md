@@ -2,7 +2,7 @@
 
 Converts multibyte text to UTF-16.
 
-**Module:** `Windows`
+**Package:** `Windows`
 
 **Microsoft documentation:** [`MultiByteToWideChar`](https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar)
 
@@ -10,11 +10,11 @@ Converts multibyte text to UTF-16.
 
 ```rux
 func MultiByteToWideChar(codePage: CodePage, flags: uint32,
-    multiByteStr: *const char8, multiByte: int32,
+    multiByteStr: *char8, multiByte: int32,
     wideCharStr: *char16, wideChar: int32) -> int32;
 
 func MultiByteToWideChar(codePage: uint32, flags: uint32,
-    multiByteStr: *const char8, multiByte: int32,
+    multiByteStr: *char8, multiByte: int32,
     wideCharStr: *char16, wideChar: int32) -> int32;
 ```
 
@@ -38,4 +38,4 @@ query, pass `null` and `0` as the destination. The `uint32` overload exists for
 ## See also
 
 - [`WideCharToMultiByte`](widechartomultibyte) — convert from UTF-16
-- [`Text conversion`](conversion) — conversion overview
+- [`Windows`](/api/windows/) — the package overview

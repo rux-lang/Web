@@ -2,7 +2,7 @@
 
 Reads the current value of a Linux clock.
 
-**Module:** `Linux`
+**Package:** `Linux`
 
 ## Signature
 
@@ -14,7 +14,7 @@ func ClockGetTime(clockId: int32, tp: *Timespec) -> int64;
 
 | Name      | Type        | Description                                |
 | --------- | ----------- | ------------------------------------------ |
-| `clockId` | `int32`     | Clock to read, such as `CLOCK_MONOTONIC`.  |
+| `clockId` | `int32`     | Clock to read, such as `ClockMonotonic`.  |
 | `tp`      | `*Timespec` | Writable destination for the clock value.  |
 
 ## Returns
@@ -23,24 +23,27 @@ func ClockGetTime(clockId: int32, tp: *Timespec) -> int64;
 
 ## Description
 
-Use `CLOCK_REALTIME` for calendar time that can jump when the system clock is
-adjusted. Use `CLOCK_MONOTONIC` for elapsed-time measurements; it is not
+Use `ClockRealtime` for calendar time that can jump when the system clock is
+adjusted. Use `ClockMonotonic` for elapsed-time measurements; it is not
 affected by discontinuous wall-clock changes.
 
 ## Example
 
 ```rux
-import Linux::{ ClockGetTime, IsError, Timespec, CLOCK_MONOTONIC };
+import Linux::{ ClockGetTime, IsError, Timespec, ClockMonotonic };
 
-var now: Timespec;
-if IsError(ClockGetTime(CLOCK_MONOTONIC, &now)) {
-    return 1i32;
+func Main() -> int {
+    var now: Timespec;
+    if IsError(ClockGetTime(ClockMonotonic, @now)) {
+        return 1;
+    }
+    return 0;
 }
 ```
 
 ## See also
 
-- [`Constants`](constants) — exported clock IDs
-- [`Timespec`](timespec) — result structure
+- [`Constants`](types) — exported clock IDs
+- [`Timespec`](types) — result structure
 - [`Nanosleep`](nanosleep) — relative sleep
 

@@ -2,7 +2,7 @@
 
 Invoke arbitrary BSD x86-64 syscalls and inspect raw results.
 
-**Module:** `BSD`
+**Package:** `Bsd`
 
 ## Signatures
 
@@ -22,8 +22,10 @@ Pointers and signed values must be converted to raw 64-bit representations.
 
 ## Returns
 
-`int64` - the raw thunk result. No validation, type conversion, retry, or
-resource management is performed.
+`int64` - the kernel result: a non-negative value on success, or a negative
+errno (`-1` through `-4095`) on failure. No validation, type conversion, retry,
+or resource management is performed. Use [`IsError`](iserror) and
+[`Errno`](errno) to interpret it.
 
 ::: danger
 The supported BSD systems do not share every syscall number or ABI detail. An
@@ -34,14 +36,12 @@ wrapper when available.
 
 ## Error Helpers
 
-| Function             | Description                                   |
-| -------------------- | --------------------------------------------- |
-| [`Errno`](errno)     | Return a result in the range 1-4095, else 0.  |
-| [`IsError`](iserror) | Test whether a result is in the range 1-4095. |
-
-The range-based helpers cannot distinguish positive errno from a legitimate
-small positive success result.
+| Function             | Description                                            |
+| -------------------- | ------------------------------------------------------ |
+| [`Errno`](errno)     | Return the positive errno of a failing result, else 0. |
+| [`IsError`](iserror) | Test whether a result is a negative errno.             |
 
 ## See also
 
+- [`Bsd`](/api/bsd/) — the package overview
 - [`Types and constants`](types) - shared syscall numbers

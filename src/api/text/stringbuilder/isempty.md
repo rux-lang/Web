@@ -2,7 +2,7 @@
 
 Reports whether anything has been written.
 
-**Module:** `Text`
+**Package:** `Text`
 
 ## Signature
 
@@ -21,16 +21,19 @@ It says nothing about the [`Capacity`](capacity): a builder that has been [`Clea
 ```rux
 import Text::StringBuilder;
 
-var builder = StringBuilder::WithCapacity(64);
-builder.IsEmpty();  // true -- room reserved, nothing written
+func Main() -> int {
+    var builder = StringBuilder::WithCapacity(64);
+    builder.IsEmpty();  // true -- room reserved, nothing written
 
-builder.Append("Rux");
-builder.IsEmpty();  // false
+    builder.Append("Rux");
+    builder.IsEmpty();  // false
 
-builder.Clear();
-builder.IsEmpty();  // true, and the 64 bytes are still there
+    builder.Clear();
+    builder.IsEmpty();  // true, and the 64 bytes are still there
 
-builder.Free();
+    builder.Free();
+    return 0;
+}
 ```
 
 ## See also
