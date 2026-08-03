@@ -1,0 +1,13 @@
+# The repository is LF-only, in the index and in the working tree, on every
+# platform. Without this, a Windows checkout with core.autocrlf=true would
+# reintroduce CRLF — and public/install.sh must stay LF or it fails to run.
+* text=auto eol=lf
+
+# Binary assets: never inspected for line endings, never diffed as text.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.ico binary
+*.woff binary
+*.woff2 binary

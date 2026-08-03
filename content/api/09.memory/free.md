@@ -1,0 +1,50 @@
+# `Free`
+
+Releases a block of memory back to the platform.
+
+**Package:** `Memory`
+
+## Signature
+
+```rux
+func Free(ptr: *opaque);
+```
+
+## Parameters
+
+| Name  | Type      | Description                                                                    |
+| ----- | --------- | ------------------------------------------------------------------------------ |
+| `ptr` | `*opaque` | A block from [`Alloc`](/api/memory/alloc) or [`Realloc`](/api/memory/realloc). |
+
+## Remarks
+
+Passing `null` is a no-op, so a caller needs no guard around the common
+"allocate, maybe fail, clean up" path.
+
+Anything else is undefined behavior and is not diagnosed: releasing the same
+block twice, releasing a pointer that [`Realloc`](/api/memory/realloc) has already moved, or
+passing a pointer this package did not produce. After the call the block is gone
+and the pointer must not be read, written, or freed again.
+
+## Example
+
+```rux
+import Memory::{ Alloc, Free };
+
+func Main() -> int {
+    let buffer = Alloc(256);
+    if buffer == null {
+        return 1;
+    }
+
+    Free(buffer);
+    Free(null); // harmless
+    return 0;
+}
+```
+
+## See also
+
+- [`Memory`](/api/memory) — the package overview
+- [`Alloc`](/api/memory/alloc) — allocate the block in the first place
+- [`Realloc`](/api/memory/realloc) — resize a block instead of releasing it

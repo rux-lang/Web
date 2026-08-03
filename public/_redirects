@@ -1,0 +1,4 @@
+# Cloudflare Pages redirects.
+# Dynamic registry routes use Nuxt's generated client-side fallback. Package
+# pages and catalog facets remain deep-linkable without introducing SSR.
+/packages/*  /200.html  200

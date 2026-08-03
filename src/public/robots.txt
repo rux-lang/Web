@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://rux-lang.dev/sitemap.xml

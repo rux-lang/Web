@@ -1,0 +1,43 @@
+# `Log2`
+
+Returns the base-2 logarithm.
+
+**Package:** `Math`
+
+## Signature
+
+```rux
+func Log2(x: float64) -> float64;
+func Log2(x: float32) -> float32;
+```
+
+## Parameters
+
+| Name | Type                  | Description           |
+| ---- | --------------------- | --------------------- |
+| `x`  | `float64` / `float32` | A non-negative value. |
+
+## Returns
+
+`log₂(x)`, in the same precision as the argument. `Log2(±0.0)` is `-Inf`;
+`Log2` of a negative value is a NaN; `Log2(+Inf)` is `+Inf`; a NaN
+propagates.
+
+## Example
+
+```rux
+import Math::Log2;
+
+func Main() -> int {
+    let a = Log2(8.0); // 3.0
+    let b = Log2(1.0); // 0.0
+    return 0;
+}
+```
+
+## See also
+
+- [`Math`](/api/math) — the package overview
+- [`Log`](/api/math/log) — natural logarithm
+- [`Log10`](/api/math/log10) — base-10 logarithm
+- [`Exp2`](/api/math/exp2) — the inverse of `Log2`

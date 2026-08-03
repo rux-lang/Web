@@ -1,0 +1,36 @@
+{
+  "community.md": {
+    "sidebar": "false",
+    "prev": "false",
+    "next": "false"
+  },
+  "download.md": {
+    "sidebar": "false",
+    "prev": "false",
+    "next": "false"
+  },
+  "faq.md": {
+    "sidebar": "false",
+    "prev": "false",
+    "next": "false"
+  },
+  "index.md": {
+    "layout": "home"
+  },
+  "packages.md": {
+    "sidebar": "false",
+    "editLink": "false",
+    "lastUpdated": "false"
+  },
+  "playground.md": {
+    "layout": "page",
+    "sidebar": "false",
+    "editLink": "false",
+    "lastUpdated": "false"
+  },
+  "support.md": {
+    "sidebar": "false",
+    "prev": "false",
+    "next": "false"
+  }
+}

@@ -1,0 +1,43 @@
+# `DegToRad`
+
+Converts an angle from degrees to radians.
+
+**Package:** `Math`
+
+## Signature
+
+```rux
+func DegToRad(x: float64) -> float64;
+func DegToRad(x: float32) -> float32;
+```
+
+## Parameters
+
+| Name | Type                  | Description           |
+| ---- | --------------------- | --------------------- |
+| `x`  | `float64` / `float32` | An angle, in degrees. |
+
+## Returns
+
+`x` scaled by `Pi/180`. The conversion is faithful enough that round numbers
+come out exact: `DegToRad(180.0)` is `Pi`. Infinities, NaN, and the sign of a
+zero all fall out of the multiplication unchanged.
+
+## Example
+
+```rux
+import Math::DegToRad;
+
+func Main() -> int {
+    let radians = DegToRad(180.0); // 3.141592653589793 (Pi)
+    let quarter = DegToRad(90.0);  // 1.5707963267948966 (HalfPi)
+    return 0;
+}
+```
+
+## See also
+
+- [`Math`](/api/math) — the package overview
+- [`RadToDeg`](/api/math/radtodeg) — the inverse conversion
+- [`Sin`](/api/math/sin) / [`Cos`](/api/math/cos) / [`Tan`](/api/math/tan) — trigonometric functions that expect radians
+- `RadPerDeg` — the constant this function multiplies by

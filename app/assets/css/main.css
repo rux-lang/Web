@@ -1,0 +1,85 @@
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+/* Tailwind must see classes used inside markdown / MDC. */
+@source "../../../content/**/*";
+
+/* Self-hosted fonts. Variable woff2, files in public/fonts/.
+   Geist and Geist Mono, (c) 2023 Vercel in collaboration with basement.studio,
+   SIL Open Font License 1.1 — see public/fonts/Geist-LICENSE.txt.
+   The mono italic is a separate face: Shiki emits italic spans for comments,
+   and without it the browser synthesises a slanted roman. */
+@font-face {
+  font-family: "Geist";
+  src: url("/fonts/Geist.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/GeistMono-Italic.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@theme static {
+  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, monospace;
+
+  /* Rux brand purple, from --rux-gradient in the old custom.css (#6f42c1). */
+  --color-rux-50: #f5f1fc;
+  --color-rux-100: #ebe3f9;
+  --color-rux-200: #d7c7f3;
+  --color-rux-300: #bda3ea;
+  --color-rux-400: #9d78de;
+  --color-rux-500: #8250d4;
+  --color-rux-600: #6f42c1;
+  --color-rux-700: #5c37a0;
+  --color-rux-800: #4a2d80;
+  --color-rux-900: #3c2668;
+  --color-rux-950: #251543;
+}
+
+.registry-shell :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-rux-500);
+  outline-offset: 2px;
+}
+
+.registry-shell .skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  transform: translateY(-200%);
+  border-radius: 0.375rem;
+  background: var(--ui-bg);
+  padding: 0.5rem 0.75rem;
+  color: var(--ui-text-highlighted);
+  box-shadow: var(--ui-shadow-lg);
+}
+
+.registry-shell .skip-link:focus {
+  transform: translateY(0);
+}
+
+#registry-content:focus {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .registry-shell *,
+  .registry-shell *::before,
+  .registry-shell *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

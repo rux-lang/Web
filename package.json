@@ -1,21 +1,70 @@
 {
-  "name": "rux.web",
+  "name": "rux-web",
   "version": "0.4.0",
+  "private": true,
   "homepage": "https://rux-lang.dev",
   "description": "Website for Rux programming language",
   "license": "MIT",
   "author": "Ivan Muzyka <musicvano@gmail.com>",
+  "engines": {
+    "node": ">=24"
+  },
   "scripts": {
-    "dev": "vitepress dev",
-    "build": "vitepress build",
-    "preview": "vitepress preview"
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "generate:hosting": "nuxt generate && node scripts/generate-sitemap.mjs",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "sync:examples": "node scripts/sync-examples.mjs",
+    "verify": "npm run verify:routes && npm run verify:links && npm run verify:meta && npm run verify:snippets && npm run verify:render",
+    "verify:routes": "node scripts/verify-routes.mjs .output/public",
+    "verify:links": "node scripts/verify-links.mjs .output/public",
+    "verify:meta": "node scripts/verify-meta.mjs",
+    "verify:snippets": "node scripts/sync-examples.mjs --check",
+    "verify:render": "node scripts/check-render.mjs",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check",
+    "lint": "eslint .",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest run",
+    "test:quality": "node test/run-quality.mjs",
+    "test:hosting-build": "node test/hosting-build.mjs",
+    "supply-chain:test": "node --test scripts/*.test.mjs",
+    "supply-chain:licenses": "node scripts/check-node-licenses.mjs package-lock.json node-license-policy.json"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.121",
+    "@iconify-json/simple-icons": "^1.2.93",
+    "@iconify-json/vscode-icons": "^1.2.68",
+    "@lhci/cli": "^0.15.1",
+    "@nuxt/eslint": "^1.10.0",
+    "@nuxt/test-utils": "^3.0.0",
     "@types/node": "26.1.1",
-    "markdown-it-mathjax3": "4.3.2",
-    "vitepress": "2.0.0-alpha.18"
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.4.11",
+    "devalue": "^5.9.0",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^10.1.8",
+    "happy-dom": "^20.11.1",
+    "prettier": "^3.9.6",
+    "selfsigned": "^5.5.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.4",
+    "vue-tsc": "^3.1.0"
   },
   "dependencies": {
-    "vitepress-plugin-group-icons": "1.7.5"
+    "@nuxt/content": "^3.15.2",
+    "@nuxt/ui": "^4.10.0",
+    "@nuxtjs/sitemap": "^8.3.2",
+    "nuxt": "^4.5.1",
+    "rehype-sanitize": "^6.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-parse": "^11.0.0",
+    "remark-rehype": "^11.1.2",
+    "unified": "^11.0.5"
+  },
+  "overrides": {
+    "tmp": "0.2.7"
   }
 }

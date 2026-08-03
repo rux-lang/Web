@@ -1,6 +1,10 @@
-# VitePress cache and build output
-.vitepress/cache/
-.vitepress/dist/
+# Nuxt build output and caches
+.nuxt/
+.output/
+.nitro/
+.data/
+dist/
+node_modules/.cache/
 
 # Node modules
 node_modules/

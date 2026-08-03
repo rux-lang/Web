@@ -1,0 +1,39 @@
+# `ReadConsoleA`
+
+Reads narrow characters from a console input buffer.
+
+**Package:** `Windows`
+
+**Microsoft documentation:** [`ReadConsole`](https://learn.microsoft.com/en-us/windows/console/readconsole)
+
+## Signature
+
+```rux
+func ReadConsoleA(
+    consoleInput: *opaque,
+    buffer: *opaque,
+    numberOfCharsToRead: uint32,
+    numberOfCharsRead: *uint32,
+    inputControl: *opaque
+) -> bool32;
+```
+
+## Parameters
+
+| Name                  | Description                                    |
+| --------------------- | ---------------------------------------------- |
+| `consoleInput`        | Console input handle.                          |
+| `buffer`              | Writable output buffer.                        |
+| `numberOfCharsToRead` | Maximum characters to read.                    |
+| `numberOfCharsRead`   | Receives the actual character count.           |
+| `inputControl`        | Input control data; use `null` for ANSI input. |
+
+## Returns
+
+`bool32` — nonzero on success or zero on failure. The function requires a
+console handle; use [`ReadFile`](/api/windows/readfile) for redirected standard input.
+
+## See also
+
+- [`GetStdHandle`](/api/windows/getstdhandle) — retrieve standard input
+- [`Windows`](/api/windows) — the package overview

@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /packages/-/auth/
+Disallow: /packages/-/dashboard/
+
+Sitemap: https://rux-lang.dev/sitemap.xml
