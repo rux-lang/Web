@@ -29,6 +29,13 @@ const { data: surround } = await useAsyncData(`surround-${path.value}`, () =>
 const inSection = computed(() => /^\/(start|docs|cli|api|blog)(\/|$)/.test(path.value));
 definePageMeta({ layout: false });
 
+// UPage sizes its centre column from whether the #right SLOT exists, not from
+// whether that slot rendered anything — so a v-if on UContentToc alone leaves a
+// dead two-column gutter. Nine pages already had one (every page whose body has
+// no h2, e.g. /docs, /api, /download). Driving the template's own v-if from this
+// makes the content span all ten columns instead.
+const showToc = computed(() => !page.value?.hideToc && !!page.value?.body?.toc?.links?.length);
+
 // `stem` retains the numeric ordering prefixes and is relative to the
 // content root, which is exactly what the GitHub edit URL needs.
 const editUrl = computed(
@@ -56,28 +63,41 @@ useHead({
 </script>
 
 <template>
-  <NuxtLayout :name="inSection ? 'docs' : false">
-    <UPage v-if="page">
-      <UPageBody>
-        <!--
-          Nuxt Content does NOT strip the H1 from the body, so rendering
-          UPageHeader :title="page.title" alongside ContentRenderer would print
-          the title twice on every page. The body supplies its own heading.
-        -->
-        <ContentRenderer :value="page" />
+  <!--
+    UMain adds no horizontal padding, so without this the content of every page
+    runs into the viewport edge while UHeader and UFooter — which carry their own
+    containers — stay inset. nuxt.com solves it the same way, but per page
+    component (design-kit.vue, docs/[...slug].vue and the rest each open with a
+    UContainer); one catch-all serves all 550 pages here, so it goes on the
+    outside of NuxtLayout — inside it would wrap only the slot and leave the docs
+    sidebar hanging outside the container.
+  -->
+  <UContainer>
+    <NuxtLayout :name="inSection ? 'docs' : false">
+      <UPage v-if="page">
+        <UPageBody>
+          <!--
+            Nuxt Content does NOT strip the H1 from the body, so rendering
+            UPageHeader :title="page.title" alongside ContentRenderer would print
+            the title twice on every page. The body supplies its own heading.
+          -->
+          <ContentRenderer :value="page" />
 
-        <USeparator class="my-8" />
+          <USeparator class="my-8" />
 
-        <UContentSurround :surround="surround" />
+          <UContentSurround :surround="surround" />
 
-        <div class="mt-8 text-sm">
-          <ULink :to="editUrl" target="_blank" class="text-muted hover:text-primary"> Edit this page on GitHub </ULink>
-        </div>
-      </UPageBody>
+          <div class="mt-8 text-sm">
+            <ULink :to="editUrl" target="_blank" class="text-muted hover:text-primary">
+              Edit this page on GitHub
+            </ULink>
+          </div>
+        </UPageBody>
 
-      <template #right>
-        <UContentToc v-if="page.body?.toc?.links?.length" :links="page.body.toc.links" />
-      </template>
-    </UPage>
-  </NuxtLayout>
+        <template v-if="showToc" #right>
+          <UContentToc :links="page.body!.toc!.links" />
+        </template>
+      </UPage>
+    </NuxtLayout>
+  </UContainer>
 </template>

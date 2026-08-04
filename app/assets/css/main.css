@@ -47,6 +47,17 @@
   --color-rux-950: #251543;
 }
 
+/* AppHeaderBottom adds a 3rem sub-nav row inside the docs sections, and it only
+   renders from `lg` up. Nuxt UI defines --ui-header-height: 4rem on :root and
+   every sticky offset in the docs layout is derived from it, so the header box
+   and those offsets have to grow together. Set on <body> (AppHeader toggles the
+   class) so it beats the :root declaration for everything inside the page. */
+@media (width >= 64rem) {
+  body.has-docs-subnav {
+    --ui-header-height: 7rem;
+  }
+}
+
 .registry-shell :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--color-rux-500);
   outline-offset: 2px;

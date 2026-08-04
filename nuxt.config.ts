@@ -60,8 +60,8 @@ export default defineNuxtConfig({
           // emitted CSS puts `html.light .shiki span` after `html .default`,
           // so light mode would silently render in material-theme-lighter.
           theme: {
-            light: "github-light",
             default: "github-light",
+            light: "github-light",
             dark: "github-dark",
           },
           // Supplying `langs` REPLACES the default set, so every language the
@@ -104,7 +104,9 @@ export default defineNuxtConfig({
       // The scanner only finds icon names written literally in templates, so
       // names referenced indirectly (app.config codeIcon, component defaults)
       // have to be listed or they fail to resolve at prerender time.
-      icons: ["lucide:file-code"],
+      // `arrow-up-right` is ui.icons.external, which UFooterColumns renders for
+      // any `target: '_blank'` link — the name never appears in source.
+      icons: ["lucide:file-code", "lucide:arrow-up-right"],
     },
   },
 

@@ -3,14 +3,15 @@
  *
  *   node scripts/verify-links.mjs <distDir> [--out file]
  *
- * Two assertions, both self-referential — the site is checked against itself,
+ * Three assertions, all self-referential — the site is checked against itself,
  * so no external reference data is needed:
  *   1. every internal href resolves to a route the build actually emitted
  *   2. every #fragment matches an id present in the target document
+ *   3. every internal href that names a file resolves to a file in the output
  *
  * The site currently has zero broken links, so any failure is a regression.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import {
   walkFiles,
@@ -34,6 +35,10 @@ if (!distDir) {
   console.error("usage: node scripts/verify-links.mjs <distDir> [--out file]");
   process.exit(2);
 }
+
+// A trailing extension on the last segment marks a file rather than a route.
+// `.html` is excluded: those ARE routes, just spelled with the extension.
+const isAsset = (route) => /\.[a-z0-9]{2,5}$/i.test(route) && !route.endsWith(".html");
 
 const files = walkFiles(distDir, ".html");
 
@@ -60,6 +65,17 @@ for (const page of pages) {
     checked++;
 
     const { route, fragment } = resolved;
+
+    // Not every internal href is a page. /design-kit links straight at the logo
+    // files in public/assets/, and those never produce an .html so they are
+    // absent from idsByRoute. Check them against the emitted file instead —
+    // a download button pointing at a missing asset still fails.
+    if (isAsset(route)) {
+      if (!existsSync(path.join(distDir, route))) {
+        failures.push({ from: page.route, href, kind: "MISSING_ASSET", target: route });
+      }
+      continue;
+    }
 
     if (!idsByRoute.has(route)) {
       failures.push({
@@ -96,6 +112,7 @@ console.log(`internal links  : ${checked}`);
 console.log(`failures        : ${unique.length}`);
 console.log(`  MISSING_PAGE  : ${unique.filter((f) => f.kind === "MISSING_PAGE").length}`);
 console.log(`  MISSING_ANCHOR: ${unique.filter((f) => f.kind === "MISSING_ANCHOR").length}`);
+console.log(`  MISSING_ASSET : ${unique.filter((f) => f.kind === "MISSING_ASSET").length}`);
 
 if (outFile) {
   mkdirSync(path.dirname(outFile), { recursive: true });

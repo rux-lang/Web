@@ -41,6 +41,16 @@ export default defineContentConfig({
             ogUrl: z.string().optional(),
           })
           .optional(),
+        // `hideToc: true` drops the "On this page" nav for pages that read as a
+        // single unit rather than a document to jump around in (/design-kit).
+        // The body still carries body.toc; only the sidebar is suppressed.
+        //
+        // Stated as hide-rather-than-show on purpose. An optional boolean is
+        // NOT undefined when the frontmatter omits it — it comes back out of the
+        // SQL dump as `false` — so a `toc: z.boolean().optional()` field reads as
+        // "toc: false" on all 550 pages and silently removes every TOC. The
+        // negative form makes that default the harmless one.
+        hideToc: z.boolean().optional(),
         date: z.string().optional(),
       }),
     }),

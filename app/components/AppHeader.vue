@@ -1,97 +1,64 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from "@nuxt/ui";
-
 const route = useRoute();
+const { headerLinks } = useHeaderLinks();
 
-// Mirrors themeConfig.nav from the old .vitepress/config.mts.
-const items = computed<NavigationMenuItem[]>(() => [
-  {
-    label: "Docs",
-    active: /^\/(start|docs|cli|api)(\/|$)/.test(route.path),
-    children: [
-      {
-        label: "Get Started",
-        description: "Install Rux and build your first program",
-        to: "/start",
-      },
-      {
-        label: "Rux Reference",
-        description: "The complete language reference",
-        to: "/docs",
-      },
-      {
-        label: "CLI Reference",
-        description: "Every rux subcommand",
-        to: "/cli",
-      },
-      {
-        label: "API Reference",
-        description: "Standard library and platform APIs",
-        to: "/api",
-      },
-    ],
-  },
-  { label: "Playground", to: "/playground" },
-  {
-    label: "Packages",
-    to: "/packages",
-    active: route.path.startsWith("/packages"),
-  },
-  { label: "Blog", to: "/blog", active: route.path.startsWith("/blog") },
-  { label: "Community", to: "/community" },
-  { label: "Support", to: "/support" },
-  { label: "Download", to: "/download" },
-  { label: "FAQ", to: "/faq" },
-]);
+// The four docs sections get their own row under the bar (nuxt.com's
+// HeaderBottom), so while it is showing the top-level "Docs" dropdown is
+// flattened to a plain link — otherwise the same four links appear twice.
+const inDocs = computed(() => /^\/(start|docs|cli|api)(\/|$)/.test(route.path));
 
-const socials = [
-  {
-    icon: "i-simple-icons-github",
-    to: "https://github.com/rux-lang/Rux",
-    label: "GitHub",
-  },
-  {
-    icon: "i-simple-icons-discord",
-    to: "https://discord.com/invite/uvSHjtZSVG",
-    label: "Discord",
-  },
-  {
-    icon: "i-simple-icons-youtube",
-    to: "https://www.youtube.com/@ruxlang",
-    label: "YouTube",
-  },
-  { icon: "i-simple-icons-x", to: "https://x.com/ruxlang", label: "X" },
-];
+const items = computed(() =>
+  headerLinks.value.map((link) => (inDocs.value && link.label === "Docs" ? { ...link, children: [] } : link)),
+);
+
+// That second row makes the header taller, and the docs layout's sticky aside
+// and TOC both offset themselves by --ui-header-height. Growing the variable
+// (see main.css) keeps them aligned instead of tucked under the sub-nav.
+useHead(() => ({
+  bodyAttrs: { class: inDocs.value ? "has-docs-subnav" : "" },
+}));
 </script>
 
 <template>
-  <UHeader :ui="{ center: 'flex-1' }">
-    <template #title>
-      <img src="/logo.svg" alt="" class="h-6 w-auto" aria-hidden="true" />
-      <span class="font-bold text-lg">Rux</span>
+  <UHeader :ui="{ left: 'min-w-0', container: 'h-16' }" class="flex flex-col">
+    <template #left>
+      <NuxtLink to="/" aria-label="Rux home" class="flex items-center gap-2">
+        <img src="/logo.svg" alt="" class="block h-6 w-auto" aria-hidden="true" />
+        <span class="font-bold text-lg">Rux</span>
+      </NuxtLink>
     </template>
 
-    <UNavigationMenu :items="items" variant="link" />
+    <UNavigationMenu :items="items" variant="link" content-orientation="vertical" :ui="{ linkLeadingIcon: 'hidden' }" />
 
     <template #right>
-      <UContentSearchButton />
-      <UColorModeButton />
-      <UButton
-        v-for="s in socials"
-        :key="s.label"
-        :icon="s.icon"
-        :to="s.to"
-        :aria-label="s.label"
-        color="neutral"
-        variant="ghost"
-        target="_blank"
-        class="hidden sm:inline-flex"
-      />
+      <UTooltip text="Search" :kbds="['meta', 'K']" ignore-non-keyboard-focus>
+        <UContentSearchButton />
+      </UTooltip>
+
+      <UTooltip text="Toggle theme">
+        <UColorModeButton />
+      </UTooltip>
+
+      <UTooltip text="Rux on GitHub">
+        <UButton
+          icon="i-simple-icons-github"
+          to="https://github.com/rux-lang/Rux"
+          target="_blank"
+          variant="ghost"
+          color="neutral"
+          square
+          aria-label="Rux on GitHub"
+        />
+      </UTooltip>
     </template>
 
     <!-- Mobile menu. Without this slot there is no navigation on small screens. -->
     <template #body>
-      <UNavigationMenu :items="items" orientation="vertical" class="-mx-2.5" />
+      <AppHeaderBody />
+    </template>
+
+    <template v-if="inDocs" #bottom>
+      <AppHeaderBottom />
     </template>
   </UHeader>
 </template>
