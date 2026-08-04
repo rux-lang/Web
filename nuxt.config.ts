@@ -26,6 +26,16 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBaseUrl: "http://localhost:8080",
+      // The Rux *language* release shown in the header badge — not this site's
+      // package.json version, which happens to match today but drifts the
+      // moment either ships on its own. Override at build time with
+      // NUXT_PUBLIC_RUX_VERSION so a release does not need a code change.
+      ruxVersion: "0.4.0",
+      // Star count shown beside the header's GitHub button. Static: nuxt.com
+      // serves this from its own cached API, and a prerendered site with no
+      // server has nowhere to cache it. Bump it here, or set
+      // NUXT_PUBLIC_GITHUB_STARS at build time to pull it from the API.
+      githubStars: "489",
     },
   },
 
@@ -106,7 +116,25 @@ export default defineNuxtConfig({
       // have to be listed or they fail to resolve at prerender time.
       // `arrow-up-right` is ui.icons.external, which UFooterColumns renders for
       // any `target: '_blank'` link — the name never appears in source.
-      icons: ["lucide:file-code", "lucide:arrow-up-right"],
+      //
+      // Everything from `message-circle` down is an app.config `prose.codeIcon`
+      // entry for the home page's code-group tabs. Those labels carry no
+      // extension, so there is no `i-vscode-icons-file-type-*` fallback to hide
+      // a miss: an unlisted one renders as a blank gap. Keep this in step with
+      // the codeIcon map in app/app.config.ts.
+      icons: [
+        "lucide:file-code",
+        "lucide:arrow-up-right",
+        "lucide:message-circle",
+        "lucide:sigma",
+        "lucide:square-function",
+        "lucide:ellipsis",
+        "lucide:box",
+        "lucide:pencil",
+        "lucide:map-pin",
+        "lucide:plug",
+        "lucide:import",
+      ],
     },
   },
 

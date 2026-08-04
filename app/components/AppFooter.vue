@@ -25,29 +25,22 @@ const socials = [
 </script>
 
 <template>
-  <!-- nuxt.com marks the seam with its brand glyph; Rux has no simple-icons
-       entry, so the logo goes through the default slot instead of `icon`. -->
+  <!-- nuxt.com marks the seam with a monochrome brand glyph. Rux has no
+       simple-icons entry, so the mark goes through the default slot rather than
+       `icon` — which also means the size and colour are set here, since the
+       theme's `icon` class (`shrink-0 size-5`) only applies to the prop. -->
   <USeparator class="h-px">
-    <img src="/logo.svg" alt="" class="h-5 w-auto" aria-hidden="true" />
+    <RuxMark class="text-muted size-5" />
   </USeparator>
 
   <UFooter :ui="{ top: 'border-b border-default' }">
     <template #top>
       <UContainer>
-        <!-- The columns grid is xl:grid-cols-3 with the columns spanning two of
-             them; nuxt.com fills the third with a newsletter form, this uses the
-             #left brand block so the row is not lopsided. -->
-        <UFooterColumns :columns="columns">
-          <template #left>
-            <div class="flex items-center gap-2">
-              <img src="/logo.svg" alt="" class="h-6 w-auto" aria-hidden="true" />
-              <span class="font-bold text-lg">Rux</span>
-            </div>
-            <p class="text-muted text-sm mt-3 max-w-xs">
-              A modern programming language for building fast, safe and readable software.
-            </p>
-          </template>
-        </UFooterColumns>
+        <!-- The theme grid is xl:grid-cols-3 with the link columns spanning two,
+             leaving the third for a brand block (here) or nuxt.com's newsletter
+             form. With no brand block the links would sit in the right two
+             thirds against an empty column, so they span all three instead. -->
+        <UFooterColumns :columns="columns" :ui="{ center: 'xl:col-span-3' }" />
       </UContainer>
     </template>
 

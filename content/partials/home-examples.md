@@ -1,16 +1,6 @@
 ::code-group
 
-```rux [Hello.rux]
-import Io::Print;
-
-// Entry point of the program
-func Main() -> int {
-	Print("Hello, Rux!");
-	return 0;
-}
-```
-
-```rux [Greet.rux]
+```rux [Hello]
 import Io::PrintLine;
 
 // Entry point of the program
@@ -36,7 +26,7 @@ func Main() -> int {
 }
 ```
 
-```rux [Factorial.rux]
+```rux [Factorial]
 import Io::Print;
 
 /// Computes the factorial of a number using an iterative approach
@@ -57,7 +47,7 @@ func Main() -> int {
 }
 ```
 
-```rux [Func.rux]
+```rux [Func]
 import Io::Print;
 
 // Regular function
@@ -78,7 +68,7 @@ func Main() -> int {
 }
 ```
 
-```rux [Variadic.rux]
+```rux [Variadic]
 import Io::Print;
 
 // Function with an arbitrary number of arguments
@@ -98,7 +88,7 @@ func Main() -> int {
 }
 ```
 
-```rux [Struct.rux]
+```rux [Struct]
 import Io::PrintLine;
 import Math::Sqrt;
 
@@ -138,64 +128,64 @@ func Main() -> int {
 }
 ```
 
-```rux [Mut.rux]
+```rux [Mut]
 func Main() -> int {
     // Compile-time constant
     const Size: uint = 1024;
     // Not allowed and will cause a compile-time error
-    Size = 35;      
+    Size = 35;
 
     // Immutable variable
     let value = 20;
     // Not allowed, as 'let' is immutable
     // This will cause a compile-time error
-    value = 25;     
+    value = 25;
 
     // Variable
     var steps = 10;
     // Allowed, as 'var' is mutable
     steps = 15;
- 
+
     return 0;
 }
 ```
 
-```rux [Pointer.rux]
-func Main() -> int {    
+```rux [Pointer]
+func Main() -> int {
     let x: int = 100;        // Immutable binding
     let ptrX: *int = @x;     // Immutable pointer to immutable value
     x = 10;                  // Compilation error
     *ptrX = 15;              // Compilation error
     ptrX = null;             // Compilation error
-        
-    var y: int = 200;        // Mutable binding    
+
+    var y: int = 200;        // Mutable binding
     let ptrY: *var int = @y; // Immutable pointer to mutable value
     y = 20;                  // OK
     *ptrY = 25;              // OK
     ptrY = null;             // Compilation error
-    
-    let z: int = 300;        // Immutable binding    
+
+    let z: int = 300;        // Immutable binding
     var ptrZ: *int = @z;     // Mutable pointer to immutable value
     z = 30;                  // Compilation error
     *ptrZ = 35;              // Compilation error
     ptrZ = null;             // OK
 
-    var t: int = 400;        // Mutable binding    
+    var t: int = 400;        // Mutable binding
     var ptrT: *var int = @t; // Mutable pointer to mutable value
     t = 40;                  // OK
     *ptrT = 45;              // OK
     ptrT = null;             // OK
-    
+
     var data = 3.1415;      // Simplified syntax
     let pointer = @data;
-    
+
     // Mutable pointer-to-pointer
     var buf: **int64 = null;
     return 0;
 }
 ```
 
-```rux [Interface.rux]
+```rux [Interface]
 import Format::Format;
 import Text::String;
 
@@ -220,7 +210,7 @@ extend Circle: Display {
 }
 ```
 
-```rux [Import.rux]
+```rux [Import]
 // Import package
 import Math;
 

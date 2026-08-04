@@ -47,6 +47,33 @@
   --color-rux-950: #251543;
 }
 
+:root {
+  /* Nuxt UI defaults --ui-container to 80rem. nuxt.com runs 90rem, and that
+     single value carries a lot of its feel: the docs sidebar, the prose column
+     and the marketing sections all key off the container, so widening it here
+     is what stops the site reading as "default Nuxt UI". */
+  --ui-container: 90rem;
+}
+
+.dark {
+  /* Nuxt UI's dark palette bottoms out at neutral-900. nuxt.com pushes the page
+     background one step further to 950 and lifts the raised surfaces to 900/800,
+     which is what gives its dark mode the extra separation between the page and
+     cards, code blocks and popovers. */
+  --ui-bg: var(--ui-color-neutral-950);
+  --ui-bg-muted: var(--ui-color-neutral-900);
+  --ui-bg-elevated: var(--ui-color-neutral-900);
+  --ui-bg-accented: var(--ui-color-neutral-800);
+}
+
+/* Nuxt UI opts into the View Transitions API for route changes. The default
+   cross-fade double-exposes the hero gradient during navigation; nuxt.com turns
+   the root animation off and lets the individual elements handle their own. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
 /* AppHeaderBottom adds a 3rem sub-nav row inside the docs sections, and it only
    renders from `lg` up. Nuxt UI defines --ui-header-height: 4rem on :root and
    every sticky offset in the docs layout is derived from it, so the header box
@@ -55,6 +82,16 @@
 @media (width >= 64rem) {
   body.has-docs-subnav {
     --ui-header-height: 7rem;
+  }
+}
+
+/* The home hero's source viewer. The samples are a ::code-group whose tallest
+   member (Greet.rux) runs to 20 lines, so without a cap the panel dictates the
+   hero's height and the two columns fall out of balance. Cap the code pane and
+   let it scroll — only from `lg`, where the hero is actually side by side. */
+@media (width >= 64rem) {
+  .home-code-viewer :where(pre) {
+    max-height: 24rem;
   }
 }
 
