@@ -23,6 +23,12 @@ const { data: surround } = await useAsyncData(`surround-${path.value}`, () =>
   }),
 );
 
+// Standalone destinations are not part of the documentation reading sequence,
+// so they should not inherit whichever content pages happen to sit before and
+// after them in the collection.
+const pagesWithoutSurround = new Set(["/community", "/download", "/support"]);
+const showSurround = computed(() => !pagesWithoutSurround.has(path.value) && !!surround.value?.some(Boolean));
+
 // Sectioned pages get the sidebar; the standalone root pages (faq, download,
 // community, support, packages, playground) carried `sidebar: false` in
 // VitePress and keep that here.
@@ -90,9 +96,9 @@ useHead({
           -->
           <ContentRenderer :value="page" />
 
-          <USeparator class="my-8" />
+          <USeparator v-if="showSurround" class="my-8" />
 
-          <UContentSurround :surround="surround" />
+          <UContentSurround v-if="showSurround" :surround="surround" />
 
           <div class="mt-8 text-sm">
             <ULink :to="editUrl" target="_blank" class="text-muted hover:text-primary">
@@ -102,7 +108,7 @@ useHead({
         </UPageBody>
 
         <template v-if="showToc" #right>
-          <UContentToc :links="page.body!.toc!.links" />
+          <UContentToc :links="page.body!.toc!.links" highlight highlight-variant="circuit" />
         </template>
       </UPage>
     </NuxtLayout>

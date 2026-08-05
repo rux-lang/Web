@@ -29,7 +29,7 @@ Rux is open source under the MIT license — the compiler, the documentation, an
 
 ::u-page-grid
 :link-card{name="Rux Compiler" handle="rux-lang/Rux" description="The compiler, standard library, and toolchain. Star the repo and dive into the code." icon="i-simple-icons-github" color="text-highlighted" count="489" unit="stars" to="https://github.com/rux-lang/Rux"}
-:link-card{name="Issue Tracker" handle="rux-lang/Rux/issues" description="Found a bug or have a feature request? Open an issue and help Rux improve." icon="i-lucide-bug" color="text-rose-500" count="17" unit="issues" to="https://github.com/rux-lang/Rux/issues"}
+:link-card{name="Issue Tracker" handle="rux-lang/Rux/issues" description="Found a bug or have a feature request? Open an issue and help Rux improve." icon="i-lucide-bug" color="text-rose-500" count="8" unit="issues" to="https://github.com/rux-lang/Rux/issues"}
 :link-card{name="Website & Docs" handle="rux-lang/Web" description="This site and the documentation are open source too — even typo fixes are welcome." icon="i-lucide-globe" color="text-emerald-500" count="12" unit="issues" to="https://github.com/rux-lang/Web"}
 ::
 
