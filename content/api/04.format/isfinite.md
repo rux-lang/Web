@@ -1,4 +1,4 @@
-# `IsFinite`
+# IsFinite
 
 Reports whether a value is an ordinary number.
 

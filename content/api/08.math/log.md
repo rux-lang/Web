@@ -1,4 +1,4 @@
-# `Log`
+# Log
 
 Returns the natural logarithm.
 

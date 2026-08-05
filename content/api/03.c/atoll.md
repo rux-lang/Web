@@ -1,4 +1,4 @@
-# `atoll`
+# atoll
 
 Converts a byte string to a long long integer value.
 

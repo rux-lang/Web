@@ -1,4 +1,4 @@
-# `fminf`
+# fminf
 
 Computes smaller of two floating-point values.
 

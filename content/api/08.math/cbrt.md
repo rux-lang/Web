@@ -1,4 +1,4 @@
-# `Cbrt`
+# Cbrt
 
 Returns the cube root.
 

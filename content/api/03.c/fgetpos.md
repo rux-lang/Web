@@ -1,4 +1,4 @@
-# `fgetpos`
+# fgetpos
 
 Gets the current file position of the stream.
 

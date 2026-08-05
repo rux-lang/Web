@@ -1,4 +1,4 @@
-# `erff`
+# erff
 
 Computes error function.
 

@@ -1,4 +1,4 @@
-# `rewind`
+# rewind
 
 Moves the file position indicator to the beginning of the stream.
 

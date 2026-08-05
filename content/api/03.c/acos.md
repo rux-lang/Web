@@ -1,4 +1,4 @@
-# `acos`
+# acos
 
 Computes arc cosine.
 

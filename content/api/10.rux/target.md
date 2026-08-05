@@ -1,4 +1,4 @@
-# `#target`
+# #target
 
 Compile-time information about the compilation target.
 

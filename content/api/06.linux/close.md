@@ -1,4 +1,4 @@
-# `Close`
+# Close
 
 Closes a file descriptor.
 

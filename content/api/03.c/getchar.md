@@ -1,4 +1,4 @@
-# `getchar`
+# getchar
 
 Reads the next character from stdin.
 

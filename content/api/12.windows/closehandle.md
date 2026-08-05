@@ -1,4 +1,4 @@
-# `CloseHandle`
+# CloseHandle
 
 Closes an open kernel object handle.
 

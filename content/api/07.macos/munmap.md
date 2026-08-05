@@ -1,4 +1,4 @@
-# `Munmap`
+# Munmap
 
 Removes a virtual-memory mapping.
 

@@ -1,4 +1,4 @@
-# `IsEmpty`
+# IsEmpty
 
 Reports whether anything has been written.
 

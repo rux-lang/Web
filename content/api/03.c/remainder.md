@@ -1,4 +1,4 @@
-# `remainder`
+# remainder
 
 Computes signed remainder of the floating-point division operation.
 

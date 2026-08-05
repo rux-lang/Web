@@ -1,4 +1,4 @@
-# `ClockGetTime`
+# ClockGetTime
 
 Reads the current value of a BSD clock.
 

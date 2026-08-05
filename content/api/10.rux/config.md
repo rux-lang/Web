@@ -1,4 +1,4 @@
-# `#config`
+# #config
 
 Compile-time access to user-defined build values.
 

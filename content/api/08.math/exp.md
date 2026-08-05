@@ -1,4 +1,4 @@
-# `Exp`
+# Exp
 
 Returns e raised to a power.
 

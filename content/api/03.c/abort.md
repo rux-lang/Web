@@ -1,4 +1,4 @@
-# `abort`
+# abort
 
 Causes abnormal program termination without cleaning up.
 

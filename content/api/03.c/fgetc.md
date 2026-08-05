@@ -1,4 +1,4 @@
-# `fgetc`
+# fgetc
 
 Reads the next character from the given stream.
 

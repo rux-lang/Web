@@ -1,4 +1,4 @@
-# `frexp`
+# frexp
 
 Decomposes a number into significand and a power of two.
 

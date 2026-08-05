@@ -1,4 +1,4 @@
-# `acoshf`
+# acoshf
 
 Computes inverse hyperbolic cosine.
 

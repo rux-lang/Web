@@ -1,4 +1,4 @@
-# `Append`
+# Append
 
 Writes bytes to the end of the builder.
 

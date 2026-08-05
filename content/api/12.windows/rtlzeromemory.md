@@ -1,4 +1,4 @@
-# `RtlZeroMemory`
+# RtlZeroMemory
 
 Fills a memory range with zeros.
 

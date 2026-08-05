@@ -1,4 +1,4 @@
-# `lgamma`
+# lgamma
 
 Computes natural logarithm of the absolute value of the gamma function.
 

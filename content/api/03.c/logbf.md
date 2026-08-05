@@ -1,4 +1,4 @@
-# `logbf`
+# logbf
 
 Extracts exponent of the number.
 

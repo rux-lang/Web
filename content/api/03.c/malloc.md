@@ -1,4 +1,4 @@
-# `malloc`
+# malloc
 
 Allocates size bytes of uninitialized memory.
 

@@ -1,4 +1,4 @@
-# `HeapAlloc`
+# HeapAlloc
 
 Allocates a block from a Win32 heap.
 

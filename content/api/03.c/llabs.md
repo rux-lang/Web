@@ -1,4 +1,4 @@
-# `llabs`
+# llabs
 
 Computes the absolute value of a long long integer value.
 

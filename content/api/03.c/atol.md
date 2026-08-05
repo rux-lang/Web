@@ -1,4 +1,4 @@
-# `atol`
+# atol
 
 Converts a byte string to a long integer value.
 

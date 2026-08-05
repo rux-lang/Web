@@ -1,4 +1,4 @@
-# `tgammaf`
+# tgammaf
 
 Computes gamma function.
 

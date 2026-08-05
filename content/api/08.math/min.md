@@ -1,4 +1,4 @@
-# `Min`
+# Min
 
 Returns the smaller of two values.
 

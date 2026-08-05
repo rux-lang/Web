@@ -1,4 +1,4 @@
-# `fopen`
+# fopen
 
 Opens a file indicated by filename with the given mode.
 

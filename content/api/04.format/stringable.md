@@ -1,4 +1,4 @@
-# `Stringable`
+# Stringable
 
 The interface a type implements to convert itself into a `String`.
 

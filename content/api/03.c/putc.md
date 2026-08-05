@@ -1,4 +1,4 @@
-# `putc`
+# putc
 
 Writes a character to the given stream.
 

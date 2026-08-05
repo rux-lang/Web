@@ -1,4 +1,4 @@
-# `abs`
+# abs
 
 Computes the absolute value of an integer value.
 

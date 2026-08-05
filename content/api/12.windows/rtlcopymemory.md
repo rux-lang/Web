@@ -1,4 +1,4 @@
-# `RtlCopyMemory`
+# RtlCopyMemory
 
 Copies bytes between non-overlapping memory ranges.
 

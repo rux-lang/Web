@@ -1,4 +1,4 @@
-# `GetTimeOfDay`
+# GetTimeOfDay
 
 Reads the current wall-clock time.
 

@@ -1,4 +1,4 @@
-# `labs`
+# labs
 
 Computes the absolute value of a long integer value.
 

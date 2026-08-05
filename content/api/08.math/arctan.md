@@ -1,4 +1,4 @@
-# `ArcTan`
+# ArcTan
 
 Returns the inverse tangent, in radians.
 

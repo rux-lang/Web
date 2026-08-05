@@ -1,4 +1,4 @@
-# `erfcf`
+# erfcf
 
 Computes complementary error function.
 

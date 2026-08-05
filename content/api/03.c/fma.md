@@ -1,4 +1,4 @@
-# `fma`
+# fma
 
 Computes fused multiply-add.
 

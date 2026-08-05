@@ -1,4 +1,4 @@
-# `WriteChar`
+# WriteChar
 
 Appends the UTF-8 bytes of a character to a builder.
 

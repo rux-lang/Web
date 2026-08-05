@@ -1,4 +1,4 @@
-# `exp`
+# exp
 
 Computes e raised to the given power.
 

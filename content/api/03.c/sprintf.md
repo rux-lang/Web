@@ -1,4 +1,4 @@
-# `sprintf`
+# sprintf
 
 Prints formatted output to a string.
 

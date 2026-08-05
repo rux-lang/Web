@@ -1,4 +1,4 @@
-# `log2`
+# log2
 
 Computes base 2 logarithm.
 

@@ -1,4 +1,4 @@
-# `GetLocalTime`
+# GetLocalTime
 
 Retrieves the current local date and time.
 

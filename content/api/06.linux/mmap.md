@@ -1,4 +1,4 @@
-# `Mmap`
+# Mmap
 
 Creates a virtual-memory mapping.
 

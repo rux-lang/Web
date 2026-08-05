@@ -1,4 +1,4 @@
-# `ArcCos`
+# ArcCos
 
 Returns the inverse cosine, in radians.
 

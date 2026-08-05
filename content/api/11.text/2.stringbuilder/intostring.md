@@ -1,4 +1,4 @@
-# `IntoString`
+# IntoString
 
 Hands the block over to a string, without copying it.
 

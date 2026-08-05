@@ -1,4 +1,4 @@
-# `ftell`
+# ftell
 
 Returns the current file position of the stream.
 

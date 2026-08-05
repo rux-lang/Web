@@ -1,4 +1,4 @@
-# `freopen`
+# freopen
 
 Reopens a stream with a different file or mode.
 

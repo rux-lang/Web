@@ -1,4 +1,4 @@
-# `gmtime`
+# gmtime
 
 Converts a time_t object to calendar time expressed as UTC.
 

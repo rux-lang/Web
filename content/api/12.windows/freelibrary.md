@@ -1,4 +1,4 @@
-# `FreeLibrary`
+# FreeLibrary
 
 Releases a reference to a loaded DLL.
 

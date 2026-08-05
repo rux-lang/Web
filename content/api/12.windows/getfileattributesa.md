@@ -1,4 +1,4 @@
-# `GetFileAttributesA`
+# GetFileAttributesA
 
 Retrieves attributes for a file or directory.
 

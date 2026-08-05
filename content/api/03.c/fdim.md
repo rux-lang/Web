@@ -1,4 +1,4 @@
-# `fdim`
+# fdim
 
 Computes positive difference of two floating-point values.
 

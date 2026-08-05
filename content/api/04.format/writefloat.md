@@ -1,4 +1,4 @@
-# `WriteFloat`
+# WriteFloat
 
 Appends the decimal text of a floating-point value to a builder.
 

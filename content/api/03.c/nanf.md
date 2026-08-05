@@ -1,4 +1,4 @@
-# `nanf`
+# nanf
 
 Generates a quiet NaN.
 

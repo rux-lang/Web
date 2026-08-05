@@ -1,4 +1,4 @@
-# `AllocConsole`
+# AllocConsole
 
 Allocates a console for the calling process.
 

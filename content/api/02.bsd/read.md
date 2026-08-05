@@ -1,4 +1,4 @@
-# `Read`
+# Read
 
 Reads bytes from a file descriptor.
 

@@ -1,4 +1,4 @@
-# `SetCurrentDirectoryA`
+# SetCurrentDirectoryA
 
 Changes the process current directory.
 

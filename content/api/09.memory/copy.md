@@ -1,4 +1,4 @@
-# `Copy`
+# Copy
 
 Copies bytes from one block of memory to another.
 

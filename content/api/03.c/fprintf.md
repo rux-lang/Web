@@ -1,4 +1,4 @@
-# `fprintf`
+# fprintf
 
 Prints formatted output to a file stream.
 

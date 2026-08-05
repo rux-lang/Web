@@ -1,4 +1,4 @@
-# `cbrtf`
+# cbrtf
 
 Computes cube root.
 

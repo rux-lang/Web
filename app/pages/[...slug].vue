@@ -1,5 +1,10 @@
 <script setup lang="ts">
+import type { ContentNavigationItem } from "@nuxt/content";
+import { findPageBreadcrumb } from "@nuxt/content/utils";
+import { mapContentNavigation } from "@nuxt/ui/utils/content";
+
 const route = useRoute();
+const navigation = inject<Ref<ContentNavigationItem[] | null>>("navigation", ref([]));
 
 // Inbound URLs may carry a trailing slash (the old site linked
 // directory indexes as /api/bsd/). queryCollection stores them slashless, so
@@ -36,6 +41,45 @@ const showSurround = computed(() => !pagesWithoutSurround.has(path.value) && !!s
 // /blog is absent on purpose: posts are served by app/pages/blog/[slug].vue,
 // which gives them nuxt.com's article layout — no left sidebar — instead.
 const inSection = computed(() => /^\/(start|docs|cli|api)(\/|$)/.test(path.value));
+const isApiPage = computed(() => /^\/api(\/|$)/.test(path.value));
+
+function isMinimarkTag(node: unknown, tag: string): boolean {
+  return Array.isArray(node) && node[0] === tag;
+}
+
+const renderedPage = computed(() => {
+  const currentPage = page.value!;
+  const body = currentPage.body;
+
+  if (!isApiPage.value || body?.type !== "minimark" || !Array.isArray(body.value)) return currentPage;
+
+  let contentStart = 0;
+  if (isMinimarkTag(body.value[contentStart], "h1")) contentStart += 1;
+  if (isMinimarkTag(body.value[contentStart], "p")) contentStart += 1;
+
+  return {
+    ...currentPage,
+    body: {
+      ...body,
+      value: body.value.slice(contentStart),
+    },
+  };
+});
+
+const apiBreadcrumbs = computed(() =>
+  mapContentNavigation(findPageBreadcrumb(navigation.value ?? [], path.value)).map(({ label, to }) => ({
+    label,
+    to,
+  })),
+);
+
+const apiInfo = computed(() => apiPageInfo(path.value));
+const { ruxVersion } = useRuntimeConfig().public;
+const apiVersion = computed(() => apiInfo.value.version ?? ruxVersion);
+
+const markdownUrl = computed(
+  () => `https://raw.githubusercontent.com/rux-lang/Web/dev/content/${page.value?.stem}.${page.value?.extension}`,
+);
 
 // One catch-all serves all 550 content pages, so they share a single
 // heroBackground value — the same "muted, present but not loud" level nuxt.com
@@ -88,13 +132,47 @@ useHead({
   <UContainer>
     <NuxtLayout :name="inSection ? 'docs' : false">
       <UPage v-if="page">
+        <UPageHeader
+          v-if="isApiPage"
+          :title="page.title"
+          :description="page.description"
+          :ui="{ wrapper: 'flex-row items-center flex-wrap justify-between' }"
+        >
+          <template #headline>
+            <UBreadcrumb :items="apiBreadcrumbs" />
+          </template>
+
+          <template #title>
+            {{ page.title }}
+
+            <UBadge
+              :label="`v${apiVersion}`"
+              color="info"
+              variant="subtle"
+              size="lg"
+              class="align-middle"
+              :aria-label="`${apiInfo.packageName ?? 'Rux'} API version ${apiVersion}`"
+            />
+          </template>
+
+          <template #links>
+            <UButton
+              label="Source"
+              icon="i-simple-icons-github"
+              :to="apiInfo.sourceUrl"
+              target="_blank"
+              color="neutral"
+              variant="soft"
+              size="sm"
+            />
+            <ApiPageActions :key="path" :markdown-url="markdownUrl" />
+          </template>
+        </UPageHeader>
+
         <UPageBody>
-          <!--
-            Nuxt Content does NOT strip the H1 from the body, so rendering
-            UPageHeader :title="page.title" alongside ContentRenderer would print
-            the title twice on every page. The body supplies its own heading.
-          -->
-          <ContentRenderer :value="page" />
+          <!-- API pages promote the leading Markdown H1 and description into
+               UPageHeader. Other sections render their complete body. -->
+          <ContentRenderer :value="renderedPage" />
 
           <USeparator v-if="showSurround" class="my-8" />
 

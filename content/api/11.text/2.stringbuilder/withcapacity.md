@@ -1,4 +1,4 @@
-# `WithCapacity`
+# WithCapacity
 
 Creates an empty builder with room reserved up front.
 

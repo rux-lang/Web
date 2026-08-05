@@ -1,4 +1,4 @@
-# `logf`
+# logf
 
 Computes natural (base e) logarithm.
 

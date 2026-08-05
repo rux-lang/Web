@@ -1,4 +1,4 @@
-# `TryParseFloat64`
+# TryParseFloat64
 
 Parses a floating-point value into an out-parameter, reporting only success or failure.
 

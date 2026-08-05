@@ -1,4 +1,4 @@
-# `putchar`
+# putchar
 
 Writes a character to stdout.
 

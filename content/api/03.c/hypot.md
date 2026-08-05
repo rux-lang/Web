@@ -1,4 +1,4 @@
-# `hypot`
+# hypot
 
 Computes square root of the sum of the squares of two given numbers.
 

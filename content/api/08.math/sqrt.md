@@ -1,4 +1,4 @@
-# `Sqrt`
+# Sqrt
 
 Returns the square root.
 

@@ -1,4 +1,4 @@
-# `GetProcessHeap`
+# GetProcessHeap
 
 Retrieves the calling process's default heap.
 

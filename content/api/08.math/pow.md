@@ -1,4 +1,4 @@
-# `Pow`
+# Pow
 
 Raises a base to an exponent.
 

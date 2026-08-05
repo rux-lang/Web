@@ -3,7 +3,7 @@ navigation:
   title: Overview
 ---
 
-# `String`
+# String
 
 An immutable, heap-allocated string.
 

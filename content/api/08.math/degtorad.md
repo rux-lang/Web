@@ -1,4 +1,4 @@
-# `DegToRad`
+# DegToRad
 
 Converts an angle from degrees to radians.
 

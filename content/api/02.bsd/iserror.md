@@ -1,4 +1,4 @@
-# `IsError`
+# IsError
 
 Tests whether a raw syscall result is an error.
 

@@ -1,4 +1,4 @@
-# `acosf`
+# acosf
 
 Computes arc cosine.
 

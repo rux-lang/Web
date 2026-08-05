@@ -1,4 +1,4 @@
-# `WriteUint`
+# WriteUint
 
 Appends the decimal digits of an unsigned integer to a builder.
 

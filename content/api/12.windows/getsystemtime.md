@@ -1,4 +1,4 @@
-# `GetSystemTime`
+# GetSystemTime
 
 Retrieves the current UTC date and time.
 

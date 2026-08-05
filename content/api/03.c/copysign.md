@@ -1,4 +1,4 @@
-# `copysign`
+# copysign
 
 Copies the sign of a floating-point value.
 

@@ -1,4 +1,4 @@
-# `CodePage`
+# CodePage
 
 Identifies a Windows character encoding.
 

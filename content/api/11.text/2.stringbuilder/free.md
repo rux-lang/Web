@@ -1,4 +1,4 @@
-# `Free`
+# Free
 
 Releases the block the builder owns.
 

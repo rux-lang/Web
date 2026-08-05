@@ -1,4 +1,4 @@
-# `Sin`
+# Sin
 
 Returns the sine of an angle in radians.
 

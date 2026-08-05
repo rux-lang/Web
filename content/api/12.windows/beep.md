@@ -1,4 +1,4 @@
-# `Beep`
+# Beep
 
 Generates a simple tone on the speaker.
 

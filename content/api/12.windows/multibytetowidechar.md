@@ -1,4 +1,4 @@
-# `MultiByteToWideChar`
+# MultiByteToWideChar
 
 Converts multibyte text to UTF-16.
 

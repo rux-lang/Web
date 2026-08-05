@@ -1,4 +1,4 @@
-# `fabs`
+# fabs
 
 Computes the absolute value of a floating-point value.
 

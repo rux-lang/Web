@@ -1,4 +1,4 @@
-# `mktime`
+# mktime
 
 Converts calendar time to a time_t object, normalizing the tm structure.
 

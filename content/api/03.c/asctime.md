@@ -1,4 +1,4 @@
-# `asctime`
+# asctime
 
 Converts a tm object to a textual representation.
 

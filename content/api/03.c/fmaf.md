@@ -1,4 +1,4 @@
-# `fmaf`
+# fmaf
 
 Computes fused multiply-add.
 

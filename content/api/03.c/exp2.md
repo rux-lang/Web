@@ -1,4 +1,4 @@
-# `exp2`
+# exp2
 
 Computes 2 raised to the given power.
 

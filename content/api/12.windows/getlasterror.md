@@ -1,4 +1,4 @@
-# `GetLastError`
+# GetLastError
 
 Retrieves the calling thread's last-error code.
 

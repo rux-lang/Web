@@ -1,4 +1,4 @@
-# `Trunc`
+# Trunc
 
 Rounds toward zero.
 

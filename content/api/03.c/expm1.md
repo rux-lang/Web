@@ -1,4 +1,4 @@
-# `expm1`
+# expm1
 
 Computes e raised to the given power, minus one.
 

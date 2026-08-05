@@ -1,4 +1,4 @@
-# `fwrite`
+# fwrite
 
 Writes count objects of the given size from a buffer to the stream.
 

@@ -1,4 +1,4 @@
-# `fread`
+# fread
 
 Reads up to count objects of the given size from the stream into a buffer.
 

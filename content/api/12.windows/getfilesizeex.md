@@ -1,4 +1,4 @@
-# `GetFileSizeEx`
+# GetFileSizeEx
 
 Retrieves the size of an open file.
 

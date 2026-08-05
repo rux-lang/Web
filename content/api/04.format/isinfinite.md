@@ -1,4 +1,4 @@
-# `IsInfinite`
+# IsInfinite
 
 Reports whether a value is one of the two infinities.
 

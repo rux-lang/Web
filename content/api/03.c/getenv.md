@@ -1,4 +1,4 @@
-# `getenv`
+# getenv
 
 Returns the value of an environment variable.
 

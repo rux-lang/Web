@@ -1,4 +1,4 @@
-# `ReadConsoleA`
+# ReadConsoleA
 
 Reads narrow characters from a console input buffer.
 

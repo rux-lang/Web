@@ -1,4 +1,4 @@
-# `GetStdHandle`
+# GetStdHandle
 
 Retrieves a handle to a standard device.
 

@@ -1,4 +1,4 @@
-# `cosh`
+# cosh
 
 Computes hyperbolic cosine.
 

@@ -1,4 +1,4 @@
-# `Set`
+# Set
 
 Fills a block of memory with a repeated byte.
 

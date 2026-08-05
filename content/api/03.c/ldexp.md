@@ -1,4 +1,4 @@
-# `ldexp`
+# ldexp
 
 Multiplies a number by 2 raised to an integer power.
 

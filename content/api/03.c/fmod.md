@@ -1,4 +1,4 @@
-# `fmod`
+# fmod
 
 Computes remainder of the floating-point division operation.
 

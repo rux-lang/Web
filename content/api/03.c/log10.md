@@ -1,4 +1,4 @@
-# `log10`
+# log10
 
 Computes common (base 10) logarithm.
 

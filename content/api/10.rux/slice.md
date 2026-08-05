@@ -1,4 +1,4 @@
-# `Slice`
+# Slice
 
 A view over a contiguous sequence of elements.
 

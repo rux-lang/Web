@@ -1,4 +1,4 @@
-# `Errno`
+# Errno
 
 Extracts the positive errno from a raw syscall result.
 

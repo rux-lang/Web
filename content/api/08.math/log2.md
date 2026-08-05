@@ -1,4 +1,4 @@
-# `Log2`
+# Log2
 
 Returns the base-2 logarithm.
 

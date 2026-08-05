@@ -1,4 +1,4 @@
-# `sscanf`
+# sscanf
 
 Reads formatted input from a string.
 

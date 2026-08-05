@@ -1,4 +1,4 @@
-# `setvbuf`
+# setvbuf
 
 Sets the buffering mode and buffer to be used by the given stream.
 

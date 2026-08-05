@@ -1,4 +1,4 @@
-# `Result`
+# Result
 
 The return type of an operation that can fail.
 

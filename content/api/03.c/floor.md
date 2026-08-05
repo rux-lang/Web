@@ -1,4 +1,4 @@
-# `floor`
+# floor
 
 Computes largest integer not greater than the given value.
 

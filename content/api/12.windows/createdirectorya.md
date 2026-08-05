@@ -1,4 +1,4 @@
-# `CreateDirectoryA`
+# CreateDirectoryA
 
 Creates a directory.
 

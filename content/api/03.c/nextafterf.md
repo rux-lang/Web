@@ -1,4 +1,4 @@
-# `nextafterf`
+# nextafterf
 
 Determines next representable floating-point value toward the given value.
 

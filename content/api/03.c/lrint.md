@@ -1,4 +1,4 @@
-# `lrint`
+# lrint
 
 Rounds to nearest integer using current rounding mode.
 

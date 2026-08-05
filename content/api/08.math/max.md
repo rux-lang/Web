@@ -1,4 +1,4 @@
-# `Max`
+# Max
 
 Returns the larger of two values.
 

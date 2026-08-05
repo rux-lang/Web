@@ -1,4 +1,4 @@
-# `Capacity`
+# Capacity
 
 Returns how many bytes fit before the block has to grow.
 

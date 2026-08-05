@@ -1,4 +1,4 @@
-# `DeleteFileA`
+# DeleteFileA
 
 Marks an existing file for deletion.
 

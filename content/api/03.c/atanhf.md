@@ -1,4 +1,4 @@
-# `atanhf`
+# atanhf
 
 Computes inverse hyperbolic tangent.
 

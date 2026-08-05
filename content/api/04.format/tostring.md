@@ -1,4 +1,4 @@
-# `ToString`
+# ToString
 
 Returns the text of a value, in a `String` the caller owns.
 

@@ -1,4 +1,4 @@
-# `Sleep`
+# Sleep
 
 Suspends execution of the current thread.
 

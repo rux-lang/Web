@@ -1,4 +1,4 @@
-# `cos`
+# cos
 
 Computes cosine.
 

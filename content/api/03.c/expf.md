@@ -1,4 +1,4 @@
-# `expf`
+# expf
 
 Computes e raised to the given power.
 

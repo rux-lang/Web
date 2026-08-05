@@ -1,4 +1,4 @@
-# `GetCurrentThreadId`
+# GetCurrentThreadId
 
 Returns the identifier of the calling thread.
 

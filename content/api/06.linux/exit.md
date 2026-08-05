@@ -1,4 +1,4 @@
-# `Exit`
+# Exit
 
 Terminates the calling thread immediately.
 

@@ -1,4 +1,4 @@
-# `ArcSin`
+# ArcSin
 
 Returns the inverse sine, in radians.
 

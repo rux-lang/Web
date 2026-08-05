@@ -1,4 +1,4 @@
-# `remquo`
+# remquo
 
 Computes signed remainder as well as the three last bits of the division operation.
 

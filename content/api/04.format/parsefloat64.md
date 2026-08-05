@@ -1,4 +1,4 @@
-# `ParseFloat64`
+# ParseFloat64
 
 Parses a floating-point value from decimal text.
 

@@ -1,4 +1,4 @@
-# `clock`
+# clock
 
 Returns the approximate processor time used by the program.
 

@@ -1,4 +1,4 @@
-# `fseek`
+# fseek
 
 Sets the file position indicator for the stream.
 

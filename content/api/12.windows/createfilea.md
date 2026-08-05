@@ -1,4 +1,4 @@
-# `CreateFileA`
+# CreateFileA
 
 Creates or opens a file or I/O device.
 

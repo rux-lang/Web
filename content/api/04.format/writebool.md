@@ -1,4 +1,4 @@
-# `WriteBool`
+# WriteBool
 
 Appends `true` or `false` to a builder.
 

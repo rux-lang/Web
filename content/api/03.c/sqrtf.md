@@ -1,4 +1,4 @@
-# `sqrtf`
+# sqrtf
 
 Computes square root.
 

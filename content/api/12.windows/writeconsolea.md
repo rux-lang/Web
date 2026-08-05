@@ -1,4 +1,4 @@
-# `WriteConsoleA`
+# WriteConsoleA
 
 Writes narrow characters to a console screen buffer.
 

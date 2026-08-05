@@ -1,4 +1,4 @@
-# `GetCurrentDirectoryA`
+# GetCurrentDirectoryA
 
 Retrieves the process current directory.
 

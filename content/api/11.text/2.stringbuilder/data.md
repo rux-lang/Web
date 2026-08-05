@@ -1,4 +1,4 @@
-# `Data`
+# Data
 
 Returns the pointer to the bytes written so far.
 

@@ -1,4 +1,4 @@
-# `Hypot`
+# Hypot
 
 Returns the length of the hypotenuse of a right triangle with legs `x` and `y`.
 

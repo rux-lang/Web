@@ -1,4 +1,4 @@
-# `truncf`
+# truncf
 
 Rounds to nearest integer not greater in magnitude than the given value.
 

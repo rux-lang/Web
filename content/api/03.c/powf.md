@@ -1,4 +1,4 @@
-# `powf`
+# powf
 
 Computes a number raised to the given power.
 

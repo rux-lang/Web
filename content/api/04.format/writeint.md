@@ -1,4 +1,4 @@
-# `WriteInt`
+# WriteInt
 
 Appends the decimal digits of a signed integer to a builder.
 

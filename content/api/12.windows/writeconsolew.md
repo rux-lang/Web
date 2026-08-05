@@ -1,4 +1,4 @@
-# `WriteConsoleW`
+# WriteConsoleW
 
 Writes UTF-16 characters to a console screen buffer.
 

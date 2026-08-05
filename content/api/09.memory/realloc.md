@@ -1,4 +1,4 @@
-# `Realloc`
+# Realloc
 
 Resizes a block of memory, preserving the bytes that still fit.
 

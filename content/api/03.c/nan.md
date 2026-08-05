@@ -1,4 +1,4 @@
-# `nan`
+# nan
 
 Generates a quiet NaN.
 

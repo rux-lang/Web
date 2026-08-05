@@ -1,4 +1,4 @@
-# `WriteFile`
+# WriteFile
 
 Writes bytes to a file or I/O device.
 

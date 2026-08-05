@@ -1,4 +1,4 @@
-# `Free`
+# Free
 
 Releases a block of memory back to the platform.
 

@@ -1,4 +1,4 @@
-# `floorf`
+# floorf
 
 Computes largest integer not greater than the given value.
 

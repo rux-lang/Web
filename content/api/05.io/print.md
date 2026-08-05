@@ -1,4 +1,4 @@
-# `Print`
+# Print
 
 Writes a value to standard output.
 

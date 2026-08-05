@@ -1,4 +1,4 @@
-# `asinh`
+# asinh
 
 Computes inverse hyperbolic sine.
 

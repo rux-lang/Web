@@ -1,4 +1,4 @@
-# `SetFileAttributesA`
+# SetFileAttributesA
 
 Sets attributes for a file or directory.
 

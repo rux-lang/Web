@@ -1,4 +1,4 @@
-# `Compare`
+# Compare
 
 Finds the offset at which two blocks of memory first differ.
 

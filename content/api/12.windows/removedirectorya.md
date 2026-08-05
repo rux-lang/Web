@@ -1,4 +1,4 @@
-# `RemoveDirectoryA`
+# RemoveDirectoryA
 
 Removes an empty directory.
 

@@ -1,4 +1,4 @@
-# `printf`
+# printf
 
 Prints formatted output to stdout.
 

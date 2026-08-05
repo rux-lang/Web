@@ -1,4 +1,4 @@
-# `Zero`
+# Zero
 
 Fills a block of memory with zero bytes.
 

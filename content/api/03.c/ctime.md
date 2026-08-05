@@ -1,4 +1,4 @@
-# `ctime`
+# ctime
 
 Converts a time_t object to a textual representation.
 

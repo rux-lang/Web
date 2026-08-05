@@ -1,4 +1,4 @@
-# `setbuf`
+# setbuf
 
 Sets the buffer to be used by the given stream.
 

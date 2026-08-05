@@ -1,4 +1,4 @@
-# `fclose`
+# fclose
 
 Closes the given file stream.
 

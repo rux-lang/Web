@@ -1,4 +1,4 @@
-# `Brk`
+# Brk
 
 Invokes the kernel's raw program-break operation.
 

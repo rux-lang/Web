@@ -1,4 +1,4 @@
-# `IsNan`
+# IsNan
 
 Reports whether a value is a NaN.
 

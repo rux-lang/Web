@@ -1,4 +1,4 @@
-# `RtlCompareMemory`
+# RtlCompareMemory
 
 Counts matching bytes from the start of two memory ranges.
 

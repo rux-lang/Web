@@ -1,4 +1,4 @@
-# `atan`
+# atan
 
 Computes arc tangent.
 

@@ -1,4 +1,4 @@
-# `Grow`
+# Grow
 
 Grows the block to hold at least a given number of bytes.
 

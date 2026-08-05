@@ -1,4 +1,4 @@
-# `Exp2`
+# Exp2
 
 Returns 2 raised to a power.
 

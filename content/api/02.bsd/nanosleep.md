@@ -1,4 +1,4 @@
-# `Nanosleep`
+# Nanosleep
 
 Suspends execution for a relative interval.
 

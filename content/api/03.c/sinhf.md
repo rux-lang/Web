@@ -1,4 +1,4 @@
-# `sinhf`
+# sinhf
 
 Computes hyperbolic sine.
 

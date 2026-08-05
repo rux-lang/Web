@@ -1,4 +1,4 @@
-# `fmaxf`
+# fmaxf
 
 Computes larger of two floating-point values.
 

@@ -1,4 +1,4 @@
-# `#compiler`
+# #compiler
 
 Compile-time information about the compiler performing the build.
 

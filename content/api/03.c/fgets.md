@@ -1,4 +1,4 @@
-# `fgets`
+# fgets
 
 Reads at most count-1 characters from the stream into a string.
 

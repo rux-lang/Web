@@ -1,4 +1,4 @@
-# `Sinh`
+# Sinh
 
 Returns the hyperbolic sine.
 

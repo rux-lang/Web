@@ -1,4 +1,4 @@
-# `difftime`
+# difftime
 
 Computes the difference in seconds between two calendar times.
 

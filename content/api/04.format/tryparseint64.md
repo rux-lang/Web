@@ -1,4 +1,4 @@
-# `TryParseInt64`
+# TryParseInt64
 
 Parses a signed integer into an out-parameter, reporting only success or failure.
 

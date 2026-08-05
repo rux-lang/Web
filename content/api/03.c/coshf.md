@@ -1,4 +1,4 @@
-# `coshf`
+# coshf
 
 Computes hyperbolic cosine.
 

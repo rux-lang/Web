@@ -1,4 +1,4 @@
-# `GetTickCount64`
+# GetTickCount64
 
 Returns milliseconds elapsed since system startup.
 

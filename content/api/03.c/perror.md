@@ -1,4 +1,4 @@
-# `perror`
+# perror
 
 Prints an error message describing the last error to stderr.
 

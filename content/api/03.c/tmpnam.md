@@ -1,4 +1,4 @@
-# `tmpnam`
+# tmpnam
 
 Generates a unique filename that does not name an existing file.
 

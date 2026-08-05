@@ -1,4 +1,4 @@
-# `localtime`
+# localtime
 
 Converts a time_t object to calendar time expressed as local time.
 

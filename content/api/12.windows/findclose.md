@@ -1,4 +1,4 @@
-# `FindClose`
+# FindClose
 
 Closes a file-search handle.
 

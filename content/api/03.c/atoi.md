@@ -1,4 +1,4 @@
-# `atoi`
+# atoi
 
 Converts a byte string to an integer value.
 

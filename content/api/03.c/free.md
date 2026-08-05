@@ -1,4 +1,4 @@
-# `free`
+# free
 
 Deallocates the memory previously allocated by malloc, calloc or realloc.
 

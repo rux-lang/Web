@@ -1,4 +1,4 @@
-# `tan`
+# tan
 
 Computes tangent.
 

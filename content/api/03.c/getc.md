@@ -1,4 +1,4 @@
-# `getc`
+# getc
 
 Reads the next character from the given stream.
 

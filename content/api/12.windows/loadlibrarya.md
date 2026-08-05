@@ -1,4 +1,4 @@
-# `LoadLibraryA`
+# LoadLibraryA
 
 Loads a DLL into the calling process.
 

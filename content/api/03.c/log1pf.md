@@ -1,4 +1,4 @@
-# `log1pf`
+# log1pf
 
 Computes natural logarithm of 1 plus the given number.
 

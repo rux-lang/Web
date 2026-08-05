@@ -1,4 +1,4 @@
-# `remove`
+# remove
 
 Deletes the file identified by the given path.
 

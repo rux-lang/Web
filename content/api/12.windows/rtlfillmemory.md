@@ -1,4 +1,4 @@
-# `RtlFillMemory`
+# RtlFillMemory
 
 Fills a memory range with a byte value.
 

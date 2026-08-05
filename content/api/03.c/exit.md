@@ -1,4 +1,4 @@
-# `exit`
+# exit
 
 Causes normal program termination with cleanup.
 

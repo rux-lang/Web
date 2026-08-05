@@ -1,4 +1,4 @@
-# `Write`
+# Write
 
 Writes bytes to a file descriptor.
 

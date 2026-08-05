@@ -1,4 +1,4 @@
-# `modff`
+# modff
 
 Decomposes a number into integer and fractional parts.
 

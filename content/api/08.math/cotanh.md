@@ -1,4 +1,4 @@
-# `Cotanh`
+# Cotanh
 
 Returns the hyperbolic cotangent.
 

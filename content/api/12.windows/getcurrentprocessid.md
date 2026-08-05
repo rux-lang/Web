@@ -1,4 +1,4 @@
-# `GetCurrentProcessId`
+# GetCurrentProcessId
 
 Returns the identifier of the calling process.
 

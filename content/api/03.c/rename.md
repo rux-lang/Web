@@ -1,4 +1,4 @@
-# `rename`
+# rename
 
 Renames a file, moving it if necessary.
 

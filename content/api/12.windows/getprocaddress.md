@@ -1,4 +1,4 @@
-# `GetProcAddress`
+# GetProcAddress
 
 Retrieves the address of an exported DLL symbol.
 

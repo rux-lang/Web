@@ -1,4 +1,4 @@
-# `atan2f`
+# atan2f
 
 Computes arc tangent, using signs to determine quadrants.
 

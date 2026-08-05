@@ -1,4 +1,4 @@
-# `GetPid`
+# GetPid
 
 Returns the calling process ID.
 

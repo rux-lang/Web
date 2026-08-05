@@ -1,4 +1,4 @@
-# `tmpfile`
+# tmpfile
 
 Creates and opens a temporary file with a unique name.
 

@@ -1,4 +1,4 @@
-# `ExitProcess`
+# ExitProcess
 
 Terminates the calling process and all of its threads.
 

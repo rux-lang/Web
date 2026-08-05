@@ -1,4 +1,4 @@
-# `Log10`
+# Log10
 
 Returns the base-10 logarithm.
 

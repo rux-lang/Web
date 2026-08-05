@@ -1,4 +1,4 @@
-# `Assert`
+# Assert
 
 Checks a condition at run time and aborts if it does not hold.
 

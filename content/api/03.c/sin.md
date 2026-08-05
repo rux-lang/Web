@@ -1,4 +1,4 @@
-# `sin`
+# sin
 
 Computes sine.
 

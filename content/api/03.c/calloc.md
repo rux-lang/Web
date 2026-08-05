@@ -1,4 +1,4 @@
-# `calloc`
+# calloc
 
 Allocates memory for an array of num objects of size and zero-initializes it.
 

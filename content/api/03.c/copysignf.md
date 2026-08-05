@@ -1,4 +1,4 @@
-# `copysignf`
+# copysignf
 
 Copies the sign of a floating-point value.
 

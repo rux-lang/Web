@@ -1,4 +1,4 @@
-# `clearerr`
+# clearerr
 
 Clears the end-of-file and error indicators for the given stream.
 

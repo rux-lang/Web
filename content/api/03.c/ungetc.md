@@ -1,4 +1,4 @@
-# `ungetc`
+# ungetc
 
 Puts a character back into the given stream.
 

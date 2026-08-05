@@ -1,4 +1,4 @@
-# `atanf`
+# atanf
 
 Computes arc tangent.
 

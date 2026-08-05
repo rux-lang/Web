@@ -1,4 +1,4 @@
-# `atof`
+# atof
 
 Converts a byte string to a floating point value.
 

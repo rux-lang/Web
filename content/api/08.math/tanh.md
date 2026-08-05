@@ -1,4 +1,4 @@
-# `Tanh`
+# Tanh
 
 Returns the hyperbolic tangent.
 

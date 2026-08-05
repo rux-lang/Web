@@ -1,4 +1,4 @@
-# `ReadFile`
+# ReadFile
 
 Reads bytes from a file or I/O device.
 

@@ -1,4 +1,4 @@
-# `CopyFileA`
+# CopyFileA
 
 Copies an existing file to a new path.
 

@@ -1,4 +1,4 @@
-# `IsError`
+# IsError
 
 Tests whether a raw syscall result encodes a Linux error.
 

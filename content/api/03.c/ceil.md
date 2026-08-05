@@ -1,4 +1,4 @@
-# `ceil`
+# ceil
 
 Computes smallest integer not less than the given value.
 

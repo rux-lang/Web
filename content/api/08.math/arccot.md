@@ -1,4 +1,4 @@
-# `ArcCot`
+# ArcCot
 
 Returns the inverse cotangent, in radians.
 

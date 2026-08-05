@@ -1,4 +1,4 @@
-# `tanf`
+# tanf
 
 Computes tangent.
 

@@ -1,4 +1,4 @@
-# `fputc`
+# fputc
 
 Writes a character to the given stream.
 

@@ -1,4 +1,4 @@
-# `asin`
+# asin
 
 Computes arc sine.
 

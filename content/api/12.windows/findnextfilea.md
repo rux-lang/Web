@@ -1,4 +1,4 @@
-# `FindNextFileA`
+# FindNextFileA
 
 Retrieves the next entry from a file search.
 

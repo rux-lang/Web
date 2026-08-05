@@ -1,4 +1,4 @@
-# `ferror`
+# ferror
 
 Checks if the error indicator is set for the given stream.
 

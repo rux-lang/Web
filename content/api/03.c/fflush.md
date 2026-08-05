@@ -1,4 +1,4 @@
-# `fflush`
+# fflush
 
 Writes any unwritten data from the stream's buffer to the file.
 

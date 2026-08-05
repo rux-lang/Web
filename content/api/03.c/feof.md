@@ -1,4 +1,4 @@
-# `feof`
+# feof
 
 Checks if the end-of-file indicator is set for the given stream.
 

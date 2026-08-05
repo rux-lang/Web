@@ -1,4 +1,4 @@
-# `Clear`
+# Clear
 
 Forgets the contents but keeps the block.
 

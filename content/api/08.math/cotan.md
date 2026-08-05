@@ -1,4 +1,4 @@
-# `Cotan`
+# Cotan
 
 Returns the cotangent of an angle in radians.
 

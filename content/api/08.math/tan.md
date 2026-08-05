@@ -1,4 +1,4 @@
-# `Tan`
+# Tan
 
 Returns the tangent of an angle in radians.
 

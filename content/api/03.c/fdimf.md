@@ -1,4 +1,4 @@
-# `fdimf`
+# fdimf
 
 Computes positive difference of two floating-point values.
 

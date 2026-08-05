@@ -1,4 +1,4 @@
-# `ToString`
+# ToString
 
 Copies the contents out into a string.
 

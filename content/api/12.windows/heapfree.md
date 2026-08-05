@@ -1,4 +1,4 @@
-# `HeapFree`
+# HeapFree
 
 Releases a block allocated from a Win32 heap.
 

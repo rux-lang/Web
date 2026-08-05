@@ -1,4 +1,4 @@
-# `#build`
+# #build
 
 Compile-time information about the active build.
 

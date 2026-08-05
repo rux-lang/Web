@@ -1,4 +1,4 @@
-# `srand`
+# srand
 
 Seeds the pseudo-random number generator used by rand.
 

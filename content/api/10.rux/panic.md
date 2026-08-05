@@ -1,4 +1,4 @@
-# `Panic`
+# Panic
 
 Terminates the program immediately with a message.
 

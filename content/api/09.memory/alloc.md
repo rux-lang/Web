@@ -1,4 +1,4 @@
-# `Alloc`
+# Alloc
 
 Allocates an uninitialized block of memory.
 

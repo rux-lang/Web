@@ -1,4 +1,4 @@
-# `sinh`
+# sinh
 
 Computes hyperbolic sine.
 

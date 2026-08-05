@@ -1,4 +1,4 @@
-# `Cosh`
+# Cosh
 
 Returns the hyperbolic cosine.
 

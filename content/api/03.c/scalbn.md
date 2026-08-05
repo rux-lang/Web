@@ -1,4 +1,4 @@
-# `scalbn`
+# scalbn
 
 Multiplies a number by FLT_RADIX raised to an integer power.
 

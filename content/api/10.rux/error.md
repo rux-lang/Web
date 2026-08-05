@@ -1,4 +1,4 @@
-# `#Error`
+# #Error
 
 Emits a compilation error.
 

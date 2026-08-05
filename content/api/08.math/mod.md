@@ -1,4 +1,4 @@
-# `Mod`
+# Mod
 
 Returns the floating-point remainder of `x / y`.
 

@@ -1,4 +1,4 @@
-# `rand`
+# rand
 
 Returns a pseudo-random integer value between 0 and RAND_MAX.
 

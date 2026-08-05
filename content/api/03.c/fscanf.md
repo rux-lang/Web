@@ -1,4 +1,4 @@
-# `fscanf`
+# fscanf
 
 Reads formatted input from a file stream.
 

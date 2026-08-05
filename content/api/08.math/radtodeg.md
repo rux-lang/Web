@@ -1,4 +1,4 @@
-# `RadToDeg`
+# RadToDeg
 
 Converts an angle from radians to degrees.
 

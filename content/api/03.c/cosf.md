@@ -1,4 +1,4 @@
-# `cosf`
+# cosf
 
 Computes cosine.
 

@@ -1,4 +1,4 @@
-# `Floor`
+# Floor
 
 Rounds down to the nearest integer value.
 

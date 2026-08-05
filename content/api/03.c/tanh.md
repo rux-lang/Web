@@ -1,4 +1,4 @@
-# `tanh`
+# tanh
 
 Computes hyperbolic tangent.
 

@@ -1,4 +1,4 @@
-# `ReadLine`
+# ReadLine
 
 Reads standard input through the next newline, and returns it as a `String`.
 

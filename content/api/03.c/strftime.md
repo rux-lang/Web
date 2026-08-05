@@ -1,4 +1,4 @@
-# `strftime`
+# strftime
 
 Converts a tm object to a custom textual representation.
 

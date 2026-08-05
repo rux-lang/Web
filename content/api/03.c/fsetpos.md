@@ -1,4 +1,4 @@
-# `fsetpos`
+# fsetpos
 
 Sets the file position of the stream to the given position.
 

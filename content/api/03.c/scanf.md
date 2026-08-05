@@ -1,4 +1,4 @@
-# `scanf`
+# scanf
 
 Reads formatted input from stdin.
 

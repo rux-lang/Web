@@ -3,7 +3,7 @@ navigation:
   title: Overview
 ---
 
-# `StringBuilder`
+# StringBuilder
 
 A growable buffer for building a string in steps.
 

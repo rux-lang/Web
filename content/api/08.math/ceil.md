@@ -1,4 +1,4 @@
-# `Ceil`
+# Ceil
 
 Rounds up to the nearest integer value.
 

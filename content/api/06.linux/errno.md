@@ -1,4 +1,4 @@
-# `Errno`
+# Errno
 
 Decodes the errno value from a raw syscall result.
 

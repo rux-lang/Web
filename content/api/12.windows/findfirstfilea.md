@@ -1,4 +1,4 @@
-# `FindFirstFileA`
+# FindFirstFileA
 
 Starts a file search and returns its first matching entry.
 

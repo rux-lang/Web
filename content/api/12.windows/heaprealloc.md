@@ -1,4 +1,4 @@
-# `HeapReAlloc`
+# HeapReAlloc
 
 Resizes a block allocated from a Win32 heap.
 

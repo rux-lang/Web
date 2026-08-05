@@ -1,4 +1,4 @@
-# `fputs`
+# fputs
 
 Writes a string to the given stream.
 

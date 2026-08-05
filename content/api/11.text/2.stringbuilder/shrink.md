@@ -1,4 +1,4 @@
-# `Shrink`
+# Shrink
 
 Drops the capacity the builder is not using.
 

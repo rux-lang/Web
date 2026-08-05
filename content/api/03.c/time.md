@@ -1,4 +1,4 @@
-# `time`
+# time
 
 Returns the current calendar time since the epoch.
 
