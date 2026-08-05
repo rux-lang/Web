@@ -12,13 +12,24 @@ useSeoMeta({
 const api = useRegistryApi();
 const search = reactive({ q: "" });
 
-const { data, error, status, refresh } = await useAsyncData<DataEnvelope<PackageHighlights>>(
+/**
+ * Lazy, not awaited. `await useAsyncData` suspends the component until the
+ * request settles, so with `server: false` the whole page waited on the API
+ * before painting anything. Lazy returns immediately, the shell renders, and
+ * the highlights fill in — which is the point of loading them client-side.
+ */
+const { data, error, status, refresh } = useLazyAsyncData<DataEnvelope<PackageHighlights>>(
   "catalog-highlights",
   (_nuxtApp, { signal }) => api.get("/v1/highlights", undefined, signal),
   { server: false },
 );
 
 const failure = computed(() => (error.value ? normalizeApiError(error.value) : null));
+
+// `idle` is the status before the client-side fetch starts. Without it the
+// template falls through to the empty state for a frame and flashes
+// "No package highlights yet" before the spinner appears.
+const loading = computed(() => status.value === "pending" || status.value === "idle");
 const hasHighlights = computed(() => Boolean(data.value?.data.recent.length || data.value?.data.popular.length));
 
 function submitSearch() {
@@ -73,7 +84,7 @@ function submitSearch() {
     </UPageHero>
 
     <UContainer class="pb-16 sm:pb-24">
-      <AppLoadingState v-if="status === 'pending'" label="Loading package highlights" />
+      <AppLoadingState v-if="loading" label="Loading package highlights" />
 
       <ApiProblemAlert v-else-if="failure" :failure="failure" @retry="refresh" />
 

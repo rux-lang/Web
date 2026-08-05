@@ -66,6 +66,42 @@
   --ui-bg-accented: var(--ui-color-neutral-800);
 }
 
+/* Coding ligatures (->, =>, !=, >=, <-, |>) for the mono face.
+
+   From Geist Mono 1.7.0 these live in Stylistic Set 11 rather than the standard
+   `liga`/`calt` features, so enabling ligatures the usual way does nothing —
+   `ss11` has to be named explicitly. The bundled woff2 reports fontRevision
+   1.70, so it has them.
+
+   `liga`/`calt` stay on because Tailwind's preflight sets
+   `font-feature-settings: normal` on code, kbd, samp and pre, which would
+   otherwise drop contextual alternates in Chromium. `.font-mono` covers the
+   places the mono face is used outside those tags — the hero's install field,
+   version badges, and inline code in the registry. */
+code,
+kbd,
+samp,
+pre,
+.font-mono {
+  font-variant-ligatures: common-ligatures contextual;
+  font-feature-settings:
+    "liga" 1,
+    "calt" 1,
+    "ss11" 1;
+}
+
+/* Shiki emits both themes into every token as CSS variables and switches on
+   `html.dark`. nuxt.com forces the dark values with !important, because the
+   generated `html .default` rule is emitted after the dark one and otherwise
+   wins the cascade on tokens the dark theme styles identically. */
+html.dark .shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
 /* Nuxt UI opts into the View Transitions API for route changes. The default
    cross-fade double-exposes the hero gradient during navigation; nuxt.com turns
    the root animation off and lets the individual elements handle their own. */

@@ -46,13 +46,13 @@ export default defineAppConfig({
       // content/partials/home-examples.md needs a line here too.
       codeIcon: {
         rux: "i-lucide-file-code",
-        hello: "i-lucide-message-circle",
-        factorial: "i-lucide-sigma",
+        hello: "i-lucide-message-square-text",
+        factorial: "i-lucide-infinity",
         func: "i-lucide-square-function",
         variadic: "i-lucide-ellipsis",
-        struct: "i-lucide-box",
-        mut: "i-lucide-pencil",
-        pointer: "i-lucide-map-pin",
+        struct: "i-lucide-layout-panel-top",
+        mut: "i-lucide-pen-line",
+        pointer: "i-lucide-at-sign",
         interface: "i-lucide-plug",
         import: "i-lucide-import",
       },

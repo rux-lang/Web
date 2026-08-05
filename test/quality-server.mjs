@@ -23,26 +23,26 @@ const catalogPackages = [
     version_url: "/v1/packages/rux/json/1.1.0",
   },
   {
-    namespace: "Community_Tools",
-    package: "Http_Client",
+    namespace: "CommunityTools",
+    package: "HttpClient",
     version: "1.0.0",
     package_type: "source",
     description: "HTTP client with streaming bodies and JSON helpers.",
     published_at: "2026-04-01T08:00:00Z",
     yanked: false,
-    package_url: "/v1/packages/community-tools/http-client",
-    version_url: "/v1/packages/community-tools/http-client/1.0.0",
+    package_url: "/v1/packages/communitytools/httpclient",
+    version_url: "/v1/packages/communitytools/httpclient/1.0.0",
   },
   {
     namespace: "Acme",
-    package: "Registry_Cli",
+    package: "RegistryCli",
     version: "2.0.0+portable",
     package_type: "program",
     description: "Portable command-line tools for exploring a Rux registry.",
     published_at: "2026-05-01T15:05:00Z",
     yanked: false,
-    package_url: "/v1/packages/acme/registry-cli",
-    version_url: "/v1/packages/acme/registry-cli/2.0.0%2Bportable",
+    package_url: "/v1/packages/acme/registrycli",
+    version_url: "/v1/packages/acme/registrycli/2.0.0%2Bportable",
   },
 ];
 
@@ -146,7 +146,7 @@ const dashboard = {
   namespaces: [
     { namespace: "Rux", role: "owner", package_count: 2 },
     {
-      namespace: "Community_Tools",
+      namespace: "CommunityTools",
       role: "maintainer",
       package_count: 1,
     },

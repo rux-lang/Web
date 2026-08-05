@@ -31,7 +31,7 @@ const inSection = computed(() => /^\/(start|docs|cli|api|blog)(\/|$)/.test(path.
 // One catch-all serves all 550 content pages, so they share a single
 // heroBackground value — the same "muted, present but not loud" level nuxt.com
 // uses across its docs. Marketing-style pages set their own, louder value.
-definePageMeta({ layout: false, heroBackground: "opacity-30" });
+definePageMeta({ heroBackground: "opacity-30" });
 
 // UPage sizes its centre column from whether the #right SLOT exists, not from
 // whether that slot rendered anything — so a v-if on UContentToc alone leaves a

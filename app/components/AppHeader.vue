@@ -117,6 +117,12 @@ useHead(() => ({
       </UTooltip>
     </template>
 
+    <!-- Replaces the theme's icon-swap toggle with nuxt.com's springing
+         hamburger. UHeader owns the open state and passes it down. -->
+    <template #toggle="{ open, toggle }">
+      <AppHeaderToggle :open="open" class="lg:hidden" @click="toggle" />
+    </template>
+
     <!-- Mobile menu. Without this slot there is no navigation on small screens. -->
     <template #body>
       <AppHeaderBody />

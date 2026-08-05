@@ -10,8 +10,6 @@ const { data: posts } = await useAsyncData("blog-posts", () =>
   queryCollection("docs").where("path", "LIKE", "/blog/%").where("extension", "=", "md").order("date", "DESC").all(),
 );
 
-definePageMeta({ layout: false });
-
 useSeoMeta({
   title: "Blog",
   description: "Release notes and articles from the Rux programming language project.",

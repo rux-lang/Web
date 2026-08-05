@@ -28,18 +28,23 @@ const socials = [
   <!-- nuxt.com marks the seam with a monochrome brand glyph. Rux has no
        simple-icons entry, so the mark goes through the default slot rather than
        `icon` — which also means the size and colour are set here, since the
-       theme's `icon` class (`shrink-0 size-5`) only applies to the prop. -->
-  <USeparator class="h-px">
-    <RuxMark class="text-muted size-5" />
+       theme's `icon` class (`shrink-0 size-5`) only applies to the prop.
+
+       No `h-px` on the root: that is the height of the *rule*, and forcing it
+       on the container clipped the glyph to a sliver. The separator draws its
+       own line; the root just needs to be tall enough to hold the mark. -->
+  <USeparator>
+    <RuxMark class="text-muted size-8" />
   </USeparator>
 
   <UFooter :ui="{ top: 'border-b border-default' }">
     <template #top>
       <UContainer>
         <!-- The theme grid is xl:grid-cols-3 with the link columns spanning two,
-             leaving the third for a brand block (here) or nuxt.com's newsletter
-             form. With no brand block the links would sit in the right two
-             thirds against an empty column, so they span all three instead. -->
+             leaving the third for a brand block (as nuxt.com uses for its
+             newsletter form). There is no brand block here, so without this the
+             links would sit in the right two thirds against an empty column —
+             they span all three instead. -->
         <UFooterColumns :columns="columns" :ui="{ center: 'xl:col-span-3' }" />
       </UContainer>
     </template>

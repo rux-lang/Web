@@ -18,7 +18,7 @@ const requestQuery = computed<Record<string, string | number>>(() => ({
 }));
 const requestKey = computed(() => `catalog-keywords:${cursor.value}`);
 
-const { data, error, status, refresh } = await useAsyncData<CursorPage<KeywordSummary>>(
+const { data, error, status, refresh } = useLazyAsyncData<CursorPage<KeywordSummary>>(
   requestKey,
   (_nuxtApp, { signal }) => api.get("/v1/keywords", requestQuery.value, signal),
   { server: false },
@@ -36,7 +36,7 @@ const failure = computed(() => (error.value ? normalizeApiError(error.value) : n
     />
 
     <div class="mt-8">
-      <AppLoadingState v-if="status === 'pending'" label="Loading package keywords" />
+      <AppLoadingState v-if="status === 'pending' || status === 'idle'" label="Loading package keywords" />
 
       <ApiProblemAlert v-else-if="failure" :failure="failure" @retry="refresh" />
 

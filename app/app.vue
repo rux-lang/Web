@@ -9,10 +9,6 @@ const { data: searchFiles } = useLazyAsyncData("search", () => queryCollectionSe
   server: false,
 });
 
-useHead({
-  htmlAttrs: { lang: "en" },
-});
-
 // `d` toggles the theme from anywhere, as on nuxt.com — declared at the root so
 // it works on every page, not only where the header button is in view.
 // defineShortcuts ignores keystrokes aimed at an input, so typing a "d" into
@@ -27,24 +23,39 @@ defineShortcuts({
   },
 });
 
-// nuxt.com drives the hero wash from its `default.vue` layout; this app keeps
-// the header/footer chrome in app.vue instead, so it is wired here. Pages opt
-// into an opacity with `definePageMeta({ heroBackground: "opacity-30" })` —
-// absent the key, the gradient renders at full strength.
-const route = useRoute();
-const heroBackgroundClass = computed(() => route.meta?.heroBackground ?? "");
+// Tints the browser chrome on mobile to match the page. The dark value is the
+// `.dark --ui-bg` from main.css (neutral-950) resolved to a literal, because a
+// var() reference is meaningless to the OS reading this meta tag.
+const themeColor = computed(() => (colorMode.value === "dark" ? "#020617" : "white"));
+
+useHead({
+  htmlAttrs: { lang: "en" },
+  meta: [{ key: "theme-color", name: "theme-color", content: themeColor }],
+});
 </script>
 
 <template>
-  <UApp>
-    <AppHeader />
-    <UMain class="relative">
-      <HeroBackground class="absolute -top-px -z-10 w-full shrink-0 text-primary" :class="heroBackgroundClass" />
+  <!--
+    The header/footer chrome lives in layouts/default.vue, as on nuxt.com, so a
+    page can opt out of it (or nest another layout inside it) through
+    definePageMeta rather than by special-casing the root component.
+  -->
+  <UApp :tooltip="{ delayDuration: 300 }">
+    <NuxtLoadingIndicator color="var(--ui-primary)" />
+
+    <!--
+      motion-v defaults to `never`, i.e. it animates regardless of the OS
+      setting. `user` makes every <Motion> in the app honour
+      prefers-reduced-motion by jumping straight to the final values — the
+      staggered entrances on the home page are decorative, so there is nothing
+      to lose by skipping them for people who asked not to see movement.
+    -->
+    <MotionConfig reduced-motion="user">
       <NuxtLayout>
         <NuxtPage />
       </NuxtLayout>
-    </UMain>
-    <AppFooter />
+    </MotionConfig>
+
     <ClientOnly>
       <LazyUContentSearch :files="searchFiles" :navigation="navigation" />
     </ClientOnly>

@@ -17,7 +17,7 @@ const api = useRegistryApi();
 const requestKey = computed(() => `package-versions:${props.namespace}:${props.packageName}`);
 const requestPath = computed(() => `${packageApiPath(props.namespace, props.packageName)}/versions`);
 
-const { data, error, status, refresh } = await useAsyncData<CursorPage<PackageVersionHistory>>(
+const { data, error, status, refresh } = useLazyAsyncData<CursorPage<PackageVersionHistory>>(
   requestKey,
   (_nuxtApp, { signal }) => api.get(requestPath.value, { limit: 20 }, signal),
   { server: false },
@@ -71,7 +71,7 @@ async function loadMore() {
       </div>
     </template>
 
-    <AppLoadingState v-if="status === 'pending'" label="Loading versions" />
+    <AppLoadingState v-if="status === 'pending' || status === 'idle'" label="Loading versions" />
     <ApiProblemAlert v-else-if="failure" :failure="failure" @retry="refresh" />
 
     <div v-else>

@@ -48,7 +48,9 @@ const requestQuery = computed(() => catalogApiQuery(requestFilters.value, cursor
 const requestEnabled = computed(() => !props.requireQuery || Boolean(requestFilters.value.q.trim()));
 const requestKey = computed(() => `catalog:${props.path}:${JSON.stringify(requestQuery.value)}`);
 
-const { data, error, status, refresh } = await useAsyncData<CursorPage<PackageSearchResult>>(
+// Lazy so the surrounding page paints before the catalog request settles; see
+// the note in app/pages/packages/index.vue.
+const { data, error, status, refresh } = useLazyAsyncData<CursorPage<PackageSearchResult>>(
   requestKey,
   (_nuxtApp, { signal }) => api.get("/v1/search", requestQuery.value, signal),
   { enabled: requestEnabled, server: false },
@@ -85,7 +87,7 @@ function applyFilters(filters: CatalogFilters) {
       size="xl"
     />
 
-    <AppLoadingState v-else-if="status === 'pending'" label="Loading packages" />
+    <AppLoadingState v-else-if="status === 'pending' || status === 'idle'" label="Loading packages" />
 
     <ApiProblemAlert v-else-if="failure" :failure="failure" @retry="refresh" />
 

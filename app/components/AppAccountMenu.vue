@@ -91,7 +91,7 @@ const menuItems = computed<DropdownMenuItem[][]>(() => {
       v-else-if="auth.status.value === 'anonymous'"
       :block="_props.mobile"
       label="Sign in"
-      icon="i-simple-icons-github"
+      icon="i-lucide-lock"
       color="neutral"
       :variant="_props.mobile ? 'outline' : 'ghost'"
       :to="signInTarget"

@@ -14,7 +14,11 @@ ruxGrammar.name = "rux";
 
 export default defineNuxtConfig({
   // @nuxt/content MUST come after @nuxt/ui, or prose components don't resolve.
-  modules: ["@nuxt/ui", "@nuxt/content", "@nuxtjs/sitemap", "@nuxt/eslint"],
+  //
+  // motion-v is already in the tree as a dependency of @nuxt/ui, but @nuxt/ui
+  // only consumes it internally — the module is what auto-imports <Motion> for
+  // our own templates (the header toggle, the home page's in-view stagger).
+  modules: ["@nuxt/ui", "@nuxt/content", "@nuxtjs/sitemap", "@nuxt/eslint", "motion-v/nuxt"],
   css: ["~/assets/css/main.css"],
   compatibilityDate: "2025-01-01",
 
@@ -64,15 +68,14 @@ export default defineNuxtConfig({
         // VitePress default outline was h2 only.
         toc: { depth: 2, searchDepth: 2 },
         highlight: {
-          // All three keys must be set. @nuxt/ui defaults to
-          // light/default/dark = material-theme-{lighter,,palenight}, and
-          // overriding only `default` + `dark` leaves `light` behind — the
-          // emitted CSS puts `html.light .shiki span` after `html .default`,
-          // so light mode would silently render in material-theme-lighter.
+          // nuxt.com's pair, which is also @nuxt/ui's default. All three keys
+          // must still be set explicitly: the emitted CSS puts
+          // `html.light .shiki span` after `html .default`, so leaving `light`
+          // unset lets it fall through to whatever `default` resolves to.
           theme: {
-            default: "github-light",
-            light: "github-light",
-            dark: "github-dark",
+            default: "material-theme-lighter",
+            light: "material-theme-lighter",
+            dark: "material-theme-palenight",
           },
           // Supplying `langs` REPLACES the default set, so every language the
           // site actually uses has to be listed explicitly.
@@ -125,6 +128,17 @@ export default defineNuxtConfig({
       icons: [
         "lucide:file-code",
         "lucide:arrow-up-right",
+        // Header dropdown icons. These live in app/composables/useNavigation.ts,
+        // and the scanner only globs .vue/.md/.yml — an icon named only in a
+        // .ts file is invisible to it and fails to resolve at prerender.
+        "lucide:rocket",
+        "lucide:book-open",
+        "lucide:square-terminal",
+        "lucide:code-xml",
+        "lucide:newspaper",
+        "lucide:messages-square",
+        "lucide:hand-heart",
+        "lucide:circle-help",
         "lucide:message-circle",
         "lucide:sigma",
         "lucide:square-function",

@@ -4,9 +4,14 @@ defineProps<{ error: NuxtError }>();
 useHead({ title: "Page not found" });
 </script>
 <template>
-  <UApp>
-    <AppHeader />
-    <UMain>
+  <!--
+    A fatal error replaces app.vue entirely, so this component supplies its own
+    UApp. The chrome, though, comes from the same `default` layout every page
+    uses — otherwise the header and footer here silently drift out of step with
+    the rest of the site.
+  -->
+  <UApp :tooltip="{ delayDuration: 300 }">
+    <NuxtLayout name="default">
       <UContainer class="py-24 text-center">
         <p class="text-primary font-semibold">
           {{ error?.statusCode ?? 404 }}
@@ -26,7 +31,6 @@ useHead({ title: "Page not found" });
           <UButton to="/docs" color="neutral" variant="subtle">Documentation</UButton>
         </div>
       </UContainer>
-    </UMain>
-    <AppFooter />
+    </NuxtLayout>
   </UApp>
 </template>

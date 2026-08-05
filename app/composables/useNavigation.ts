@@ -29,21 +29,25 @@ export const useHeaderLinks = () => {
         {
           label: "Get Started",
           description: "Install Rux and build your first program",
+          icon: "i-lucide-rocket",
           to: "/start",
         },
         {
           label: "Rux Reference",
           description: "The complete language reference",
+          icon: "i-lucide-book-open",
           to: "/docs",
         },
         {
           label: "CLI Reference",
           description: "Every rux subcommand",
+          icon: "i-lucide-square-terminal",
           to: "/cli",
         },
         {
           label: "API Reference",
           description: "Standard library and platform APIs",
+          icon: "i-lucide-code-xml",
           to: "/api",
         },
       ],
@@ -54,11 +58,42 @@ export const useHeaderLinks = () => {
       to: "/packages",
       active: route.path.startsWith("/packages"),
     },
-    { label: "Blog", to: "/blog", active: route.path.startsWith("/blog") },
-    { label: "Community", to: "/community" },
-    { label: "Support", to: "/support" },
     { label: "Download", to: "/download" },
-    { label: "FAQ", to: "/faq" },
+    {
+      // The four standalone pages that are neither reference nor tooling,
+      // grouped so the bar does not run to eight top-level items. `to` points
+      // at Community as the most representative of the four, matching how Docs
+      // opens onto the reference.
+      label: "Resources",
+      to: "/community",
+      active: /^\/(blog|community|support|faq)(\/|$)/.test(route.path),
+      children: [
+        {
+          label: "Blog",
+          description: "Release notes and articles from the project",
+          icon: "i-lucide-newspaper",
+          to: "/blog",
+        },
+        {
+          label: "Community",
+          description: "Where Rux is discussed and built",
+          icon: "i-lucide-messages-square",
+          to: "/community",
+        },
+        {
+          label: "Support",
+          description: "Get help, report a bug, or sponsor the project",
+          icon: "i-lucide-hand-heart",
+          to: "/support",
+        },
+        {
+          label: "FAQ",
+          description: "Short answers to the questions asked most",
+          icon: "i-lucide-circle-help",
+          to: "/faq",
+        },
+      ],
+    },
   ]);
 
   return { headerLinks };
@@ -92,11 +127,6 @@ const footerLinks: FooterColumn[] = [
       { label: "Support", to: "/support" },
       { label: "Design Kit", to: "/design-kit" },
       { label: "FAQ", to: "/faq" },
-      {
-        label: "Source Code",
-        to: "https://github.com/rux-lang/Rux",
-        target: "_blank",
-      },
     ],
   },
 ];

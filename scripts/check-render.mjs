@@ -67,16 +67,21 @@ for (const route of ["/docs/functions/declaration", "/api/io/print", "/start/exa
   });
 }
 
-// The compiled themes must be the configured pair, not @nuxt/ui's material
-// default — overriding only `default`+`dark` leaves `light` behind, and the
-// emitted `html.light .shiki span` rule wins in light mode.
-check("code", "shiki themes are the configured pair", () => {
+// All three theme slots must compile through — setting only `default`+`dark`
+// leaves `light` at whatever @nuxt/ui defaults to, and the emitted
+// `html.light .shiki span` rule then wins in light mode. Shiki emits the
+// classes in default/light/dark order, so this catches a missing slot as well
+// as a stale theme name. Keep in step with content.build.markdown.highlight
+// .theme in nuxt.config.ts.
+const SHIKI_THEMES = ["material-theme-lighter", "material-theme-lighter", "material-theme-palenight"];
+
+check("code", "shiki themes are the configured trio", () => {
   const h = read("/docs/functions/declaration");
   if (!h) return { ok: false, detail: "route missing" };
   const cls = h.match(/class="[^"]*shiki-themes ([^"]*)"/)?.[1] ?? "";
   const themes = cls.trim().split(/\s+/).filter(Boolean);
   return {
-    ok: themes.length > 0 && themes.every((t) => t.startsWith("github-")),
+    ok: themes.length === SHIKI_THEMES.length && themes.every((t, i) => t === SHIKI_THEMES[i]),
     detail: themes.join(" ") || "none",
   };
 });

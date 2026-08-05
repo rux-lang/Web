@@ -14,7 +14,9 @@ const packageName = computed(() => String(route.params.package));
 const requestedVersion = computed(() => scalarQueryValue(route.query.version));
 const requestKey = computed(() => `package-page:${namespace.value}:${packageName.value}:${requestedVersion.value}`);
 
-const { data, error, status, refresh } = await useAsyncData<PackagePageDocument>(
+// Lazy so the breadcrumb and shell paint before the API responds; see the note
+// in app/pages/packages/index.vue.
+const { data, error, status, refresh } = useLazyAsyncData<PackagePageDocument>(
   requestKey,
   async (_nuxtApp, { signal }) => {
     const summaryRequest = api.get<DataEnvelope<PackageSummary>>(
@@ -109,7 +111,7 @@ const breadcrumbItems = computed(() => [
   <UContainer class="py-10 sm:py-14">
     <UBreadcrumb :items="breadcrumbItems" class="mb-6" />
 
-    <AppLoadingState v-if="status === 'pending'" label="Loading package details" />
+    <AppLoadingState v-if="status === 'pending' || status === 'idle'" label="Loading package details" />
 
     <ApiProblemAlert v-else-if="failure" :failure="failure" @retry="refresh" />
 

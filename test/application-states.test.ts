@@ -11,6 +11,7 @@ describe("AppLoadingState", () => {
       global: {
         stubs: {
           USkeleton: { template: "<div data-skeleton />" },
+          UIcon: { props: ["name"], template: '<i data-icon :data-name="name" />' },
         },
       },
     });
@@ -19,7 +20,18 @@ describe("AppLoadingState", () => {
     expect(status.attributes("aria-live")).toBe("polite");
     expect(status.attributes("aria-busy")).toBe("true");
     expect(status.text()).toContain("Loading packages");
-    expect(status.get('[aria-hidden="true"]').findAll("[data-skeleton]")).toHaveLength(6);
+
+    // The spinner is decorative — the label is what gets announced.
+    const spinner = status.get("[data-icon]");
+    expect(spinner.attributes("data-name")).toBe("i-lucide-loader-circle");
+    expect(spinner.attributes("aria-hidden")).toBe("true");
+
+    // Skeletons are placeholders, so they sit inside an aria-hidden container.
+    const skeletons = status.findAll("[data-skeleton]");
+    expect(skeletons).toHaveLength(6);
+    for (const skeleton of skeletons) {
+      expect(skeleton.element.closest('[aria-hidden="true"]')).not.toBeNull();
+    }
   });
 });
 

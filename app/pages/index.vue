@@ -59,11 +59,46 @@ const features = [
   },
 ];
 
+/**
+ * The toolchain numbers, laid out as nuxt.com's "Built on proven tools" panel:
+ * the figure is the card title and the old caption becomes the description.
+ *
+ * Each card carries its own hue, on the figure and in the background wash —
+ * the same per-card tinting nuxt.com gives its Vue / Vite / Nitro cards. Class
+ * names are spelled out in full rather than assembled from parts, because
+ * Tailwind scans this file as plain text and never sees a concatenation.
+ *
+ * The claims themselves are unchanged from the plain stat row this replaced.
+ */
 const stats = [
-  { value: "50ms", label: "typical compile — no LLVM, no waiting" },
-  { value: "1", label: "tiny binary for the whole toolchain" },
-  { value: "0", label: "dependencies, VMs, or runtimes" },
-  { value: "100%", label: "native machine code, full speed" },
+  {
+    icon: "i-lucide-timer",
+    value: "50ms",
+    label: "Typical compile — no LLVM, no waiting.",
+    color: "text-pink-500",
+    gradient: "from-pink-500/10",
+  },
+  {
+    icon: "i-lucide-package",
+    value: "1",
+    label: "Tiny binary for the whole toolchain.",
+    color: "text-sky-500",
+    gradient: "from-sky-500/10",
+  },
+  {
+    icon: "i-lucide-circle-slash",
+    value: "0",
+    label: "Dependencies, VMs, or runtimes.",
+    color: "text-emerald-500",
+    gradient: "from-emerald-500/10",
+  },
+  {
+    icon: "i-lucide-cpu",
+    value: "100%",
+    label: "Native machine code, full speed.",
+    color: "text-amber-500",
+    gradient: "from-amber-500/10",
+  },
 ];
 
 /**
@@ -71,15 +106,20 @@ const stats = [
  * as an unlinked card with an "Under development" badge — the union is declared
  * so those two stay optional rather than being inferred away.
  *
- * All Simple Icons, including VS Code: it used to be the odd one out on the
- * vscode-icons set, which draws a file-type glyph rather than the product mark
- * the other five use.
+ * Icons come from the multi-colour `logos` set rather than monochrome Simple
+ * Icons, so each product keeps its own brand mark. Two exceptions fall back to
+ * Simple Icons plus a tint class, which is how nuxt.com colours its own stat
+ * tiles (`text-red-500` on npm, `text-indigo-400` on Discord):
+ *   - `logos` has no Zed entry at all;
+ *   - `logos:neovim` is the wide wordmark, which squashes in a square tile.
+ *
+ * Six editors split 3 / centre / 3 across the bento.
  */
-const editors: { name: string; icon: string; to?: string; cta?: string }[] = [
+const editors: { name: string; icon: string; iconClass?: string; to?: string; cta?: string }[] = [
   {
     name: "Visual Studio Code",
     to: "https://marketplace.visualstudio.com/items?itemName=rux-lang.vscode-rux",
-    icon: "i-simple-icons-visualstudiocode",
+    icon: "i-logos-visual-studio-code",
     cta: "Get extension",
   },
   {
@@ -91,13 +131,17 @@ const editors: { name: string; icon: string; to?: string; cta?: string }[] = [
   {
     name: "Sublime Text",
     to: "https://packagecontrol.io/packages/Rux",
-    icon: "i-simple-icons-sublimetext",
+    icon: "i-logos-sublimetext-icon",
     cta: "Get package",
   },
-  { name: "Neovim", icon: "i-simple-icons-neovim" },
-  { name: "JetBrains IDEs", icon: "i-simple-icons-jetbrains" },
-  { name: "Emacs", icon: "i-simple-icons-gnuemacs" },
+  { name: "Neovim", icon: "i-simple-icons-neovim", iconClass: "text-green-500" },
+  { name: "JetBrains IDEs", icon: "i-logos-jetbrains" },
+  { name: "Emacs", icon: "i-logos-emacs" },
 ];
+
+// The bento puts three cards either side of the centre panel.
+const editorsLeft = computed(() => editors.slice(0, 3));
+const editorsRight = computed(() => editors.slice(3));
 
 // Shown in the hero's announcement badge; see nuxt.config runtimeConfig.
 const { ruxVersion } = useRuntimeConfig().public;
@@ -109,7 +153,7 @@ const { data: examples } = await useAsyncData("home-examples", () =>
 
 // The landing page is the one place the hero wash runs at full strength, as on
 // nuxt.com; every other page damps it down.
-definePageMeta({ layout: false, heroBackground: "" });
+definePageMeta({ heroBackground: "" });
 
 useSeoMeta({
   title: "Rux Programming Language",
@@ -205,17 +249,39 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
         features: 'lg:grid-cols-3 lg:gap-10',
       }"
     >
+      <!--
+        The cells rise and fade in as the section scrolls into view, staggered
+        100ms apart, exactly as nuxt.com animates its own feature grid. `once`
+        matters: without it the whole grid replays every time it re-enters the
+        viewport, which reads as a glitch rather than an entrance.
+      -->
       <template #features>
-        <li v-for="f in features" :key="f.title">
+        <Motion
+          v-for="(f, index) in features"
+          :key="f.title"
+          as="li"
+          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :transition="{ delay: 0.1 * index }"
+          :in-view-options="{ once: true }"
+        >
           <UPageFeature :icon="f.icon" :title="f.title" :description="f.description" orientation="vertical" />
-        </li>
+        </Motion>
 
-        <li class="bg-muted/50 flex h-full flex-col justify-center gap-4 p-4">
+        <!-- The CTA cell lands last, one step after the final feature. -->
+        <Motion
+          as="li"
+          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :transition="{ delay: 0.1 * features.length }"
+          :in-view-options="{ once: true }"
+          class="bg-muted/50 flex h-full flex-col justify-center gap-4 p-4"
+        >
           <span class="text-lg font-semibold">Dive into the language</span>
           <div>
             <UButton to="/docs" label="Start reading docs" trailing icon="i-lucide-arrow-right" />
           </div>
-        </li>
+        </Motion>
       </template>
     </UPageSection>
 
@@ -223,16 +289,49 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
       title="Up and Running in Seconds"
       description="One small download gives you the compiler, linter, package manager, formatter, and test runner. No SDKs to chain together, nothing else to install."
     >
-      <dl class="grid grid-cols-2 gap-6 sm:grid-cols-4">
-        <div v-for="s in stats" :key="s.label" class="text-center">
-          <dt class="text-4xl font-bold text-primary tabular-nums">
-            {{ s.value }}
-          </dt>
-          <dd class="mt-2 text-sm text-muted text-balance">
-            {{ s.label }}
-          </dd>
-        </div>
-      </dl>
+      <!--
+        nuxt.com's "Built on proven tools" treatment: no gap, and every card but
+        the last drops the border on its trailing edge, so the row reads as one
+        segmented panel rather than four boxes. Only the outer corners round.
+
+        Upstream switches to columns at `sm` because it has three cards; four
+        need more room, so this waits for `lg`.
+
+        The wash is the Rux purple on every card. nuxt.com varies the tint per
+        card because each is a different product's brand — these four are all
+        facets of one toolchain, so a different hue each would be decoration
+        with nothing behind it.
+      -->
+      <div class="grid grid-cols-1 lg:grid-cols-4">
+        <Motion
+          v-for="(s, index) in stats"
+          :key="s.value"
+          class="flex"
+          :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+          :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+          :transition="{ delay: 0.1 * index }"
+          :in-view-options="{ once: true }"
+        >
+          <UPageCard
+            :title="s.value"
+            :description="s.label"
+            class="h-full w-full"
+            :ui="{
+              root: [
+                'rounded-none border border-default ring-0 bg-linear-to-br from-5% via-transparent via-50% to-transparent',
+                s.gradient,
+                index === 0 ? 'max-lg:rounded-t-lg lg:rounded-s-lg' : '',
+                index === stats.length - 1 ? 'max-lg:rounded-b-lg lg:rounded-e-lg' : 'max-lg:border-b-0 lg:border-r-0',
+              ].join(' '),
+              title: `text-4xl font-bold tabular-nums ${s.color}`,
+            }"
+          >
+            <template #leading>
+              <UIcon :name="s.icon" class="size-6" :class="s.color" />
+            </template>
+          </UPageCard>
+        </Motion>
+      </div>
     </UPageSection>
 
     <UPageSection
@@ -240,26 +339,63 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
       description="Syntax highlighting and language support, wherever you write code."
       :ui="{ root: 'border-t border-default bg-linear-to-b from-muted to-default dark:from-muted/40' }"
     >
-      <UPageGrid class="lg:grid-cols-3">
-        <UPageCard v-for="e in editors" :key="e.name" variant="subtle" :to="e.to" :target="e.to ? '_blank' : undefined">
-          <div class="flex items-center gap-3">
-            <!-- The boxed mark is nuxt.com's stat-tile treatment: a bordered,
-                 default-background square that keeps six different brand glyphs
-                 reading as one set despite their varying weights. -->
-            <div class="border-default bg-default flex items-center justify-center rounded-lg border p-2">
-              <UIcon :name="e.icon" class="size-6" />
-            </div>
-            <div class="flex min-w-0 flex-col items-start gap-1">
-              <span class="text-highlighted text-lg font-semibold">{{ e.name }}</span>
-              <p v-if="e.cta" class="text-sm">{{ e.cta }}</p>
-              <UBadge v-else variant="subtle" color="neutral" size="sm">Under development</UBadge>
-            </div>
-          </div>
-        </UPageCard>
-      </UPageGrid>
+      <!--
+        nuxt.com's "Trusted by developers worldwide" bento: two narrow columns of
+        small cards flanking one tall panel. Six editors split 3 / centre / 3.
+      -->
+      <div class="flex flex-col gap-4 md:flex-row">
+        <div class="flex flex-col gap-4 md:w-1/4">
+          <HomeEditorCard v-for="(e, index) in editorsLeft" :key="e.name" :editor="e" :index="index" />
+        </div>
+
+        <div class="md:w-1/2">
+          <!-- Not `as-child`: see the note in HomeEditorCard.vue — it would put
+               the transform on UPageCard's stretched link and break the card. -->
+          <Motion
+            class="h-full"
+            :initial="{ opacity: 0, transform: 'translateY(10px)' }"
+            :while-in-view="{ opacity: 1, transform: 'translateY(0)' }"
+            :transition="{ delay: 0.3 }"
+            :in-view-options="{ once: true }"
+          >
+            <UPageCard class="h-full" variant="subtle" to="https://github.com/rux-lang" target="_blank">
+              <div class="flex h-full flex-col items-center justify-around gap-4 text-center">
+                <span class="text-xl font-semibold">Missing your editor?</span>
+                <p class="text-muted">
+                  Rux editor support is developed in the open, one repository per editor. Add the one you use.
+                </p>
+                <!-- UPageCard links via a stretched overlay rather than by
+                     wrapping its content, so this is a sibling anchor, not a
+                     nested one. It carries the same `to` so it works whichever
+                     of the two receives the click. -->
+                <UButton
+                  class="w-fit"
+                  label="Contribute support"
+                  icon="i-simple-icons-github"
+                  color="neutral"
+                  to="https://github.com/rux-lang"
+                  target="_blank"
+                />
+              </div>
+            </UPageCard>
+          </Motion>
+        </div>
+
+        <div class="flex flex-col gap-4 md:w-1/4">
+          <HomeEditorCard v-for="(e, index) in editorsRight" :key="e.name" :editor="e" :index="index" />
+        </div>
+      </div>
     </UPageSection>
 
-    <UPageCTA
+    <!-- Registry data, fetched in the browser. See the component. -->
+    <HomePackages />
+
+    <!--
+      nuxt.com renders Sponsors as a UPageSection sitting in the same
+      muted-to-default band every other section uses, not as a floating card —
+      so this is a section with that root recipe rather than a subtle UPageCTA.
+    -->
+    <UPageSection
       title="Sponsors"
       description="Rux is free, open source, and developed independently. You could be the first."
       :links="[
@@ -269,9 +405,11 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
           icon: 'i-lucide-heart',
         },
       ]"
-      variant="subtle"
-      class="my-16"
-      :ui="{ title: 'lg:text-5xl' }"
+      :ui="{
+        root: 'border-t border-default bg-linear-to-b from-muted to-default dark:from-muted/40',
+        container: 'py-12 sm:py-16 lg:py-20',
+        title: 'lg:text-5xl',
+      }"
     />
   </div>
 </template>

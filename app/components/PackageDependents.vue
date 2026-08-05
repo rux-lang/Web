@@ -15,7 +15,7 @@ const api = useRegistryApi();
 const requestKey = computed(() => `package-dependents:${props.namespace}:${props.packageName}`);
 const requestPath = computed(() => `${packageApiPath(props.namespace, props.packageName)}/dependents`);
 
-const { data, error, status, refresh } = await useAsyncData<CursorPage<DependentPackage>>(
+const { data, error, status, refresh } = useLazyAsyncData<CursorPage<DependentPackage>>(
   requestKey,
   (_nuxtApp, { signal }) => api.get(requestPath.value, { limit: 20 }, signal),
   { server: false },
@@ -63,7 +63,7 @@ async function loadMore() {
       <p class="mt-2 text-muted">Representative releases that require this package.</p>
     </div>
 
-    <AppLoadingState v-if="status === 'pending'" label="Loading dependents" />
+    <AppLoadingState v-if="status === 'pending' || status === 'idle'" label="Loading dependents" />
     <ApiProblemAlert v-else-if="failure" :failure="failure" @retry="refresh" />
 
     <div v-else>
