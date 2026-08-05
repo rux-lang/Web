@@ -52,6 +52,21 @@ export default defineContentConfig({
         // negative form makes that default the harmless one.
         hideToc: z.boolean().optional(),
         date: z.string().optional(),
+        // Blog card fields, read by app/pages/blog/index.vue and the RSS feed.
+        // Only /blog/* sets them; the 540-odd docs pages leave them undefined.
+        // The schema is not `.passthrough()`, so a frontmatter key that is not
+        // declared here is dropped silently on the way into the SQL dump.
+        category: z.string().optional(),
+        image: z.string().optional(),
+        authors: z
+          .array(
+            z.object({
+              name: z.string(),
+              avatar: z.object({ src: z.string() }).optional(),
+              to: z.string().optional(),
+            }),
+          )
+          .optional(),
       }),
     }),
 

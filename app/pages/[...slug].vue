@@ -26,7 +26,10 @@ const { data: surround } = await useAsyncData(`surround-${path.value}`, () =>
 // Sectioned pages get the sidebar; the standalone root pages (faq, download,
 // community, support, packages, playground) carried `sidebar: false` in
 // VitePress and keep that here.
-const inSection = computed(() => /^\/(start|docs|cli|api|blog)(\/|$)/.test(path.value));
+//
+// /blog is absent on purpose: posts are served by app/pages/blog/[slug].vue,
+// which gives them nuxt.com's article layout — no left sidebar — instead.
+const inSection = computed(() => /^\/(start|docs|cli|api)(\/|$)/.test(path.value));
 
 // One catch-all serves all 550 content pages, so they share a single
 // heroBackground value — the same "muted, present but not loud" level nuxt.com

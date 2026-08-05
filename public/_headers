@@ -7,3 +7,10 @@
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
+
+# The nitro route sets this itself, but the route is prerendered away — what
+# ships is a plain .xml file, which Cloudflare would otherwise serve as
+# application/xml. Readers accept that; the specific type is what makes browser
+# feed extensions offer to subscribe.
+/blog/rss.xml
+  Content-Type: application/rss+xml; charset=utf-8

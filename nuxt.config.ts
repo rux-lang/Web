@@ -47,6 +47,14 @@ export default defineNuxtConfig({
     head: {
       titleTemplate: "%s | Rux Programming Language",
       link: [
+        // Site-wide feed discovery: readers and browser extensions look for
+        // this on whatever page the user is standing on, not just /blog.
+        {
+          rel: "alternate",
+          type: "application/rss+xml",
+          title: "Rux Blog",
+          href: "https://rux-lang.dev/blog/rss.xml",
+        },
         { rel: "icon", type: "image/svg+xml", href: "/logo.svg" },
         { rel: "icon", href: "/favicon.ico", sizes: "any" },
         {
@@ -92,6 +100,10 @@ export default defineNuxtConfig({
       // rest yet — exactly the silent drop gate 1 exists to catch.
       routes: contentRoutes().concat([
         "/200.html",
+        // server/routes/blog/rss.xml.ts. Nothing links to it from a crawlable
+        // <a> before this list is built, and a static host has no nitro to
+        // serve it on demand — unlisted, the feed simply would not exist.
+        "/blog/rss.xml",
         "/packages",
         "/packages/-/search",
         "/packages/-/keywords",
@@ -120,11 +132,11 @@ export default defineNuxtConfig({
       // `arrow-up-right` is ui.icons.external, which UFooterColumns renders for
       // any `target: '_blank'` link — the name never appears in source.
       //
-      // Everything from `message-circle` down is an app.config `prose.codeIcon`
-      // entry for the home page's code-group tabs. Those labels carry no
-      // extension, so there is no `i-vscode-icons-file-type-*` fallback to hide
-      // a miss: an unlisted one renders as a blank gap. Keep this in step with
-      // the codeIcon map in app/app.config.ts.
+      // Everything from `message-square-text` down is an app.config
+      // `prose.codeIcon` entry for the home page's code-group tabs. Those
+      // labels carry no extension, so there is no `i-vscode-icons-file-type-*`
+      // fallback to hide a miss: an unlisted one renders as a blank gap. Keep
+      // this in step with the codeIcon map in app/app.config.ts.
       icons: [
         "lucide:file-code",
         "lucide:arrow-up-right",
@@ -139,13 +151,13 @@ export default defineNuxtConfig({
         "lucide:messages-square",
         "lucide:hand-heart",
         "lucide:circle-help",
-        "lucide:message-circle",
-        "lucide:sigma",
+        "lucide:message-square-text",
+        "lucide:infinity",
         "lucide:square-function",
         "lucide:ellipsis",
-        "lucide:box",
-        "lucide:pencil",
-        "lucide:map-pin",
+        "lucide:layout-panel-top",
+        "lucide:pen-line",
+        "lucide:at-sign",
         "lucide:plug",
         "lucide:import",
       ],
