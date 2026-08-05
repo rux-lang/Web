@@ -121,16 +121,6 @@ html.dark .shiki span {
   }
 }
 
-/* The home hero's source viewer. The samples are a ::code-group whose tallest
-   member (Greet.rux) runs to 20 lines, so without a cap the panel dictates the
-   hero's height and the two columns fall out of balance. Cap the code pane and
-   let it scroll — only from `lg`, where the hero is actually side by side. */
-@media (width >= 64rem) {
-  .home-code-viewer :where(pre) {
-    max-height: 24rem;
-  }
-}
-
 .registry-shell :where(a, button, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid var(--color-rux-500);
   outline-offset: 2px;

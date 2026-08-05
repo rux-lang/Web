@@ -132,11 +132,8 @@ export default defineNuxtConfig({
       // `arrow-up-right` is ui.icons.external, which UFooterColumns renders for
       // any `target: '_blank'` link — the name never appears in source.
       //
-      // Everything from `message-square-text` down is an app.config
-      // `prose.codeIcon` entry for the home page's code-group tabs. Those
-      // labels carry no extension, so there is no `i-vscode-icons-file-type-*`
-      // fallback to hide a miss: an unlisted one renders as a blank gap. Keep
-      // this in step with the codeIcon map in app/app.config.ts.
+      // The five topic-tab icons are data in app/pages/index.vue rather than
+      // literal template attributes, so the scanner cannot discover them.
       icons: [
         "lucide:file-code",
         "lucide:arrow-up-right",
@@ -152,13 +149,9 @@ export default defineNuxtConfig({
         "lucide:hand-heart",
         "lucide:circle-help",
         "lucide:message-square-text",
-        "lucide:infinity",
         "lucide:square-function",
-        "lucide:ellipsis",
         "lucide:layout-panel-top",
-        "lucide:pen-line",
         "lucide:at-sign",
-        "lucide:plug",
         "lucide:import",
       ],
     },

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { TabsItem } from "@nuxt/ui";
+
 /**
  * The landing page, rebuilt on Nuxt UI.
  *
@@ -146,10 +148,71 @@ const editorsRight = computed(() => editors.slice(3));
 // Shown in the hero's announcement badge; see nuxt.config runtimeConfig.
 const { ruxVersion } = useRuntimeConfig().public;
 
-// Hand-edited MDC partial; the tab icons are mapped in app.config.ts.
-const { data: examples } = await useAsyncData("home-examples", () =>
-  queryCollection("partials").path("/partials/home-examples").first(),
-);
+// Each topic owns a small CodeTree partial. Keeping the tab metadata here makes
+// the navigation visible to Nuxt's icon bundler while the Rux source remains
+// hand-editable Markdown content.
+const exampleDefinitions = [
+  {
+    label: "Basics",
+    icon: "i-lucide-message-square-text",
+    value: "basics",
+    path: "/partials/home-examples/basics",
+  },
+  {
+    label: "Functions",
+    icon: "i-lucide-square-function",
+    value: "functions",
+    path: "/partials/home-examples/functions",
+  },
+  {
+    label: "Types",
+    icon: "i-lucide-layout-panel-top",
+    value: "types",
+    path: "/partials/home-examples/types",
+  },
+  {
+    label: "Memory",
+    icon: "i-lucide-memory-stick",
+    value: "memory",
+    path: "/partials/home-examples/memory",
+  },
+  {
+    label: "Imports",
+    icon: "i-lucide-import",
+    value: "imports",
+    path: "/partials/home-examples/imports",
+  },
+] satisfies Array<TabsItem & { path: string }>;
+
+const { data: examplePages } = await useAsyncData("home-examples", async () => {
+  const pages = await Promise.all(
+    exampleDefinitions.map(async ({ value, path }) => {
+      const page = await queryCollection("partials").path(path).first();
+      if (!page) {
+        throw createError({
+          statusCode: 500,
+          statusMessage: `Missing home example partial: ${path}`,
+        });
+      }
+
+      return [String(value), page] as const;
+    }),
+  );
+
+  return Object.fromEntries(pages);
+});
+
+function getExamplePage(value: TabsItem["value"]) {
+  const page = examplePages.value?.[String(value)];
+  if (!page) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: `Missing rendered home example: ${String(value)}`,
+    });
+  }
+
+  return page;
+}
 
 // The landing page is the one place the hero wash runs at full strength, as on
 // nuxt.com; every other page damps it down.
@@ -175,17 +238,13 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
 
 <template>
   <div>
-    <!--
-      Horizontal hero: copy on the left, a live code sample on the right, as on
-      nuxt.com. Their `lg:py-40` and `min-h-[540px]` are tuned to a taller left
-      column than this one and leave a blank band under the hero, so the padding
-      is dialled back and the min-height dropped.
-    -->
     <UPageHero
+      class="relative"
       orientation="horizontal"
       :ui="{
-        container: 'py-20 sm:py-24 lg:py-28',
+        container: '!pb-20 py-24 sm:py-32 lg:py-40',
         title: 'text-5xl sm:text-7xl',
+        wrapper: 'lg:min-h-[540px]',
       }"
     >
       <template #headline>
@@ -218,16 +277,37 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
         </div>
       </template>
 
-      <!--
-        The source viewer. `home-examples` is a ::code-group, which Nuxt UI's
-        prose already renders as a tabbed panel with its own border and header —
-        so it is dropped in directly rather than nested inside a UPageCard, which
-        would double the chrome. The height cap (see main.css) keeps the longest
-        sample from stretching the hero; the code block scrolls instead.
-      -->
-      <div v-if="examples" class="home-code-viewer w-full min-w-0">
-        <ContentRenderer :value="examples" />
-      </div>
+      <!-- Nuxt.com's hero treatment: topic tabs above a persistent CodeTree.
+           The panel becomes full-bleed on small screens, then docks to the
+           right of the copy with a fixed-height tree/editor split. -->
+      <UPageCard
+        v-if="examplePages"
+        class="right-0 -mx-4 w-screen max-w-[800px] overflow-auto rounded-none sm:-mx-6 lg:absolute lg:-mt-16 lg:mx-0 lg:w-[calc(50%-2rem)] lg:rounded-l-[calc(var(--ui-radius)*4)] [@media(min-width:2400px)]:relative [@media(min-width:2400px)]:right-auto [@media(min-width:2400px)]:mx-auto [@media(min-width:2400px)]:mt-8 [@media(min-width:2400px)]:w-full [@media(min-width:2400px)]:rounded-2xl"
+        variant="subtle"
+        :ui="{
+          container: 'w-full sm:pt-4.5 lg:pr-0 [@media(min-width:2400px)]:px-6',
+        }"
+      >
+        <UTabs
+          :items="exampleDefinitions"
+          default-value="basics"
+          :unmount-on-hide="false"
+          color="neutral"
+          :ui="{
+            list: 'overflow-x-auto bg-transparent px-0 lg:pr-4',
+            trigger:
+              'group shrink-0 data-[state=active]:text-highlighted in-[[data-slot=list]:not(:has([data-slot=indicator]))]:data-[state=active]:before:bg-default',
+            indicator: 'bg-default',
+            leadingIcon: 'hidden size-4 group-data-[state=active]:text-primary sm:inline-flex',
+            content:
+              'bg-default opacity-100 transition-opacity duration-500 data-[state=inactive]:opacity-0 lg:h-[450px] [@media(min-width:2400px)]:rounded-l-[calc(var(--ui-radius)*1.5)] [@media(min-width:2400px)]:border-e [@media(min-width:2400px)]:border-default',
+          }"
+        >
+          <template #content="{ item }">
+            <ContentRenderer :value="getExamplePage(item.value)" />
+          </template>
+        </UTabs>
+      </UPageCard>
     </UPageHero>
 
     <!--
