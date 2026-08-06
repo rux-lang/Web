@@ -377,7 +377,7 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
         Upstream switches to columns at `sm` because it has three cards; four
         need more room, so this waits for `lg`.
 
-        The wash is the Rux purple on every card. nuxt.com varies the tint per
+        The wash is the Rux violet on every card. nuxt.com varies the tint per
         card because each is a different product's brand — these four are all
         facets of one toolchain, so a different hue each would be decoration
         with nothing behind it.

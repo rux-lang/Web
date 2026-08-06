@@ -9,16 +9,16 @@
  * component is found.
  *
  * `path` is the shared basename of the .svg and .png in public/assets/design-kit
- * — the two files must be named identically apart from the extension. The avatar
- * variants ship as PNG only (they are raster exports with a baked background),
- * hence `png-only`.
+ * — the two files must be named identically apart from the extension. That now
+ * includes the avatar variants (`icon-violet-white`, `icon-violet-mist`), which
+ * bake their backdrop into a `<rect>` in the SVG rather than shipping as raster
+ * exports; the earlier `png-only` escape hatch is gone with them.
  */
 defineProps<{
   name: string;
   path: string;
   background?: string;
   full?: boolean;
-  pngOnly?: boolean;
 }>();
 </script>
 
@@ -26,7 +26,7 @@ defineProps<{
   <div class="not-prose">
     <UCard :ui="{ body: full ? 'p-11 sm:p-11' : 'p-8 sm:p-8' }" :class="background">
       <img
-        :src="`/assets/design-kit/${path}.${pngOnly ? 'png' : 'svg'}`"
+        :src="`/assets/design-kit/${path}.svg`"
         :alt="`Rux logo (${name})`"
         class="mx-auto"
         :class="full ? 'h-10' : 'h-16'"
@@ -40,7 +40,6 @@ defineProps<{
 
       <div class="flex items-center">
         <UButton
-          v-if="!pngOnly"
           variant="link"
           label="svg"
           size="sm"

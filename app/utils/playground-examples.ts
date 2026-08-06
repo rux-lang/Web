@@ -194,9 +194,9 @@ import Math::Pi;
 
 func Main() -> int {
     Print("Circle radius: ");
-    let input = ReadLine();             // read String from stdin
-    let result = ParseFloat64(input);   // convert String to float64
-    match result {                      // test result of converting
+    let input = ReadLine();
+    let result = ParseFloat64(input);
+    match result {
         .Success(radius) => {
             PrintLine("Circumference: {}", 2.0 * Pi * radius);
             PrintLine("Area: {}", Pi * radius * radius);

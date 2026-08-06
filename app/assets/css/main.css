@@ -30,21 +30,43 @@
 }
 
 @theme static {
-  --font-sans: "Geist", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, monospace;
+  --font-sans: "Geist", "Inter", "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
 
-  /* Rux brand purple, from --rux-gradient in the old custom.css (#6f42c1). */
-  --color-rux-50: #f5f1fc;
-  --color-rux-100: #ebe3f9;
-  --color-rux-200: #d7c7f3;
-  --color-rux-300: #bda3ea;
-  --color-rux-400: #9d78de;
-  --color-rux-500: #8250d4;
-  --color-rux-600: #6f42c1;
-  --color-rux-700: #5c37a0;
-  --color-rux-800: #4a2d80;
-  --color-rux-900: #3c2668;
-  --color-rux-950: #251543;
+  /* Rux brand violet. --color-rux-400 (#a78bfa) is the accent the mark is drawn
+     in — see RuxLogo.vue, public/logo.svg and the design-kit exports — and it is
+     the value /design-kit publishes as "Violet". */
+  --color-rux-50: #f5f3ff;
+  --color-rux-100: #ede9fe;
+  --color-rux-200: #ddd6fe;
+  --color-rux-300: #c4b5fd;
+  --color-rux-400: #a78bfa;
+  --color-rux-500: #8b5cf6;
+  --color-rux-600: #7c3aed;
+  --color-rux-700: #6d28d9;
+  --color-rux-800: #5b21b6;
+  --color-rux-900: #4c1d95;
+  --color-rux-950: #2e1065;
+
+  /* "Mist" — the brand's dark surface, a cool blue-grey rather than a neutral.
+     --color-mist-900 (#161b1d) is the page background and the backdrop baked
+     into icon-violet-mist.svg. /design-kit publishes #22292b as the swatch, a
+     touch lighter than the raw page background — deliberate, so don't "fix" the
+     mismatch by syncing one to the other. The scale has to be declared here
+     (not just used in `.dark` below) so Tailwind emits the utilities —
+     /design-kit sets its dark card backgrounds with `bg-mist-900` from
+     Markdown. */
+  --color-mist-50: #f3f6f7;
+  --color-mist-100: #e6ecec;
+  --color-mist-200: #ccd6d8;
+  --color-mist-300: #aab9bd;
+  --color-mist-400: #82969b;
+  --color-mist-500: #65787d;
+  --color-mist-600: #4f6064;
+  --color-mist-700: #3a4448;
+  --color-mist-800: #242b2e;
+  --color-mist-900: #161b1d;
+  --color-mist-950: #0c1012;
 }
 
 :root {
@@ -56,14 +78,13 @@
 }
 
 .dark {
-  /* Nuxt UI's dark palette bottoms out at neutral-900. nuxt.com pushes the page
-     background one step further to 950 and lifts the raised surfaces to 900/800,
-     which is what gives its dark mode the extra separation between the page and
-     cards, code blocks and popovers. */
-  --ui-bg: var(--ui-color-neutral-950);
-  --ui-bg-muted: var(--ui-color-neutral-900);
-  --ui-bg-elevated: var(--ui-color-neutral-900);
-  --ui-bg-accented: var(--ui-color-neutral-800);
+  /* Nuxt UI's dark palette is neutral greys. The brand's dark surface is mist,
+     and the three steps give the same separation nuxt.com gets between the page
+     and its cards, code blocks and popovers. */
+  --ui-bg: var(--color-mist-900);
+  --ui-bg-muted: var(--color-mist-800);
+  --ui-bg-elevated: var(--color-mist-800);
+  --ui-bg-accented: var(--color-mist-700);
 }
 
 /* Coding ligatures (->, =>, !=, >=, <-, |>) for the mono face.

@@ -22,29 +22,30 @@ look the same wherever it appears.
 
 ## Logo
 
-The logo is made of two elements: the omega mark and the `Rux` wordmark. In most
-places they appear together. The mark works on its own as an icon, an avatar, or
-a badge — but the wordmark should never appear without the mark beside it.
+The logo is made of two elements: the octopus mark and the `Rux` wordmark. In
+most places they appear together. The mark works on its own as an icon, an
+avatar, or a badge — but the wordmark should never appear without the mark
+beside it.
 
 Pick the variant with the most contrast against your background. On a colored or
 photographic background, use the solid white or solid black version rather than
-the purple one.
+the violet one.
 
 ### Icon
 
 ::u-page-grid
-:design-kit-image-card{path="icon-purple" name="Purple"}
+:design-kit-image-card{path="icon-violet" name="Violet"}
 :design-kit-image-card{path="icon-black" name="Black" background="bg-white"}
-:design-kit-image-card{path="icon-white" name="White" background="bg-zinc-800"}
+:design-kit-image-card{path="icon-white" name="White" background="bg-mist-900"}
 ::
 
 ### Logo
 
 ::u-page-grid
-:design-kit-image-card{path="logo-purple-white" name="Purple & white" background="bg-zinc-800" full}
+:design-kit-image-card{path="logo-violet-white" name="Violet & white" background="bg-mist-900" full}
 :design-kit-image-card{path="logo-black" name="Black" background="bg-white" full}
-:design-kit-image-card{path="logo-white" name="White" background="bg-zinc-800" full}
-:design-kit-image-card{path="logo-purple-black" name="Purple & black" background="bg-white" full}
+:design-kit-image-card{path="logo-white" name="White" background="bg-mist-900" full}
+:design-kit-image-card{path="logo-violet-black" name="Violet & black" background="bg-white" full}
 ::
 
 ### Avatars
@@ -54,8 +55,8 @@ platforms flatten transparency onto a background you do not control. These two
 export the mark onto a fixed 512 × 512 backdrop instead.
 
 ::u-page-grid
-:design-kit-image-card{path="icon-purple-white" name="Purple on white" png-only}
-:design-kit-image-card{path="icon-purple-zinc" name="Purple on zinc" png-only}
+:design-kit-image-card{path="icon-violet-white" name="Violet on white" background="bg-white"}
+:design-kit-image-card{path="icon-violet-mist" name="Violet on mist" background="bg-[#22292b]"}
 ::
 
 ### Usage
@@ -74,18 +75,18 @@ maintains what you are building.
 
 ## Color Palette
 
-The palette is built around a single accent purple, kept deliberately small so
+The palette is built around a single accent violet, kept deliberately small so
 that the color carries meaning wherever it appears. Use the values below rather
 than sampling them from a screenshot.
 
 ::u-page-grid
-:design-kit-color-card{background="#8E51FF" name="Purple"}
-:design-kit-color-card{background="#27272A" name="Zinc"}
+:design-kit-color-card{background="#A78BFA" name="Violet"}
+:design-kit-color-card{background="#22292B" name="Mist"}
 :design-kit-color-card{background="#000000" name="Black"}
 :design-kit-color-card{background="#FFFFFF" name="White"}
 ::
 
-Purple is the accent — links, active states, the mark itself. Zinc is the dark
+Violet is the accent — links, active states, the mark itself. Mist is the dark
 surface, black and white carry the text. Nothing else is part of the brand.
 
 ## Typography
