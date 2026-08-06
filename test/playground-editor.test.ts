@@ -6,24 +6,35 @@ import CodeEditor from "../app/components/playground/CodeEditor.vue";
 const colorMode = ref("light");
 vi.stubGlobal("useColorMode", () => colorMode);
 
-function mountEditor(props: Record<string, unknown> = {}) {
-  return mount(CodeEditor, {
+async function mountEditor(props: Record<string, unknown> = {}) {
+  const wrapper = mount(CodeEditor, {
     props: { modelValue: "func Main() -> int {}\n", ...props },
     attachTo: document.body,
     global: {
       stubs: {
-        // The real ClientOnly renders nothing on the server; in a test the
-        // editor is the whole point, so render the default slot.
-        ClientOnly: { template: "<div><slot /></div>" },
+        // Reproduces the real ClientOnly: the default slot appears only after
+        // its own onMounted, which runs *after* this component's. A stub that
+        // rendered the slot straight away would hide the fact that the editor's
+        // host element does not exist yet at that point.
+        ClientOnly: {
+          data: () => ({ ready: false }),
+          mounted() {
+            (this as unknown as { ready: boolean }).ready = true;
+          },
+          template: `<div><slot v-if="ready" /><slot v-else name="fallback" /></div>`,
+        },
         USkeleton: true,
       },
     },
   });
+
+  await nextTick();
+  return wrapper;
 }
 
 describe("playground code editor", () => {
-  it("mounts a labelled, editable CodeMirror buffer", () => {
-    const wrapper = mountEditor();
+  it("mounts a labelled, editable CodeMirror buffer", async () => {
+    const wrapper = await mountEditor();
     const content = wrapper.get(".cm-content");
 
     expect(content.attributes("aria-label")).toBe("Rux source code");
@@ -34,8 +45,8 @@ describe("playground code editor", () => {
     wrapper.unmount();
   });
 
-  it("stops being editable when readonly", () => {
-    const wrapper = mountEditor({ readonly: true });
+  it("stops being editable when readonly", async () => {
+    const wrapper = await mountEditor({ readonly: true });
 
     expect(wrapper.get(".cm-content").attributes("contenteditable")).toBe("false");
 
@@ -43,7 +54,7 @@ describe("playground code editor", () => {
   });
 
   it("replaces the document when the bound value changes elsewhere", async () => {
-    const wrapper = mountEditor();
+    const wrapper = await mountEditor();
     await wrapper.setProps({ modelValue: "// formatted\n" });
 
     expect(wrapper.get(".cm-content").text()).toContain("// formatted");
@@ -55,7 +66,7 @@ describe("playground code editor", () => {
   });
 
   it("swaps the theme in place when the colour mode flips", async () => {
-    const wrapper = mountEditor();
+    const wrapper = await mountEditor();
     const editor = wrapper.get(".cm-editor").element;
     const before = editor.className;
 
@@ -75,7 +86,7 @@ describe("playground code editor", () => {
   });
 
   it("emits run on Ctrl-Enter without inserting a newline", async () => {
-    const wrapper = mountEditor();
+    const wrapper = await mountEditor();
     const content = wrapper.get(".cm-content");
 
     await content.trigger("keydown", { key: "Enter", ctrlKey: true });

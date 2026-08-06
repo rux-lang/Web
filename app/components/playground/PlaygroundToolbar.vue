@@ -62,6 +62,7 @@ function submit(mode: PlaygroundMode) {
       placeholder="Choose an example"
       aria-label="Example program"
       class="w-full sm:w-52"
+      :ui="{ content: 'min-w-72' }"
     />
 
     <USwitch

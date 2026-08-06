@@ -168,7 +168,7 @@ watch(
 </script>
 
 <template>
-  <section :aria-labelledby="headingId" :aria-busy="pending" class="flex min-h-0 flex-col gap-3">
+  <section :aria-labelledby="headingId" :aria-busy="pending" class="flex flex-col gap-3">
     <h2 :id="headingId" class="sr-only">Run results</h2>
 
     <!-- Transport faults only. A compiler diagnostic never reaches this. -->
@@ -180,8 +180,7 @@ watch(
       :unmount-on-hide="false"
       color="neutral"
       variant="link"
-      class="min-h-0 flex-1"
-      :ui="{ content: 'min-h-0 flex-1 overflow-y-auto pt-3' }"
+      :ui="{ content: 'pt-3' }"
     >
       <template #output>
         <AppLoadingState v-if="loading" label="Running your program" />

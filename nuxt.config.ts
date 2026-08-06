@@ -153,6 +153,15 @@ export default defineNuxtConfig({
         "lucide:layout-panel-top",
         "lucide:at-sign",
         "lucide:import",
+        // The playground's example gallery. Same problem: the names are data in
+        // app/utils/playground-examples.ts, and a .ts file is invisible to the
+        // scanner, so they would render as blank gaps in the example selector.
+        "lucide:terminal",
+        "lucide:languages",
+        "lucide:binary",
+        "lucide:sigma",
+        "lucide:brackets",
+        "lucide:circle-dashed",
       ],
     },
   },

@@ -39,8 +39,11 @@ export function contentRoutes() {
         return "/" + noExt.replace(/\/index$/, "");
       })
       .filter((r) => !r.startsWith("/partials"))
-      // Vue pages, not markdown.
-      .concat(["/", "/blog"])
+      // Vue pages, not markdown. A static route outranks the [...slug]
+      // catch-all, so these have no file under content/ to be derived from —
+      // and this function is both the prerender seed and the verify:routes
+      // oracle, so a page missing here is a page that never gets built.
+      .concat(["/", "/blog", "/playground"])
       .sort()
       .filter((r, i, a) => a.indexOf(r) === i)
   );

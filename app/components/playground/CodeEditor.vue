@@ -24,7 +24,7 @@ import {
   lineNumbers,
   placeholder as placeholderExtension,
 } from "@codemirror/view";
-import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from "vue";
+import { onBeforeUnmount, ref, shallowRef, watch } from "vue";
 import { ruxEditorTheme, ruxLanguage } from "~/utils/rux-language";
 
 const props = withDefaults(
@@ -94,8 +94,12 @@ function mount(parent: HTMLElement) {
   });
 }
 
-onMounted(() => {
-  if (host.value) view.value = mount(host.value);
+// Watched rather than mounted in `onMounted`: <ClientOnly> renders its fallback
+// on the first client pass and swaps in the default slot from its own
+// `onMounted`, which runs after this component's. Building the view there finds
+// `host` still null and leaves an empty box with no error to explain it.
+watch(host, (element) => {
+  if (element && !view.value) view.value = mount(element);
 });
 
 onBeforeUnmount(() => {
