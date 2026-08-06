@@ -14,6 +14,15 @@ export function useRegistryApi() {
         signal,
       });
     },
+    post<T>(path: string, body: Record<string, unknown>, signal?: AbortSignal) {
+      return $fetch<T>(path, {
+        baseURL,
+        method: "POST",
+        credentials: "omit",
+        body,
+        signal,
+      });
+    },
     sessionGet<T>(path: string, signal?: AbortSignal) {
       return $fetch<T>(path, {
         baseURL,

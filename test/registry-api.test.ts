@@ -26,6 +26,19 @@ describe("registry API transport", () => {
     );
   });
 
+  it("posts the playground submission without credentials", () => {
+    const controller = new AbortController();
+    useRegistryApi().post("/v1/playground/run", { mode: "run", source: "Fn Main() {}\n" }, controller.signal);
+
+    expect(fetch).toHaveBeenCalledWith("/v1/playground/run", {
+      baseURL: "https://api.rux-lang.dev",
+      method: "POST",
+      credentials: "omit",
+      body: { mode: "run", source: "Fn Main() {}\n" },
+      signal: controller.signal,
+    });
+  });
+
   it("includes browser credentials only for session requests", () => {
     const api = useRegistryApi();
     api.sessionGet("/v1/auth/session");
