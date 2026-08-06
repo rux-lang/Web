@@ -54,6 +54,13 @@ describe("playground request construction", () => {
     expect(rejection?.field).toBe("source");
   });
 
+  it("treats a buffer of whitespace as empty, which the server would not", () => {
+    const { request, rejection } = buildRunRequest("  \n\t\n", "run", "debug", "");
+
+    expect(request).toBeNull();
+    expect(rejection?.message).toBe("Write some Rux before running it.");
+  });
+
   it("measures the documented bounds in bytes, not characters", () => {
     const withinBytes = buildRunRequest("ααααα", "run", "debug", "", smallLimits);
     const overBytes = buildRunRequest("ααααααααα", "run", "debug", "", smallLimits);

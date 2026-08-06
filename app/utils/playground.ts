@@ -58,7 +58,11 @@ export function buildRunRequest(
   const sourceBytes = byteLength(source);
   const stdinBytes = byteLength(stdin);
 
-  if (sourceBytes === 0) {
+  // The server only refuses a byte-empty source, but a buffer of whitespace can
+  // only ever come back as "no entry point". Rejecting it here is the friendlier
+  // answer, and it keeps one rule for emptiness — the toolbar disables on the
+  // same condition, and Ctrl+Enter does not go through the toolbar.
+  if (source.trim().length === 0) {
     return { request: null, rejection: { field: "source", message: "Write some Rux before running it." } };
   }
   if (sourceBytes > limits.max_source_bytes) {
