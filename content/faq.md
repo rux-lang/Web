@@ -17,18 +17,15 @@ Rux is a compiled, strongly typed, multi-paradigm programming language. It compi
 
 ## What is the current status of Rux?
 
-Rux is experimental and under active development. The latest stable release is **v0.3.0**, released on June 23, 2026.
+Rux is experimental and under active development. The latest stable release is **v0.4.0**.
 
-Version 0.3.0 added broader platform support, target-specific compilation attributes, Unicode escapes, a macOS linker backend, Windows DLL output, new package-manager commands, and compiler fixes. Language features and tooling may still change between releases.
+Version 0.4.0 added compile-time programming — `when` conditional compilation, `intrinsic` declarations, and the `#`-prefixed compiler context — along with native AArch64 host support on every tested platform, an explicit `let`/`var` mutability model, inline assembly functions, and the System V AMD64 calling convention on Linux. It also removed `#{...}` metadata blocks and the `$`-sigil compiler parameters, so code written against v0.3.0 needs updating. Language features and tooling may still change between releases.
 
 See the [release history](https://github.com/rux-lang/Rux/blob/dev/CHANGELOG.md) and [GitHub releases](https://github.com/rux-lang/Rux/releases) for details.
 
 ## Which platforms are supported?
 
-The compiler is continuously tested on:
-
-- Linux x64
-- Windows x64
+The compiler is built and continuously tested on both x86-64 and AArch64 for: FreeBSD, Linux, macOS, and Windows. Other hosts are supported by [building from source](/start/build), without prebuilt binaries or continuous testing.
 
 ## Does Rux support cross-compilation?
 
@@ -36,7 +33,9 @@ Not yet. The current compiler primarily builds native programs for its host plat
 
 ## How do I install Rux?
 
-Windows and Linux ship prebuilt binaries — see the [Download](/download) page for installers and archives.
+FreeBSD, Linux, macOS, and Windows ship prebuilt binaries for x86-64 and
+AArch64 — see the [Download](/download) page for the archives, the Windows
+installer, and the `SHA256SUMS` checksums.
 
 On Windows, you can also install through the official Scoop bucket:
 
@@ -45,17 +44,15 @@ scoop bucket add rux-lang https://github.com/rux-lang/Scoop
 scoop install rux
 ```
 
-On Linux, install with the one-line script, your distribution's package manager
-(Arch, Fedora-based distributions, and openSUSE), or the prebuilt tarball — see
-the [Linux install guide](/start/install/linux):
+On Linux, install with the one-line script or the prebuilt tarball — see the
+[Linux install guide](/start/install/linux):
 
 ```sh
 curl -fsSL https://rux-lang.dev/install.sh | sh
 ```
 
-macOS, BSD, and illumos do not have prebuilt packages yet; on those platforms
-[build the compiler from source](/start/build) with CMake and a C++26-capable
-compiler.
+On any other platform, [build the compiler from source](/start/build) with
+CMake and a C++26-capable compiler.
 
 ## How do I create and run a project?
 
@@ -84,7 +81,7 @@ No. Rux implements its own compilation pipeline:
 2. Semantic analysis
 3. High-level intermediate representation (HIR)
 4. Low-level intermediate representation (LIR)
-5. x86-64 machine-code generation
+5. x86-64 and AArch64 machine-code generation
 6. Rux Compiled Unit emission
 7. Native linking
 
@@ -140,14 +137,17 @@ See [Error Handling](/docs/error/overview) for the current documented approach.
 ## Can Rux call native functions?
 
 Yes. `extern` declarations describe functions and variables supplied by the
-operating system or a native library:
+operating system or a native library, and `#Link` names the library the
+loader resolves them from:
 
 ```rux
-extern func GetStdHandle(handle: int) -> int;
+#Link("Kernel32.dll")
+extern func GetStdHandle(handle: uint32) -> *opaque;
 ```
 
-Windows supports imported DLL symbols. Native external-symbol support on the
-ELF and Mach-O backends is currently more limited. See the
+Library names differ per system, so guard the declarations with
+[conditional compilation](/docs/comptime/conditional) rather than declaring
+them unconditionally. See the
 [Foreign Function Interface](/docs/ffi/overview).
 
 ## Can Rux build libraries?
@@ -159,19 +159,27 @@ rux new App --bin
 rux new Utility --lib
 ```
 
-Version 0.3.0 also supports Windows PE32+ DLL output by setting the package type
-to `Dll` in `Rux.toml`. Shared-library support on other platforms is still
-developing.
+Setting the package type to `Dll` in `Rux.toml` emits a Windows PE32+ DLL, with
+an export directory and an optional `DllMain`. Shared-library output on other
+platforms is still developing.
 
 ## Is there a standard library?
 
-The standard library is developed separately in the
-[`rux-lang/Std`](https://github.com/rux-lang/Std) repository.
+Not a monolithic one. Rux has no built-in runtime — everything is a package you
+add to a project with [`rux add`](/cli/add), so a program depends only on what
+it asks for.
 
-Platform packages are also maintained separately, including [`rux-lang/BSD`](https://github.com/rux-lang/BSD), [`rux-lang/Illumos`](https://github.com/rux-lang/Illumos), [`rux-lang/Linux`](https://github.com/rux-lang/Linux), [`rux-lang/MacOS`](https://github.com/rux-lang/MacOS), and [`rux-lang/Windows`](https://github.com/rux-lang/Windows).
+The cross-platform layer is portable and is what you should reach for first:
+[`Rux`](/api/rux), [`C`](/api/c), [`Format`](/api/format), [`Io`](/api/io),
+[`Math`](/api/math), [`Memory`](/api/memory), and [`Text`](/api/text). Below it,
+the platform layer declares one operating system's own entry points:
+[`BSD`](/api/bsd), [`Linux`](/api/linux), [`MacOS`](/api/macos), and
+[`Windows`](/api/windows).
 
-These libraries are early-stage and do not yet provide the breadth or stability
-of a mature standard library.
+These packages are developed alongside the compiler in the
+[`rux-lang/Rux`](https://github.com/rux-lang/Rux) repository. None of them has a
+stable API yet — names, signatures, and behavior may change between releases.
+See the [API Reference](/api).
 
 ## Does Rux include a package manager?
 
@@ -179,16 +187,20 @@ Yes. Package management is integrated into the `rux` CLI. Common commands
 include:
 
 ```sh
-rux add Std
+rux add Io
 rux install
 rux list
 rux update
-rux remove Std
+rux remove Io
+rux uninstall
 ```
 
 Registry packages are indexed by the official registry at
-[`rux-lang.dev/packages`](https://rux-lang.dev/packages). Local path and
-target-specific dependencies are also supported. See the
+[`rux-lang.dev/packages`](https://rux-lang.dev/packages). Local path
+dependencies are also supported. A manifest declares a single `[Dependencies]`
+table — platform selection belongs in source, with
+[conditional compilation](/docs/comptime/conditional), rather than in
+target-specific dependency sections. See the
 [Package System](/docs/packages/manifest).
 
 ## What other commands does the CLI provide?
@@ -201,7 +213,7 @@ rux help
 rux help build
 ```
 
-Some newer command surfaces, including parts of documentation generation and test execution, are still under implementation. Consult the [CLI Reference](/cli) and the help output of your installed version.
+[`rux doc`](/cli/doc) is still a stub — it reads the manifest but does not generate documentation yet. Consult the [CLI Reference](/cli) and the help output of your installed version.
 
 ## Which editors support Rux?
 
@@ -221,7 +233,7 @@ See the [Rux Compiled Unit specification](/docs/appendix/rcu).
 
 ## Is Rux open source?
 
-Yes. The compiler is published under the [MIT License](https://github.com/rux-lang/Rux/blob/main/LICENSE). Development happens in the open at [`github.com/rux-lang/Rux`](https://github.com/rux-lang/Rux).
+Yes. The compiler is published under the [MIT License](https://github.com/rux-lang/Rux/blob/main/LICENSE.md). Development happens in the open at [`github.com/rux-lang/Rux`](https://github.com/rux-lang/Rux).
 
 ## How can I contribute?
 

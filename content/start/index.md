@@ -28,7 +28,7 @@ The quickest way to get a feel for Rux is the [Rux Playground](/playground) — 
 When you're ready to build real projects, install the Rux toolchain — the compiler, package manager, formatter, and test runner, all in a single small binary.
 
 ::note
-Windows and Linux ship prebuilt binaries today. macOS, BSD, and illumos are still in development — on those platforms you can [build from source](/start/build).
+FreeBSD, Linux, macOS, and Windows ship prebuilt binaries for x86-64 and AArch64. On the other BSDs and illumos you can [build from source](/start/build).
 ::
 
 1. [Install](/start/install/linux) for your platform or [build from source](/start/build) — it's rather simple.

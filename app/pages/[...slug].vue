@@ -31,7 +31,7 @@ const { data: surround } = await useAsyncData(`surround-${path.value}`, () =>
 // Standalone destinations are not part of the documentation reading sequence,
 // so they should not inherit whichever content pages happen to sit before and
 // after them in the collection.
-const pagesWithoutSurround = new Set(["/community", "/download", "/support"]);
+const pagesWithoutSurround = new Set(["/community", "/download", "/faq", "/support"]);
 const showSurround = computed(() => !pagesWithoutSurround.has(path.value) && !!surround.value?.some(Boolean));
 
 // Sectioned pages get the sidebar; the standalone root pages (faq, download,

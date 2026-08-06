@@ -137,6 +137,12 @@ export default defineNuxtConfig({
       icons: [
         "lucide:file-code",
         "lucide:arrow-up-right",
+        // UCodeIcon assembles `i-vscode-icons-file-type-<ext>` from a fence's
+        // filename when neither the filename nor the extension is in the
+        // codeIcon map, so the name exists nowhere in source for the scanner to
+        // find. `.rux` is mapped to lucide:file-code above; the `Rux.toml`
+        // manifest in every home-page code tree falls through to this one.
+        "vscode-icons:file-type-toml",
         // Header dropdown icons. These live in app/composables/useNavigation.ts,
         // and the scanner only globs .vue/.md/.yml — an icon named only in a
         // .ts file is invisible to it and fails to resolve at prerender.

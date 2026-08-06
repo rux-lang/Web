@@ -42,7 +42,7 @@ function submitSearch() {
 <template>
   <div>
     <UPageHero
-      title="Packages for Rux"
+      title="Rux Packages"
       description="The official home for discovering, publishing, and downloading packages for the Rux programming language."
       headline="The Rux package registry"
     >

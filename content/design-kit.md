@@ -7,7 +7,7 @@ navigation:
 # short set of asset grids read top to bottom, not a document to jump around in.
 hideToc: true
 seo:
-  title: Rux Design Kit
+  title: Design Kit
   description: Download the Rux logo, icon, and avatars, and get the exact brand colors and typefaces used across the Rux language, tooling, and documentation.
   ogType: website
   ogUrl: https://rux-lang.dev/design-kit
