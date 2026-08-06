@@ -62,6 +62,16 @@ export interface PlaygroundDiagnostic {
   notes: PlaygroundDiagnostic[];
 }
 
+/** One starter program in the toolbar's gallery. */
+export interface PlaygroundExample {
+  value: string;
+  label: string;
+  icon: string;
+  description: string;
+  source: string;
+  stdin: string;
+}
+
 /** Why a submission was refused before it was sent. */
 export interface PlaygroundRejection {
   field: "source" | "stdin";

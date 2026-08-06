@@ -232,6 +232,13 @@ export function formatDuration(ms: number): string {
   return `${(ms / 1000).toFixed(2)} s`;
 }
 
+/** Renders the CPU quota, which the sandbox states in thousandths of a core. */
+export function formatCpuQuota(millis: number): string {
+  if (!Number.isFinite(millis) || millis <= 0) return "—";
+  const cores = millis / 1000;
+  return `${Number(cores.toFixed(2))} ${cores === 1 ? "core" : "cores"}`;
+}
+
 /** Renders a sandbox bound the way the sandbox states it: in binary units. */
 export function formatLimitBytes(value: number): string {
   if (!Number.isFinite(value) || value < 0) return "—";

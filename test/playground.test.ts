@@ -3,6 +3,7 @@ import type { PlaygroundLimits } from "../app/types/playground";
 import {
   buildRunRequest,
   defaultPlaygroundLimits,
+  formatCpuQuota,
   formatDuration,
   formatLimitBytes,
   normalizePlaygroundLimits,
@@ -222,6 +223,13 @@ describe("playground formatting helpers", () => {
     expect(formatLimitBytes(512)).toBe("512 B");
     expect(formatLimitBytes(16 * 1024)).toBe("16 KiB");
     expect(formatLimitBytes(128 * 1024 * 1024)).toBe("128 MiB");
+  });
+
+  it("reads the CPU quota back out of thousandths of a core", () => {
+    expect(formatCpuQuota(500)).toBe("0.5 cores");
+    expect(formatCpuQuota(1000)).toBe("1 core");
+    expect(formatCpuQuota(16000)).toBe("16 cores");
+    expect(formatCpuQuota(0)).toBe("—");
   });
 
   it("names only the streams that were actually cut", () => {
