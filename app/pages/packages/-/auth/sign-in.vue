@@ -58,7 +58,8 @@ function signIn() {
         <UButton block size="lg" label="Continue with GitHub" icon="i-simple-icons-github" @click="signIn" />
 
         <p class="text-center text-sm text-muted">
-          GitHub returns only the identity details needed for your registry account.
+          GitHub returns only the identity details needed for your registry account. The
+          <ULink to="/privacy" class="text-default hover:underline">Privacy Policy</ULink> lists exactly what is stored.
         </p>
 
         <UButton block label="Return without signing in" color="neutral" variant="ghost" :to="returnPath" />
