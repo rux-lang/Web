@@ -150,6 +150,7 @@ export default defineNuxtConfig({
         "lucide:book-open",
         "lucide:square-terminal",
         "lucide:code-xml",
+        "lucide:package",
         "lucide:newspaper",
         "lucide:messages-square",
         "lucide:hand-heart",

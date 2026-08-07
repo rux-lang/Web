@@ -24,7 +24,7 @@ export const useHeaderLinks = () => {
       // children away inside the docs sections, leaving a plain link.
       label: "Docs",
       to: "/docs",
-      active: /^\/(start|docs|cli|api)(\/|$)/.test(route.path),
+      active: /^\/(start|docs|cli|api|packaging)(\/|$)/.test(route.path),
       children: [
         {
           label: "Get Started",
@@ -49,6 +49,12 @@ export const useHeaderLinks = () => {
           description: "Standard library and platform APIs",
           icon: "i-lucide-code-xml",
           to: "/api",
+        },
+        {
+          label: "Packaging",
+          description: "Manifests, dependencies, and publishing",
+          icon: "i-lucide-package",
+          to: "/packaging",
         },
       ],
     },
@@ -109,6 +115,7 @@ const footerLinks: FooterColumn[] = [
       { label: "Rux Reference", to: "/docs" },
       { label: "CLI Reference", to: "/cli" },
       { label: "API Reference", to: "/api" },
+      { label: "Packaging", to: "/packaging" },
     ],
   },
   {
@@ -125,8 +132,22 @@ const footerLinks: FooterColumn[] = [
     children: [
       { label: "Community", to: "/community" },
       { label: "Support", to: "/support" },
+      {
+        label: "Report a Bug",
+        to: "https://github.com/rux-lang/Rux/issues/new?template=bug_report.yml",
+        target: "_blank",
+      },
       { label: "Design Kit", to: "/design-kit" },
       { label: "FAQ", to: "/faq" },
+    ],
+  },
+  {
+    label: "Legal",
+    children: [
+      { label: "Privacy Policy", to: "/privacy" },
+      { label: "Terms of Use", to: "/terms" },
+      { label: "Code of Conduct", to: "/code-of-conduct" },
+      { label: "Security", to: "/security" },
     ],
   },
 ];

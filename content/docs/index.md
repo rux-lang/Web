@@ -1,11 +1,11 @@
 ---
 title: Rux Language Reference
-description: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and the package system.
+description: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and compile-time programming.
 navigation:
   title: Table of Contents
 seo:
   title: Rux Reference
-  description: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and the package system.
+  description: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and compile-time programming.
   ogImage: https://rux-lang.dev/images/og-docs.jpg
   ogType: website
   ogUrl: https://rux-lang.dev/docs/
@@ -166,12 +166,10 @@ seo:
     - 27.5. [Error](/docs/attributes/error)
     - 27.6. [NoReturn](/docs/attributes/noreturn)
     - 27.7. [Allow](/docs/attributes/allow)
-28. [Package System](/docs/packages/types)
-    - 28.1. [Package Types](/docs/packages/types)
-    - 28.2. [Directory Layout](/docs/packages/dirs)
-    - 28.3. [Package Manifest](/docs/packages/manifest)
-    - 28.4. [Dependencies](/docs/packages/dependencies)
-29. [Appendix](/docs/appendix/primitives)
-    - 29.1. [Primitive Type Reference](/docs/appendix/primitives)
-    - 29.2. [Token Reference](/docs/appendix/tokens)
-    - 29.3. [Rux Compiled Unit](/docs/appendix/rcu)
+28. [Appendix](/docs/appendix/primitives)
+    - 28.1. [Primitive Type Reference](/docs/appendix/primitives)
+    - 28.2. [Token Reference](/docs/appendix/tokens)
+    - 28.3. [Rux Compiled Unit](/docs/appendix/rcu)
+
+Packages, manifests, dependencies, and publishing have their own section:
+[Packaging](/packaging).

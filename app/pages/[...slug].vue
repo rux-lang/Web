@@ -31,7 +31,17 @@ const { data: surround } = await useAsyncData(`surround-${path.value}`, () =>
 // Standalone destinations are not part of the documentation reading sequence,
 // so they should not inherit whichever content pages happen to sit before and
 // after them in the collection.
-const pagesWithoutSurround = new Set(["/community", "/download", "/faq", "/support"]);
+const pagesWithoutSurround = new Set([
+  "/code-of-conduct",
+  "/community",
+  "/design-kit",
+  "/download",
+  "/faq",
+  "/privacy",
+  "/security",
+  "/support",
+  "/terms",
+]);
 const showSurround = computed(() => !pagesWithoutSurround.has(path.value) && !!surround.value?.some(Boolean));
 
 // Sectioned pages get the sidebar; the standalone root pages (faq, download,
@@ -40,7 +50,7 @@ const showSurround = computed(() => !pagesWithoutSurround.has(path.value) && !!s
 //
 // /blog is absent on purpose: posts are served by app/pages/blog/[slug].vue,
 // which gives them nuxt.com's article layout — no left sidebar — instead.
-const inSection = computed(() => /^\/(start|docs|cli|api)(\/|$)/.test(path.value));
+const inSection = computed(() => /^\/(start|docs|cli|api|packaging)(\/|$)/.test(path.value));
 const isApiPage = computed(() => /^\/api(\/|$)/.test(path.value));
 
 function isMinimarkTag(node: unknown, tag: string): boolean {

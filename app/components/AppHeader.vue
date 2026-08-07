@@ -45,10 +45,10 @@ const logoContextMenuItems: ContextMenuItem[][] = [
   [{ label: "Browse design kit", icon: "i-lucide-shapes", to: "/design-kit" }],
 ];
 
-// The four docs sections get their own row under the bar (nuxt.com's
-// HeaderBottom), so while it is showing the top-level "Docs" dropdown is
-// flattened to a plain link — otherwise the same four links appear twice.
-const inDocs = computed(() => /^\/(start|docs|cli|api)(\/|$)/.test(route.path));
+// The docs sections get their own row under the bar (nuxt.com's HeaderBottom),
+// so while it is showing the top-level "Docs" dropdown is flattened to a plain
+// link — otherwise the same links appear twice.
+const inDocs = computed(() => /^\/(start|docs|cli|api|packaging)(\/|$)/.test(route.path));
 
 const items = computed(() =>
   headerLinks.value.map((link) => (inDocs.value && link.label === "Docs" ? { ...link, children: [] } : link)),

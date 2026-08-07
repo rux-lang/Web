@@ -65,7 +65,7 @@ rux run
 ```
 
 A package contains a `Rux.toml` manifest and source files under `Src/`. See
-[Directory Layout](/docs/packages/dirs) and the [CLI Reference](/cli) for the
+[Directory Layout](/packaging/layout) and the [CLI Reference](/cli) for the
 available commands.
 
 ## What language is the compiler written in?
@@ -187,7 +187,7 @@ Yes. Package management is integrated into the `rux` CLI. Common commands
 include:
 
 ```sh
-rux add Io
+rux add Rux/Io
 rux install
 rux list
 rux update
@@ -196,12 +196,26 @@ rux uninstall
 ```
 
 Registry packages are indexed by the official registry at
-[`rux-lang.dev/packages`](https://rux-lang.dev/packages). Local path
+[`rux-lang.dev/packages`](/packages). Local path
 dependencies are also supported. A manifest declares a single `[Dependencies]`
 table — platform selection belongs in source, with
 [conditional compilation](/docs/comptime/conditional), rather than in
-target-specific dependency sections. See the
-[Package System](/docs/packages/manifest).
+target-specific dependency sections. See [Packaging](/packaging) for the whole
+subject.
+
+## How do I publish a package?
+
+Give the package a [namespace](/packaging/namespaces) you own and a `MinRux`
+version, create an [API token](/packaging/tokens) with the `publish` scope, then:
+
+```sh
+rux publish --dry-run
+rux publish
+```
+
+Published versions are immutable — a mistake is fixed by publishing a new
+version and [yanking](/packaging/yanking) the old one. See
+[Publishing](/packaging/publishing) for the full walkthrough.
 
 ## What other commands does the CLI provide?
 
@@ -237,4 +251,14 @@ Yes. The compiler is published under the [MIT License](https://github.com/rux-la
 
 ## How can I contribute?
 
-Read the [contribution guide](https://github.com/rux-lang/Rux/blob/dev/CONTRIBUTING.md), build the `dev` branch, run the test suite, and open an issue or pull request. Compiler, documentation, package, and editor contributions are all maintained through the [Rux GitHub organization](https://github.com/rux-lang).
+Read the [contribution guide](https://github.com/rux-lang/Rux/blob/dev/CONTRIBUTING.md), build the `dev` branch, run the test suite, and open an issue or pull request. Compiler, documentation, package, and editor contributions are all maintained through the [Rux GitHub organization](https://github.com/rux-lang). The [Code of Conduct](/code-of-conduct) applies everywhere the community gathers.
+
+## How do I report a bug or a security problem?
+
+Bugs go to the [issue tracker](https://github.com/rux-lang/Rux/issues/new?template=bug_report.yml) with a minimal reproducer. Feature ideas start in [Discussions](https://github.com/rux-lang/Rux/discussions).
+
+Security vulnerabilities are reported **privately** — follow the [security policy](/security) rather than opening a public issue. The [support page](/support) lists all three routes.
+
+## What data does the website collect?
+
+The documentation site has no analytics, no tracking, and no third-party scripts. The only personal data held is what a registry account needs, and it comes from GitHub. The [Privacy Policy](/privacy) has the details.

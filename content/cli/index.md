@@ -48,14 +48,19 @@ rux fmt
 | --------------------------------- | ------------------------------------------------- |
 | [`rux add`](/cli/add)             | Add a dependency to the manifest                  |
 | [`rux build`](/cli/build)         | Build the current package                         |
+| [`rux check`](/cli/check)         | Analyze the sources without building              |
 | [`rux clean`](/cli/clean)         | Remove build artifacts                            |
 | [`rux doc`](/cli/doc)             | Generate package documentation                    |
 | [`rux fmt`](/cli/fmt)             | Format source files and manifests                 |
 | [`rux help`](/cli/help)           | Show help information                             |
+| [`rux info`](/cli/info)           | Show package metadata                             |
 | [`rux init`](/cli/init)           | Initialize a Rux package in the current directory |
 | [`rux install`](/cli/install)     | Install packages into the cache                   |
+| [`rux lint`](/cli/lint)           | Run source-level diagnostics                      |
 | [`rux list`](/cli/list)           | List packages                                     |
 | [`rux new`](/cli/new)             | Create a new Rux package                          |
+| [`rux pack`](/cli/pack)           | Build the publishable package archive             |
+| [`rux publish`](/cli/publish)     | Publish the package to the registry               |
 | [`rux remove`](/cli/remove)       | Remove a dependency from the manifest             |
 | [`rux run`](/cli/run)             | Build and run the main executable                 |
 | [`rux test`](/cli/test)           | Run all test targets                              |
@@ -78,7 +83,7 @@ rux fmt
 ```sh
 rux new App --bin
 cd App
-rux add Json@0.1.3
+rux add Rux/Json@0.1.3
 rux install
 rux build
 rux run
@@ -87,13 +92,21 @@ rux test
 rux clean
 ```
 
+Publishing follows on from there — see [Packaging](/packaging) for the whole subject:
+
+```sh
+rux check
+rux pack
+rux publish --dry-run
+rux publish
+```
+
 ## Planned Extensions
 
-| Command       | Purpose                             |
-| ------------- | ----------------------------------- |
-| `rux bench`   | Run benchmarks                      |
-| `rux deps`    | Inspect dependency graph            |
-| `rux login`   | Authenticate with registry          |
-| `rux lint`    | Run static analysis                 |
-| `rux publish` | Publish package to the Rux registry |
-| `rux repl`    | Interactive Rux shell               |
+| Command     | Purpose                        |
+| ----------- | ------------------------------ |
+| `rux bench` | Run benchmarks                 |
+| `rux deps`  | Inspect dependency graph       |
+| `rux login` | Authenticate with the registry |
+| `rux repl`  | Interactive Rux shell          |
+| `rux yank`  | Withdraw a published version   |
