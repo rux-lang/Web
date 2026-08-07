@@ -4,7 +4,7 @@
  * Hand-rolled rather than pulled from the `feed` package: the site needs one
  * channel with five entries and no Atom/JSON variants, and a dependency that
  * ships its own XML builder is more supply-chain surface than the ~40 lines
- * below (every dependency here goes through `supply-chain:licenses`).
+ * below.
  *
  * Kept free of nitro imports so `test/feed.test.ts` can exercise it directly —
  * the same split as `app/utils/*.ts`, which hold the parsing the Vitest suite

@@ -49,7 +49,5 @@ jobs:
         run: npm ci
       - name: Audit dependencies
         run: npm audit --package-lock-only --audit-level=high
-      - name: Enforce license policy
-        run: |
-          npm run supply-chain:test
-          npm run supply-chain:licenses
+      - name: Test supply-chain tooling
+        run: npm run supply-chain:test

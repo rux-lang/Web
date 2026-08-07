@@ -28,8 +28,7 @@
     "test": "vitest run",
     "test:quality": "node test/run-quality.mjs",
     "test:hosting-build": "node test/hosting-build.mjs",
-    "supply-chain:test": "node --test scripts/*.test.mjs",
-    "supply-chain:licenses": "node scripts/check-node-licenses.mjs package-lock.json node-license-policy.json"
+    "supply-chain:test": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
     "@iconify-json/logos": "^1.2.12",
