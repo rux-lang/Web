@@ -207,8 +207,14 @@ const breadcrumbItems = computed(() => [
         description="Existing projects may still download it, but new dependency resolution will not select it."
       />
 
-      <div class="mt-10 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div class="min-w-0 space-y-14">
+      <div class="mt-10 grid gap-x-12 gap-y-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <PackageDownloadChart
+          :namespace="release.namespace"
+          :package-name="release.package"
+          class="lg:col-start-2 lg:row-start-1"
+        />
+
+        <div class="min-w-0 space-y-14 lg:col-start-1 lg:row-span-2 lg:row-start-1">
           <section aria-labelledby="readme-heading">
             <div class="mb-5">
               <h2 id="readme-heading" class="text-2xl font-semibold text-highlighted">README</h2>
@@ -232,7 +238,7 @@ const breadcrumbItems = computed(() => [
 
         <aside
           aria-label="Package release information"
-          class="space-y-6 self-start lg:sticky lg:top-[calc(var(--ui-header-height)+1.5rem)]"
+          class="space-y-6 self-start lg:col-start-2 lg:row-start-2 lg:sticky lg:top-[calc(var(--ui-header-height)+1.5rem)]"
         >
           <PackageInstallCommand
             :namespace="release.namespace"

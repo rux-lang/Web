@@ -10,6 +10,10 @@ export function packageVersionApiPath(namespace: string, packageName: string, ve
   return `${packageApiPath(namespace, packageName)}/${encodeURIComponent(version)}`;
 }
 
+export function packageDownloadsApiPath(namespace: string, packageName: string): string {
+  return `${packageApiPath(namespace, packageName)}/downloads`;
+}
+
 export function representativePackage(
   items: PackageSearchResult[],
   namespace: string,

@@ -104,6 +104,18 @@ const release = {
   download_url: "/v1/packages/rux/json/1.1.0/download",
 };
 
+const downloadStatistics = {
+  window_days: 30,
+  start_date: "2026-07-08",
+  end_date: "2026-08-06",
+  total_downloads: 13125,
+  total_all_time: 98450,
+  daily: Array.from({ length: 30 }, (_, index) => ({
+    date: new Date(Date.UTC(2026, 6, 8 + index)).toISOString().slice(0, 10),
+    downloads: 260 + ((index * 97) % 330) + (index === 21 ? 420 : 0),
+  })),
+};
+
 const versions = [
   {
     version: "1.1.0",
@@ -275,6 +287,7 @@ function apiResponse(url) {
     return { data: items, meta: { next_cursor: null } };
   }
   if (url.pathname === "/v1/packages/rux/json") return { data: summary };
+  if (url.pathname === "/v1/packages/rux/json/downloads") return { data: downloadStatistics };
   if (url.pathname === "/v1/packages/rux/json/1.1.0") return { data: release };
   if (url.pathname === "/v1/packages/rux/json/versions") {
     return { data: versions, meta: { next_cursor: null } };

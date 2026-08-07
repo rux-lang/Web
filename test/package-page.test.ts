@@ -1,15 +1,19 @@
 import { flushPromises, mount, shallowMount } from "@vue/test-utils";
 import type { Component } from "vue";
+import { ref } from "vue";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import PackageDownloadChart from "../app/components/PackageDownloadChart.vue";
 import PackageInstallCommand from "../app/components/PackageInstallCommand.vue";
 import SanitizedReadme from "../app/components/SanitizedReadme.vue";
 import type { PackageSearchResult } from "../app/types/catalog";
-import type { PackageDependency } from "../app/types/package";
+import type { PackageDependency, PackageDownloadStatistics } from "../app/types/package";
+import { downloadChartGeometry, nearestDownloadIndex } from "../app/utils/download-chart";
 import {
   dependencyPackagePath,
   exactInstallCommand,
   formatBytes,
   packageApiPath,
+  packageDownloadsApiPath,
   packageVersionTarget,
   packageVersionApiPath,
   representativePackage,
@@ -32,6 +36,9 @@ describe("package page helpers", () => {
   it("builds encoded API paths and compiler-compatible exact install commands", () => {
     expect(packageApiPath("Rux Tools", "Json/Parser")).toBe("/v1/packages/Rux%20Tools/Json%2FParser");
     expect(packageVersionApiPath("Rux", "Json", "1.2.3+native")).toBe("/v1/packages/Rux/Json/1.2.3%2Bnative");
+    expect(packageDownloadsApiPath("Rux Tools", "Json/Parser")).toBe(
+      "/v1/packages/Rux%20Tools/Json%2FParser/downloads",
+    );
     expect(exactInstallCommand("Rux_Tools", "Json_Parser", "1.2.3+native")).toBe(
       "rux add Rux_Tools/Json_Parser@1.2.3+native",
     );
@@ -61,6 +68,120 @@ describe("package page helpers", () => {
     expect(formatBytes(999)).toBe("999 B");
     expect(formatBytes(1500)).toBe("1.5 kB");
     expect(formatBytes(2_000_000)).toBe("2 MB");
+  });
+});
+
+describe("download chart geometry", () => {
+  it("builds a bounded area and preserves a zero baseline", () => {
+    const zero = downloadChartGeometry([
+      { date: "2026-07-01", downloads: 0 },
+      { date: "2026-07-02", downloads: 0 },
+    ]);
+    expect(zero.maximum).toBe(0);
+    expect(zero.points.every((point) => point.y === zero.baseline)).toBe(true);
+
+    const varied = downloadChartGeometry([
+      { date: "2026-07-01", downloads: 2 },
+      { date: "2026-07-02", downloads: 8 },
+      { date: "2026-07-03", downloads: 4 },
+    ]);
+    expect(varied.points[1]?.y).toBe(6);
+    expect(varied.area).toMatch(/^M 6 90 L /);
+    expect(varied.area).toMatch(/ L 294 90 Z$/);
+  });
+
+  it("selects the nearest point while clamping pointer positions", () => {
+    expect(nearestDownloadIndex(-20, 300, 30)).toBe(0);
+    expect(nearestDownloadIndex(150, 300, 30)).toBe(15);
+    expect(nearestDownloadIndex(400, 300, 30)).toBe(29);
+    expect(nearestDownloadIndex(10, 0, 30)).toBeNull();
+    expect(nearestDownloadIndex(10, 300, 0)).toBeNull();
+  });
+});
+
+describe("PackageDownloadChart", () => {
+  const statistics: PackageDownloadStatistics = {
+    window_days: 30,
+    start_date: "2026-07-08",
+    end_date: "2026-08-06",
+    total_downloads: 12_540,
+    total_all_time: 98_450,
+    daily: [
+      { date: "2026-07-08", downloads: 120 },
+      { date: "2026-07-09", downloads: 180 },
+      { date: "2026-07-10", downloads: 90 },
+    ],
+  };
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  function mountChart(options?: {
+    data?: PackageDownloadStatistics | null;
+    error?: Error | null;
+    status?: "idle" | "pending" | "success" | "error";
+    refresh?: ReturnType<typeof vi.fn>;
+  }) {
+    const refresh = options?.refresh ?? vi.fn();
+    vi.stubGlobal("useRegistryApi", () => ({ get: vi.fn() }));
+    vi.stubGlobal("useLazyAsyncData", () => ({
+      data: ref(options?.data === null ? null : { data: options?.data ?? statistics }),
+      error: ref(options?.error ?? null),
+      status: ref(options?.status ?? "success"),
+      refresh,
+    }));
+    return {
+      refresh,
+      wrapper: mount(PackageDownloadChart, {
+        props: { namespace: "Rux", packageName: "Json" },
+        global: {
+          stubs: {
+            UCard: { template: '<section><slot name="header" /><slot /></section>' },
+            USkeleton: { template: "<div data-skeleton />" },
+            ApiProblemAlert: {
+              props: ["failure"],
+              emits: ["retry"],
+              template: "<button data-retry @click=\"$emit('retry')\">Retry</button>",
+            },
+          },
+        },
+      }),
+    };
+  }
+
+  it("renders package-wide totals and exposes daily keyboard inspection", async () => {
+    const { wrapper } = mountChart();
+    expect(wrapper.text()).toContain("Across all versions");
+    expect(wrapper.text()).toContain("12,540");
+    expect(wrapper.text()).toContain("98,450");
+    expect(wrapper.text()).toContain("Jul 8, 2026 – Aug 6, 2026");
+    expect(wrapper.get("polyline").attributes("points")).not.toBe("");
+
+    const chart = wrapper.get('[role="group"]');
+    expect(chart.attributes("aria-label")).toContain("Peak day");
+    await chart.trigger("keydown", { key: "End" });
+    expect(wrapper.text()).toContain("Jul 10, 2026: 90 downloads");
+    await chart.trigger("keydown", { key: "Escape" });
+    expect(wrapper.text()).not.toContain("Jul 10, 2026: 90 downloads");
+  });
+
+  it("keeps loading, empty, and retry states local to the chart card", async () => {
+    const loading = mountChart({ data: null, status: "pending" }).wrapper;
+    expect(loading.get('[role="status"]').attributes("aria-label")).toBe("Loading download statistics");
+
+    const empty = mountChart({
+      data: {
+        ...statistics,
+        total_downloads: 0,
+        total_all_time: 0,
+        daily: statistics.daily.map((day) => ({ ...day, downloads: 0 })),
+      },
+    }).wrapper;
+    expect(empty.text()).toContain("No downloads have been recorded yet");
+
+    const refresh = vi.fn();
+    const failed = mountChart({ data: null, error: new Error("offline"), status: "error", refresh });
+    await failed.wrapper.get("[data-retry]").trigger("click");
+    expect(refresh).toHaveBeenCalledOnce();
   });
 });
 

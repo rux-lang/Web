@@ -74,6 +74,20 @@ export interface PackageVersionHistory {
   download_url: string;
 }
 
+export interface PackageDownloadDay {
+  date: string;
+  downloads: number;
+}
+
+export interface PackageDownloadStatistics {
+  window_days: number;
+  start_date: string;
+  end_date: string;
+  total_downloads: number;
+  total_all_time: number;
+  daily: PackageDownloadDay[];
+}
+
 export interface DependentRequirement {
   alias: string;
   version_range: string;
