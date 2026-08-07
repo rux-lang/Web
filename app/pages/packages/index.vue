@@ -45,24 +45,26 @@ function submitSearch() {
       title="Rux Packages"
       description="Discover, publish, and download packages for the Rux programming language."
     >
-      <UForm
-        :state="search"
-        aria-label="Search packages"
-        class="mx-auto mt-8 flex w-full max-w-2xl flex-col gap-3 sm:flex-row"
-        @submit="submitSearch"
-      >
-        <UFormField name="q" label="Search packages" class="flex-1 text-left">
-          <UInput
-            v-model="search.q"
-            type="search"
-            icon="i-lucide-search"
-            placeholder="Package name, namespace, keyword, or description"
-            autocomplete="off"
-            class="w-full"
-          />
-        </UFormField>
-        <UButton type="submit" label="Search" class="sm:mt-6" />
-      </UForm>
+      <template #body>
+        <UForm
+          :state="search"
+          aria-label="Search packages"
+          class="mx-auto flex w-full max-w-2xl flex-col gap-3 sm:flex-row"
+          @submit="submitSearch"
+        >
+          <UFormField name="q" label="Search packages" class="flex-1 text-left">
+            <UInput
+              v-model="search.q"
+              type="search"
+              icon="i-lucide-search"
+              placeholder="Package name, namespace, keyword, or description"
+              autocomplete="off"
+              class="w-full"
+            />
+          </UFormField>
+          <UButton type="submit" label="Search" class="sm:mt-6" />
+        </UForm>
+      </template>
 
       <template #links>
         <UButton
