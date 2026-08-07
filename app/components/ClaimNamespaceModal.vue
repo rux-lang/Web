@@ -112,7 +112,7 @@ async function submit() {
             v-model="state.name"
             class="w-full"
             autocomplete="off"
-            placeholder="For example, Rux_Tools"
+            placeholder="For example, nickname or company"
             :disabled="submitting"
           />
         </UFormField>

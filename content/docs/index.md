@@ -4,7 +4,7 @@ description: The complete Rux language reference — covering lexical structure,
 navigation:
   title: Table of Contents
 seo:
-  title: Rux Language Reference
+  title: Rux Reference
   description: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and the package system.
   ogImage: https://rux-lang.dev/images/og-docs.jpg
   ogType: website

@@ -4,7 +4,7 @@ description: Reference documentation for the Rux packages — the cross-platform
 navigation:
   title: Table of Contents
 seo:
-  title: Rux API Reference
+  title: API Reference
   description: Reference documentation for the Rux packages — the cross-platform Format, Io, Math, Memory, Std, and Text, and the platform-dependent bindings for BSD, illumos, Linux, macOS, and Windows.
   ogImage: https://rux-lang.dev/images/og-api.jpg
   ogType: website

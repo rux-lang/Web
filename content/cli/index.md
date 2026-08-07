@@ -4,7 +4,7 @@ description: Reference for the rux command line interface — the primary tool f
 navigation:
   title: Overview
 seo:
-  title: Rux CLI Reference
+  title: CLI Reference
   description: Reference for the rux command line interface — the primary tool for Rux projects, integrating the compiler, package manager, formatter, dependency resolver, and build system.
   ogImage: https://rux-lang.dev/images/og-cli.jpg
   ogType: website

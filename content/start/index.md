@@ -4,7 +4,7 @@ description: Get started with Rux in minutes — try it in your browser on the P
 navigation:
   title: Overview
 seo:
-  title: Get Started with Rux
+  title: Get Started
   description: Get started with Rux in minutes — try it in your browser on the Playground, install the toolchain on Linux or Windows, set up your editor, and write your first program.
   ogImage: https://rux-lang.dev/images/og-start.jpg
   ogType: website

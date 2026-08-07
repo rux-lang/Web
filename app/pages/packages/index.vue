@@ -5,7 +5,7 @@ import { normalizeApiError } from "~/utils/api-problem";
 definePageMeta({ layout: "packages" });
 
 useSeoMeta({
-  title: "Rux Package Registry",
+  title: "Packages",
   description: "Discover and publish packages for the Rux programming language.",
 });
 
@@ -43,8 +43,7 @@ function submitSearch() {
   <div>
     <UPageHero
       title="Rux Packages"
-      description="The official home for discovering, publishing, and downloading packages for the Rux programming language."
-      headline="The Rux package registry"
+      description="Discover, publish, and download packages for the Rux programming language."
     >
       <UForm
         :state="search"

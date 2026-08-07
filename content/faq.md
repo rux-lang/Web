@@ -2,7 +2,7 @@
 title: Frequently Asked Questions
 description: Answers to common questions about Rux — what it is, supported platforms, installation, projects, the compiler, FFI, the standard library, the package manager, and more.
 seo:
-  title: Rux Frequently Asked Questions
+  title: FAQ
   description: Answers to common questions about Rux — what it is, supported platforms, installation, projects, the compiler, FFI, the standard library, the package manager, and more.
   ogImage: https://rux-lang.dev/images/og-faq.jpg
   ogType: website
