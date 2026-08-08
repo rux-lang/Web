@@ -58,6 +58,8 @@ rux fmt
 | [`rux install`](/cli/install)     | Install packages into the cache                   |
 | [`rux lint`](/cli/lint)           | Run source-level diagnostics                      |
 | [`rux list`](/cli/list)           | List packages                                     |
+| [`rux login`](/cli/login)         | Store a registry token for publishing             |
+| [`rux logout`](/cli/logout)       | Remove a stored registry token                    |
 | [`rux new`](/cli/new)             | Create a new Rux package                          |
 | [`rux pack`](/cli/pack)           | Build the publishable package archive             |
 | [`rux publish`](/cli/publish)     | Publish the package to the registry               |
@@ -95,6 +97,7 @@ rux clean
 Publishing follows on from there — see [Packaging](/packaging) for the whole subject:
 
 ```sh
+rux login
 rux check
 rux pack
 rux publish --dry-run
@@ -103,10 +106,9 @@ rux publish
 
 ## Planned Extensions
 
-| Command     | Purpose                        |
-| ----------- | ------------------------------ |
-| `rux bench` | Run benchmarks                 |
-| `rux deps`  | Inspect dependency graph       |
-| `rux login` | Authenticate with the registry |
-| `rux repl`  | Interactive Rux shell          |
-| `rux yank`  | Withdraw a published version   |
+| Command     | Purpose                      |
+| ----------- | ---------------------------- |
+| `rux bench` | Run benchmarks               |
+| `rux deps`  | Inspect dependency graph     |
+| `rux repl`  | Interactive Rux shell        |
+| `rux yank`  | Withdraw a published version |

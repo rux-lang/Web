@@ -24,7 +24,7 @@ export const useHeaderLinks = () => {
       // children away inside the docs sections, leaving a plain link.
       label: "Docs",
       to: "/docs",
-      active: /^\/(start|docs|cli|api|packaging)(\/|$)/.test(route.path),
+      active: /^\/(start|docs|cli|packaging|api)(\/|$)/.test(route.path),
       children: [
         {
           label: "Get Started",
@@ -45,16 +45,16 @@ export const useHeaderLinks = () => {
           to: "/cli",
         },
         {
-          label: "API Reference",
-          description: "Standard library and platform APIs",
-          icon: "i-lucide-code-xml",
-          to: "/api",
-        },
-        {
           label: "Packaging",
           description: "Manifests, dependencies, and publishing",
           icon: "i-lucide-package",
           to: "/packaging",
+        },
+        {
+          label: "API Reference",
+          description: "Standard library and platform APIs",
+          icon: "i-lucide-code-xml",
+          to: "/api",
         },
       ],
     },
