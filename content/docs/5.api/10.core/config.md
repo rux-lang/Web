@@ -30,7 +30,7 @@ extend Config {
 ## Example
 
 ```rux
-import Rux::{ #config };
+import Core::{ #config };
 import Io::PrintLine;
 
 func Main() -> int {
@@ -43,6 +43,6 @@ func Main() -> int {
 
 ## See also
 
-- [`Rux`](/docs/api/rux) — the package overview
-- [`#build`](/docs/api/rux/build) / [`#compiler`](/docs/api/rux/compiler) / [`#target`](/docs/api/rux/target) / [`#source`](/docs/api/rux/source) — the other compile-time values
+- [`Core`](/docs/api/core) — the package overview
+- [`#build`](/docs/api/core/build) / [`#compiler`](/docs/api/core/compiler) / [`#target`](/docs/api/core/target) / [`#source`](/docs/api/core/source) — the other compile-time values
 - [Conditional Compilation](/docs/lang/comptime/conditional) — using the build context in `when`

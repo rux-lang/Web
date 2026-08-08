@@ -19,6 +19,6 @@ The `data` field is a read-only `*T`. Reach for a slice whenever a function need
 
 ## See also
 
-- [`Rux`](/docs/api/rux) — the package overview
+- [`Core`](/docs/api/core) — the package overview
 - [Slices](/docs/lang/slices/overview) — the language-reference treatment
-- [`Range`](/docs/api/rux/ranges) — indexing a slice with a range produces another slice
+- [`Range`](/docs/api/core/ranges) — indexing a slice with a range produces another slice

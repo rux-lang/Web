@@ -8,7 +8,7 @@ Type = "Program"
 Description = "Package import"
 
 [Dependencies]
-"Rux/Math" = "*"
+Math = { Namespace = "Rux", Version = "*" }
 ```
 
 ```rux [Imports/Src/Main.rux]

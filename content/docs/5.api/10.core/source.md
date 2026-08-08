@@ -37,7 +37,7 @@ struct Source {
 ## Example
 
 ```rux
-import Rux::{ #source };
+import Core::{ #source };
 import Io::PrintLine;
 
 func Main() -> int {
@@ -48,6 +48,6 @@ func Main() -> int {
 
 ## See also
 
-- [`Rux`](/docs/api/rux) — the package overview
-- [`#build`](/docs/api/rux/build) / [`#compiler`](/docs/api/rux/compiler) / [`#config`](/docs/api/rux/config) / [`#target`](/docs/api/rux/target) — the other compile-time values
+- [`Core`](/docs/api/core) — the package overview
+- [`#build`](/docs/api/core/build) / [`#compiler`](/docs/api/core/compiler) / [`#config`](/docs/api/core/config) / [`#target`](/docs/api/core/target) — the other compile-time values
 - [Conditional Compilation](/docs/lang/comptime/conditional) — the compile-time context

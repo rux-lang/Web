@@ -170,7 +170,7 @@ add to a project with [`rux add`](/docs/cli/add), so a program depends only on w
 it asks for.
 
 The cross-platform layer is portable and is what you should reach for first:
-[`Rux`](/docs/api/rux), [`C`](/docs/api/c), [`Format`](/docs/api/format), [`Io`](/docs/api/io),
+[`Core`](/docs/api/core), [`C`](/docs/api/c), [`Format`](/docs/api/format), [`Io`](/docs/api/io),
 [`Math`](/docs/api/math), [`Memory`](/docs/api/memory), and [`Text`](/docs/api/text). Below it,
 the platform layer declares one operating system's own entry points:
 [`BSD`](/docs/api/bsd), [`Linux`](/docs/api/linux), [`MacOS`](/docs/api/macos), and

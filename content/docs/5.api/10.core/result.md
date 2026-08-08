@@ -16,7 +16,7 @@ enum Result<T, E> {
 A `Result<T, E>` holds either a `Success` carrying the value `T` an operation produced, or an `Error` carrying the failure `E`. Because the error is part of the return type, a caller cannot read the value without acknowledging that the call might have failed — the usual way is to [`match`](/docs/lang/statements/match) on the two variants.
 
 ```rux
-import Rux::Result;
+import Core::Result;
 
 match ParseInt64("42") {
     .Success(n) => PrintLine(n),
@@ -24,11 +24,11 @@ match ParseInt64("42") {
 }
 ```
 
-`Result` is the recoverable-error half of Rux's error model; for conditions a caller is not expected to recover from, see [`Panic`](/docs/api/rux/panic).
+`Result` is the recoverable-error half of Rux's error model; for conditions a caller is not expected to recover from, see [`Panic`](/docs/api/core/panic).
 
 ## See also
 
-- [`Rux`](/docs/api/rux) — the package overview
+- [`Core`](/docs/api/core) — the package overview
 - [The `Result` Type](/docs/lang/error/result) — the language-reference treatment
 - [`match`](/docs/lang/statements/match) — destructuring `Success` and `Error`
-- [`Panic`](/docs/api/rux/panic) — for unrecoverable errors
+- [`Panic`](/docs/api/core/panic) — for unrecoverable errors

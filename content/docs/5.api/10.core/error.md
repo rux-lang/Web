@@ -17,7 +17,7 @@ intrinsic func #Error(message: Slice<char8>);
 ## Example
 
 ```rux
-import Rux::{ #target, #Error };
+import Core::{ #target, #Error };
 
 when #target.os {
     .Linux => { /* ... */ },
@@ -28,7 +28,7 @@ when #target.os {
 
 ## See also
 
-- [`Rux`](/docs/api/rux) — the package overview
-- [`#Warn`](/docs/api/rux/warn) — report a compile-time warning without stopping the build
-- [`#target`](/docs/api/rux/target) — the target that is usually being checked
+- [`Core`](/docs/api/core) — the package overview
+- [`#Warn`](/docs/api/core/warn) — report a compile-time warning without stopping the build
+- [`#target`](/docs/api/core/target) — the target that is usually being checked
 - [Conditional Compilation](/docs/lang/comptime/conditional) — `when` and the build context

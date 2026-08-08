@@ -13,6 +13,11 @@ describe("API page metadata", () => {
   });
 
   it("maps package-specific and shared implementation files", () => {
+    expect(apiPageInfo("/docs/api/core/assert")).toEqual({
+      packageName: "Core",
+      version: "0.1.0",
+      sourceUrl: "https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Assert.rux",
+    });
     expect(apiPageInfo("/docs/api/io/printline").sourceUrl).toMatch(/\/Packages\/Io\/Src\/PrintLine\.rux$/);
     expect(apiPageInfo("/docs/api/math/degtorad").sourceUrl).toMatch(/\/Packages\/Math\/Src\/Angle\.rux$/);
     expect(apiPageInfo("/docs/api/text/stringbuilder/append").sourceUrl).toMatch(

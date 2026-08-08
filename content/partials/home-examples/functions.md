@@ -8,7 +8,7 @@ Type = "Program"
 Description = "Functions and generics"
 
 [Dependencies]
-"Rux/Io" = "*"
+Io = { Namespace = "Rux", Version = "*" }
 ```
 
 ```rux [Functions/Src/Main.rux]

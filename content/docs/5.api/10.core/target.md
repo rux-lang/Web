@@ -70,7 +70,7 @@ enum ObjectFormat: uint8 { Unknown, COFF, ELF, MachO, Wasm }
 ## Example
 
 ```rux
-import Rux::{ #target };
+import Core::{ #target };
 
 func Main() -> int {
     when #target.os {
@@ -84,6 +84,6 @@ func Main() -> int {
 
 ## See also
 
-- [`Rux`](/docs/api/rux) — the package overview
-- [`#build`](/docs/api/rux/build) / [`#compiler`](/docs/api/rux/compiler) / [`#config`](/docs/api/rux/config) / [`#source`](/docs/api/rux/source) — the other compile-time values
+- [`Core`](/docs/api/core) — the package overview
+- [`#build`](/docs/api/core/build) / [`#compiler`](/docs/api/core/compiler) / [`#config`](/docs/api/core/config) / [`#source`](/docs/api/core/source) — the other compile-time values
 - [Conditional Compilation](/docs/lang/comptime/conditional) — selecting code by target

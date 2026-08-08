@@ -8,7 +8,7 @@ Type = "Program"
 Description = "The first application"
 
 [Dependencies]
-"Rux/Io" = "*"
+Io = { Namespace = "Rux", Version = "*" }
 ```
 
 ```rux [Hello/Src/Main.rux]

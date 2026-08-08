@@ -4,13 +4,13 @@ const PACKAGES_ROOT = "Packages";
 const apiPackages = {
   bsd: "Bsd",
   c: "C",
+  core: "Core",
   format: "Format",
   io: "Io",
   linux: "Linux",
   macos: "MacOS",
   math: "Math",
   memory: "Memory",
-  rux: "Rux",
   text: "Text",
   windows: "Windows",
 } as const;
@@ -23,13 +23,13 @@ type ApiPackageSlug = keyof typeof apiPackages;
 const packageVersions: Record<ApiPackageSlug, string> = {
   bsd: "0.1.0",
   c: "0.1.0",
+  core: "0.1.0",
   format: "0.1.0",
   io: "0.1.0",
   linux: "0.1.0",
   macos: "0.1.0",
   math: "0.1.0",
   memory: "0.1.0",
-  rux: "0.1.0",
   text: "0.1.0",
   windows: "0.1.0",
 };
@@ -280,7 +280,7 @@ function sourceFile(packageSlug: ApiPackageSlug, segments: string[]): string | u
   if (packageSlug === "format") return formatSources[member];
   if (packageSlug === "io") return ioSources[member];
   if (packageSlug === "math") return mathSources[member] ?? `${titleCase(member)}.rux`;
-  if (packageSlug === "memory" || packageSlug === "rux") return `${titleCase(member)}.rux`;
+  if (packageSlug === "core" || packageSlug === "memory") return `${titleCase(member)}.rux`;
 
   if (packageSlug === "text") {
     if (segments.includes("stringbuilder")) return "StringBuilder.rux";

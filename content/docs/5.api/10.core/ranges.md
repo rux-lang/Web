@@ -47,6 +47,6 @@ The start-bearing ranges (`Range`, `RangeInclusive`, `RangeFrom`) can drive a `f
 
 ## See also
 
-- [`Rux`](/docs/api/rux) — the package overview
+- [`Core`](/docs/api/core) — the package overview
 - [Ranges](/docs/lang/ranges/overview) — the language-reference treatment
-- [`Slice`](/docs/api/rux/slice) — what range-indexing a collection yields
+- [`Slice`](/docs/api/core/slice) — what range-indexing a collection yields

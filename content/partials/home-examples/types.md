@@ -8,8 +8,8 @@ Type = "Program"
 Description = "Structure and methods"
 
 [Dependencies]
-"Rux/Io" = "*"
-"Rux/Math" = "*"
+Io = { Namespace = "Rux", Version = "*" }
+Math = { Namespace = "Rux", Version = "*" }
 ```
 
 ```rux [Struct/Src/Main.rux]
@@ -63,10 +63,10 @@ Type = "Program"
 Description = "Interface implementation"
 
 [Dependencies]
-"Rux/Format" = "*"
-"Rux/Io" = "*"
-"Rux/Math" = "*"
-"Rux/Text" = "*"
+Format = { Namespace = "Rux", Version = "*" }
+Io = { Namespace = "Rux", Version = "*" }
+Math = { Namespace = "Rux", Version = "*" }
+Text = { Namespace = "Rux", Version = "*" }
 ```
 
 ```rux [Interface/Src/Circle.rux]
