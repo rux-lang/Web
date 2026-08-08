@@ -14,7 +14,7 @@ _Last updated: 7 August 2026_
 
 This policy explains what data the Rux project collects, why, and how long it is kept. It covers the
 website at `rux-lang.dev`, the [package registry](/packages) and its API at `api.rux-lang.dev`, and the
-[playground](/playground).
+[playground](/play).
 
 The data controller is **Ivan Muzyka and the Rux Contributors**. Questions about this policy, or a
 request about your data, go to [info@rux-lang.dev](mailto:info@rux-lang.dev).
@@ -64,7 +64,7 @@ not to us, so GitHub can see your IP address and browser when it is fetched.
 
 ## API tokens
 
-An [API token](/packaging/tokens) lets the `rux` command line publish on your behalf. We store the
+An [API token](/docs/packaging/tokens) lets the `rux` command line publish on your behalf. We store the
 token's display name, its scopes, its creation, expiry and last-use times, a short non-secret prefix,
 and a **SHA-256 hash of the credential**. The credential itself is shown once and never stored, so we
 cannot recover or display it again.
@@ -73,7 +73,7 @@ cannot recover or display it again.
 
 Everything you publish is **public**: the package name, namespace, version, manifest metadata, README,
 license, and the package archive itself. Published versions are immutable —
-[yanking](/packaging/yanking) withdraws a version from new resolution but does not delete it. Do not
+[yanking](/docs/packaging/yanking) withdraws a version from new resolution but does not delete it. Do not
 publish anything you are not willing to make permanently public.
 
 The registry records a **download event** for each package download so it can show download counts.
@@ -81,7 +81,7 @@ Events are counted; they do not identify who downloaded what.
 
 ## The playground
 
-Code you run in the [playground](/playground) is sent to our API and executed in a throwaway container.
+Code you run in the [playground](/play) is sent to our API and executed in a throwaway container.
 The container is destroyed after the run.
 
 **Nothing is stored.** There is no database table for playground runs, no retention period, and no

@@ -25,11 +25,11 @@ See the [release history](https://github.com/rux-lang/Rux/blob/dev/CHANGELOG.md)
 
 ## Which platforms are supported?
 
-The compiler is built and continuously tested on both x86-64 and AArch64 for: FreeBSD, Linux, macOS, and Windows. Other hosts are supported by [building from source](/start/build), without prebuilt binaries or continuous testing.
+The compiler is built and continuously tested on both x86-64 and AArch64 for: FreeBSD, Linux, macOS, and Windows. Other hosts are supported by [building from source](/docs/start/build), without prebuilt binaries or continuous testing.
 
 ## Does Rux support cross-compilation?
 
-Not yet. The current compiler primarily builds native programs for its host platform. Target-specific declarations can be selected with [conditional compilation](/docs/comptime/conditional) — `when #target.os == .Windows { ... }`.
+Not yet. The current compiler primarily builds native programs for its host platform. Target-specific declarations can be selected with [conditional compilation](/docs/lang/comptime/conditional) — `when #target.os == .Windows { ... }`.
 
 ## How do I install Rux?
 
@@ -45,13 +45,13 @@ scoop install rux
 ```
 
 On Linux, install with the one-line script or the prebuilt tarball — see the
-[Linux install guide](/start/install/linux):
+[Linux install guide](/docs/start/install/linux):
 
 ```sh
 curl -fsSL https://rux-lang.dev/install.sh | sh
 ```
 
-On any other platform, [build the compiler from source](/start/build) with
+On any other platform, [build the compiler from source](/docs/start/build) with
 CMake and a C++26-capable compiler.
 
 ## How do I create and run a project?
@@ -65,7 +65,7 @@ rux run
 ```
 
 A package contains a `Rux.toml` manifest and source files under `Src/`. See
-[Directory Layout](/packaging/layout) and the [CLI Reference](/cli) for the
+[Directory Layout](/docs/packaging/layout) and the [CLI Reference](/docs/cli) for the
 available commands.
 
 ## What language is the compiler written in?
@@ -115,7 +115,7 @@ count += 1;
 ```
 
 Reassigning a `let` binding is a compile-time error. See
-[Variables](/docs/variables/overview).
+[Variables](/docs/lang/variables/overview).
 
 ## Does Rux have a garbage collector?
 
@@ -132,7 +132,7 @@ experimental.
 Rux does not currently implement stack-unwinding exceptions. Error handling is
 explicit and remains an evolving part of the language and standard library.
 
-See [Error Handling](/docs/error/overview) for the current documented approach.
+See [Error Handling](/docs/lang/error/overview) for the current documented approach.
 
 ## Can Rux call native functions?
 
@@ -146,9 +146,9 @@ extern func GetStdHandle(handle: uint32) -> *opaque;
 ```
 
 Library names differ per system, so guard the declarations with
-[conditional compilation](/docs/comptime/conditional) rather than declaring
+[conditional compilation](/docs/lang/comptime/conditional) rather than declaring
 them unconditionally. See the
-[Foreign Function Interface](/docs/ffi/overview).
+[Foreign Function Interface](/docs/lang/ffi/overview).
 
 ## Can Rux build libraries?
 
@@ -166,7 +166,7 @@ platforms is still developing.
 ## Is there a standard library?
 
 Not a monolithic one. Rux has no built-in runtime — everything is a package you
-add to a project with [`rux add`](/cli/add), so a program depends only on what
+add to a project with [`rux add`](/docs/cli/add), so a program depends only on what
 it asks for.
 
 The cross-platform layer is portable and is what you should reach for first:
@@ -199,14 +199,14 @@ Registry packages are indexed by the official registry at
 [`rux-lang.dev/packages`](/packages). Local path
 dependencies are also supported. A manifest declares a single `[Dependencies]`
 table — platform selection belongs in source, with
-[conditional compilation](/docs/comptime/conditional), rather than in
-target-specific dependency sections. See [Packaging](/packaging) for the whole
+[conditional compilation](/docs/lang/comptime/conditional), rather than in
+target-specific dependency sections. See [Packaging](/docs/packaging) for the whole
 subject.
 
 ## How do I publish a package?
 
-Give the package a [namespace](/packaging/namespaces) you own and a `MinRux`
-version, create an [API token](/packaging/tokens) with the `publish` scope, then:
+Give the package a [namespace](/docs/packaging/namespaces) you own and a `MinRux`
+version, create an [API token](/docs/packaging/tokens) with the `publish` scope, then:
 
 ```sh
 rux publish --dry-run
@@ -214,8 +214,8 @@ rux publish
 ```
 
 Published versions are immutable — a mistake is fixed by publishing a new
-version and [yanking](/packaging/yanking) the old one. See
-[Publishing](/packaging/publishing) for the full walkthrough.
+version and [yanking](/docs/packaging/yanking) the old one. See
+[Publishing](/docs/packaging/publishing) for the full walkthrough.
 
 ## What other commands does the CLI provide?
 
@@ -227,7 +227,7 @@ rux help
 rux help build
 ```
 
-[`rux doc`](/cli/doc) is still a stub — it reads the manifest but does not generate documentation yet. Consult the [CLI Reference](/cli) and the help output of your installed version.
+[`rux doc`](/docs/cli/doc) is still a stub — it reads the manifest but does not generate documentation yet. Consult the [CLI Reference](/docs/cli) and the help output of your installed version.
 
 ## Which editors support Rux?
 
@@ -243,7 +243,7 @@ Editor integrations are developed independently from the compiler, so feature co
 
 An `.rcu` file is a **Rux Compiled Unit**, the compiler's native object format. It stores machine code, data, symbols, and relocations before the Rux linker combines units into a platform executable or library.
 
-See the [Rux Compiled Unit specification](/docs/appendix/rcu).
+See the [Rux Compiled Unit specification](/docs/lang/appendix/rcu).
 
 ## Is Rux open source?
 

@@ -5,23 +5,26 @@ const navigation = inject<Ref<ContentNavigationItem[]>>("navigation");
 const route = useRoute();
 
 /**
- * The old sidebar was keyed by route prefix (/docs/, /docs/api/, /cli/, /start/,
- * /blog/) — five slices of one tree. queryCollectionNavigation returns the
- * whole tree, so pick the branch matching the section being viewed.
+ * Every documentation page is /docs/<book>/<page>, so the sidebar is always the
+ * `/docs` branch's child matching the second path segment — one rule for all
+ * five books, with no section names written down anywhere.
  *
- * Four slices now: blog posts render through app/pages/blog/[slug].vue, which
- * follows nuxt.com in giving an article no sidebar at all.
+ * It used to key off the *first* segment, back when /start, /cli and /packaging
+ * were top-level siblings of /docs; nesting them removed the special case that
+ * had to dig /docs/api out of the /docs subtree on its own.
+ *
+ * Blog posts never reach here: they render through app/pages/blog/[slug].vue,
+ * which follows nuxt.com in giving an article no sidebar at all.
  */
-const top = computed(() => "/" + (route.path.split("/")[1] ?? ""));
-
 const section = computed(() => {
-  if (route.path === "/docs/api" || route.path.startsWith("/docs/api/")) {
-    const docs = navigation?.value?.find((item) => item.path === "/docs");
-    const api = docs?.children?.find((item) => item.path === "/docs/api");
-    return api ? [api] : [];
-  }
+  // The /docs hub itself has no book, and gets no sidebar. app/pages/[...slug]
+  // only selects this layout below /docs, so this is belt-and-braces.
+  const book = route.path.split("/")[2];
+  if (!book) return [];
 
-  return navigation?.value?.filter((item) => item.path === top.value) ?? [];
+  const docs = navigation?.value?.find((item) => item.path === "/docs");
+  const found = docs?.children?.find((item) => item.path === `/docs/${book}`);
+  return found ? [found] : [];
 });
 </script>
 

@@ -46,7 +46,12 @@ const styleOf = (html) => [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)]
 // Rux fences highlighted
 // @nuxt/content emits hashed token classes plus a <style> block of --shiki-*
 // custom properties, not inline colours, so assert the class/variable pairing.
-for (const route of ["/docs/functions/declaration", "/docs/api/io/print", "/start/examples", "/docs/structs/methods"]) {
+for (const route of [
+  "/docs/lang/functions/declaration",
+  "/docs/api/io/print",
+  "/docs/start/examples",
+  "/docs/lang/structs/methods",
+]) {
   check("code", route, () => {
     const h = read(route);
     if (!h) return { ok: false, detail: "route missing" };
@@ -76,7 +81,7 @@ for (const route of ["/docs/functions/declaration", "/docs/api/io/print", "/star
 const SHIKI_THEMES = ["material-theme-lighter", "material-theme-lighter", "material-theme-palenight"];
 
 check("code", "shiki themes are the configured trio", () => {
-  const h = read("/docs/functions/declaration");
+  const h = read("/docs/lang/functions/declaration");
   if (!h) return { ok: false, detail: "route missing" };
   const cls = h.match(/class="[^"]*shiki-themes ([^"]*)"/)?.[1] ?? "";
   const themes = cls.trim().split(/\s+/).filter(Boolean);
@@ -151,8 +156,8 @@ check("callouts", "titled callouts keep the title on its own line", () => {
 
 // Code-group tabs
 for (const [route, expectTabs] of [
-  ["/start/build", 11],
-  ["/start/editors/vscode", 2],
+  ["/docs/start/build", 11],
+  ["/docs/start/editors/vscode", 2],
 ]) {
   check("tabs", route, () => {
     const h = read(route);
@@ -168,7 +173,7 @@ for (const [route, expectTabs] of [
 }
 
 // <sup> and wide tables
-for (const route of ["/docs/appendix/tokens", "/docs/appendix/primitives"]) {
+for (const route of ["/docs/lang/appendix/tokens", "/docs/lang/appendix/primitives"]) {
   check("tables", route, () => {
     const h = read(route);
     if (!h) return { ok: false, detail: "route missing" };
@@ -201,7 +206,7 @@ for (const [route, want] of [
   ["/docs/api/linux/syscalls", null],
   ["/docs/api/text/string/plus", "+"],
   ["/blog/release-v0.1.0", null],
-  ["/cli/global", null],
+  ["/docs/cli/global", null],
 ]) {
   check("titles", route, () => {
     const h = read(route);
@@ -234,7 +239,7 @@ check("assets", "self-hosted fonts, no external font host", () => {
 });
 
 check("assets", "dark-mode rules emitted", () => {
-  const h = read("/docs");
+  const h = read("/docs/lang");
   if (!h) return { ok: false, detail: "route missing" };
   const inline = styleOf(h);
   const cssDir = path.join(DIST, "_nuxt");

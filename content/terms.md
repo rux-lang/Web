@@ -13,7 +13,7 @@ seo:
 _Last updated: 7 August 2026_
 
 These terms apply to the website at `rux-lang.dev`, the [package registry](/packages) and its API, and
-the [playground](/playground). By using them you agree to them. If you do not, please do not use the
+the [playground](/play). By using them you agree to them. If you do not, please do not use the
 services.
 
 The Rux compiler and toolchain are separate: they are distributed under the
@@ -23,7 +23,7 @@ of the software itself.
 ## Using the services
 
 Reading the documentation and browsing, searching, and downloading packages needs no account. Publishing
-requires a registry account and an [API token](/packaging/tokens).
+requires a registry account and an [API token](/docs/packaging/tokens).
 
 You are responsible for keeping your account and your tokens secure. Anything done with your credentials
 is treated as done by you. Revoke a token as soon as you suspect it has leaked.
@@ -47,14 +47,14 @@ the registry — for as long as it remains published. That licence exists so the
 package to the people who depend on it; it does not give us ownership.
 
 Publish under a licence that lets other people actually use the package. Set `License` or `LicenseFile`
-in your [manifest](/packaging/manifest).
+in your [manifest](/docs/packaging/manifest).
 
 ## Publication is permanent
 
 **A published version is immutable and cannot be edited, replaced, or deleted.** Other people's builds
 depend on that being true.
 
-[Yanking](/packaging/yanking) withdraws a version from new dependency resolution but leaves it
+[Yanking](/docs/packaging/yanking) withdraws a version from new dependency resolution but leaves it
 downloadable, so existing builds keep working. It is not deletion, and it is not a way to take back
 something that should not have been published.
 
@@ -65,7 +65,7 @@ bytes.
 
 ## Namespaces
 
-Claiming a [namespace](/packaging/namespaces) makes you responsible for what is published under it.
+Claiming a [namespace](/docs/packaging/namespaces) makes you responsible for what is published under it.
 Namespaces are allocated first come, first served, on the understanding that you intend to use them.
 
 We may reclaim or block a namespace or package name that is used to squat, to impersonate a person or

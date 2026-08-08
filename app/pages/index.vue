@@ -263,9 +263,9 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
       <template #links>
         <div class="flex w-full flex-col gap-4">
           <div class="flex flex-wrap items-center gap-2">
-            <UButton to="/start" size="xl" icon="i-lucide-rocket" label="Get Started" />
+            <UButton to="/docs/start" size="xl" icon="i-lucide-rocket" label="Get Started" />
             <UButton
-              to="/docs"
+              to="/docs/lang"
               size="xl"
               color="neutral"
               variant="subtle"
@@ -359,7 +359,7 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
         >
           <span class="text-lg font-semibold">Dive into the language</span>
           <div>
-            <UButton to="/docs" label="Start reading docs" trailing icon="i-lucide-arrow-right" />
+            <UButton to="/docs/lang" label="Start reading docs" trailing icon="i-lucide-arrow-right" />
           </div>
         </Motion>
       </template>

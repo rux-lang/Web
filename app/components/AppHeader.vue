@@ -48,7 +48,11 @@ const logoContextMenuItems: ContextMenuItem[][] = [
 // The docs sections get their own row under the bar (nuxt.com's HeaderBottom),
 // so while it is showing the top-level "Docs" dropdown is flattened to a plain
 // link — otherwise the same links appear twice.
-const inDocs = computed(() => /^\/(start|docs|cli|packaging)(\/|$)/.test(route.path));
+//
+// This includes the /docs hub, which is why it lacks the trailing `.` that
+// app/pages/[...slug].vue's `inSection` carries: the hub wants the switcher row
+// but has no sidebar.
+const inDocs = computed(() => /^\/docs(\/|$)/.test(route.path));
 
 const items = computed(() =>
   headerLinks.value.map((link) => (inDocs.value && link.label === "Docs" ? { ...link, children: [] } : link)),

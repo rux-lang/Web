@@ -82,7 +82,7 @@ const stubs = {
 };
 
 async function mountPage() {
-  const Page = (await import("../app/pages/playground.vue")).default;
+  const Page = (await import("../app/pages/play.vue")).default;
   const wrapper = mount(Page, { global: { stubs } });
   await nextTick();
   return wrapper;

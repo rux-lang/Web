@@ -35,7 +35,7 @@ async function copyCommand() {
     <template #header>
       <div>
         <h2 class="font-semibold text-highlighted">Add this release</h2>
-        <p class="mt-1 text-sm text-muted">Adds the exact version to Rux.toml.</p>
+        <p class="mt-1 text-sm text-muted">Run the following command.</p>
       </div>
     </template>
 

@@ -43,7 +43,7 @@ export function contentRoutes() {
       // catch-all, so these have no file under content/ to be derived from —
       // and this function is both the prerender seed and the verify:routes
       // oracle, so a page missing here is a page that never gets built.
-      .concat(["/", "/blog", "/playground"])
+      .concat(["/", "/blog", "/play"])
       .sort()
       .filter((r, i, a) => a.indexOf(r) === i)
   );

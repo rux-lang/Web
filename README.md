@@ -15,10 +15,12 @@ The official website for [Rux](https://rux-lang.dev), built with Nuxt, Nuxt Cont
 │   ├── error.vue
 │   └── app.config.ts
 ├── content/              # every page, as Markdown
-│   ├── docs/             # language reference
-│   │   └── api/          # standard library and platform APIs (/docs/api)
-│   ├── cli/              # rux CLI subcommands
-│   ├── start/            # Get Started guide
+│   ├── docs/             # all five documentation books live under /docs
+│   │   ├── 1.start/      # Get Started guide (/docs/start)
+│   │   ├── 2.lang/       # language reference (/docs/lang)
+│   │   ├── 3.cli/        # rux CLI subcommands (/docs/cli)
+│   │   ├── 4.packaging/  # manifests, dependencies, publishing (/docs/packaging)
+│   │   └── 5.api/        # standard library and platform APIs (/docs/api)
 │   ├── blog/
 │   └── partials/         # fragments rendered inside Vue pages
 ├── grammars/             # rux.tmLanguage.json, the Shiki grammar
@@ -28,7 +30,7 @@ The official website for [Rux](https://rux-lang.dev), built with Nuxt, Nuxt Cont
 └── nuxt.config.ts
 ```
 
-Nuxt Content maps every `.md` file under `content/` to a route based on its path. Navigation is generated from the filesystem — **there is no sidebar file to edit.** Ordering comes from numeric filename prefixes (`03.signed/2.int8.md` → `/docs/signed/int8`), which are stripped from the URL, and directory titles come from `.navigation.yml`.
+Nuxt Content maps every `.md` file under `content/` to a route based on its path. Navigation is generated from the filesystem — **there is no sidebar file to edit.** Ordering comes from numeric filename prefixes (`2.lang/03.signed/2.int8.md` → `/docs/lang/signed/int8`), which are stripped from the URL, and directory titles come from `.navigation.yml`.
 
 Images go in `public/images/` and are referenced from `/images/`.
 

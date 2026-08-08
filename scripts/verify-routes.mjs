@@ -7,7 +7,7 @@
  * generated from, so adding or removing pages needs no bookkeeping here.
  *
  *   1. every Markdown file under content/ produced a route
- *   2. no route leaked a numeric ordering prefix (e.g. /docs/03.signed/...)
+ *   2. no route leaked a numeric ordering prefix (e.g. /docs/lang/03.signed/...)
  *
  * Check 1 is the one that matters. Nitro only prerenders what it is told about
  * or can crawl to, so a page nobody links to yet can sit on disk and never

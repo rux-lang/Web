@@ -35,6 +35,7 @@ const pagesWithoutSurround = new Set([
   "/code-of-conduct",
   "/community",
   "/design-kit",
+  "/docs",
   "/download",
   "/faq",
   "/privacy",
@@ -44,13 +45,16 @@ const pagesWithoutSurround = new Set([
 ]);
 const showSurround = computed(() => !pagesWithoutSurround.has(path.value) && !!surround.value?.some(Boolean));
 
-// Sectioned pages get the sidebar; the standalone root pages (faq, download,
-// community, support, packages, playground) carried `sidebar: false` in
-// VitePress and keep that here.
+// Every page *below* /docs is inside one of the five books and gets that book's
+// sidebar. Note the trailing `.`: it excludes /docs itself, which is the hub —
+// a grid of the five, with nothing to put in an aside. AppHeader's `inDocs` is
+// the same test without it, because the hub *does* want the section switcher
+// row. The standalone root pages (faq, download, community, support, packages,
+// playground) carried `sidebar: false` in VitePress and keep that here.
 //
-// /blog is absent on purpose: posts are served by app/pages/blog/[slug].vue,
-// which gives them nuxt.com's article layout — no left sidebar — instead.
-const inSection = computed(() => /^\/(start|docs|cli|packaging)(\/|$)/.test(path.value));
+// /blog is excluded too: posts are served by app/pages/blog/[slug].vue, which
+// gives them nuxt.com's article layout — no left sidebar — instead.
+const inSection = computed(() => /^\/docs\/./.test(path.value));
 const isApiPage = computed(() => /^\/docs\/api(\/|$)/.test(path.value));
 
 function isMinimarkTag(node: unknown, tag: string): boolean {
@@ -99,7 +103,7 @@ definePageMeta({ heroBackground: "opacity-30" });
 // UPage sizes its centre column from whether the #right SLOT exists, not from
 // whether that slot rendered anything — so a v-if on UContentToc alone leaves a
 // dead two-column gutter. Nine pages already had one (every page whose body has
-// no h2, e.g. /docs, /docs/api, /download). Driving the template's own v-if from this
+// no h2, e.g. /docs/lang, /docs/api, /download). Driving the template's own v-if from this
 // makes the content span all ten columns instead.
 const showToc = computed(() => !page.value?.hideToc && !!page.value?.body?.toc?.links?.length);
 

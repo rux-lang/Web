@@ -24,31 +24,31 @@ export const useHeaderLinks = () => {
       // children away inside the docs sections, leaving a plain link.
       label: "Docs",
       to: "/docs",
-      active: /^\/(start|docs|cli|packaging)(\/|$)/.test(route.path),
+      active: /^\/docs(\/|$)/.test(route.path),
       children: [
         {
           label: "Get Started",
           description: "Install Rux and build your first program",
           icon: "i-lucide-rocket",
-          to: "/start",
+          to: "/docs/start",
         },
         {
           label: "Rux Reference",
           description: "The complete language reference",
           icon: "i-lucide-book-open",
-          to: "/docs",
+          to: "/docs/lang",
         },
         {
           label: "CLI Reference",
           description: "Every rux subcommand",
           icon: "i-lucide-square-terminal",
-          to: "/cli",
+          to: "/docs/cli",
         },
         {
           label: "Packaging",
           description: "Manifests, dependencies, and publishing",
           icon: "i-lucide-package",
-          to: "/packaging",
+          to: "/docs/packaging",
         },
         {
           label: "API Reference",
@@ -58,7 +58,7 @@ export const useHeaderLinks = () => {
         },
       ],
     },
-    { label: "Playground", to: "/playground" },
+    { label: "Playground", to: "/play" },
     {
       label: "Packages",
       to: "/packages",
@@ -111,18 +111,18 @@ const footerLinks: FooterColumn[] = [
   {
     label: "Documentation",
     children: [
-      { label: "Get Started", to: "/start" },
-      { label: "Rux Reference", to: "/docs" },
-      { label: "CLI Reference", to: "/cli" },
+      { label: "Get Started", to: "/docs/start" },
+      { label: "Rux Reference", to: "/docs/lang" },
+      { label: "CLI Reference", to: "/docs/cli" },
       { label: "API Reference", to: "/docs/api" },
-      { label: "Packaging", to: "/packaging" },
+      { label: "Packaging", to: "/docs/packaging" },
     ],
   },
   {
     label: "Explore",
     children: [
       { label: "Download", to: "/download" },
-      { label: "Playground", to: "/playground" },
+      { label: "Playground", to: "/play" },
       { label: "Packages", to: "/packages" },
       { label: "Blog", to: "/blog" },
     ],

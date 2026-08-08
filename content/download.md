@@ -71,5 +71,5 @@ notes, and the full asset list live on GitHub.
 ::
 
 Prefer a package manager, or want the finer details for your platform? The
-per-platform [install guides](/start) cover every supported install method
+per-platform [install guides](/docs/start) cover every supported install method
 step by step.
