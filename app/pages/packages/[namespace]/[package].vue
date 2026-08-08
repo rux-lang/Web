@@ -78,6 +78,11 @@ const { data, error, status, refresh } = useLazyAsyncData<PackagePageDocument>(
 
 const failure = computed(() => (error.value ? normalizeApiError(error.value) : null));
 const release = computed(() => data.value?.release ?? null);
+const readmeFile = computed(() => release.value?.readme_file ?? null);
+const licenseFile = computed(() => release.value?.license_file ?? null);
+// A LICENSE.md goes through the same sanitizer as the README; a plain LICENSE file is not Markdown
+// and is shown verbatim instead.
+const licenseIsMarkdown = computed(() => Boolean(licenseFile.value?.path.toLowerCase().endsWith(".md")));
 const pageTitle = computed(() =>
   release.value
     ? `${release.value.namespace}/${release.value.package} ${release.value.version} · Rux Package Registry`
@@ -207,22 +212,26 @@ const breadcrumbItems = computed(() => [
         description="Existing projects may still download it, but new dependency resolution will not select it."
       />
 
-      <div class="mt-10 grid gap-x-12 gap-y-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <!-- grid-rows-[auto_1fr]: the README column spans both rows, so a long README leaves surplus
+           height for the grid to distribute. Pinning row 1 to auto keeps it at the download card's
+           own height and sends the surplus to row 2, which is what holds the sticky aside against
+           the chart instead of pushing it down the page. -->
+      <div class="mt-10 grid gap-x-12 gap-y-6 lg:grid-cols-[minmax(0,1fr)_22rem] lg:grid-rows-[auto_1fr]">
         <PackageDownloadChart
           :namespace="release.namespace"
           :package-name="release.package"
-          class="lg:col-start-2 lg:row-start-1"
+          class="self-start lg:col-start-2 lg:row-start-1"
         />
 
         <div class="min-w-0 space-y-14 lg:col-start-1 lg:row-span-2 lg:row-start-1">
           <section aria-labelledby="readme-heading">
             <div class="mb-5">
               <h2 id="readme-heading" class="text-2xl font-semibold text-highlighted">README</h2>
-              <p v-if="release.readme" class="mt-2 text-sm text-muted">
-                {{ release.readme.path }}
+              <p v-if="readmeFile" class="mt-2 text-sm text-muted">
+                {{ readmeFile.path }}
               </p>
             </div>
-            <SanitizedReadme v-if="release.readme" :source="release.readme.source" />
+            <SanitizedReadme v-if="readmeFile" :source="readmeFile.source" />
             <UEmpty
               v-else
               icon="i-lucide-file-question-mark"
@@ -230,6 +239,20 @@ const breadcrumbItems = computed(() => [
               description="This release does not include referenced README content."
               variant="subtle"
             />
+          </section>
+
+          <section v-if="licenseFile" id="license" aria-labelledby="license-heading">
+            <div class="mb-5">
+              <h2 id="license-heading" class="text-2xl font-semibold text-highlighted">License</h2>
+              <p class="mt-2 text-sm text-muted">
+                {{ licenseFile.path }}
+              </p>
+            </div>
+            <SanitizedReadme v-if="licenseIsMarkdown" :source="licenseFile.source" />
+            <pre
+              v-else
+              class="overflow-x-auto rounded-md border border-default bg-muted p-4 text-sm whitespace-pre-wrap text-highlighted"
+              >{{ licenseFile.source }}</pre>
           </section>
 
           <PackageDependencies :dependencies="release.dependencies" />
