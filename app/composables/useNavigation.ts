@@ -24,7 +24,7 @@ export const useHeaderLinks = () => {
       // children away inside the docs sections, leaving a plain link.
       label: "Docs",
       to: "/docs",
-      active: /^\/(start|docs|cli|packaging|api)(\/|$)/.test(route.path),
+      active: /^\/(start|docs|cli|packaging)(\/|$)/.test(route.path),
       children: [
         {
           label: "Get Started",
@@ -54,7 +54,7 @@ export const useHeaderLinks = () => {
           label: "API Reference",
           description: "Standard library and platform APIs",
           icon: "i-lucide-code-xml",
-          to: "/api",
+          to: "/docs/api",
         },
       ],
     },
@@ -114,7 +114,7 @@ const footerLinks: FooterColumn[] = [
       { label: "Get Started", to: "/start" },
       { label: "Rux Reference", to: "/docs" },
       { label: "CLI Reference", to: "/cli" },
-      { label: "API Reference", to: "/api" },
+      { label: "API Reference", to: "/docs/api" },
       { label: "Packaging", to: "/packaging" },
     ],
   },

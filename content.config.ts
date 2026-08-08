@@ -3,7 +3,7 @@ import { defineCollection, defineContentConfig, z } from "@nuxt/content";
 /**
  * One `docs` collection over all 550 pages.
  *
- * VitePress's five sidebar route keys (/start/, /docs/, /api/, /cli/, /blog/)
+ * VitePress's five sidebar route keys (/start/, /docs/, /docs/api/, /cli/, /blog/)
  * are five slices of ONE tree, which is exactly what queryCollectionNavigation
  * returns. Splitting per section would mean five navigation queries, five
  * search calls and branching in the catch-all page, for no gain.

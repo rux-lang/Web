@@ -46,7 +46,7 @@ const styleOf = (html) => [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)]
 // Rux fences highlighted
 // @nuxt/content emits hashed token classes plus a <style> block of --shiki-*
 // custom properties, not inline colours, so assert the class/variable pairing.
-for (const route of ["/docs/functions/declaration", "/api/io/print", "/start/examples", "/docs/structs/methods"]) {
+for (const route of ["/docs/functions/declaration", "/docs/api/io/print", "/start/examples", "/docs/structs/methods"]) {
   check("code", route, () => {
     const h = read(route);
     if (!h) return { ok: false, detail: "route missing" };
@@ -183,7 +183,7 @@ for (const route of ["/docs/appendix/tokens", "/docs/appendix/primitives"]) {
 }
 
 // Literal {{ }} must survive as text, not be interpolated
-for (const route of ["/api/io", "/api/io/print"]) {
+for (const route of ["/docs/api/io", "/docs/api/io/print"]) {
   check("braces", route, () => {
     const h = read(route);
     if (!h) return { ok: false, detail: "route missing" };
@@ -198,8 +198,8 @@ for (const route of ["/api/io", "/api/io/print"]) {
 
 // Awkward titles
 for (const [route, want] of [
-  ["/api/linux/syscalls", null],
-  ["/api/text/string/plus", "+"],
+  ["/docs/api/linux/syscalls", null],
+  ["/docs/api/text/string/plus", "+"],
   ["/blog/release-v0.1.0", null],
   ["/cli/global", null],
 ]) {

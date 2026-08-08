@@ -1,0 +1,21 @@
+# FindClose
+
+Closes a file-search handle.
+
+**Package:** `Windows`
+
+**Microsoft documentation:** [`FindClose`](https://learn.microsoft.com/en-us/windows/win32/docs/api/fileapi/nf-fileapi-findclose)
+
+## Signature
+
+```rux
+func FindClose(findFile: *opaque) -> bool32;
+```
+
+Returns nonzero on success or zero on failure. Call it exactly once for every
+successful [`FindFirstFileA`](/docs/api/windows/findfirstfilea), including when enumeration stops
+early. Search handles must not be passed to `CloseHandle`.
+
+## See also
+
+- [`Windows`](/docs/api/windows) — the package overview

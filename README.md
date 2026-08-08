@@ -16,7 +16,7 @@ The official website for [Rux](https://rux-lang.dev), built with Nuxt, Nuxt Cont
 │   └── app.config.ts
 ├── content/              # every page, as Markdown
 │   ├── docs/             # language reference
-│   ├── api/              # standard library and platform APIs
+│   │   └── api/          # standard library and platform APIs (/docs/api)
 │   ├── cli/              # rux CLI subcommands
 │   ├── start/            # Get Started guide
 │   ├── blog/

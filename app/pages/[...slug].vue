@@ -7,7 +7,7 @@ const route = useRoute();
 const navigation = inject<Ref<ContentNavigationItem[] | null>>("navigation", ref([]));
 
 // Inbound URLs may carry a trailing slash (the old site linked
-// directory indexes as /api/bsd/). queryCollection stores them slashless, so
+// directory indexes as /docs/api/bsd/). queryCollection stores them slashless, so
 // normalise before querying or those pages 404 on client-side navigation while
 // the prerendered HTML still serves — a bug that hides in testing.
 const path = computed(() => route.path.replace(/\/+$/, "") || "/");
@@ -50,8 +50,8 @@ const showSurround = computed(() => !pagesWithoutSurround.has(path.value) && !!s
 //
 // /blog is absent on purpose: posts are served by app/pages/blog/[slug].vue,
 // which gives them nuxt.com's article layout — no left sidebar — instead.
-const inSection = computed(() => /^\/(start|docs|cli|api|packaging)(\/|$)/.test(path.value));
-const isApiPage = computed(() => /^\/api(\/|$)/.test(path.value));
+const inSection = computed(() => /^\/(start|docs|cli|packaging)(\/|$)/.test(path.value));
+const isApiPage = computed(() => /^\/docs\/api(\/|$)/.test(path.value));
 
 function isMinimarkTag(node: unknown, tag: string): boolean {
   return Array.isArray(node) && node[0] === tag;
@@ -99,7 +99,7 @@ definePageMeta({ heroBackground: "opacity-30" });
 // UPage sizes its centre column from whether the #right SLOT exists, not from
 // whether that slot rendered anything — so a v-if on UContentToc alone leaves a
 // dead two-column gutter. Nine pages already had one (every page whose body has
-// no h2, e.g. /docs, /api, /download). Driving the template's own v-if from this
+// no h2, e.g. /docs, /docs/api, /download). Driving the template's own v-if from this
 // makes the content span all ten columns instead.
 const showToc = computed(() => !page.value?.hideToc && !!page.value?.body?.toc?.links?.length);
 

@@ -6,13 +6,17 @@ const { headerLinks } = useHeaderLinks();
 // the visitor is inside one of the four documentation sections.
 const links = computed(() => {
   const children = headerLinks.value.find((link) => link.label === "Docs")?.children ?? [];
+  const activeTo = children
+    .map((child) => child.to)
+    .filter((to): to is string => typeof to === "string" && (route.path === to || route.path.startsWith(`${to}/`)))
+    .sort((a, b) => b.length - a.length)[0];
 
   // UNavigationMenu marks a link active on an exact path match, which would
   // leave the row unhighlighted on every page below a section root.
   return children.map((child) => ({
     ...child,
     description: undefined,
-    active: typeof child.to === "string" && route.path.startsWith(child.to),
+    active: child.to === activeTo,
   }));
 });
 </script>

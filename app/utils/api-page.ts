@@ -296,7 +296,8 @@ export interface ApiPageInfo {
 
 export function apiPageInfo(path: string): ApiPageInfo {
   const segments = normalizedSegments(path);
-  const packageSlug = segments[0] === "api" ? (segments[1] as ApiPackageSlug | undefined) : undefined;
+  const packageSlug =
+    segments[0] === "docs" && segments[1] === "api" ? (segments[2] as ApiPackageSlug | undefined) : undefined;
 
   if (!packageSlug || !(packageSlug in apiPackages)) {
     return { sourceUrl: `${RUX_REPOSITORY}/tree/main/${PACKAGES_ROOT}` };

@@ -170,16 +170,16 @@ add to a project with [`rux add`](/cli/add), so a program depends only on what
 it asks for.
 
 The cross-platform layer is portable and is what you should reach for first:
-[`Rux`](/api/rux), [`C`](/api/c), [`Format`](/api/format), [`Io`](/api/io),
-[`Math`](/api/math), [`Memory`](/api/memory), and [`Text`](/api/text). Below it,
+[`Rux`](/docs/api/rux), [`C`](/docs/api/c), [`Format`](/docs/api/format), [`Io`](/docs/api/io),
+[`Math`](/docs/api/math), [`Memory`](/docs/api/memory), and [`Text`](/docs/api/text). Below it,
 the platform layer declares one operating system's own entry points:
-[`BSD`](/api/bsd), [`Linux`](/api/linux), [`MacOS`](/api/macos), and
-[`Windows`](/api/windows).
+[`BSD`](/docs/api/bsd), [`Linux`](/docs/api/linux), [`MacOS`](/docs/api/macos), and
+[`Windows`](/docs/api/windows).
 
 These packages are developed alongside the compiler in the
 [`rux-lang/Rux`](https://github.com/rux-lang/Rux) repository. None of them has a
 stable API yet — names, signatures, and behavior may change between releases.
-See the [API Reference](/api).
+See the [API Reference](/docs/api).
 
 ## Does Rux include a package manager?
 
