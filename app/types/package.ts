@@ -19,17 +19,6 @@ export interface PackageReadme {
   source: string;
 }
 
-export type PackageLicense =
-  | {
-      kind: "expression";
-      expression: string;
-    }
-  | {
-      kind: "file";
-      path: string;
-      source: string;
-    };
-
 export interface PackageChecksum {
   algorithm: "sha256";
   digest: string;
@@ -50,7 +39,8 @@ export interface PackageVersion {
   dependencies: PackageDependency[];
   normalized_manifest: Record<string, unknown>;
   readme: PackageReadme | null;
-  license: PackageLicense | null;
+  license: string | null;
+  license_url: string | null;
   checksum: PackageChecksum;
   artifact_size: number;
   artifact_file_count: number;

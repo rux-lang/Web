@@ -87,7 +87,8 @@ const release = {
     source:
       "# Rux Json\n\nStreaming JSON parsing and serialization.\n\n## Features\n\n- Bounded parsing\n- Helpful errors\n\n```rux\nuse Json\n```",
   },
-  license: { kind: "expression", expression: "MIT" },
+  license: "MIT",
+  license_url: "https://github.com/rux-lang/Rux/blob/main/LICENSE.md",
   checksum: {
     algorithm: "sha256",
     digest: "2222222222222222222222222222222222222222222222222222222222222222",

@@ -56,12 +56,21 @@ const manifestSource = computed(() => normalizedManifestSource(props.release.nor
       <div>
         <dt class="text-muted">License</dt>
         <dd class="mt-1 font-medium text-highlighted">
-          <template v-if="release.license?.kind === 'expression'">
-            {{ release.license.expression }}
-          </template>
-          <template v-else-if="release.license?.kind === 'file'">
-            {{ release.license.path }}
-          </template>
+          <ULink
+            v-if="release.license && release.license_url"
+            :to="release.license_url"
+            target="_blank"
+            :aria-label="`${release.license} license (opens in a new tab)`"
+            >{{ release.license }}</ULink
+          >
+          <template v-else-if="release.license">{{ release.license }}</template>
+          <ULink
+            v-else-if="release.license_url"
+            :to="release.license_url"
+            target="_blank"
+            aria-label="License (opens in a new tab)"
+            >View license</ULink
+          >
           <template v-else>Not provided</template>
         </dd>
       </div>
@@ -94,15 +103,6 @@ const manifestSource = computed(() => normalizedManifestSource(props.release.nor
 
     <template #footer>
       <div class="space-y-3">
-        <details v-if="release.license?.kind === 'file'" class="group">
-          <summary class="inline-flex min-h-11 cursor-pointer items-center text-sm font-medium text-highlighted">
-            View license file
-          </summary>
-          <pre
-            class="mt-3 max-h-72 overflow-auto whitespace-pre-wrap rounded-md bg-elevated p-3 text-xs text-default"
-            >{{ release.license.source }}</pre>
-        </details>
-
         <details class="group">
           <summary class="inline-flex min-h-11 cursor-pointer items-center text-sm font-medium text-highlighted">
             View normalized manifest

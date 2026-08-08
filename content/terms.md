@@ -42,12 +42,12 @@ When you publish a package you confirm that:
 - it does not contain other people's secrets, credentials, or personal data.
 
 You keep ownership of what you publish. You grant the Rux project a non-exclusive, worldwide, royalty-free
-licence to store, reproduce, and distribute it, and to display its metadata, README, and licence text on
-the registry — for as long as it remains published. That licence exists so the registry can serve your
+licence to store, reproduce, and distribute it, and to display its metadata and README on the registry —
+for as long as it remains published. That licence exists so the registry can serve your
 package to the people who depend on it; it does not give us ownership.
 
-Publish under a licence that lets other people actually use the package. Set `License` or `LicenseFile`
-in your [manifest](/docs/packaging/manifest).
+Publish under a licence that lets other people actually use the package. Set `License`, `LicenseUrl`, or
+both in your [manifest](/docs/packaging/manifest).
 
 ## Publication is permanent
 
