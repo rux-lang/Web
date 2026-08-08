@@ -83,6 +83,55 @@ const licenseFile = computed(() => release.value?.license_file ?? null);
 // A LICENSE.md goes through the same sanitizer as the README; a plain LICENSE file is not Markdown
 // and is shown verbatim instead.
 const licenseIsMarkdown = computed(() => Boolean(licenseFile.value?.path.toLowerCase().endsWith(".md")));
+
+const tab = ref("readme");
+// PackageDependents owns its own fetch, so it reports its count back for the badge. Null until that
+// request settles, which keeps the badge from flashing 0 while it loads. Its pagination has no
+// total, so a page with more behind the cursor reads "20+" rather than an understated "20".
+const dependents = ref<{ loaded: number; hasMore: boolean } | null>(null);
+
+function countBadge(label: string) {
+  return { label, color: "neutral" as const, variant: "subtle" as const };
+}
+
+const tabItems = computed(() => [
+  { label: "README", value: "readme", icon: "i-lucide-book-text", slot: "readme" as const },
+  {
+    label: "Dependencies",
+    value: "dependencies",
+    icon: "i-lucide-package",
+    slot: "dependencies" as const,
+    badge: countBadge(String(release.value?.dependencies.length ?? 0)),
+  },
+  {
+    label: "Dependents",
+    value: "dependents",
+    icon: "i-lucide-package-open",
+    slot: "dependents" as const,
+    ...(dependents.value
+      ? { badge: countBadge(`${dependents.value.loaded}${dependents.value.hasMore ? "+" : ""}`) }
+      : {}),
+  },
+  ...(licenseFile.value
+    ? [{ label: "License", value: "license", icon: "i-lucide-scale", slot: "license" as const }]
+    : []),
+]);
+
+// The LICENSE.md link in the sidebar and an inbound /packages/ns/name#license both have to open the
+// panel rather than jump to an id inside a hidden tab.
+function showLicense() {
+  if (!licenseFile.value) return;
+  tab.value = "license";
+}
+
+watch(
+  [licenseFile, () => route.hash],
+  ([file, hash]) => {
+    if (file && hash === "#license") tab.value = "license";
+  },
+  { immediate: true },
+);
+
 const pageTitle = computed(() =>
   release.value
     ? `${release.value.namespace}/${release.value.package} ${release.value.version} · Rux Package Registry`
@@ -223,41 +272,68 @@ const breadcrumbItems = computed(() => [
           class="self-start lg:col-start-2 lg:row-start-1"
         />
 
-        <div class="min-w-0 space-y-14 lg:col-start-1 lg:row-span-2 lg:row-start-1">
-          <section aria-labelledby="readme-heading">
-            <div class="mb-5">
-              <h2 id="readme-heading" class="text-2xl font-semibold text-highlighted">README</h2>
-              <p v-if="readmeFile" class="mt-2 text-sm text-muted">
+        <!-- unmount-on-hide=false is load-bearing: it mounts PackageDependents up front so its fetch
+             runs and can report the count for the tab badge, instead of waiting for a first click. -->
+        <section
+          aria-labelledby="package-documents-heading"
+          class="min-w-0 lg:col-start-1 lg:row-span-2 lg:row-start-1"
+        >
+          <h2 id="package-documents-heading" class="sr-only">Package documents</h2>
+
+          <UTabs
+            v-model="tab"
+            :items="tabItems"
+            :unmount-on-hide="false"
+            color="neutral"
+            variant="link"
+            class="w-full"
+            :ui="{
+              root: 'w-full items-stretch',
+              list: 'w-full overflow-x-auto overflow-y-hidden',
+              trigger: 'shrink-0',
+              content: 'pt-3 min-h-96',
+            }"
+          >
+            <template #readme>
+              <p v-if="readmeFile" class="mb-5 text-sm text-muted">
                 {{ readmeFile.path }}
               </p>
-            </div>
-            <SanitizedReadme v-if="readmeFile" :source="readmeFile.source" />
-            <UEmpty
-              v-else
-              icon="i-lucide-file-question-mark"
-              title="No README provided"
-              description="This release does not include referenced README content."
-              variant="subtle"
-            />
-          </section>
+              <SanitizedReadme v-if="readmeFile" :source="readmeFile.source" />
+              <UEmpty
+                v-else
+                icon="i-lucide-file-question-mark"
+                title="No README provided"
+                description="This release does not include referenced README content."
+                variant="subtle"
+              />
+            </template>
 
-          <section v-if="licenseFile" id="license" aria-labelledby="license-heading">
-            <div class="mb-5">
-              <h2 id="license-heading" class="text-2xl font-semibold text-highlighted">License</h2>
-              <p class="mt-2 text-sm text-muted">
-                {{ licenseFile.path }}
-              </p>
-            </div>
-            <SanitizedReadme v-if="licenseIsMarkdown" :source="licenseFile.source" />
-            <pre
-              v-else
-              class="overflow-x-auto rounded-md border border-default bg-muted p-4 text-sm whitespace-pre-wrap text-highlighted"
-              >{{ licenseFile.source }}</pre>
-          </section>
+            <template #dependencies>
+              <PackageDependencies :dependencies="release.dependencies" />
+            </template>
 
-          <PackageDependencies :dependencies="release.dependencies" />
-          <PackageDependents :namespace="release.namespace" :package-name="release.package" />
-        </div>
+            <template #dependents>
+              <PackageDependents
+                :namespace="release.namespace"
+                :package-name="release.package"
+                @count="dependents = $event"
+              />
+            </template>
+
+            <template #license>
+              <div v-if="licenseFile" id="license">
+                <p class="mb-5 text-sm text-muted">
+                  {{ licenseFile.path }}
+                </p>
+                <SanitizedReadme v-if="licenseIsMarkdown" :source="licenseFile.source" />
+                <pre
+                  v-else
+                  class="overflow-x-auto rounded-md border border-default bg-muted p-4 text-sm whitespace-pre-wrap text-highlighted"
+                  >{{ licenseFile.source }}</pre>
+              </div>
+            </template>
+          </UTabs>
+        </section>
 
         <aside
           aria-label="Package release information"
@@ -274,7 +350,7 @@ const breadcrumbItems = computed(() => [
             :selected-version="release.version"
             :representative-version="data.representative_version ?? release.version"
           />
-          <PackageReleaseDetails :summary="data.summary" :release="release" />
+          <PackageReleaseDetails :summary="data.summary" :release="release" @show-license="showLicense" />
         </aside>
       </div>
     </template>

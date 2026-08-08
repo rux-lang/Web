@@ -10,8 +10,9 @@ defineProps<{
 <template>
   <section aria-labelledby="dependencies-heading">
     <div class="mb-5">
-      <h2 id="dependencies-heading" class="text-2xl font-semibold text-highlighted">Dependencies</h2>
-      <p class="mt-2 text-muted">Registry packages required by this exact release.</p>
+      <!-- The tab label names this section on screen; the heading stays for the accessibility tree. -->
+      <h2 id="dependencies-heading" class="sr-only">Dependencies</h2>
+      <p class="text-muted">Registry packages required by this exact release.</p>
     </div>
 
     <ul v-if="dependencies.length" class="divide-y divide-default rounded-lg border border-default">

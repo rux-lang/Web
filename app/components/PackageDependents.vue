@@ -1,4 +1,7 @@
 <script setup lang="ts">
+// Imported explicitly rather than auto-imported, as PackageDownloadChart.vue does: the Vitest config
+// has no Nuxt auto-import shim, so a component that relies on them cannot be mounted in a test.
+import { computed, ref, watch } from "vue";
 import type { ApiFailure } from "~/types/api";
 import type { CursorPage } from "~/types/catalog";
 import type { DependentPackage } from "~/types/package";
@@ -10,6 +13,10 @@ const props = defineProps<{
   namespace: string;
   packageName: string;
 }>();
+
+// The page badges this count on its tab. The cursor pagination carries no total, so the count is
+// what has been loaded and `hasMore` says whether the real figure is higher.
+const emit = defineEmits<{ count: [{ loaded: number; hasMore: boolean }] }>();
 
 const api = useRegistryApi();
 const requestKey = computed(() => `package-dependents:${props.namespace}:${props.packageName}`);
@@ -33,6 +40,7 @@ watch(
     items.value = page?.data ?? [];
     nextCursor.value = page?.meta?.next_cursor ?? null;
     loadMoreFailure.value = null;
+    if (page) emit("count", { loaded: items.value.length, hasMore: Boolean(nextCursor.value) });
   },
   { immediate: true },
 );
@@ -48,6 +56,7 @@ async function loadMore() {
     });
     items.value.push(...page.data);
     nextCursor.value = page.meta.next_cursor;
+    emit("count", { loaded: items.value.length, hasMore: Boolean(nextCursor.value) });
   } catch (cause) {
     loadMoreFailure.value = normalizeApiError(cause);
   } finally {
@@ -59,8 +68,9 @@ async function loadMore() {
 <template>
   <section aria-labelledby="dependents-heading">
     <div class="mb-5">
-      <h2 id="dependents-heading" class="text-2xl font-semibold text-highlighted">Dependents</h2>
-      <p class="mt-2 text-muted">Representative releases that require this package.</p>
+      <!-- The tab label names this section on screen; the heading stays for the accessibility tree. -->
+      <h2 id="dependents-heading" class="sr-only">Dependents</h2>
+      <p class="text-muted">Representative releases that require this package.</p>
     </div>
 
     <AppLoadingState v-if="status === 'pending' || status === 'idle'" label="Loading dependents" />

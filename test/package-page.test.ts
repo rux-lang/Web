@@ -2,6 +2,8 @@ import { flushPromises, mount, shallowMount } from "@vue/test-utils";
 import type { Component } from "vue";
 import { ref } from "vue";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import PackageDependencies from "../app/components/PackageDependencies.vue";
+import PackageDependents from "../app/components/PackageDependents.vue";
 import PackageDownloadChart from "../app/components/PackageDownloadChart.vue";
 import PackageInstallCommand from "../app/components/PackageInstallCommand.vue";
 import SanitizedReadme from "../app/components/SanitizedReadme.vue";
@@ -244,6 +246,91 @@ describe("PackageInstallCommand", () => {
         description: "Select the command and copy it manually.",
       }),
     );
+  });
+});
+
+describe("tabbed package documents", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const dependency: PackageDependency = {
+    alias: "Json",
+    target_namespace: "Rux_Tools",
+    target_package: "Json_Parser",
+    version_range: "^1.2",
+  };
+
+  it("leaves the Dependencies heading to the tab label while keeping it for assistive technology", () => {
+    const wrapper = mount(PackageDependencies, {
+      props: { dependencies: [dependency] },
+      global: {
+        stubs: {
+          UButton: { props: ["label"], template: "<a>{{ label }}</a>" },
+          UEmpty: { template: "<div data-empty />" },
+        },
+      },
+    });
+
+    // The tab strip names the section on screen, so the h2 must not be a second visible title.
+    const heading = wrapper.get("#dependencies-heading");
+    expect(heading.classes()).toContain("sr-only");
+    expect(heading.classes()).not.toContain("text-2xl");
+    expect(wrapper.text()).toContain("Registry packages required by this exact release.");
+    expect(wrapper.text()).toContain("Rux_Tools/Json_Parser");
+  });
+
+  function mountDependents(page: { data: unknown[]; meta: { next_cursor: string | null } } | null) {
+    vi.stubGlobal("useRegistryApi", () => ({ get: vi.fn() }));
+    vi.stubGlobal("useLazyAsyncData", () => ({
+      data: ref(page),
+      error: ref(null),
+      status: ref("success"),
+      refresh: vi.fn(),
+    }));
+    return mount(PackageDependents, {
+      props: { namespace: "Rux", packageName: "Json" },
+      global: {
+        stubs: {
+          AppLoadingState: { template: "<div data-loading />" },
+          ApiProblemAlert: { props: ["failure"], template: "<div data-problem />" },
+          UPageCard: { props: ["title"], template: "<article>{{ title }}<slot name='footer' /></article>" },
+          UBadge: { template: "<span><slot /></span>" },
+          UButton: { props: ["label"], template: "<button>{{ label }}</button>" },
+          UEmpty: { template: "<div data-empty />" },
+        },
+      },
+    });
+  }
+
+  it("reports its loaded count so the page can badge the tab without a second request", () => {
+    const wrapper = mountDependents({
+      data: [
+        {
+          namespace: "Rux",
+          package: "Io",
+          version: "0.1.1",
+          description: "Streams",
+          package_type: "source",
+          published_at: "2026-08-08T00:00:00Z",
+          yanked: false,
+          requirements: [{ alias: "Json", version_range: "^1.2" }],
+        },
+      ],
+      meta: { next_cursor: null },
+    });
+
+    expect(wrapper.emitted("count")).toEqual([[{ loaded: 1, hasMore: false }]]);
+  });
+
+  it("flags a truncated first page so the badge can read as a lower bound", () => {
+    const wrapper = mountDependents({ data: [], meta: { next_cursor: "cursor-2" } });
+
+    expect(wrapper.emitted("count")).toEqual([[{ loaded: 0, hasMore: true }]]);
+  });
+
+  it("stays silent until its request settles so the badge never flashes a placeholder zero", () => {
+    const wrapper = mountDependents(null);
+
+    expect(wrapper.emitted("count")).toBeUndefined();
   });
 });
 

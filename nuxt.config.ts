@@ -160,6 +160,13 @@ export default defineNuxtConfig({
         "lucide:layout-panel-top",
         "lucide:at-sign",
         "lucide:import",
+        // The package page's tab strip. Same problem again: the names are data in
+        // a computed in app/pages/packages/[namespace]/[package].vue, not literal
+        // template attributes, so the scanner cannot see them.
+        // (`lucide:package` is already listed above.)
+        "lucide:book-text",
+        "lucide:package-open",
+        "lucide:scale",
         // The playground's example gallery. Same problem: the names are data in
         // app/utils/playground-examples.ts, and a .ts file is invisible to the
         // scanner, so they would render as blank gaps in the example selector.

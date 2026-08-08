@@ -8,6 +8,10 @@ const props = defineProps<{
   release: PackageVersion;
 }>();
 
+// The license text lives in a tab panel on the package page, so the link asks the page to select it
+// rather than jumping to an id that may be inside a hidden panel.
+const emit = defineEmits<{ showLicense: [] }>();
+
 const manifestSource = computed(() => normalizedManifestSource(props.release.normalized_manifest));
 </script>
 
@@ -58,7 +62,7 @@ const manifestSource = computed(() => normalizedManifestSource(props.release.nor
         <dd class="mt-1 font-medium text-highlighted">
           <template v-if="release.license">{{ release.license }}</template>
           <template v-else-if="!release.license_file">Not provided</template>
-          <ULink v-if="release.license_file" to="#license" class="mt-1 block font-normal">
+          <ULink v-if="release.license_file" to="#license" class="mt-1 block font-normal" @click="emit('showLicense')">
             {{ release.license_file.path }}
           </ULink>
         </dd>
