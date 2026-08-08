@@ -82,13 +82,17 @@ const release = {
       type: "library",
     },
   },
-  readme: {
+  readme_file: {
     path: "README.md",
     source:
       "# Rux Json\n\nStreaming JSON parsing and serialization.\n\n## Features\n\n- Bounded parsing\n- Helpful errors\n\n```rux\nuse Json\n```",
   },
   license: "MIT",
-  license_url: "https://github.com/rux-lang/Rux/blob/main/LICENSE.md",
+  license_file: {
+    path: "LICENSE.md",
+    source:
+      "# MIT License\n\nCopyright (c) 2026 The Rux Authors\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction.",
+  },
   checksum: {
     algorithm: "sha256",
     digest: "2222222222222222222222222222222222222222222222222222222222222222",

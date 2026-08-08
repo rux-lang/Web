@@ -14,10 +14,13 @@ export interface PackageDependency {
   version_range: string;
 }
 
-export interface PackageReadme {
+export interface PackageTextFile {
   path: string;
   source: string;
 }
+
+export type PackageReadme = PackageTextFile;
+export type PackageLicenseFile = PackageTextFile;
 
 export interface PackageChecksum {
   algorithm: "sha256";
@@ -38,9 +41,9 @@ export interface PackageVersion {
   homepage_url: string | null;
   dependencies: PackageDependency[];
   normalized_manifest: Record<string, unknown>;
-  readme: PackageReadme | null;
+  readme_file: PackageReadme | null;
   license: string | null;
-  license_url: string | null;
+  license_file: PackageLicenseFile | null;
   checksum: PackageChecksum;
   artifact_size: number;
   artifact_file_count: number;

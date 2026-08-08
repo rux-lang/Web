@@ -46,7 +46,7 @@ licence to store, reproduce, and distribute it, and to display its metadata and 
 for as long as it remains published. That licence exists so the registry can serve your
 package to the people who depend on it; it does not give us ownership.
 
-Publish under a licence that lets other people actually use the package. Set `License`, `LicenseUrl`, or
+Publish under a licence that lets other people actually use the package. Set `License`, `LicenseFile`, or
 both in your [manifest](/docs/packaging/manifest).
 
 ## Publication is permanent

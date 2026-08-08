@@ -56,22 +56,11 @@ const manifestSource = computed(() => normalizedManifestSource(props.release.nor
       <div>
         <dt class="text-muted">License</dt>
         <dd class="mt-1 font-medium text-highlighted">
-          <ULink
-            v-if="release.license && release.license_url"
-            :to="release.license_url"
-            target="_blank"
-            :aria-label="`${release.license} license (opens in a new tab)`"
-            >{{ release.license }}</ULink
-          >
-          <template v-else-if="release.license">{{ release.license }}</template>
-          <ULink
-            v-else-if="release.license_url"
-            :to="release.license_url"
-            target="_blank"
-            aria-label="License (opens in a new tab)"
-            >View license</ULink
-          >
-          <template v-else>Not provided</template>
+          <template v-if="release.license">{{ release.license }}</template>
+          <template v-else-if="!release.license_file">Not provided</template>
+          <ULink v-if="release.license_file" to="#license" class="mt-1 block font-normal">
+            {{ release.license_file.path }}
+          </ULink>
         </dd>
       </div>
       <div>
