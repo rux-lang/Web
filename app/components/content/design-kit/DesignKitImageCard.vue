@@ -10,9 +10,9 @@
  *
  * `path` is the shared basename of the .svg and .png in public/assets/design-kit
  * — the two files must be named identically apart from the extension. That now
- * includes the avatar variants (`icon-violet-white`, `icon-violet-mist`), which
- * bake their backdrop into a `<rect>` in the SVG rather than shipping as raster
- * exports; the earlier `png-only` escape hatch is gone with them.
+ * includes the avatar variants (`avatar-white`, `avatar-mist`), which bake their
+ * backdrop into a `<rect>` in the SVG rather than shipping as raster exports;
+ * the earlier `png-only` escape hatch is gone with them.
  */
 defineProps<{
   name: string;

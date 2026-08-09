@@ -34,7 +34,7 @@ const socials = [
        on the container clipped the glyph to a sliver. The separator draws its
        own line; the root just needs to be tall enough to hold the mark. -->
   <USeparator>
-    <RuxMark class="text-muted size-8" />
+    <RuxMark class="text-muted size-6" />
   </USeparator>
 
   <UFooter :ui="{ top: 'border-b border-default' }">

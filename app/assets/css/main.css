@@ -33,9 +33,11 @@
   --font-sans: "Geist", "Inter", "Fira Sans", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "Geist Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
 
-  /* Rux brand violet. --color-rux-400 (#a78bfa) is the accent the mark is drawn
-     in — see RuxLogo.vue, public/logo.svg and the design-kit exports — and it is
-     the value /design-kit publishes as "Violet". */
+  /* Rux brand violet. --color-rux-400 (#a78bfa) is the UI accent — links, active
+     states, the `primary` colour in app.config.ts — and the value /design-kit
+     publishes as "Violet". The mark itself is a gradient between --color-rux-300
+     and --color-rux-600 (see RuxLogo.vue, public/logo.svg and the design-kit
+     exports), so all three steps are published on that page. */
   --color-rux-50: #f5f3ff;
   --color-rux-100: #ede9fe;
   --color-rux-200: #ddd6fe;
@@ -50,7 +52,7 @@
 
   /* "Mist" — the brand's dark surface, a cool blue-grey rather than a neutral.
      --color-mist-900 (#161b1d) is the page background and the backdrop baked
-     into icon-violet-mist.svg. /design-kit publishes #22292b as the swatch, a
+     into avatar-mist.svg. /design-kit publishes #22292b as the swatch, a
      touch lighter than the raw page background — deliberate, so don't "fix" the
      mismatch by syncing one to the other. The scale has to be declared here
      (not just used in `.dark` below) so Tailwind emits the utilities —

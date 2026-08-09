@@ -17,24 +17,28 @@ seo:
 
 Everything you need to present Rux correctly — the logo in every variant, the
 brand colors, and the typefaces. The identity is deliberately plain: one mark,
-one accent color, one type family. Use these files as they are, and Rux will
+two accent colors, one type family. Use these files as they are, and Rux will
 look the same wherever it appears.
 
 ## Logo
 
-The logo is made of two elements: the octopus mark and the `Rux` wordmark. In
-most places they appear together. The mark works on its own as an icon, an
-avatar, or a badge — but the wordmark should never appear without the mark
-beside it.
+The logo is made of two elements: the `R` mark and the `Rux` wordmark. The mark
+is a single letterform — a violet bowl over an amber checkerboard leg, the two
+halves of the same `R`. In most places the mark and the wordmark appear
+together. The mark works on its own as an icon, an avatar, or a badge — but the
+wordmark should never appear without the mark beside it.
 
 Pick the variant with the most contrast against your background. On a colored or
 photographic background, use the solid white or solid black version rather than
-the violet one.
+the full-color one.
 
 ### Icon
 
+The mark alone, drawn to the edges of a square so it drops into a favicon, a
+tile, or a badge without extra padding.
+
 ::u-page-grid
-:design-kit-image-card{path="icon-violet" name="Violet"}
+:design-kit-image-card{path="icon-color" name="Color"}
 :design-kit-image-card{path="icon-black" name="Black" background="bg-white"}
 :design-kit-image-card{path="icon-white" name="White" background="bg-mist-900"}
 ::
@@ -42,21 +46,24 @@ the violet one.
 ### Logo
 
 ::u-page-grid
-:design-kit-image-card{path="logo-violet-white" name="Violet & white" background="bg-mist-900" full}
-:design-kit-image-card{path="logo-black" name="Black" background="bg-white" full}
+:design-kit-image-card{path="logo-color-white" name="Color & white" background="bg-mist-900" full}
+:design-kit-image-card{path="logo-color-black" name="Color & black" background="bg-white" full}
 :design-kit-image-card{path="logo-white" name="White" background="bg-mist-900" full}
-:design-kit-image-card{path="logo-violet-black" name="Violet & black" background="bg-white" full}
+:design-kit-image-card{path="logo-black" name="Black" background="bg-white" full}
 ::
 
 ### Avatars
 
 Profile pictures are usually cropped to a circle or a rounded square, and most
-platforms flatten transparency onto a background you do not control. These two
-export the mark onto a fixed 512 × 512 backdrop instead.
+platforms flatten transparency onto a background you do not control. These three
+inset the mark inside a fixed 512 × 512 square so the crop never bites into it —
+two with the backdrop baked in, one left transparent for platforms that let you
+set your own.
 
 ::u-page-grid
-:design-kit-image-card{path="icon-violet-white" name="Violet on white" background="bg-white"}
-:design-kit-image-card{path="icon-violet-mist" name="Violet on mist" background="bg-[#22292b]"}
+:design-kit-image-card{path="avatar-white" name="On white" background="bg-white"}
+:design-kit-image-card{path="avatar-mist" name="On mist" background="bg-[#22292b]"}
+:design-kit-image-card{path="avatar" name="Transparent"}
 ::
 
 ### Usage
@@ -75,19 +82,31 @@ maintains what you are building.
 
 ## Color Palette
 
-The palette is built around a single accent violet, kept deliberately small so
-that the color carries meaning wherever it appears. Use the values below rather
-than sampling them from a screenshot.
+The palette is built around two accents — violet and amber — kept deliberately
+small so that the colors carry meaning wherever they appear. Each accent has a
+light and a deep value; the mark runs a top-to-bottom gradient between the two.
+Use the values below rather than sampling them from a screenshot.
 
 ::u-page-grid
+:design-kit-color-card{background="#C4B5FD" name="Violet Light"}
 :design-kit-color-card{background="#A78BFA" name="Violet"}
+:design-kit-color-card{background="#7C3AED" name="Violet Deep"}
+:design-kit-color-card{background="#FDE68A" name="Amber Light"}
+:design-kit-color-card{background="#D97706" name="Amber Deep"}
+::
+
+Violet is the primary accent — links, active states, the bowl of the mark. Amber
+is the secondary, and appears only in the mark's checkerboard leg; it is never a
+link or a button color.
+
+::u-page-grid
 :design-kit-color-card{background="#22292B" name="Mist"}
 :design-kit-color-card{background="#000000" name="Black"}
 :design-kit-color-card{background="#FFFFFF" name="White"}
 ::
 
-Violet is the accent — links, active states, the mark itself. Mist is the dark
-surface, black and white carry the text. Nothing else is part of the brand.
+Mist is the dark surface, black and white carry the text. Nothing else is part
+of the brand.
 
 ## Typography
 
