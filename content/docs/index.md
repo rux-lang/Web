@@ -6,7 +6,7 @@ navigation:
 seo:
   title: Documentation
   description: Everything written about Rux — install the toolchain and build your first program, read the complete language reference, look up a rux subcommand, package and publish your work, or browse the standard library API.
-  ogImage: https://rux-lang.dev/images/og-docs.jpg
+  ogImage: https://rux-lang.dev/images/og-docs.png
   ogType: website
   ogUrl: https://rux-lang.dev/docs
 hideToc: true

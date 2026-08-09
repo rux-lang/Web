@@ -43,10 +43,10 @@ useSeoMeta({
     "Write, compile, and run Rux code directly in your browser — no installation required. Experiment with the language using the live Rux Playground.",
   ogType: "website",
   ogUrl: "https://rux-lang.dev/play",
-  ogImage: "https://rux-lang.dev/images/og-playground.jpg",
+  ogImage: "https://rux-lang.dev/images/og-playground.png",
   twitterCard: "summary_large_image",
   twitterTitle: "Rux Playground",
-  twitterImage: "https://rux-lang.dev/images/og-playground.jpg",
+  twitterImage: "https://rux-lang.dev/images/og-playground.png",
 });
 
 useHead({

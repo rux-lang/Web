@@ -6,7 +6,7 @@ navigation:
 seo:
   title: Rux Reference
   description: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and compile-time programming.
-  ogImage: https://rux-lang.dev/images/og-docs.jpg
+  ogImage: https://rux-lang.dev/images/og-docs.png
   ogType: website
   ogUrl: https://rux-lang.dev/docs/lang
 ---

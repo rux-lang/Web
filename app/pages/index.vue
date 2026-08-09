@@ -238,11 +238,11 @@ useSeoMeta({
   ogDescription: "Fast, compiled, strongly typed, multi-paradigm language",
   ogType: "website",
   ogUrl: "https://rux-lang.dev",
-  ogImage: "https://rux-lang.dev/images/og-rux.jpg",
+  ogImage: "https://rux-lang.dev/images/og-rux.png",
   twitterCard: "summary_large_image",
   twitterTitle: "Rux Programming Language",
   twitterDescription: "Fast, compiled, strongly typed, multi-paradigm language",
-  twitterImage: "https://rux-lang.dev/images/og-rux.jpg",
+  twitterImage: "https://rux-lang.dev/images/og-rux.png",
 });
 
 useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });

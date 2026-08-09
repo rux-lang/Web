@@ -25,10 +25,10 @@ useSeoMeta({
   ogDescription: "Release notes and articles from the Rux programming language project.",
   ogType: "website",
   ogUrl: "https://rux-lang.dev/blog",
-  ogImage: "https://rux-lang.dev/images/og-blog.jpg",
+  ogImage: "https://rux-lang.dev/images/og-blog.png",
   twitterCard: "summary_large_image",
   twitterTitle: "Rux Blog",
-  twitterImage: "https://rux-lang.dev/images/og-blog.jpg",
+  twitterImage: "https://rux-lang.dev/images/og-blog.png",
 });
 
 useHead({

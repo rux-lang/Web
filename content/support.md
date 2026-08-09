@@ -4,7 +4,7 @@ description: Support Rux with donations, sponsorship, code, and documentation. H
 seo:
   title: Support
   description: Support Rux with donations, sponsorship, code, and documentation. Help fund the compiler, standard library, tooling, and docs of this free, open-source language.
-  ogImage: https://rux-lang.dev/images/og-support.jpg
+  ogImage: https://rux-lang.dev/images/og-support.png
   ogType: website
   ogUrl: https://rux-lang.dev/support
 ---

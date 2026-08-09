@@ -1,6 +1,12 @@
 ---
 title: Download
 description: Download the Rux compiler for FreeBSD, Linux, macOS, and Windows on x86-64 and AArch64.
+seo:
+  title: Download Rux
+  description: Download the Rux compiler for FreeBSD, Linux, macOS, and Windows on x86-64 and AArch64.
+  ogImage: https://rux-lang.dev/images/og-download.png
+  ogType: website
+  ogUrl: https://rux-lang.dev/download
 ---
 
 # Download Rux

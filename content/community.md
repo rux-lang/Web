@@ -4,7 +4,7 @@ description: Join the Rux community — follow updates, ask questions, and get i
 seo:
   title: Community
   description: Join the Rux community — follow updates, ask questions, and get involved. Connect with the team and other developers building with the Rux programming language.
-  ogImage: https://rux-lang.dev/images/og-community.jpg
+  ogImage: https://rux-lang.dev/images/og-community.png
   ogType: website
   ogUrl: https://rux-lang.dev/community
 ---
