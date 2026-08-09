@@ -105,15 +105,16 @@ const stats = [
 
 /**
  * Editor support. An entry without `to`/`cta` has no extension yet and renders
- * as an unlinked card with an "Under development" badge — the union is declared
+ * as an unlinked card with a "Coming soon" badge — the union is declared
  * so those two stay optional rather than being inferred away.
  *
  * Icons come from the multi-colour `logos` set rather than monochrome Simple
- * Icons, so each product keeps its own brand mark. Two exceptions fall back to
+ * Icons, so each product keeps its own brand mark. Three exceptions fall back to
  * Simple Icons plus a tint class, which is how nuxt.com colours its own stat
  * tiles (`text-red-500` on npm, `text-indigo-400` on Discord):
  *   - `logos` has no Zed entry at all;
- *   - `logos:neovim` is the wide wordmark, which squashes in a square tile.
+ *   - `logos:neovim` is the wide wordmark, which squashes in a square tile;
+ *   - Helix uses the violet from its official multi-colour logo.
  *
  * Six editors split 3 / centre / 3 across the bento.
  */
@@ -136,9 +137,20 @@ const editors: { name: string; icon: string; iconClass?: string; to?: string; ct
     icon: "i-logos-sublimetext-icon",
     cta: "Get package",
   },
-  { name: "Neovim", icon: "i-simple-icons-neovim", iconClass: "text-green-500" },
-  { name: "JetBrains IDEs", icon: "i-logos-jetbrains" },
-  { name: "Emacs", icon: "i-logos-emacs" },
+  {
+    name: "Neovim",
+    icon: "i-simple-icons-neovim",
+    iconClass: "text-green-500",
+  },
+  {
+    name: "Helix",
+    icon: "i-simple-icons-helix",
+    iconClass: "text-[#706bc8]",
+  },
+  {
+    name: "JetBrains IDEs",
+    icon: "i-logos-jetbrains",
+  },
 ];
 
 // The bento puts three cards either side of the centre panel.

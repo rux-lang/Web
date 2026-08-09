@@ -48,7 +48,7 @@ defineProps<{
             <UIcon name="i-lucide-arrow-up-right" class="size-3.5" />
           </p>
 
-          <UBadge v-else variant="subtle" color="neutral" size="sm">Under development</UBadge>
+          <UBadge v-else variant="subtle" color="neutral" size="sm">Coming soon</UBadge>
         </div>
       </div>
     </UPageCard>
