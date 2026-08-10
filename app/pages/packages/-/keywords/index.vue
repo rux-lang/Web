@@ -1,6 +1,14 @@
 <script setup lang="ts">
-import type { CursorPage, KeywordSummary } from "~/types/catalog";
-import { catalogKeywordPath, scalarQueryValue } from "~/utils/catalog";
+import type { KeywordSummary, OffsetPage } from "~/types/catalog";
+import {
+  CATALOG_PAGE_SIZE,
+  catalogKeywordPath,
+  catalogPageNumber,
+  keywordApiQuery,
+  keywordRouteQuery,
+  keywordSortOptions,
+  scalarQueryValue,
+} from "~/utils/catalog";
 import { normalizeApiError } from "~/utils/api-problem";
 definePageMeta({ layout: "packages" });
 
@@ -11,20 +19,32 @@ useSeoMeta({
 
 const route = useRoute();
 const api = useRegistryApi();
-const cursor = computed(() => scalarQueryValue(route.query.cursor));
-const requestQuery = computed<Record<string, string | number>>(() => ({
-  limit: 20,
-  ...(cursor.value ? { cursor: cursor.value } : {}),
-}));
-const requestKey = computed(() => `catalog-keywords:${cursor.value}`);
 
-const { data, error, status, refresh } = useLazyAsyncData<CursorPage<KeywordSummary>>(
+// The URL is the single source of truth for both controls, as it is on the
+// catalog: a shared link reproduces the exact page and ordering.
+const sort = computed(() => scalarQueryValue(route.query.sort));
+const page = computed(() => catalogPageNumber(route.query.page));
+const requestQuery = computed(() => keywordApiQuery(sort.value, page.value));
+const requestKey = computed(() => `catalog-keywords:${JSON.stringify(requestQuery.value)}`);
+
+const { data, error, status, refresh } = useLazyAsyncData<OffsetPage<KeywordSummary>>(
   requestKey,
   (_nuxtApp, { signal }) => api.get("/v1/keywords", requestQuery.value, signal),
   { server: false },
 );
 
 const failure = computed(() => (error.value ? normalizeApiError(error.value) : null));
+
+// Reordering drops the page: a page number from one ordering means nothing in
+// the next, and page 4 of a re-sorted list is rarely where the reader wants to
+// land.
+function applySort(value: string) {
+  return navigateTo({ path: "/packages/-/keywords", query: keywordRouteQuery(value) });
+}
+
+function pageTo(target: number) {
+  return { path: "/packages/-/keywords", query: keywordRouteQuery(sort.value, target) };
+}
 </script>
 
 <template>
@@ -41,12 +61,26 @@ const failure = computed(() => (error.value ? normalizeApiError(error.value) : n
       <ApiProblemAlert v-else-if="failure" :failure="failure" @retry="refresh" />
 
       <section v-else-if="data" aria-labelledby="keyword-list-heading">
-        <div class="mb-5 flex flex-wrap items-baseline justify-between gap-2">
+        <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 id="keyword-list-heading" class="text-xl font-semibold text-highlighted">Keywords</h2>
-          <p v-if="data.data.length" class="text-sm text-muted">
-            {{ data.data.length }}
-            {{ data.data.length === 1 ? "keyword" : "keywords" }} on this page
-          </p>
+          <div class="flex flex-wrap items-center gap-3">
+            <p v-if="data.meta.total" class="text-sm text-muted">
+              {{ data.meta.total.toLocaleString("en") }}
+              {{ data.meta.total === 1 ? "keyword" : "keywords" }}
+            </p>
+            <USelect
+              :model-value="sort"
+              :items="keywordSortOptions"
+              value-key="value"
+              label-key="label"
+              placeholder="Number of packages"
+              aria-label="Sort keywords by"
+              icon="i-lucide-arrow-down-wide-narrow"
+              class="w-56"
+              :ui="{ placeholder: 'text-default' }"
+              @update:model-value="applySort"
+            />
+          </div>
         </div>
 
         <UPageGrid v-if="data.data.length">
@@ -69,7 +103,15 @@ const failure = computed(() => (error.value ? normalizeApiError(error.value) : n
           size="xl"
         />
 
-        <CursorPager path="/packages/-/keywords" :query="{}" :cursor="cursor" :next-cursor="data.meta.next_cursor" />
+        <UPagination
+          v-if="data.meta.total > CATALOG_PAGE_SIZE"
+          :page="page"
+          :items-per-page="CATALOG_PAGE_SIZE"
+          :total="data.meta.total"
+          :to="pageTo"
+          show-edges
+          class="mt-8 flex justify-center"
+        />
       </section>
     </div>
   </UContainer>

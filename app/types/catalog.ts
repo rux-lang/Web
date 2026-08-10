@@ -11,6 +11,20 @@ export interface CursorPage<T> {
   };
 }
 
+/**
+ * The catalog's page envelope. `/v1/search` is the one registry collection with
+ * a total, which is what lets the catalog render numbered pages; every other
+ * collection is still forward-only and returns a {@link CursorPage}.
+ */
+export interface OffsetPage<T> {
+  data: T[];
+  meta: {
+    total: number;
+    page: number;
+    per_page: number;
+  };
+}
+
 export interface CatalogPackage {
   namespace: string;
   package: string;
@@ -24,6 +38,8 @@ export interface CatalogPackage {
 
 export interface PackageSearchResult extends CatalogPackage {
   yanked: boolean;
+  downloads_total: number;
+  downloads_30d: number;
 }
 
 export interface HighlightPackage extends CatalogPackage {
@@ -47,4 +63,5 @@ export interface CatalogFilters {
   namespace: string;
   keyword: string;
   packageType: string;
+  sort: string;
 }

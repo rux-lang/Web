@@ -42,7 +42,6 @@ describe("packages layout", () => {
 
     const links = wrapper.findAll("a");
     expect(links.some((link) => link.attributes("href") === "/packages")).toBe(true);
-    expect(links.some((link) => link.attributes("href") === "/packages/-/search")).toBe(true);
     expect(links.some((link) => link.attributes("href") === "/packages/-/keywords")).toBe(true);
     expect(wrapper.find('[aria-label="Package registry navigation"]').exists()).toBe(true);
     expect(wrapper.findAllComponents({ name: "AppAccountMenu" })).toHaveLength(1);

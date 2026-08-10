@@ -105,7 +105,6 @@ export default defineNuxtConfig({
         // serve it on demand — unlisted, the feed simply would not exist.
         "/blog/rss.xml",
         "/packages",
-        "/packages/-/search",
         "/packages/-/keywords",
         "/packages/-/auth/sign-in",
         "/packages/-/auth/callback",

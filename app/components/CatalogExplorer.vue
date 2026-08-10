@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import type { CatalogFilters, CursorPage, PackageSearchResult } from "~/types/catalog";
-import { catalogApiQuery, catalogRouteQuery, scalarQueryValue } from "~/utils/catalog";
+import type { CatalogFilters, OffsetPage, PackageSearchResult } from "~/types/catalog";
+import {
+  CATALOG_PAGE_SIZE,
+  catalogApiQuery,
+  catalogPageNumber,
+  catalogRouteQuery,
+  scalarQueryValue,
+} from "~/utils/catalog";
 import { normalizeApiError } from "~/utils/api-problem";
 
 const props = withDefaults(
@@ -30,11 +36,16 @@ const props = withDefaults(
 const route = useRoute();
 const api = useRegistryApi();
 
+// `q` is read whether or not the input is rendered: `showQuery` decides where
+// the search box lives, not whether the term survives. Gating the read here
+// would drop the active search from the URL the moment any other filter was
+// applied on a page that hosts its search elsewhere, such as /packages.
 const editableFilters = computed<CatalogFilters>(() => ({
-  q: props.showQuery ? scalarQueryValue(route.query.q) : "",
+  q: scalarQueryValue(route.query.q),
   namespace: props.showNamespace ? scalarQueryValue(route.query.namespace) : "",
   keyword: props.showKeyword ? scalarQueryValue(route.query.keyword) : "",
   packageType: scalarQueryValue(route.query.package_type),
+  sort: scalarQueryValue(route.query.sort),
 }));
 
 const requestFilters = computed<CatalogFilters>(() => ({
@@ -43,23 +54,30 @@ const requestFilters = computed<CatalogFilters>(() => ({
   keyword: props.fixedKeyword || editableFilters.value.keyword,
 }));
 
-const cursor = computed(() => scalarQueryValue(route.query.cursor));
-const requestQuery = computed(() => catalogApiQuery(requestFilters.value, cursor.value));
+const page = computed(() => catalogPageNumber(route.query.page));
+const requestQuery = computed(() => catalogApiQuery(requestFilters.value, page.value));
 const requestEnabled = computed(() => !props.requireQuery || Boolean(requestFilters.value.q.trim()));
 const requestKey = computed(() => `catalog:${props.path}:${JSON.stringify(requestQuery.value)}`);
 
 // Lazy so the surrounding page paints before the catalog request settles; see
 // the note in app/pages/packages/index.vue.
-const { data, error, status, refresh } = useLazyAsyncData<CursorPage<PackageSearchResult>>(
+const { data, error, status, refresh } = useLazyAsyncData<OffsetPage<PackageSearchResult>>(
   requestKey,
   (_nuxtApp, { signal }) => api.get("/v1/search", requestQuery.value, signal),
   { enabled: requestEnabled, server: false },
 );
 
 const failure = computed(() => (error.value ? normalizeApiError(error.value) : null));
-const paginationQuery = computed(() => catalogRouteQuery(editableFilters.value));
+
+// Rendering the pager as links keeps every page a real address, which the back
+// button and a shared URL both need on a statically hosted site.
+function pageTo(target: number) {
+  return { path: props.path, query: catalogRouteQuery(editableFilters.value, target) };
+}
 
 function applyFilters(filters: CatalogFilters) {
+  // No page argument, so any filter change lands back on page one — a page
+  // number carried over from a wider result set usually points past the end.
   return navigateTo({
     path: props.path,
     query: catalogRouteQuery(filters),
@@ -94,13 +112,13 @@ function applyFilters(filters: CatalogFilters) {
     <section v-else-if="data" aria-labelledby="catalog-results-heading">
       <div class="mb-5 flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="catalog-results-heading" class="text-xl font-semibold text-highlighted">Packages</h2>
-        <p v-if="data.data.length" class="text-sm text-muted">
-          {{ data.data.length }}
-          {{ data.data.length === 1 ? "result" : "results" }} on this page
+        <p v-if="data.meta.total" class="text-sm text-muted">
+          {{ data.meta.total.toLocaleString("en") }}
+          {{ data.meta.total === 1 ? "package" : "packages" }}
         </p>
       </div>
 
-      <CatalogPackageGrid v-if="data.data.length" :items="data.data" />
+      <CatalogPackageGrid v-if="data.data.length" :items="data.data" show-downloads />
       <UEmpty
         v-else
         icon="i-lucide-package-x"
@@ -110,7 +128,15 @@ function applyFilters(filters: CatalogFilters) {
         size="xl"
       />
 
-      <CursorPager :path="path" :query="paginationQuery" :cursor="cursor" :next-cursor="data.meta.next_cursor" />
+      <UPagination
+        v-if="data.meta.total > CATALOG_PAGE_SIZE"
+        :page="page"
+        :items-per-page="CATALOG_PAGE_SIZE"
+        :total="data.meta.total"
+        :to="pageTo"
+        show-edges
+        class="mt-8 flex justify-center"
+      />
     </section>
   </div>
 </template>

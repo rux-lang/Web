@@ -4,7 +4,7 @@ import { computed } from "vue";
 
 const route = useRoute();
 const canonicalUrl = computed(() => new URL(route.path, "https://rux-lang.dev").toString());
-const privateRoute = computed(() => /^\/packages\/-\/(?:auth|dashboard|search)(?:\/|$)/.test(route.path));
+const privateRoute = computed(() => /^\/packages\/-\/(?:auth|dashboard)(?:\/|$)/.test(route.path));
 
 useHead(() => ({
   link: [{ rel: "canonical", href: canonicalUrl.value }],
@@ -24,15 +24,13 @@ const { user } = useCurrentUser();
  */
 const navigationItems = computed<NavigationMenuItem[]>(() => [
   {
-    label: "Overview",
+    label: "Browse",
     icon: "i-lucide-package",
     to: "/packages",
-    exact: true,
-  },
-  {
-    label: "Search",
-    icon: "i-lucide-search",
-    to: "/packages/-/search",
+    // Matched on the path alone: the catalog carries its search, filters, sort
+    // and page in the query string, and an exact match would drop the highlight
+    // the moment any of them was set.
+    active: route.path === "/packages",
   },
   {
     label: "Keywords",

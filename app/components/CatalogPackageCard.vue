@@ -9,7 +9,21 @@ const props = defineProps<{
 }>();
 
 const isYanked = computed(() => "yanked" in props.item && props.item.yanked);
-const downloads = computed(() => ("downloads_30d" in props.item ? props.item.downloads_30d : null));
+
+/**
+ * Search rows carry an all-time count and highlights only a 30-day one, so the
+ * card reports whichever the row actually has and labels it accordingly. A
+ * lifetime total is the more useful figure when it is available.
+ */
+const downloads = computed(() => {
+  if ("downloads_total" in props.item) {
+    return { count: props.item.downloads_total, label: "downloads" };
+  }
+  if ("downloads_30d" in props.item && props.item.downloads_30d !== null) {
+    return { count: props.item.downloads_30d, label: "downloads in 30 days" };
+  }
+  return null;
+});
 </script>
 
 <template>
@@ -43,8 +57,8 @@ const downloads = computed(() => ("downloads_30d" in props.item ? props.item.dow
         </UBadge>
         <UBadge v-if="isYanked" color="warning" variant="subtle"> Yanked </UBadge>
         <span>Published {{ formatPublishedAt(item.published_at) }}</span>
-        <span v-if="showDownloads && downloads !== null">
-          {{ downloads.toLocaleString("en") }} downloads in 30 days
+        <span v-if="showDownloads && downloads">
+          {{ downloads.count.toLocaleString("en") }} {{ downloads.label }}
         </span>
       </div>
     </template>

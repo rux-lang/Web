@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
 import type { CatalogFilters } from "~/types/catalog";
-import { packageTypeOptions } from "~/utils/catalog";
+import { catalogSortOptions, packageTypeOptions } from "~/utils/catalog";
 
 const props = withDefaults(
   defineProps<{
@@ -35,7 +35,9 @@ watch(
   { deep: true },
 );
 
-const hasValues = computed(() => Boolean(state.q || state.namespace || state.keyword || state.packageType));
+const hasValues = computed(() =>
+  Boolean(state.q || state.namespace || state.keyword || state.packageType || state.sort),
+);
 
 function submit() {
   emit("submit", { ...state });
@@ -47,6 +49,7 @@ function clear() {
     namespace: "",
     keyword: "",
     packageType: "",
+    sort: "",
   });
   submit();
 }
@@ -55,16 +58,21 @@ function clear() {
 <template>
   <UForm
     :state="state"
-    class="grid items-end gap-4 rounded-lg bg-elevated/50 p-4 ring ring-default sm:grid-cols-2 lg:grid-cols-4"
-    aria-label="Catalog filters"
+    class="grid items-end gap-4 rounded-lg bg-elevated/50 p-4 ring ring-default sm:grid-cols-2 lg:grid-cols-3"
+    :aria-label="showQuery ? 'Search and filter packages' : 'Catalog filters'"
     @submit="submit"
   >
-    <UFormField v-if="showQuery" name="q" label="Search" class="sm:col-span-2">
+    <!--
+      The search term leads the block on its own row: it is the control most
+      requests start from, and the narrower filters below read as refinements
+      of it rather than as five peers.
+    -->
+    <UFormField v-if="showQuery" name="q" label="Search" class="sm:col-span-2 lg:col-span-3">
       <UInput
         v-model="state.q"
         type="search"
         icon="i-lucide-search"
-        placeholder="Package name, namespace, or keyword"
+        placeholder="Package name, namespace, keyword, or description"
         autocomplete="off"
         class="w-full"
       />
@@ -90,8 +98,25 @@ function clear() {
       />
     </UFormField>
 
+    <UFormField name="sort" label="Sort by">
+      <!--
+        Applied on change rather than on submit: an ordering that needs a second
+        click to take effect reads as a broken control.
+      -->
+      <USelect
+        v-model="state.sort"
+        :items="catalogSortOptions"
+        value-key="value"
+        label-key="label"
+        :placeholder="state.q ? 'Relevance' : 'Alphabetical'"
+        class="w-full"
+        :ui="{ placeholder: 'text-default' }"
+        @update:model-value="submit"
+      />
+    </UFormField>
+
     <div class="flex flex-wrap gap-2">
-      <UButton type="submit" :label="submitLabel" icon="i-lucide-filter" />
+      <UButton type="submit" :label="submitLabel" :icon="showQuery ? 'i-lucide-search' : 'i-lucide-filter'" />
       <UButton
         v-if="hasValues"
         type="button"

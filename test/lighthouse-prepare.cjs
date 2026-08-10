@@ -1,7 +1,5 @@
 const expectedContent = new Map([
-  ["/packages", "#recent-packages-heading"],
   ["/packages", "#catalog-results-heading"],
-  ["/packages/-/search", "#catalog-results-heading"],
   ["/packages/rux/json", "#readme-heading"],
   ["/packages/-/dashboard", "#dashboard-content"],
 ]);

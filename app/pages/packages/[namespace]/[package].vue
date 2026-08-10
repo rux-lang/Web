@@ -1,10 +1,21 @@
 <script setup lang="ts">
-import type { DataEnvelope, CursorPage, PackageSearchResult } from "~/types/catalog";
+import type { DataEnvelope, OffsetPage, PackageSearchResult } from "~/types/catalog";
 import type { PackagePageDocument, PackageSummary, PackageVersion } from "~/types/package";
 import { catalogKeywordPath, catalogNamespacePath, packageTypeLabel, scalarQueryValue } from "~/utils/catalog";
 import { normalizeApiError } from "~/utils/api-problem";
 import { packageApiPath, packageVersionApiPath, representativePackage } from "~/utils/package";
-definePageMeta({ layout: "packages" });
+definePageMeta({
+  layout: "packages",
+  /**
+   * `-` is the registry's reserved prefix for its own pages and can never be a
+   * namespace — the identity syntax forbids a leading hyphen. Without this
+   * guard, any unclaimed `/packages/-/…` path falls through to this route and
+   * renders a package page that fails against an invalid namespace, which reads
+   * as a broken registry rather than a missing page. That is what a retired
+   * route such as the former `/packages/-/search` would otherwise become.
+   */
+  validate: (route) => route.params.namespace !== "-",
+});
 
 const route = useRoute();
 const api = useRegistryApi();
@@ -24,12 +35,12 @@ const { data, error, status, refresh } = useLazyAsyncData<PackagePageDocument>(
       undefined,
       signal,
     );
-    const representativeRequest = api.get<CursorPage<PackageSearchResult>>(
+    const representativeRequest = api.get<OffsetPage<PackageSearchResult>>(
       "/v1/search",
       {
         q: packageName.value,
         namespace: namespace.value,
-        limit: 1,
+        per_page: 1,
       },
       signal,
     );

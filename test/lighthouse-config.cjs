@@ -6,7 +6,7 @@ const origin = `https://${qualityHost}:${qualityPort}`;
 const urls = [
   `${origin}/`,
   `${origin}/packages`,
-  `${origin}/packages/-/search?q=json`,
+  `${origin}/packages?q=json`,
   `${origin}/packages/rux/json`,
   `${origin}/packages/-/dashboard`,
 ];

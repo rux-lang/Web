@@ -63,9 +63,9 @@ describe("authentication data", () => {
   });
 
   it("expires and consumes one-time return paths", () => {
-    storeReturnPath(sessionStorage, "/packages/-/search?q=json", origin, 1_000);
-    expect(storedReturnPath(sessionStorage, origin, 2_000)).toBe("/packages/-/search?q=json");
-    expect(consumeReturnPath(sessionStorage, origin, 2_000)).toBe("/packages/-/search?q=json");
+    storeReturnPath(sessionStorage, "/packages?q=json", origin, 1_000);
+    expect(storedReturnPath(sessionStorage, origin, 2_000)).toBe("/packages?q=json");
+    expect(consumeReturnPath(sessionStorage, origin, 2_000)).toBe("/packages?q=json");
     expect(sessionStorage.getItem(AUTH_RETURN_STORAGE_KEY)).toBeNull();
 
     storeReturnPath(sessionStorage, "/packages", origin, 1_000);
