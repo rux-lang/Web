@@ -4,7 +4,7 @@
 [Package]
 Name = "Struct"
 Version = "0.1.0"
-Type = "Program"
+Type = "Executable"
 Description = "Structure and methods"
 
 [Dependencies]
@@ -59,7 +59,7 @@ extend Vector {
 [Package]
 Name = "Interface"
 Version = "0.1.0"
-Type = "Program"
+Type = "Executable"
 Description = "Interface implementation"
 
 [Dependencies]

@@ -4,7 +4,7 @@
 [Package]
 Name = "Hello"
 Version = "0.1.0"
-Type = "Program"
+Type = "Executable"
 Description = "The first application"
 
 [Dependencies]

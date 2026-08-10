@@ -26,6 +26,7 @@ import {
   keywordRouteQuery,
   keywordSortOptions,
   packageTypeOptions,
+  packageTypeLabel,
   scalarQueryValue,
 } from "../app/utils/catalog";
 
@@ -42,7 +43,7 @@ const packageResult: PackageSearchResult = {
   namespace: "Rux_Tools",
   package: "Json_Parser",
   version: "1.2.0",
-  package_type: "library",
+  package_type: "shared_library",
   description: "Literal JSON parsing",
   published_at: "2026-08-02T12:00:00Z",
   yanked: true,
@@ -68,7 +69,7 @@ describe("catalog URL helpers", () => {
       q: "  fast   json  ",
       namespace: " Rux_Tools ",
       keyword: " data ",
-      packageType: "library",
+      packageType: "shared_library",
       sort: "downloads",
       order: "asc",
     };
@@ -78,7 +79,7 @@ describe("catalog URL helpers", () => {
       q: "fast json",
       namespace: "Rux_Tools",
       keyword: "data",
-      package_type: "library",
+      package_type: "shared_library",
       sort: "downloads",
       order: "asc",
       page: "3",
@@ -162,6 +163,19 @@ describe("catalog URL helpers", () => {
     expect(packageTypeOptions.every((option) => option.value.length > 0)).toBe(true);
     expect(catalogSortOptions.every((option) => option.value.length > 0)).toBe(true);
   });
+
+  it("labels every registry package type explicitly", () => {
+    expect(packageTypeOptions).toEqual([
+      { label: "Executable", value: "executable" },
+      { label: "Shared library", value: "shared_library" },
+      { label: "Static library", value: "static_library" },
+      { label: "Source library", value: "source_library" },
+    ]);
+    expect(packageTypeLabel("executable")).toBe("Executable");
+    expect(packageTypeLabel("shared_library")).toBe("Shared library");
+    expect(packageTypeLabel("static_library")).toBe("Static library");
+    expect(packageTypeLabel("source_library")).toBe("Source library");
+  });
 });
 
 describe("CatalogFilterForm", () => {
@@ -181,7 +195,7 @@ describe("CatalogFilterForm", () => {
         props: ["modelValue"],
         emits: ["update:modelValue"],
         template:
-          '<select :value="modelValue" @change="$emit(\'update:modelValue\', $event.target.value)"><option value=""><slot /></option><option value="library">Library</option><option value="downloads">Total downloads</option></select>',
+          '<select :value="modelValue" @change="$emit(\'update:modelValue\', $event.target.value)"><option value=""><slot /></option><option value="shared_library">Shared library</option><option value="downloads">Total downloads</option></select>',
       },
       UButton: {
         props: ["label", "type", "icon"],
@@ -282,7 +296,7 @@ describe("CatalogPackageCard", () => {
     expect(wrapper.findAll("a").some((link) => link.attributes("href") === "/packages/-/namespaces/rux-tools")).toBe(
       true,
     );
-    expect(wrapper.text()).toContain("Library");
+    expect(wrapper.text()).toContain("Shared library");
     expect(wrapper.text()).toContain("Yanked");
     expect(wrapper.text()).toContain("Aug 2, 2026");
     expect(wrapper.find('[data-icon="i-lucide-calendar-days"]').exists()).toBe(true);
@@ -324,16 +338,21 @@ describe("CatalogPackageCard", () => {
 
 describe("catalog pagination links", () => {
   it("addresses every page through the filter-preserving route query", () => {
-    const filters: CatalogFilters = { ...emptyFilters, q: "json", packageType: "library", sort: "downloads" };
+    const filters: CatalogFilters = {
+      ...emptyFilters,
+      q: "json",
+      packageType: "shared_library",
+      sort: "downloads",
+    };
     const pageTo = (page: number) => ({ path: "/packages", query: catalogRouteQuery(filters, page) });
 
     expect(pageTo(1)).toEqual({
       path: "/packages",
-      query: { q: "json", package_type: "library", sort: "downloads" },
+      query: { q: "json", package_type: "shared_library", sort: "downloads" },
     });
     expect(pageTo(3)).toEqual({
       path: "/packages",
-      query: { q: "json", package_type: "library", sort: "downloads", page: "3" },
+      query: { q: "json", package_type: "shared_library", sort: "downloads", page: "3" },
     });
   });
 });

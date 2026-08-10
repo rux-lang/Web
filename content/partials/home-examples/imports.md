@@ -4,7 +4,7 @@
 [Package]
 Name = "Imports"
 Version = "0.1.0"
-Type = "Program"
+Type = "Executable"
 Description = "Package import"
 
 [Dependencies]

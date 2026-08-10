@@ -57,16 +57,20 @@ export const DEFAULT_KEYWORD_SORT = "packages";
 
 export const packageTypeOptions: { label: string; value: string }[] = [
   {
-    label: "Program",
-    value: "program",
+    label: "Executable",
+    value: "executable",
   },
   {
-    label: "Library",
-    value: "library",
+    label: "Shared library",
+    value: "shared_library",
   },
   {
-    label: "Source",
-    value: "source",
+    label: "Static library",
+    value: "static_library",
+  },
+  {
+    label: "Source library",
+    value: "source_library",
   },
 ];
 
@@ -100,7 +104,12 @@ export function formatPublishedAt(value: string): string {
 }
 
 export function packageTypeLabel(value: PackageType): string {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+  return {
+    executable: "Executable",
+    shared_library: "Shared library",
+    static_library: "Static library",
+    source_library: "Source library",
+  }[value];
 }
 
 export function canonicalSearchText(value: string): string {

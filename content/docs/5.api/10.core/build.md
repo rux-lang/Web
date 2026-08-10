@@ -35,7 +35,7 @@ struct Build {
 | `debugAssertions` | `bool`             | Whether [`DebugAssert`](/docs/api/core/assert) checks are compiled. |
 | `debugInfo`       | `bool`             | Whether debug information is emitted.                               |
 | `isTest`          | `bool`             | Whether this is a test build.                                       |
-| `outputKind`      | `OutputKind`       | `Executable`, `SharedLibrary`, or `StaticLibrary`.                  |
+| `outputKind`      | `OutputKind`       | `Executable`, `SharedLibrary`, `StaticLibrary`, or `SourceLibrary`. |
 | `timestamp`       | `uint64`           | Build time as a Unix timestamp.                                     |
 | `date`            | `Slice<char8>`     | Build date as text.                                                 |
 | `time`            | `Slice<char8>`     | Build time of day as text.                                          |
@@ -45,8 +45,10 @@ struct Build {
 ```rux
 enum BuildMode: uint8 { Debug = 0, Release = 1 }
 enum OptimizationMode: uint8 { None = 0, Size = 1, Speed = 2 }
-enum OutputKind: uint8 { Executable = 0, SharedLibrary = 1, StaticLibrary = 2 }
+enum OutputKind: uint8 { Executable = 0, SharedLibrary = 1, StaticLibrary = 2, SourceLibrary = 3 }
 ```
+
+A standalone SourceLibrary check reports `SourceLibrary`. Source compiled into a dependent package reports the consuming package's output kind.
 
 ## Example
 

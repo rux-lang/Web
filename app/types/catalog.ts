@@ -1,4 +1,4 @@
-export type PackageType = "program" | "library" | "source";
+export type PackageType = "executable" | "shared_library" | "static_library" | "source_library";
 
 export interface DataEnvelope<T> {
   data: T;

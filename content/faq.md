@@ -152,16 +152,15 @@ them unconditionally. See the
 
 ## Can Rux build libraries?
 
-Rux packages can be initialized as executable or library packages:
+Rux 0.4.0 builds executables, native shared libraries, and native static libraries:
 
 ```sh
-rux new App --bin
-rux new Utility --lib
+rux new App --executable
+rux new Plugin --shared
+rux new Utility --static
 ```
 
-Setting the package type to `Dll` in `Rux.toml` emits a Windows PE32+ DLL, with
-an export directory and an optional `DllMain`. Shared-library output on other
-platforms is still developing.
+`SharedLibrary` emits a DLL plus import library on Windows, an `.so` on ELF targets, or a `.dylib` on macOS. `StaticLibrary` emits a `.lib` on Windows or `.a` elsewhere. These are local artifacts in 0.4.0; registry publication and binary dependency consumption are not enabled yet.
 
 ## Is there a standard library?
 

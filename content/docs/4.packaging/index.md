@@ -25,7 +25,7 @@ Everything here works offline, with no account and no registry.
 
 | Page                                         | Covers                                                     |
 | -------------------------------------------- | ---------------------------------------------------------- |
-| [Package Types](/docs/packaging/types)       | `Program`, `Library`, and `Source`, and what each produces |
+| [Package Types](/docs/packaging/types)       | Executable, shared, static, and source libraries           |
 | [Directory Layout](/docs/packaging/layout)   | Where sources, build output, and metadata live             |
 | [Package Manifest](/docs/packaging/manifest) | Every field of `Rux.toml`, and the rules each one follows  |
 | [Dependencies](/docs/packaging/dependencies) | Declaring, resolving, and updating what your package needs |
@@ -49,7 +49,7 @@ no account; publishing to it does.
 The short version of the whole section:
 
 ```sh
-rux new Widget --lib --namespace Acme   # Create it
+rux new Widget --source --namespace Acme # Create a publishable package
 rux add Io                              # Depend on something
 rux check                               # Make sure it compiles
 rux pack                                # Inspect the archive

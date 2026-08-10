@@ -4,7 +4,7 @@
 [Package]
 Name = "Mutability"
 Version = "0.1.0"
-Type = "Program"
+Type = "Executable"
 Description = "Mutability in action"
 ```
 
@@ -33,7 +33,7 @@ func Main() -> int {
 [Package]
 Name = "Pointers"
 Version = "0.1.0"
-Type = "Program"
+Type = "Executable"
 Description = "Pointer semantics"
 ```
 

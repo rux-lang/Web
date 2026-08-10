@@ -4,7 +4,7 @@
 [Package]
 Name = "Functions"
 Version = "0.1.0"
-Type = "Program"
+Type = "Executable"
 Description = "Functions and generics"
 
 [Dependencies]
