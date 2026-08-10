@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { KeywordSummary, OffsetPage } from "~/types/catalog";
 import {
-  CATALOG_PAGE_SIZE,
+  KEYWORD_PAGE_SIZE,
   catalogKeywordPath,
   catalogPageNumber,
   keywordApiQuery,
+  keywordResultSummary,
   keywordRouteQuery,
   keywordSortOptions,
   scalarQueryValue,
@@ -34,6 +35,15 @@ const { data, error, status, refresh } = useLazyAsyncData<OffsetPage<KeywordSumm
 );
 
 const failure = computed(() => (error.value ? normalizeApiError(error.value) : null));
+const resultSummary = computed(() => {
+  if (!data.value) return "";
+  return keywordResultSummary(
+    data.value.meta.total,
+    data.value.meta.page,
+    data.value.meta.per_page,
+    data.value.data.length,
+  );
+});
 
 // Reordering drops the page: a page number from one ordering means nothing in
 // the next, and page 4 of a re-sorted list is rarely where the reader wants to
@@ -48,12 +58,8 @@ function pageTo(target: number) {
 </script>
 
 <template>
-  <UContainer class="py-8 sm:py-12">
-    <UPageHeader
-      headline="Catalog"
-      title="Package keywords"
-      description="Browse the topics package authors use to describe their work."
-    />
+  <UContainer class="pb-16 sm:pb-24">
+    <UPageHeader title="Package keywords" description="Browse the topics package authors use to describe their work." />
 
     <div class="mt-8">
       <AppLoadingState v-if="status === 'pending' || status === 'idle'" label="Loading package keywords" />
@@ -64,10 +70,7 @@ function pageTo(target: number) {
         <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 id="keyword-list-heading" class="text-xl font-semibold text-highlighted">Keywords</h2>
           <div class="flex flex-wrap items-center gap-3">
-            <p v-if="data.meta.total" class="text-sm text-muted">
-              {{ data.meta.total.toLocaleString("en") }}
-              {{ data.meta.total === 1 ? "keyword" : "keywords" }}
-            </p>
+            <p v-if="resultSummary" class="text-sm text-muted">{{ resultSummary }}</p>
             <USelect
               :model-value="sort"
               :items="keywordSortOptions"
@@ -104,9 +107,9 @@ function pageTo(target: number) {
         />
 
         <UPagination
-          v-if="data.meta.total > CATALOG_PAGE_SIZE"
+          v-if="data.meta.total > KEYWORD_PAGE_SIZE"
           :page="page"
-          :items-per-page="CATALOG_PAGE_SIZE"
+          :items-per-page="KEYWORD_PAGE_SIZE"
           :total="data.meta.total"
           :to="pageTo"
           show-edges

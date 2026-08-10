@@ -64,4 +64,5 @@ export interface CatalogFilters {
   keyword: string;
   packageType: string;
   sort: string;
+  order: string;
 }

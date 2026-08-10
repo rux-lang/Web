@@ -17,10 +17,10 @@ const isYanked = computed(() => "yanked" in props.item && props.item.yanked);
  */
 const downloads = computed(() => {
   if ("downloads_total" in props.item) {
-    return { count: props.item.downloads_total, label: "downloads" };
+    return { count: props.item.downloads_total, label: "downloads", window: null };
   }
   if ("downloads_30d" in props.item && props.item.downloads_30d !== null) {
-    return { count: props.item.downloads_30d, label: "downloads in 30 days" };
+    return { count: props.item.downloads_30d, label: "downloads in 30 days", window: "30d" };
   }
   return null;
 });
@@ -51,15 +51,28 @@ const downloads = computed(() => {
     </template>
 
     <template #footer>
-      <div class="flex flex-wrap items-center gap-2 text-sm text-muted">
-        <UBadge color="neutral" variant="subtle">
-          {{ packageTypeLabel(item.package_type) }}
-        </UBadge>
-        <UBadge v-if="isYanked" color="warning" variant="subtle"> Yanked </UBadge>
-        <span>Published {{ formatPublishedAt(item.published_at) }}</span>
-        <span v-if="showDownloads && downloads">
-          {{ downloads.count.toLocaleString("en") }} {{ downloads.label }}
-        </span>
+      <div class="space-y-3">
+        <div class="flex flex-wrap items-center gap-2">
+          <UBadge color="neutral" variant="subtle">
+            {{ packageTypeLabel(item.package_type) }}
+          </UBadge>
+          <UBadge v-if="isYanked" color="warning" variant="subtle"> Yanked </UBadge>
+        </div>
+
+        <div class="flex items-center justify-between gap-4 text-sm text-muted">
+          <span class="inline-flex min-w-0 items-center gap-1.5">
+            <UIcon name="i-lucide-calendar-days" class="size-4 shrink-0" aria-hidden="true" />
+            <span><span class="sr-only">Published </span>{{ formatPublishedAt(item.published_at) }}</span>
+          </span>
+          <span v-if="showDownloads && downloads" class="inline-flex shrink-0 items-center gap-1.5">
+            <UIcon name="i-lucide-download" class="size-4" aria-hidden="true" />
+            <span>
+              {{ downloads.count.toLocaleString("en") }}
+              <span v-if="downloads.window" aria-hidden="true" class="text-dimmed">/ {{ downloads.window }}</span>
+              <span class="sr-only">{{ ` ${downloads.label}` }}</span>
+            </span>
+          </span>
+        </div>
       </div>
     </template>
   </UPageCard>

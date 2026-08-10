@@ -39,7 +39,7 @@ export default defineNuxtConfig({
       // serves this from its own cached API, and a prerendered site with no
       // server has nowhere to cache it. Bump it here, or set
       // NUXT_PUBLIC_GITHUB_STARS at build time to pull it from the API.
-      githubStars: "489",
+      githubStars: "490",
     },
   },
 

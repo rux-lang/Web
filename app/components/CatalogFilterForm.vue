@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
 import type { CatalogFilters } from "~/types/catalog";
-import { catalogSortOptions, packageTypeOptions } from "~/utils/catalog";
+import {
+  canonicalSearchText,
+  catalogSortOptions,
+  defaultCatalogOrder,
+  defaultCatalogSort,
+  packageTypeOptions,
+} from "~/utils/catalog";
 
 const props = withDefaults(
   defineProps<{
@@ -36,8 +42,20 @@ watch(
 );
 
 const hasValues = computed(() =>
-  Boolean(state.q || state.namespace || state.keyword || state.packageType || state.sort),
+  Boolean(state.q || state.namespace || state.keyword || state.packageType || state.sort || state.order),
 );
+const effectiveSort = computed(() => state.sort || defaultCatalogSort(canonicalSearchText(state.q)));
+const effectiveOrder = computed(() => state.order || defaultCatalogOrder(effectiveSort.value));
+const directionLocked = computed(() => effectiveSort.value === "relevance");
+const directionIcon = computed(() => (effectiveOrder.value === "asc" ? "i-lucide-arrow-up" : "i-lucide-arrow-down"));
+const directionLabel = computed(() => {
+  if (directionLocked.value) return "Relevance is sorted by best match first";
+  return effectiveOrder.value === "asc" ? "Sort ascending" : "Sort descending";
+});
+const directionTooltip = computed(() => {
+  if (directionLocked.value) return "Relevance always shows best matches first";
+  return effectiveOrder.value === "asc" ? "Ascending" : "Descending";
+});
 
 function submit() {
   emit("submit", { ...state });
@@ -50,7 +68,20 @@ function clear() {
     keyword: "",
     packageType: "",
     sort: "",
+    order: "",
   });
+  submit();
+}
+
+function changeSort(value: string) {
+  state.sort = value;
+  state.order = defaultCatalogOrder(value || defaultCatalogSort(canonicalSearchText(state.q)));
+  submit();
+}
+
+function toggleOrder() {
+  if (directionLocked.value) return;
+  state.order = effectiveOrder.value === "asc" ? "desc" : "asc";
   submit();
 }
 </script>
@@ -58,16 +89,12 @@ function clear() {
 <template>
   <UForm
     :state="state"
-    class="grid items-end gap-4 rounded-lg bg-elevated/50 p-4 ring ring-default sm:grid-cols-2 lg:grid-cols-3"
+    class="grid items-end gap-4 rounded-lg bg-elevated/50 p-4 ring ring-default sm:grid-cols-2 lg:grid-cols-4"
     :aria-label="showQuery ? 'Search and filter packages' : 'Catalog filters'"
     @submit="submit"
   >
-    <!--
-      The search term leads the block on its own row: it is the control most
-      requests start from, and the narrower filters below read as refinements
-      of it rather than as five peers.
-    -->
-    <UFormField v-if="showQuery" name="q" label="Search" class="sm:col-span-2 lg:col-span-3">
+    <!-- Search stays the widest control without pushing every filter below it. -->
+    <UFormField v-if="showQuery" name="q" label="Search" class="sm:col-span-2">
       <UInput
         v-model="state.q"
         type="search"
@@ -99,23 +126,33 @@ function clear() {
     </UFormField>
 
     <UFormField name="sort" label="Sort by">
-      <!--
-        Applied on change rather than on submit: an ordering that needs a second
-        click to take effect reads as a broken control.
-      -->
-      <USelect
-        v-model="state.sort"
-        :items="catalogSortOptions"
-        value-key="value"
-        label-key="label"
-        :placeholder="state.q ? 'Relevance' : 'Alphabetical'"
-        class="w-full"
-        :ui="{ placeholder: 'text-default' }"
-        @update:model-value="submit"
-      />
+      <!-- Sort and direction changes apply immediately and return to page one. -->
+      <UFieldGroup class="w-full">
+        <USelect
+          :model-value="state.sort"
+          :items="catalogSortOptions"
+          value-key="value"
+          label-key="label"
+          :placeholder="state.q ? 'Relevance' : 'Alphabetical'"
+          class="min-w-0 flex-1"
+          :ui="{ placeholder: 'text-default' }"
+          @update:model-value="changeSort"
+        />
+        <UTooltip :text="directionTooltip">
+          <UButton
+            type="button"
+            :icon="directionIcon"
+            color="neutral"
+            variant="outline"
+            :aria-label="directionLabel"
+            :aria-disabled="directionLocked"
+            @click="toggleOrder"
+          />
+        </UTooltip>
+      </UFieldGroup>
     </UFormField>
 
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap gap-2 sm:col-span-2">
       <UButton type="submit" :label="submitLabel" :icon="showQuery ? 'i-lucide-search' : 'i-lucide-filter'" />
       <UButton
         v-if="hasValues"

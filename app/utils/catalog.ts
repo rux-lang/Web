@@ -3,6 +3,7 @@ import type { CatalogFilters, CatalogPackage, PackageType } from "~/types/catalo
 export type CatalogQueryValue = string | null | (string | null)[] | undefined;
 
 export const CATALOG_PAGE_SIZE = 15;
+export const KEYWORD_PAGE_SIZE = 30;
 
 /**
  * The orderings `GET /v1/search` accepts, in the order the Sort by menu lists
@@ -115,6 +116,10 @@ export function defaultCatalogSort(query: string): string {
   return query ? "relevance" : "name";
 }
 
+export function defaultCatalogOrder(sort: string): string {
+  return sort === "name" ? "asc" : "desc";
+}
+
 export function catalogPageNumber(value: CatalogQueryValue): number {
   const page = Number.parseInt(scalarQueryValue(value), 10);
   return Number.isFinite(page) && page > 0 ? page : 1;
@@ -125,12 +130,15 @@ export function catalogRouteQuery(filters: CatalogFilters, page = 1): Record<str
   const search = canonicalSearchText(filters.q);
   const namespace = filters.namespace.trim();
   const keyword = filters.keyword.trim();
+  const sort = filters.sort || defaultCatalogSort(search);
+  const order = filters.order || defaultCatalogOrder(sort);
 
   if (search) query.q = search;
   if (namespace) query.namespace = namespace;
   if (keyword) query.keyword = keyword;
   if (filters.packageType) query.package_type = filters.packageType;
   if (filters.sort && filters.sort !== defaultCatalogSort(search)) query.sort = filters.sort;
+  if (order !== defaultCatalogOrder(sort)) query.order = order;
   if (page > 1) query.page = String(page);
 
   return query;
@@ -142,9 +150,30 @@ export function catalogApiQuery(filters: CatalogFilters, page = 1): Record<strin
     // The URL omits both when they match the default; the request states them,
     // so a page is never at the mercy of a server-side default changing.
     sort: filters.sort || defaultCatalogSort(canonicalSearchText(filters.q)),
+    order: filters.order || defaultCatalogOrder(filters.sort || defaultCatalogSort(canonicalSearchText(filters.q))),
     page,
     per_page: CATALOG_PAGE_SIZE,
   };
+}
+
+export function catalogResultSummary(total: number, page: number, perPage: number, itemCount: number): string {
+  if (total <= 0 || itemCount <= 0) return "";
+
+  const start = (page - 1) * perPage + 1;
+  const end = Math.min(total, start + itemCount - 1);
+  const range =
+    start === end ? start.toLocaleString("en") : `${start.toLocaleString("en")}–${end.toLocaleString("en")}`;
+  return `Showing ${range} of ${total.toLocaleString("en")} ${total === 1 ? "package" : "packages"}`;
+}
+
+export function keywordResultSummary(total: number, page: number, perPage: number, itemCount: number): string {
+  if (total <= 0 || itemCount <= 0) return "";
+
+  const start = (page - 1) * perPage + 1;
+  const end = Math.min(total, start + itemCount - 1);
+  const range =
+    start === end ? start.toLocaleString("en") : `${start.toLocaleString("en")}–${end.toLocaleString("en")}`;
+  return `Showing ${range} of ${total.toLocaleString("en")} ${total === 1 ? "keyword" : "keywords"}`;
 }
 
 /**
@@ -163,6 +192,6 @@ export function keywordApiQuery(sort: string, page = 1): Record<string, string |
   return {
     sort: sort || DEFAULT_KEYWORD_SORT,
     page,
-    per_page: CATALOG_PAGE_SIZE,
+    per_page: KEYWORD_PAGE_SIZE,
   };
 }

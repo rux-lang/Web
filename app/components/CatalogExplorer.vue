@@ -4,6 +4,7 @@ import {
   CATALOG_PAGE_SIZE,
   catalogApiQuery,
   catalogPageNumber,
+  catalogResultSummary,
   catalogRouteQuery,
   scalarQueryValue,
 } from "~/utils/catalog";
@@ -46,6 +47,7 @@ const editableFilters = computed<CatalogFilters>(() => ({
   keyword: props.showKeyword ? scalarQueryValue(route.query.keyword) : "",
   packageType: scalarQueryValue(route.query.package_type),
   sort: scalarQueryValue(route.query.sort),
+  order: scalarQueryValue(route.query.order),
 }));
 
 const requestFilters = computed<CatalogFilters>(() => ({
@@ -68,6 +70,15 @@ const { data, error, status, refresh } = useLazyAsyncData<OffsetPage<PackageSear
 );
 
 const failure = computed(() => (error.value ? normalizeApiError(error.value) : null));
+const resultSummary = computed(() => {
+  if (!data.value) return "";
+  return catalogResultSummary(
+    data.value.meta.total,
+    data.value.meta.page,
+    data.value.meta.per_page,
+    data.value.data.length,
+  );
+});
 
 // Rendering the pager as links keeps every page a real address, which the back
 // button and a shared URL both need on a statically hosted site.
@@ -112,10 +123,7 @@ function applyFilters(filters: CatalogFilters) {
     <section v-else-if="data" aria-labelledby="catalog-results-heading">
       <div class="mb-5 flex flex-wrap items-baseline justify-between gap-2">
         <h2 id="catalog-results-heading" class="text-xl font-semibold text-highlighted">Packages</h2>
-        <p v-if="data.meta.total" class="text-sm text-muted">
-          {{ data.meta.total.toLocaleString("en") }}
-          {{ data.meta.total === 1 ? "package" : "packages" }}
-        </p>
+        <p v-if="resultSummary" class="text-sm text-muted">{{ resultSummary }}</p>
       </div>
 
       <CatalogPackageGrid v-if="data.data.length" :items="data.data" show-downloads />
