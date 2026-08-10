@@ -34,10 +34,10 @@ const features = [
     description: "No implicit conversions, no surprises. Everything is checked at compile time and free at runtime.",
   },
   {
-    icon: "i-lucide-shield-check",
-    title: "Memory Safety",
+    icon: "i-lucide-lock",
+    title: "Explicit Mutability",
     description:
-      "References are checked and safe, pointers are raw and unchecked. You choose — no hidden cost on either.",
+      "Bindings are immutable until you write var. That choice runs deep — through struct fields and pointers.",
   },
   {
     icon: "i-lucide-dna",
