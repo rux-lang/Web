@@ -1,89 +1,121 @@
 # Rux Website
 
-The official website for [Rux](https://rux-lang.dev), built with Nuxt, Nuxt Content, and Nuxt UI. The registry is served at `https://rux-lang.dev/packages`; its API is the separate `rux-lang/WebApi` service at `https://api.rux-lang.dev`.
+[![CI](https://github.com/rux-lang/Web/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/rux-lang/Web/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/rux-lang/Web)](LICENSE.md)
+[![Website](https://img.shields.io/badge/website-rux--lang.dev-blue)](https://rux-lang.dev)
+
+The official website for the [Rux programming language](https://rux-lang.dev), built with Nuxt 4, Nuxt Content 3, and Nuxt UI 4.
+
+This application contains three main areas:
+
+- **Documentation and blog** — more than 550 Markdown pages, prerendered as a fully static site.
+- **Package registry** — a client-side interface under [`/packages`](https://rux-lang.dev/packages).
+- **Playground** — a browser-based Rux editor and runner under [`/play`](https://rux-lang.dev/play).
+
+The registry and playground communicate with the separate Rust [`rux-lang/Server`](https://github.com/rux-lang/Server) service at `https://api.rux-lang.dev`. This repository contains only the website; its sole Nitro server route generates the blog RSS feed during the static build.
+
+## Requirements
+
+- Node.js 24 (see [`.nvmrc`](.nvmrc))
+- npm
+
+## Getting Started
+
+```bash
+npm ci
+npm run dev
+```
+
+The development server runs at <http://localhost:3000>. Documentation, blog, and marketing pages work without any other service.
+
+Registry pages expect the Rux server at `http://localhost:8080` by default. The playground additionally requires the server's playground broker and sandbox. See the [`rux-lang/Server`](https://github.com/rux-lang/Server) documentation for its local setup.
 
 ## Project Structure
 
-```
+```text
 .
 ├── app/
-│   ├── assets/           # CSS and the .rux example sources
-│   ├── components/       # site shell, docs, and package-registry UI
-│   ├── layouts/
-│   ├── pages/            # site pages and the /packages registry subtree
-│   ├── app.vue
-│   ├── error.vue
-│   └── app.config.ts
-├── content/              # every page, as Markdown
-│   ├── docs/             # all five documentation books live under /docs
-│   │   ├── 1.start/      # Get Started guide (/docs/start)
-│   │   ├── 2.lang/       # language reference (/docs/lang)
-│   │   ├── 3.cli/        # rux CLI subcommands (/docs/cli)
-│   │   ├── 4.packaging/  # manifests, dependencies, publishing (/docs/packaging)
-│   │   └── 5.api/        # standard library and platform APIs (/docs/api)
-│   ├── blog/
-│   └── partials/         # fragments rendered inside Vue pages
-├── grammars/             # rux.tmLanguage.json, the Shiki grammar
-├── public/               # static assets, fonts, served from the site root
-├── scripts/              # build helpers and the verification gates
-├── content.config.ts
-└── nuxt.config.ts
+│   ├── assets/            # global CSS
+│   ├── components/        # site, content, registry, and playground UI
+│   ├── composables/       # shared API, authentication, and navigation state
+│   ├── layouts/           # default, documentation, and registry layouts
+│   ├── pages/             # marketing, blog, registry, and playground routes
+│   ├── plugins/           # client initialization
+│   ├── types/             # application types
+│   └── utils/             # parsing, normalization, and domain utilities
+├── content/
+│   ├── docs/              # five documentation books under /docs
+│   ├── blog/              # blog posts
+│   └── partials/          # Markdown fragments embedded in Vue pages
+├── grammars/              # Rux TextMate grammar used by Shiki and CodeMirror
+├── public/                # static assets, fonts, headers, and redirects
+├── scripts/               # build helpers and generated-site verification
+├── server/                # prerendered blog RSS route and feed serializer
+├── test/                  # Vitest and build-quality tests
+├── content.config.ts      # Nuxt Content collections and schema
+└── nuxt.config.ts         # Nuxt, Nitro, sitemap, icon, and runtime config
 ```
 
-Nuxt Content maps every `.md` file under `content/` to a route based on its path. Navigation is generated from the filesystem — **there is no sidebar file to edit.** Ordering comes from numeric filename prefixes (`2.lang/03.signed/2.int8.md` → `/docs/lang/signed/int8`), which are stripped from the URL, and directory titles come from `.navigation.yml`.
+Nuxt Content maps routable Markdown under `content/` to URLs based on its path. Documentation navigation is derived from the filesystem—there is no sidebar file to edit. Numeric prefixes control ordering and are removed from URLs, while `.navigation.yml` files provide directory titles.
 
-Images go in `public/images/` and are referenced from `/images/`.
+Images belong in `public/images/` and are referenced from `/images/...`.
 
 ## Commands
 
-All commands are run from the root of the project, from a terminal:
+Run commands from the repository root:
 
-| Command                    | Action                                                         |
-| :------------------------- | :------------------------------------------------------------- |
-| `npm install`              | Installs dependencies                                          |
-| `npm run dev`              | Starts local dev server at `localhost:3000`                    |
-| `npm run generate`         | Builds the static site into `.output/public/`                  |
-| `npm run generate:hosting` | Builds and adds the live registry sitemap                      |
-| `npm run preview`          | Previews the production build locally                          |
-| `npm run verify`           | Runs documentation-site verification gates                     |
-| `npm run lint`             | Lints all Vue and TypeScript source                            |
-| `npm run typecheck`        | Runs Nuxt type checking                                        |
-| `npm test`                 | Runs the Vitest suite                                          |
-| `npm run sync:examples`    | Regenerates the home page snippets from `app/assets/examples/` |
-
-`npm run build` produces a server build. Cloudflare Pages uses `npm run generate:hosting`, with `NUXT_PUBLIC_API_BASE_URL=https://api.rux-lang.dev`, `RUX_SITEMAP_API_BASE_URL=https://api.rux-lang.dev`, and `RUX_SITE_ORIGIN=https://rux-lang.dev`.
-
-Registry data is loaded only in the browser. Static utility pages are prerendered, while `/packages/*` deep links fall back to Nuxt's generated `200.html` through `public/_redirects`.
+| Command                      | Action                                                            |
+| :--------------------------- | :---------------------------------------------------------------- |
+| `npm run dev`                | Start the development server at `localhost:3000`                  |
+| `npm run build`              | Create a Nuxt server build                                        |
+| `npm run generate`           | Generate the static site in `.output/public/`                     |
+| `npm run generate:hosting`   | Generate the production site and add the live registry sitemap    |
+| `npm run preview`            | Preview a production build                                        |
+| `npm run lint`               | Lint Vue and TypeScript source                                    |
+| `npm run typecheck`          | Run Nuxt type checking                                            |
+| `npm test`                   | Run the Vitest suite                                              |
+| `npm run format:check`       | Check repository formatting with Prettier                         |
+| `npm run verify`             | Verify routes, links, metadata, and rendering in a generated site |
+| `npm run test:quality`       | Run Lighthouse checks against a previously generated site         |
+| `npm run test:hosting-build` | Exercise the production hosting build                             |
 
 ## Verification
 
-`npm run verify` runs after `npm run generate` and checks the built output:
+`npm run verify` checks `.output/public`, so run a static build first:
 
-| Gate              | Checks                                                            |
-| :---------------- | :---------------------------------------------------------------- |
-| `verify:routes`   | Every Markdown file produced a route; no ordering prefix in a URL |
-| `verify:links`    | Every internal link and `#anchor` resolves                        |
-| `verify:meta`     | Canonical link, title, and complete share cards                   |
-| `verify:snippets` | Home page snippets match `app/assets/examples/*.rux`              |
-| `verify:render`   | Highlighting, callouts, code groups, fonts, dark mode             |
+```bash
+npm run generate
+npm run verify
+```
 
-Every gate checks the build against the repository itself, so adding or removing pages needs no bookkeeping.
+The verification gates derive their expectations from the repository:
+
+| Gate            | Checks                                                               |
+| :-------------- | :------------------------------------------------------------------- |
+| `verify:routes` | Every Markdown page was generated and ordering prefixes did not leak |
+| `verify:links`  | Internal links, assets, and page anchors resolve                     |
+| `verify:meta`   | Canonical URLs, titles, and social metadata are complete             |
+| `verify:render` | Syntax highlighting, prose components, fonts, and themes render      |
+
+CI runs linting, type checking, unit tests, static generation, generated-site verification, and supply-chain checks.
 
 ## Deployment
 
-Cloudflare Pages, from `main`:
+Cloudflare Pages deploys `main` as a fully static site:
 
 | Setting          | Value                      |
 | :--------------- | :------------------------- |
 | Build command    | `npm run generate:hosting` |
 | Output directory | `.output/public`           |
-| `NODE_VERSION`   | `24`                       |
+| Node.js version  | `24`                       |
 
-A wrong output directory publishes a blank site rather than failing the build, so check it on the first deploy.
+Production builds use `NUXT_PUBLIC_API_BASE_URL`, `RUX_SITEMAP_API_BASE_URL`, and `RUX_SITE_ORIGIN` to point the client and generated sitemap at the deployed services.
 
 ## Contributing
 
-Pull requests should target `dev`, not `main`. CI rejects pull requests opened against `main`. To add a page, create the Markdown file under `content/` — it appears in the navigation automatically.
+Pull requests must target `dev`; CI rejects pull requests opened against `main`.
+
+To add documentation, create a Markdown file under `content/docs/`. Routes and navigation are generated from the content tree, so no route or sidebar registry needs updating.
 
 ## License
 
