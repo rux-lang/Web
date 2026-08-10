@@ -1,0 +1,630 @@
+{
+  "schemaVersion": 1,
+  "program": { "name": "rux", "version": "0.4.0" },
+  "globalOptions": [
+    {
+      "flags": "--color <auto|always|never>",
+      "description": "Control colored console output",
+      "takesValue": true,
+      "repeatable": false
+    },
+    { "flags": "-h, --help", "description": "Show help information", "takesValue": false, "repeatable": false },
+    {
+      "flags": "--manifest <path>",
+      "description": "Use the specified manifest file instead of Rux.toml",
+      "takesValue": true,
+      "repeatable": false
+    },
+    { "flags": "-q, --quiet", "description": "Do not show log messages", "takesValue": false, "repeatable": false },
+    { "flags": "-v, --verbose", "description": "Use verbose output", "takesValue": false, "repeatable": false },
+    { "flags": "-V, --version", "description": "Show version information", "takesValue": false, "repeatable": false }
+  ],
+  "commands": [
+    {
+      "name": "add",
+      "summary": "Add a dependency to the manifest",
+      "description": "Add a brand new external dependency link directly into the package configuration file.",
+      "usages": [
+        "rux add [namespace]/[package]",
+        "rux add [namespace]/[package]@[requirement]",
+        "rux add [package] --path [path]"
+      ],
+      "arguments": [
+        {
+          "name": "package",
+          "description": "A namespaced package identity and optional requirement",
+          "required": true,
+          "multiple": false
+        }
+      ],
+      "options": [
+        {
+          "flags": "--path <path>",
+          "description": "Add a local path-based dependency",
+          "takesValue": true,
+          "repeatable": false
+        },
+        {
+          "flags": "--registry <url>",
+          "description": "Registry API base URL to check the package against",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux add Rux/Io", "rux add Rux/Io@^0.1.0", "rux add Json --path ../Json"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/add"
+    },
+    {
+      "name": "build",
+      "summary": "Build the current package",
+      "description": "Build the current package",
+      "usages": ["rux build [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--debug",
+          "description": "Build with debug symbols (unoptimized output)",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--define <name[=value]>",
+          "description": "Set or override a config compile-time value",
+          "takesValue": true,
+          "repeatable": true
+        },
+        {
+          "flags": "--emit <kind[,kind...]>",
+          "description": "Additionally emit tokens, ast, sema, hir, lir, asm, or rcu inspection output",
+          "takesValue": true,
+          "repeatable": true
+        },
+        {
+          "flags": "--release",
+          "description": "Build with release profile (optimized, no debug info)",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--stats",
+          "description": "Print build timing, source, performance, and output statistics",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--target <triple>",
+          "description": "Build for the specified target platform (e.g. linux-x86_64, linux-aarch64)",
+          "takesValue": true,
+          "repeatable": false
+        },
+        {
+          "flags": "-q, --quiet",
+          "description": "Suppress non-essential output (only errors are shown)",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "-v, --verbose",
+          "description": "Enable verbose output for detailed build information",
+          "takesValue": false,
+          "repeatable": false
+        }
+      ],
+      "examples": [
+        "rux build",
+        "rux build --debug",
+        "rux build --release",
+        "rux build --stats",
+        "rux build --verbose --release",
+        "rux build --emit ast,sema"
+      ],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/build"
+    },
+    {
+      "name": "check",
+      "summary": "Check package source code for errors without building",
+      "description": "Parse and analyze the source workspace files for syntactic or semantic safety flaws without emitting compilation binaries.",
+      "usages": ["rux check [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--define <name[=value]>",
+          "description": "Set or override a config compile-time value",
+          "takesValue": true,
+          "repeatable": true
+        },
+        {
+          "flags": "--json",
+          "description": "Output diagnostics in JSON format",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--target <triple>",
+          "description": "Check code health for a specific target platform",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux check", "rux check --json", "rux check --target windows-x86_64"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/check"
+    },
+    {
+      "name": "clean",
+      "summary": "Remove build artifacts",
+      "description": "Purge compiled code modules, system logs, and cached local build tracking states from the environment workspace.",
+      "usages": ["rux clean [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--temp",
+          "description": "Remove only the temporary build directory (Temp/)",
+          "takesValue": false,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux clean", "rux clean --temp"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/clean"
+    },
+    {
+      "name": "doc",
+      "summary": "Generate package documentation",
+      "description": "Generate package documentation",
+      "usages": ["rux doc [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--define <name[=value]>",
+          "description": "Set or override a config compile-time value",
+          "takesValue": true,
+          "repeatable": true
+        },
+        {
+          "flags": "--document-private-items",
+          "description": "Include private declarations and members",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "-o, --output <dir>",
+          "description": "Write the generated site to this directory",
+          "takesValue": true,
+          "repeatable": false
+        },
+        {
+          "flags": "--open",
+          "description": "Open the generated documentation index in a browser",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--target <triple>",
+          "description": "Document APIs enabled for a supported target",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux doc", "rux doc --open"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/doc"
+    },
+    {
+      "name": "fmt",
+      "summary": "Format source files and manifests",
+      "description": "Format all *.rux source files and *.toml manifests",
+      "usages": ["rux fmt [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--check",
+          "description": "Check file formatting status without modifying source files",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--manifest-only",
+          "description": "Format only the manifest configuration file (Rux.toml)",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--source-only",
+          "description": "Format only Rux source files",
+          "takesValue": false,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux fmt", "rux fmt --check", "rux fmt --manifest-only"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/fmt"
+    },
+    {
+      "name": "help",
+      "summary": "Show help information",
+      "description": "Show help information",
+      "usages": ["rux help"],
+      "arguments": [
+        {
+          "name": "command",
+          "description": "The command whose help should be shown",
+          "required": false,
+          "multiple": false
+        }
+      ],
+      "options": [
+        {
+          "flags": "--json",
+          "description": "Print the versioned command contract as JSON",
+          "takesValue": false,
+          "repeatable": false
+        }
+      ],
+      "examples": [],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/help"
+    },
+    {
+      "name": "info",
+      "summary": "Show package metadata and manifest information",
+      "description": "Show information about the current or an installed Rux package",
+      "usages": ["rux info", "rux info [namespace]/[package]", "rux info [namespace]/[package]@[requirement]"],
+      "arguments": [
+        {
+          "name": "package",
+          "description": "A namespaced package identity and optional requirement",
+          "required": false,
+          "multiple": false
+        }
+      ],
+      "options": [
+        {
+          "flags": "--json",
+          "description": "Output package metadata in JSON format",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--registry <url>",
+          "description": "Registry API base URL to look an uninstalled package up on",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux info", "rux info Rux/Io", "rux info Rux/Io@0.1.0", "rux info --json"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/info"
+    },
+    {
+      "name": "init",
+      "summary": "Initialize a Rux package in the current directory",
+      "description": "Initialize a Rux package in the current directory",
+      "usages": ["rux init [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--bin",
+          "description": "Create a Program package with an entry point (default)",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--lib",
+          "description": "Create a Library package built as a shared library",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--source",
+          "description": "Create a Source package compiled into its dependents",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--namespace <ns>",
+          "description": "Set the registry namespace required to publish",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux init", "rux init --bin", "rux init --lib --namespace Rux"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/init"
+    },
+    {
+      "name": "install",
+      "summary": "Install dependencies",
+      "description": "Install dependencies",
+      "usages": ["rux install", "rux install [namespace]/[package]", "rux install [namespace]/[package]@[requirement]"],
+      "arguments": [
+        {
+          "name": "package",
+          "description": "A namespaced package identity and optional requirement",
+          "required": false,
+          "multiple": false
+        }
+      ],
+      "options": [
+        {
+          "flags": "--registry <url>",
+          "description": "Registry API base URL to resolve and download from",
+          "takesValue": true,
+          "repeatable": false
+        },
+        {
+          "flags": "--target <triple>",
+          "description": "Install dependencies applicable to a target platform",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": [
+        "rux install",
+        "rux install Rux/Io",
+        "rux install Rux/Io@^0.1.0",
+        "rux install --target windows-x86_64",
+        "rux install --registry http://localhost:8080"
+      ],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/install"
+    },
+    {
+      "name": "lint",
+      "summary": "Lint package source files",
+      "description": "Run source-level diagnostics without emitting build artifacts",
+      "usages": ["rux lint [options]"],
+      "arguments": [],
+      "options": [],
+      "examples": ["rux lint", "rux lint --verbose"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/lint"
+    },
+    {
+      "name": "list",
+      "summary": "List dependencies",
+      "description": "List packages in the manifest file",
+      "usages": ["rux list [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--global",
+          "description": "List packages in the global environment cache instead of the local manifest",
+          "takesValue": false,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux list", "rux list --global"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/list"
+    },
+    {
+      "name": "login",
+      "summary": "Store a registry token for publishing",
+      "description": "Authenticate to a Rux package registry",
+      "usages": ["rux login [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--registry <url>",
+          "description": "Registry API base URL to authenticate to",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux login", "rux login --registry http://localhost:8080"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/login"
+    },
+    {
+      "name": "logout",
+      "summary": "Remove a stored registry token",
+      "description": "Forget the token stored for a Rux package registry",
+      "usages": ["rux logout [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--registry <url>",
+          "description": "Registry API base URL to forget the token for",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux logout", "rux logout --registry http://localhost:8080"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/logout"
+    },
+    {
+      "name": "new",
+      "summary": "Create a new Rux package",
+      "description": "Create a new Rux package in a new directory",
+      "usages": ["rux new [name] [options]"],
+      "arguments": [
+        { "name": "name", "description": "The package or dependency name", "required": true, "multiple": false }
+      ],
+      "options": [
+        {
+          "flags": "--bin",
+          "description": "Create a Program package with an entry point (default)",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--lib",
+          "description": "Create a Library package built as a shared library",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--source",
+          "description": "Create a Source package compiled into its dependents",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--namespace <ns>",
+          "description": "Set the registry namespace required to publish",
+          "takesValue": true,
+          "repeatable": false
+        },
+        {
+          "flags": "--path <dir>",
+          "description": "Create the workspace in a specific directory",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux new App", "rux new App --bin", "rux new Io --lib --namespace Rux"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/new"
+    },
+    {
+      "name": "pack",
+      "summary": "Build the publishable package archive",
+      "description": "Build the .ruxpkg archive that 'rux publish' uploads",
+      "usages": ["rux pack [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "-o, --output <path>",
+          "description": "Write the archive to a specific path",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux pack", "rux pack --output Dist/Math.ruxpkg"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/pack"
+    },
+    {
+      "name": "publish",
+      "summary": "Publish the package to the registry",
+      "description": "Upload the package archive to a Rux package registry",
+      "usages": ["rux publish [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--registry <url>",
+          "description": "Registry API base URL to publish to",
+          "takesValue": true,
+          "repeatable": false
+        },
+        {
+          "flags": "--dry-run",
+          "description": "Validate and build the archive without uploading",
+          "takesValue": false,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux publish", "rux publish --dry-run", "rux publish --registry http://localhost:8080"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/publish"
+    },
+    {
+      "name": "remove",
+      "summary": "Remove a dependency from the manifest",
+      "description": "Remove a dependency from the manifest",
+      "usages": ["rux remove [name]"],
+      "arguments": [
+        { "name": "name", "description": "The package or dependency name", "required": true, "multiple": false }
+      ],
+      "options": [],
+      "examples": ["rux remove Json", "rux remove Random"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/remove"
+    },
+    {
+      "name": "run",
+      "summary": "Build and run the main executable",
+      "description": "Build and execute a runnable target",
+      "usages": ["rux run [options] [-- args...]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--define <name[=value]>",
+          "description": "Set or override a config compile-time value",
+          "takesValue": true,
+          "repeatable": true
+        },
+        { "flags": "--release", "description": "Build with release profile", "takesValue": false, "repeatable": false }
+      ],
+      "examples": ["rux run", "rux run --release", "rux run -- --port 8080"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/run"
+    },
+    {
+      "name": "test",
+      "summary": "Run all test targets",
+      "description": "Run package unit tests",
+      "usages": ["rux test [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--define <name[=value]>",
+          "description": "Set or override a config compile-time value",
+          "takesValue": true,
+          "repeatable": true
+        },
+        { "flags": "--release", "description": "Build with release profile", "takesValue": false, "repeatable": false }
+      ],
+      "examples": ["rux test", "rux test --release"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/test"
+    },
+    {
+      "name": "uninstall",
+      "summary": "Uninstall dependencies",
+      "description": "Uninstall dependencies from the local cache",
+      "usages": [
+        "rux uninstall",
+        "rux uninstall [namespace]/[package]",
+        "rux uninstall [namespace]/[package]@[requirement]",
+        "rux uninstall [options]"
+      ],
+      "arguments": [
+        {
+          "name": "package",
+          "description": "A namespaced package identity and optional requirement",
+          "required": false,
+          "multiple": false
+        }
+      ],
+      "options": [
+        {
+          "flags": "--global",
+          "description": "Uninstall every package in the global environment cache",
+          "takesValue": false,
+          "repeatable": false
+        }
+      ],
+      "examples": ["rux uninstall", "rux uninstall Rux/Json", "rux uninstall Rux/Json@0.1.0", "rux uninstall --global"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/uninstall"
+    },
+    {
+      "name": "update",
+      "summary": "Update dependencies",
+      "description": "Update dependencies",
+      "usages": ["rux update [options]"],
+      "arguments": [],
+      "options": [
+        {
+          "flags": "--global",
+          "description": "Update all entries in the global environment cache",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--registry <url>",
+          "description": "Registry API base URL to resolve and download from",
+          "takesValue": true,
+          "repeatable": false
+        },
+        {
+          "flags": "--target <triple>",
+          "description": "Update dependencies applicable to a target platform",
+          "takesValue": true,
+          "repeatable": false
+        }
+      ],
+      "examples": [
+        "rux update",
+        "rux update --global",
+        "rux update --target linux-aarch64",
+        "rux update --registry http://localhost:8080"
+      ],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/update"
+    },
+    {
+      "name": "version",
+      "summary": "Show version information",
+      "description": "Show information about the Rux toolchain version",
+      "usages": ["rux version"],
+      "arguments": [],
+      "options": [],
+      "examples": ["rux version", "rux -V", "rux --version"],
+      "documentationUrl": "https://rux-lang.dev/docs/cli/version"
+    }
+  ]
+}
