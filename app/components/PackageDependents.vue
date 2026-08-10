@@ -97,10 +97,28 @@ async function loadMore() {
                 <span>{{ item.version }} · {{ formatPublishedAt(item.published_at) }}</span>
               </div>
               <ul class="space-y-1">
-                <li v-for="requirement in item.requirements" :key="requirement.alias">
-                  <code class="text-highlighted">{{ requirement.alias }}</code>
-                  requires
-                  <code class="text-highlighted">{{ requirement.version_range }}</code>
+                <li
+                  v-for="requirement in item.requirements"
+                  :key="requirement.alias"
+                  class="flex flex-wrap items-center gap-x-1.5 gap-y-1"
+                >
+                  <span>
+                    <code class="text-highlighted">{{ requirement.alias }}</code>
+                    requires
+                    <code class="text-highlighted">{{ requirement.version_range }}</code>
+                  </span>
+                  <span v-if="requirement.target_os?.length" class="inline-flex flex-wrap items-center gap-1">
+                    <span>on</span>
+                    <UBadge
+                      v-for="targetOs in requirement.target_os"
+                      :key="targetOs"
+                      color="neutral"
+                      variant="subtle"
+                      size="sm"
+                    >
+                      {{ targetOs }}
+                    </UBadge>
+                  </span>
                 </li>
               </ul>
             </div>

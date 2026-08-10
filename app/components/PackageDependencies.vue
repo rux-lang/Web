@@ -33,6 +33,12 @@ defineProps<{
             Imported as
             <code class="text-highlighted">{{ dependency.alias }}</code>
           </p>
+          <div v-if="dependency.target_os?.length" class="mt-2 flex flex-wrap items-center gap-1.5">
+            <span class="text-xs text-muted">Targets</span>
+            <UBadge v-for="targetOs in dependency.target_os" :key="targetOs" color="neutral" variant="subtle" size="sm">
+              {{ targetOs }}
+            </UBadge>
+          </div>
         </div>
         <code class="self-start rounded-md bg-elevated px-2 py-1 text-sm text-highlighted sm:self-center">
           {{ dependency.version_range }}

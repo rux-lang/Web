@@ -257,6 +257,7 @@ describe("tabbed package documents", () => {
     target_namespace: "Rux_Tools",
     target_package: "Json_Parser",
     version_range: "^1.2",
+    target_os: ["Windows", "Linux"],
   };
 
   it("leaves the Dependencies heading to the tab label while keeping it for assistive technology", () => {
@@ -265,6 +266,7 @@ describe("tabbed package documents", () => {
       global: {
         stubs: {
           UButton: { props: ["label"], template: "<a>{{ label }}</a>" },
+          UBadge: { template: "<span><slot /></span>" },
           UEmpty: { template: "<div data-empty />" },
         },
       },
@@ -276,6 +278,9 @@ describe("tabbed package documents", () => {
     expect(heading.classes()).not.toContain("text-2xl");
     expect(wrapper.text()).toContain("Registry packages required by this exact release.");
     expect(wrapper.text()).toContain("Rux_Tools/Json_Parser");
+    expect(wrapper.text()).toContain("Targets");
+    expect(wrapper.text()).toContain("Windows");
+    expect(wrapper.text()).toContain("Linux");
   });
 
   function mountDependents(page: { data: unknown[]; meta: { next_cursor: string | null } } | null) {
@@ -312,13 +317,14 @@ describe("tabbed package documents", () => {
           package_type: "source",
           published_at: "2026-08-08T00:00:00Z",
           yanked: false,
-          requirements: [{ alias: "Json", version_range: "^1.2" }],
+          requirements: [{ alias: "Json", version_range: "^1.2", target_os: ["MacOS"] }],
         },
       ],
       meta: { next_cursor: null },
     });
 
     expect(wrapper.emitted("count")).toEqual([[{ loaded: 1, hasMore: false }]]);
+    expect(wrapper.text()).toContain("MacOS");
   });
 
   it("flags a truncated first page so the badge can read as a lower bound", () => {

@@ -1,5 +1,8 @@
 import type { PackageType } from "./catalog";
 
+export type TargetOperatingSystem =
+  "Windows" | "Linux" | "MacOS" | "FreeBSD" | "OpenBSD" | "NetBSD" | "DragonFlyBSD" | "Illumos";
+
 export interface PackageSummary {
   namespace: string;
   package: string;
@@ -12,6 +15,7 @@ export interface PackageDependency {
   target_namespace: string;
   target_package: string;
   version_range: string;
+  target_os?: TargetOperatingSystem[];
 }
 
 export interface PackageTextFile {
@@ -84,6 +88,7 @@ export interface PackageDownloadStatistics {
 export interface DependentRequirement {
   alias: string;
   version_range: string;
+  target_os?: TargetOperatingSystem[];
 }
 
 export interface DependentPackage {
