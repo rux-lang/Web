@@ -20,6 +20,7 @@ import {
   packageVersionApiPath,
   representativePackage,
 } from "../app/utils/package";
+import { readmeHighlightLanguage } from "../app/utils/readme-highlighter";
 import { safeReadmeLink, sanitizedReadmeTree, textContent } from "../app/utils/readme";
 
 const representative: PackageSearchResult = {
@@ -348,6 +349,45 @@ function elements(node: unknown): Record<string, unknown>[] {
 }
 
 describe("README sanitization", () => {
+  const proseStub = (tag: string): Component => ({
+    template: `<${tag}><slot /></${tag}>`,
+  });
+  const proseStubs = {
+    ProseA: {
+      props: ["href", "target"],
+      template: '<a :href="href" :target="target"><slot /></a>',
+    },
+    ProseBlockquote: proseStub("blockquote"),
+    ProseCode: proseStub("code"),
+    ProseEm: proseStub("em"),
+    ProseH3: proseStub("h3"),
+    ProseH4: proseStub("h4"),
+    ProseHr: proseStub("hr"),
+    ProseLi: proseStub("li"),
+    ProseOl: proseStub("ol"),
+    ProseP: proseStub("p"),
+    ProsePre: {
+      inheritAttrs: false,
+      props: ["code", "language"],
+      template: '<pre v-bind="$attrs" :data-code="code" :data-language="language"><slot /></pre>',
+    },
+    ProseStrong: proseStub("strong"),
+    ProseTable: proseStub("table"),
+    ProseTbody: proseStub("tbody"),
+    ProseTd: proseStub("td"),
+    ProseTh: proseStub("th"),
+    ProseThead: proseStub("thead"),
+    ProseTr: proseStub("tr"),
+    ProseUl: proseStub("ul"),
+  };
+
+  function mountReadme(source: string) {
+    return mount(SanitizedReadme, {
+      props: { source },
+      global: { stubs: proseStubs },
+    });
+  }
+
   const hostileReadme = `# Safe heading
 
 [Safe](https://example.com/docs) [Relative](./private) [Script](javascript:alert(1))
@@ -387,38 +427,7 @@ describe("README sanitization", () => {
   });
 
   it("renders sanitized links through prose components without making blocked content interactive", () => {
-    const proseStub = (tag: string): Component => ({
-      template: `<${tag}><slot /></${tag}>`,
-    });
-    const wrapper = mount(SanitizedReadme, {
-      props: { source: hostileReadme },
-      global: {
-        stubs: {
-          ProseA: {
-            props: ["href", "target"],
-            template: '<a :href="href" :target="target"><slot /></a>',
-          },
-          ProseBlockquote: proseStub("blockquote"),
-          ProseCode: proseStub("code"),
-          ProseEm: proseStub("em"),
-          ProseH3: proseStub("h3"),
-          ProseH4: proseStub("h4"),
-          ProseHr: proseStub("hr"),
-          ProseLi: proseStub("li"),
-          ProseOl: proseStub("ol"),
-          ProseP: proseStub("p"),
-          ProsePre: proseStub("pre"),
-          ProseStrong: proseStub("strong"),
-          ProseTable: proseStub("table"),
-          ProseTbody: proseStub("tbody"),
-          ProseTd: proseStub("td"),
-          ProseTh: proseStub("th"),
-          ProseThead: proseStub("thead"),
-          ProseTr: proseStub("tr"),
-          ProseUl: proseStub("ul"),
-        },
-      },
-    });
+    const wrapper = mountReadme(hostileReadme);
 
     const links = wrapper.findAll("a");
     expect(links).toHaveLength(1);
@@ -432,5 +441,69 @@ describe("README sanitization", () => {
     expect(wrapper.text()).toContain("[Image: Tracking pixel]");
     expect(wrapper.find("img").exists()).toBe(false);
     expect(wrapper.find("iframe").exists()).toBe(false);
+  });
+
+  it("maps Rux and shell-family fence aliases to the bundled grammars", () => {
+    expect(readmeHighlightLanguage("rux")).toBe("rux");
+    expect(readmeHighlightLanguage("RUX")).toBe("rux");
+    for (const language of ["sh", "bash", "shell", "shellscript", "zsh"]) {
+      expect(readmeHighlightLanguage(language)).toBe("shellscript");
+    }
+    expect(readmeHighlightLanguage("python")).toBeNull();
+    expect(readmeHighlightLanguage(undefined)).toBeNull();
+  });
+
+  it("highlights Rux and shell fences with matching light and dark themes", async () => {
+    const wrapper = mountReadme(
+      [
+        "```rux",
+        "import Format::{ ToString, TryParseInt64 };",
+        "",
+        "var text = ToString(42);",
+        'var parsed = TryParseInt64("42");',
+        "```",
+        "",
+        "```sh",
+        "echo $RUX_HOME",
+        "```",
+      ].join("\n"),
+    );
+
+    const plainBlocks = wrapper.findAll("pre");
+    expect(plainBlocks).toHaveLength(2);
+    expect(plainBlocks.every((block) => !block.classes().includes("shiki"))).toBe(true);
+
+    await flushPromises();
+
+    const blocks = wrapper.findAll("pre");
+    expect(blocks[0]?.classes()).toEqual(expect.arrayContaining(["shiki", "language-rux"]));
+    expect(blocks[1]?.classes()).toEqual(expect.arrayContaining(["shiki", "language-sh"]));
+    for (const block of blocks) {
+      expect(block.classes()).toEqual(expect.arrayContaining(["material-theme-lighter", "material-theme-palenight"]));
+      expect(block.find('[style*="--shiki-dark"]').exists()).toBe(true);
+    }
+    expect(blocks[0]?.findAll(".line")).toHaveLength(4);
+    expect(Array.from(blocks[0]?.get("code").element.childNodes ?? []).every((node) => node.nodeType === 1)).toBe(true);
+    expect(blocks[0]?.get("code").element.textContent).toBe(blocks[0]?.attributes("data-code"));
+    expect(blocks[1]?.findAll(".line")).toHaveLength(1);
+    expect(blocks[0]?.attributes("data-code")).toContain("import Format::{ ToString, TryParseInt64 };");
+    expect(blocks[0]?.attributes("data-code")).toContain('var parsed = TryParseInt64("42");');
+    expect(blocks[1]?.attributes("data-code")).toContain("echo $RUX_HOME");
+  });
+
+  it("keeps unsupported and unlabelled fences as copyable plain code", async () => {
+    const wrapper = mountReadme(["```python", "print('plain')", "```", "", "```", "unlabelled", "```"].join("\n"));
+
+    await flushPromises();
+
+    const blocks = wrapper.findAll("pre");
+    expect(blocks).toHaveLength(2);
+    expect(blocks.every((block) => !block.classes().includes("shiki"))).toBe(true);
+    expect(blocks[0]?.attributes("data-language")).toBe("python");
+    expect(blocks[0]?.attributes("data-code")).toContain("print('plain')");
+    expect(blocks[1]?.attributes("data-language")).toBeUndefined();
+    expect(blocks[1]?.attributes("data-code")).toContain("unlabelled");
+    expect(wrapper.text()).toContain("print('plain')");
+    expect(wrapper.text()).toContain("unlabelled");
   });
 });

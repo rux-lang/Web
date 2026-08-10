@@ -1,6 +1,7 @@
 <script lang="ts">
 import type { Element, Properties, RootContent } from "hast";
 import { computed, defineComponent, h, resolveComponent, type Component, type PropType, type VNodeChild } from "vue";
+import ReadmeCodeBlock from "~/components/ReadmeCodeBlock.vue";
 import { safeReadmeLink, sanitizedReadmeTree, textContent } from "~/utils/readme";
 
 const proseComponents: Record<string, string> = {
@@ -14,7 +15,6 @@ const proseComponents: Record<string, string> = {
   li: "ProseLi",
   ol: "ProseOl",
   p: "ProseP",
-  pre: "ProsePre",
   strong: "ProseStrong",
   table: "ProseTable",
   tbody: "ProseTbody",
@@ -87,14 +87,10 @@ export default defineComponent({
       if (node.tagName === "pre") {
         const code = textContent(node);
         return [
-          h(
-            components.pre ?? "pre",
-            {
-              code,
-              language: languageFrom(node),
-            },
-            () => h("code", code),
-          ),
+          h(ReadmeCodeBlock, {
+            code,
+            language: languageFrom(node),
+          }),
         ];
       }
 
