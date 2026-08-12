@@ -127,7 +127,7 @@ const editors: { name: string; icon: string; iconClass?: string; to?: string; ct
   },
   {
     name: "Zed",
-    to: "https://github.com/rux-lang/Zed",
+    to: "https://zed.dev/extensions/rux",
     icon: "i-simple-icons-zedindustries",
     cta: "Get extension",
   },
