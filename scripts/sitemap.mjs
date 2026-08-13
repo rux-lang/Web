@@ -145,8 +145,33 @@ export async function fetchSitemapEntries(apiBaseUrl, fetchImpl = fetch) {
   return entries;
 }
 
-export async function sitemapEntriesForBuild(apiBaseUrl, fetchImpl = fetch) {
-  return fetchSitemapEntries(apiBaseUrl, fetchImpl);
+function errorMessage(error) {
+  if (!(error instanceof Error)) return String(error);
+  // undici reports every transport fault as the bare string "fetch failed" and
+  // hides the useful part (ECONNREFUSED, ETIMEDOUT, DNS) in `cause`, which is
+  // exactly what an operator reading a Cloudflare build log needs to see.
+  const cause = error.cause instanceof Error ? `: ${error.cause.message}` : "";
+  return `${error.message}${cause}`;
+}
+
+// Build-time policy wrapper over fetchSitemapEntries: the registry is a
+// separate service on separate hardware, and this site must stay deployable
+// while it is down. An unreachable or failing API degrades the sitemap to
+// content routes instead of failing `generate:hosting` — search engines
+// re-crawl, so a temporarily slimmer sitemap costs far less than a blocked
+// deploy of ~570 documentation pages that do not depend on the registry at all.
+//
+// Configuration is deliberately NOT covered by that: callers validate
+// RUX_SITEMAP_API_BASE_URL with exactHttpOrigin first, so a missing or
+// malformed origin still fails loudly. Availability degrades; operator
+// mistakes do not.
+export async function sitemapEntriesForBuild(apiBaseUrl, fetchImpl = fetch, onWarn = console.warn) {
+  try {
+    return await fetchSitemapEntries(apiBaseUrl, fetchImpl);
+  } catch (error) {
+    onWarn(`Registry sitemap source unavailable, continuing without registry URLs — ${errorMessage(error)}`);
+    return [];
+  }
 }
 
 function xmlEscape(value) {

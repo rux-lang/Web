@@ -117,6 +117,37 @@ describe("sitemap source", () => {
     await expect(sitemapEntriesForBuild("https://api.rux-lang.dev", fetchMock)).resolves.toEqual([]);
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
+
+  it("degrades to no registry entries when the API is unreachable", async () => {
+    const transportFailure = Object.assign(new Error("fetch failed"), {
+      cause: new Error("connect ETIMEDOUT 188.166.62.211:443"),
+    });
+    const fetchMock = vi.fn(async () => {
+      throw transportFailure;
+    });
+    const warnings: string[] = [];
+
+    await expect(
+      sitemapEntriesForBuild("https://api.rux-lang.dev", fetchMock, (message: string) => {
+        warnings.push(message);
+      }),
+    ).resolves.toEqual([]);
+    expect(warnings).toHaveLength(1);
+    expect(warnings[0]).toContain("continuing without registry URLs");
+    expect(warnings[0]).toContain("connect ETIMEDOUT 188.166.62.211:443");
+  });
+
+  it("degrades when the API answers but the payload breaks the contract", async () => {
+    const fetchMock = vi.fn(async () => jsonResponse({ error: "boom" }, 503));
+    const warnings: string[] = [];
+
+    await expect(
+      sitemapEntriesForBuild("https://api.rux-lang.dev", fetchMock, (message: string) => {
+        warnings.push(message);
+      }),
+    ).resolves.toEqual([]);
+    expect(warnings[0]).toContain("HTTP 503");
+  });
 });
 
 describe("sitemap XML", () => {
