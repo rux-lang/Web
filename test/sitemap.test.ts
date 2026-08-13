@@ -1,3 +1,7 @@
+import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
 import { describe, expect, it, vi } from "vitest";
 
 import {
@@ -7,6 +11,7 @@ import {
   buildSitemapFiles,
   exactHttpOrigin,
   fetchSitemapEntries,
+  resolvePublicDirectory,
   sitemapEntriesForBuild,
 } from "../scripts/sitemap.mjs";
 
@@ -147,6 +152,28 @@ describe("sitemap source", () => {
       }),
     ).resolves.toEqual([]);
     expect(warnings[0]).toContain("HTTP 503");
+  });
+});
+
+describe("output directory", () => {
+  it("falls back to the Cloudflare preset's dist directory", async () => {
+    // `nuxt generate` writes .output/public locally and dist on Cloudflare
+    // Pages, so the script has to accept either.
+    const root = await mkdtemp(join(tmpdir(), "rux-sitemap-"));
+    const dist = join(root, "dist");
+    await mkdir(dist);
+
+    await expect(resolvePublicDirectory([join(root, ".output/public"), dist])).resolves.toBe(dist);
+  });
+
+  it("rejects when nothing was generated, naming every path it tried", async () => {
+    const root = await mkdtemp(join(tmpdir(), "rux-sitemap-"));
+    // A file is not a directory, and must not be mistaken for one.
+    await writeFile(join(root, "dist"), "", "utf8");
+
+    await expect(resolvePublicDirectory([join(root, ".output/public"), join(root, "dist")])).rejects.toThrow(
+      "no generated output directory found",
+    );
   });
 });
 

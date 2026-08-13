@@ -106,10 +106,12 @@ Cloudflare Pages deploys `main` as a fully static site:
 | Setting          | Value                      |
 | :--------------- | :------------------------- |
 | Build command    | `npm run generate:hosting` |
-| Output directory | `.output/public`           |
+| Output directory | `dist`                     |
 | Node.js version  | `24`                       |
 
-Production builds use `NUXT_PUBLIC_API_BASE_URL`, `RUX_SITEMAP_API_BASE_URL`, and `RUX_SITE_ORIGIN` to point the client and generated sitemap at the deployed services.
+The output directory is `dist`, not the `.output/public` a local build produces: on Cloudflare, nitro selects the `cloudflare-pages-static` preset, which writes the site to `dist` instead. Locally Nuxt symlinks `dist` to `.output/public`, so either path works on a developer machine.
+
+Production builds use `NUXT_PUBLIC_API_BASE_URL`, `RUX_SITEMAP_API_BASE_URL`, and `RUX_SITE_ORIGIN` to point the client and generated sitemap at the deployed services. The registry sitemap is best-effort: if the API is unreachable, the build logs a warning and publishes a sitemap of content routes alone rather than failing.
 
 ## Contributing
 

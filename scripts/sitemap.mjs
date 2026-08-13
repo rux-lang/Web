@@ -253,6 +253,20 @@ export function buildSitemapFiles(siteOrigin, sourceEntries) {
   };
 }
 
+// The generated site does not always land in the same place. Locally the
+// `static` preset writes `.output/public` and Nuxt symlinks `dist` to it, but
+// on Cloudflare Pages nitro selects `cloudflare-pages-static`, whose
+// `output.dir` is `<rootDir>/dist` — so `.output/public` never exists there and
+// a hardcoded path fails the build *after* 1158 routes have been prerendered.
+export async function resolvePublicDirectory(candidates) {
+  for (const candidate of candidates) {
+    const entry = await stat(candidate).catch(() => null);
+    if (entry?.isDirectory()) return candidate;
+  }
+
+  throw new Error(`no generated output directory found, looked in: ${candidates.join(", ")}`);
+}
+
 export async function writeSitemapFiles(outputDirectory, files) {
   const output = await stat(outputDirectory).catch(() => null);
   if (!output?.isDirectory()) {
