@@ -14,7 +14,9 @@ const commandDetails = {
       "The artifact is written below configured `[Build].Output` using the selected profile. Inspection output is written below `Temp/` and does not replace the normal artifact.",
     environment: ["`SOURCE_DATE_EPOCH` fixes compiler timestamps for reproducible builds."],
     related: ["check", "run", "clean"],
-    afterBehavior: `### \`--emit\` values
+    afterBehavior: `Executable, SharedLibrary, and StaticLibrary packages build their conventional native artifact. A Windows SharedLibrary additionally writes its \`.lib\` import library. SourceLibrary packages can be checked but cannot be built directly.
+
+### \`--emit\` values
 
 | Kind | Additional output |
 | --- | --- |
@@ -68,7 +70,7 @@ The option is repeatable and accepts comma-separated values, so \`--emit ast --e
   },
   init: {
     behavior:
-      "Creates a manifest and starter source in the current directory. `--bin`, `--lib`, and `--source` select mutually exclusive package kinds; Program is the default. `--namespace` prepares a registry identity.",
+      "Creates a manifest and starter source in the current directory. `--executable`, `--shared`, `--static`, and `--source` are mutually exclusive; Executable is the default. `--namespace` prepares a registry identity.",
     related: ["new"],
   },
   install: {
@@ -108,7 +110,7 @@ The option is repeatable and accepts comma-separated values, so \`--emit ast --e
   },
   new: {
     behavior:
-      "Creates a new directory containing a manifest and starter source. `--bin`, `--lib`, and `--source` are mutually exclusive; Program is the default. `--path` selects the parent directory and `--namespace` sets the publishable registry namespace.",
+      "Creates a new directory containing a manifest and starter source. `--executable`, `--shared`, `--static`, and `--source` are mutually exclusive; Executable is the default. `--path` selects the parent directory and `--namespace` sets the registry namespace.",
     related: ["init"],
   },
   pack: {
@@ -134,7 +136,7 @@ The option is repeatable and accepts comma-separated values, so \`--emit ast --e
   },
   run: {
     behavior:
-      "Builds a Program package, then runs its executable. `--define` overrides compile-time configuration and `--release` selects the release profile. Only arguments after `--` are passed to the child program.",
+      "Builds an Executable package, then runs it. SharedLibrary, StaticLibrary, and SourceLibrary packages cannot run. `--define` overrides compile-time configuration and `--release` selects the release profile. Only arguments after `--` are passed to the child program.",
     output:
       "Compiler progress and diagnostics use the usual streams. After a successful build, the command returns the child program's exit code.",
     environment: ["`SOURCE_DATE_EPOCH` fixes compiler timestamps for reproducible builds."],

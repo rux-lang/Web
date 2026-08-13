@@ -62,6 +62,12 @@
       "arguments": [],
       "options": [
         {
+          "flags": "--all",
+          "description": "Build all 16 target/profile cells; incompatible with --target, --debug, --release, and --emit",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
           "flags": "--debug",
           "description": "Build with debug symbols (unoptimized output)",
           "takesValue": false,
@@ -112,8 +118,9 @@
       ],
       "examples": [
         "rux build",
+        "rux build --all --stats",
         "rux build --debug",
-        "rux build --release",
+        "rux build --release --target linux-x86_64",
         "rux build --stats",
         "rux build --verbose --release",
         "rux build --emit ast,sema"
@@ -298,20 +305,26 @@
       "arguments": [],
       "options": [
         {
-          "flags": "--bin",
-          "description": "Create a Program package with an entry point (default)",
+          "flags": "--executable",
+          "description": "Create an Executable package with an entry point (default)",
           "takesValue": false,
           "repeatable": false
         },
         {
-          "flags": "--lib",
-          "description": "Create a Library package built as a shared library",
+          "flags": "--shared",
+          "description": "Create a SharedLibrary package",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--static",
+          "description": "Create a StaticLibrary package",
           "takesValue": false,
           "repeatable": false
         },
         {
           "flags": "--source",
-          "description": "Create a Source package compiled into its dependents",
+          "description": "Create a SourceLibrary package compiled into its dependents",
           "takesValue": false,
           "repeatable": false
         },
@@ -322,7 +335,13 @@
           "repeatable": false
         }
       ],
-      "examples": ["rux init", "rux init --bin", "rux init --lib --namespace Rux"],
+      "examples": [
+        "rux init",
+        "rux init --executable",
+        "rux init --shared --namespace Rux",
+        "rux init --static",
+        "rux init --source"
+      ],
       "documentationUrl": "https://rux-lang.dev/docs/cli/init"
     },
     {
@@ -432,20 +451,26 @@
       ],
       "options": [
         {
-          "flags": "--bin",
-          "description": "Create a Program package with an entry point (default)",
+          "flags": "--executable",
+          "description": "Create an Executable package with an entry point (default)",
           "takesValue": false,
           "repeatable": false
         },
         {
-          "flags": "--lib",
-          "description": "Create a Library package built as a shared library",
+          "flags": "--shared",
+          "description": "Create a SharedLibrary package",
+          "takesValue": false,
+          "repeatable": false
+        },
+        {
+          "flags": "--static",
+          "description": "Create a StaticLibrary package",
           "takesValue": false,
           "repeatable": false
         },
         {
           "flags": "--source",
-          "description": "Create a Source package compiled into its dependents",
+          "description": "Create a SourceLibrary package compiled into its dependents",
           "takesValue": false,
           "repeatable": false
         },
@@ -462,7 +487,13 @@
           "repeatable": false
         }
       ],
-      "examples": ["rux new App", "rux new App --bin", "rux new Io --lib --namespace Rux"],
+      "examples": [
+        "rux new App",
+        "rux new App --executable",
+        "rux new Io --shared --namespace Rux",
+        "rux new Math --static",
+        "rux new Json --source"
+      ],
       "documentationUrl": "https://rux-lang.dev/docs/cli/new"
     },
     {
@@ -548,7 +579,13 @@
           "takesValue": true,
           "repeatable": true
         },
-        { "flags": "--release", "description": "Build with release profile", "takesValue": false, "repeatable": false }
+        { "flags": "--release", "description": "Build with release profile", "takesValue": false, "repeatable": false },
+        {
+          "flags": "--target <triple>",
+          "description": "Build and run the tests for the specified target platform",
+          "takesValue": true,
+          "repeatable": false
+        }
       ],
       "examples": ["rux test", "rux test --release"],
       "documentationUrl": "https://rux-lang.dev/docs/cli/test"
