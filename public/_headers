@@ -1,10 +1,16 @@
 # This file is the ONLY place security headers are configured.
+#
+# script-src needs 'wasm-unsafe-eval': on a static host @nuxt/content runs its
+# queries in the browser against @sqlite.org/sqlite-wasm, and compiling that
+# module counts as script evaluation. Without it every client-side
+# queryCollection fails (⌘K search, client-side navigation to a docs page)
+# while the prerendered first paint still looks correct.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), fullscreen=(self), geolocation=(), microphone=(), payment=(), usb=()
   X-Frame-Options: DENY
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.rux-lang.dev https://cloudflareinsights.com; font-src 'self' data:; frame-ancestors 'none'; img-src 'self' data: https://avatars.githubusercontent.com; object-src 'none'; script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests; worker-src 'self' blob:
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.rux-lang.dev https://cloudflareinsights.com; font-src 'self' data:; frame-ancestors 'none'; img-src 'self' data: https://avatars.githubusercontent.com; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests; worker-src 'self' blob:
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
