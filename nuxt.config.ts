@@ -93,6 +93,23 @@ export default defineNuxtConfig({
     },
   },
 
+  hooks: {
+    // app/components/content/ProseCodeTree.vue overrides Nuxt UI's prose
+    // component of the same name, but @nuxt/content registers that directory
+    // NON-global, so the override takes the name out of the global registry
+    // that mdc resolves `::code-tree` through. Dev is unaffected (Vite has
+    // every component to hand); a production build emits a literal
+    // <ProseCodeTree> element instead, and the browser renders each file as a
+    // separate code block rather than the tree/editor split — the home page's
+    // examples panel silently loses its layout. Registering it global puts the
+    // name back where mdc looks for it.
+    "components:extend"(components) {
+      for (const component of components) {
+        if (component.pascalName === "ProseCodeTree") component.global = true;
+      }
+    },
+  },
+
   nitro: {
     prerender: {
       // seed deterministically from the content tree. crawlLinks alone
