@@ -1,16 +1,16 @@
 ---
 title: Privacy Policy
-description: What rux-lang.dev, the package registry, and the playground collect, why, and how long it is kept. No analytics, no tracking, no advertising.
+description: What rux-lang.dev, the package registry, and the playground collect, why, and how long it is kept. Cookieless analytics, no cross-site tracking, no advertising.
 seo:
   title: Privacy Policy
-  description: What rux-lang.dev, the package registry, and the playground collect, why, and how long it is kept. No analytics, no tracking, no advertising.
+  description: What rux-lang.dev, the package registry, and the playground collect, why, and how long it is kept. Cookieless analytics, no cross-site tracking, no advertising.
   ogType: website
   ogUrl: https://rux-lang.dev/privacy
 ---
 
 # Privacy Policy
 
-_Last updated: 7 August 2026_
+_Last updated: 14 August 2026_
 
 This policy explains what data the Rux project collects, why, and how long it is kept. It covers the website at `rux-lang.dev`, the [package registry](/packages) and its API at `api.rux-lang.dev`, and the [playground](/play).
 
@@ -18,7 +18,7 @@ Questions about this policy, or a request about your data, go to [info@rux-lang.
 
 ## In short
 
-- The documentation site has **no analytics, no tracking, no advertising, and no third-party scripts**.
+- The documentation site uses **cookieless, privacy-friendly analytics** that build no profile and identify no visitor. There is **no advertising and no cross-site tracking**.
 - Reading the documentation, browsing packages, and downloading packages need **no account**.
 - The only personal data we hold is what a **registry account** requires, and it comes from GitHub.
 - The playground **stores nothing**.
@@ -26,7 +26,11 @@ Questions about this policy, or a request about your data, go to [info@rux-lang.
 
 ## Browsing the website
 
-The site is a set of static files. It sets no cookies, embeds no analytics, and loads no third-party scripts. Fonts are served from our own domain rather than a font CDN.
+The site is a set of static files. It sets no cookies. Fonts are served from our own domain rather than a font CDN.
+
+We measure how the site is used with [Cabin](https://withcabin.com), which loads one script from `scripts.withcabin.com` and sends its measurements to `ping.withcabin.com`. Cabin is cookieless: it stores no identifier in your browser and does not follow you across sites, so no consent banner is required. What it records is the page path, the referring page, your screen width, how long the page took to load, and how long you stayed — aggregated into counts, never into a profile of you. Nothing there is combined with your registry account.
+
+If you would rather not be counted, run `cabin.blockMe(1)` in your browser's console; that stores an opt-out flag in `localStorage` on this site and stops all further measurement. Blocking `scripts.withcabin.com` in an extension works just as well, and nothing on the site depends on it loading.
 
 Two things are stored in your own browser, never sent to us as a profile:
 

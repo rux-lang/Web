@@ -106,6 +106,18 @@ definePageMeta({ heroBackground: "opacity-30" });
 // no h2, e.g. /docs/lang, /docs/api, /download). Driving the template's own v-if from this
 // makes the content span all ten columns instead.
 const showToc = computed(() => !page.value?.hideToc && !!page.value?.body?.toc?.links?.length);
+const tocLinks = computed(() => (showToc.value ? page.value!.body!.toc!.links : undefined));
+
+// Below `lg` both asides are display:none and AppDocsMobileNav stands in for
+// them, so every page inside a book needs the #right slot even when it has no
+// TOC — /docs/lang and /docs/api among them. When the TOC is what is missing,
+// nothing in that slot survives to `lg`, so the gutter is collapsed by hand
+// there exactly as the plain `v-if` used to do it.
+//
+// Outside the books there is no sidebar to reach and so no bar; those pages keep
+// UContentToc's own accordion on a phone, which is why it is only hidden below
+// `lg` when the bar is there to replace it.
+const rightColumn = computed(() => (showToc.value ? undefined : { center: "lg:col-span-10", right: "lg:hidden" }));
 
 // `stem` retains the numeric ordering prefixes and is relative to the
 // content root, which is exactly what the GitHub edit URL needs.
@@ -134,18 +146,18 @@ useHead({
 </script>
 
 <template>
-  <!--
-    UMain adds no horizontal padding, so without this the content of every page
-    runs into the viewport edge while UHeader and UFooter — which carry their own
-    containers — stay inset. nuxt.com solves it the same way, but per page
-    component (design-kit.vue, docs/[...slug].vue and the rest each open with a
-    UContainer); one catch-all serves all 550 pages here, so it goes on the
-    outside of NuxtLayout — inside it would wrap only the slot and leave the docs
-    sidebar hanging outside the container.
-  -->
   <UContainer>
+    <!--
+      UMain adds no horizontal padding, so without this UContainer the content of
+      every page runs into the viewport edge while UHeader and UFooter — which
+      carry their own containers — stay inset. nuxt.com solves it the same way,
+      but per page component (design-kit.vue, docs/[...slug].vue and the rest
+      each open with a UContainer); one catch-all serves all 550 pages here, so
+      it goes on the outside of NuxtLayout — inside it would wrap only the slot
+      and leave the docs sidebar hanging outside the container.
+    -->
     <NuxtLayout :name="inSection ? 'docs' : false">
-      <UPage v-if="page">
+      <UPage v-if="page" :ui="rightColumn">
         <UPageHeader
           v-if="isApiPage"
           :title="page.title"
@@ -199,8 +211,23 @@ useHead({
           </div>
         </UPageBody>
 
-        <template v-if="showToc" #right>
-          <UContentToc :links="page.body!.toc!.links" highlight highlight-variant="circuit" />
+        <template v-if="showToc || inSection" #right>
+          <!--
+            UPage's #right slot merges its column classes onto the FIRST child
+            and renders the rest as further grid items, so these two are siblings
+            on purpose: the TOC owns the gutter from `lg` up, the mobile bar owns
+            the top of the page below it, and neither is ever visible at the same
+            time as the other.
+          -->
+          <UContentToc
+            v-if="showToc"
+            :links="tocLinks"
+            highlight
+            highlight-variant="circuit"
+            :class="inSection ? 'hidden lg:flex lg:bg-[initial] lg:backdrop-blur-none' : undefined"
+          />
+
+          <AppDocsMobileNav v-if="inSection" :links="tocLinks" />
         </template>
       </UPage>
     </NuxtLayout>

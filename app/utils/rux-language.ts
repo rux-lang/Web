@@ -243,42 +243,57 @@ interface RuxPalette {
   activeLine: string;
 }
 
-/** material-theme-lighter, the site's Shiki light theme. */
+/**
+ * catppuccin-latte, the site's Shiki light theme.
+ *
+ * Transcribed from the theme's `tokenColors`, one scope per field: `comment`,
+ * `keyword` (which also covers `storage.type`/`storage.modifier`),
+ * `keyword.operator` for the word operators, `constant.language` for booleans
+ * and `constant.numeric` for numbers — Catppuccin splits those two — plus
+ * `entity.name.type`, `string`, `constant.character.escape`,
+ * `entity.name.function` and `punctuation`. Variables take the editor
+ * foreground. Selection and active line come from `colors` and carry the
+ * theme's own alpha.
+ */
 const lightPalette: RuxPalette = {
-  comment: "#90A4AE",
-  control: "#39ADB5",
-  keyword: "#F76D47",
-  operatorKeyword: "#39ADB5",
-  storage: "#9C3EDA",
-  variable: "#90A4AE",
-  bool: "#FF5370",
-  number: "#F76D47",
-  type: "#E2931D",
-  string: "#91B859",
-  escape: "#90A4AE",
-  callee: "#6182B8",
-  punctuation: "#39ADB5",
-  selection: "#80CBC440",
-  activeLine: "#CCD7DA40",
+  comment: "#7C7F93",
+  control: "#8839EF",
+  keyword: "#8839EF",
+  operatorKeyword: "#179299",
+  storage: "#8839EF",
+  variable: "#4C4F69",
+  bool: "#D20F39",
+  number: "#FE640B",
+  type: "#DF8E1D",
+  string: "#40A02B",
+  escape: "#EA76CB",
+  callee: "#1E66F5",
+  punctuation: "#7C7F93",
+  selection: "#7C7F934D",
+  activeLine: "#4C4F6912",
 };
 
-/** material-theme-palenight, the site's Shiki dark theme. */
+/**
+ * catppuccin-mocha, the site's Shiki dark theme. Catppuccin gives both flavours
+ * the same scope map, so this is the light palette field for field, read off
+ * Mocha's `tokenColors` and `colors`.
+ */
 const darkPalette: RuxPalette = {
-  comment: "#676E95",
-  control: "#89DDFF",
-  keyword: "#F78C6C",
-  operatorKeyword: "#89DDFF",
-  storage: "#C792EA",
-  variable: "#babed8",
-  bool: "#ff9cac",
-  number: "#F78C6C",
-  type: "#FFCB6B",
-  string: "#C3E88D",
-  escape: "#babed8",
-  callee: "#82AAFF",
-  punctuation: "#89DDFF",
-  selection: "#717CB480",
-  activeLine: "#00000030",
+  comment: "#9399B2",
+  control: "#CBA6F7",
+  keyword: "#CBA6F7",
+  operatorKeyword: "#94E2D5",
+  storage: "#CBA6F7",
+  variable: "#CDD6F4",
+  bool: "#F38BA8",
+  number: "#FAB387",
+  type: "#F9E2AF",
+  string: "#A6E3A1",
+  escape: "#F5C2E7",
+  callee: "#89B4FA",
+  punctuation: "#9399B2",
+  selection: "#9399B240",
+  activeLine: "#CDD6F412",
 };
 
 function highlightStyle(palette: RuxPalette, themeType: "light" | "dark"): HighlightStyle {

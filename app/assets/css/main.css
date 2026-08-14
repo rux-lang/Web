@@ -4,34 +4,60 @@
 /* Tailwind must see classes used inside markdown / MDC. */
 @source "../../../content/**/*";
 
-/* Self-hosted fonts. Variable woff2, files in public/fonts/.
-   Geist and Geist Mono, (c) 2023 Vercel in collaboration with basement.studio,
-   SIL Open Font License 1.1 — see public/fonts/Geist-LICENSE.txt.
+/* Self-hosted fonts, files in public/fonts/.
+   Noto Sans, (c) 2022 The Noto Project Authors, and JetBrains Mono,
+   (c) 2020 The JetBrains Mono Project Authors — both SIL Open Font License 1.1.
    The mono italic is a separate face: Shiki emits italic spans for comments,
-   and without it the browser synthesises a slanted roman. */
+   and without it the browser synthesises a slanted roman.
+
+   **The declared weight must match what the file carries.** A `font-weight`
+   RANGE claims a variable axis; the browser then believes the face covers 700
+   and stops synthesising bold, so a static file declared `100 900` renders
+   every heading and every **bold** run at its single weight. That is what the
+   sans did until the variable subsets below replaced it. The mono pair is
+   still static, which is why it declares a single 400 and lets the browser
+   synthesise instead. */
+/* Noto Sans ships as per-subset files, so the sans is two faces rather than
+   one. `unicode-range` is what keeps that cheap: latin-ext is five times the
+   size of latin and is fetched only if a page actually uses a codepoint in it.
+   Every non-latin character on this site (Cyrillic, Greek, Arabic, box
+   drawing) sits inside a code fence, so it is the mono face that needs the
+   wide coverage, not this one. */
 @font-face {
-  font-family: "Geist";
-  src: url("/fonts/Geist.woff2") format("woff2");
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-latin.woff2") format("woff2-variations");
   font-weight: 100 900;
+  font-display: swap;
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC,
+    U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Noto Sans";
+  src: url("/fonts/NotoSans-latin-ext.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-display: swap;
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F,
+    U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono.woff2") format("woff2");
+  font-weight: 400;
   font-display: swap;
 }
 @font-face {
-  font-family: "Geist Mono";
-  src: url("/fonts/GeistMono.woff2") format("woff2");
-  font-weight: 100 900;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Geist Mono";
-  src: url("/fonts/GeistMono-Italic.woff2") format("woff2");
-  font-weight: 100 900;
+  font-family: "JetBrains Mono";
+  src: url("/fonts/JetBrainsMono-Italic.woff2") format("woff2");
+  font-weight: 400;
   font-style: italic;
   font-display: swap;
 }
 
 @theme static {
-  --font-sans: "Geist", "Inter", "Fira Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "Geist Mono", "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+  --font-sans: "Noto Sans", "Inter", "Fira Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, monospace;
 
   /* Rux brand violet. --color-rux-400 (#a78bfa) is the UI accent — links, active
      states, the `primary` colour in app.config.ts — and the value /design-kit
@@ -91,12 +117,11 @@
 
 /* Coding ligatures (->, =>, !=, >=, <-, |>) for the mono face.
 
-   From Geist Mono 1.7.0 these live in Stylistic Set 11 rather than the standard
-   `liga`/`calt` features, so enabling ligatures the usual way does nothing —
-   `ss11` has to be named explicitly. The bundled woff2 reports fontRevision
-   1.70, so it has them.
+   JetBrains Mono keeps these in the standard `liga`/`calt` features, so naming
+   those two is enough — unlike Geist Mono, which this site used previously and
+   which hides its ligatures in Stylistic Set 11.
 
-   `liga`/`calt` stay on because Tailwind's preflight sets
+   They still have to be named: Tailwind's preflight sets
    `font-feature-settings: normal` on code, kbd, samp and pre, which would
    otherwise drop contextual alternates in Chromium. `.font-mono` covers the
    places the mono face is used outside those tags — the hero's install field,
@@ -109,8 +134,7 @@ pre,
   font-variant-ligatures: common-ligatures contextual;
   font-feature-settings:
     "liga" 1,
-    "calt" 1,
-    "ss11" 1;
+    "calt" 1;
 }
 
 /* Shiki emits both themes into every token as CSS variables and switches on

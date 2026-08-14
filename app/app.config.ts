@@ -22,6 +22,16 @@ export default defineAppConfig({
           base: "w-full",
         },
       },
+      // Nuxt UI's default `pre` base carries `whitespace-pre-wrap
+      // wrap-break-word`, so a long line folds mid-token instead of scrolling —
+      // which reads badly for code, where indentation is structure. The slot
+      // already has `overflow-x-auto`; switching the two wrapping utilities off
+      // is all it takes to turn that into a real horizontal scrollbar.
+      pre: {
+        slots: {
+          base: "whitespace-pre wrap-normal",
+        },
+      },
       // CodeIcon resolves a tab label in two steps: the whole filename
       // LOWERCASED first, then the extension, falling back to
       // `i-vscode-icons-file-type-<ext>`.

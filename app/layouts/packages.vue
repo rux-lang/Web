@@ -51,12 +51,12 @@ const navigationItems = computed<NavigationMenuItem[]>(() => [
 </script>
 
 <template>
-  <!--
-    The site chrome lives in the `default` layout, and Nuxt applies exactly one
-    layout per page — so without nesting it here the registry would render with
-    no header or footer. `default` renders its <slot/>, which is what this fills.
-  -->
   <NuxtLayout name="default">
+    <!--
+      The site chrome lives in the `default` layout, and Nuxt applies exactly one
+      layout per page — so without nesting it here the registry would render with
+      no header or footer. `default` renders its <slot/>, which is what this fills.
+    -->
     <div class="registry-shell min-h-[60vh]">
       <a class="skip-link" href="#registry-content">Skip to registry content</a>
 

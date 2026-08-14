@@ -479,7 +479,7 @@ describe("README sanitization", () => {
     expect(blocks[0]?.classes()).toEqual(expect.arrayContaining(["shiki", "language-rux"]));
     expect(blocks[1]?.classes()).toEqual(expect.arrayContaining(["shiki", "language-sh"]));
     for (const block of blocks) {
-      expect(block.classes()).toEqual(expect.arrayContaining(["material-theme-lighter", "material-theme-palenight"]));
+      expect(block.classes()).toEqual(expect.arrayContaining(["catppuccin-latte", "catppuccin-mocha"]));
       expect(block.find('[style*="--shiki-dark"]').exists()).toBe(true);
     }
     expect(blocks[0]?.findAll(".line")).toHaveLength(4);

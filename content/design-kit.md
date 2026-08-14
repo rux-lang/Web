@@ -86,12 +86,12 @@ Mist is the dark surface, black and white carry the text. Nothing else is part o
 
 ## Typography
 
-Rux uses [Geist](https://vercel.com/font) throughout, in two widths: the proportional face for prose and interface text, and the monospaced face for code, file paths, and terminal output. Both are variable fonts licensed under the [SIL Open Font License 1.1](https://openfontlicense.org), so they are free to
+Rux uses two typefaces: [Noto Sans](https://fonts.google.com/noto/specimen/Noto+Sans) for prose and interface text, and [JetBrains Mono](https://www.jetbrains.com/lp/mono/) for code, file paths, and terminal output. Noto Sans is a variable font; JetBrains Mono ships as separate upright and italic faces at a single weight. Both are licensed under the [SIL Open Font License 1.1](https://openfontlicense.org), so they are free to
 redistribute with your own materials.
 
 ::u-page-grid
-:design-kit-font-card{name="Geist" usage="Headings, body copy, and interface text"}
-:design-kit-font-card{name="Geist Mono" usage="Code, file paths, and command output" mono}
+:design-kit-font-card{name="Noto Sans" usage="Headings, body copy, and interface text"}
+:design-kit-font-card{name="JetBrains Mono" usage="Code, file paths, and command output" mono}
 ::
 
 ## Getting the Files

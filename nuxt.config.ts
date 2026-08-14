@@ -39,7 +39,7 @@ export default defineNuxtConfig({
       // serves this from its own cached API, and a prerendered site with no
       // server has nowhere to cache it. Bump it here, or set
       // NUXT_PUBLIC_GITHUB_STARS at build time to pull it from the API.
-      githubStars: "491",
+      githubStars: "490",
     },
   },
 
@@ -63,6 +63,22 @@ export default defineNuxtConfig({
           href: "/apple-touch-icon.png",
         },
       ],
+      // Cabin analytics. `tagPosition: 'bodyClose'` is what Cabin's "before the
+      // closing </body> tag" instruction means in a Nuxt head config; unhead
+      // otherwise puts a script in <head>.
+      //
+      // Prerendering bakes this into all ~570 pages, so it is gated on a
+      // production build — `npm run dev` would otherwise report localhost page
+      // views into the same site. The script fetches nothing until it runs, so
+      // the guard costs nothing at runtime.
+      //
+      // The beacon host is NOT the script host: hello.js falls back to
+      // ping.withcabin.com for its XHR/sendBeacon calls, so the CSP in
+      // public/_headers has to name both origins.
+      script:
+        process.env.NODE_ENV === "production"
+          ? [{ src: "https://scripts.withcabin.com/hello.js", async: true, defer: true, tagPosition: "bodyClose" }]
+          : [],
     },
   },
 
@@ -76,14 +92,14 @@ export default defineNuxtConfig({
         // VitePress default outline was h2 only.
         toc: { depth: 2, searchDepth: 2 },
         highlight: {
-          // nuxt.com's pair, which is also @nuxt/ui's default. All three keys
-          // must still be set explicitly: the emitted CSS puts
+          // Catppuccin's own Latte (light) / Mocha (dark) pair. All three
+          // keys must still be set explicitly: the emitted CSS puts
           // `html.light .shiki span` after `html .default`, so leaving `light`
           // unset lets it fall through to whatever `default` resolves to.
           theme: {
-            default: "material-theme-lighter",
-            light: "material-theme-lighter",
-            dark: "material-theme-palenight",
+            default: "catppuccin-latte",
+            light: "catppuccin-latte",
+            dark: "catppuccin-mocha",
           },
           // Supplying `langs` REPLACES the default set, so every language the
           // site actually uses has to be listed explicitly.

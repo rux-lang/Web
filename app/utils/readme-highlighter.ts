@@ -1,6 +1,6 @@
 import shellscript from "@shikijs/langs/shellscript";
-import materialThemeLighter from "@shikijs/themes/material-theme-lighter";
-import materialThemePalenight from "@shikijs/themes/material-theme-palenight";
+import catppuccinLatte from "@shikijs/themes/catppuccin-latte";
+import catppuccinMocha from "@shikijs/themes/catppuccin-mocha";
 import type { Element } from "hast";
 import { createHighlighterCore } from "shiki/core";
 import { createJavaScriptRegexEngine } from "shiki/engine/javascript";
@@ -25,7 +25,7 @@ function getReadmeHighlighter() {
   highlighterPromise ??= createHighlighterCore({
     engine: createJavaScriptRegexEngine(),
     langs: [ruxGrammar, shellscript],
-    themes: [materialThemeLighter, materialThemePalenight],
+    themes: [catppuccinLatte, catppuccinMocha],
   });
   return highlighterPromise;
 }
@@ -42,8 +42,8 @@ export async function highlightReadmeCode(code: string, language: string | undef
   const tree = highlighter.codeToHast(displayCode, {
     lang: supportedLanguage,
     themes: {
-      light: "material-theme-lighter",
-      dark: "material-theme-palenight",
+      light: "catppuccin-latte",
+      dark: "catppuccin-mocha",
     },
   });
 

@@ -260,4 +260,4 @@ Security vulnerabilities are reported **privately** — follow the [security pol
 
 ## What data does the website collect?
 
-The documentation site has no analytics, no tracking, and no third-party scripts. The only personal data held is what a registry account needs, and it comes from GitHub. The [Privacy Policy](/privacy) has the details.
+The documentation site uses [Cabin](https://withcabin.com), a cookieless analytics script that counts page views without identifying you or tracking you across sites. There is no advertising. The only personal data held is what a registry account needs, and it comes from GitHub. The [Privacy Policy](/privacy) has the details.

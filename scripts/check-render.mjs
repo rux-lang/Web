@@ -78,7 +78,7 @@ for (const route of [
 // classes in default/light/dark order, so this catches a missing slot as well
 // as a stale theme name. Keep in step with content.build.markdown.highlight
 // .theme in nuxt.config.ts.
-const SHIKI_THEMES = ["material-theme-lighter", "material-theme-lighter", "material-theme-palenight"];
+const SHIKI_THEMES = ["catppuccin-latte", "catppuccin-latte", "catppuccin-mocha"];
 
 check("code", "shiki themes are the configured trio", () => {
   const h = read("/docs/lang/functions/declaration");
