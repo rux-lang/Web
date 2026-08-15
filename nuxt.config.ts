@@ -63,21 +63,26 @@ export default defineNuxtConfig({
           href: "/apple-touch-icon.png",
         },
       ],
-      // Cabin analytics. `tagPosition: 'bodyClose'` is what Cabin's "before the
-      // closing </body> tag" instruction means in a Nuxt head config; unhead
-      // otherwise puts a script in <head>.
+      // Umami analytics (cloud). The script goes in <head> with `defer`, which
+      // is how Umami documents it; `data-website-id` identifies the site.
       //
       // Prerendering bakes this into all ~570 pages, so it is gated on a
       // production build — `npm run dev` would otherwise report localhost page
       // views into the same site. The script fetches nothing until it runs, so
       // the guard costs nothing at runtime.
       //
-      // The beacon host is NOT the script host: hello.js falls back to
-      // ping.withcabin.com for its XHR/sendBeacon calls, so the CSP in
-      // public/_headers has to name both origins.
+      // Script host and beacon host are the same here: script.js posts to
+      // https://cloud.umami.is/api/send, so the CSP in public/_headers names
+      // that one origin in both script-src and connect-src.
       script:
         process.env.NODE_ENV === "production"
-          ? [{ src: "https://scripts.withcabin.com/hello.js", async: true, defer: true, tagPosition: "bodyClose" }]
+          ? [
+              {
+                src: "https://cloud.umami.is/script.js",
+                defer: true,
+                "data-website-id": "0b66fa29-cdb0-44eb-bff7-4f57f61a51f4",
+              },
+            ]
           : [],
     },
   },

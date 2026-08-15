@@ -6,16 +6,16 @@
 # queryCollection fails (⌘K search, client-side navigation to a docs page)
 # while the prerendered first paint still looks correct.
 #
-# Cabin analytics needs two different origins: scripts.withcabin.com serves
-# hello.js (script-src) and ping.withcabin.com receives the /event and
-# /duration beacons (connect-src). Naming only the script host lets the tag
-# load and then silently drops every measurement.
+# Umami analytics serves script.js and receives its /api/send beacons from the
+# same origin, cloud.umami.is, so that host has to appear in BOTH script-src and
+# connect-src. Naming it only in script-src lets the tag load and then silently
+# drops every measurement.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), fullscreen=(self), geolocation=(), microphone=(), payment=(), usb=()
   X-Frame-Options: DENY
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.rux-lang.dev https://cloudflareinsights.com https://ping.withcabin.com; font-src 'self' data:; frame-ancestors 'none'; img-src 'self' data: https://avatars.githubusercontent.com; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://scripts.withcabin.com; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests; worker-src 'self' blob:
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.rux-lang.dev https://cloud.umami.is https://cloudflareinsights.com; font-src 'self' data:; frame-ancestors 'none'; img-src 'self' data: https://avatars.githubusercontent.com; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests; worker-src 'self' blob:
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

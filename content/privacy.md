@@ -28,9 +28,9 @@ Questions about this policy, or a request about your data, go to [info@rux-lang.
 
 The site is a set of static files. It sets no cookies. Fonts are served from our own domain rather than a font CDN.
 
-We measure how the site is used with [Cabin](https://withcabin.com), which loads one script from `scripts.withcabin.com` and sends its measurements to `ping.withcabin.com`. Cabin is cookieless: it stores no identifier in your browser and does not follow you across sites, so no consent banner is required. What it records is the page path, the referring page, your screen width, how long the page took to load, and how long you stayed — aggregated into counts, never into a profile of you. Nothing there is combined with your registry account.
+We measure how the site is used with [Umami](https://umami.is), which loads one script from `cloud.umami.is` and sends its measurements back to the same host. Umami is cookieless: it stores no identifier in your browser and does not follow you across sites, so no consent banner is required. What it records is the page path, the referring page, your screen size, and your browser, operating system and country — aggregated into counts, never into a profile of you. Nothing there is combined with your registry account.
 
-If you would rather not be counted, run `cabin.blockMe(1)` in your browser's console; that stores an opt-out flag in `localStorage` on this site and stops all further measurement. Blocking `scripts.withcabin.com` in an extension works just as well, and nothing on the site depends on it loading.
+If you would rather not be counted, run `localStorage.setItem('umami.disabled', 1)` in your browser's console; that stores an opt-out flag on this site and stops all further measurement. Blocking `cloud.umami.is` in an extension works just as well, and nothing on the site depends on it loading.
 
 Two things are stored in your own browser, never sent to us as a profile:
 
