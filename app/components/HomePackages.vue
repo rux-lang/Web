@@ -45,7 +45,7 @@ const iconFor = (packageType: string) => TYPE_ICONS[packageType] ?? "i-lucide-pa
 
 <template>
   <UPageSection
-    title="Build on what the community has published"
+    title="Popular Packages"
     :description="`The most downloaded packages in the Rux registry over the last ${windowDays} days.`"
     :links="[
       { label: 'Browse all packages', to: '/packages', icon: 'i-lucide-package-search' },

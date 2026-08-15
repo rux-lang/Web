@@ -59,10 +59,11 @@ Built with MSVC on Windows Server 2025 and Windows 11 on Arm. The installer puts
 
 ## Every Release
 
-Each download above resolves to the newest release. Older versions, release notes, and the full asset list live on GitHub.
+Each download above resolves to the newest release. Older versions, release notes, and the full asset list live on GitHub, alongside a changelog that records each change as it lands.
 
 ::u-page-grid
 :link-card{name="All releases" handle="rux-lang/Rux/releases" description="Every tagged version with its notes and assets." icon="i-simple-icons-github" color="text-highlighted" note="GitHub" to="https://github.com/rux-lang/Rux/releases"}
+:link-card{name="Changelog" handle="CHANGELOG.md" description="What landed in each release, and what is queued for the next one." icon="i-lucide-scroll-text" color="text-violet-500" note="Main branch" to="https://github.com/rux-lang/Rux/blob/main/CHANGELOG.md"}
 :link-card{name="Checksums" handle="SHA256SUMS" description="One SHA-256 per asset in the latest release." icon="i-lucide-shield-check" color="text-emerald-500" note="Latest release" to="https://github.com/rux-lang/Rux/releases/latest/download/SHA256SUMS"}
 ::
 
