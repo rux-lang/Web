@@ -71,9 +71,9 @@ export default defineNuxtConfig({
       // views into the same site. The script fetches nothing until it runs, so
       // the guard costs nothing at runtime.
       //
-      // Script host and beacon host are the same here: script.js posts to
-      // https://cloud.umami.is/api/send, so the CSP in public/_headers names
-      // that one origin in both script-src and connect-src.
+      // Script host and beacon host differ: this script.js posts to
+      // https://gateway.umami.is/api/send, so the CSP in public/_headers has to
+      // allow cloud.umami.is in script-src and gateway.umami.is in connect-src.
       script:
         process.env.NODE_ENV === "production"
           ? [

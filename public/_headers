@@ -6,16 +6,19 @@
 # queryCollection fails (⌘K search, client-side navigation to a docs page)
 # while the prerendered first paint still looks correct.
 #
-# Umami analytics serves script.js and receives its /api/send beacons from the
-# same origin, cloud.umami.is, so that host has to appear in BOTH script-src and
-# connect-src. Naming it only in script-src lets the tag load and then silently
-# drops every measurement.
+# Umami analytics uses TWO origins: script.js is served from cloud.umami.is, but
+# it posts its /api/send beacons to gateway.umami.is. So cloud.umami.is belongs
+# in script-src and gateway.umami.is in connect-src — naming only the script
+# host lets the tag load and then silently drops every measurement, which is
+# exactly what happened while connect-src listed cloud.umami.is alone.
+# cloud.umami.is stays in connect-src because the script has historically posted
+# there and still falls back to it.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), fullscreen=(self), geolocation=(), microphone=(), payment=(), usb=()
   X-Frame-Options: DENY
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.rux-lang.dev https://cloud.umami.is https://cloudflareinsights.com; font-src 'self' data:; frame-ancestors 'none'; img-src 'self' data: https://avatars.githubusercontent.com; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests; worker-src 'self' blob:
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; connect-src 'self' https://api.rux-lang.dev https://cloud.umami.is https://gateway.umami.is; font-src 'self' data:; frame-ancestors 'none'; img-src 'self' data: https://avatars.githubusercontent.com; object-src 'none'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://cloud.umami.is; style-src 'self' 'unsafe-inline'; upgrade-insecure-requests; worker-src 'self' blob:
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable
