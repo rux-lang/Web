@@ -1,6 +1,9 @@
 ::code-tree{defaultValue="Functions/Src/Main.rux" class="my-0! lg:rounded-r-none lg:border-r-0"}
 
 ```toml [Functions/Rux.toml]
+[Manifest]
+Version = 1
+
 [Package]
 Name = "Functions"
 Version = "0.1.0"

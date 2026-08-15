@@ -1,6 +1,9 @@
 ::code-tree{defaultValue="Mutability/Src/Main.rux" class="my-0! lg:rounded-r-none lg:border-r-0"}
 
 ```toml [Mutability/Rux.toml]
+[Manifest]
+Version = 1
+
 [Package]
 Name = "Mutability"
 Version = "0.1.0"
@@ -30,6 +33,9 @@ func Main() -> int {
 ```
 
 ```toml [Pointers/Rux.toml]
+[Manifest]
+Version = 1
+
 [Package]
 Name = "Pointers"
 Version = "0.1.0"

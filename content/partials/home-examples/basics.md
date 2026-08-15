@@ -1,6 +1,9 @@
 ::code-tree{defaultValue="Hello/Src/Main.rux" class="my-0! lg:rounded-r-none lg:border-r-0"}
 
 ```toml [Hello/Rux.toml]
+[Manifest]
+Version = 1
+
 [Package]
 Name = "Hello"
 Version = "0.1.0"

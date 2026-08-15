@@ -1,6 +1,9 @@
 ::code-tree{defaultValue="Struct/Src/Main.rux" class="my-0! lg:rounded-r-none lg:border-r-0"}
 
 ```toml [Struct/Rux.toml]
+[Manifest]
+Version = 1
+
 [Package]
 Name = "Struct"
 Version = "0.1.0"
@@ -56,6 +59,9 @@ extend Vector {
 ```
 
 ```toml [Interface/Rux.toml]
+[Manifest]
+Version = 1
+
 [Package]
 Name = "Interface"
 Version = "0.1.0"
