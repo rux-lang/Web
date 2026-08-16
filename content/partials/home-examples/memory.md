@@ -12,21 +12,15 @@ Description = "Mutability in action"
 ```
 
 ```rux [Mutability/Src/Main.rux]
-func Main() -> int {
-    // Compile-time constant
-    const Size: uint = 1024;
-    // Compile-time error
-    Size = 35;
-
-    // Immutable variable
-    let value = 20;
-    // Compile-time error
-    value = 25;
-
-    // Variable
-    var steps = 10;
-    // OK
-    steps = 15;
+func Main() -> int {    
+    const Size = 10u; // Compile-time constant
+    Size = 35;        // Not allowed
+    
+    let value = 20; // Immutable variable
+    value = 25;     // Not allowed
+    
+    var steps = 10; // Variable
+    steps = 15;     // OK
 
     return 0;
 }
@@ -44,41 +38,29 @@ Description = "Pointer semantics"
 ```
 
 ```rux [Pointers/Src/Main.rux]
-func Main() -> int {
-    // Immutable binding
-    let x: int = 100;
-    // Immutable pointer
-    let ptrX: *int = @x;
-    // Compile-time error
-    x = 10;
-    // Compile-time error
-    *ptrX = 15;
-    // Compile-time error
-    ptrX = null;
+func Main() -> int {    
+    let x: int = 100;    // Immutable binding    
+    let ptrX: *int = @x; // Immutable pointer
+    x = 10;      // Not allowed
+    *ptrX = 15;  // Not allowed
+    ptrX = null; // Not allowed
+    
+    var y: int = 200;        // Mutable binding    
+    let ptrY: *var int = @y; // Immutable pointer
+    y = 20;      // OK
+    *ptrY = 25;  // OK
+    ptrY = null; // Not allowed
 
-    // Mutable binding
-    var y: int = 200;
-    // Immutable pointer
-    let ptrY: *var int = @y;
-    y = 20;     // OK
-    *ptrY = 25; // OK
-    // Compile-time error
-    ptrY = null;
-
-    // Immutable binding
-    let z: int = 300;
-    // Mutable pointer
-    var ptrZ: *int = @z;
-    // Compile-time error
-    z = 30;
-    // Compile-time error
-    *ptrZ = 35;
+    
+    let z: int = 300;    // Immutable binding
+    var ptrZ: *int = @z; // Mutable pointer
+    z = 30;      // Not allowed
+    *ptrZ = 35;  // Not allowed
     ptrZ = null; // OK
 
-    // Mutable binding
-    var t: int = 400;
-    // Mutable pointer
-    var ptrT: *var int = @t;
+    
+    var t: int = 400;        // Mutable binding
+    var ptrT: *var int = @t; // Mutable pointer
     t = 40;      // OK
     *ptrT = 45;  // OK
     ptrT = null; // OK
