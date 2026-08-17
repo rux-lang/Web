@@ -125,6 +125,7 @@ const footerLinks: FooterColumn[] = [
       { label: "Playground", to: "/play" },
       { label: "Packages", to: "/packages" },
       { label: "Blog", to: "/blog" },
+      { label: "Status", to: "https://rux-lang.instatus.com/", target: "_blank" },
     ],
   },
   {
