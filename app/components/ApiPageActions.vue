@@ -77,6 +77,12 @@ const items = computed<DropdownMenuItem[][]>(() => [
       to: `https://claude.ai/new?q=${encodeURIComponent(prompt.value)}`,
       target: "_blank",
     },
+    {
+      label: "Open in FLASH CLI",
+      icon: "i-simple-icons-gnometerminal",
+      to: `flash://?prompt=${encodeURIComponent(prompt.value)}`,
+      target: "_blank",
+    }
   ],
 ]);
 
