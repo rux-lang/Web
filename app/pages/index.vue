@@ -24,7 +24,7 @@ const features = [
       "Compiles straight to native machine code. No virtual machine, no interpreter, no garbage collector pauses.",
   },
   {
-    icon: "i-lucide-gauge",
+    icon: "i-lucide-timer",
     title: "Instant Toolchain",
     description: "Compiler, linter, package manager, formatter, and test runner — one small binary, zero dependencies.",
   },
@@ -74,32 +74,32 @@ const features = [
  */
 const stats = [
   {
-    icon: "i-lucide-timer",
-    value: "50ms",
-    label: "Typical compile — no LLVM, no waiting.",
-    color: "text-pink-500",
-    gradient: "from-pink-500/10",
-  },
-  {
-    icon: "i-lucide-package",
-    value: "1",
-    label: "Tiny binary for the whole toolchain.",
-    color: "text-sky-500",
-    gradient: "from-sky-500/10",
-  },
-  {
     icon: "i-lucide-circle-slash",
     value: "0",
-    label: "Dependencies, VMs, or runtimes.",
+    label: "Dependencies, virtual machines, or runtimes.",
     color: "text-emerald-500",
     gradient: "from-emerald-500/10",
   },
   {
+    icon: "i-lucide-package",
+    value: "1",
+    label: "Small executable for the whole toolchain.",
+    color: "text-sky-500",
+    gradient: "from-sky-500/10",
+  },
+  {
     icon: "i-lucide-cpu",
     value: "100%",
-    label: "Native machine code, full speed.",
+    label: "Native machine code for x86-64 and AArch64.",
     color: "text-amber-500",
     gradient: "from-amber-500/10",
+  },
+  {
+    icon: "i-lucide-gauge",
+    value: "100 kLOC/s",
+    label: "Typical compile speed, no LLVM, no waiting.",
+    color: "text-pink-500",
+    gradient: "from-pink-500/10",
   },
 ];
 
