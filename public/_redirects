@@ -8,3 +8,7 @@
 /docs/start           /docs/learn                301
 /docs/start/examples  /docs/learn/first-project  301
 /docs/start/*         /docs/learn/:splat         301
+
+# rux 0.4.0 prints this URL with every manifest error; the page lives in the
+# Packaging book.
+/docs/manifest        /docs/packaging/manifest   301
