@@ -120,7 +120,7 @@ Each appends into a [`StringBuilder`](/docs/api/text/stringbuilder) and allocate
 
 ### Parsing
 
-Each reads a value out of a `Slice<char8>` or a `String`, allocating nothing. The `Parse` forms return a [`Result`](/docs/lang/error/result); the `TryParse` forms write through a pointer and return whether it worked.
+Each reads a value out of a `Slice<char8>` or a `String`, allocating nothing. The `Parse` forms return a [`Result`](/docs/lang/errors/overview); the `TryParse` forms write through a pointer and return whether it worked.
 
 | Function                                              | Description                                         |
 | ----------------------------------------------------- | --------------------------------------------------- |

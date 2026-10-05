@@ -14,7 +14,7 @@ enum ParseError {
 }
 ```
 
-The error half of the [`Result`](/docs/lang/error/result) that
+The error half of the [`Result`](/docs/lang/errors/overview) that
 [`ParseInt64`](/docs/api/format/parseint64) and [`ParseFloat64`](/docs/api/format/parsefloat64) return. The
 [`TryParse`](/docs/api/format/tryparseint64) functions collapse it to a `bool`, so it only
 surfaces from the `Parse` functions.
@@ -54,4 +54,4 @@ func Main() -> int {
 
 - [`Format`](/docs/api/format) — the package overview
 - [`ParseInt64`](/docs/api/format/parseint64) / [`ParseFloat64`](/docs/api/format/parsefloat64) — the functions that return it
-- [`Result`](/docs/lang/error/result) — the success-or-error type it is the error half of
+- [`Result`](/docs/lang/errors/overview) — the success-or-error type it is the error half of

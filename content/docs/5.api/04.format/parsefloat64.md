@@ -24,7 +24,7 @@ func ParseFloat64(
 
 ## Returns
 
-A [`Result`](/docs/lang/error/result): `Success` holds the parsed `float64`, and
+A [`Result`](/docs/lang/errors/overview): `Success` holds the parsed `float64`, and
 `Error` holds a [`ParseError`](/docs/api/format/parseerror) saying why the text was rejected.
 
 The accepted grammar is a decimal number with an optional sign, an optional

@@ -59,5 +59,5 @@ The package also defines the primitive types — the [signed](/docs/lang/signed/
 ## See also
 
 - [Conditional Compilation](/docs/lang/comptime/conditional) — using the compile-time context in `when`
-- [The `Result` Type](/docs/lang/error/result) — the recoverable-error model
+- [The `Result` Type](/docs/lang/errors/overview) — the recoverable-error model
 - [Slices](/docs/lang/slices/overview) and [Ranges](/docs/lang/ranges/overview) — the language-reference treatment

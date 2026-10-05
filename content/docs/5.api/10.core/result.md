@@ -29,6 +29,6 @@ match ParseInt64("42") {
 ## See also
 
 - [`Core`](/docs/api/core) — the package overview
-- [The `Result` Type](/docs/lang/error/result) — the language-reference treatment
+- [The `Result` Type](/docs/lang/errors/overview) — the language-reference treatment
 - [`match`](/docs/lang/statements/match) — destructuring `Success` and `Error`
 - [`Panic`](/docs/api/core/panic) — for unrecoverable errors

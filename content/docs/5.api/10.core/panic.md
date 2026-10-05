@@ -35,4 +35,4 @@ func Main() -> int {
 - [`Core`](/docs/api/core) — the package overview
 - [`Assert`](/docs/api/core/assert) — a conditional panic on a checked invariant
 - [`Result`](/docs/api/core/result) — the recoverable-error alternative
-- [Fatal Errors](/docs/lang/error/fatal) — when to panic versus return an error
+- [Fatal Errors](/docs/lang/errors/panics) — when to panic versus return an error

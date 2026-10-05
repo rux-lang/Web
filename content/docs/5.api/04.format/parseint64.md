@@ -24,7 +24,7 @@ func ParseInt64(
 
 ## Returns
 
-A [`Result`](/docs/lang/error/result): `Success` holds the parsed `int64`, and
+A [`Result`](/docs/lang/errors/overview): `Success` holds the parsed `int64`, and
 `Error` holds a [`ParseError`](/docs/api/format/parseerror) saying why the text was rejected.
 
 The accepted form is an optional `+` or `-` followed by one or more decimal
