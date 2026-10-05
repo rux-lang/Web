@@ -35,7 +35,7 @@ import Core::{ #target, #Error };
 | [`Slice`](/docs/api/core/slice)   | A view over a contiguous sequence of elements.   |
 | [`Ranges`](/docs/api/core/ranges) | The range types produced by the range operators. |
 
-The package also defines the primitive types — the [signed](/docs/lang/signed/int) and [unsigned](/docs/lang/unsigned/uint) integers, [floating-point](/docs/lang/floating/float), [boolean](/docs/lang/boolean/bool), and [character](/docs/lang/character/char) families — which are covered in the language reference.
+The package also defines the primitive types — the [signed](/docs/lang/types/integers) and [unsigned](/docs/lang/types/integers) integers, [floating-point](/docs/lang/types/floating-point), [boolean](/docs/lang/types/booleans), and [character](/docs/lang/types/characters) families — which are covered in the language reference.
 
 ## Diagnostics
 
