@@ -32,8 +32,12 @@ const { data: collectionSurround } = await useAsyncData(`surround-${path.value}`
 // previous book's last page (or the /docs hub) as its neighbour. Prev/next is a
 // reading order *within* a book: drop a neighbour that sits in another one.
 const bookOf = (p: string) => p.match(/^\/docs\/[^/]+/)?.[0] ?? `/${p.split("/")[1]}`;
-const surround = computed(() =>
-  collectionSurround.value?.map((item) => (item && bookOf(item.path) === bookOf(path.value) ? item : null)),
+// UContentSurround renders each slot under `v-if="link"`, so a null skips that
+// side; its prop type just does not admit one.
+const surround = computed(
+  () =>
+    collectionSurround.value?.map((item) => (item && bookOf(item.path) === bookOf(path.value) ? item : null)) as
+      ContentNavigationItem[] | undefined,
 );
 
 // Standalone destinations are not part of the documentation reading sequence,
