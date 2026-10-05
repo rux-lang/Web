@@ -140,6 +140,7 @@ export default defineNuxtConfig({
       },
       {
         title: "Language reference",
+        description: "The precise rules of the Rux language as rux 0.4.0 implements them, chapter by chapter.",
         contentCollection: "docs",
         contentFilters: [{ field: "path", operator: "LIKE", value: "/docs/lang%" }],
       },

@@ -1,11 +1,11 @@
 ---
 title: Rux Language Reference
-description: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and compile-time programming.
+description: The complete reference for the Rux language as implemented by rux 0.4.0 — lexical structure, types, expressions, functions, data types, optionals, errors, ownership, interfaces, generics, modules, compile-time programming and FFI.
 navigation:
-  title: Table of Contents
+  title: Overview
 seo:
   title: Rux Reference
-  description: The complete Rux language reference — covering lexical structure, primitive types, variables, functions, structs, enums, interfaces, modules, error handling, FFI, and compile-time programming.
+  description: The complete reference for the Rux language as implemented by rux 0.4.0 — lexical structure, types, expressions, functions, data types, optionals, errors, ownership, interfaces, generics, modules, compile-time programming and FFI.
   ogImage: https://rux-lang.dev/images/og-docs.png
   ogType: website
   ogUrl: https://rux-lang.dev/docs/lang
@@ -13,162 +13,73 @@ seo:
 
 # Rux Language Reference
 
-1. [Introduction](/docs/lang/introduction)
-2. [Lexical Structure](/docs/lang/lexical/sources)
-   - 2.1. [Source Files](/docs/lang/lexical/sources)
-   - 2.2. [Comments](/docs/lang/lexical/comments)
-   - 2.3. [Keywords](/docs/lang/lexical/keywords)
-   - 2.4. [Identifiers](/docs/lang/lexical/identifiers)
-   - 2.5. [Literals](/docs/lang/lexical/literals)
-   - 2.6. [Operators](/docs/lang/lexical/operators)
-3. [Signed Integers](/docs/lang/signed/int)
-   - 3.1. [int](/docs/lang/signed/int)
-   - 3.2. [int8](/docs/lang/signed/int8)
-   - 3.3. [int16](/docs/lang/signed/int16)
-   - 3.4. [int32](/docs/lang/signed/int32)
-   - 3.5. [int64](/docs/lang/signed/int64)
-   - 3.6. [int128](/docs/lang/signed/int128)
-   - 3.7. [int256](/docs/lang/signed/int256)
-   - 3.8. [int512](/docs/lang/signed/int512)
-4. [Unsigned Integers](/docs/lang/unsigned/uint)
-   - 4.1. [uint](/docs/lang/unsigned/uint)
-   - 4.2. [uint8](/docs/lang/unsigned/uint8)
-   - 4.3. [uint16](/docs/lang/unsigned/uint16)
-   - 4.4. [uint32](/docs/lang/unsigned/uint32)
-   - 4.5. [uint64](/docs/lang/unsigned/uint64)
-   - 4.6. [uint128](/docs/lang/unsigned/uint128)
-   - 4.7. [uint256](/docs/lang/unsigned/uint256)
-   - 4.8. [uint512](/docs/lang/unsigned/uint512)
-5. [Floating-Point](/docs/lang/floating/float)
-   - 5.1. [float](/docs/lang/floating/float)
-   - 5.2. [float8](/docs/lang/floating/float8)
-   - 5.3. [float16](/docs/lang/floating/float16)
-   - 5.4. [float32](/docs/lang/floating/float32)
-   - 5.5. [float64](/docs/lang/floating/float64)
-   - 5.6. [float80](/docs/lang/floating/float80)
-   - 5.7. [float128](/docs/lang/floating/float128)
-   - 5.8. [float256](/docs/lang/floating/float256)
-   - 5.9. [float512](/docs/lang/floating/float512)
-6. [Booleans](/docs/lang/boolean/bool)
-   - 6.1. [bool](/docs/lang/boolean/bool)
-   - 6.2. [bool8](/docs/lang/boolean/bool8)
-   - 6.3. [bool16](/docs/lang/boolean/bool16)
-   - 6.4. [bool32](/docs/lang/boolean/bool32)
-   - 6.5. [bool64](/docs/lang/boolean/bool64)
-   - 6.6. [bool128](/docs/lang/boolean/bool128)
-   - 6.7. [bool256](/docs/lang/boolean/bool256)
-   - 6.8. [bool512](/docs/lang/boolean/bool512)
-7. [Characters](/docs/lang/character/char)
-   - 7.1. [char](/docs/lang/character/char)
-   - 7.2. [char8](/docs/lang/character/char8)
-   - 7.3. [char16](/docs/lang/character/char16)
-   - 7.4. [char32](/docs/lang/character/char32)
-   - 7.5. [char64](/docs/lang/character/char64)
-   - 7.6. [char128](/docs/lang/character/char128)
-   - 7.7. [char256](/docs/lang/character/char256)
-   - 7.8. [char512](/docs/lang/character/char512)
-8. [Variables](/docs/lang/variables/overview)
-   - 8.1. [Overview](/docs/lang/variables/overview)
-   - 8.2. [Immutable](/docs/lang/variables/let)
-   - 8.3. [Mutable](/docs/lang/variables/var)
-   - 8.4. [Mutability of Structs](/docs/lang/variables/mutability)
-9. [Constants](/docs/lang/constants/overview)
-   - 9.1. [Overview](/docs/lang/constants/overview)
-   - 9.2. [Intrinsic Constants](/docs/lang/constants/intrinsic)
-10. [Operations](/docs/lang/operations/overview)
-    - 10.1. [Overview](/docs/lang/operations/overview)
-    - 10.2. [Arithmetic Operations](/docs/lang/operations/arithmetic)
-    - 10.3. [Comparison Operations](/docs/lang/operations/comparison)
-    - 10.4. [Logical Operations](/docs/lang/operations/logical)
-    - 10.5. [Bitwise Operations](/docs/lang/operations/bitwise)
-    - 10.6. [Shift Operations](/docs/lang/operations/shift)
-    - 10.7. [Type Casts](/docs/lang/operations/type-cast)
-    - 10.8. [Type Tests](/docs/lang/operations/type-test)
-11. [Statements](/docs/lang/statements/overview)
-    - 11.1. [Overview](/docs/lang/statements/overview)
-    - 11.2. [if / else](/docs/lang/statements/if)
-    - 11.3. [match](/docs/lang/statements/match)
-    - 11.4. [while](/docs/lang/statements/while)
-    - 11.5. [for / in](/docs/lang/statements/for)
-    - 11.6. [loop](/docs/lang/statements/loop)
-    - 11.7. [break / continue](/docs/lang/statements/break-continue)
-12. [Functions](/docs/lang/functions/overview)
-    - 12.1. [Overview](/docs/lang/functions/overview)
-    - 12.2. [Declaration](/docs/lang/functions/declaration)
-    - 12.3. [Variadic Functions](/docs/lang/functions/variadic)
-    - 12.4. [Generic Functions](/docs/lang/functions/generic)
-    - 12.5. [Assembler Functions](/docs/lang/functions/assembler)
-    - 12.6. [Main Entry Point](/docs/lang/functions/main)
-13. [Structures](/docs/lang/structs/overview)
-    - 13.1. [Overview](/docs/lang/structs/overview)
-    - 13.2. [Methods](/docs/lang/structs/methods)
-14. [Unions](/docs/lang/unions/overview)
-    - 14.1 [Overview](/docs/lang/unions/overview)
-15. [Enumerations](/docs/lang/enums/overview)
-    - 15.1. [Overview](/docs/lang/enums/values)
-    - 15.2. [Backing Type and Values](/docs/lang/enums/values)
-    - 15.3. [Variants with Data](/docs/lang/enums/data)
-16. [Tuples](/docs/lang/tuples/overview)
-    - 16.1. [Overview](/docs/lang/tuples/overview)
-    - 16.2. [Destructuring](/docs/lang/tuples/destructuring)
-    - 16.3. [Tuples vs. Structs](/docs/lang/tuples/vs-struct)
-17. [Arrays](/docs/lang/arrays/overview)
-    - 17.1. [Overview](/docs/lang/arrays/overview)
-    - 17.2. [Indexing and Iteration](/docs/lang/arrays/access)
-    - 17.3. [Arrays as Slices](/docs/lang/arrays/slicing)
-18. [Slices](/docs/lang/slices/overview)
-    - 18.1. [Overview](/docs/lang/slices/overview)
-    - 18.2. [String Literals](/docs/lang/slices/literals)
-    - 18.3. [Indexing and Iteration](/docs/lang/slices/access)
-    - 18.4. [Slices and Pointers](/docs/lang/slices/low-level)
-19. [Ranges](/docs/lang/ranges/overview)
-    - 19.1. [Overview](/docs/lang/ranges/overview)
-    - 19.2. [Using Ranges](/docs/lang/ranges/usage)
-20. [Pointers](/docs/lang/pointers/overview)
-    - 20.1. [Overview](/docs/lang/pointers/overview)
-    - 20.2. [Pointer Types](/docs/lang/pointers/types)
-    - 20.3. [The null Pointer](/docs/lang/pointers/null)
-    - 20.4. [Fields and Members](/docs/lang/pointers/members)
-    - 20.5. [Pointer Arithmetic](/docs/lang/pointers/arithmetic)
-    - 20.6. [Pointers and extern](/docs/lang/pointers/extern)
-21. [Type Aliases](/docs/lang/aliases/overview)
-    - 21.1. [Overview](/docs/lang/aliases/overview)
-    - 21.2. [Usage](/docs/lang/aliases/usage)
-    - 21.3. [Function Type Aliases](/docs/lang/aliases/function-types)
-    - 21.4. [Built-in Aliases](/docs/lang/aliases/builtin)
-22. [Interfaces](/docs/lang/interfaces/overview)
-    - 22.1. [Overview](/docs/lang/interfaces/overview)
-    - 22.2. [Interface Declaration](/docs/lang/interfaces/declaration)
-    - 22.3. [Interface Implementation](/docs/lang/interfaces/implementation)
-23. [Modules](/docs/lang/modules/overview)
-    - 23.1. [Overview](/docs/lang/modules/overview)
-    - 23.2. [Module Declaration](/docs/lang/modules/declaration)
-    - 23.3. [Items Visibility](/docs/lang/modules/visibility)
-    - 23.4. [Import](/docs/lang/modules/import)
-24. [Error Handling](/docs/lang/error/overview)
-    - 24.1. [Overview](/docs/lang/error/overview)
-    - 24.2. [The Result Type](/docs/lang/error/result)
-    - 24.3. [Fatal Errors](/docs/lang/error/fatal)
-25. [Foreign Function Interface](/docs/lang/ffi/overview)
-    - 25.1. [Overview](/docs/lang/ffi/overview)
-    - 25.2. [External Declarations](/docs/lang/ffi/extern)
-    - 25.3. [Linking Libraries](/docs/lang/ffi/import)
-26. [Compile-Time Programming](/docs/lang/comptime/overview)
-    - 26.1. [Overview](/docs/lang/comptime/overview)
-    - 26.2. [Conditional Compilation](/docs/lang/comptime/conditional)
-    - 26.3. [Build Context](/docs/lang/comptime/context)
-    - 26.4. [Intrinsics](/docs/lang/comptime/intrinsic)
-27. [Attributes](/docs/lang/attributes/overview)
-    - 27.1. [Overview](/docs/lang/attributes/overview)
-    - 27.2. [Link](/docs/lang/attributes/link)
-    - 27.3. [Abi](/docs/lang/attributes/abi)
-    - 27.4. [Warn](/docs/lang/attributes/warn)
-    - 27.5. [Error](/docs/lang/attributes/error)
-    - 27.6. [NoReturn](/docs/lang/attributes/noreturn)
-    - 27.7. [Allow](/docs/lang/attributes/allow)
-28. [Appendix](/docs/lang/appendix/primitives)
-    - 28.1. [Primitive Type Reference](/docs/lang/appendix/primitives)
-    - 28.2. [Token Reference](/docs/lang/appendix/tokens)
-    - 28.3. [Rux Compiled Unit](/docs/lang/appendix/rcu)
+This reference describes the Rux language exactly as **rux 0.4.0** implements it: every type, expression, statement and declaration, the rules the compiler enforces and the messages it prints when a rule is broken. Every example on these pages compiles with rux 0.4.0.
 
-Packages, manifests, dependencies, and publishing have their own section: [Packaging](/docs/packaging).
+It is written for looking things up. To learn the language from the beginning, follow [Learn Rux](/docs/learn) — a course of short, runnable lessons — and come back here for the full rules. The [Introduction](/docs/lang/introduction) explains how the chapters are organised and the grammar notation they use.
+
+## The basics
+
+::u-page-grid
+:u-page-card{title="Introduction" description="Design goals, a first program, and how to read this reference." icon="i-lucide-book-open" to="/docs/lang/introduction" variant="subtle"}
+:u-page-card{title="Lexical structure" description="Source files, comments, identifiers, keywords, literals and operator tokens." icon="i-lucide-text" to="/docs/lang/lexical/source-files" variant="subtle"}
+:u-page-card{title="Types" description="Integers, floating point, booleans, characters, text and type aliases." icon="i-lucide-shapes" to="/docs/lang/types/overview" variant="subtle"}
+:u-page-card{title="Bindings" description="let, var and const, initialisation and destructuring." icon="i-lucide-tag" to="/docs/lang/bindings/overview" variant="subtle"}
+:u-page-card{title="Expressions" description="Every operator, its precedence, and casts with as." icon="i-lucide-plus" to="/docs/lang/expressions/overview" variant="subtle"}
+:u-page-card{title="Statements" description="if, the four loops, labelled break and continue, and return." icon="i-lucide-git-branch" to="/docs/lang/statements/overview" variant="subtle"}
+:u-page-card{title="Patterns" description="match, exhaustiveness, and every pattern form." icon="i-lucide-scan-search" to="/docs/lang/patterns/match" variant="subtle"}
+::
+
+## Functions and data
+
+::u-page-grid
+:u-page-card{title="Functions" description="Declarations, parameters, overloading, function types and Main." icon="i-lucide-square-function" to="/docs/lang/functions/declaration" variant="subtle"}
+:u-page-card{title="Structures" description="Structs, methods with typed receivers, constructors and extensions." icon="i-lucide-box" to="/docs/lang/structs/overview" variant="subtle"}
+:u-page-card{title="Enumerations" description="Scalar enums with a backing type and explicit values." icon="i-lucide-list-ordered" to="/docs/lang/enums/overview" variant="subtle"}
+:u-page-card{title="Variants" description="Tagged unions whose cases carry their own data." icon="i-lucide-split" to="/docs/lang/variants/overview" variant="subtle"}
+:u-page-card{title="Unions" description="Untagged overlays of several types in one place." icon="i-lucide-layers" to="/docs/lang/unions/overview" variant="subtle"}
+:u-page-card{title="Tuples" description="Anonymous products, the unit type and structural equality." icon="i-lucide-parentheses" to="/docs/lang/tuples/overview" variant="subtle"}
+:u-page-card{title="Arrays" description="Fixed-length T[N], repeat literals and bounds checks." icon="i-lucide-brackets" to="/docs/lang/arrays/overview" variant="subtle"}
+:u-page-card{title="Slices" description="Read-only T[..] and writable var T[..] views." icon="i-lucide-scissors" to="/docs/lang/slices/overview" variant="subtle"}
+:u-page-card{title="Ranges" description="The six range forms and where they are used." icon="i-lucide-move-horizontal" to="/docs/lang/ranges/overview" variant="subtle"}
+::
+
+## Absence and failure
+
+::u-page-grid
+:u-page-card{title="Optionals" description="T? and none, ?? fallbacks and ? propagation." icon="i-lucide-circle-dashed" to="/docs/lang/optionals/overview" variant="subtle"}
+:u-page-card{title="Errors" description="Fallibles T ! E, fail, catch, propagation and panics." icon="i-lucide-triangle-alert" to="/docs/lang/errors/overview" variant="subtle"}
+:u-page-card{title="Sum types" description="A | B values, typed patterns and the is test." icon="i-lucide-combine" to="/docs/lang/sums/overview" variant="subtle"}
+::
+
+## Memory and ownership
+
+::u-page-grid
+:u-page-card{title="References" description="Borrowing with &T and &var T, and the exclusivity rule." icon="i-lucide-link" to="/docs/lang/references/overview" variant="subtle"}
+:u-page-card{title="Pointers" description="*T and *var T, @ and *, null, arithmetic and slicing." icon="i-lucide-mouse-pointer-2" to="/docs/lang/pointers/overview" variant="subtle"}
+:u-page-card{title="Ownership" description="Copies and moves, destructors and defer." icon="i-lucide-key-round" to="/docs/lang/ownership/overview" variant="subtle"}
+:u-page-card{title="Memory layout" description="sizeof, alignof, padding and the layout of native forms." icon="i-lucide-ruler" to="/docs/lang/memory/layout" variant="subtle"}
+::
+
+## Abstraction
+
+::u-page-grid
+:u-page-card{title="Interfaces" description="Declarations, interface values, core interfaces, operators, indexers and iteration." icon="i-lucide-plug" to="/docs/lang/interfaces/overview" variant="subtle"}
+:u-page-card{title="Generics" description="Generic functions, types and methods, and bounds." icon="i-lucide-variable" to="/docs/lang/generics/overview" variant="subtle"}
+:u-page-card{title="Modules" description="Packages and modules, imports and pub visibility." icon="i-lucide-package" to="/docs/lang/modules/overview" variant="subtle"}
+::
+
+## Compile time and platform
+
+::u-page-grid
+:u-page-card{title="Compile time" description="when, the #target, #build, #compiler, #source and #config context, intrinsics and diagnostics." icon="i-lucide-cpu" to="/docs/lang/comptime/overview" variant="subtle"}
+:u-page-card{title="Attributes" description="#Link, #Abi, #NoReturn, #Warn, #Error, #Allow and #Format." icon="i-lucide-at-sign" to="/docs/lang/attributes/overview" variant="subtle"}
+:u-page-card{title="Foreign Function Interface" description="extern declarations, linking libraries and inline assembly." icon="i-lucide-cable" to="/docs/lang/ffi/overview" variant="subtle"}
+::
+
+## Appendix
+
+- [Primitive types](/docs/lang/appendix/primitives) — every primitive type and alias in one table, implemented and reserved.
+- [Tokens](/docs/lang/appendix/tokens) — every token the lexer produces.
+- [Rux Compiled Unit](/docs/lang/appendix/rcu) — the compiler's native object format.
+
+Package manifests, dependencies and publishing are covered in [Packaging](/docs/packaging), and the standard packages in the [API Reference](/docs/api).
