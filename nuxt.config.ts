@@ -18,7 +18,10 @@ export default defineNuxtConfig({
   // motion-v is already in the tree as a dependency of @nuxt/ui, but @nuxt/ui
   // only consumes it internally — the module is what auto-imports <Motion> for
   // our own templates (the header toggle, the home page's in-view stagger).
-  modules: ["@nuxt/ui", "@nuxt/content", "@nuxtjs/sitemap", "@nuxt/eslint", "motion-v/nuxt"],
+  //
+  // nuxt-llms comes after @nuxt/content, which detects it and feeds the docs
+  // collection into /llms.txt and /llms-full.txt (both prerendered).
+  modules: ["@nuxt/ui", "@nuxt/content", "nuxt-llms", "@nuxtjs/sitemap", "@nuxt/eslint", "motion-v/nuxt"],
   css: ["~/assets/css/main.css"],
   compatibilityDate: "2025-01-01",
 
@@ -111,6 +114,54 @@ export default defineNuxtConfig({
           langs: [ruxGrammar, "sh", "bash", "toml", "json", "yaml", "js", "ts", "vue", "c", "powershell"],
         },
       },
+    },
+  },
+
+  // /llms.txt (an index of every page) and /llms-full.txt (every page's
+  // Markdown in one file), for coding assistants — /docs/learn/ai points
+  // learners at the full file. Rux is newer than any model's training data,
+  // so this is the context an assistant actually needs. Each section is a
+  // slice of the one `docs` collection, chosen by URL prefix.
+  llms: {
+    domain: "https://rux-lang.dev",
+    title: "Rux Programming Language",
+    description:
+      "Rux is a compiled, statically typed systems programming language. This site holds the Learn Rux course, the language reference, the CLI and packaging guides, and the standard-package API.",
+    notes: [
+      "Rux is pre-1.0 and newer than most training data: prefer these pages over what similar languages do.",
+      "Complete example programs for every lesson live at https://github.com/rux-lang/Examples.",
+    ],
+    sections: [
+      {
+        title: "Learn Rux",
+        description: "The course: getting started, 25 parts from Basics to Projects, one runnable program per lesson.",
+        contentCollection: "docs",
+        contentFilters: [{ field: "path", operator: "LIKE", value: "/docs/learn%" }],
+      },
+      {
+        title: "Language reference",
+        contentCollection: "docs",
+        contentFilters: [{ field: "path", operator: "LIKE", value: "/docs/lang%" }],
+      },
+      {
+        title: "CLI",
+        contentCollection: "docs",
+        contentFilters: [{ field: "path", operator: "LIKE", value: "/docs/cli%" }],
+      },
+      {
+        title: "Packaging",
+        contentCollection: "docs",
+        contentFilters: [{ field: "path", operator: "LIKE", value: "/docs/packaging%" }],
+      },
+      {
+        title: "Standard packages API",
+        contentCollection: "docs",
+        contentFilters: [{ field: "path", operator: "LIKE", value: "/docs/api%" }],
+      },
+    ],
+    full: {
+      title: "Rux Programming Language — full documentation",
+      description: "Every course lesson, reference, CLI, packaging and API page of rux-lang.dev as Markdown.",
     },
   },
 

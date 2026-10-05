@@ -69,6 +69,7 @@
     "mermaid": "^11.17.2",
     "motion-v": "^2.3.0",
     "nuxt": "^4.5.1",
+    "nuxt-llms": "^0.2.0",
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
@@ -78,6 +79,7 @@
   },
   "overrides": {
     "tmp": "0.2.7",
-    "@puppeteer/browsers": "^3.2.0"
+    "@puppeteer/browsers": "^3.2.0",
+    "mdast-util-to-markdown": "2.1.2"
   }
 }
