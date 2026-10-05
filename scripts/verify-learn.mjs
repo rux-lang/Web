@@ -17,6 +17,10 @@
  *   4. every `lesson.requires` slug is a lesson that comes earlier
  *   5. every lesson still carries its generated regions (sync:needs,
  *      sync:program, sync:output), so sync:learn can keep it up to date
+ *   6. no callout (::note, ::warning, …) puts two inline elements side by side
+ *      with only a space between them — `a` `b`, **Label:** [link] — because
+ *      Nuxt UI unwraps a callout's paragraph and drops that whitespace-only
+ *      text, so it renders as `a``b` or "Label:link"
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
@@ -123,6 +127,32 @@ for (const part of PARTS) {
     }
     seen.add(slug);
   }
+}
+
+// 6. Inline elements inside callouts. Each element is reduced to one letter —
+// Code, Link, Bold, Emphasis — so the test is just "two letters, only spaces
+// between". Code first, so a `*` or `[` inside backticks cannot start another.
+for (const file of markdown(BOOK)) {
+  let callouts = 0;
+  let fenced = false;
+  readFileSync(file, "utf8")
+    .split(/\r?\n/)
+    .forEach((line, index) => {
+      if (line.startsWith("```")) fenced = !fenced;
+      if (fenced) return;
+      if (/^::[a-z]/.test(line)) callouts++;
+      else if (/^::\s*$/.test(line) && callouts) callouts--;
+      else if (callouts) {
+        const shape = line
+          .replace(/`[^`]+`/g, "C")
+          .replace(/\[[^\]]*\]\([^)]*\)/g, "L")
+          .replace(/\*\*[^*]+\*\*/g, "B")
+          .replace(/(?<![*\w])_[^_]+_(?!\w)/g, "E");
+        if (/[CLBE] +[CLBE]/.test(shape)) {
+          fail(file, `line ${index + 1}: two inline elements in a callout with only a space between them lose it`);
+        }
+      }
+    });
 }
 
 console.log(`course pages    : ${owners.size}`);
