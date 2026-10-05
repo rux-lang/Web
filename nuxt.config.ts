@@ -202,6 +202,13 @@ export default defineNuxtConfig({
         "/packages/-/dashboard",
         "/packages/-/dashboard/tokens",
         "/packages/-/dashboard/settings",
+        // /llms.txt links every docs page to its Markdown at /raw/<path>.md.
+        // @nuxt/content only queues those for prerender through a header on
+        // `/`, which is rendered before llms.txt has collected its links, so
+        // none were emitted and every link in the index was a 404.
+        ...contentRoutes()
+          .filter((route: string) => /^\/docs\/./.test(route))
+          .map((route: string) => `/raw${route}.md`),
       ]),
       crawlLinks: true,
       failOnError: false,
