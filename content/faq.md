@@ -25,7 +25,7 @@ See the [release history](https://github.com/rux-lang/Rux/blob/dev/CHANGELOG.md)
 
 ## Which platforms are supported?
 
-The compiler is built and continuously tested on both x86-64 and AArch64 for: FreeBSD, Linux, macOS, and Windows. Other hosts are supported by [building from source](/docs/start/build), without prebuilt binaries or continuous testing.
+The compiler is built and continuously tested on both x86-64 and AArch64 for: FreeBSD, Linux, macOS, and Windows. Other hosts are supported by [building from source](/docs/learn/build), without prebuilt binaries or continuous testing.
 
 ## Does Rux support cross-compilation?
 
@@ -45,13 +45,13 @@ scoop install rux
 ```
 
 On Linux, install with the one-line script or the prebuilt tarball — see the
-[Linux install guide](/docs/start/install/linux):
+[Linux install guide](/docs/learn/install/linux):
 
 ```sh
 curl -fsSL https://rux-lang.dev/install.sh | sh
 ```
 
-On any other platform, [build the compiler from source](/docs/start/build) with
+On any other platform, [build the compiler from source](/docs/learn/build) with
 CMake and a C++26-capable compiler.
 
 ## How do I create and run a project?

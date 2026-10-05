@@ -2,3 +2,9 @@
 # Dynamic registry routes use Nuxt's generated client-side fallback. Package
 # pages and catalog facets remain deep-linkable without introducing SSR.
 /packages/*  /200.html  200
+
+# Get Started moved into the Learn Rux course (its "Getting started" group).
+# Specific rules come first: Cloudflare applies the first match.
+/docs/start           /docs/learn                301
+/docs/start/examples  /docs/learn/first-project  301
+/docs/start/*         /docs/learn/:splat         301

@@ -275,7 +275,7 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
       <template #links>
         <div class="flex w-full flex-col gap-4">
           <div class="flex flex-wrap items-center gap-2">
-            <UButton to="/docs/start" size="xl" icon="i-lucide-rocket" label="Get Started" />
+            <UButton to="/docs/learn" size="xl" icon="i-lucide-rocket" label="Get Started" />
             <UButton
               to="/docs/lang"
               size="xl"

@@ -49,7 +49,7 @@ const styleOf = (html) => [...html.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)]
 for (const route of [
   "/docs/lang/functions/declaration",
   "/docs/api/io/print",
-  "/docs/start/examples",
+  "/docs/learn/first-project",
   "/docs/lang/structs/methods",
 ]) {
   check("code", route, () => {
@@ -156,8 +156,8 @@ check("callouts", "titled callouts keep the title on its own line", () => {
 
 // Code-group tabs
 for (const [route, expectTabs] of [
-  ["/docs/start/build", 11],
-  ["/docs/start/editors/vscode", 2],
+  ["/docs/learn/build", 11],
+  ["/docs/learn/editors/vscode", 2],
 ]) {
   check("tabs", route, () => {
     const h = read(route);

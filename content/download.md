@@ -67,4 +67,4 @@ Each download above resolves to the newest release. Older versions, release note
 :link-card{name="Checksums" handle="SHA256SUMS" description="One SHA-256 per asset in the latest release." icon="i-lucide-shield-check" color="text-emerald-500" note="Latest release" to="https://github.com/rux-lang/Rux/releases/latest/download/SHA256SUMS"}
 ::
 
-Prefer a package manager, or want the finer details for your platform? The per-platform [install guides](/docs/start) cover every supported install method step by step.
+Prefer a package manager, or want the finer details for your platform? The per-platform [install guides](/docs/learn) cover every supported install method step by step.

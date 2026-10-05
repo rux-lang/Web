@@ -1,4 +1,4 @@
-import { readdirSync, statSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -21,6 +21,18 @@ function stripPrefix(segment) {
 }
 
 /**
+ * A frontmatter `path:` overrides the route Nuxt Content derives from the file
+ * location (its path-meta transformer spreads the parsed page over the
+ * generated path). The Learn Rux course relies on it: lessons are filed by part
+ * (`6.learn/03.control-flow/06.do-while.md`) but served flat
+ * (`/docs/learn/do-while`), the URLs every README in rux-lang/Examples links to.
+ */
+export function frontmatterPath(file) {
+  const match = readFileSync(file, "utf8").match(/^---\r?\n([\s\S]*?)\r?\n---/);
+  return match?.[1].match(/^path:\s*["']?([^"'\r\n]+?)["']?\s*$/m)?.[1];
+}
+
+/**
  * Every route the content tree should produce.
  *
  * Used as the nitro prerender seed instead of relying on `crawlLinks` alone.
@@ -33,6 +45,8 @@ export function contentRoutes() {
   return (
     walk(CONTENT)
       .map((file) => {
+        const override = frontmatterPath(file);
+        if (override) return override;
         const rel = path.relative(CONTENT, file).split(path.sep).map(stripPrefix).join("/");
         const noExt = rel.replace(/\.md$/, "");
         if (noExt === "index") return "/";

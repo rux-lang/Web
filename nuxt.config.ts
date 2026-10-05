@@ -184,6 +184,7 @@ export default defineNuxtConfig({
         // and the scanner only globs .vue/.md/.yml — an icon named only in a
         // .ts file is invisible to it and fails to resolve at prerender.
         "lucide:rocket",
+        "lucide:graduation-cap",
         "lucide:book-open",
         "lucide:square-terminal",
         "lucide:code-xml",

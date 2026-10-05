@@ -27,10 +27,10 @@ export const useHeaderLinks = () => {
       active: /^\/docs(\/|$)/.test(route.path),
       children: [
         {
-          label: "Get Started",
-          description: "Install Rux and build your first program",
-          icon: "i-lucide-rocket",
-          to: "/docs/start",
+          label: "Learn Rux",
+          description: "Install Rux and learn it step by step, from Hello to projects",
+          icon: "i-lucide-graduation-cap",
+          to: "/docs/learn",
         },
         {
           label: "Rux Reference",
@@ -111,7 +111,7 @@ const footerLinks: FooterColumn[] = [
   {
     label: "Documentation",
     children: [
-      { label: "Get Started", to: "/docs/start" },
+      { label: "Learn Rux", to: "/docs/learn" },
       { label: "Rux Reference", to: "/docs/lang" },
       { label: "CLI Reference", to: "/docs/cli" },
       { label: "API Reference", to: "/docs/api" },
