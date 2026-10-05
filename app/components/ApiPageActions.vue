@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from "@nuxt/ui";
 
-const props = defineProps<{
-  markdownUrl: string;
-}>();
+const props = withDefaults(
+  defineProps<{
+    markdownUrl: string;
+    // What the "Open in …" entries ask the assistant to do. Learn Rux lessons
+    // pass a tutoring prompt; API pages keep the plain read-and-answer one.
+    prompt?: string;
+    // The FLASH CLI entry is offered on API pages only.
+    flash?: boolean;
+  }>(),
+  { prompt: undefined, flash: true },
+);
 
 const toast = useToast();
 const copied = ref(false);
@@ -50,7 +58,7 @@ async function copyPage() {
   }
 }
 
-const prompt = computed(() => `Read ${props.markdownUrl} so I can ask questions about it.`);
+const prompt = computed(() => props.prompt ?? `Read ${props.markdownUrl} so I can ask questions about it.`);
 
 const items = computed<DropdownMenuItem[][]>(() => [
   [
@@ -77,12 +85,16 @@ const items = computed<DropdownMenuItem[][]>(() => [
       to: `https://claude.ai/new?q=${encodeURIComponent(prompt.value)}`,
       target: "_blank",
     },
-    {
-      label: "Open in FLASH CLI",
-      icon: "i-simple-icons-gnometerminal",
-      to: `flash://?prompt=${encodeURIComponent(prompt.value)}`,
-      target: "_blank",
-    }
+    ...(props.flash
+      ? [
+          {
+            label: "Open in FLASH CLI",
+            icon: "i-simple-icons-gnometerminal",
+            to: `flash://?prompt=${encodeURIComponent(prompt.value)}`,
+            target: "_blank",
+          },
+        ]
+      : []),
   ],
 ]);
 

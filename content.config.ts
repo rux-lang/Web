@@ -68,6 +68,18 @@ export default defineContentConfig({
             }),
           )
           .optional(),
+        // Learn Rux course pages (/docs/learn/*). Every lesson mirrors one
+        // package in github.com/rux-lang/Examples: `number` is its place in the
+        // course ("3.6"), `source` the package folder ("ControlFlow/DoWhile"),
+        // and `requires` the slugs of the lessons it builds on. Read by
+        // LearnPageActions.vue and scripts/verify-learn.mjs.
+        lesson: z
+          .object({
+            number: z.string(),
+            source: z.string(),
+            requires: z.array(z.string()).optional(),
+          })
+          .optional(),
       }),
     }),
 

@@ -56,6 +56,10 @@ const showSurround = computed(() => !pagesWithoutSurround.has(path.value) && !!s
 // gives them nuxt.com's article layout — no left sidebar — instead.
 const inSection = computed(() => /^\/docs\/./.test(path.value));
 const isApiPage = computed(() => /^\/docs\/api(\/|$)/.test(path.value));
+// Learn Rux lessons carry a `lesson` frontmatter block (content.config.ts).
+// Like API pages they promote their H1 into UPageHeader, which adds the part
+// and lesson number, the Examples source and the "ask an assistant" menu.
+const lesson = computed(() => page.value?.lesson);
 
 function isMinimarkTag(node: unknown, tag: string): boolean {
   return Array.isArray(node) && node[0] === tag;
@@ -65,11 +69,14 @@ const renderedPage = computed(() => {
   const currentPage = page.value!;
   const body = currentPage.body;
 
-  if (!isApiPage.value || body?.type !== "minimark" || !Array.isArray(body.value)) return currentPage;
+  if ((!isApiPage.value && !lesson.value) || body?.type !== "minimark" || !Array.isArray(body.value)) {
+    return currentPage;
+  }
 
+  // A lesson's description lives in frontmatter, so only its H1 moves.
   let contentStart = 0;
   if (isMinimarkTag(body.value[contentStart], "h1")) contentStart += 1;
-  if (isMinimarkTag(body.value[contentStart], "p")) contentStart += 1;
+  if (isApiPage.value && isMinimarkTag(body.value[contentStart], "p")) contentStart += 1;
 
   return {
     ...currentPage,
@@ -91,8 +98,24 @@ const apiInfo = computed(() => apiPageInfo(path.value));
 const { ruxVersion } = useRuntimeConfig().public;
 const apiVersion = computed(() => apiInfo.value.version ?? ruxVersion);
 
+// The sidebar group a lesson sits in is its part ("Control flow").
+const { book } = useDocsSection();
+const lessonPart = computed(
+  () => book.value?.children?.find((group) => group.children?.some((item) => item.path === path.value))?.title,
+);
+const lessonSourceUrl = computed(() => `https://github.com/rux-lang/Examples/tree/main/${lesson.value?.source}`);
+
 const markdownUrl = computed(
   () => `https://raw.githubusercontent.com/rux-lang/Web/dev/content/${page.value?.stem}.${page.value?.extension}`,
+);
+
+const lessonPrompt = computed(
+  () =>
+    `I am learning the Rux programming language with the Learn Rux course. ` +
+    `Read lesson ${lesson.value?.number} at ${markdownUrl.value} and its program at ` +
+    `https://raw.githubusercontent.com/rux-lang/Examples/main/${lesson.value?.source}/Src/Main.rux. ` +
+    `Rux is a new language, so rely on these files rather than on what similar languages do. ` +
+    `Explain the lesson step by step, then check my understanding with one short question at a time.`,
 );
 
 // One catch-all serves all 550 content pages, so they share a single
@@ -192,6 +215,30 @@ useHead({
               size="sm"
             />
             <ApiPageActions :key="path" :markdown-url="markdownUrl" />
+          </template>
+        </UPageHeader>
+
+        <UPageHeader
+          v-else-if="lesson"
+          :title="page.title"
+          :description="page.description"
+          :ui="{ wrapper: 'flex-row items-center flex-wrap justify-between' }"
+        >
+          <template #headline>
+            <span>{{ lessonPart ? `${lessonPart} · ` : "" }}Lesson {{ lesson.number }}</span>
+          </template>
+
+          <template #links>
+            <UButton
+              label="Source"
+              icon="i-simple-icons-github"
+              :to="lessonSourceUrl"
+              target="_blank"
+              color="neutral"
+              variant="soft"
+              size="sm"
+            />
+            <ApiPageActions :key="path" :markdown-url="markdownUrl" :prompt="lessonPrompt" :flash="false" />
           </template>
         </UPageHeader>
 
