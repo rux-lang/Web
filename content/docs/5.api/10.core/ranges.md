@@ -4,7 +4,7 @@ The range types produced by the range operators.
 
 **Package:** `Rux`
 
-Each range operator builds one of these structs. A range with a start is iterable in a [`for`](/docs/lang/statements/for) loop; every range can slice a collection.
+Each range operator builds one of these structs. A range with a start is iterable in a [`for`](/docs/lang/statements/loops#for) loop; every range can slice a collection.
 
 ## Definitions
 

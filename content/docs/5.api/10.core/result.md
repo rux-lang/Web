@@ -13,7 +13,7 @@ enum Result<T, E> {
 }
 ```
 
-A `Result<T, E>` holds either a `Success` carrying the value `T` an operation produced, or an `Error` carrying the failure `E`. Because the error is part of the return type, a caller cannot read the value without acknowledging that the call might have failed — the usual way is to [`match`](/docs/lang/statements/match) on the two variants.
+A `Result<T, E>` holds either a `Success` carrying the value `T` an operation produced, or an `Error` carrying the failure `E`. Because the error is part of the return type, a caller cannot read the value without acknowledging that the call might have failed — the usual way is to [`match`](/docs/lang/patterns/match) on the two variants.
 
 ```rux
 import Core::Result;
@@ -30,5 +30,5 @@ match ParseInt64("42") {
 
 - [`Core`](/docs/api/core) — the package overview
 - [The `Result` Type](/docs/lang/errors/overview) — the language-reference treatment
-- [`match`](/docs/lang/statements/match) — destructuring `Success` and `Error`
+- [`match`](/docs/lang/patterns/match) — destructuring `Success` and `Error`
 - [`Panic`](/docs/api/core/panic) — for unrecoverable errors
