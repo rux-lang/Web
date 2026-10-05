@@ -124,9 +124,11 @@ export default defineNuxtConfig({
     // separate code block rather than the tree/editor split — the home page's
     // examples panel silently loses its layout. Registering it global puts the
     // name back where mdc looks for it.
+    // ProsePre.vue (```mermaid fences → diagrams) is the same kind of override
+    // and needs the same treatment.
     "components:extend"(components) {
       for (const component of components) {
-        if (component.pascalName === "ProseCodeTree") component.global = true;
+        if (component.pascalName === "ProseCodeTree" || component.pascalName === "ProsePre") component.global = true;
       }
     },
   },
@@ -222,6 +224,17 @@ export default defineNuxtConfig({
   // sitemap must stay at exactly that path (a single sitemap, not an index).
   sitemap: {
     xsl: false,
+  },
+
+  vite: {
+    optimizeDeps: {
+      // MermaidDiagram.vue imports mermaid lazily, the first time a page with a
+      // diagram is opened. Vite's dev server only finds such an import then,
+      // re-optimises, and the open tab is left requesting the old dependency
+      // hashes (504 "Outdated Optimize Dep") until a hard reload. Declaring it
+      // up front optimises it at startup instead.
+      include: ["mermaid"],
+    },
   },
 
   typescript: {
