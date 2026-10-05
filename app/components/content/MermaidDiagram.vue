@@ -80,6 +80,11 @@ async function draw() {
     startOnLoad: false,
     securityLevel: "strict",
     theme: "base",
+    // Mermaid 12 made ELK the default layout and `neo` the default look for
+    // flowcharts. Every diagram on the site was drawn and checked under dagre
+    // and the classic look, so both are pinned rather than left to the default.
+    layout: "dagre",
+    look: "classic",
     fontFamily: font,
     themeVariables: { ...palettes[dark ? "dark" : "light"], fontFamily: font, fontSize: "14px", darkMode: dark },
     flowchart: { curve: "basis", padding: 12 },
