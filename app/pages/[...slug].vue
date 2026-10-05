@@ -22,10 +22,18 @@ if (!page.value) {
   });
 }
 
-const { data: surround } = await useAsyncData(`surround-${path.value}`, () =>
+const { data: collectionSurround } = await useAsyncData(`surround-${path.value}`, () =>
   queryCollectionItemSurroundings("docs", path.value, {
     fields: ["description"],
   }),
+);
+
+// The collection is one stem-ordered list, so the first page of a book has the
+// previous book's last page (or the /docs hub) as its neighbour. Prev/next is a
+// reading order *within* a book: drop a neighbour that sits in another one.
+const bookOf = (p: string) => p.match(/^\/docs\/[^/]+/)?.[0] ?? `/${p.split("/")[1]}`;
+const surround = computed(() =>
+  collectionSurround.value?.map((item) => (item && bookOf(item.path) === bookOf(path.value) ? item : null)),
 );
 
 // Standalone destinations are not part of the documentation reading sequence,
@@ -114,7 +122,8 @@ const lessonPrompt = computed(
     `I am learning the Rux programming language with the Learn Rux course. ` +
     `Read lesson ${lesson.value?.number} at ${markdownUrl.value} and its program at ` +
     `https://raw.githubusercontent.com/rux-lang/Examples/main/${lesson.value?.source}/Src/Main.rux. ` +
-    `Rux is a new language, so rely on these files rather than on what similar languages do. ` +
+    `Rux is a new language, so rely on these files rather than on what similar languages do; ` +
+    `https://rux-lang.dev/llms-full.txt has the whole course and language reference if you need more. ` +
     `Explain the lesson step by step, then check my understanding with one short question at a time.`,
 );
 
