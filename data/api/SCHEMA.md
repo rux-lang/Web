@@ -98,3 +98,14 @@ Every Markdown string is the documentation's own normalized Markdown, unchanged:
 ## What the site does with it
 
 The `@see` URL is the routing table. `https://rux-lang.dev/docs/api/<slug>/<page>` makes the item the owner of page `<page>`; `…/<page>#<anchor>` places the item (or member) as an anchored section on that page. Members default to their type's page. Fields and cases need no `@see`. See `scripts/api-docs.mjs`.
+
+Several declarations may share one URL as an _overload set_: callables of one name (`Print(String)`, `Print(StringView)`, …), or declarations of one name that no target has both of (`type c_long = int32` on Windows, `int64` elsewhere). The set renders as one section with every signature in one fence. Anything else that shares a URL is an error.
+
+## Targets
+
+`rux doc` documents the API one `--target` enables, so `npm run sync:api` takes a snapshot for every supported target (only the platform's own targets for a platform package such as Linux) and merges them into the one file in this folder. The merge adds two fields; the compiler writes neither, and neither bumps `schema`:
+
+- `targets` at the top level: every target the merged snapshots were taken for, in the order of `TARGETS` in `scripts/api-docs.mjs`. `target` keeps the first of them.
+- `targets` on every item, member, field and case: the targets that declare it.
+
+Declarations match across targets by kind, name, module (items only) and signature, and a constant also by its value, so a constant whose value differs by OS becomes one declaration per value, each with its own `targets`. A declaration missing from some targets gets an availability note on its page ("Linux · FreeBSD"), and the variants of an overload set are labelled with theirs in the signature fence.

@@ -46,6 +46,8 @@ describe("slugs", () => {
     expect(kebab("IOError")).toBe("io-error");
     expect(kebab("UTF8Decode")).toBe("utf8-decode");
     expect(kebab("Reset")).toBe("reset");
+    expect(kebab("#build")).toBe("build");
+    expect(kebab("c_long")).toBe("c-long");
   });
 
   it("names constructors, destructors and operators by what they are", () => {
@@ -175,6 +177,7 @@ describe("targets", () => {
     expect(availability(undefined, all)).toBeNull();
     expect(availability(["linux-x86_64", "linux-aarch64", "freebsd-x86_64"], all)).toBe("Linux · FreeBSD");
     expect(availability(["windows-x86_64", "linux-aarch64"], all)).toBe("Windows (x86-64) · Linux (AArch64)");
+    expect(availability(["linux-x86_64"], ["linux-x86_64", "linux-aarch64"])).toBe("x86-64");
   });
 
   // Windows has Shrink and a 32-bit CLong; Linux has no Shrink and a 64-bit CLong.

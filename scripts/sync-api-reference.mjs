@@ -1,13 +1,18 @@
 /**
- * npm run sync:api -- <path-to-Rux> [--package Allocator] [--from <dir>] [--check]
+ * npm run sync:api -- <path-to-Rux> [--package Allocator] [--target <triple>] [--from <dir>] [--check]
  *
- * Takes a `rux doc --format json` snapshot of each requested package, copies it
- * and the package README into data/api/, and regenerates the package's pages
- * under content/docs/5.api/<folder>/ through scripts/api-docs.mjs. Without
- * `--package` it syncs every package in GENERATED.
+ * Takes a `rux doc --format json` snapshot of each requested package for every
+ * target, merges them into one (scripts/api-docs.mjs, mergeSnapshots), copies
+ * it and the package README into data/api/, and regenerates the package's
+ * pages under content/docs/5.api/<folder>/. Without `--package` it syncs every
+ * package in GENERATED.
  *
- * Without `--from`, it runs `<rux>/Bin/rux doc --format json` at the root of
- * the Rux workspace; `--from` reads `<Name>.json` files a previous run wrote.
+ * Snapshots are taken for TARGETS, or for the `--target` triples given. A
+ * platform package (the registry's `platform`, such as Linux) is documented
+ * only for its own operating system's targets. Without `--from`, it runs
+ * `<rux>/Bin/rux doc --format json --target <t>` once per target at the root
+ * of the Rux workspace; `--from` reads a previous run instead, either one
+ * `<dir>/<target>/<Name>.json` per target or a single `<dir>/<Name>.json`.
  * The README always comes from `<rux>/Packages/<Name>/README.md`, so verify
  * can re-render later without a Rux checkout. `--check` writes nothing and
  * exits 1 when anything would change.
@@ -28,23 +33,29 @@ import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { format } from "prettier";
 import { API_ROOT, GENERATED, PACKAGES } from "./api-packages.mjs";
-import { renderApiPackage } from "./api-docs.mjs";
+import { TARGETS, mergeSnapshots, renderApiPackage, targetOs } from "./api-docs.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const usage = "Usage: npm run sync:api -- <path-to-Rux> [--package <Name>]… [--from <dir-of-json>] [--check]";
+const usage =
+  "Usage: npm run sync:api -- <path-to-Rux> [--package <Name>]… [--target <triple>]… [--from <dir>] [--check]";
 
 function parseArguments(argv) {
-  const options = { rux: null, packages: [], from: null, check: false };
+  const options = { rux: null, packages: [], targets: [], from: null, check: false };
+  const list = (value) => (value ?? "").split(",").filter(Boolean);
   for (let index = 0; index < argv.length; index++) {
     const argument = argv[index];
     if (argument === "--check") options.check = true;
-    else if (argument === "--package") options.packages.push(...(argv[++index] ?? "").split(",").filter(Boolean));
+    else if (argument === "--package") options.packages.push(...list(argv[++index]));
+    else if (argument === "--target") options.targets.push(...list(argv[++index]));
     else if (argument === "--from") options.from = argv[++index];
     else if (argument.startsWith("--")) throw new Error(`Unknown option ${argument}`);
     else if (!options.rux) options.rux = argument;
     else throw new Error(`Unexpected argument ${argument}`);
   }
   if (!options.rux || options.from === undefined) throw new Error(usage);
+  for (const target of options.targets) {
+    if (!TARGETS.includes(target)) throw new Error(`Unknown target ${target}; expected one of ${TARGETS.join(", ")}`);
+  }
   return options;
 }
 
@@ -65,6 +76,10 @@ function removeEmptyDirectories(directory) {
 }
 
 const toRepo = (file) => relative(root, file).split("\\").join("/");
+
+/** The targets a package is documented for: its own OS's for a platform package, every requested one otherwise. */
+const targetsFor = (entry, targets) =>
+  entry.platform ? targets.filter((target) => targetOs(target) === entry.platform.toLowerCase()) : targets;
 
 let options;
 try {
@@ -91,20 +106,68 @@ for (const name of requested) {
   }
   entries.push(entry);
 }
+const targets = options.targets.length ? TARGETS.filter((target) => options.targets.includes(target)) : TARGETS;
+const needed = TARGETS.filter((target) => entries.some((entry) => targetsFor(entry, targets).includes(target)));
 
-let source = options.from && resolve(options.from);
+// Where each target's snapshots are: target → directory, or null when that target's run failed.
+const sources = new Map();
+let single = null;
 let scratch = null;
-if (!source) {
+if (options.from) {
+  const from = resolve(options.from);
+  const perTarget = TARGETS.filter((target) => existsSync(join(from, target)));
+  if (perTarget.length)
+    for (const target of needed) sources.set(target, perTarget.includes(target) ? join(from, target) : null);
+  else single = from;
+} else {
   const binary = join(rux, "Bin", process.platform === "win32" ? "rux.exe" : "rux");
   scratch = mkdtempSync(join(tmpdir(), "rux-api-"));
-  source = join(scratch, "json");
-  try {
-    execFileSync(binary, ["doc", "--format", "json", "--output", source], { cwd: rux, stdio: "inherit" });
-  } catch (error) {
-    console.error(`rux doc --format json failed: ${error.message}`);
-    rmSync(scratch, { recursive: true, force: true });
-    process.exit(1);
+  for (const target of needed) {
+    const output = join(scratch, target);
+    try {
+      execFileSync(binary, ["doc", "--format", "json", "--target", target, "--output", output], {
+        cwd: rux,
+        stdio: ["ignore", "ignore", "pipe"],
+      });
+      sources.set(target, output);
+    } catch (error) {
+      console.warn(`warning: rux doc --target ${target} failed: ${String(error.stderr ?? error.message).trim()}`);
+      sources.set(target, null);
+    }
   }
+}
+
+/**
+ * The per-target snapshots of one package. A target may be missing only when
+ * the package's dependencies are gated away from that target's OS (a
+ * dependency whose `TargetOS` leaves it out); anything else is an error.
+ */
+function snapshotsOf(entry) {
+  if (single) {
+    const file = join(single, `${entry.name}.json`);
+    if (!existsSync(file)) throw new Error(`No snapshot for ${entry.name}: ${file} does not exist`);
+    return [JSON.parse(readFileSync(file, "utf8"))];
+  }
+  const found = [];
+  const missing = [];
+  for (const target of targetsFor(entry, targets)) {
+    const file = sources.get(target) && join(sources.get(target), `${entry.name}.json`);
+    if (file && existsSync(file)) found.push(JSON.parse(readFileSync(file, "utf8")));
+    else missing.push(target);
+  }
+  if (!found.length)
+    throw new Error(`No snapshot of ${entry.name} for any of ${targetsFor(entry, targets).join(", ")}`);
+  const gated = (target) =>
+    found[0].package.dependencies.some(
+      (dependency) =>
+        dependency.targetOS?.length &&
+        !dependency.targetOS.some((os) => os.toLowerCase() === targetOs(target).toLowerCase()),
+    );
+  for (const target of missing) {
+    if (!gated(target)) throw new Error(`No snapshot of ${entry.name} for ${target}`);
+    console.warn(`warning: ${entry.name} has no snapshot for ${target}; its dependencies leave that target out`);
+  }
+  return found;
 }
 
 const drift = [];
@@ -112,9 +175,7 @@ const writes = new Map();
 const deletes = [];
 try {
   for (const entry of entries) {
-    const jsonFile = join(source, `${entry.name}.json`);
-    if (!existsSync(jsonFile)) throw new Error(`No snapshot for ${entry.name}: ${jsonFile} does not exist`);
-    const snapshot = JSON.parse(readFileSync(jsonFile, "utf8"));
+    const snapshot = mergeSnapshots(snapshotsOf(entry));
     const readmeFile = join(rux, "Packages", entry.name, "README.md");
     const readme = existsSync(readmeFile)
       ? await format(readFileSync(readmeFile, "utf8"), { parser: "markdown", printWidth: 120 })
@@ -131,7 +192,9 @@ try {
     for (const file of listFiles(resolve(root, API_ROOT, entry.folder))) {
       if (!writes.has(file)) deletes.push(file);
     }
-    console.log(`${entry.name} ${snapshot.package.version}: ${snapshot.items.length} items, ${pages.size} files`);
+    console.log(
+      `${entry.name} ${snapshot.package.version}: ${snapshot.items.length} items for ${snapshot.targets.join(", ")}, ${pages.size} files`,
+    );
   }
 } catch (error) {
   console.error(error.message);

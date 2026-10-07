@@ -64,12 +64,14 @@ export const OPERATOR_SLUGS = {
 /** Unary spellings that share a token with a binary operator. */
 const UNARY_OPERATOR_SLUGS = { "-": "negate", "+": "plus", "*": "dereference", "&": "address-of" };
 
-/** `BytesUsed` → `bytes-used`, `UTF8Decode` → `utf8-decode`, `IOError` → `io-error`. */
+/** `BytesUsed` → `bytes-used`, `UTF8Decode` → `utf8-decode`, `IOError` → `io-error`, `#build` → `build`. */
 export function kebab(name) {
   return name
+    .replace(/[^A-Za-z0-9_\s-]+/g, "")
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
     .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-    .replace(/[_\s]+/g, "-")
+    .replace(/[_\s-]+/g, "-")
+    .replace(/^-|-$/g, "")
     .toLowerCase();
 }
 
@@ -544,7 +546,9 @@ export function availability(targets, all) {
       if (!have.length) return null;
       const name = OS_NAMES[os] ?? os;
       if (have.length === ofOs.length) return name;
-      return `${name} (${have.map((target) => ARCH_NAMES[target.slice(os.length + 1)] ?? target).join(", ")})`;
+      const architectures = have.map((target) => ARCH_NAMES[target.slice(os.length + 1)] ?? target).join(", ");
+      // A package documented for one OS only (Linux) needs no OS name: "x86-64".
+      return systems.length === 1 ? architectures : `${name} (${architectures})`;
     })
     .filter(Boolean)
     .join(" · ");
@@ -566,7 +570,7 @@ function mergeLists(lists, key, combine) {
       const base = key(value);
       const count = (seen.get(base) ?? 0) + 1;
       seen.set(base, count);
-      return `${base} ${count}`;
+      return `${base}#${count}`;
     });
     const mine = new Set(ids);
     let cursor = -1;
@@ -702,7 +706,11 @@ function byUrl(ctx, entries) {
  * The rux fence of a set: every signature, each under a `// Linux · macOS`
  * comment when the declarations differ in where they exist.
  */
-function signatureFence(ctx, set, signatureOf) {
+function signatureFence(ctx, unordered, signatureOf) {
+  // Target variants go in target order (Windows, Linux, macOS, FreeBSD), whatever order the merge found them in.
+  const first = (entry) =>
+    entry.targets ? Math.min(...entry.targets.map((target) => ctx.targets.indexOf(target))) : -1;
+  const set = [...unordered].sort((a, b) => first(a) - first(b));
   const notes = set.map((entry) => availability(entry.targets, ctx.targets));
   const annotate = set.length > 1 && notes.some((note) => note !== notes[0]);
   const blocks = set.map((entry, index) => {
