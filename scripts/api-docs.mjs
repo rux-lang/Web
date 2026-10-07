@@ -937,7 +937,7 @@ function renderOverview(ctx, readme, entry) {
   page.add(
     `Add ${code(pkg.name)} to the \`[Dependencies]\` table of your package's \`Rux.toml\`:`,
     fence("toml", `[Dependencies]\n${pkg.name} = { Namespace = "${pkg.namespace}", Version = "${pkg.version}" }`),
-    "Standard packages are declared by hand: they ship with the compiler rather than through the registry, so `rux add` cannot add them.",
+    `Standard packages are declared by hand: the registry does not serve them, so ${code(`rux add ${pkg.namespace}/${pkg.name}`)} cannot add them.`,
   );
 
   if (pkg.dependencies.length) {
