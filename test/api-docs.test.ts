@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  availability,
   kebab,
+  mergeSnapshots,
   memberSlug,
   pageAnchors,
   planRoutes,
@@ -133,12 +135,105 @@ describe("planRoutes", () => {
     expect(() => planRoutes(snapshot)).toThrow(/one kebab-case segment/);
   });
 
-  it("numbers same-name overloads that have no URL", () => {
+  it("lets same-name callables share a URL as one overload set", () => {
+    expect(routes.get(url("sqrt"))).toEqual({ page: "sqrt", anchor: null });
     const snapshot = copy();
     const fault = item(snapshot, "Fault");
-    fault.members.push({ ...structuredClone(fault.members[0]), line: 40 });
+    fault.members.push({
+      ...structuredClone(fault.members[0]),
+      signature: "pub func IsTransient(self: Fault, strict: bool) -> bool",
+    });
     const overloaded = planRoutes(snapshot);
-    expect(overloaded.get(url("fault", "is-transient-2"))).toEqual({ page: "fault", anchor: "is-transient-2" });
+    expect(overloaded.get(url("fault", "is-transient"))).toEqual({ page: "fault", anchor: "is-transient" });
+    expect(overloaded.has(url("fault", "is-transient-2"))).toBe(false);
+  });
+
+  it("still throws when a shared URL joins a non-callable present on the same targets", () => {
+    const snapshot = copy();
+    snapshot.items.push({ ...structuredClone(item(snapshot, "EmptyBlock")), value: "0" });
+    expect(() => planRoutes(snapshot)).toThrow(/EmptyBlock and EmptyBlock both claim .*#empty-block/);
+  });
+
+  it("lets same-name declarations share a URL when no target has both", () => {
+    const snapshot = copy();
+    const windows = item(snapshot, "EmptyBlock");
+    const linux = { ...structuredClone(windows), value: "0", targets: ["linux-x86_64"] };
+    windows.targets = ["windows-x86_64"];
+    snapshot.items.push(linux);
+    expect(planRoutes(snapshot).get(url("empty-blocks", "empty-block"))).toEqual({
+      page: "empty-blocks",
+      anchor: "empty-block",
+    });
+  });
+});
+
+describe("targets", () => {
+  const all = ["windows-x86_64", "windows-aarch64", "linux-x86_64", "linux-aarch64", "freebsd-x86_64"];
+
+  it("names where a declaration exists by operating system, and by architecture when it must", () => {
+    expect(availability(all, all)).toBeNull();
+    expect(availability(undefined, all)).toBeNull();
+    expect(availability(["linux-x86_64", "linux-aarch64", "freebsd-x86_64"], all)).toBe("Linux · FreeBSD");
+    expect(availability(["windows-x86_64", "linux-aarch64"], all)).toBe("Windows (x86-64) · Linux (AArch64)");
+  });
+
+  // Windows has Shrink and a 32-bit CLong; Linux has no Shrink and a 64-bit CLong.
+  const base64 = item(fixture, "NaturalAlignment");
+  const cLong = (width: string) => ({
+    ...structuredClone(base64),
+    kind: "type",
+    name: "CLong",
+    displayName: "CLong",
+    line: 3,
+    signature: `pub type CLong = ${width}`,
+    doc: {
+      ...structuredClone(base64.doc),
+      summary: "A C `long`.",
+      markdown: "A C `long`.",
+      params: [],
+      returns: null,
+      see: [url("c-long")],
+    },
+  });
+  const windows = { ...copy(), target: "windows-x86_64" };
+  const linux = { ...copy(), target: "linux-x86_64" };
+  windows.items.splice(1, 0, cLong("int32"));
+  linux.items.splice(1, 0, cLong("int64"));
+  const arena = item(linux, "Arena");
+  arena.members = arena.members.filter((member: { name: string }) => member.name !== "Shrink");
+  const merged = mergeSnapshots([windows, linux]);
+
+  it("merges per-target snapshots and records each declaration's targets", () => {
+    const both = ["windows-x86_64", "linux-x86_64"];
+    expect(merged.targets).toEqual(both);
+    expect(merged.items.map((entry: { name: string }) => entry.name).slice(0, 4)).toEqual([
+      "Store",
+      "CLong",
+      "CLong",
+      "Arena",
+    ]);
+    expect(merged.items[1].targets).toEqual(["windows-x86_64"]);
+    expect(merged.items[2].targets).toEqual(["linux-x86_64"]);
+    const members = item(merged, "Arena").members;
+    const named = (name: string) => members.find((member: { name: string }) => member.name === name);
+    expect(named("Shrink").targets).toEqual(["windows-x86_64"]);
+    expect(named("Reset").targets).toEqual(both);
+    expect(item(merged, "Arena").fields[0].targets).toEqual(both);
+  });
+
+  it("refuses to merge different packages or versions", () => {
+    const other = { ...linux, package: { ...linux.package, version: "9.9.9" } };
+    expect(() => mergeSnapshots([windows, other])).toThrow(/Cannot merge/);
+  });
+
+  it("notes where a declaration exists and annotates signatures that differ by target", async () => {
+    const pages = await renderApiPackage(merged, null, entry);
+    const arenaPage = pages.get(`${base}/2.types/arena.md`)!;
+    expect(between(arenaPage, '<h3 id="shrink">', "## Operators")).toContain("**Availability**: Windows");
+    expect(between(arenaPage, '<h3 id="reset">', '<h3 id="shrink">')).not.toContain("Availability");
+    const cLongPage = pages.get(`${base}/2.types/c-long.md`)!;
+    expect(cLongPage).toContain("```rux\n// Windows\npub type CLong = int32\n\n// Linux\npub type CLong = int64\n```");
+    expect(cLongPage).not.toContain("Availability");
   });
 });
 
@@ -198,6 +293,7 @@ describe("renderApiPackage", async () => {
       `${base}/2.types/fault.md`,
       `${base}/3.functions/.navigation.yml`,
       `${base}/3.functions/natural-alignment.md`,
+      `${base}/3.functions/sqrt.md`,
       `${base}/4.constants/.navigation.yml`,
       `${base}/4.constants/empty-blocks.md`,
     ]);
@@ -354,6 +450,21 @@ describe("renderApiPackage", async () => {
     expect(dependencies).toContain("- `Core` 0.1.0");
     expect(dependencies).toContain("- [`Allocator`](/docs/api/allocator) 0.1.0");
     expect(dependencies).toContain("- `Windows` 0.1.0 (Windows only)");
+  });
+
+  it("renders an overload set as one section with every signature and merged parameters", () => {
+    const sqrt = pages.get(`${base}/3.functions/sqrt.md`)!;
+    expect(sqrt).toContain(
+      "# Sqrt\n\nThe square root of `x`.\n\n```rux\npub func Sqrt(x: float64) -> float64\npub func Sqrt(x: float32) -> float32\n```",
+    );
+    expect(sqrt).toContain("Correctly rounded; a negative `x` gives NaN.");
+    expect(sqrt).toMatch(/\| `x` +\| `float64` \/ `float32` \| the value whose square root is taken \|/);
+    expect(sqrt).toMatch(
+      /\| `pub func Sqrt\(x: float32\) -> float32` +\| The square root of `x` at `float32` precision\. +\|/,
+    );
+    expect(sqrt.match(/^# /gm)).toHaveLength(1);
+    const functions = between(pages.get(`${base}/0.index.md`)!, "### Functions", "### Constants");
+    expect(functions.match(/\[`Sqrt`\]/g)).toHaveLength(1);
   });
 
   it("collects every heading id a page will have", () => {

@@ -152,12 +152,32 @@ function routingUrl(see, slug, owner) {
   return parsed;
 }
 
+const CALLABLE_ITEMS = new Set(["function", "extern"]);
+const CALLABLE_MEMBERS = new Set(["constructor", "associated", "method", "operator", "requirement"]);
+
 /**
- * Places every public item and member of a package. Returns the routing table
- * plus the per-page view the renderer needs:
+ * Whether two claims on one URL form an overload set rather than a collision:
+ * both items or both members, with the same name, and either both callable
+ * (`Print(String)` and `Print(StringView)`) or never present on the same
+ * target (`type c_long = int32` on Windows, `int64` elsewhere).
+ */
+function overloads(a, b) {
+  if (Boolean(a.member) !== Boolean(b.member)) return false;
+  const [x, y] = a.member ? [a.member, b.member] : [a.item, b.item];
+  if (x.name !== y.name) return false;
+  const callable = a.member ? CALLABLE_MEMBERS : CALLABLE_ITEMS;
+  if (callable.has(x.kind) && callable.has(y.kind)) return true;
+  return Boolean(x.targets && y.targets) && !x.targets.some((target) => y.targets.includes(target));
+}
+
+/**
+ * Places every public item and member of a package. Every URL is claimed by
+ * one declaration or by an overload set — declarations of one name that
+ * render as one section. Returns the routing table plus the per-page view the
+ * renderer needs:
  *
- * - `routes`: url → { page, anchor, item, member }
- * - `pages`: page → { owner, sections } (sections: items placed by fragment)
+ * - `routes`: url → { page, anchor, entries: [{ item, member }] }
+ * - `pages`: page → { owner: items[] | null, sections: items[][] } (sections: items placed by fragment)
  * - `places`: item or member → { page, anchor, url }
  */
 export function planPackage(snapshot) {
@@ -170,13 +190,17 @@ export function planPackage(snapshot) {
   const claim = (page, anchor, target) => {
     const url = apiUrl(slug, page, anchor);
     const existing = routes.get(url);
-    if (existing) throw new Error(`${describe(existing)} and ${describe(target)} both claim ${url}`);
-    routes.set(url, { page, anchor, ...target });
+    if (!existing) routes.set(url, { page, anchor, entries: [target] });
+    else {
+      const other = existing.entries.find((entry) => !overloads(entry, target));
+      if (other) throw new Error(`${describe(other)} and ${describe(target)} both claim ${url}`);
+      existing.entries.push(target);
+    }
     places.set(target.member ?? target.item, { page, anchor, url });
     return url;
   };
   const pageOf = (page) => {
-    if (!pages.has(page)) pages.set(page, { owner: null, sections: [] });
+    if (!pages.has(page)) pages.set(page, { owner: null, sections: new Map() });
     return pages.get(page);
   };
 
@@ -188,20 +212,19 @@ export function planPackage(snapshot) {
   });
   for (const { item, page, anchor } of placed) {
     if (anchor !== null) continue;
-    const entry = pageOf(page);
-    if (entry.owner) throw new Error(`${entry.owner.name} and ${item.name} both claim ${apiUrl(slug, page)}`);
-    entry.owner = item;
     claim(page, null, { item, member: null });
+    const entry = pageOf(page);
+    entry.owner = [...(entry.owner ?? []), item];
   }
   for (const { item, page, anchor } of placed) {
     if (anchor === null) continue;
-    pageOf(page).sections.push(item);
     claim(page, anchor, { item, member: null });
+    const { sections } = pageOf(page);
+    sections.set(anchor, [...(sections.get(anchor) ?? []), item]);
   }
 
   for (const { item, page, anchor } of placed) {
     const prefix = anchor === null ? "" : `${anchor}-`;
-    const defaults = new Map();
     for (const member of item.members.filter(isPublic)) {
       const label = memberLabel(item, member);
       const route = routingUrl(member.doc.see, slug, label);
@@ -211,24 +234,22 @@ export function planPackage(snapshot) {
           throw new Error(`${label} routes to page ${route.page}, but it renders with ${item.name} on page ${page}`);
         }
         claim(page, route.anchor, { item, member });
-        continue;
+      } else {
+        // Overloads share a name and so a default anchor: they render as one set.
+        claim(page, `${prefix}${memberSlug(member)}`, { item, member });
       }
-      // Overloads share a name, so the second and later default to -2, -3, ….
-      const base = `${prefix}${memberSlug(member)}`;
-      const seen = (defaults.get(base) ?? 0) + 1;
-      defaults.set(base, seen);
-      claim(page, seen === 1 ? base : `${base}-${seen}`, { item, member });
     }
   }
 
+  for (const entry of pages.values()) entry.sections = [...entry.sections.values()];
   return { slug, routes, pages, places };
 }
 
 /**
  * The routing table: every public item and member's canonical URL → where it
- * renders. Throws when two things claim one page+anchor, when a URL names
- * another package, and when a member's URL tries to own a page or leave its
- * type's page.
+ * renders. Throws when two things that are not one overload set claim one
+ * page+anchor, when a URL names another package, and when a member's URL tries
+ * to own a page or leave its type's page.
  */
 export function planRoutes(snapshot) {
   return new Map([...planPackage(snapshot).routes].map(([url, { page, anchor }]) => [url, { page, anchor }]));
@@ -488,6 +509,153 @@ const memberDisplay = (member) =>
   member.kind === "destructor" && !member.name.startsWith("~") ? `~${member.name}` : member.name;
 
 // ---------------------------------------------------------------------------
+// Targets
+
+/** Every target `rux doc --target` supports, in the order snapshots are merged and availability is listed. */
+export const TARGETS = [
+  "windows-x86_64",
+  "windows-aarch64",
+  "linux-x86_64",
+  "linux-aarch64",
+  "macos-x86_64",
+  "macos-aarch64",
+  "freebsd-x86_64",
+  "freebsd-aarch64",
+];
+
+const OS_NAMES = { windows: "Windows", linux: "Linux", macos: "macOS", freebsd: "FreeBSD" };
+const ARCH_NAMES = { x86_64: "x86-64", aarch64: "AArch64" };
+
+/** `linux-x86_64` → `linux`. */
+export const targetOs = (target) => target.slice(0, target.indexOf("-"));
+
+/**
+ * Where a declaration exists, as readers name it: "Linux · FreeBSD", or
+ * "Linux (x86-64)" when only some of an OS's targets have it. `null` when it
+ * exists on every target the package was documented for.
+ */
+export function availability(targets, all) {
+  if (!targets || !all?.length || all.every((target) => targets.includes(target))) return null;
+  const systems = [...new Set(all.map(targetOs))];
+  return systems
+    .map((os) => {
+      const ofOs = all.filter((target) => targetOs(target) === os);
+      const have = ofOs.filter((target) => targets.includes(target));
+      if (!have.length) return null;
+      const name = OS_NAMES[os] ?? os;
+      if (have.length === ofOs.length) return name;
+      return `${name} (${have.map((target) => ARCH_NAMES[target.slice(os.length + 1)] ?? target).join(", ")})`;
+    })
+    .filter(Boolean)
+    .join(" · ");
+}
+
+/**
+ * Merges lists of one kind of declaration from several snapshots, in source
+ * order: an entry first seen in a later target goes after the last entry of
+ * that target the result already holds, and after any entry only earlier
+ * targets have. Equal keys are one entry, whose `targets` lists every target
+ * that has it.
+ */
+function mergeLists(lists, key, combine) {
+  const result = [];
+  const byKey = new Map();
+  for (const [target, values] of lists) {
+    const seen = new Map();
+    const ids = (values ?? []).map((value) => {
+      const base = key(value);
+      const count = (seen.get(base) ?? 0) + 1;
+      seen.set(base, count);
+      return `${base} ${count}`;
+    });
+    const mine = new Set(ids);
+    let cursor = -1;
+    ids.forEach((id, index) => {
+      let record = byKey.get(id);
+      if (record) {
+        record.values.push(values[index]);
+        record.targets.push(target);
+        cursor = result.indexOf(record);
+        return;
+      }
+      while (cursor + 1 < result.length && !mine.has(result[cursor + 1].id)) cursor++;
+      record = { id, values: [values[index]], targets: [target] };
+      result.splice(++cursor, 0, record);
+      byKey.set(id, record);
+    });
+  }
+  return result.map(({ values, targets }) => combine(values, targets));
+}
+
+const constantValue = (entry) => (entry.kind === "constant" ? `=${entry.value}` : "");
+
+/**
+ * One snapshot from the snapshots of one package taken for several targets
+ * (data/api/SCHEMA.md, "Targets"). Items match by kind, name, module and
+ * signature (and value, for a constant, whose value often differs by OS);
+ * members by kind, name and signature; fields by name and type; cases by
+ * name, value and payload. Every item, member, field and case gets `targets`.
+ */
+export function mergeSnapshots(snapshots) {
+  if (!snapshots.length) throw new Error("No snapshots to merge");
+  const [first] = snapshots;
+  for (const snapshot of snapshots) {
+    if (snapshot.schema !== first.schema) throw new Error("Snapshots of different schemas cannot be merged");
+    if (snapshot.package.name !== first.package.name || snapshot.package.version !== first.package.version) {
+      throw new Error(
+        `Cannot merge ${snapshot.package.name} ${snapshot.package.version} into ${first.package.name} ${first.package.version}`,
+      );
+    }
+  }
+  const per = (pick) => snapshots.map((snapshot) => [snapshot.target, pick(snapshot)]);
+  const tagged = (values, targets) => ({ ...values[0], targets });
+  const unionBy = (lists, key) => mergeLists(lists, key, (values) => values[0]);
+  const items = mergeLists(
+    per((snapshot) => snapshot.items),
+    (item) => `${item.kind}|${item.name}|${item.module}|${item.signature}${constantValue(item)}`,
+    (values, targets) => {
+      const at = (pick) => values.map((value, index) => [targets[index], pick(value)]);
+      return {
+        ...values[0],
+        fields: mergeLists(
+          at((item) => item.fields),
+          (field) => `${field.name}|${field.type}`,
+          tagged,
+        ),
+        cases: mergeLists(
+          at((item) => item.cases),
+          (entry) => `${entry.name}|${entry.value}|${entry.payload}`,
+          tagged,
+        ),
+        members: mergeLists(
+          at((item) => item.members),
+          (member) => `${member.kind}|${member.name}|${member.signature}${constantValue(member)}`,
+          tagged,
+        ),
+        implements: [...new Set(values.flatMap((item) => item.implements ?? []))],
+        targets,
+      };
+    },
+  );
+  return {
+    ...first,
+    targets: snapshots.map((snapshot) => snapshot.target),
+    package: {
+      ...first.package,
+      dependencies: unionBy(
+        per((snapshot) => snapshot.package.dependencies),
+        (dependency) => dependency.name,
+      ),
+    },
+    modules: unionBy(
+      per((snapshot) => snapshot.modules),
+      (module) => module.name,
+    ),
+    items,
+  };
+}
+
+// ---------------------------------------------------------------------------
 // Rendering
 
 const MEMBER_SECTIONS = [
@@ -509,6 +677,100 @@ function splitSummary(doc) {
   if (summary && markdown.startsWith(summary)) return { summary, rest: markdown.slice(summary.length).trim() };
   return { summary: summary || markdown.split(/\n\s*\n/)[0], rest: summary ? markdown : "" };
 }
+
+/** The declaration of a set whose prose speaks for it: the longest, which is the most complete. */
+const canonical = (set) =>
+  set.reduce((best, entry) => ((entry.doc.markdown ?? "").length > (best.doc.markdown ?? "").length ? entry : best));
+
+/** The targets a set covers between them; `null` when any member of it is everywhere. */
+function unionTargets(set) {
+  if (set.some((entry) => !entry.targets)) return null;
+  return [...new Set(set.flatMap((entry) => entry.targets))];
+}
+
+/** Groups declarations by the URL they render at, keeping first-seen order. */
+function byUrl(ctx, entries) {
+  const groups = new Map();
+  for (const entry of entries) {
+    const url = ctx.plan.places.get(entry).url;
+    groups.set(url, [...(groups.get(url) ?? []), entry]);
+  }
+  return [...groups.values()];
+}
+
+/**
+ * The rux fence of a set: every signature, each under a `// Linux · macOS`
+ * comment when the declarations differ in where they exist.
+ */
+function signatureFence(ctx, set, signatureOf) {
+  const notes = set.map((entry) => availability(entry.targets, ctx.targets));
+  const annotate = set.length > 1 && notes.some((note) => note !== notes[0]);
+  const blocks = set.map((entry, index) => {
+    const signature = signatureOf(entry);
+    return annotate ? `// ${notes[index] ?? "Every target"}\n${signature}` : signature;
+  });
+  const separator = annotate || blocks.some((block) => block.includes("\n")) ? "\n\n" : "\n";
+  return fence("rux", blocks.join(separator));
+}
+
+function availabilityNote(ctx, set) {
+  const note = availability(unionTargets(set), ctx.targets);
+  return note ? `**Availability**: ${note}` : "";
+}
+
+/** A table of each overload's summary, when the overloads describe themselves differently. */
+function overloadSummaries(set, signatureOf, prose) {
+  const summaries = set.map((entry) => entry.doc.summary ?? "");
+  if (set.length < 2 || summaries.every((summary) => summary === summaries[0])) return "";
+  return table(
+    ["Overload", "Summary"],
+    set.map((entry, index) => [cell(code(signatureOf(entry).replace(/\s+/g, " "))), cell(prose(summaries[index]))]),
+  );
+}
+
+/**
+ * One Parameters table for a set. When every overload names its parameters
+ * alike, a row per name lists each distinct type (`float64` / `float32`);
+ * otherwise there is a row per distinct name and type.
+ */
+function parameterTable(set, paramsOf, prose) {
+  const lists = set.map((entry) => paramsOf(entry).filter((param) => param.name !== "self"));
+  const docs = new Map();
+  for (const entry of set) {
+    for (const param of entry.doc.params)
+      if (param.markdown && !docs.has(param.name)) docs.set(param.name, param.markdown);
+  }
+  const names = lists[0].map((param) => param.name).join(",");
+  const aligned = lists.every((list) => list.map((param) => param.name).join(",") === names);
+  const typeCell = (types) => [...new Set(types.filter(Boolean))].map(code).join(" / ");
+  const rows = aligned
+    ? lists[0].map((param, index) => [param.name, typeCell(lists.map((list) => list[index].type))])
+    : [
+        ...new Map(
+          lists.flat().map((param) => [`${param.name}|${param.type}`, [param.name, typeCell([param.type])]]),
+        ).values(),
+      ];
+  return table(
+    ["Name", "Type", "Description"],
+    rows.map(([name, type]) => [code(name), type, cell(prose(docs.get(name) ?? ""))]),
+  );
+}
+
+function typeParameterTable(header, typeParams, doc, prose) {
+  const typeDocs = new Map(doc.typeParams.map((entry) => [entry.name, entry.markdown]));
+  return table(
+    [header, "Description"],
+    typeParams.map((param) => [
+      code(param.bounds?.length ? `${param.name}: ${param.bounds.join(" + ")}` : param.name),
+      cell(prose(typeDocs.get(param.name) ?? "")),
+    ]),
+  );
+}
+
+const returnsLine = (set, prose) => {
+  const returns = [canonical(set), ...set].find((entry) => entry.doc.returns)?.doc.returns;
+  return returns ? `**Returns**: ${prose(returns)}` : "";
+};
 
 /**
  * Builds the identifier index auto-linking resolves against: every public
@@ -589,18 +851,21 @@ class PageWriter {
   }
 }
 
-/** The deprecation callout and the "See also" line, for the `@see` URLs other than the item's own. */
-function renderDocExtras(doc, { prose, skipUrl }) {
+/** The deprecation callouts and the "See also" line, for the `@see` URLs other than the set's own. */
+function renderDocExtras(set, { prose, skipUrl, signatureOf }) {
   const extras = [];
-  if (doc.deprecated) {
-    const body = prose(doc.deprecated);
+  const deprecated = set.filter((entry) => entry.doc.deprecated);
+  for (const entry of deprecated) {
+    // Name the overload only when the others are not deprecated with it.
+    const which = deprecated.length < set.length ? `${code(signatureOf(entry).replace(/\s+/g, " "))}: ` : "";
+    const body = `${which}${prose(entry.doc.deprecated)}`;
     extras.push(
       calloutSafe(body)
         ? `::warning\n**Deprecated.**\\\n${body}\n::`
         : `> **Deprecated.**\\\n> ${body.replace(/\n/g, "\n> ")}`,
     );
   }
-  const see = doc.see
+  const see = [...new Set(set.flatMap((entry) => entry.doc.see))]
     .filter((url) => url !== skipUrl)
     .map((url) => {
       const label = url.startsWith(`${SITE}/`) ? sitePath(url) : url;
@@ -610,76 +875,58 @@ function renderDocExtras(doc, { prose, skipUrl }) {
   return extras;
 }
 
-function renderMember(page, ctx, item, member, level, { heading = true } = {}) {
-  const place = ctx.plan.places.get(member);
+/** One member, or every overload of it, as an anchored section. */
+function renderMember(page, ctx, item, set, level, { heading = true } = {}) {
+  const [first] = set;
+  const main = canonical(set);
+  const place = ctx.plan.places.get(first);
   const prose = (markdown) => transformProse(markdown, ctx.resolve({ item, self: place.url }));
-  if (heading) page.anchored(level, place.anchor, memberDisplay(member));
-  page.add(fence("rux", memberSignature(member)));
-  if (member.doc.markdown) page.add(prose(member.doc.markdown));
-  const typeDocs = new Map(member.doc.typeParams.map((entry) => [entry.name, entry.markdown]));
+  if (heading) page.anchored(level, place.anchor, memberDisplay(first));
+  page.add(signatureFence(ctx, set, memberSignature), availabilityNote(ctx, set));
+  if (main.doc.markdown) page.add(prose(main.doc.markdown));
+  page.add(overloadSummaries(set, memberSignature, prose));
+  page.add(typeParameterTable("Type parameter", main.typeParams, main.doc, prose));
   page.add(
-    table(
-      ["Type parameter", "Description"],
-      member.typeParams.map((param) => [
-        code(param.bounds?.length ? `${param.name}: ${param.bounds.join(" + ")}` : param.name),
-        cell(prose(typeDocs.get(param.name) ?? "")),
-      ]),
-    ),
+    parameterTable(set, (member) => member.params, prose),
+    returnsLine(set, prose),
   );
-  const paramDocs = new Map(member.doc.params.map((entry) => [entry.name, entry.markdown]));
-  page.add(
-    table(
-      ["Name", "Type", "Description"],
-      member.params
-        .filter((param) => param.name !== "self")
-        .map((param) => [code(param.name), code(param.type), cell(prose(paramDocs.get(param.name) ?? ""))]),
-    ),
-  );
-  if (member.doc.returns) page.add(`**Returns**: ${prose(member.doc.returns)}`);
-  page.add(...renderDocExtras(member.doc, { prose, skipUrl: place.url }));
-  page.add(`[Source](${sourceUrl(ctx.snapshot, item.source, member.line)})`);
+  page.add(...renderDocExtras(set, { prose, skipUrl: place.url, signatureOf: memberSignature }));
+  page.add(`[Source](${sourceUrl(ctx.snapshot, item.source, first.line)})`);
 }
 
-/**
- * Everything below an item's prose: its tables and members. `sectionLevel` is
- * the heading level of "Fields", "Methods" and the rest, or `null` to write
- * them as bold labels (an item rendered inside another page's section).
- */
-function renderItemSections(page, ctx, item, sectionLevel, memberLevel) {
-  const place = ctx.plan.places.get(item);
-  const prose = (markdown) => transformProse(markdown, ctx.resolve({ item, self: place.url }));
+const onlyOn = (ctx, entry) => {
+  const note = availability(entry.targets, ctx.targets);
+  return note ? ` (${note} only)` : "";
+};
 
-  const typeDocs = new Map(item.doc.typeParams.map((entry) => [entry.name, entry.markdown]));
+/**
+ * Everything below an item's prose: its tables and members. `set` is the
+ * item, or every item of an overload set. `sectionLevel` is the heading level
+ * of "Fields", "Methods" and the rest, or `null` to write them as bold labels
+ * (an item rendered inside another page's section).
+ */
+function renderItemSections(page, ctx, set, sectionLevel, memberLevel) {
+  const item = canonical(set);
+  const place = ctx.plan.places.get(item);
+  const members = set.flatMap((entry) => entry.members.filter(isPublic));
+  const context = { item: { ...item, members }, self: place.url };
+  const prose = (markdown) => transformProse(markdown, ctx.resolve(context));
+  const renderGroups = (entries, options) => {
+    for (const group of byUrl(ctx, entries)) renderMember(page, ctx, context.item, group, memberLevel, options);
+  };
+
   if (item.typeParams.length) {
     page.section(sectionLevel, "Type parameters");
-    page.add(
-      table(
-        ["Name", "Description"],
-        item.typeParams.map((param) => [
-          code(param.bounds?.length ? `${param.name}: ${param.bounds.join(" + ")}` : param.name),
-          cell(prose(typeDocs.get(param.name) ?? "")),
-        ]),
-      ),
-    );
+    page.add(typeParameterTable("Name", item.typeParams, item.doc, prose));
   }
 
   if (["function", "extern"].includes(item.kind)) {
-    const params = item.params ?? signatureParams(item.signature);
-    const paramDocs = new Map(item.doc.params.map((entry) => [entry.name, entry.markdown]));
-    if (params.length) {
+    const params = parameterTable(set, (entry) => entry.params ?? signatureParams(entry.signature), prose);
+    if (params) {
       page.section(sectionLevel, "Parameters");
-      page.add(
-        table(
-          ["Name", "Type", "Description"],
-          params.map((param) => [
-            code(param.name),
-            param.type ? code(param.type) : "",
-            cell(prose(paramDocs.get(param.name) ?? "")),
-          ]),
-        ),
-      );
+      page.add(params);
     }
-    if (item.doc.returns) page.add(`**Returns**: ${prose(item.doc.returns)}`);
+    page.add(returnsLine(set, prose));
   }
 
   const fields = (item.fields ?? []).filter((field) => field.public);
@@ -688,7 +935,11 @@ function renderItemSections(page, ctx, item, sectionLevel, memberLevel) {
     page.add(
       table(
         ["Name", "Type", "Description"],
-        fields.map((field) => [code(field.name), code(field.type), cell(prose(field.doc ?? ""))]),
+        fields.map((field) => [
+          code(field.name),
+          code(field.type),
+          cell(`${prose(field.doc ?? "")}${onlyOn(ctx, field)}`.trim()),
+        ]),
       ),
     );
   }
@@ -704,28 +955,30 @@ function renderItemSections(page, ctx, item, sectionLevel, memberLevel) {
           const payload = entry.payload ? (entry.payload.startsWith("{") ? ` ${entry.payload}` : entry.payload) : "";
           const row = [code(`${entry.name}${payload}`)];
           if (valued) row.push(entry.value !== null && entry.value !== undefined ? code(String(entry.value)) : "");
-          row.push(cell(prose(entry.doc ?? "")));
+          row.push(cell(`${prose(entry.doc ?? "")}${onlyOn(ctx, entry)}`.trim()));
           return row;
         }),
       ),
     );
   }
 
-  const members = item.members.filter(isPublic);
   const requirements = members.filter((member) => member.kind === "requirement");
   if (requirements.length) {
     page.section(sectionLevel, "Requirements");
-    for (const member of requirements) renderMember(page, ctx, item, member, memberLevel);
+    renderGroups(requirements);
   }
 
   if (item.kind === "interface") {
-    const implementations = ctx.snapshot.items.filter((other) => other.implements?.includes(item.name));
+    const implementations = byUrl(
+      ctx,
+      ctx.snapshot.items.filter((other) => other.implements?.includes(item.name)),
+    );
     if (implementations.length) {
       page.section(sectionLevel, "Implementations");
       page.add(
         table(
           ["Type", "Summary"],
-          implementations.map((other) => [
+          implementations.map(([other]) => [
             `[${code(other.displayName)}](${sitePath(ctx.plan.places.get(other).url)})`,
             cell(transformProse(other.doc.summary ?? "", ctx.resolve({ item: other, self: null }))),
           ]),
@@ -739,10 +992,10 @@ function renderItemSections(page, ctx, item, sectionLevel, memberLevel) {
     const group = own.filter((member) => member.kind === kind);
     if (!group.length) continue;
     page.section(sectionLevel, title);
-    for (const member of group) renderMember(page, ctx, item, member, memberLevel);
+    renderGroups(group);
   }
 
-  const conformances = [...(item.implements ?? [])];
+  const conformances = [...new Set(set.flatMap((entry) => entry.implements ?? []))];
   for (const member of members) {
     if (member.conformance && !conformances.includes(member.conformance)) conformances.push(member.conformance);
   }
@@ -751,40 +1004,39 @@ function renderItemSections(page, ctx, item, sectionLevel, memberLevel) {
     const target = ctx.snapshot.items.find((other) => other.kind === "interface" && other.name === name);
     const link = target ? `[${code(name)}](${sitePath(ctx.plan.places.get(target).url)})` : code(name);
     page.add(`${code(item.displayName)} conforms to ${link}.`);
-    for (const member of members.filter((entry) => entry.conformance === name)) {
-      renderMember(page, ctx, item, member, memberLevel);
-    }
+    renderGroups(members.filter((entry) => entry.conformance === name));
   }
 
   const constants = own.filter((member) => member.kind === "constant");
   if (constants.length) {
     page.section(sectionLevel, "Constants");
-    for (const member of constants) renderMember(page, ctx, item, member, memberLevel);
+    renderGroups(constants);
   }
 
-  const destructor = own.find((member) => member.kind === "destructor");
-  if (destructor) {
+  const destructors = own.filter((member) => member.kind === "destructor");
+  if (destructors.length) {
     page.section(sectionLevel, "Destructor");
     // The section heading's own id is `destructor`, the destructor's default
     // anchor, so on an item's own page the destructor needs no heading of its
     // own — a second element with that id would be a duplicate.
-    const anchor = ctx.plan.places.get(destructor).anchor;
-    renderMember(page, ctx, item, destructor, memberLevel, {
-      heading: !(sectionLevel !== null && anchor === headingSlug("Destructor")),
-    });
+    const anchor = ctx.plan.places.get(destructors[0]).anchor;
+    renderGroups(destructors, { heading: !(sectionLevel !== null && anchor === headingSlug("Destructor")) });
   }
 }
 
-/** An item placed on another item's page or a topic page: heading, signature, prose, members. */
-function renderPlacedItem(page, ctx, item, level, sectionLevel, memberLevel) {
-  const place = ctx.plan.places.get(item);
-  const prose = (markdown) => transformProse(markdown, ctx.resolve({ item, self: place.url }));
-  page.anchored(level, place.anchor, item.displayName);
-  page.add(fence("rux", itemSignature(item)));
-  if (item.doc.markdown) page.add(prose(item.doc.markdown));
-  page.add(...renderDocExtras(item.doc, { prose, skipUrl: place.url }));
-  page.add(`[Source](${sourceUrl(ctx.snapshot, item.source, item.line)})`);
-  renderItemSections(page, ctx, item, sectionLevel, memberLevel);
+/** An item (or overload set) placed on another item's page or a topic page: heading, signature, prose, members. */
+function renderPlacedItem(page, ctx, set, level, sectionLevel, memberLevel) {
+  const [first] = set;
+  const main = canonical(set);
+  const place = ctx.plan.places.get(first);
+  const prose = (markdown) => transformProse(markdown, ctx.resolve({ item: main, self: place.url }));
+  page.anchored(level, place.anchor, first.displayName);
+  page.add(signatureFence(ctx, set, itemSignature), availabilityNote(ctx, set));
+  if (main.doc.markdown) page.add(prose(main.doc.markdown));
+  page.add(overloadSummaries(set, itemSignature, prose));
+  page.add(...renderDocExtras(set, { prose, skipUrl: place.url, signatureOf: itemSignature }));
+  page.add(`[Source](${sourceUrl(ctx.snapshot, first.source, first.line)})`);
+  renderItemSections(page, ctx, set, sectionLevel, memberLevel);
 }
 
 function generatedComment(slug) {
@@ -799,41 +1051,49 @@ function groupFor(kind) {
 
 function renderItemPage(ctx, pageSlug, { owner, sections }) {
   const { snapshot, plan } = ctx;
-  const place = plan.places.get(owner);
-  const prose = (markdown) => transformProse(markdown, ctx.resolve({ item: owner, self: place.url }));
-  const { summary, rest } = splitSummary(owner.doc);
-  const description = plainText(summary) || owner.displayName;
+  const [first] = owner;
+  const main = canonical(owner);
+  const place = plan.places.get(first);
+  const prose = (markdown) => transformProse(markdown, ctx.resolve({ item: main, self: place.url }));
+  const { summary, rest } = splitSummary(main.doc);
+  const description = plainText(summary) || first.displayName;
   const page = new PageWriter();
   page.add(
     frontmatter({
-      title: owner.displayName,
+      title: first.displayName,
       description,
       path: `/docs/api/${plan.slug}/${pageSlug}`,
-      navigation: owner.displayName,
+      navigation: first.displayName,
       api: {
         package: snapshot.package.name,
-        kind: owner.kind,
+        kind: first.kind,
         version: snapshot.package.version,
-        source: owner.source,
-        line: owner.line,
+        source: first.source,
+        line: first.line,
       },
-      seoTitle: `${owner.displayName} — ${snapshot.package.name} API`,
+      seoTitle: `${first.displayName} — ${snapshot.package.name} API`,
     }),
   );
   page.add(generatedComment(plan.slug));
-  page.add(`# ${escapeHtml(owner.displayName)}`);
+  page.add(`# ${escapeHtml(first.displayName)}`);
   if (summary) page.add(prose(summary));
-  page.add(fence("rux", itemSignature(owner)));
+  page.add(signatureFence(ctx, owner, itemSignature), availabilityNote(ctx, owner));
   if (rest) page.add(prose(rest));
-  page.add(...renderDocExtras(owner.doc, { prose, skipUrl: place.url }));
+  page.add(overloadSummaries(owner, itemSignature, prose));
+  page.add(...renderDocExtras(owner, { prose, skipUrl: place.url, signatureOf: itemSignature }));
   renderItemSections(page, ctx, owner, 2, 3);
   if (sections.length) {
     page.section(2, "Related");
-    for (const item of sections) renderPlacedItem(page, ctx, item, 3, null, 4);
+    for (const set of sections) renderPlacedItem(page, ctx, set, 3, null, 4);
   }
   return page;
 }
 
+/**
+ * A page only fragment URLs point at. Its title, and optionally the lead
+ * paragraph and description, come from the registry entry's
+ * `topics: { <page>: "Title" | { title, description } }`.
+ */
 function renderTopicPage(ctx, pageSlug, { sections }, entry) {
   const { snapshot, plan } = ctx;
   const topic = entry.topics?.[pageSlug];
@@ -842,7 +1102,7 @@ function renderTopicPage(ctx, pageSlug, { sections }, entry) {
       `${apiUrl(plan.slug, pageSlug)} is a topic page (only #fragment URLs point at it), but the registry entry for ${snapshot.package.name} has no topics["${pageSlug}"] title`,
     );
   }
-  const first = sections[0];
+  const [first] = sections[0];
   const title = typeof topic === "string" ? topic : topic.title;
   const lead = (typeof topic === "string" ? null : topic.description) ?? first.doc.summary ?? title;
   const description = plainText(lead);
@@ -865,8 +1125,8 @@ function renderTopicPage(ctx, pageSlug, { sections }, entry) {
   );
   page.add(generatedComment(plan.slug));
   page.add(`# ${escapeHtml(title)}`);
-  page.add(transformProse(lead, ctx.resolve(null)));
-  for (const item of sections) renderPlacedItem(page, ctx, item, 2, null, 3);
+  page.add(transformProse(lead.replace(/([^.])$/, "$1."), ctx.resolve(null)));
+  for (const set of sections) renderPlacedItem(page, ctx, set, 2, null, 3);
   return page;
 }
 
@@ -962,16 +1222,24 @@ function renderOverview(ctx, readme, entry) {
 
   page.section(2, "Index");
   for (const group of KIND_GROUPS) {
-    const items = snapshot.items.filter((item) => group.kinds.includes(item.kind));
-    if (!items.length) continue;
+    const sets = byUrl(
+      ctx,
+      snapshot.items.filter((item) => group.kinds.includes(item.kind)),
+    );
+    if (!sets.length) continue;
     page.section(3, group.title);
     page.add(
       table(
         ["Name", "Summary"],
-        items.map((item) => [
-          `[${code(item.displayName)}](${sitePath(plan.places.get(item).url)})`,
-          cell(transformProse(item.doc.summary ?? "", ctx.resolve({ item, self: plan.places.get(item).url }))),
-        ]),
+        sets.map((set) => {
+          const [item] = set;
+          const { url } = plan.places.get(item);
+          const summary = canonical(set).doc.summary ?? "";
+          return [
+            `[${code(item.displayName)}](${sitePath(url)})`,
+            cell(transformProse(summary, ctx.resolve({ item, self: url }))),
+          ];
+        }),
       ),
     );
   }
@@ -990,7 +1258,8 @@ export async function renderApiPackage(snapshot, readme, entry) {
   }
   const plan = planPackage(snapshot);
   const index = linkIndex(snapshot, plan);
-  const ctx = { snapshot, plan, resolve: makeResolver(snapshot, plan, index) };
+  const targets = snapshot.targets ?? (snapshot.target ? [snapshot.target] : []);
+  const ctx = { snapshot, plan, targets, resolve: makeResolver(snapshot, plan, index) };
   const base = `${API_ROOT}/${entry.folder}`;
   const files = new Map();
   const write = (relative, page) => {
@@ -1003,7 +1272,7 @@ export async function renderApiPackage(snapshot, readme, entry) {
 
   const groups = new Set();
   for (const [pageSlug, page] of [...plan.pages].sort(([a], [b]) => a.localeCompare(b))) {
-    const group = groupFor(page.owner ? page.owner.kind : "topic");
+    const group = groupFor(page.owner ? page.owner[0].kind : "topic");
     groups.add(group);
     const rendered = page.owner ? renderItemPage(ctx, pageSlug, page) : renderTopicPage(ctx, pageSlug, page, entry);
     write(`${group.folder}/${pageSlug}.md`, rendered);
