@@ -1,11 +1,11 @@
 ---
 title: API Reference
-description: Reference documentation for the Rux packages — the cross-platform Format, Io, Math, Memory, Std, and Text, and the platform-dependent bindings for BSD, illumos, Linux, macOS, and Windows.
+description: Reference documentation for the Rux standard packages — the foundation, text, collection, system and data-format packages, cryptography, and the platform bindings for C, Linux, FreeBSD, macOS and Windows.
 navigation:
   title: Table of Contents
 seo:
   title: API Reference
-  description: Reference documentation for the Rux packages — the cross-platform Format, Io, Math, Memory, Std, and Text, and the platform-dependent bindings for BSD, illumos, Linux, macOS, and Windows.
+  description: Reference documentation for the Rux standard packages — the foundation, text, collection, system and data-format packages, cryptography, and the platform bindings for C, Linux, FreeBSD, macOS and Windows.
   ogImage: https://rux-lang.dev/images/og-api.png
   ogType: website
   ogUrl: https://rux-lang.dev/docs/api
@@ -13,15 +13,23 @@ seo:
 
 # API Reference
 
-1. [Introduction](/docs/api/introduction)
-2. Cross-Platform Packages
-   - 2.1. [Format](/docs/api/format)
-   - 2.2. [Io](/docs/api/io)
-   - 2.3. [Math](/docs/api/math)
-   - 2.4. [Memory](/docs/api/memory)
-   - 2.5. [Text](/docs/api/text)
-3. Platform-Dependent Packages
-   - 3.1. [BSD](/docs/api/bsd)
-   - 3.2. [Linux](/docs/api/linux)
-   - 3.3. [MacOS](/docs/api/macos)
-   - 3.4. [Windows](/docs/api/windows)
+This reference documents the packages that ship with Rux: every public type, interface, function and constant, what it does and where it lives in the source. It is for looking things up rather than learning — if you are new to the language, start with [Learn Rux](/docs/learn) or the [Rux Language Reference](/docs/lang).
+
+Rux has no monolithic runtime. Each package below is a dependency a project declares in its [manifest](/docs/packaging/manifest), and a program depends only on what it asks for.
+
+::warning
+**Unstable API**\
+None of these packages has a stable API yet. Names, signatures and behaviour may change between releases, and this reference changes with them.
+::
+
+:api-packages
+
+## Reading this reference
+
+Each package has an overview page listing everything it exports, and each type, interface or function has a page of its own. A type's members — constructors, methods, operators and constants — are sections of that page, so every one has a link of its own, such as `/docs/api/allocator/arena#reset`.
+
+- **Header** — the declaration's kind, the package version it describes, and a **Source** button that opens the declaration on GitHub.
+- **Sidebar** — inside a package, the sidebar lists that package only, grouped into interfaces, types, functions and constants. The menu above it switches to another package.
+- **Platform badges** — Linux, FreeBSD, macOS and Windows each bind one operating system's own entry points, with no portability layer, and build only for that platform. Guard every call to them with [conditional compilation](/docs/lang/comptime/conditional).
+
+A package marked _Reference pending_ is available to programs but not documented here yet. Packages still on their earlier, hand-written pages keep that layout until their reference is generated.
