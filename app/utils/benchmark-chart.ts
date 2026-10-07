@@ -58,11 +58,18 @@ export function logTicks([start, end]: [number, number]): number[] {
   return [...ticks].sort((a, b) => a - b);
 }
 
-/** Position of a value along a log axis, 0 at the start and 1 at the end. */
+/**
+ * Position of a value along a log axis, 0 at the start and 1 at the end.
+ *
+ * Rounded to six decimals because Math.log is not required to be bit-exact:
+ * Node and the browser disagreed in the last digit, so the prerendered `left:`
+ * styles failed hydration. Everything computed from the position afterwards is
+ * plain IEEE arithmetic and agrees on both sides.
+ */
 export function logPosition(value: number, [start, end]: [number, number]): number {
   if (value <= 0) return 0;
   const position = Math.log(value / start) / Math.log(end / start);
-  return Math.min(1, Math.max(0, position));
+  return Math.round(Math.min(1, Math.max(0, position)) * 1e6) / 1e6;
 }
 
 const formatters = new Map<number, Intl.NumberFormat>();

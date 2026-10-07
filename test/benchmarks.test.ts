@@ -144,6 +144,8 @@ describe("benchmark chart geometry", () => {
     expect(logPosition(0.1, [0.1, 10])).toBe(0);
     expect(logPosition(100, [0.1, 10])).toBe(1);
     expect(logPosition(0, [0.1, 10])).toBe(0);
+    // Rounded, so the server and the browser render the same `left:` style.
+    expect(logPosition(3, [1, 7])).toBe(0.564575);
   });
 
   it("formats values, ratios and ticks the way the report does", () => {
