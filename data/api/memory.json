@@ -1,0 +1,1480 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Memory",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Memory management functions",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/memory",
+    "dependencies": [
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "FreeBSD", "namespace": "Rux", "version": "0.1.0", "targetOS": ["FreeBSD"] },
+      { "name": "Linux", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Linux"] },
+      { "name": "macOS", "namespace": "Rux", "version": "0.1.0", "targetOS": ["macOS"] },
+      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Access",
+      "source": "Src/Access.rux",
+      "header": "Alignment, unaligned access, byte swapping, and clearing a secret so that it stays cleared.\nThree of these exist because a pointer is not always where a type wants it. A value read from a file, a packet or\na mapped structure sits wherever the format put it, and on some machines a load that crosses an alignment boundary\nfaults rather than being slow. The load and store helpers below go through bytes, so they are correct at any\naddress and cost the same everywhere.\n`ZeroizeBlock` exists because clearing a secret is a write nothing reads back, which is exactly the write a\ncompiler is entitled to delete. It is the one operation here that rests on a compiler guarantee rather than a\nlibrary one."
+    },
+    {
+      "name": "Alloc",
+      "source": "Src/Alloc.rux",
+      "header": "Taking storage from the operating system, at whatever granularity it hands it out in.\nThe one allocation primitive under `Rux/Allocator`, and deliberately the smallest possible: it takes bytes\nand gives back an address, with no size class, no free list and no header of its own beyond what the\nplatform needs to release the block again. Everything shaped like an allocator is built on this rather\nthan inside it.\nA zero size returns null rather than an address, which is the one place this differs from the page layer\nabove it: `Rux/Allocator` gives a zero-sized request a shared non-null address so that no caller has to\nbranch, and does that itself."
+    },
+    {
+      "name": "Block",
+      "source": "Src/Block.rux",
+      "header": "Raw block operations: copying, moving, filling, comparing and searching a run of bytes.\nNothing here knows what the bytes mean. A block is an address and a length, and every operation touches exactly\nthe length it is given and nothing beyond it.\n**Zero length is always legal, and null is legal with it.** A length of zero does nothing at all, and the pointers\nare not examined, so `Copy(null, null, 0)` is defined and does nothing. That is deliberately not C's rule, where\npassing null to `memcpy` is undefined even for a zero length — a rule that turns an ordinary empty case into a\ntrap and forces every caller to guard. A non-zero length requires real, usable storage.\nOverlap is where `Copy` and `Move` part company. `Copy` may be read as copying byte zero first and byte `length -\n1` last, so a destination that overlaps the source ahead of it reads bytes the copy has already overwritten.\n`Move` is defined for every overlap, at the cost of choosing a direction first.\nThe comparisons treat a byte as unsigned, so ordering does not depend on whether the platform's plain `char` is\nsigned. None of them is constant-time: each stops at the first difference, so nothing here may compare a secret."
+    },
+    {
+      "name": "Free",
+      "source": "Src/Free.rux",
+      "header": "Giving storage back to the operating system.\nA null pointer is accepted and does nothing, so a cleanup path need not test for one. Everything else must\nbe an address this module's `Alloc` or `Realloc` returned; there is no way to check that here and no\nattempt to."
+    },
+    {
+      "name": "Pages",
+      "source": "Src/Pages.rux",
+      "header": "Address space at the granularity the operating system hands it out in: whole pages, with a protection.\nThis is the layer under an allocator rather than an allocator itself. Nothing here tracks what it gave out, keeps\na free list, or remembers a length — a caller releases exactly what it took, and passing a different length is\nits own mistake to make.\nThe four systems disagree about almost everything here, so the surface is one this package defines rather than any\none platform's. Protection is a flag set, failure is a `PageError` rather than an errno or a `GetLastError` code,\nand a length is rounded up to whole pages by the system whether or not the caller does it first.\nWindows is the one that differs in kind. It separates reserving address space from committing storage to it, and\nthese calls always do both — which is the behaviour every other system has and the one an allocator expects. A\ncaller wanting a large reservation cheaply has to reach for `Rux/Windows` directly."
+    },
+    {
+      "name": "Realloc",
+      "source": "Src/Realloc.rux",
+      "header": "Resizing an allocation, preserving the bytes that still fit.\nThree degenerate cases, each answered rather than refused: a null pointer allocates, a zero size releases\nand returns null, and a failure returns null while leaving the original allocation valid and still the\ncaller's. That last one is the one callers get wrong — assigning the result over the original pointer\nloses the allocation on every failure — and is why the failure is documented on every path here."
+    }
+  ],
+  "items": [
+    {
+      "kind": "function",
+      "name": "IsAligned",
+      "displayName": "IsAligned",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 22,
+      "signature": "pub func IsAligned(address: uint, alignment: uint) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether `address` is a multiple of `alignment`.",
+        "markdown": "Whether `address` is a multiple of `alignment`.\n`address` and `alignment` are read by value. An `alignment` of zero reports false rather than dividing by it, and\nan alignment that is not a power of two gives an answer that is arithmetically true but rarely meaningful, since\nhardware alignment is always a power of two.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "address", "markdown": "the address or offset to test" },
+          { "name": "alignment", "markdown": "the boundary to test against; zero reports false" }
+        ],
+        "returns": "whether `address` is a multiple of `alignment`",
+        "see": ["https://rux-lang.dev/docs/api/memory/alignment#is-aligned"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsPointerAligned",
+      "displayName": "IsPointerAligned",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 35,
+      "signature": "pub func IsPointerAligned(pointer: *opaque, alignment: uint) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether `pointer` is aligned for `alignment`.",
+        "markdown": "Whether `pointer` is aligned for `alignment`.\n`pointer` is read by value and never dereferenced. A null pointer reports true for every alignment, since zero is\na multiple of everything; a caller that means \"usable\" has to ask that separately.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "pointer", "markdown": "the address to test, never dereferenced" },
+          { "name": "alignment", "markdown": "the boundary to test against" }
+        ],
+        "returns": "whether `pointer` is a multiple of `alignment`",
+        "see": ["https://rux-lang.dev/docs/api/memory/alignment#is-pointer-aligned"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AlignUp",
+      "displayName": "AlignUp",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 50,
+      "signature": "pub func AlignUp(value: uint, alignment: uint) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The next multiple of `alignment` at or above `value`.",
+        "markdown": "The next multiple of `alignment` at or above `value`.\n`value` and `alignment` are read by value. An `alignment` of zero or one returns `value` unchanged, since every\nvalue is already a multiple of both.\nReturns `value` itself when it is already aligned, so this is idempotent.\nA `value` within `alignment - 1` of the maximum has no next multiple, and this wraps to a small number rather\nthan reporting it. A caller sizing an allocation must check for that before trusting the result; `AlignUpChecked`\ndoes the checking.",
+        "typeParams": [],
+        "params": [
+          { "name": "value", "markdown": "the value to round up" },
+          { "name": "alignment", "markdown": "the boundary to round to; zero or one changes nothing" }
+        ],
+        "returns": "the next multiple of `alignment` at or above `value`",
+        "see": ["https://rux-lang.dev/docs/api/memory/alignment#align-up"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AlignUpChecked",
+      "displayName": "AlignUpChecked",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 67,
+      "signature": "pub func AlignUpChecked(value: uint, alignment: uint, result: *var uint) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "The next multiple of `alignment` at or above `value`, reporting whether it was representable.",
+        "markdown": "The next multiple of `alignment` at or above `value`, reporting whether it was representable.\n`value` and `alignment` are read by value; `result` receives the aligned value when this returns `false`, and is\nleft unwritten when it returns `true`. `result` must not be null.\nReturns `true` when rounding up would pass the maximum, which is the case an allocation size has to notice: a\nwrapped size is an allocation far smaller than the caller asked for.\nRuns in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "value", "markdown": "the value to round up" },
+          { "name": "alignment", "markdown": "the boundary to round to; zero or one changes nothing" },
+          { "name": "result", "markdown": "receives the aligned value when this returns false" }
+        ],
+        "returns": "true when rounding up would pass the maximum",
+        "see": ["https://rux-lang.dev/docs/api/memory/alignment#align-up-checked"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AlignDown",
+      "displayName": "AlignDown",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 90,
+      "signature": "pub func AlignDown(value: uint, alignment: uint) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The previous multiple of `alignment` at or below `value`.",
+        "markdown": "The previous multiple of `alignment` at or below `value`.\n`value` and `alignment` are read by value. An `alignment` of zero or one returns `value` unchanged.\nCannot fail: rounding down never leaves the range.",
+        "typeParams": [],
+        "params": [
+          { "name": "value", "markdown": "the value to round down" },
+          { "name": "alignment", "markdown": "the boundary to round to; zero or one changes nothing" }
+        ],
+        "returns": "the previous multiple of `alignment` at or below `value`",
+        "see": ["https://rux-lang.dev/docs/api/memory/alignment#align-down"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "LoadUnaligned",
+      "displayName": "LoadUnaligned<T>",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 107,
+      "signature": "pub func LoadUnaligned<T>(source: *opaque, destination: *var T)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Reads a value of `T` from `source`, whatever `source` is aligned to.",
+        "markdown": "Reads a value of `T` from `source`, whatever `source` is aligned to.\n`source` is borrowed and `sizeof(T)` bytes are read from it; `destination` receives the value. Both must be\nnon-null.\nThe bytes are taken one at a time, so this is correct at any address on any machine — including the ones where a\nmisaligned load faults rather than merely costing more.\nCannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.\n`source` must be readable for `sizeof(T)` bytes. The bytes are taken as they are, so a value that is not a valid\n`T` stays invalid; this reinterprets rather than validating.",
+        "typeParams": [{ "name": "T", "markdown": "the type whose bytes are read" }],
+        "params": [
+          { "name": "source", "markdown": "the address to read `sizeof(T)` bytes from, at any alignment" },
+          { "name": "destination", "markdown": "receives the value" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/unaligned-access#load-unaligned"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "StoreUnaligned",
+      "displayName": "StoreUnaligned<T>",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 119,
+      "signature": "pub func StoreUnaligned<T>(destination: *var opaque, value: *T)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Writes a value of `T` to `destination`, whatever `destination` is aligned to.",
+        "markdown": "Writes a value of `T` to `destination`, whatever `destination` is aligned to.\n`value` is borrowed and read; `destination` is borrowed and receives `sizeof(T)` bytes. Both must be non-null.\nCannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.\n`destination` must be writable for `sizeof(T)` bytes.",
+        "typeParams": [{ "name": "T", "markdown": "the type whose bytes are written" }],
+        "params": [
+          { "name": "destination", "markdown": "the address to write `sizeof(T)` bytes to, at any alignment" },
+          { "name": "value", "markdown": "the value to write" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/unaligned-access#store-unaligned"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ReverseBlock",
+      "displayName": "ReverseBlock",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 132,
+      "signature": "pub func ReverseBlock(buffer: *var opaque, length: uint)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reverses the order of `length` bytes at `buffer`, in place.",
+        "markdown": "Reverses the order of `length` bytes at `buffer`, in place.\n`buffer` is borrowed and rewritten. A `length` of zero or one changes nothing and accepts a null pointer at zero.\nThis is the byte-order conversion for a run of bytes rather than for one value; `Core::ReverseBytes` is the one\nthat takes an integer.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`buffer` must be readable and writable for `length` bytes.",
+        "typeParams": [],
+        "params": [
+          { "name": "buffer", "markdown": "the bytes to reverse in place" },
+          { "name": "length", "markdown": "how many bytes; zero or one changes nothing" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/unaligned-access#reverse-block"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "LoadLittleEndian",
+      "displayName": "LoadLittleEndian<T>",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 157,
+      "signature": "pub func LoadLittleEndian<T>(source: *opaque, destination: *var T)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Reads a `T` from `source`, taking the bytes as little-endian.",
+        "markdown": "Reads a `T` from `source`, taking the bytes as little-endian.\n`source` is borrowed and `sizeof(T)` bytes are read; `destination` receives the value in the target's own order.\nBoth must be non-null. Needs no alignment.\nThis is the pair of calls a file or wire format actually needs: the bytes are wherever the format put them, and\ntheir order is the format's rather than the machine's.\nCannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.\n`source` must be readable for `sizeof(T)` bytes.",
+        "typeParams": [{ "name": "T", "markdown": "the type whose bytes are read" }],
+        "params": [
+          { "name": "source", "markdown": "the address to read `sizeof(T)` little-endian bytes from" },
+          { "name": "destination", "markdown": "receives the value in the target's own order" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/unaligned-access#load-little-endian"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "LoadBigEndian",
+      "displayName": "LoadBigEndian<T>",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 173,
+      "signature": "pub func LoadBigEndian<T>(source: *opaque, destination: *var T)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Reads a `T` from `source`, taking the bytes as big-endian.",
+        "markdown": "Reads a `T` from `source`, taking the bytes as big-endian.\n`source` is borrowed and `sizeof(T)` bytes are read; `destination` receives the value in the target's own order.\nBoth must be non-null. Needs no alignment. This is network byte order.\nCannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.\n`source` must be readable for `sizeof(T)` bytes.",
+        "typeParams": [{ "name": "T", "markdown": "the type whose bytes are read" }],
+        "params": [
+          { "name": "source", "markdown": "the address to read `sizeof(T)` big-endian bytes from" },
+          { "name": "destination", "markdown": "receives the value in the target's own order" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/unaligned-access#load-big-endian"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "StoreLittleEndian",
+      "displayName": "StoreLittleEndian<T>",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 189,
+      "signature": "pub func StoreLittleEndian<T>(destination: *var opaque, value: *T)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Writes a `T` to `destination` as little-endian bytes.",
+        "markdown": "Writes a `T` to `destination` as little-endian bytes.\n`value` is borrowed and read; `destination` receives `sizeof(T)` bytes. Both must be non-null. Needs no\nalignment.\nCannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.\n`destination` must be writable for `sizeof(T)` bytes.",
+        "typeParams": [{ "name": "T", "markdown": "the type whose bytes are written" }],
+        "params": [
+          { "name": "destination", "markdown": "receives `sizeof(T)` little-endian bytes" },
+          { "name": "value", "markdown": "the value to write" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/unaligned-access#store-little-endian"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "StoreBigEndian",
+      "displayName": "StoreBigEndian<T>",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 205,
+      "signature": "pub func StoreBigEndian<T>(destination: *var opaque, value: *T)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Writes a `T` to `destination` as big-endian bytes.",
+        "markdown": "Writes a `T` to `destination` as big-endian bytes.\n`value` is borrowed and read; `destination` receives `sizeof(T)` bytes. Both must be non-null. Needs no\nalignment.\nCannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.\n`destination` must be writable for `sizeof(T)` bytes.",
+        "typeParams": [{ "name": "T", "markdown": "the type whose bytes are written" }],
+        "params": [
+          { "name": "destination", "markdown": "receives `sizeof(T)` big-endian bytes" },
+          { "name": "value", "markdown": "the value to write" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/unaligned-access#store-big-endian"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ZeroizeBlock",
+      "displayName": "ZeroizeBlock",
+      "module": "Access",
+      "source": "Src/Access.rux",
+      "line": 227,
+      "signature": "pub func ZeroizeBlock(buffer: *var opaque, length: uint)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Clears `length` bytes at `buffer`, and is not removed however unread those bytes are afterwards.",
+        "markdown": "Clears `length` bytes at `buffer`, and is not removed however unread those bytes are afterwards.\n`buffer` is borrowed and written. A `length` of zero writes nothing and accepts a null pointer.\nThis is what `Zero` is not. Clearing a secret is a write nothing reads back, which dead-store elimination is\nentitled to delete, and ordinary source cannot say \"and mean it\" — so this is a compiler guarantee rather than a\nlibrary one.\nThe guarantee is `Core::Zeroize`'s; this adds the empty-case contract the rest of this module has and takes the\n`*var opaque` and `uint` every other block operation here takes.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`buffer` must be writable for `length` bytes.\nIt clears the storage it is given and nothing else. A copy the caller made beforehand, a value the compiler\nspilled to the stack, or bytes a reallocation left behind are all still there — so a secret has to be kept in\none place from the start for this to be the whole of its erasure.",
+        "typeParams": [],
+        "params": [
+          { "name": "buffer", "markdown": "the bytes to clear" },
+          { "name": "length", "markdown": "how many bytes; zero writes nothing and accepts a null pointer" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/blocks#zeroize-block"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Alloc",
+      "displayName": "Alloc",
+      "module": "Alloc",
+      "source": "Src/Alloc.rux",
+      "line": 29,
+      "signature": "pub func Alloc(size: uint) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Allocates `size` uninitialized bytes.",
+        "markdown": "Allocates `size` uninitialized bytes.\nReturns the base address, or null when the size overflows the platform bookkeeping or the system cannot satisfy\nthe request. A zero size is permitted, but the returned address is platform-dependent and must not be touched.\nThe allocation is owned by the caller until `Free` releases it or `Realloc` replaces it. The address is aligned\nto at least 16 bytes on every supported target.\nThe bytes are uninitialized. Reading any byte before writing it, accessing beyond `size`, or using the address\nafter it is released is invalid.",
+        "typeParams": [],
+        "params": [{ "name": "size", "markdown": "how many bytes to take; zero returns null" }],
+        "returns": "the address of the allocation, or null when the system refused",
+        "see": ["https://rux-lang.dev/docs/api/memory/allocation#alloc"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Copy",
+      "displayName": "Copy",
+      "module": "Block",
+      "source": "Src/Block.rux",
+      "line": 30,
+      "signature": "pub func Copy(destination: *var opaque, source: *opaque, length: uint)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Copies `length` bytes from `source` to `destination`, which must not overlap.",
+        "markdown": "Copies `length` bytes from `source` to `destination`, which must not overlap.\n`source` is borrowed and read; `destination` is borrowed and written. Nothing is returned and nothing takes\nownership. A `length` of zero copies nothing and accepts null for either pointer.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`destination` must be writable for `length` bytes and `source` readable for `length`, and the two ranges must not\noverlap. Use `Move` when they might: this one is free to copy in whichever order suits the machine.",
+        "typeParams": [],
+        "params": [
+          { "name": "destination", "markdown": "where the bytes go; must not overlap `source`" },
+          { "name": "source", "markdown": "where the bytes come from" },
+          { "name": "length", "markdown": "how many bytes to copy" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/blocks#copy"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Move",
+      "displayName": "Move",
+      "module": "Block",
+      "source": "Src/Block.rux",
+      "line": 59,
+      "signature": "pub func Move(destination: *var opaque, source: *opaque, length: uint)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Copies `length` bytes from `source` to `destination`, correctly even when the two overlap.",
+        "markdown": "Copies `length` bytes from `source` to `destination`, correctly even when the two overlap.\n`source` is borrowed and read; `destination` is borrowed and written. A `length` of zero moves nothing and\naccepts null for either pointer.\nThe result is what copying through a temporary would give: every source byte reaches its destination as it was\nbefore the move began. Sliding a run forward within one buffer therefore works, which is what an insertion into\nthe middle of an array needs.\nCannot fail. Runs in time proportional to `length` and allocates nothing — the temporary is notional, and the\ndirection of the copy is what actually makes it right.\n`destination` must be writable for `length` bytes and `source` readable for `length`. They may overlap in any\nway, including exactly.",
+        "typeParams": [],
+        "params": [
+          { "name": "destination", "markdown": "where the bytes go; may overlap `source`" },
+          { "name": "source", "markdown": "where the bytes come from" },
+          { "name": "length", "markdown": "how many bytes to move" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/blocks#move"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Set",
+      "displayName": "Set",
+      "module": "Block",
+      "source": "Src/Block.rux",
+      "line": 92,
+      "signature": "pub func Set(destination: *var opaque, value: byte, length: uint)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes `value` to each of `length` bytes at `destination`.",
+        "markdown": "Writes `value` to each of `length` bytes at `destination`.\n`destination` is borrowed and written. A `length` of zero writes nothing and accepts a null pointer.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`destination` must be writable for `length` bytes. This is not the call for clearing a secret: a write nothing\nreads back may be deleted, and `Core::Zeroize` is the one that may not be.",
+        "typeParams": [],
+        "params": [
+          { "name": "destination", "markdown": "the bytes to write" },
+          { "name": "value", "markdown": "the byte to write to each" },
+          { "name": "length", "markdown": "how many bytes to write" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/blocks#set"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Zero",
+      "displayName": "Zero",
+      "module": "Block",
+      "source": "Src/Block.rux",
+      "line": 114,
+      "signature": "pub func Zero(destination: *var opaque, length: uint)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes zero to each of `length` bytes at `destination`.",
+        "markdown": "Writes zero to each of `length` bytes at `destination`.\n`destination` is borrowed and written. A `length` of zero writes nothing and accepts a null pointer.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`destination` must be writable for `length` bytes. For a secret, use `Core::Zeroize`, which the compiler may not\ndelete however unread the bytes are afterwards.",
+        "typeParams": [],
+        "params": [
+          { "name": "destination", "markdown": "the bytes to clear" },
+          { "name": "length", "markdown": "how many bytes to clear" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/blocks#zero"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MismatchOffset",
+      "displayName": "MismatchOffset",
+      "module": "Block",
+      "source": "Src/Block.rux",
+      "line": 136,
+      "signature": "pub func MismatchOffset(left: *opaque, right: *opaque, length: uint) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The offset at which two blocks first differ, or `length` when they do not.",
+        "markdown": "The offset at which two blocks first differ, or `length` when they do not.\nBoth pointers are borrowed and read. A `length` of zero reports zero and accepts null for either pointer, which\nis the same answer two equal empty blocks give.\nThe answer is a position rather than an ordering, so it says where the blocks diverge and not which one sorts\nfirst. `Compare` answers that.\nCannot fail. Runs in time proportional to the shared prefix and allocates nothing.\nBoth pointers must be readable for `length` bytes. Not constant-time: it stops at the first difference, so it\nmust not be used on a secret.",
+        "typeParams": [],
+        "params": [
+          { "name": "left", "markdown": "one of the two blocks" },
+          { "name": "right", "markdown": "the other" },
+          { "name": "length", "markdown": "how many bytes to compare" }
+        ],
+        "returns": "the offset of the first differing byte, or `length` when none differs",
+        "see": ["https://rux-lang.dev/docs/api/memory/blocks#mismatch-offset"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Compare",
+      "displayName": "Compare",
+      "module": "Block",
+      "source": "Src/Block.rux",
+      "line": 166,
+      "signature": "pub func Compare(left: *opaque, right: *opaque, length: uint) -> Ordering",
+      "typeParams": [],
+      "doc": {
+        "summary": "Orders two blocks lexicographically, byte by byte.",
+        "markdown": "Orders two blocks lexicographically, byte by byte.\nBoth pointers are borrowed and read. Returns `Less` when `left` sorts first, `Greater` when `right` does, and\n`Equal` when the two ranges hold the same bytes. A `length` of zero reports `Equal` and accepts null for either\npointer.\nBytes are compared as unsigned, so the answer does not depend on whether the platform's plain `char` is signed,\nand it matches the order the bytes would sort in as a string.\nCannot fail. Runs in time proportional to the shared prefix and allocates nothing.\nBoth pointers must be readable for `length` bytes. Not constant-time: it stops at the first difference, so a\nsecret compared this way leaks where it differs. `Rux/Crypto` is where a constant-time comparison belongs.",
+        "typeParams": [],
+        "params": [
+          { "name": "left", "markdown": "one of the two blocks" },
+          { "name": "right", "markdown": "the other" },
+          { "name": "length", "markdown": "how many bytes to compare" }
+        ],
+        "returns": "how `left` orders against `right`",
+        "see": ["https://rux-lang.dev/docs/api/memory/blocks#compare"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Equal",
+      "displayName": "Equal",
+      "module": "Block",
+      "source": "Src/Block.rux",
+      "line": 184,
+      "signature": "pub func Equal(left: *opaque, right: *opaque, length: uint) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether two blocks hold the same bytes.",
+        "markdown": "Whether two blocks hold the same bytes.\nBoth pointers are borrowed and read. A `length` of zero reports true and accepts null for either pointer: two\nempty blocks are equal.\nCannot fail. Runs in time proportional to the shared prefix and allocates nothing.\nBoth pointers must be readable for `length` bytes. Not constant-time.",
+        "typeParams": [],
+        "params": [
+          { "name": "left", "markdown": "one of the two blocks" },
+          { "name": "right", "markdown": "the other" },
+          { "name": "length", "markdown": "how many bytes to compare" }
+        ],
+        "returns": "whether every byte matches",
+        "see": ["https://rux-lang.dev/docs/api/memory/blocks#equal"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Find",
+      "displayName": "Find",
+      "module": "Block",
+      "source": "Src/Block.rux",
+      "line": 198,
+      "signature": "pub func Find(haystack: *opaque, length: uint, value: byte) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The offset of the first byte equal to `value`, or `length` when there is none.",
+        "markdown": "The offset of the first byte equal to `value`, or `length` when there is none.\n`haystack` is borrowed and read. A `length` of zero reports zero and accepts a null pointer, which is also what a\nsearch that found nothing reports — an empty block contains nothing to find either way.\nCannot fail. Runs in time proportional to the offset returned and allocates nothing.\n`haystack` must be readable for `length` bytes.",
+        "typeParams": [],
+        "params": [
+          { "name": "haystack", "markdown": "the bytes to search" },
+          { "name": "length", "markdown": "how many bytes to search" },
+          { "name": "value", "markdown": "the byte to look for" }
+        ],
+        "returns": "the offset of the first occurrence, or `length` when there is none",
+        "see": ["https://rux-lang.dev/docs/api/memory/blocks#find"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Free",
+      "displayName": "Free",
+      "module": "Free",
+      "source": "Src/Free.rux",
+      "line": 20,
+      "signature": "pub func Free(ptr: *opaque)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Releases an allocation.",
+        "markdown": "Releases an allocation. A null pointer is accepted and does nothing.\nA non-null `ptr` must be the live base address returned by `Alloc` or `Realloc`. Every pointer into the block\nbecomes invalid immediately; releasing an interior, foreign, or already released address is invalid.",
+        "typeParams": [],
+        "params": [{ "name": "ptr", "markdown": "an address `Alloc` or `Realloc` returned, or null" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/allocation#free"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "PageNone",
+      "displayName": "PageNone",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 38,
+      "signature": "pub const PageNone: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "What may be done with a page, as a set of flags to combine with `|`.",
+        "markdown": "What may be done with a page, as a set of flags to combine with `|`.\nA protection of `PageNone` reserves the address space and refuses every access to it, which is how a guard page\nis made. Combining write and execute is refused outright by some systems and by policy on others, so a caller\nthat needs both should write through one protection and execute through another.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-none"],
+        "deprecated": null
+      },
+      "value": "0",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "PageRead",
+      "displayName": "PageRead",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 42,
+      "signature": "pub const PageRead: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The page may be read.",
+        "markdown": "The page may be read.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-read"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "PageWrite",
+      "displayName": "PageWrite",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 48,
+      "signature": "pub const PageWrite: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The page may be written.",
+        "markdown": "The page may be written.\nImplies readability on every supported system: none of them can make a page write-only, whatever their flags\nsuggest.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-write"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "PageExecute",
+      "displayName": "PageExecute",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 52,
+      "signature": "pub const PageExecute: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The page may be executed.",
+        "markdown": "The page may be executed.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-execute"],
+        "deprecated": null
+      },
+      "value": "4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "PageError",
+      "displayName": "PageError",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 60,
+      "signature": "pub enum PageError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why a page operation did not do what was asked.",
+        "markdown": "Why a page operation did not do what was asked. `Copy`.\nOne set of reasons across four systems that report failure three different ways: an errno, a `GetLastError` code,\nand a sentinel address. A reason the mapping does not cover arrives as `Failed`, which is not a promise that\nnothing went wrong — only that this module could not name it. Every case is a failure: a call that succeeds\nreports its success channel instead.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "InvalidLength",
+          "value": "1",
+          "payload": null,
+          "line": 62,
+          "doc": "The length was zero, or too large for the address space to hold.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidAddress",
+          "value": "2",
+          "payload": null,
+          "line": 64,
+          "doc": "The address was not page-aligned, or names nothing this process may operate on.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "OutOfMemory",
+          "value": "3",
+          "payload": null,
+          "line": 66,
+          "doc": "The system has no storage to back the request.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "PermissionDenied",
+          "value": "4",
+          "payload": null,
+          "line": 68,
+          "doc": "The system refused the protection asked for, which is usually write and execute together.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Unsupported",
+          "value": "5",
+          "payload": null,
+          "line": 70,
+          "doc": "The combination is not supported on this system.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Failed",
+          "value": "6",
+          "payload": null,
+          "line": 72,
+          "doc": "The system reported a failure this module has no name for.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "MinimumPageSize",
+      "displayName": "MinimumPageSize",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 84,
+      "signature": "pub const MinimumPageSize: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The smallest page any supported system uses, in bytes.",
+        "markdown": "The smallest page any supported system uses, in bytes.\nFour kibibytes, which is the page size on seven of the eight supported target cells and the floor on the eighth:\nApple Silicon uses sixteen, and a Linux kernel may be configured for sixteen or sixty-four, but none of them\ngoes below this.\nIt is a bound, not an answer. `PageAlign` rounds to it because rounding to a divisor of the real page size is\nalways safe — the system rounds again, up to whatever its pages actually are — and because asking the system on\nevery call would put a file read or a system call inside an allocator's inner loop. A caller that needs the real\ngranularity asks `PageSize` once and keeps the answer.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#minimum-page-size"],
+        "deprecated": null
+      },
+      "value": "4096",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PageSize",
+      "displayName": "PageSize",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 102,
+      "signature": "pub func PageSize() -> uint ! PageError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Asks the system how large a page actually is, in bytes.",
+        "markdown": "Asks the system how large a page actually is, in bytes.\nThe answer is always a power of two, and is the granularity every call in this module rounds a length up to. It\nvaries by machine and not only by system: Apple Silicon uses sixteen kibibytes where Apple's x86-64 uses four,\nand a Linux kernel may be configured for either or for sixty-four.\nEach system is asked the way it wants to be asked, by the package that owns it — `GetSystemInfo` on Windows,\n`getpagesize` on Darwin, the `hw.pagesize` sysctl on FreeBSD, and `/proc/self/auxv` on Linux, whose kernel\npublishes the value in the auxiliary vector rather than behind a system call. Nothing is captured at process\nstart and no libc is called.\nReports `Unsupported` when the system would not answer — on Linux, a container built without `/proc` is the\nordinary way that happens. A failure is reported rather than a guess substituted, because a caller that is\nasking this instead of using `MinimumPageSize` is asking for the real number, and a wrong real number is worse\nthan a refusal it can handle.\nAllocates nothing. Runs in constant time on three systems and performs one open, read and close on Linux, so a\ncaller that needs the size more than once should keep it.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the page size in bytes, or the reason the system would not answer",
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-size"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PageAllocate",
+      "displayName": "PageAllocate",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 134,
+      "signature": "pub func PageAllocate(length: uint, protection: uint32) -> (*var opaque) ! PageError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Takes `length` bytes of address space with the given protection, and reports where it landed.",
+        "markdown": "Takes `length` bytes of address space with the given protection, and reports where it landed.\n`length` is rounded up to whole pages by the system. `protection` is a combination of the `Page*` flags, and\n`PageNone` is legal — it takes the space and refuses every access to it.\nThe pages are zero-filled on every supported system. Nothing else about their contents is promised.\nA `length` of zero is refused with `InvalidLength` rather than succeeding with nothing, because a zero-length\nmapping is a caller's arithmetic error far more often than an intention.\nRuns in constant time as far as this module is concerned; the system may take longer. Allocates nothing beyond\nwhat it is asked for.\nThe pages are the caller's until `PageRelease` takes exactly this length back. Releasing a different length, or\nan address this did not return, is undefined on Windows and silently partial elsewhere.",
+        "typeParams": [],
+        "params": [
+          {
+            "name": "length",
+            "markdown": "how many bytes of address space to take, rounded up to whole pages by the system"
+          },
+          { "name": "protection", "markdown": "what may be done with the pages, as `Page*` flags" }
+        ],
+        "returns": "the base address of the pages, or the reason the address space was not taken",
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-allocate"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PageRelease",
+      "displayName": "PageRelease",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 162,
+      "signature": "pub func PageRelease(address: *var opaque, length: uint) -> ! PageError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Gives back `length` bytes of address space at `address`.",
+        "markdown": "Gives back `length` bytes of address space at `address`.\n`address` must be a base address `PageAllocate` returned, and `length` the length it was given. Succeeds when the\nsystem accepted the release.\nA `length` of zero is refused with `InvalidLength`, and a null `address` with `InvalidAddress`, rather than either\nbeing quietly ignored: both are arithmetic errors at the caller far more often than intentions.\nEvery pointer into the range becomes invalid, and the address space may be handed to the next allocation at once.\nWindows requires the exact base address and ignores the length entirely; the other systems accept a sub-range and\nrelease only that, so a wrong length there silently releases the wrong amount.",
+        "typeParams": [],
+        "params": [
+          { "name": "address", "markdown": "a base address `PageAllocate` returned" },
+          { "name": "length", "markdown": "the length it was given" }
+        ],
+        "returns": "nothing on success, or the reason the system refused the release",
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-release"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PageProtect",
+      "displayName": "PageProtect",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 189,
+      "signature": "pub func PageProtect(address: *var opaque, length: uint, protection: uint32) -> ! PageError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Changes what may be done with `length` bytes at `address`.",
+        "markdown": "Changes what may be done with `length` bytes at `address`.\n`address` must be page-aligned and `length` is rounded up to whole pages. Succeeds when the system accepted the\nchange.\nThe change takes effect at once, so a thread touching the range concurrently faults rather than finishing what it\nstarted.\nNothing here checks that the range was ever allocated. Asking for write and execute together is refused on Apple\nSilicon without an entitlement and by policy on hardened systems elsewhere, which arrives as `PermissionDenied`.",
+        "typeParams": [],
+        "params": [
+          { "name": "address", "markdown": "a page-aligned address" },
+          { "name": "length", "markdown": "how many bytes, rounded up to whole pages" },
+          { "name": "protection", "markdown": "what may be done with the pages afterwards" }
+        ],
+        "returns": "nothing on success, or the reason the system refused the change",
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-protect"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PageAlign",
+      "displayName": "PageAlign",
+      "module": "Pages",
+      "source": "Src/Pages.rux",
+      "line": 219,
+      "signature": "pub func PageAlign(length: uint) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "Rounds `length` up to a whole number of `MinimumPageSize` blocks.",
+        "markdown": "Rounds `length` up to a whole number of `MinimumPageSize` blocks.\nIt rounds to the bound rather than to the system's real page size, which is a deliberate difference from what\nthe name suggests and the reason `MinimumPageSize` is public. Rounding to a divisor of the real size cannot make\nan allocation wrong — every call in this module hands the length to a system that rounds again, up to whatever\nits pages actually are — and it keeps a file read out of an allocator's inner loop. On a machine with larger\npages the result is a length the system will round further, which costs nothing.\nA caller that needs the length to be a whole number of *real* pages asks `PageSize` once, keeps the answer, and\nrounds with `AlignUp` itself.\nReturns the rounded length, or `length` itself when rounding would pass the end of the range — which a caller\nsizing an allocation should notice, since the system will refuse such a length anyway.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "length", "markdown": "the byte count to round up" }],
+        "returns": "the rounded length",
+        "see": ["https://rux-lang.dev/docs/api/memory/pages#page-align"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Realloc",
+      "displayName": "Realloc",
+      "module": "Realloc",
+      "source": "Src/Realloc.rux",
+      "line": 23,
+      "signature": "pub func Realloc(ptr: *opaque, size: uint) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Resizes an allocation to `size` bytes, preserving the bytes that still fit.",
+        "markdown": "Resizes an allocation to `size` bytes, preserving the bytes that still fit.\nA null `ptr` behaves as `Alloc(size)`. A zero size releases a non-null allocation and returns null. On failure,\nreturns null and leaves the original allocation valid; on success, the original address is invalid even when the\nreturned address has the same numeric value.\nA non-null `ptr` must be the live base address returned by `Alloc` or an earlier `Realloc`. Interior, released,\nor foreign addresses are invalid. Bytes added beyond the old size are uninitialized.",
+        "typeParams": [],
+        "params": [
+          { "name": "ptr", "markdown": "the allocation to resize, or null to allocate" },
+          { "name": "size", "markdown": "the wanted size; zero releases and returns null" }
+        ],
+        "returns": "the address of the resized allocation, or null on failure",
+        "see": ["https://rux-lang.dev/docs/api/memory/allocation#realloc"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

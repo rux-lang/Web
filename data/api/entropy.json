@@ -1,0 +1,628 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Entropy",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Unpredictable bytes from the operating system",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/entropy",
+    "dependencies": [
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "FreeBSD", "namespace": "Rux", "version": "0.1.0", "targetOS": ["FreeBSD"] },
+      { "name": "Linux", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Linux"] },
+      { "name": "macOS", "namespace": "Rux", "version": "0.1.0", "targetOS": ["macOS"] },
+      { "name": "Memory", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Error",
+      "source": "Src/Error.rux",
+      "header": "Why a request for unpredictable bytes did not produce them.\nFour systems report the failure four ways — a negative error number, an `NTSTATUS`, and on Darwin no failure at\nall — and a caller asking for a key does not want to know which. What a caller does want to know is whether to\ntry again, whether the source exists on this system, and whether the buffer holds anything.\nOne rule holds across every function in this package: a request either fills the whole buffer and succeeds, or\nfails with one of these and leaves the buffer whatever it already held. There is no partial fill to inspect,\nbecause a half-filled key is more dangerous than none at all — the first half looks exactly as random as a whole\none."
+    },
+    {
+      "name": "Fill",
+      "source": "Src/Fill.rux",
+      "header": "The call a caller actually makes, and the seam that makes its failure paths testable.\n`FillFromSource` is the system, reached directly. This is the layer above it: it splits a request larger than any\nsingle call into as many calls as it takes, it zeroizes the whole buffer when any part of the request fails, and\nit reaches the system through an interface rather than by name.\nThat last part is the point of the module. Entropy failures are the ones nobody tests: they need a kernel with no\ngenerator, a process being signalled steadily, or a cryptographic provider that refuses — none of which a test\ncan arrange. So the source is an `EntropySource`, `SystemEntropy` is the one that asks the operating system, and a\ntest supplies one that fails exactly when the test wants it to. The code that handles a failure is then the same\ncode in the test and in production, which is the only way to know it works."
+    },
+    {
+      "name": "Source",
+      "source": "Src/Source.rux",
+      "header": "The system's own generator, reached the way each system wants to be asked.\nFour systems, four interfaces. Linux and FreeBSD have a `getrandom` system call that may write fewer bytes than\nasked for and may be interrupted by a signal, so a caller who needs the whole buffer has to loop — and looping\ncorrectly is most of what this module is. Darwin's `arc4random_buf` is always seeded, never blocks and cannot\nfail, so it returns nothing at all. Windows has `BCryptGenRandom`, which either fills the whole buffer or fails,\nand reports through an `NTSTATUS` rather than an error number.\nWhat comes out is fit for a key, a token, or anything an adversary would like to guess. It is not a generator:\nthere is no state here, nothing is reproducible, and drawing a lot of bytes at once is slower than drawing them\nfrom a seeded generator. Ask for a seed here and take the rest from `Rux/Random`.\nA failure leaves nothing usable behind. Whatever a short read managed to write is zeroized before the failure is\nreported, because a half-filled key looks exactly as random as a whole one, and a caller who ignores a return\nvalue should get an obviously wrong buffer rather than a subtly weak one."
+    }
+  ],
+  "items": [
+    {
+      "kind": "enum",
+      "name": "EntropyError",
+      "displayName": "EntropyError",
+      "module": "Error",
+      "source": "Src/Error.rux",
+      "line": 14,
+      "signature": "pub enum EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why unpredictable bytes could not be obtained.",
+        "markdown": "Why unpredictable bytes could not be obtained.\nEvery case is a failure: nothing was written that a caller may rely on. A filled buffer is the success channel of\nthe `! EntropyError` the fill returns.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/entropy/entropy-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Unsupported",
+          "value": null,
+          "payload": null,
+          "line": 18,
+          "doc": "This system has no entropy source this package can reach.\nA kernel too old for its own generator reports this. It does not change while a program runs, so retrying is\npointless.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Interrupted",
+          "value": null,
+          "payload": null,
+          "line": 21,
+          "doc": "The source kept being interrupted, and the call gave up rather than looping forever.\nOrdinary on a process taking signals steadily. Worth one more attempt; not worth an unbounded number.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Failed",
+          "value": null,
+          "payload": null,
+          "line": 23,
+          "doc": "The source refused for a reason the system did not make actionable.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TooLarge",
+          "value": null,
+          "payload": null,
+          "line": 26,
+          "doc": "The request was larger than the source accepts in one call.\nWindows takes a 32-bit count, so a request above four gigabytes has no honest answer. Split it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "IsTransient",
+          "line": 37,
+          "signature": "pub func IsTransient(self: *EntropyError) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "*EntropyError",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether trying again might work.",
+            "markdown": "Whether trying again might work.\n`self` is borrowed. True for `Interrupted`, which says a signal arrived rather than that anything is wrong.\nFalse for everything else: a system with no source will not grow one, and a refusal repeated is still a\nrefusal.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether asking again could succeed",
+            "see": ["https://rux-lang.dev/docs/api/entropy/entropy-error#is-transient"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "interface",
+      "name": "EntropySource",
+      "displayName": "EntropySource",
+      "module": "Fill",
+      "source": "Src/Fill.rux",
+      "line": 18,
+      "signature": "pub interface EntropySource",
+      "typeParams": [],
+      "doc": {
+        "summary": "Something that can fill a buffer with unpredictable bytes.",
+        "markdown": "Something that can fill a buffer with unpredictable bytes.\nImplemented by `SystemEntropy` for the operating system's generator, and by a test for a source that fails on\ndemand. An implementation either fills the whole buffer and succeeds, or fails with why it did not.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/entropy/entropy-source"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "requirement",
+          "name": "Fill",
+          "line": 28,
+          "signature": "func Fill(self: &var Self, buffer: *var opaque, length: uint) -> ! EntropyError",
+          "typeParams": [],
+          "params": [
+            { "name": "buffer", "type": "*var opaque" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var Self",
+          "returnType": "! EntropyError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Fills `length` bytes of `buffer` with unpredictable bytes.",
+            "markdown": "Fills `length` bytes of `buffer` with unpredictable bytes.\n`buffer` is borrowed and written; `length` is read by value. Succeeds only when every byte was written. An\nimplementation may write part of the buffer before failing — the caller is what guarantees nothing\npartial survives.\n`buffer` must be writable for `length` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "buffer", "markdown": "receives the bytes" },
+              { "name": "length", "markdown": "how many bytes to fill" }
+            ],
+            "returns": "nothing when every byte was written, or why not",
+            "see": ["https://rux-lang.dev/docs/api/entropy/entropy-source#fill"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "SystemEntropy",
+      "displayName": "SystemEntropy",
+      "module": "Fill",
+      "source": "Src/Fill.rux",
+      "line": 35,
+      "signature": "pub struct SystemEntropy",
+      "typeParams": [],
+      "doc": {
+        "summary": "The operating system's generator, as an `EntropySource`.",
+        "markdown": "The operating system's generator, as an `EntropySource`.\nHolds nothing: the system's generator needs no handle, no seed and no shutdown. It exists so that code taking a\nsource can be handed the real one.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/entropy/system-entropy"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "SystemEntropy",
+          "line": 45,
+          "signature": "pub func SystemEntropy() -> SystemEntropy",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "SystemEntropy",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The operating system's generator.",
+            "markdown": "The operating system's generator.\nTakes nothing and cannot fail. Costs nothing to make, so there is no reason to keep one around rather than\nmaking one where it is needed.\nRuns in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the source, which holds no state of its own",
+            "see": ["https://rux-lang.dev/docs/api/entropy/system-entropy#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Fill",
+          "line": 60,
+          "signature": "pub func Fill(self: &var SystemEntropy, buffer: *var opaque, length: uint) -> ! EntropyError",
+          "typeParams": [],
+          "params": [
+            { "name": "buffer", "type": "*var opaque" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var SystemEntropy",
+          "returnType": "! EntropyError",
+          "value": null,
+          "conformance": "EntropySource",
+          "public": true,
+          "doc": {
+            "summary": "Fills `length` bytes of `buffer` from the operating system.",
+            "markdown": "Fills `length` bytes of `buffer` from the operating system.\nExactly `FillFromSource`, reached through the interface. Succeeds only when every byte was written.\nRuns in time proportional to `length` and allocates nothing.\n`buffer` must be writable for `length` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "buffer", "markdown": "receives the bytes" },
+              { "name": "length", "markdown": "how many bytes to fill" }
+            ],
+            "returns": "nothing when every byte was written, or why not",
+            "see": ["https://rux-lang.dev/docs/api/entropy/system-entropy#fill"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["EntropySource"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "FillFrom",
+      "displayName": "FillFrom",
+      "module": "Fill",
+      "source": "Src/Fill.rux",
+      "line": 79,
+      "signature": "pub func FillFrom(source: &var EntropySource, buffer: *var opaque, length: uint) -> ! EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Fills `length` bytes of `buffer` from `source`, in as many calls as it takes.",
+        "markdown": "Fills `length` bytes of `buffer` from `source`, in as many calls as it takes.\n`source` is borrowed for the call; `buffer` is borrowed and written; `length` is read by value. Succeeds only when\nevery byte was written, and otherwise fails with what the source reported.\nA request larger than a single call accepts is split, so a caller need not know what that limit is. A failure\npart-way through a split request is a failure of the whole request: there is no state in which some of a buffer\nis unpredictable and the rest is not, because nothing downstream could act on the difference.\nRuns in time proportional to `length` and allocates nothing.\n`buffer` must be writable for `length` bytes. On any failure the whole buffer is zeroized, including the parts an\nearlier call filled successfully.",
+        "typeParams": [],
+        "params": [
+          { "name": "source", "markdown": "where the bytes come from" },
+          { "name": "buffer", "markdown": "receives the bytes" },
+          { "name": "length", "markdown": "how many bytes to fill" }
+        ],
+        "returns": "nothing when every byte was written, or why not",
+        "see": ["https://rux-lang.dev/docs/api/entropy/entropy-source#fill-from"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "FillWithRetries",
+      "displayName": "FillWithRetries",
+      "module": "Fill",
+      "source": "Src/Fill.rux",
+      "line": 113,
+      "signature": "pub func FillWithRetries(source: &var EntropySource, buffer: *var opaque, length: uint, attempts: uint) -> ! EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Fills `length` bytes of `buffer` from `source`, trying again while the failure says trying again might work.",
+        "markdown": "Fills `length` bytes of `buffer` from `source`, trying again while the failure says trying again might work.\n`source` is borrowed for the call; `buffer` is borrowed and written; `length` and `attempts` are read by value.\n`attempts` is how many extra tries to make, so zero is one attempt and behaves exactly like `FillFrom`.\nOnly a transient failure is retried — `Interrupted`, which says a signal arrived rather than that anything is\nwrong. A system with no source and a provider that refused are both reported at once, because repeating them\nwould only take longer to reach the same answer.\nRuns in time proportional to `length` times the attempts made, and allocates nothing.\n`buffer` must be writable for `length` bytes. Every failed attempt zeroizes the buffer, so a failure that\nexhausts the attempts leaves zeros.",
+        "typeParams": [],
+        "params": [
+          { "name": "source", "markdown": "where the bytes come from" },
+          { "name": "buffer", "markdown": "receives the bytes" },
+          { "name": "length", "markdown": "how many bytes to fill" },
+          { "name": "attempts", "markdown": "how many times to go back to an interrupted source before giving up" }
+        ],
+        "returns": "nothing when every byte was written, or why not — `Interrupted` after `attempts` tries",
+        "see": ["https://rux-lang.dev/docs/api/entropy/entropy-source#fill-with-retries"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Fill",
+      "displayName": "Fill",
+      "module": "Fill",
+      "source": "Src/Fill.rux",
+      "line": 140,
+      "signature": "pub func Fill(buffer: *var opaque, length: uint) -> ! EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Fills `length` bytes of `buffer` from the operating system.",
+        "markdown": "Fills `length` bytes of `buffer` from the operating system.\n`buffer` is borrowed and written; `length` is read by value. This is the call to make when there is no reason to\nname a source: it is `FillFrom` over `SystemEntropy`, with the same contract.\nRuns in time proportional to `length` and allocates nothing.\n`buffer` must be writable for `length` bytes. On any failure the whole buffer is zeroized.",
+        "typeParams": [],
+        "params": [
+          { "name": "buffer", "markdown": "receives the bytes" },
+          { "name": "length", "markdown": "how many bytes to fill" }
+        ],
+        "returns": "nothing when every byte was written, or why not",
+        "see": ["https://rux-lang.dev/docs/api/entropy/fill"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "NextUint64",
+      "displayName": "NextUint64",
+      "module": "Fill",
+      "source": "Src/Fill.rux",
+      "line": 151,
+      "signature": "pub func NextUint64() -> uint64 ! EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "An unpredictable 64-bit value, which is what a generator wants for a seed.",
+        "markdown": "An unpredictable 64-bit value, which is what a generator wants for a seed.\nA failed draw scrubs its local copy before failing, so nothing of a partial draw is left behind on the stack.\nRuns in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": "eight unpredictable bytes as a value, or why the draw failed",
+        "see": ["https://rux-lang.dev/docs/api/entropy/next-uint64"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "MaxEntropyAttempts",
+      "displayName": "MaxEntropyAttempts",
+      "module": "Source",
+      "source": "Src/Source.rux",
+      "line": 31,
+      "signature": "pub const MaxEntropyAttempts: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many times a fill will go back to an interrupted source before giving up.",
+        "markdown": "How many times a fill will go back to an interrupted source before giving up.\nA signal arriving during the call is ordinary and retrying is correct, but a process taking signals steadily\nmust not spin forever inside what its caller believes is one operation. Reaching this reports `Interrupted`,\nwhich says exactly that and leaves trying again to the caller, who knows whether it is worth it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/entropy/system-entropy#max-entropy-attempts"],
+        "deprecated": null
+      },
+      "value": "16",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "MaxEntropyRequest",
+      "displayName": "MaxEntropyRequest",
+      "module": "Source",
+      "source": "Src/Source.rux",
+      "line": 37,
+      "signature": "pub const MaxEntropyRequest: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The largest request the source accepts in a single call.",
+        "markdown": "The largest request the source accepts in a single call.\nWindows takes a 32-bit count, so this is what a portable caller may ask for at once. A larger buffer is filled by\nasking more than once, which `Fill` does.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/entropy/system-entropy#max-entropy-request"],
+        "deprecated": null
+      },
+      "value": "0xFFFFFFFF",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "FillFromSource",
+      "displayName": "FillFromSource",
+      "module": "Source",
+      "source": "Src/Source.rux",
+      "line": 55,
+      "signature": "pub func FillFromSource(buffer: *var opaque, length: uint) -> ! EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Fills `length` bytes of `buffer` from the system's generator, in one pass.",
+        "markdown": "Fills `length` bytes of `buffer` from the system's generator, in one pass.\n`buffer` is borrowed and written; `length` is read by value. Succeeds only when every byte was written.\nA zero length succeeds without touching anything. A length past what the source accepts is reported before the\nbuffer is looked at, so an impossible request is refused whatever was passed with it; a null buffer with an\nordinary length reports `Failed` rather than being written through.\nOn Linux and FreeBSD a short count is not a failure, so this loops until the buffer is full; a signal in the\nmiddle is retried up to `MaxEntropyAttempts` times before reporting `Interrupted`. A kernel with no such call\nreports `Unsupported`. On Darwin the source cannot fail. On Windows a request above `MaxEntropyRequest` reports\n`TooLarge`, since the count is passed as 32 bits.\nRuns in time proportional to `length` and allocates nothing.\n`buffer` must be writable for `length` bytes. On any failure the buffer is zeroized, so a caller who ignores the\nresult gets zeros rather than a partly random buffer that would pass a glance.",
+        "typeParams": [],
+        "params": [
+          { "name": "buffer", "markdown": "receives the bytes" },
+          { "name": "length", "markdown": "how many bytes to fill" }
+        ],
+        "returns": "nothing when every byte was written in this one pass, or why not",
+        "see": ["https://rux-lang.dev/docs/api/entropy/system-entropy#fill-from-source"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

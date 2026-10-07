@@ -92,14 +92,86 @@ export const PACKAGES = [
       },
     },
   },
-  { name: "Memory", area: "foundation", icon: "i-lucide-memory-stick", description: "Memory management functions" },
+  {
+    name: "Memory",
+    area: "foundation",
+    icon: "i-lucide-memory-stick",
+    description: "Memory management functions",
+    topics: {
+      allocation: {
+        title: "Heap allocation",
+        description: "Allocating, resizing and releasing blocks on the system heap.",
+      },
+      blocks: {
+        title: "Block operations",
+        description: "Copying, filling, clearing, comparing and searching blocks of bytes.",
+      },
+      alignment: {
+        title: "Alignment",
+        description: "Testing addresses for alignment and rounding them to a boundary.",
+      },
+      "unaligned-access": {
+        title: "Unaligned and byte-order access",
+        description: "Reading and writing values at any alignment and in either byte order.",
+      },
+      pages: {
+        title: "Pages",
+        description: "Address space in whole pages from the operating system, with a protection.",
+      },
+    },
+  },
   {
     name: "Allocator",
     area: "foundation",
     icon: "i-lucide-boxes",
     description: "Allocation contracts and the allocators that meet them",
   },
-  { name: "Math", area: "foundation", icon: "i-lucide-sigma", description: "Mathematical constants and functions" },
+  {
+    name: "Math",
+    area: "foundation",
+    icon: "i-lucide-sigma",
+    description: "Mathematical constants and functions",
+    topics: {
+      constants: { title: "Constants", description: "Mathematical constants, rounded to the nearest float64." },
+      trigonometry: {
+        title: "Trigonometry",
+        description: "Sine, cosine, tangent, their inverses, and conversion between degrees and radians.",
+      },
+      hyperbolic: {
+        title: "Hyperbolic functions",
+        description: "Hyperbolic sine, cosine, tangent and their inverses.",
+      },
+      exponential: {
+        title: "Exponentials and logarithms",
+        description: "Powers of e and two, and logarithms in base e, two and ten.",
+      },
+      powers: {
+        title: "Powers and roots",
+        description: "Raising to a power, square and cube roots, and the hypotenuse.",
+      },
+      rounding: {
+        title: "Rounding and remainders",
+        description: "Rounding to an integral value in a chosen direction, and the floating-point remainder.",
+      },
+      "abs-min-max": {
+        title: "Absolute value, minimum and maximum",
+        description: "The magnitude of a floating-point value and the smaller or larger of two.",
+      },
+      integer: {
+        title: "Integer arithmetic",
+        description: "Checked and wrapping integer operations: magnitude, extrema, clamping, GCD, LCM and powers.",
+      },
+      classification: {
+        title: "Classification and special values",
+        description:
+          "Telling NaNs, infinities, zeros, subnormals and normal values apart, and making the special ones.",
+      },
+      "float-representation": {
+        title: "Floating-point representation",
+        description: "Signs, exponents, neighbouring values and ulp distances of floating-point values.",
+      },
+    },
+  },
   { name: "Text", area: "text", icon: "i-lucide-type", description: "Strings and fundamental text manipulation" },
   { name: "Format", area: "text", icon: "i-lucide-whole-word", description: "String conversion and formatting" },
   {
@@ -180,6 +252,17 @@ export const PACKAGES = [
     area: "collections",
     icon: "i-lucide-dices",
     description: "Pseudorandom number generators and distributions",
+    topics: {
+      uniform: { title: "Uniform ranges", description: "Uniform integers and floats in a bounded range." },
+      distributions: {
+        title: "Distributions",
+        description: "Values from the Bernoulli, exponential, normal, binomial, Poisson, gamma and beta distributions.",
+      },
+      sampling: {
+        title: "Sampling and shuffling",
+        description: "Shuffling a slice and choosing indices, uniformly or by weight.",
+      },
+    },
   },
   { name: "Io", area: "system", icon: "i-lucide-terminal", description: "Streams, console I/O, readers and writers" },
   {
