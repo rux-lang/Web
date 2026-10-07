@@ -1,0 +1,3206 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Hash",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Named non-cryptographic hashes and checksums",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/hash",
+    "dependencies": [{ "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }]
+  },
+  "modules": [
+    {
+      "name": "Crc",
+      "source": "Src/Crc.rux",
+      "header": "CRC-32, the checksum that answers \"did these bytes arrive intact?\" — and its Castagnoli variant, which answers it\nbetter and is what modern formats and hardware use.\nA cyclic redundancy check is division: treat the message as a polynomial over GF(2), divide by a fixed generator,\nand keep the remainder. What that buys over a sum is a guarantee rather than a hope — a 32-bit CRC detects every\nburst error up to 32 bits long, every single-bit and double-bit error, and every error of odd weight, which no\ngeneral-purpose hash promises about anything.\nBoth forms here are the reflected, table-driven ones every implementation uses: bits enter least significant end\nfirst, the state starts at all ones, and the answer is the state complemented. Those three conventions are not\narbitrary — the initial ones make leading zero bytes change the answer, and the final complement makes trailing\nones do the same, so a message padded at either end is not mistaken for the message itself.\nThe two differ only in the generator. CRC-32 uses the IEEE 802.3 polynomial that gzip, PNG and zip all use.\nCRC-32C uses Castagnoli's, which detects more of the double-bit errors that matter at the lengths storage systems\ncare about, and which x86-64 and AArch64 both implement in hardware — iSCSI, ext4, Btrfs and SCTP all chose it.\nThis implementation is the table, not the instruction: correct everywhere, and about a byte per cycle.\nA CRC is a checksum, not a hash and emphatically not a digest. It detects accident, never intent: given any\nmessage and any target value, producing a message with that CRC is arithmetic a beginner can do. It implements\n`Hasher` because feeding it bytes has the same shape, not because it is a substitute for one.\nhttps://datatracker.ietf.org/doc/html/rfc3385"
+    },
+    {
+      "name": "Fnv",
+      "source": "Src/Fnv.rux",
+      "header": "FNV-1a, the hash to reach for when the input is short and the code must be obvious.\nFowler-Noll-Vo is a byte at a time: exclusive-or the byte into the accumulator, then multiply by a prime chosen so\nthat every input byte reaches every output bit. There is no block buffer, no padding and no finalization, which is\nwhy an implementation fits on a page and why hashing four bytes costs four multiplies rather than a round of\nmixing that assumed sixteen.\nThat simplicity is also its limit. FNV-1a has no key, its structure is public, and finding two inputs that collide\nis a small computation — so it must not key a table whose contents an adversary chooses. `SipHash` is the answer\nthere. For a compile-time constant, a short identifier, or a checksum over data nobody is attacking, FNV-1a is\nsmaller and faster than anything that would replace it.\nBoth widths are the standard ones: the 32-bit and 64-bit parameters from the FNV specification, unmodified. A hash\ncomputed here will match any other correct implementation, which is what makes it worth naming an algorithm rather\nthan promising only \"some hash\".\nhttps://datatracker.ietf.org/doc/html/draft-eastlake-fnv-21"
+    },
+    {
+      "name": "Hasher",
+      "source": "Src/Hasher.rux",
+      "header": "What every hash in this package implements, and the pieces every caller of one needs.\nA hash here is built the same way regardless of algorithm: make one, write bytes into it in order, and ask for the\nanswer. That shape is what lets a value be hashed without first being turned into a contiguous buffer — a struct\nwrites each of its fields in turn, and a collection writes each of its elements, with nothing copied anywhere.\nTake a hasher by generic bound rather than as an owning interface value: `func Digest<H: Hasher>(hasher: &var H)`\nborrows the caller's own hasher and resolves at instantiation. The interface exists to be the bound.\nNone of these are cryptographic. They are fast, they are named, and they are documented — but an adversary who\ngets to choose the input can find collisions in any of them except `SipHash`, and even `SipHash` promises only\nthat it is hard without the key. Anything that must resist an adversary belongs in `Rux/Crypto`."
+    },
+    {
+      "name": "SipHash",
+      "source": "Src/SipHash.rux",
+      "header": "SipHash-2-4, the hash that keeps a table fast when someone is trying to make it slow.\nEvery other hash in this package has a fixed, public structure, so anyone can compute inputs that collide. Feed a\nfew thousand of those to a hash table and every one lands in the same bucket: lookups that should be constant\nbecome linear, and a service that was doing fine falls over on traffic that looks perfectly ordinary. That attack\nis what SipHash exists to stop.\nIt stops it by being keyed. Without the key, finding two inputs that collide is as hard as breaking the function,\nand the key is a secret the program picks at startup — from `Rux/Entropy` — and never publishes. An attacker who\ncannot guess it cannot aim. The keying is real cryptographic keying rather than a seed mixed in for luck, which is\nthe difference between this and `XxHash64`.\nThe price is speed: two rounds per eight bytes of input and four more at the end, against xxHash64's one round per\neight bytes across four independent lanes. For a hash table's short keys the difference is small and worth paying.\nFor hashing a large file it is not, and `XxHash64` is the better answer there.\nThis is not a general-purpose message authentication code either, despite the resemblance. Sixty-four bits is\nenough to make collisions unfindable at hash-table scale and not enough to authenticate a message; `Rux/Crypto`\nhas HMAC for that.\nhttps://www.aumasson.jp/siphash/siphash.pdf"
+    },
+    {
+      "name": "XxHash",
+      "source": "Src/XxHash.rux",
+      "header": "xxHash64, the hash to reach for when there is a lot of data and the answer must be ready before the next cache\nmiss.\nWhere FNV-1a takes one byte at a time, this takes thirty-two: four independent 64-bit accumulators, each mixing\nits own eight bytes with a multiply and a rotate, so a wide machine has four chains to run at once instead of one\ndependency chain to wait on. The accumulators are folded together at the end, the length is mixed in, and the tail\nis finished eight, four and one byte at a time.\nThe mixing is arithmetic rather than table lookup, which is what keeps it fast on data that does not fit in cache:\nthere is no table to evict. The final avalanche — shift, multiply, shift, multiply, shift — is what makes a\none-bit change in the input change about half the output bits, which the round function alone does not give.\nA seed is part of the algorithm here, not an afterthought: two runs with different seeds produce unrelated hashes\nof the same input, which is enough to stop accidental collisions from following data between two tables. It is not\nenough to stop a deliberate one — xxHash is not keyed in the cryptographic sense, and an adversary who learns the\nseed can find collisions as easily as without it. `SipHash` is the answer where that matters.\nThe result matches the reference implementation exactly, for every input length and every seed.\nhttps://github.com/Cyan4973/xxHash/blob/dev/doc/xxhash_spec.md"
+    }
+  ],
+  "items": [
+    {
+      "kind": "constant",
+      "name": "Crc32Polynomial",
+      "displayName": "Crc32Polynomial",
+      "module": "Crc",
+      "source": "Src/Crc.rux",
+      "line": 24,
+      "signature": "pub const Crc32Polynomial: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The reflected IEEE 802.3 generator polynomial, which is what gzip, PNG and zip mean by \"CRC-32\".",
+        "markdown": "The reflected IEEE 802.3 generator polynomial, which is what gzip, PNG and zip mean by \"CRC-32\".",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/crc32#crc32-polynomial"],
+        "deprecated": null
+      },
+      "value": "0xEDB88320",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "Crc32cPolynomial",
+      "displayName": "Crc32cPolynomial",
+      "module": "Crc",
+      "source": "Src/Crc.rux",
+      "line": 28,
+      "signature": "pub const Crc32cPolynomial: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The reflected Castagnoli generator polynomial, which is what iSCSI, ext4, Btrfs and SCTP mean by \"CRC-32C\".",
+        "markdown": "The reflected Castagnoli generator polynomial, which is what iSCSI, ext4, Btrfs and SCTP mean by \"CRC-32C\".",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/crc32c#crc32c-polynomial"],
+        "deprecated": null
+      },
+      "value": "0x82F63B78",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "Crc32Initial",
+      "displayName": "Crc32Initial",
+      "module": "Crc",
+      "source": "Src/Crc.rux",
+      "line": 34,
+      "signature": "pub const Crc32Initial: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The value a CRC register starts at, and the value the finished register is complemented against.",
+        "markdown": "The value a CRC register starts at, and the value the finished register is complemented against.\nBoth ends are all ones, which is what makes a message padded with zeroes at either end give a different answer\nfrom the message itself.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/crc32#crc32-initial"],
+        "deprecated": null
+      },
+      "value": "0xFFFFFFFF",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "Crc32Table",
+      "displayName": "Crc32Table",
+      "module": "Crc",
+      "source": "Src/Crc.rux",
+      "line": 40,
+      "signature": "pub const Crc32Table: uint32[N]",
+      "typeParams": [],
+      "doc": {
+        "summary": "One byte of division by `Crc32Polynomial`, precomputed for every possible byte.",
+        "markdown": "One byte of division by `Crc32Polynomial`, precomputed for every possible byte.\nEntry `i` is `i` divided by the generator, so a whole byte of the message advances the register in one indexed\nlookup and one shift rather than eight conditional shifts.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/crc32#crc32-table"],
+        "deprecated": null
+      },
+      "value": "[\n    0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA, 0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,\n    0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988, 0x09B64C2B, 0x7EB17CBD, 0xE7B82D07, 0x90BF1D91,\n    0x1DB71064, 0x6AB020F2, 0xF3B97148, 0x84BE41DE, 0x1ADAD47D, 0x6DDDE4EB, 0xF4D4B551, 0x83D385C7,\n    0x136C9856, 0x646BA8C0, 0xFD62F97A, 0x8A65C9EC, 0x14015C4F, 0x63066CD9, 0xFA0F3D63, 0x8D080DF5,\n    0x3B6E20C8, 0x4C69105E, 0xD56041E4, 0xA2677172, 0x3C03E4D1, 0x4B04D447, 0xD20D85FD, 0xA50AB56B,\n    0x35B5A8FA, 0x42B2986C, 0xDBBBC9D6, 0xACBCF940, 0x32D86CE3, 0x45DF5C75, 0xDCD60DCF, 0xABD13D59,\n    0x26D930AC, 0x51DE003A, 0xC8D75180, 0xBFD06116, 0x21B4F4B5, 0x56B3C423, 0xCFBA9599, 0xB8BDA50F,\n    0x2802B89E, 0x5F058808, 0xC60CD9B2, 0xB10BE924, 0x2F6F7C87, 0x58684C11, 0xC1611DAB, 0xB6662D3D,\n    0x76DC4190, 0x01DB7106, 0x98D220BC, 0xEFD5102A, 0x71B18589, 0x06B6B51F, 0x9FBFE4A5, 0xE8B8D433,\n    0x7807C9A2, 0x0F00F934, 0x9609A88E, 0xE10E9818, 0x7F6A0DBB, 0x086D3D2D, 0x91646C97, 0xE6635C01,\n    0x6B6B51F4, 0x1C6C6162, 0x856530D8, 0xF262004E, 0x6C0695ED, 0x1B01A57B, 0x8208F4C1, 0xF50FC457,\n    0x65B0D9C6, 0x12B7E950, 0x8BBEB8EA, 0xFCB9887C, 0x62DD1DDF, 0x15DA2D49, 0x8CD37CF3, 0xFBD44C65,\n    0x4DB26158, 0x3AB551CE, 0xA3BC0074, 0xD4BB30E2, 0x4ADFA541, 0x3DD895D7, 0xA4D1C46D, 0xD3D6F4FB,\n    0x4369E96A, 0x346ED9FC, 0xAD678846, 0xDA60B8D0, 0x44042D73, 0x33031DE5, 0xAA0A4C5F, 0xDD0D7CC9,\n    0x5005713C, 0x270241AA, 0xBE0B1010, 0xC90C2086, 0x5768B525, 0x206F85B3, 0xB966D409, 0xCE61E49F,\n    0x5EDEF90E, 0x29D9C998, 0xB0D09822, 0xC7D7A8B4, 0x59B33D17, 0x2EB40D81, 0xB7BD5C3B, 0xC0BA6CAD,\n    0xEDB88320, 0x9ABFB3B6, 0x03B6E20C, 0x74B1D29A, 0xEAD54739, 0x9DD277AF, 0x04DB2615, 0x73DC1683,\n    0xE3630B12, 0x94643B84, 0x0D6D6A3E, 0x7A6A5AA8, 0xE40ECF0B, 0x9309FF9D, 0x0A00AE27, 0x7D079EB1,\n    0xF00F9344, 0x8708A3D2, 0x1E01F268, 0x6906C2FE, 0xF762575D, 0x806567CB, 0x196C3671, 0x6E6B06E7,\n    0xFED41B76, 0x89D32BE0, 0x10DA7A5A, 0x67DD4ACC, 0xF9B9DF6F, 0x8EBEEFF9, 0x17B7BE43, 0x60B08ED5,\n    0xD6D6A3E8, 0xA1D1937E, 0x38D8C2C4, 0x4FDFF252, 0xD1BB67F1, 0xA6BC5767, 0x3FB506DD, 0x48B2364B,\n    0xD80D2BDA, 0xAF0A1B4C, 0x36034AF6, 0x41047A60, 0xDF60EFC3, 0xA867DF55, 0x316E8EEF, 0x4669BE79,\n    0xCB61B38C, 0xBC66831A, 0x256FD2A0, 0x5268E236, 0xCC0C7795, 0xBB0B4703, 0x220216B9, 0x5505262F,\n    0xC5BA3BBE, 0xB2BD0B28, 0x2BB45A92, 0x5CB36A04, 0xC2D7FFA7, 0xB5D0CF31, 0x2CD99E8B, 0x5BDEAE1D,\n    0x9B64C2B0, 0xEC63F226, 0x756AA39C, 0x026D930A, 0x9C0906A9, 0xEB0E363F, 0x72076785, 0x05005713,\n    0x95BF4A82, 0xE2B87A14, 0x7BB12BAE, 0x0CB61B38, 0x92D28E9B, 0xE5D5BE0D, 0x7CDCEFB7, 0x0BDBDF21,\n    0x86D3D2D4, 0xF1D4E242, 0x68DDB3F8, 0x1FDA836E, 0x81BE16CD, 0xF6B9265B, 0x6FB077E1, 0x18B74777,\n    0x88085AE6, 0xFF0F6A70, 0x66063BCA, 0x11010B5C, 0x8F659EFF, 0xF862AE69, 0x616BFFD3, 0x166CCF45,\n    0xA00AE278, 0xD70DD2EE, 0x4E048354, 0x3903B3C2, 0xA7672661, 0xD06016F7, 0x4969474D, 0x3E6E77DB,\n    0xAED16A4A, 0xD9D65ADC, 0x40DF0B66, 0x37D83BF0, 0xA9BCAE53, 0xDEBB9EC5, 0x47B2CF7F, 0x30B5FFE9,\n    0xBDBDF21C, 0xCABAC28A, 0x53B39330, 0x24B4A3A6, 0xBAD03605, 0xCDD70693, 0x54DE5729, 0x23D967BF,\n    0xB3667A2E, 0xC4614AB8, 0x5D681B02, 0x2A6F2B94, 0xB40BBE37, 0xC30C8EA1, 0x5A05DF1B, 0x2D02EF8D\n]",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "Crc32cTable",
+      "displayName": "Crc32cTable",
+      "module": "Crc",
+      "source": "Src/Crc.rux",
+      "line": 77,
+      "signature": "pub const Crc32cTable: uint32[N]",
+      "typeParams": [],
+      "doc": {
+        "summary": "One byte of division by `Crc32cPolynomial`, precomputed for every possible byte.",
+        "markdown": "One byte of division by `Crc32cPolynomial`, precomputed for every possible byte.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/crc32c#crc32c-table"],
+        "deprecated": null
+      },
+      "value": "[\n    0x00000000, 0xF26B8303, 0xE13B70F7, 0x1350F3F4, 0xC79A971F, 0x35F1141C, 0x26A1E7E8, 0xD4CA64EB,\n    0x8AD958CF, 0x78B2DBCC, 0x6BE22838, 0x9989AB3B, 0x4D43CFD0, 0xBF284CD3, 0xAC78BF27, 0x5E133C24,\n    0x105EC76F, 0xE235446C, 0xF165B798, 0x030E349B, 0xD7C45070, 0x25AFD373, 0x36FF2087, 0xC494A384,\n    0x9A879FA0, 0x68EC1CA3, 0x7BBCEF57, 0x89D76C54, 0x5D1D08BF, 0xAF768BBC, 0xBC267848, 0x4E4DFB4B,\n    0x20BD8EDE, 0xD2D60DDD, 0xC186FE29, 0x33ED7D2A, 0xE72719C1, 0x154C9AC2, 0x061C6936, 0xF477EA35,\n    0xAA64D611, 0x580F5512, 0x4B5FA6E6, 0xB93425E5, 0x6DFE410E, 0x9F95C20D, 0x8CC531F9, 0x7EAEB2FA,\n    0x30E349B1, 0xC288CAB2, 0xD1D83946, 0x23B3BA45, 0xF779DEAE, 0x05125DAD, 0x1642AE59, 0xE4292D5A,\n    0xBA3A117E, 0x4851927D, 0x5B016189, 0xA96AE28A, 0x7DA08661, 0x8FCB0562, 0x9C9BF696, 0x6EF07595,\n    0x417B1DBC, 0xB3109EBF, 0xA0406D4B, 0x522BEE48, 0x86E18AA3, 0x748A09A0, 0x67DAFA54, 0x95B17957,\n    0xCBA24573, 0x39C9C670, 0x2A993584, 0xD8F2B687, 0x0C38D26C, 0xFE53516F, 0xED03A29B, 0x1F682198,\n    0x5125DAD3, 0xA34E59D0, 0xB01EAA24, 0x42752927, 0x96BF4DCC, 0x64D4CECF, 0x77843D3B, 0x85EFBE38,\n    0xDBFC821C, 0x2997011F, 0x3AC7F2EB, 0xC8AC71E8, 0x1C661503, 0xEE0D9600, 0xFD5D65F4, 0x0F36E6F7,\n    0x61C69362, 0x93AD1061, 0x80FDE395, 0x72966096, 0xA65C047D, 0x5437877E, 0x4767748A, 0xB50CF789,\n    0xEB1FCBAD, 0x197448AE, 0x0A24BB5A, 0xF84F3859, 0x2C855CB2, 0xDEEEDFB1, 0xCDBE2C45, 0x3FD5AF46,\n    0x7198540D, 0x83F3D70E, 0x90A324FA, 0x62C8A7F9, 0xB602C312, 0x44694011, 0x5739B3E5, 0xA55230E6,\n    0xFB410CC2, 0x092A8FC1, 0x1A7A7C35, 0xE811FF36, 0x3CDB9BDD, 0xCEB018DE, 0xDDE0EB2A, 0x2F8B6829,\n    0x82F63B78, 0x709DB87B, 0x63CD4B8F, 0x91A6C88C, 0x456CAC67, 0xB7072F64, 0xA457DC90, 0x563C5F93,\n    0x082F63B7, 0xFA44E0B4, 0xE9141340, 0x1B7F9043, 0xCFB5F4A8, 0x3DDE77AB, 0x2E8E845F, 0xDCE5075C,\n    0x92A8FC17, 0x60C37F14, 0x73938CE0, 0x81F80FE3, 0x55326B08, 0xA759E80B, 0xB4091BFF, 0x466298FC,\n    0x1871A4D8, 0xEA1A27DB, 0xF94AD42F, 0x0B21572C, 0xDFEB33C7, 0x2D80B0C4, 0x3ED04330, 0xCCBBC033,\n    0xA24BB5A6, 0x502036A5, 0x4370C551, 0xB11B4652, 0x65D122B9, 0x97BAA1BA, 0x84EA524E, 0x7681D14D,\n    0x2892ED69, 0xDAF96E6A, 0xC9A99D9E, 0x3BC21E9D, 0xEF087A76, 0x1D63F975, 0x0E330A81, 0xFC588982,\n    0xB21572C9, 0x407EF1CA, 0x532E023E, 0xA145813D, 0x758FE5D6, 0x87E466D5, 0x94B49521, 0x66DF1622,\n    0x38CC2A06, 0xCAA7A905, 0xD9F75AF1, 0x2B9CD9F2, 0xFF56BD19, 0x0D3D3E1A, 0x1E6DCDEE, 0xEC064EED,\n    0xC38D26C4, 0x31E6A5C7, 0x22B65633, 0xD0DDD530, 0x0417B1DB, 0xF67C32D8, 0xE52CC12C, 0x1747422F,\n    0x49547E0B, 0xBB3FFD08, 0xA86F0EFC, 0x5A048DFF, 0x8ECEE914, 0x7CA56A17, 0x6FF599E3, 0x9D9E1AE0,\n    0xD3D3E1AB, 0x21B862A8, 0x32E8915C, 0xC083125F, 0x144976B4, 0xE622F5B7, 0xF5720643, 0x07198540,\n    0x590AB964, 0xAB613A67, 0xB831C993, 0x4A5A4A90, 0x9E902E7B, 0x6CFBAD78, 0x7FAB5E8C, 0x8DC0DD8F,\n    0xE330A81A, 0x115B2B19, 0x020BD8ED, 0xF0605BEE, 0x24AA3F05, 0xD6C1BC06, 0xC5914FF2, 0x37FACCF1,\n    0x69E9F0D5, 0x9B8273D6, 0x88D28022, 0x7AB90321, 0xAE7367CA, 0x5C18E4C9, 0x4F48173D, 0xBD23943E,\n    0xF36E6F75, 0x0105EC76, 0x12551F82, 0xE03E9C81, 0x34F4F86A, 0xC69F7B69, 0xD5CF889D, 0x27A40B9E,\n    0x79B737BA, 0x8BDCB4B9, 0x988C474D, 0x6AE7C44E, 0xBE2DA0A5, 0x4C4623A6, 0x5F16D052, 0xAD7D5351\n]",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Crc32",
+      "displayName": "Crc32",
+      "module": "Crc",
+      "source": "Src/Crc.rux",
+      "line": 115,
+      "signature": "pub struct Crc32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The CRC-32 of a message, computed a byte at a time.",
+        "markdown": "The CRC-32 of a message, computed a byte at a time.\nCopy, and holding only the register, so passing one by value takes a snapshot of the checksum so far.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/crc32"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "register",
+          "type": "uint32",
+          "public": false,
+          "line": 117,
+          "doc": "The register, before the final complement. Starts at `Crc32Initial`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Crc32",
+          "line": 124,
+          "signature": "pub func Crc32() -> Crc32",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Crc32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Constructs a checksum with nothing written into it yet.",
+            "markdown": "Constructs a checksum with nothing written into it yet.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher with nothing written to it yet",
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 132,
+          "signature": "pub func Reset(self: &var Crc32)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Crc32",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Puts the checksum back to where `Crc32()` leaves one.",
+            "markdown": "Puts the checksum back to where `Crc32()` leaves one.\n`self` is borrowed mutably. Everything written so far is forgotten.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32#reset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Value",
+          "line": 142,
+          "signature": "pub func Value(self: &Crc32) -> uint32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Crc32",
+          "returnType": "uint32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The checksum of everything written so far.",
+            "markdown": "The checksum of everything written so far.\n`self` is borrowed. This is the register complemented, which is the value every other implementation reports;\nthe register itself stays as it was, so writing more continues rather than starting over.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the checksum of everything written so far",
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32#value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 156,
+          "signature": "pub func Write(self: &var Crc32, bytes: *byte, length: uint)",
+          "typeParams": [],
+          "params": [
+            { "name": "bytes", "type": "*byte" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var Crc32",
+          "returnType": null,
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "Adds `length` bytes at `bytes` to the checksum.",
+            "markdown": "Adds `length` bytes at `bytes` to the checksum.\n`bytes` is borrowed and read; `length` is read by value. A zero length changes nothing and is the one case in\nwhich `bytes` may be null. Splitting a message across several writes gives the same answer as one write.\nRuns in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "bytes", "markdown": "the bytes to absorb" },
+              { "name": "length", "markdown": "how many bytes; zero absorbs nothing" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 172,
+          "signature": "pub func Finish(self: &var Crc32) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Crc32",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "The checksum of everything written so far, widened to 64 bits.",
+            "markdown": "The checksum of everything written so far, widened to 64 bits.\n`self` is borrowed. The upper 32 bits are always zero: a CRC-32 is 32 bits wide however it is reported, and\n`Value` is the call to make when that width is what is wanted.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the hash of everything written since the last reset",
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Hasher"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Crc32c",
+      "displayName": "Crc32c",
+      "module": "Crc",
+      "source": "Src/Crc.rux",
+      "line": 183,
+      "signature": "pub struct Crc32c",
+      "typeParams": [],
+      "doc": {
+        "summary": "The CRC-32C of a message, computed a byte at a time.",
+        "markdown": "The CRC-32C of a message, computed a byte at a time.\nThe variant to prefer for new work: it detects more of the double-bit errors that appear at storage-record\nlengths, and it is the one both supported architectures implement in hardware. Choose `Crc32` only when an\nexisting format requires it.\nStructural `Copy`; copying takes an independent snapshot of the register.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/crc32c"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "register",
+          "type": "uint32",
+          "public": false,
+          "line": 185,
+          "doc": "The register, before the final complement. Starts at `Crc32Initial`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Crc32c",
+          "line": 192,
+          "signature": "pub func Crc32c() -> Crc32c",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Crc32c",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Constructs a checksum with nothing written into it yet.",
+            "markdown": "Constructs a checksum with nothing written into it yet.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher with nothing written to it yet",
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32c#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 200,
+          "signature": "pub func Reset(self: &var Crc32c)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Crc32c",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Puts the checksum back to where `Crc32c()` leaves one.",
+            "markdown": "Puts the checksum back to where `Crc32c()` leaves one.\n`self` is borrowed mutably. Everything written so far is forgotten.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32c#reset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Value",
+          "line": 209,
+          "signature": "pub func Value(self: &Crc32c) -> uint32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Crc32c",
+          "returnType": "uint32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The checksum of everything written so far.",
+            "markdown": "The checksum of everything written so far.\n`self` is borrowed. The register complemented, which is the value every other implementation reports.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the checksum of everything written so far",
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32c#value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 223,
+          "signature": "pub func Write(self: &var Crc32c, bytes: *byte, length: uint)",
+          "typeParams": [],
+          "params": [
+            { "name": "bytes", "type": "*byte" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var Crc32c",
+          "returnType": null,
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "Adds `length` bytes at `bytes` to the checksum.",
+            "markdown": "Adds `length` bytes at `bytes` to the checksum.\n`bytes` is borrowed and read; `length` is read by value. A zero length changes nothing and is the one case in\nwhich `bytes` may be null. Splitting a message across several writes gives the same answer as one write.\nRuns in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "bytes", "markdown": "the bytes to absorb" },
+              { "name": "length", "markdown": "how many bytes; zero absorbs nothing" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32c#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 238,
+          "signature": "pub func Finish(self: &var Crc32c) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Crc32c",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "The checksum of everything written so far, widened to 64 bits.",
+            "markdown": "The checksum of everything written so far, widened to 64 bits.\n`self` is borrowed. The upper 32 bits are always zero.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the hash of everything written since the last reset",
+            "see": ["https://rux-lang.dev/docs/api/hash/crc32c#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Hasher"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Crc32Of",
+      "displayName": "Crc32Of",
+      "module": "Crc",
+      "source": "Src/Crc.rux",
+      "line": 252,
+      "signature": "pub func Crc32Of(bytes: *byte, length: uint) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The CRC-32 of `length` bytes at `bytes`.",
+        "markdown": "The CRC-32 of `length` bytes at `bytes`.\n`bytes` is borrowed and read; `length` is read by value. A zero length gives zero, the CRC of the empty message,\nand is the one case in which `bytes` may be null.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to hash" },
+          { "name": "length", "markdown": "how many bytes" }
+        ],
+        "returns": "their CRC-32 checksum",
+        "see": ["https://rux-lang.dev/docs/api/hash/crc32#crc32-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Crc32cOf",
+      "displayName": "Crc32cOf",
+      "module": "Crc",
+      "source": "Src/Crc.rux",
+      "line": 267,
+      "signature": "pub func Crc32cOf(bytes: *byte, length: uint) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The CRC-32C of `length` bytes at `bytes`.",
+        "markdown": "The CRC-32C of `length` bytes at `bytes`.\n`bytes` is borrowed and read; `length` is read by value. A zero length gives zero, and is the one case in which\n`bytes` may be null.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to hash" },
+          { "name": "length", "markdown": "how many bytes" }
+        ],
+        "returns": "their CRC-32C checksum",
+        "see": ["https://rux-lang.dev/docs/api/hash/crc32c#crc32c-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "FnvOffsetBasis32",
+      "displayName": "FnvOffsetBasis32",
+      "module": "Fnv",
+      "source": "Src/Fnv.rux",
+      "line": 20,
+      "signature": "pub const FnvOffsetBasis32: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The 32-bit FNV-1a offset basis, which is what an empty input hashes to.",
+        "markdown": "The 32-bit FNV-1a offset basis, which is what an empty input hashes to.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/fnv1a32#fnv-offset-basis32"],
+        "deprecated": null
+      },
+      "value": "0x811C9DC5",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "FnvPrime32",
+      "displayName": "FnvPrime32",
+      "module": "Fnv",
+      "source": "Src/Fnv.rux",
+      "line": 24,
+      "signature": "pub const FnvPrime32: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The 32-bit FNV prime.",
+        "markdown": "The 32-bit FNV prime.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/fnv1a32#fnv-prime32"],
+        "deprecated": null
+      },
+      "value": "16777619",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "FnvOffsetBasis64",
+      "displayName": "FnvOffsetBasis64",
+      "module": "Fnv",
+      "source": "Src/Fnv.rux",
+      "line": 28,
+      "signature": "pub const FnvOffsetBasis64: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The 64-bit FNV-1a offset basis, which is what an empty input hashes to.",
+        "markdown": "The 64-bit FNV-1a offset basis, which is what an empty input hashes to.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/fnv1a64#fnv-offset-basis64"],
+        "deprecated": null
+      },
+      "value": "0xCBF29CE484222325",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "FnvPrime64",
+      "displayName": "FnvPrime64",
+      "module": "Fnv",
+      "source": "Src/Fnv.rux",
+      "line": 32,
+      "signature": "pub const FnvPrime64: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The 64-bit FNV prime.",
+        "markdown": "The 64-bit FNV prime.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/fnv1a64#fnv-prime64"],
+        "deprecated": null
+      },
+      "value": "0x100000001B3",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Fnv1a32",
+      "displayName": "Fnv1a32",
+      "module": "Fnv",
+      "source": "Src/Fnv.rux",
+      "line": 38,
+      "signature": "pub struct Fnv1a32",
+      "typeParams": [],
+      "doc": {
+        "summary": "FNV-1a over 32 bits, computed one byte at a time.",
+        "markdown": "FNV-1a over 32 bits, computed one byte at a time.\nCopy, and holding only the accumulator, so passing one by value takes a snapshot of the hash so far — which is\noccasionally useful and never surprising, since there is nothing else in it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/fnv1a32"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "state",
+          "type": "uint32",
+          "public": false,
+          "line": 40,
+          "doc": "The accumulator, starting at the offset basis.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Fnv1a32",
+          "line": 47,
+          "signature": "pub func Fnv1a32() -> Fnv1a32",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Fnv1a32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Constructs a hasher with nothing written into it yet.",
+            "markdown": "Constructs a hasher with nothing written into it yet.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher seeded with the 32-bit offset basis",
+            "see": ["https://rux-lang.dev/docs/api/hash/fnv1a32#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 55,
+          "signature": "pub func Reset(self: &var Fnv1a32)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Fnv1a32",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Puts the hasher back to where `Fnv1a32()` leaves one.",
+            "markdown": "Puts the hasher back to where `Fnv1a32()` leaves one.\n`self` is borrowed mutably. Everything written so far is forgotten.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/fnv1a32#reset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Value",
+          "line": 65,
+          "signature": "pub func Value(self: &Fnv1a32) -> uint32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Fnv1a32",
+          "returnType": "uint32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The 32-bit hash of everything written so far.",
+            "markdown": "The 32-bit hash of everything written so far.\n`self` is borrowed. This is the algorithm's own width; `Finish` widens it to 64 bits for the `Hasher`\ncontract, which does not make it a 64-bit hash.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the hash of everything written so far",
+            "see": ["https://rux-lang.dev/docs/api/hash/fnv1a32#value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 80,
+          "signature": "pub func Write(self: &var Fnv1a32, bytes: *byte, length: uint)",
+          "typeParams": [],
+          "params": [
+            { "name": "bytes", "type": "*byte" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var Fnv1a32",
+          "returnType": null,
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "Adds `length` bytes at `bytes` to the hash.",
+            "markdown": "Adds `length` bytes at `bytes` to the hash.\n`bytes` is borrowed and read; `length` is read by value. A zero length changes nothing and is the one case in\nwhich `bytes` may be null. Splitting the same bytes across several writes gives the same answer as one write,\nbecause there is no block to align to.\nRuns in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "bytes", "markdown": "the bytes to absorb" },
+              { "name": "length", "markdown": "how many bytes; zero absorbs nothing" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/fnv1a32#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 97,
+          "signature": "pub func Finish(self: &var Fnv1a32) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Fnv1a32",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "The hash of everything written so far, widened to 64 bits.",
+            "markdown": "The hash of everything written so far, widened to 64 bits.\n`self` is borrowed. The hasher stays usable: asking twice gives the same answer, and writing more continues\nfrom here. The upper 32 bits are always zero, which is what a 32-bit hash promoted to the contract looks\nlike — use `Value` when the 32-bit answer is what is wanted.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the hash of everything written since the last reset",
+            "see": ["https://rux-lang.dev/docs/api/hash/fnv1a32#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Hasher"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Fnv1a64",
+      "displayName": "Fnv1a64",
+      "module": "Fnv",
+      "source": "Src/Fnv.rux",
+      "line": 107,
+      "signature": "pub struct Fnv1a64",
+      "typeParams": [],
+      "doc": {
+        "summary": "FNV-1a over 64 bits, computed one byte at a time.",
+        "markdown": "FNV-1a over 64 bits, computed one byte at a time.\nThe width to prefer: the same cost per byte as the 32-bit form on any 64-bit machine, and far enough from a\nbirthday collision that an ordinary table will never see one by accident.\nStructural `Copy`; copying takes an independent snapshot of the accumulator.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/fnv1a64"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "state",
+          "type": "uint64",
+          "public": false,
+          "line": 109,
+          "doc": "The accumulator, starting at the offset basis.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Fnv1a64",
+          "line": 116,
+          "signature": "pub func Fnv1a64() -> Fnv1a64",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Fnv1a64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Constructs a hasher with nothing written into it yet.",
+            "markdown": "Constructs a hasher with nothing written into it yet.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher seeded with the 64-bit offset basis",
+            "see": ["https://rux-lang.dev/docs/api/hash/fnv1a64#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 124,
+          "signature": "pub func Reset(self: &var Fnv1a64)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Fnv1a64",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Puts the hasher back to where `Fnv1a64()` leaves one.",
+            "markdown": "Puts the hasher back to where `Fnv1a64()` leaves one.\n`self` is borrowed mutably. Everything written so far is forgotten.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/fnv1a64#reset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 138,
+          "signature": "pub func Write(self: &var Fnv1a64, bytes: *byte, length: uint)",
+          "typeParams": [],
+          "params": [
+            { "name": "bytes", "type": "*byte" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var Fnv1a64",
+          "returnType": null,
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "Adds `length` bytes at `bytes` to the hash.",
+            "markdown": "Adds `length` bytes at `bytes` to the hash.\n`bytes` is borrowed and read; `length` is read by value. A zero length changes nothing and is the one case in\nwhich `bytes` may be null. Splitting the same bytes across several writes gives the same answer as one write.\nRuns in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "bytes", "markdown": "the bytes to absorb" },
+              { "name": "length", "markdown": "how many bytes; zero absorbs nothing" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/fnv1a64#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 154,
+          "signature": "pub func Finish(self: &var Fnv1a64) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Fnv1a64",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "The hash of everything written so far.",
+            "markdown": "The hash of everything written so far.\n`self` is borrowed. The hasher stays usable: asking twice gives the same answer, and writing more continues\nfrom here rather than starting over.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the hash of everything written since the last reset",
+            "see": ["https://rux-lang.dev/docs/api/hash/fnv1a64#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Hasher"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Fnv1a32Of",
+      "displayName": "Fnv1a32Of",
+      "module": "Fnv",
+      "source": "Src/Fnv.rux",
+      "line": 169,
+      "signature": "pub func Fnv1a32Of(bytes: *byte, length: uint) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The 32-bit FNV-1a hash of `length` bytes at `bytes`.",
+        "markdown": "The 32-bit FNV-1a hash of `length` bytes at `bytes`.\n`bytes` is borrowed and read; `length` is read by value. A zero length gives the offset basis, and is the one\ncase in which `bytes` may be null.\nThe one-shot form of making a hasher, writing once and finishing. Identical in result and cost.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to hash" },
+          { "name": "length", "markdown": "how many bytes" }
+        ],
+        "returns": "their 32-bit FNV-1a hash",
+        "see": ["https://rux-lang.dev/docs/api/hash/fnv1a32#fnv1a32-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Fnv1a64Of",
+      "displayName": "Fnv1a64Of",
+      "module": "Fnv",
+      "source": "Src/Fnv.rux",
+      "line": 184,
+      "signature": "pub func Fnv1a64Of(bytes: *byte, length: uint) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The 64-bit FNV-1a hash of `length` bytes at `bytes`.",
+        "markdown": "The 64-bit FNV-1a hash of `length` bytes at `bytes`.\n`bytes` is borrowed and read; `length` is read by value. A zero length gives the offset basis, and is the one\ncase in which `bytes` may be null.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to hash" },
+          { "name": "length", "markdown": "how many bytes" }
+        ],
+        "returns": "their 64-bit FNV-1a hash",
+        "see": ["https://rux-lang.dev/docs/api/hash/fnv1a64#fnv1a64-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "interface",
+      "name": "Hasher",
+      "displayName": "Hasher",
+      "module": "Hasher",
+      "source": "Src/Hasher.rux",
+      "line": 18,
+      "signature": "pub interface Hasher",
+      "typeParams": [],
+      "doc": {
+        "summary": "A hash being computed, one write at a time.",
+        "markdown": "A hash being computed, one write at a time.\nWritten as an interface so a generic can require it. Borrow an implementation under a bound so mutations apply\nto the caller's state without copying it.\nAn implementation must give the same answer for the same sequence of bytes, whatever the writes were split into:\nwriting eight bytes at once and writing them one at a time must agree. It must not read anything but the bytes it\nis given — no address, no counter, no clock.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/hasher"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "requirement",
+          "name": "Write",
+          "line": 27,
+          "signature": "func Write(self: &var Self, bytes: *byte, length: uint)",
+          "typeParams": [],
+          "params": [
+            { "name": "bytes", "type": "*byte" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var Self",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds `length` bytes at `bytes` to what is being hashed.",
+            "markdown": "Adds `length` bytes at `bytes` to what is being hashed.\n`bytes` is borrowed and read; `length` is read by value. A zero length is legal and changes nothing, and is\nthe one case in which `bytes` may be null.\nRuns in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "bytes", "markdown": "the bytes to absorb" },
+              { "name": "length", "markdown": "how many bytes; zero absorbs nothing" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/hasher#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "requirement",
+          "name": "Finish",
+          "line": 35,
+          "signature": "func Finish(self: &var Self) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Self",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The hash of everything written so far.",
+            "markdown": "The hash of everything written so far.\nReturns the answer by value and leaves the hasher usable: asking twice gives the same answer, and writing\nmore afterwards continues from where the writes left off rather than starting over.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the hash of everything written since the last reset",
+            "see": ["https://rux-lang.dev/docs/api/hash/hasher#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HashBytes",
+      "displayName": "HashBytes<H>",
+      "module": "Hasher",
+      "source": "Src/Hasher.rux",
+      "line": 50,
+      "signature": "pub func HashBytes<H: Hasher>(hasher: &var H, bytes: *byte, length: uint) -> uint64",
+      "typeParams": [{ "name": "H", "bounds": ["Hasher"] }],
+      "doc": {
+        "summary": "Writes `length` bytes and returns the hash, for a caller with nothing else to add.",
+        "markdown": "Writes `length` bytes and returns the hash, for a caller with nothing else to add.\n`hasher` is borrowed mutably and left holding what it hashed; `bytes` is borrowed and read. The type argument\nmust be written out — `HashBytes<Fnv1a64>(hasher, data, length)` — because a generic argument is never\ninferred.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+        "typeParams": [{ "name": "H", "markdown": "the hasher's type" }],
+        "params": [
+          { "name": "hasher", "markdown": "the hasher to use, which is reset first" },
+          { "name": "bytes", "markdown": "the bytes to hash" },
+          { "name": "length", "markdown": "how many bytes" }
+        ],
+        "returns": "their hash",
+        "see": ["https://rux-lang.dev/docs/api/hash/hasher#hash-bytes"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteByte",
+      "displayName": "WriteByte<H>",
+      "module": "Hasher",
+      "source": "Src/Hasher.rux",
+      "line": 62,
+      "signature": "pub func WriteByte<H: Hasher>(hasher: &var H, value: byte)",
+      "typeParams": [{ "name": "H", "bounds": ["Hasher"] }],
+      "doc": {
+        "summary": "Writes one byte into `hasher`.",
+        "markdown": "Writes one byte into `hasher`.\n`hasher` is borrowed mutably; `value` is read by value.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [{ "name": "H", "markdown": "the hasher's type" }],
+        "params": [
+          { "name": "hasher", "markdown": "the hasher to write to" },
+          { "name": "value", "markdown": "the byte to write" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/hasher#write-byte"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteUint32",
+      "displayName": "WriteUint32<H>",
+      "module": "Hasher",
+      "source": "Src/Hasher.rux",
+      "line": 75,
+      "signature": "pub func WriteUint32<H: Hasher>(hasher: &var H, value: uint32)",
+      "typeParams": [{ "name": "H", "bounds": ["Hasher"] }],
+      "doc": {
+        "summary": "Writes a 32-bit value into `hasher`, least significant byte first.",
+        "markdown": "Writes a 32-bit value into `hasher`, least significant byte first.\n`hasher` is borrowed mutably; `value` is read by value. The byte order is fixed rather than the machine's, so a\nvalue hashes the same on every target — which is what makes a hash of a struct mean the same thing everywhere.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [{ "name": "H", "markdown": "the hasher's type" }],
+        "params": [
+          { "name": "hasher", "markdown": "the hasher to write to" },
+          { "name": "value", "markdown": "the value, written as little-endian bytes" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/hasher#write-uint32"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteUint64",
+      "displayName": "WriteUint64<H>",
+      "module": "Hasher",
+      "source": "Src/Hasher.rux",
+      "line": 93,
+      "signature": "pub func WriteUint64<H: Hasher>(hasher: &var H, value: uint64)",
+      "typeParams": [{ "name": "H", "bounds": ["Hasher"] }],
+      "doc": {
+        "summary": "Writes a 64-bit value into `hasher`, least significant byte first.",
+        "markdown": "Writes a 64-bit value into `hasher`, least significant byte first.\n`hasher` is borrowed mutably; `value` is read by value. The byte order is fixed rather than the machine's, for\nthe same reason as `WriteUint32`.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [{ "name": "H", "markdown": "the hasher's type" }],
+        "params": [
+          { "name": "hasher", "markdown": "the hasher to write to" },
+          { "name": "value", "markdown": "the value, written as little-endian bytes" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/hasher#write-uint64"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "SipInit0",
+      "displayName": "SipInit0",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 25,
+      "signature": "pub const SipInit0: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The first initialization constant, mixed with the low half of the key.",
+        "markdown": "The first initialization constant, mixed with the low half of the key.\nThe four are the ASCII of \"somepseudorandomlygeneratedbytes\", split into eight-byte pieces — an arbitrary\nstarting point chosen to be visibly arbitrary.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-init0"],
+        "deprecated": null
+      },
+      "value": "0x736F6D6570736575",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "SipInit1",
+      "displayName": "SipInit1",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 29,
+      "signature": "pub const SipInit1: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The second initialization constant, mixed with the high half of the key.",
+        "markdown": "The second initialization constant, mixed with the high half of the key.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-init1"],
+        "deprecated": null
+      },
+      "value": "0x646F72616E646F6D",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "SipInit2",
+      "displayName": "SipInit2",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 33,
+      "signature": "pub const SipInit2: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The third initialization constant, mixed with the low half of the key.",
+        "markdown": "The third initialization constant, mixed with the low half of the key.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-init2"],
+        "deprecated": null
+      },
+      "value": "0x6C7967656E657261",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "SipInit3",
+      "displayName": "SipInit3",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 37,
+      "signature": "pub const SipInit3: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The fourth initialization constant, mixed with the high half of the key.",
+        "markdown": "The fourth initialization constant, mixed with the high half of the key.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-init3"],
+        "deprecated": null
+      },
+      "value": "0x7465646279746573",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "SipCompressionRounds",
+      "displayName": "SipCompressionRounds",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 41,
+      "signature": "pub const SipCompressionRounds: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many rounds each eight-byte word of input is mixed with: the 2 of SipHash-2-4.",
+        "markdown": "How many rounds each eight-byte word of input is mixed with: the 2 of SipHash-2-4.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-compression-rounds"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "SipFinalizationRounds",
+      "displayName": "SipFinalizationRounds",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 45,
+      "signature": "pub const SipFinalizationRounds: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many rounds finish the hash after the last word: the 4 of SipHash-2-4.",
+        "markdown": "How many rounds finish the hash after the last word: the 4 of SipHash-2-4.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-finalization-rounds"],
+        "deprecated": null
+      },
+      "value": "4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "SipState",
+      "displayName": "SipState",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 51,
+      "signature": "pub struct SipState",
+      "typeParams": [],
+      "doc": {
+        "summary": "The four words SipHash mixes, and the round that mixes them.",
+        "markdown": "The four words SipHash mixes, and the round that mixes them.\nCopy. Exposed because the round is the whole of the algorithm and worth being able to read, not because a caller\nhas any reason to drive one directly.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-state"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "first",
+          "type": "uint64",
+          "public": false,
+          "line": 52,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "second",
+          "type": "uint64",
+          "public": false,
+          "line": 53,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "third",
+          "type": "uint64",
+          "public": false,
+          "line": 54,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "fourth",
+          "type": "uint64",
+          "public": false,
+          "line": 55,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "FromKey",
+          "line": 66,
+          "signature": "pub func FromKey(low: uint64, high: uint64) -> SipState",
+          "typeParams": [],
+          "params": [
+            { "name": "low", "type": "uint64" },
+            { "name": "high", "type": "uint64" }
+          ],
+          "receiver": null,
+          "returnType": "SipState",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The state a key starts from.",
+            "markdown": "The state a key starts from.\n`low` and `high` are the two halves of the 128-bit key, read by value.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [
+              { "name": "low", "markdown": "the key's first eight bytes as a word" },
+              { "name": "high", "markdown": "the key's second eight bytes as a word" }
+            ],
+            "returns": "the four-word state that key starts from",
+            "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-state-from-key"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Round",
+          "line": 81,
+          "signature": "pub func Round(self: &var SipState, count: uint)",
+          "typeParams": [],
+          "params": [{ "name": "count", "type": "uint" }],
+          "receiver": "&var SipState",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Runs `count` SipHash rounds over the state.",
+            "markdown": "Runs `count` SipHash rounds over the state.\n`self` is borrowed mutably; `count` is read by value. Each round is four add-rotate-exclusive-or steps\narranged so that every word depends on every other after two of them.\nCannot fail. Runs in time proportional to `count` and allocates nothing.",
+            "typeParams": [],
+            "params": [{ "name": "count", "markdown": "how many rounds to run" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-state-round"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "SipHash24",
+      "displayName": "SipHash24",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 117,
+      "signature": "pub struct SipHash24",
+      "typeParams": [],
+      "doc": {
+        "summary": "SipHash-2-4 over a stream of bytes, keyed with 128 bits.",
+        "markdown": "SipHash-2-4 over a stream of bytes, keyed with 128 bits.\nCopy. Holds up to seven bytes of pending input alongside its state.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "keyLow",
+          "type": "uint64",
+          "public": false,
+          "line": 119,
+          "doc": "The low half of the key, kept so `Reset` can start over from it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "keyHigh",
+          "type": "uint64",
+          "public": false,
+          "line": 121,
+          "doc": "The high half of the key.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "state",
+          "type": "SipState",
+          "public": false,
+          "line": 123,
+          "doc": "The four words being mixed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "total",
+          "type": "uint64",
+          "public": false,
+          "line": 125,
+          "doc": "How many bytes have been written in total; its low byte is mixed into the final word.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "pending",
+          "type": "byte[N]",
+          "public": false,
+          "line": 127,
+          "doc": "Input that has arrived but does not yet fill an eight-byte word.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffered",
+          "type": "uint",
+          "public": false,
+          "line": 129,
+          "doc": "How much of `pending` is in use, always under eight.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "WithKey",
+          "line": 142,
+          "signature": "pub func WithKey(low: uint64, high: uint64) -> SipHash24",
+          "typeParams": [],
+          "params": [
+            { "name": "low", "type": "uint64" },
+            { "name": "high", "type": "uint64" }
+          ],
+          "receiver": null,
+          "returnType": "SipHash24",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A hasher keyed with `low` and `high`, with nothing written into it yet.",
+            "markdown": "A hasher keyed with `low` and `high`, with nothing written into it yet.\nBoth halves are read by value. The key must be unpredictable to whoever supplies the input — draw it from\n`Rux/Entropy` at startup and keep it. A fixed key compiled into a program is a published key, and a published\nkey is no key at all.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [
+              { "name": "low", "markdown": "the key's first eight bytes as a word" },
+              { "name": "high", "markdown": "the key's second eight bytes as a word" }
+            ],
+            "returns": "a hasher keyed with those two words",
+            "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#with-key"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "WithKeyBytes",
+          "line": 162,
+          "signature": "pub func WithKeyBytes(key: *byte) -> SipHash24",
+          "typeParams": [],
+          "params": [{ "name": "key", "type": "*byte" }],
+          "receiver": null,
+          "returnType": "SipHash24",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A hasher keyed with the sixteen bytes at `key`, least significant byte of each half first.",
+            "markdown": "A hasher keyed with the sixteen bytes at `key`, least significant byte of each half first.\n`key` is borrowed and read. This is the byte order the specification and every published test vector use, so\nit is what to reach for when checking against one; `WithKey` is what to reach for when the key came from\n`Rux/Entropy` as two words.\nCannot fail. Runs in constant time and allocates nothing.\n`key` must be readable for sixteen bytes.",
+            "typeParams": [],
+            "params": [{ "name": "key", "markdown": "sixteen key bytes, read as two little-endian words" }],
+            "returns": "a hasher keyed with them",
+            "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#with-key-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 178,
+          "signature": "pub func Reset(self: &var SipHash24)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var SipHash24",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Puts the hasher back to where it started, keeping its key.",
+            "markdown": "Puts the hasher back to where it started, keeping its key.\n`self` is borrowed mutably. Everything written so far is forgotten; the key is not.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#reset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 195,
+          "signature": "pub func Write(self: &var SipHash24, bytes: *byte, length: uint)",
+          "typeParams": [],
+          "params": [
+            { "name": "bytes", "type": "*byte" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var SipHash24",
+          "returnType": null,
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "Adds `length` bytes at `bytes` to the hash.",
+            "markdown": "Adds `length` bytes at `bytes` to the hash.\n`bytes` is borrowed and read; `length` is read by value. A zero length changes nothing and is the one case in\nwhich `bytes` may be null. Input that does not fill an eight-byte word is held until the rest arrives, so any\ndivision of the same byte stream into writes gives the same answer.\nRuns in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "bytes", "markdown": "the bytes to absorb" },
+              { "name": "length", "markdown": "how many bytes; zero absorbs nothing" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 240,
+          "signature": "pub func Finish(self: &var SipHash24) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var SipHash24",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "The hash of everything written so far.",
+            "markdown": "The hash of everything written so far.\n`self` is borrowed. Nothing is consumed: the finishing rounds run on a copy of the state, so asking twice\ngives the same answer and writing more continues from where the writes left off.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the hash of everything written since the last reset",
+            "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Hasher"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SipWord",
+      "displayName": "SipWord",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 266,
+      "signature": "pub func SipWord(bytes: *byte) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The eight bytes at `bytes` as a 64-bit word, least significant byte first.",
+        "markdown": "The eight bytes at `bytes` as a 64-bit word, least significant byte first.\n`bytes` is borrowed and read. Assembled a byte at a time, so the answer is the same at any address on any\nmachine: SipHash is defined on a little-endian byte stream rather than on the machine's own order.\nCannot fail. Runs in constant time and allocates nothing.\n`bytes` must be readable for eight bytes.",
+        "typeParams": [],
+        "params": [{ "name": "bytes", "markdown": "eight bytes to read" }],
+        "returns": "them as a little-endian word",
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-word"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SipHash24Of",
+      "displayName": "SipHash24Of",
+      "module": "SipHash",
+      "source": "Src/SipHash.rux",
+      "line": 287,
+      "signature": "pub func SipHash24Of(bytes: *byte, length: uint, low: uint64, high: uint64) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SipHash-2-4 of `length` bytes at `bytes`, keyed with `low` and `high`.",
+        "markdown": "The SipHash-2-4 of `length` bytes at `bytes`, keyed with `low` and `high`.\n`bytes` is borrowed and read; the rest are read by value. A zero length gives the hash of the empty input under\nthat key, and is the one case in which `bytes` may be null.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to hash" },
+          { "name": "length", "markdown": "how many bytes" },
+          { "name": "low", "markdown": "the key's first eight bytes as a word" },
+          { "name": "high", "markdown": "the key's second eight bytes as a word" }
+        ],
+        "returns": "their keyed hash",
+        "see": ["https://rux-lang.dev/docs/api/hash/sip-hash24#sip-hash24-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "XxPrime1",
+      "displayName": "XxPrime1",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 22,
+      "signature": "pub const XxPrime1: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The first xxHash64 prime, which every round multiplies by.",
+        "markdown": "The first xxHash64 prime, which every round multiplies by.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-prime1"],
+        "deprecated": null
+      },
+      "value": "0x9E3779B185EBCA87",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "XxPrime2",
+      "displayName": "XxPrime2",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 26,
+      "signature": "pub const XxPrime2: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The second xxHash64 prime, which scales each input lane before it is rotated in.",
+        "markdown": "The second xxHash64 prime, which scales each input lane before it is rotated in.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-prime2"],
+        "deprecated": null
+      },
+      "value": "0xC2B2AE3D27D4EB4F",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "XxPrime3",
+      "displayName": "XxPrime3",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 30,
+      "signature": "pub const XxPrime3: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The third xxHash64 prime, used in the four-byte tail step and the avalanche.",
+        "markdown": "The third xxHash64 prime, used in the four-byte tail step and the avalanche.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-prime3"],
+        "deprecated": null
+      },
+      "value": "0x165667B19E3779F9",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "XxPrime4",
+      "displayName": "XxPrime4",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 34,
+      "signature": "pub const XxPrime4: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The fourth xxHash64 prime, added after each merge and after each eight-byte tail step.",
+        "markdown": "The fourth xxHash64 prime, added after each merge and after each eight-byte tail step.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-prime4"],
+        "deprecated": null
+      },
+      "value": "0x85EBCA77C2B2AE63",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "XxPrime5",
+      "displayName": "XxPrime5",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 38,
+      "signature": "pub const XxPrime5: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The fifth xxHash64 prime, which seeds an input too short to fill a block and mixes each trailing byte.",
+        "markdown": "The fifth xxHash64 prime, which seeds an input too short to fill a block and mixes each trailing byte.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-prime5"],
+        "deprecated": null
+      },
+      "value": "0x27D4EB2F165667C5",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "XxBlockSize",
+      "displayName": "XxBlockSize",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 44,
+      "signature": "pub const XxBlockSize: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many bytes one xxHash64 round consumes: four lanes of eight.",
+        "markdown": "How many bytes one xxHash64 round consumes: four lanes of eight.\nAn input shorter than this never touches the accumulators at all, which is why the short and long paths give\ndifferent-looking code for the same algorithm.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-block-size"],
+        "deprecated": null
+      },
+      "value": "32",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ReadLittleEndian64",
+      "displayName": "ReadLittleEndian64",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 55,
+      "signature": "pub func ReadLittleEndian64(bytes: *byte) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The eight bytes at `bytes` as a 64-bit value, least significant byte first.",
+        "markdown": "The eight bytes at `bytes` as a 64-bit value, least significant byte first.\n`bytes` is borrowed and read. Assembled a byte at a time rather than read as a word, so the answer is the same at\nany address on any machine — xxHash is defined on a little-endian byte stream, not on whatever the machine\nhappens to hold.\nCannot fail. Runs in constant time and allocates nothing.\n`bytes` must be readable for eight bytes.",
+        "typeParams": [],
+        "params": [{ "name": "bytes", "markdown": "eight bytes to read" }],
+        "returns": "them as a little-endian word",
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#read-little-endian64"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ReadLittleEndian32",
+      "displayName": "ReadLittleEndian32",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 72,
+      "signature": "pub func ReadLittleEndian32(bytes: *byte) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The four bytes at `bytes` as a 32-bit value, least significant byte first.",
+        "markdown": "The four bytes at `bytes` as a 32-bit value, least significant byte first.\n`bytes` is borrowed and read. Assembled a byte at a time, for the same reason as `ReadLittleEndian64`.\nCannot fail. Runs in constant time and allocates nothing.\n`bytes` must be readable for four bytes.",
+        "typeParams": [],
+        "params": [{ "name": "bytes", "markdown": "four bytes to read" }],
+        "returns": "them as a little-endian half word",
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#read-little-endian32"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "XxRound",
+      "displayName": "XxRound",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 90,
+      "signature": "pub func XxRound(accumulator: uint64, lane: uint64) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "One accumulator round: mix `lane` into `accumulator`.",
+        "markdown": "One accumulator round: mix `lane` into `accumulator`.\nBoth are read by value and the new accumulator is returned. This is the whole of xxHash64's inner loop — scale\nthe input, add, rotate, scale again — and it is what the four lanes each run independently.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "accumulator", "markdown": "the lane's running value" },
+          { "name": "lane", "markdown": "the input word to fold into it" }
+        ],
+        "returns": "the lane's new value",
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-round"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "XxMerge",
+      "displayName": "XxMerge",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 102,
+      "signature": "pub func XxMerge(hash: uint64, accumulator: uint64) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Folds one finished accumulator into the running hash.",
+        "markdown": "Folds one finished accumulator into the running hash.\nBoth are read by value and the new hash is returned. The accumulator is passed through a round from zero first,\nso a lane that happened to end at a convenient value does not stay convenient.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "hash", "markdown": "the running hash" },
+          { "name": "accumulator", "markdown": "the lane to merge into it" }
+        ],
+        "returns": "the merged hash",
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-merge"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "XxAvalanche",
+      "displayName": "XxAvalanche",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 114,
+      "signature": "pub func XxAvalanche(hash: uint64) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The final mixing step, which spreads every input bit across the whole result.",
+        "markdown": "The final mixing step, which spreads every input bit across the whole result.\n`hash` is read by value and the finished hash is returned. Without this a one-bit change in the input moves only\nthe bits the round function reached; with it, about half of them move.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "hash", "markdown": "the value to mix" }],
+        "returns": "it with every input bit spread across the output",
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-avalanche"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "XxHash64",
+      "displayName": "XxHash64",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 128,
+      "signature": "pub struct XxHash64",
+      "typeParams": [],
+      "doc": {
+        "summary": "xxHash64 over a stream of bytes, in as many writes as the caller has.",
+        "markdown": "xxHash64 over a stream of bytes, in as many writes as the caller has.\nCopy, but large: thirty-two bytes of pending input plus its accumulators. Borrow one by reference unless a\nsnapshot of the hash so far is what is wanted.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "seed",
+          "type": "uint64",
+          "public": false,
+          "line": 130,
+          "doc": "The seed this was created with, kept so `Reset` can start over from it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "first",
+          "type": "uint64",
+          "public": false,
+          "line": 132,
+          "doc": "The four accumulators, one per eight-byte lane of a block.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "second",
+          "type": "uint64",
+          "public": false,
+          "line": 133,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "third",
+          "type": "uint64",
+          "public": false,
+          "line": 134,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "fourth",
+          "type": "uint64",
+          "public": false,
+          "line": 135,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "total",
+          "type": "uint64",
+          "public": false,
+          "line": 137,
+          "doc": "How many bytes have been written in total, which the algorithm mixes in at the end.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "pending",
+          "type": "byte[N]",
+          "public": false,
+          "line": 139,
+          "doc": "Input that has arrived but does not yet fill a block.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffered",
+          "type": "uint",
+          "public": false,
+          "line": 141,
+          "doc": "How much of `pending` is in use.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "XxHash64",
+          "line": 148,
+          "signature": "pub func XxHash64() -> XxHash64",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "XxHash64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Constructs an unseeded hasher with nothing written into it yet.",
+            "markdown": "Constructs an unseeded hasher with nothing written into it yet.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher with a seed of zero",
+            "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "WithSeed",
+          "line": 160,
+          "signature": "pub func WithSeed(seed: uint64) -> XxHash64",
+          "typeParams": [],
+          "params": [{ "name": "seed", "type": "uint64" }],
+          "receiver": null,
+          "returnType": "XxHash64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A hasher with nothing written into it yet, using `seed`.",
+            "markdown": "A hasher with nothing written into it yet, using `seed`.\n`seed` is read by value. Two hashers with different seeds give unrelated answers for the same input, which is\nenough to keep accidental collisions from following data from one table to another. It is not enough to stop\na deliberate collision: an adversary who knows the seed is no worse off than one hashing without it.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [{ "name": "seed", "markdown": "the seed to start from" }],
+            "returns": "a hasher seeded with it",
+            "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#with-seed"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 177,
+          "signature": "pub func Reset(self: &var XxHash64)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var XxHash64",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Puts the hasher back to where it started, keeping its seed.",
+            "markdown": "Puts the hasher back to where it started, keeping its seed.\n`self` is borrowed mutably. Everything written so far is forgotten; the seed is not.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#reset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 206,
+          "signature": "pub func Write(self: &var XxHash64, bytes: *byte, length: uint)",
+          "typeParams": [],
+          "params": [
+            { "name": "bytes", "type": "*byte" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var XxHash64",
+          "returnType": null,
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "Adds `length` bytes at `bytes` to the hash.",
+            "markdown": "Adds `length` bytes at `bytes` to the hash.\n`bytes` is borrowed and read; `length` is read by value. A zero length changes nothing and is the one case in\nwhich `bytes` may be null. Input that does not fill a block is held until the rest of it arrives, so any\ndivision of the same byte stream into writes gives the same answer.\nRuns in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "bytes", "markdown": "the bytes to absorb" },
+              { "name": "length", "markdown": "how many bytes; zero absorbs nothing" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 255,
+          "signature": "pub func Finish(self: &var XxHash64) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var XxHash64",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "The hash of everything written so far.",
+            "markdown": "The hash of everything written so far.\n`self` is borrowed. Nothing is consumed: asking twice gives the same answer, and writing more continues from\nwhere the writes left off rather than starting over.\nCannot fail. Runs in time proportional to what is held pending, which is under one block. Allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the hash of everything written since the last reset",
+            "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Hasher"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "XxHash64SeededOf",
+      "displayName": "XxHash64SeededOf",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 304,
+      "signature": "pub func XxHash64SeededOf(bytes: *byte, length: uint, seed: uint64) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The xxHash64 of `length` bytes at `bytes`, using `seed`.",
+        "markdown": "The xxHash64 of `length` bytes at `bytes`, using `seed`.\n`bytes` is borrowed and read; `length` and `seed` are read by value. A zero length gives the hash of the empty\ninput for that seed, and is the one case in which `bytes` may be null.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to hash" },
+          { "name": "length", "markdown": "how many bytes" },
+          { "name": "seed", "markdown": "the seed to start from" }
+        ],
+        "returns": "their seeded hash",
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-hash64-seeded-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "XxHash64Of",
+      "displayName": "XxHash64Of",
+      "module": "XxHash",
+      "source": "Src/XxHash.rux",
+      "line": 319,
+      "signature": "pub func XxHash64Of(bytes: *byte, length: uint) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The xxHash64 of `length` bytes at `bytes`, seeded with zero.",
+        "markdown": "The xxHash64 of `length` bytes at `bytes`, seeded with zero.\n`bytes` is borrowed and read; `length` is read by value. This is what every published xxHash64 test vector means\nby \"the hash of\" an input.\nCannot fail. Runs in time proportional to `length` and allocates nothing.\n`bytes` must be readable for `length` bytes.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to hash" },
+          { "name": "length", "markdown": "how many bytes" }
+        ],
+        "returns": "their hash, seeded with zero",
+        "see": ["https://rux-lang.dev/docs/api/hash/xx-hash64#xx-hash64-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}
