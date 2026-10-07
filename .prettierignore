@@ -7,3 +7,7 @@ grammars/rux.tmLanguage.json
 
 # npm owns this file's formatting.
 package-lock.json
+
+# Written by scripts/import-benchmarks.mjs; a re-import must reproduce the file
+# byte for byte, so Prettier keeps its hands off.
+data/benchmarks/

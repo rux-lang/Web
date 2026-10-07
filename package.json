@@ -19,6 +19,7 @@
     "verify": "npm run verify:cli && npm run verify:learn && npm run verify:routes && npm run verify:links && npm run verify:meta && npm run verify:render",
     "sync:cli": "node scripts/sync-cli-reference.mjs",
     "sync:learn": "node scripts/sync-learn.mjs",
+    "import:benchmarks": "node scripts/import-benchmarks.mjs",
     "verify:cli": "node scripts/verify-cli.mjs",
     "verify:learn": "node scripts/verify-learn.mjs",
     "verify:routes": "node scripts/verify-routes.mjs .output/public",

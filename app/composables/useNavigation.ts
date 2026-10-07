@@ -66,19 +66,25 @@ export const useHeaderLinks = () => {
     },
     { label: "Download", to: "/download" },
     {
-      // The four standalone pages that are neither reference nor tooling,
-      // grouped so the bar does not run to eight top-level items. `to` points
-      // at Community as the most representative of the four, matching how Docs
-      // opens onto the reference.
+      // The standalone pages that are neither reference nor tooling, grouped
+      // so the bar does not run to eight top-level items. `to` points at
+      // Community as the most representative of them, matching how Docs opens
+      // onto the reference.
       label: "Resources",
       to: "/community",
-      active: /^\/(blog|community|support|faq)(\/|$)/.test(route.path),
+      active: /^\/(blog|benchmarks|community|support|faq)(\/|$)/.test(route.path),
       children: [
         {
           label: "Blog",
           description: "Release notes and articles from the project",
           icon: "i-lucide-newspaper",
           to: "/blog",
+        },
+        {
+          label: "Benchmarks",
+          description: "Rux against Rust, C++, Go, C# and Java",
+          icon: "i-lucide-gauge",
+          to: "/benchmarks",
         },
         {
           label: "Community",
@@ -125,6 +131,7 @@ const footerLinks: FooterColumn[] = [
       { label: "Playground", to: "/play" },
       { label: "Packages", to: "/packages" },
       { label: "Blog", to: "/blog" },
+      { label: "Benchmarks", to: "/benchmarks" },
       { label: "Status", to: "https://rux-lang.instatus.com/", target: "_blank" },
     ],
   },

@@ -103,6 +103,20 @@
      and the marketing sections all key off the container, so widening it here
      is what stops the site reading as "default Nuxt UI". */
   --ui-container: 90rem;
+
+  /* /benchmarks chart colours. Two hues only, on purpose: the dot plot puts
+     every language on one row, so any two dots can touch, and six or eight
+     hues cannot stay apart under colour-blind simulation when every pair is a
+     neighbour. Rux and the one language it is compared with get a hue; the
+     rest are grey context, named by the tooltip and the table. Validated with
+     the dataviz palette checks against white and mist-900 — re-run them before
+     changing a value. The heatmap's diverging pair has a grey (transparent)
+     midpoint at 1.00×. */
+  --bench-rux: #4a3aa7;
+  --bench-compare: #eb6834;
+  --bench-other: var(--color-mist-400);
+  --bench-ahead: #2a78d6;
+  --bench-behind: #e34948;
 }
 
 .dark {
@@ -113,6 +127,12 @@
   --ui-bg-muted: var(--color-mist-800);
   --ui-bg-elevated: var(--color-mist-800);
   --ui-bg-accented: var(--color-mist-700);
+
+  --bench-rux: #9085e9;
+  --bench-compare: #d95926;
+  --bench-other: var(--color-mist-500);
+  --bench-ahead: #3987e5;
+  --bench-behind: #e66767;
 }
 
 /* Coding ligatures (->, =>, !=, >=, <-, |>) for the mono face.

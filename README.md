@@ -52,6 +52,7 @@ Registry pages expect the Rux server at `http://localhost:8080` by default. The 
 ├── scripts/               # build helpers and generated-site verification
 ├── server/                # prerendered blog RSS route and feed serializer
 ├── test/                  # Vitest and build-quality tests
+├── data/                  # CLI contract and benchmark results (one JSON file per machine)
 ├── content.config.ts      # Nuxt Content collections and schema
 └── nuxt.config.ts         # Nuxt, Nitro, sitemap, icon, and runtime config
 ```
@@ -118,6 +119,14 @@ Production builds use `NUXT_PUBLIC_API_BASE_URL`, `RUX_SITEMAP_API_BASE_URL`, an
 Pull requests must target `dev`; CI rejects pull requests opened against `main`.
 
 To add documentation, create a Markdown file under `content/docs/`. Routes and navigation are generated from the content tree, so no route or sidebar registry needs updating.
+
+To publish benchmark results on [`/benchmarks`](https://rux-lang.dev/benchmarks), run [`rux-lang/Benchmarks`](https://github.com/rux-lang/Benchmarks) on the machine and import its results folder:
+
+```bash
+npm run import:benchmarks -- ../Benchmarks/Results/20261007-144047-windows --id ryzen5-5500 --label "Desktop · Ryzen 5 5500" --order 1
+```
+
+This writes `data/benchmarks/<id>.json`. The page lists every file in that folder in `--order`, so a new machine needs no code change, and importing a newer run with the same `--id` replaces the old one.
 
 ## License
 

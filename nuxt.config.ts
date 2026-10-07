@@ -251,6 +251,7 @@ export default defineNuxtConfig({
         "lucide:code-xml",
         "lucide:package",
         "lucide:newspaper",
+        "lucide:gauge",
         "lucide:messages-square",
         "lucide:hand-heart",
         "lucide:circle-help",
