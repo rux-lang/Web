@@ -11,6 +11,7 @@ import {
   renderApiPackage,
   signatureParams,
   transformProse,
+  withValue,
 } from "../scripts/api-docs.mjs";
 
 import fixture from "./fixtures/api-fixture.json";
@@ -272,6 +273,15 @@ describe("prose", () => {
 });
 
 describe("signatures", () => {
+  it("elides a constant initializer that spans lines or makes the declaration too long", () => {
+    expect(withValue("pub const PoolAlignment: uint", "16")).toBe("pub const PoolAlignment: uint = 16");
+    expect(withValue("pub const Table: uint32[3]", "[\n    1,\n    2,\n    3\n]")).toBe(
+      "pub const Table: uint32[3] = …",
+    );
+    expect(withValue("pub const Name: String", `"${"x".repeat(120)}"`)).toBe("pub const Name: String = …");
+    expect(withValue("pub const Width: uint = 4", "4")).toBe("pub const Width: uint = 4");
+  });
+
   it("reads typed parameters from a function signature, generics and nesting included", () => {
     expect(signatureParams("pub func Map<K, V>(size: uint, limit: Map<uint, uint>, f: (int) -> int) -> uint")).toEqual([
       { name: "size", type: "uint" },

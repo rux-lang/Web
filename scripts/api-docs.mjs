@@ -465,10 +465,16 @@ export function signatureParams(signature) {
     .filter((param) => param.name !== "self");
 }
 
-const withValue = (signature, value) =>
-  value === null || value === undefined || /=/.test(signature.replace(/[=!<>]=|=>|<-/g, ""))
-    ? signature
-    : `${signature} = ${value}`;
+/**
+ * A constant's declaration with its initializer. A generated table (Unicode's
+ * `uint32[N] = [...]`) would print hundreds of lines, so an initializer that
+ * spans lines or would take the declaration past 120 characters shows as `…`.
+ */
+export function withValue(signature, value) {
+  if (value === null || value === undefined || /=/.test(signature.replace(/[=!<>]=|=>|<-/g, ""))) return signature;
+  const shown = /\n/.test(value) || `${signature} = ${value};`.length > 120 ? "…" : value;
+  return `${signature} = ${shown}`;
+}
 
 function itemSignature(item) {
   const indent = "    ";
