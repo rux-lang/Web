@@ -72,6 +72,41 @@ export const PACKAGES = [
     area: "collections",
     icon: "i-lucide-arrow-down-wide-narrow",
     description: "Generic algorithms over slices and mutable slices",
+    topics: {
+      searching: {
+        title: "Searching",
+        description:
+          "Linear queries over a slice in no particular order: whether it holds a value, where, and how many.",
+      },
+      comparing: {
+        title: "Comparing slices",
+        description: "Element-by-element equality, the first difference and lexicographic order between two slices.",
+      },
+      "sorted-slices": {
+        title: "Sorted slices",
+        description: "Binary search and bounds over a slice that is already in order, and checking that it is.",
+      },
+      sorting: {
+        title: "Sorting",
+        description: "Putting a slice in order in place, unstably with no storage or stably with caller scratch.",
+      },
+      heaps: {
+        title: "Heaps",
+        description: "A binary max-heap laid out in the slice itself, the building block of a priority queue.",
+      },
+      "min-max": {
+        title: "Minimum and maximum",
+        description: "The smallest and largest elements of a slice, and clamping a value into a range.",
+      },
+      folding: {
+        title: "Folding",
+        description: "Reducing a slice to one value, and mapping one slice onto another.",
+      },
+      modifying: {
+        title: "Modifying",
+        description: "Rearranging a slice in place, removing elements, and moving elements between slices.",
+      },
+    },
   },
   {
     name: "Hash",

@@ -1,0 +1,2987 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Algorithms",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Generic algorithms over slices and mutable slices",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/algorithms",
+    "dependencies": [{ "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }]
+  },
+  "modules": [
+    {
+      "name": "Find",
+      "source": "Src/Find.rux",
+      "header": "Linear queries over a sequence that is in no particular order.\nEverything here reads a `T[..]` and returns an answer about it. A search that found something answers with the\nindex it found, as an optional `uint?`, because \"not found\" is an ordinary outcome and a sentinel index is a bug\nwaiting for the one sequence long enough to reach it. An empty slice is not a special case anywhere: it contains\nnothing, satisfies every universal claim, and matches no search.\nThe value-based queries need `==` on the element type and nothing more, so a type with equality but no ordering\ncan use them. The predicate-based ones need nothing at all — the caller's function supplies the test — and the\nordered searches live in `Search`, which needs `<`.\nA predicate is an ordinary function value. Rux has no closures, so it carries no captured state: anything it needs\nbeyond the element has to be reachable from the function itself.\nNothing here allocates, and nothing here writes. Every one of these is a single pass unless it says otherwise."
+    },
+    {
+      "name": "Fold",
+      "source": "Src/Fold.rux",
+      "header": "Reducing a sequence to one value, and mapping one sequence onto another.\nA fold is the general form: an accumulator, a starting value, and a function that folds each element into it. The\naccumulator's type is independent of the element's, so the same operation both sums a sequence of numbers and\nbuilds something else entirely out of one.\nThe numeric forms are folds with the function already chosen. They take the starting value rather than assuming\none, because a generic `T` has no zero this package could name: nothing here requires a type to say what its\nadditive identity is, and inventing one would be wrong for every type that has no such thing. Passing `0` costs a\ncaller nothing and keeps the operation honest about what it does.\nOverflow is the element type's business. `Sum` adds with `+`, so a sum that does not fit behaves exactly as `+`\nbehaves on that type — these do not check, and a caller who needs checking folds `AddChecked` instead. That is\nthe fold's whole reason for being general.\nNothing here allocates."
+    },
+    {
+      "name": "Heap",
+      "source": "Src/Heap.rux",
+      "header": "A binary max-heap laid out in the sequence itself, with no node structure and no allocation.\nThe heap property is an arrangement rather than a type: element `i` is at least as large as elements `2i+1` and\n`2i+2`, which puts the largest element at the front and lets the largest be removed, or a new element added, in\ntime proportional to the logarithm of the length. That is what a priority queue is, and it is why these operations\nare here rather than in a container — any sequence a caller already has can be one.\nThe arrangement is not an order. A heap is not sorted, and only its first element is where a sorted sequence would\nput it. `SortHeap` turns one into the other, which is what heapsort is.\nEvery operation here takes the whole heap as a view and works within it. Growing and shrinking are the caller's:\n`PushHeap` is told about an element already appended, and `PopHeap` leaves the removed element at the end for the\ncaller to drop. That keeps this package out of the business of owning storage, which it is not in anywhere.\nRequires `<` on the element type, or a three-way comparison for the `By` forms. Nothing here allocates."
+    },
+    {
+      "name": "MinMax",
+      "source": "Src/MinMax.rux",
+      "header": "The smallest and largest elements of a sequence, and clamping a value into a range.\nEvery search here answers with an index rather than a value, because the index is the more useful answer and the\nvalue is one dereference away. An empty slice has no smallest element, so the answer is `none` rather than a\nsentinel index or a default-constructed value that was never in the sequence.\nTies go to the first: `MinIndex` reports the earliest of several equal smallest elements, and `MaxIndex` the\nearliest of several equal largest ones. That is a promise rather than an accident, and it is what makes a sort\nbuilt on these predictable.\nThe plain forms need `<` on the element type. The `By` forms take a three-way comparison instead, which is what to\nuse when the element has no ordering of its own, or when the wanted order is not its own."
+    },
+    {
+      "name": "Modify",
+      "source": "Src/Modify.rux",
+      "header": "Rearranging a sequence in place, and moving elements between sequences.\nEverything that writes takes a `var T[..]`; everything that only reads takes a `T[..]`. Nothing here\nresizes anything, because none of these own the storage they work on. The removals compact survivors toward the\nfront and report how many are left, and it is the caller — who does own the storage — that shortens it.\nWhat is left past the reported length after a removal is unspecified. It is neither cleared nor preserved: the\nelements there were moved from, and reading them back is reading whatever the compaction happened to leave. For a\n`Copy` element that is a stale duplicate; for anything else it is a value with no owner.\nA rotation and a reversal need no scratch storage at all, which is why they are here rather than in an allocating\nlayer: a rotation is three reversals, and that is the whole of it."
+    },
+    {
+      "name": "Search",
+      "source": "Src/Search.rux",
+      "header": "Searching a sequence that is already in order, and asking whether it is.\nEverything here assumes the slice is sorted by the same order the search uses. That is the caller's promise, and\nnothing checks it on the way in: checking would cost the linear scan the binary search exists to avoid. A search\nover an unsorted slice does not fail — it answers, and the answer is meaningless. `IsSorted` is there for a\ncaller who wants to check, once, where checking is worth it.\nA bound is a position rather than an element: `LowerBound` is the first position where the value could be inserted\nwithout breaking the order, and `UpperBound` is the last. Between them lie exactly the elements equal to it, which\nis what `EqualRange` returns in one pass. All three answer for a value that is not present at all — the answer is\nan empty range at the position it would go.\nThe plain forms need `<` on the element type. The `By` forms take a three-way comparison, which is what to use for\na type with no ordering of its own or an order that is not its own. Every `By` form must be given the same order\nthe slice was sorted by; a different one gives a meaningless answer just as an unsorted slice does.\nNothing here allocates or writes."
+    },
+    {
+      "name": "Sort",
+      "source": "Src/Sort.rux",
+      "header": "Sorting: putting a sequence in order, in place, with no storage but its own.\n`Sort` is an introsort — quicksort with a three-way partition, falling back to heapsort once the recursion budget\nis spent and to insertion sort on small partitions. Each part covers the others' weakness. Quicksort is the\nfastest of the three on ordinary input and the only one that degrades to quadratic on input chosen to defeat its\npivot rule; heapsort never degrades and is slower on everything; insertion sort beats both below about sixteen\nelements, where choosing a pivot costs more than the sorting does. The result has a genuine O(n log n) worst case\nwith no auxiliary storage, which no one of the three has alone.\n**The worst case, precisely.** Comparisons are O(n log n) for every input, with no exceptions and nothing\nprobabilistic about it: the depth budget is `2 * floor(log2 n)`, and a range still unsorted when it runs out is\nhanded to heapsort, which is O(n log n) unconditionally. Auxiliary storage is O(1) — one pivot and a few indices.\nStack depth is O(log n) frames, about sixty-four for any addressable length, because the recursive call always\ntakes the smaller side of a partition while the larger is handled by the loop. None of that depends on the input\nbeing random, and there are no randomized pivots to make it depend on the run.\n**Sorting is not stable.** Equivalent elements may come out in a different order than they went in. It is\ndeterministic — the same input always gives the same output and the same number of comparisons — but a caller\nwho needs equal elements to keep their original order needs a stable sort, which needs somewhere to put things.\nThe plain forms require `<` on the element type and nothing else, under the same strict-weak-ordering contract as\n`Search`: equivalence is derived as neither element being less than the other, so a type that orders without\ndefining `==` sorts fine. The `By` forms take a three-way comparison instead, for a sequence ordered by something\nother than its element type's own `<`.\nThe `By` machinery below mirrors the operator-based helpers rather than sharing them. A generic function cannot be\nused as a value in Rux, so the operator forms cannot pass `<` as a comparator into one shared implementation, and\nthreading a runtime flag instead would put a branch in the innermost comparison of every sort — the one place it\nwould be felt. When generic functions become usable as values, the two sets collapse into one."
+    },
+    {
+      "name": "Stable",
+      "source": "Src/Stable.rux",
+      "header": "Stable sorting: putting a sequence in order while leaving equal elements in the order they arrived.\n`Sort` is faster and needs no storage at all, and for most sequences the difference between equal elements is not\nobservable. It becomes observable the moment a second key is involved: sort a table by one column, then by\nanother, and only a stable sort leaves the first ordering intact within each group of the second. That is what\nthis is for, and it is the only reason to pay for it.\nThe price is storage. A merge cannot be done in place without either quadratic movement or an amount of index\narithmetic that no one should maintain, so this asks the caller for scratch storage as long as the sequence and\nmerges into it. Asking rather than allocating is deliberate: this package allocates nothing anywhere, which is\nwhat lets it be used where allocation is not available, and a caller who has a buffer already should not have a\nsecond one taken behind their back.\nThe sort is a bottom-up merge: insertion sort over short runs first, then merges of doubling width, alternating\nbetween the sequence and the scratch so that nothing is copied merely to move it back. An odd number of merge\npasses ends with the answer in the scratch, and only then is it copied home.\nComparisons are O(n log n) for every input — there is no bad case here at all, unlike a quicksort — and the\nmovement is the same. What it costs over `Sort` is the storage and about a constant factor."
+    }
+  ],
+  "items": [
+    {
+      "kind": "function",
+      "name": "Contains",
+      "displayName": "Contains<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 23,
+      "signature": "pub func Contains<T>(items: T[..], value: T) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Whether any element of `items` equals `value`.",
+        "markdown": "Whether any element of `items` equals `value`.\n`items` is borrowed and read; `value` is read by value. An empty slice contains nothing, so this is false.\nCannot fail. Runs in time proportional to the length, stopping at the first match, and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to look for" }
+        ],
+        "returns": "whether any element equals `value`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#contains"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Count",
+      "displayName": "Count<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 35,
+      "signature": "pub func Count<T>(items: T[..], value: T) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "How many elements of `items` equal `value`.",
+        "markdown": "How many elements of `items` equal `value`.\n`items` is borrowed and read; `value` is read by value. An empty slice gives zero.\nCannot fail. Runs in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to look for" }
+        ],
+        "returns": "how many elements equal `value`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#count"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IndexOf",
+      "displayName": "IndexOf<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 56,
+      "signature": "pub func IndexOf<T>(items: T[..], value: T) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of the first element of `items` equal to `value`.",
+        "markdown": "The index of the first element of `items` equal to `value`.\n`items` is borrowed and read; `value` is read by value. Reports `none` when no element matches, including for an\nempty slice.\nCannot fail. Runs in time proportional to the length, stopping at the first match, and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to look for" }
+        ],
+        "returns": "the first index holding `value`, or `none`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#index-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "LastIndexOf",
+      "displayName": "LastIndexOf<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 74,
+      "signature": "pub func LastIndexOf<T>(items: T[..], value: T) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of the last element of `items` equal to `value`.",
+        "markdown": "The index of the last element of `items` equal to `value`.\n`items` is borrowed and read; `value` is read by value. Reports `none` when no element matches.\nCannot fail. Runs in time proportional to the length, stopping at the first match from the end, and allocates\nnothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to look for" }
+        ],
+        "returns": "the last index holding `value`, or `none`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#last-index-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IndexWhere",
+      "displayName": "IndexWhere<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 92,
+      "signature": "pub func IndexWhere<T>(items: T[..], predicate: func(T) -> bool) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of the first element of `items` that `predicate` accepts.",
+        "markdown": "The index of the first element of `items` that `predicate` accepts.\n`items` is borrowed and read; `predicate` is called once per element until it accepts one. Reports `none` when\nit accepts none.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "predicate", "markdown": "the test each element is put to" }
+        ],
+        "returns": "the first index whose element satisfies `predicate`, or `none`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#index-where"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "LastIndexWhere",
+      "displayName": "LastIndexWhere<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 110,
+      "signature": "pub func LastIndexWhere<T>(items: T[..], predicate: func(T) -> bool) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of the last element of `items` that `predicate` accepts.",
+        "markdown": "The index of the last element of `items` that `predicate` accepts.\n`items` is borrowed and read; `predicate` is called once per element from the end until it accepts one. Reports\n`none` when it accepts none.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "predicate", "markdown": "the test each element is put to" }
+        ],
+        "returns": "the last index whose element satisfies `predicate`, or `none`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#last-index-where"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CountWhere",
+      "displayName": "CountWhere<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 127,
+      "signature": "pub func CountWhere<T>(items: T[..], predicate: func(T) -> bool) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "How many elements of `items` the predicate accepts.",
+        "markdown": "How many elements of `items` the predicate accepts.\n`items` is borrowed and read; `predicate` is called once per element. An empty slice gives zero.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "predicate", "markdown": "the test each element is put to" }
+        ],
+        "returns": "how many elements satisfy `predicate`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#count-where"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AllOf",
+      "displayName": "AllOf<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 149,
+      "signature": "pub func AllOf<T>(items: T[..], predicate: func(T) -> bool) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Whether `predicate` accepts every element of `items`.",
+        "markdown": "Whether `predicate` accepts every element of `items`.\n`items` is borrowed and read. An empty slice satisfies this, as it satisfies every universal claim: there is no\nelement that fails.\nCannot fail. Runs in time proportional to the length, stopping at the first rejection, and allocates nothing\nbeyond whatever `predicate` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "predicate", "markdown": "the test each element is put to" }
+        ],
+        "returns": "whether every element satisfies `predicate`; true for an empty sequence",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#all-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AnyOf",
+      "displayName": "AnyOf<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 167,
+      "signature": "pub func AnyOf<T>(items: T[..], predicate: func(T) -> bool) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Whether `predicate` accepts at least one element of `items`.",
+        "markdown": "Whether `predicate` accepts at least one element of `items`.\n`items` is borrowed and read. An empty slice does not satisfy this: there is no element that passes.\nCannot fail. Runs in time proportional to the length, stopping at the first acceptance, and allocates nothing\nbeyond whatever `predicate` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "predicate", "markdown": "the test each element is put to" }
+        ],
+        "returns": "whether any element satisfies `predicate`; false for an empty sequence",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#any-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "NoneOf",
+      "displayName": "NoneOf<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 180,
+      "signature": "pub func NoneOf<T>(items: T[..], predicate: func(T) -> bool) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Whether `predicate` accepts no element of `items`.",
+        "markdown": "Whether `predicate` accepts no element of `items`.\n`items` is borrowed and read. An empty slice satisfies this, for the same reason it satisfies `AllOf`.\nCannot fail. Runs in time proportional to the length, stopping at the first acceptance, and allocates nothing\nbeyond whatever `predicate` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "predicate", "markdown": "the test each element is put to" }
+        ],
+        "returns": "whether no element satisfies `predicate`; true for an empty sequence",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/searching#none-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Mismatch",
+      "displayName": "Mismatch<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 194,
+      "signature": "pub func Mismatch<T>(left: T[..], right: T[..]) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of the first position where `left` and `right` differ.",
+        "markdown": "The index of the first position where `left` and `right` differ.\nBoth are borrowed and read. Reports `none` when neither runs out before a difference is found and the two are\nequal for their whole common length — so two slices of different lengths that agree on the shorter one report\nthe shorter length, and two identical slices report `none`.\nCannot fail. Runs in time proportional to the shorter length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "left", "markdown": "one of the two sequences" },
+          { "name": "right", "markdown": "the other" }
+        ],
+        "returns": "the first index where the two differ, or `none` when neither runs out first",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/comparing#mismatch"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SequenceEqual",
+      "displayName": "SequenceEqual<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 214,
+      "signature": "pub func SequenceEqual<T>(left: T[..], right: T[..]) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Whether `left` and `right` hold the same elements in the same order.",
+        "markdown": "Whether `left` and `right` hold the same elements in the same order.\nBoth are borrowed and read. Different lengths are never equal, and two empty slices are, whatever their data\npointers hold.\nCannot fail. Runs in time proportional to the shorter length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "left", "markdown": "one of the two sequences" },
+          { "name": "right", "markdown": "the other" }
+        ],
+        "returns": "whether both hold the same elements in the same order",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/comparing#sequence-equal"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Compare",
+      "displayName": "Compare<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 231,
+      "signature": "pub func Compare<T>(left: T[..], right: T[..]) -> Ordering",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "How `left` orders against `right`, element by element.",
+        "markdown": "How `left` orders against `right`, element by element.\nBoth are borrowed and read. The comparison is lexicographic, which is the order a dictionary uses: the first\nposition where the two differ decides, and if neither differs before one runs out, the shorter is the smaller.\nTwo equal-length slices that never differ are `Equal`.\nRequires `<` and `==` on the element type. Use `CompareBy` where the element has no ordering of its own or the\nwanted order is not its own.\nCannot fail. Runs in time proportional to the shorter length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "left", "markdown": "one of the two sequences" },
+          { "name": "right", "markdown": "the other" }
+        ],
+        "returns": "how `left` orders against `right`, comparing element by element then by length",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/comparing#compare"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CompareBy",
+      "displayName": "CompareBy<T>",
+      "module": "Find",
+      "source": "Src/Find.rux",
+      "line": 255,
+      "signature": "pub func CompareBy<T>(left: T[..], right: T[..], compare: func(T, T) -> Ordering) -> Ordering",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "How `left` orders against `right`, with `compare` deciding each pair.",
+        "markdown": "How `left` orders against `right`, with `compare` deciding each pair.\nBoth slices are borrowed and read; `compare` is called at most once per position of the shorter one. Lexicographic\nexactly as `Compare` is, and the way to order a sequence whose elements have no `<` of their own — or to order it\nby something other than their own.\nCannot fail. Runs in time proportional to the shorter length and allocates nothing beyond whatever `compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "left", "markdown": "one of the two sequences" },
+          { "name": "right", "markdown": "the other" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "how `left` orders against `right` under `compare`, then by length",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/comparing#compare-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Fold",
+      "displayName": "Fold<T, A>",
+      "module": "Fold",
+      "source": "Src/Fold.rux",
+      "line": 29,
+      "signature": "pub func Fold<T, A>(items: T[..], initial: A, combine: func(A, T) -> A) -> A",
+      "typeParams": [
+        { "name": "T", "bounds": [] },
+        { "name": "A", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "Folds every element of `items` into an accumulator, left to right.",
+        "markdown": "Folds every element of `items` into an accumulator, left to right.\n`items` is borrowed and read; `initial` is read by value and returned when the sequence is empty; `combine` is\ncalled once per element with the accumulator so far and the element. The accumulator's type is independent of the\nelement's.\nLeft to right is part of the contract rather than an implementation detail: a `combine` that is not associative\ngives a different answer in the other direction, and callers depend on the order.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `combine` does.",
+        "typeParams": [
+          { "name": "T", "markdown": "the element type" },
+          { "name": "A", "markdown": "the accumulated value's type" }
+        ],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "initial", "markdown": "the value to start from" },
+          { "name": "combine", "markdown": "how to fold an element into the running value" }
+        ],
+        "returns": "the value left after folding every element into it",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/folding#fold"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "FoldRight",
+      "displayName": "FoldRight<T, A>",
+      "module": "Fold",
+      "source": "Src/Fold.rux",
+      "line": 51,
+      "signature": "pub func FoldRight<T, A>(items: T[..], initial: A, combine: func(A, T) -> A) -> A",
+      "typeParams": [
+        { "name": "T", "bounds": [] },
+        { "name": "A", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "Folds every element of `items` into an accumulator, right to left.",
+        "markdown": "Folds every element of `items` into an accumulator, right to left.\n`items` is borrowed and read; `initial` is read by value and returned when the sequence is empty; `combine` is\ncalled once per element with the accumulator so far and the element, starting from the last.\nThe mirror of `Fold`, and a different answer for any `combine` that is not associative.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `combine` does.",
+        "typeParams": [
+          { "name": "T", "markdown": "the element type" },
+          { "name": "A", "markdown": "the accumulated value's type" }
+        ],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "initial", "markdown": "the value to start from" },
+          { "name": "combine", "markdown": "how to fold an element into the running value" }
+        ],
+        "returns": "the value left after folding every element into it, from the end",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/folding#fold-right"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sum",
+      "displayName": "Sum<T>",
+      "module": "Fold",
+      "source": "Src/Fold.rux",
+      "line": 72,
+      "signature": "pub func Sum<T>(items: T[..], initial: T) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The sum of `initial` and every element of `items`.",
+        "markdown": "The sum of `initial` and every element of `items`.\n`items` is borrowed and read; `initial` is read by value and is what an empty sequence gives back. The starting\nvalue is asked for rather than assumed, because a generic element type has no zero this package could name.\nRequires `+` on the element type. Overflow behaves exactly as `+` does on that type: this does not check, and a\ncaller who needs checking folds a checked addition instead.\nCannot fail. Runs in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "initial", "markdown": "the value to start from" }
+        ],
+        "returns": "`initial` plus every element",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/folding#sum"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Product",
+      "displayName": "Product<T>",
+      "module": "Fold",
+      "source": "Src/Fold.rux",
+      "line": 92,
+      "signature": "pub func Product<T>(items: T[..], initial: T) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The product of `initial` and every element of `items`.",
+        "markdown": "The product of `initial` and every element of `items`.\n`items` is borrowed and read; `initial` is read by value and is what an empty sequence gives back — which is why\nit must be one rather than zero for the answer to mean anything.\nRequires `*` on the element type. Overflow behaves exactly as `*` does on that type.\nCannot fail. Runs in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "initial", "markdown": "the value to start from" }
+        ],
+        "returns": "`initial` times every element",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/folding#product"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Transform",
+      "displayName": "Transform<T, U>",
+      "module": "Fold",
+      "source": "Src/Fold.rux",
+      "line": 115,
+      "signature": "pub func Transform<T, U>(destination: var U[..], source: T[..], transform: func(T) -> U) -> bool",
+      "typeParams": [
+        { "name": "T", "bounds": [] },
+        { "name": "U", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "Writes `transform` of each element of `source` into `destination`.",
+        "markdown": "Writes `transform` of each element of `source` into `destination`.\n`source` is borrowed and read; `destination` is borrowed mutably and written; `transform` is called once per\nelement. The two sequences may have different element types, and may be the same storage when they do not.\nReports false, having written nothing, when the two lengths differ — for the same reason `CopyTo` does: a\npartial result is worse than a refused one when the caller cannot tell how far it got.\nRuns in time proportional to the length and allocates nothing beyond whatever `transform` does.",
+        "typeParams": [
+          { "name": "T", "markdown": "the element type" },
+          { "name": "U", "markdown": "the destination element type" }
+        ],
+        "params": [
+          { "name": "destination", "markdown": "where the results go" },
+          { "name": "source", "markdown": "where the elements come from" },
+          { "name": "transform", "markdown": "how to turn a source element into a destination one" }
+        ],
+        "returns": "whether `destination` was long enough to hold every result",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/folding#transform"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MakeHeap",
+      "displayName": "MakeHeap<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 24,
+      "signature": "pub func MakeHeap<T>(items: var T[..])",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Rearranges `items` into a max-heap.",
+        "markdown": "Rearranges `items` into a max-heap.\n`items` is borrowed mutably and rewritten. Fewer than two elements are already a heap. The arrangement is not an\norder: only the first element ends up where a sorted sequence would put it.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the length — linear, not `n log n`, because sifting from the bottom up\ndoes most of its work on the short subtrees near the leaves. Allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#make-heap"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PushHeap",
+      "displayName": "PushHeap<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 42,
+      "signature": "pub func PushHeap<T>(items: var T[..])",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Restores the heap property after an element has been appended to `items`.",
+        "markdown": "Restores the heap property after an element has been appended to `items`.\n`items` is borrowed mutably and rewritten; it must be the whole heap including the new last element, and\neverything before that element must already be a heap. An empty view does nothing.\nThe caller appends and this repairs, because appending is the storage owner's business.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#push-heap"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PopHeap",
+      "displayName": "PopHeap<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 56,
+      "signature": "pub func PopHeap<T>(items: var T[..])",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Moves the largest element of `items` to its end and restores the heap property over the rest.",
+        "markdown": "Moves the largest element of `items` to its end and restores the heap property over the rest.\n`items` is borrowed mutably and rewritten. Afterwards the largest element sits at the last position and the first\n`length - 1` positions are a heap again; the caller is what shortens the sequence, or leaves the element there.\nFewer than two elements do nothing.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#pop-heap"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SortHeap",
+      "displayName": "SortHeap<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 74,
+      "signature": "pub func SortHeap<T>(items: var T[..])",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Turns the heap `items` into a sorted sequence, smallest first.",
+        "markdown": "Turns the heap `items` into a sorted sequence, smallest first.\n`items` is borrowed mutably and rewritten; it must already be a heap, which `MakeHeap` is what makes it. Repeated\npopping, which is exactly heapsort.\nA sequence that is not a heap does not fail; it comes out rearranged and not sorted.\nRequires `<` on the element type.\nCannot fail. Makes O(n log n) comparisons and allocates nothing. Equal elements may be reordered.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#sort-heap"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsHeap",
+      "displayName": "IsHeap<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 91,
+      "signature": "pub func IsHeap<T>(items: T[..]) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Whether `items` is arranged as a max-heap.",
+        "markdown": "Whether `items` is arranged as a max-heap.\n`items` is borrowed and read. An empty sequence and a single element are heaps, there being no pair to violate\nthe property.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": "whether the sequence satisfies the heap property throughout",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#is-heap"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsHeapUntil",
+      "displayName": "IsHeapUntil<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 104,
+      "signature": "pub func IsHeapUntil<T>(items: T[..]) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "How much of `items` from the front is arranged as a max-heap.",
+        "markdown": "How much of `items` from the front is arranged as a max-heap.\n`items` is borrowed and read. Returns the length when the whole sequence is a heap, and otherwise the index of\nthe first element larger than its parent.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the answer and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": "how many leading elements satisfy the heap property",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#is-heap-until"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MakeHeapBy",
+      "displayName": "MakeHeapBy<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 153,
+      "signature": "pub func MakeHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Rearranges `items` into a max-heap under `compare`.",
+        "markdown": "Rearranges `items` into a max-heap under `compare`.\n`items` is borrowed mutably and rewritten; `compare` must be a strict weak ordering. Fewer than two elements are\nalready a heap.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#make-heap-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PushHeapBy",
+      "displayName": "PushHeapBy<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 170,
+      "signature": "pub func PushHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Restores the heap property under `compare` after an element has been appended to `items`.",
+        "markdown": "Restores the heap property under `compare` after an element has been appended to `items`.\n`items` is borrowed mutably and rewritten; everything before its last element must already be a heap.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever\n`compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#push-heap-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PopHeapBy",
+      "displayName": "PopHeapBy<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 183,
+      "signature": "pub func PopHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Moves the largest element of `items` under `compare` to its end and restores the heap over the rest.",
+        "markdown": "Moves the largest element of `items` under `compare` to its end and restores the heap over the rest.\n`items` is borrowed mutably and rewritten. The caller is what shortens the sequence afterwards.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever\n`compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#pop-heap-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SortHeapBy",
+      "displayName": "SortHeapBy<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 200,
+      "signature": "pub func SortHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Turns the heap `items` into a sequence sorted by `compare`, smallest first.",
+        "markdown": "Turns the heap `items` into a sequence sorted by `compare`, smallest first.\n`items` is borrowed mutably and rewritten and must already be a heap under the same comparison.\nCannot fail. Makes O(n log n) comparisons and allocates nothing beyond whatever `compare` does. Equivalent\nelements may be reordered.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#sort-heap-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsHeapBy",
+      "displayName": "IsHeapBy<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 216,
+      "signature": "pub func IsHeapBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Whether `items` is arranged as a max-heap under `compare`.",
+        "markdown": "Whether `items` is arranged as a max-heap under `compare`.\n`items` is borrowed and read. An empty sequence and a single element are heaps.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "whether the sequence satisfies the heap property throughout under `compare`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#is-heap-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsHeapUntilBy",
+      "displayName": "IsHeapUntilBy<T>",
+      "module": "Heap",
+      "source": "Src/Heap.rux",
+      "line": 229,
+      "signature": "pub func IsHeapUntilBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "How much of `items` from the front is arranged as a max-heap under `compare`.",
+        "markdown": "How much of `items` from the front is arranged as a max-heap under `compare`.\n`items` is borrowed and read. Returns the length when the whole sequence is a heap, and otherwise the index of\nthe first element larger than its parent.\nCannot fail. Runs in time proportional to the answer and allocates nothing beyond whatever `compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "how many leading elements satisfy the heap property under `compare`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/heaps#is-heap-until-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MinIndex",
+      "displayName": "MinIndex<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 22,
+      "signature": "pub func MinIndex<T>(items: T[..]) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of the smallest element of `items`.",
+        "markdown": "The index of the smallest element of `items`.\n`items` is borrowed and read. Reports `none` for an empty slice, and the earliest index when several elements\ntie.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the length, comparing each element once, and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": "the index of the smallest element, the first when several tie, or `none` when empty",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#min-index"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MaxIndex",
+      "displayName": "MaxIndex<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 44,
+      "signature": "pub func MaxIndex<T>(items: T[..]) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of the largest element of `items`.",
+        "markdown": "The index of the largest element of `items`.\n`items` is borrowed and read. Reports `none` for an empty slice, and the earliest index when several elements\ntie.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": "the index of the largest element, the first when several tie, or `none` when empty",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#max-index"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MinIndexBy",
+      "displayName": "MinIndexBy<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 66,
+      "signature": "pub func MinIndexBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of the smallest element of `items`, with `compare` deciding.",
+        "markdown": "The index of the smallest element of `items`, with `compare` deciding.\n`items` is borrowed and read; `compare` is called once per element after the first. Reports `none` for an empty\nslice, and the earliest index when several elements tie.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "the index of the smallest element under `compare`, or `none` when empty",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#min-index-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MaxIndexBy",
+      "displayName": "MaxIndexBy<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 88,
+      "signature": "pub func MaxIndexBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of the largest element of `items`, with `compare` deciding.",
+        "markdown": "The index of the largest element of `items`, with `compare` deciding.\n`items` is borrowed and read; `compare` is called once per element after the first. Reports `none` for an empty\nslice, and the earliest index when several elements tie.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "the index of the largest element under `compare`, or `none` when empty",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#max-index-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MinMaxIndex",
+      "displayName": "MinMaxIndex<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 116,
+      "signature": "pub func MinMaxIndex<T>(items: T[..], smallest: *var uint, largest: *var uint) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The indices of the smallest and largest elements of `items`, in one pass.",
+        "markdown": "The indices of the smallest and largest elements of `items`, in one pass.\n`items` is borrowed and read; `smallest` and `largest` are written only when this reports true. Reports false for\nan empty slice and writes neither. Ties go to the earliest index on both ends, exactly as the single-ended\nsearches promise.\nTwo separate passes would compare each element twice; this compares them in pairs and so makes about three\ncomparisons for every two elements.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the length and allocates nothing.\n`smallest` and `largest` must be non-null and writable.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "smallest", "markdown": "receives the index of the smallest element" },
+          { "name": "largest", "markdown": "receives the index of the largest element" }
+        ],
+        "returns": "whether there was anything to report, which an empty sequence is not",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#min-max-index"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MinMaxIndexBy",
+      "displayName": "MinMaxIndexBy<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 147,
+      "signature": "pub func MinMaxIndexBy<T>(items: T[..], compare: func(T, T) -> Ordering, smallest: *var uint, largest: *var uint) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The indices of the smallest and largest elements of `items`, in one pass, with `compare` deciding.",
+        "markdown": "The indices of the smallest and largest elements of `items`, in one pass, with `compare` deciding.\n`items` is borrowed and read; `smallest` and `largest` are written only when this reports true. Reports false for\nan empty slice and writes neither. Ties go to the earliest index on both ends.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.\n`smallest` and `largest` must be non-null and writable.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" },
+          { "name": "smallest", "markdown": "receives the index of the smallest element" },
+          { "name": "largest", "markdown": "receives the index of the largest element" }
+        ],
+        "returns": "whether there was anything to report, which an empty sequence is not",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#min-max-index-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Min",
+      "displayName": "Min<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 175,
+      "signature": "pub func Min<T>(left: T, right: T) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The smaller of two values, or `left` when neither is smaller.",
+        "markdown": "The smaller of two values, or `left` when neither is smaller.\nBoth are read by value and one is returned by copy. Requires `<` on the type.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "left", "markdown": "one of the two values" },
+          { "name": "right", "markdown": "the other" }
+        ],
+        "returns": "the smaller of the two, or `left` when they tie",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#min"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Max",
+      "displayName": "Max<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 188,
+      "signature": "pub func Max<T>(left: T, right: T) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The larger of two values, or `left` when neither is larger.",
+        "markdown": "The larger of two values, or `left` when neither is larger.\nBoth are read by value and one is returned by copy. Requires `<` on the type.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "left", "markdown": "one of the two values" },
+          { "name": "right", "markdown": "the other" }
+        ],
+        "returns": "the larger of the two, or `left` when they tie",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#max"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Clamp",
+      "displayName": "Clamp<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 204,
+      "signature": "pub func Clamp<T>(value: T, low: T, high: T) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "`value` brought into the range `low` to `high`, inclusive at both ends.",
+        "markdown": "`value` brought into the range `low` to `high`, inclusive at both ends.\nAll three are read by value and one is returned by copy. A `low` above `high` is an empty range with no answer\nthat could be right, so `low` is returned — the caller passed a range it cannot have meant.\nRequires `<` on the type.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "value", "markdown": "the value to bring into range" },
+          { "name": "low", "markdown": "the lowest allowed value" },
+          { "name": "high", "markdown": "the highest allowed value" }
+        ],
+        "returns": "`value` brought into `[low, high]`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#clamp"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ClampBy",
+      "displayName": "ClampBy<T>",
+      "module": "MinMax",
+      "source": "Src/MinMax.rux",
+      "line": 222,
+      "signature": "pub func ClampBy<T>(value: T, low: T, high: T, compare: func(T, T) -> Ordering) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "`value` brought into the range `low` to `high`, with `compare` deciding.",
+        "markdown": "`value` brought into the range `low` to `high`, with `compare` deciding.\nAll three values are read by value and one is returned by copy; `compare` is called at most three times. A `low`\nabove `high` returns `low`, exactly as `Clamp` does.\nCannot fail. Runs in constant time and allocates nothing beyond whatever `compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "value", "markdown": "the value to bring into range" },
+          { "name": "low", "markdown": "the lowest allowed value" },
+          { "name": "high", "markdown": "the highest allowed value" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "`value` brought into `[low, high]` under `compare`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/min-max#clamp-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Swap",
+      "displayName": "Swap<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 20,
+      "signature": "pub func Swap<T>(left: *var T, right: *var T)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Exchanges the values at two locations.",
+        "markdown": "Exchanges the values at two locations.\nBoth are borrowed mutably and both are written. Passing the same location twice is legal and leaves it alone.\nCannot fail. Runs in constant time and allocates nothing.\nBoth pointers must be non-null and writable.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "left", "markdown": "one of the two elements" },
+          { "name": "right", "markdown": "the other" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#swap"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Reverse",
+      "displayName": "Reverse<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 33,
+      "signature": "pub func Reverse<T>(items: var T[..])",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Reverses the order of `items` in place.",
+        "markdown": "Reverses the order of `items` in place.\n`items` is borrowed mutably and rewritten. An empty slice and a single element are already reversed, so neither\nis a special case.\nCannot fail. Runs in time proportional to the length, making half as many exchanges, and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#reverse"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Rotate",
+      "displayName": "Rotate<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 56,
+      "signature": "pub func Rotate<T>(items: var T[..], middle: uint) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Rotates `items` left so that the element at `middle` becomes the first.",
+        "markdown": "Rotates `items` left so that the element at `middle` becomes the first.\n`items` is borrowed mutably and rewritten. A `middle` of zero or of the whole length leaves the order alone;\nanything past the length is refused, since there is no such element to bring to the front.\nDone as three reversals — the front, the back, then the whole — which needs no scratch storage and touches\nevery element at most twice.\nReports false only for a `middle` past the length.\nRuns in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "middle", "markdown": "the index that becomes the new first element" }
+        ],
+        "returns": "whether `middle` was a usable index",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#rotate"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Fill",
+      "displayName": "Fill<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 73,
+      "signature": "pub func Fill<T>(items: var T[..], value: T)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Writes `value` into every position of `items`.",
+        "markdown": "Writes `value` into every position of `items`.\n`items` is borrowed mutably and rewritten; `value` is read by value and copied into each position. An empty slice\nwrites nothing.\nCannot fail. Runs in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to write to every element" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#fill"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CopyTo",
+      "displayName": "CopyTo<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 93,
+      "signature": "pub func CopyTo<T>(destination: var T[..], source: T[..]) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Copies `source` into `destination`, front to back.",
+        "markdown": "Copies `source` into `destination`, front to back.\n`destination` is borrowed mutably and written; `source` is borrowed and read. Reports false when the two lengths\ndiffer, having written nothing: a partial copy is worse than a refused one, since the caller cannot tell how far\nit got.\nThe two must not overlap, unless `destination` begins at or before `source`. Use `MoveTo` where they might.\nRuns in time proportional to the length and allocates nothing.\nOverlapping the wrong way silently copies elements that were already overwritten.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "destination", "markdown": "where the results go" },
+          { "name": "source", "markdown": "where the elements come from" }
+        ],
+        "returns": "whether `destination` was long enough",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#copy-to"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MoveTo",
+      "displayName": "MoveTo<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 114,
+      "signature": "pub func MoveTo<T>(destination: var T[..], source: T[..]) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Copies `source` into `destination`, correctly however the two overlap.",
+        "markdown": "Copies `source` into `destination`, correctly however the two overlap.\n`destination` is borrowed mutably and written; `source` is borrowed and read. Reports false when the two lengths\ndiffer, having written nothing.\nCopies back to front when `destination` starts after `source`, and front to back otherwise, which is what makes\nshifting a run of elements along its own storage safe in either direction.\nRuns in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "destination", "markdown": "where the results go" },
+          { "name": "source", "markdown": "where the elements come from" }
+        ],
+        "returns": "whether `destination` was long enough",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#move-to"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Unique",
+      "displayName": "Unique<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 137,
+      "signature": "pub func Unique<T>(items: var T[..]) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Collapses each run of adjacent equal elements in `items` to one, and reports how many are left.",
+        "markdown": "Collapses each run of adjacent equal elements in `items` to one, and reports how many are left.\n`items` is borrowed mutably and rewritten. Only *adjacent* duplicates go: on a sorted slice that removes every\nduplicate, and on an unsorted one it removes only the runs, which is the useful behaviour rather than a\ncompromise — it makes this the second half of sort-then-unique without paying for a second sort.\nRelative order among the survivors is preserved, nothing is resized, and what lies past the reported length is\nunspecified.\nRequires `==` on the element type.\nCannot fail. Runs in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": "how many elements are left after collapsing each run of equal neighbours to one",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#unique"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "RemoveValue",
+      "displayName": "RemoveValue<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 161,
+      "signature": "pub func RemoveValue<T>(items: var T[..], value: T) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Removes every element of `items` equal to `value`, and reports how many are left.",
+        "markdown": "Removes every element of `items` equal to `value`, and reports how many are left.\n`items` is borrowed mutably and rewritten; `value` is read by value. Survivors are compacted toward the front in\ntheir original order, nothing is resized, and what lies past the reported length is unspecified.\nRequires `==` on the element type.\nCannot fail. Runs in time proportional to the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to remove every occurrence of" }
+        ],
+        "returns": "how many elements are left",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#remove-value"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "RemoveWhere",
+      "displayName": "RemoveWhere<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 183,
+      "signature": "pub func RemoveWhere<T>(items: var T[..], predicate: func(T) -> bool) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Removes every element of `items` that `predicate` accepts, and reports how many are left.",
+        "markdown": "Removes every element of `items` that `predicate` accepts, and reports how many are left.\n`items` is borrowed mutably and rewritten; `predicate` is called once per element. Survivors are compacted toward\nthe front in their original order, nothing is resized, and what lies past the reported length is unspecified.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "predicate", "markdown": "the test each element is put to" }
+        ],
+        "returns": "how many elements are left",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#remove-where"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Partition",
+      "displayName": "Partition<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 208,
+      "signature": "pub func Partition<T>(items: var T[..], predicate: func(T) -> bool) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Moves every element `predicate` accepts to the front of `items`, and reports how many there were.",
+        "markdown": "Moves every element `predicate` accepts to the front of `items`, and reports how many there were.\n`items` is borrowed mutably and rewritten; `predicate` is called once per element. Everything before the reported\nindex satisfies the predicate and everything from it on does not.\nOrder within each group is *not* preserved: this exchanges elements from both ends inward, which is what keeps it\nto one pass and no scratch storage. A caller that needs the original order within each group needs a stable\npartition, which needs somewhere to put things.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "predicate", "markdown": "the test each element is put to" }
+        ],
+        "returns": "the index of the first element that fails `predicate`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#partition"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PartitionPoint",
+      "displayName": "PartitionPoint<T>",
+      "module": "Modify",
+      "source": "Src/Modify.rux",
+      "line": 235,
+      "signature": "pub func PartitionPoint<T>(items: T[..], predicate: func(T) -> bool) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Where the accepted elements of an already-partitioned `items` end.",
+        "markdown": "Where the accepted elements of an already-partitioned `items` end.\n`items` is borrowed and read; `predicate` is called about as many times as the logarithm of the length. Requires\nthat every element the predicate accepts comes before every element it rejects — which is what `Partition`\nleaves behind, and what a sorted slice is with respect to any threshold predicate.\nA slice that is not partitioned this way does not fail; it answers, and the answer is meaningless.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever\n`predicate` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "predicate", "markdown": "the test each element is put to" }
+        ],
+        "returns": "the index of the first element that fails `predicate`, assuming the sequence is partitioned",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/modifying#partition-point"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsSorted",
+      "displayName": "IsSorted<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 27,
+      "signature": "pub func IsSorted<T>(items: T[..]) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Whether `items` is in non-decreasing order.",
+        "markdown": "Whether `items` is in non-decreasing order.\n`items` is borrowed and read. An empty slice and a single element are sorted, there being no pair to be out of\norder. Equal neighbours are in order: this asks for non-decreasing, not strictly increasing.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the length, stopping at the first pair out of order, and allocates\nnothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": "whether the sequence is in non-descending order",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#is-sorted"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsSortedUntil",
+      "displayName": "IsSortedUntil<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 41,
+      "signature": "pub func IsSortedUntil<T>(items: T[..]) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "How far `items` is in non-decreasing order.",
+        "markdown": "How far `items` is in non-decreasing order.\n`items` is borrowed and read. Returns the length of the longest sorted run starting at the front, which is the\nwhole length when the slice is sorted, and the index of the first element smaller than the one before it\notherwise. An empty slice gives zero and a single element gives one.\nRequires `<` on the element type.\nCannot fail. Runs in time proportional to the answer and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": "how many leading elements are in non-descending order",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#is-sorted-until"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "LowerBound",
+      "displayName": "LowerBound<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 62,
+      "signature": "pub func LowerBound<T>(items: T[..], value: T) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The first position where `value` could be inserted without breaking the order.",
+        "markdown": "The first position where `value` could be inserted without breaking the order.\n`items` is borrowed and read; `value` is read by value. This is the index of the first element not less than\n`value` — the first equal one when there are equals, and where it would go when there are none. A value larger\nthan everything gives the length.\nRequires `<` on the element type, and requires `items` to be sorted by that order.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to place" }
+        ],
+        "returns": "the first index where `value` could be inserted and keep the order",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#lower-bound"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "UpperBound",
+      "displayName": "UpperBound<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 87,
+      "signature": "pub func UpperBound<T>(items: T[..], value: T) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The last position where `value` could be inserted without breaking the order.",
+        "markdown": "The last position where `value` could be inserted without breaking the order.\n`items` is borrowed and read; `value` is read by value. This is the index of the first element greater than\n`value` — one past the last equal one when there are equals, and the same as `LowerBound` when there are none.\nRequires `<` on the element type, and requires `items` to be sorted by that order.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to place" }
+        ],
+        "returns": "the last index where `value` could be inserted and keep the order",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#upper-bound"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "BinarySearch",
+      "displayName": "BinarySearch<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 115,
+      "signature": "pub func BinarySearch<T>(items: T[..], value: T) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of an element of `items` equal to `value`.",
+        "markdown": "The index of an element of `items` equal to `value`.\n`items` is borrowed and read; `value` is read by value. Reports `none` when no element is equal. When several\nare, the one reported is the first of them, which makes the answer depend on the sequence rather than on how the\nsearch happened to divide it.\nRequires `<` on the element type, and requires `items` to be sorted by that order. Equality is decided by the\nordering rather than by `==`: two elements neither of which is less than the other are equal here, whatever `==`\nwould say about them.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to look for" }
+        ],
+        "returns": "the index of a matching element, or `none`; which one is unspecified when several match",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#binary-search"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "EqualRange",
+      "displayName": "EqualRange<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 132,
+      "signature": "pub func EqualRange<T>(items: T[..], value: T) -> uint..uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The range of positions in `items` holding elements equal to `value`.",
+        "markdown": "The range of positions in `items` holding elements equal to `value`.\n`items` is borrowed and read; `value` is read by value. The range runs from `LowerBound` to `UpperBound`, so it\nis empty when no element is equal — and its `start` is then where the value would be inserted, which is the\nanswer a caller inserting into a sorted sequence wants.\nRequires `<` on the element type, and requires `items` to be sorted by that order.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to bracket" }
+        ],
+        "returns": "the range of indices holding elements equal to `value`, empty when none does",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#equal-range"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsSortedBy",
+      "displayName": "IsSortedBy<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 145,
+      "signature": "pub func IsSortedBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Whether `items` is in non-decreasing order under `compare`.",
+        "markdown": "Whether `items` is in non-decreasing order under `compare`.\n`items` is borrowed and read; `compare` is called once per neighbouring pair until one is out of order. An empty\nslice and a single element are sorted, and equal neighbours are in order.\nCannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "whether the sequence is in non-descending order under `compare`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#is-sorted-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsSortedUntilBy",
+      "displayName": "IsSortedUntilBy<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 158,
+      "signature": "pub func IsSortedUntilBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "How far `items` is in non-decreasing order under `compare`.",
+        "markdown": "How far `items` is in non-decreasing order under `compare`.\n`items` is borrowed and read. Returns the length of the longest sorted run starting at the front, exactly as\n`IsSortedUntil` does for the element type's own order.\nCannot fail. Runs in time proportional to the answer and allocates nothing beyond whatever `compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "how many leading elements are in non-descending order under `compare`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#is-sorted-until-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "LowerBoundBy",
+      "displayName": "LowerBoundBy<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 178,
+      "signature": "pub func LowerBoundBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The first position where `value` could be inserted into `items` under `compare` without breaking the order.",
+        "markdown": "The first position where `value` could be inserted into `items` under `compare` without breaking the order.\n`items` is borrowed and read; `value` is read by value. `compare` must be the order `items` was sorted by.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever\n`compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to place" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "the first index where `value` could be inserted and keep the order under `compare`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#lower-bound-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "UpperBoundBy",
+      "displayName": "UpperBoundBy<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 203,
+      "signature": "pub func UpperBoundBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The last position where `value` could be inserted into `items` under `compare` without breaking the order.",
+        "markdown": "The last position where `value` could be inserted into `items` under `compare` without breaking the order.\n`items` is borrowed and read; `value` is read by value. `compare` must be the order `items` was sorted by.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever\n`compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to place" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "the last index where `value` could be inserted and keep the order under `compare`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#upper-bound-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "BinarySearchBy",
+      "displayName": "BinarySearchBy<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 229,
+      "signature": "pub func BinarySearchBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint?",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The index of an element of `items` that `compare` calls equal to `value`.",
+        "markdown": "The index of an element of `items` that `compare` calls equal to `value`.\n`items` is borrowed and read; `value` is read by value. Reports `none` when no element is equal, and the first of\nthem when several are. `compare` must be the order `items` was sorted by.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever\n`compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to look for" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "the index of a matching element under `compare`, or `none`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#binary-search-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "EqualRangeBy",
+      "displayName": "EqualRangeBy<T>",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 246,
+      "signature": "pub func EqualRangeBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint..uint",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The range of positions in `items` holding elements `compare` calls equal to `value`.",
+        "markdown": "The range of positions in `items` holding elements `compare` calls equal to `value`.\n`items` is borrowed and read; `value` is read by value. Empty when no element is equal, with its `start` at the\nposition the value would be inserted. `compare` must be the order `items` was sorted by.\nCannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever\n`compare` does.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "value", "markdown": "the value to bracket" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "the range of indices holding elements equal to `value` under `compare`",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorted-slices#equal-range-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sort",
+      "displayName": "Sort<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 42,
+      "signature": "pub func Sort<T>(items: var T[..])",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts `items` into non-decreasing order.",
+        "markdown": "Puts `items` into non-decreasing order.\n`items` is borrowed mutably and rewritten. Fewer than two elements are already sorted, so the data pointer is\nnever read in that case and an empty view is not a special case.\nRequires `<` on the element type, as a strict weak ordering. Equal elements may be reordered: this is not stable.\nCannot fail. Makes O(n log n) comparisons for every input, uses O(1) storage beyond the sequence, and recurses\nO(log n) deep.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#sort"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SortDescending",
+      "displayName": "SortDescending<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 69,
+      "signature": "pub func SortDescending<T>(items: var T[..])",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts `items` into non-increasing order.",
+        "markdown": "Puts `items` into non-increasing order.\n`items` is borrowed mutably and rewritten. An ascending sort followed by a reversal, rather than a mirrored copy\nof every helper below: threading a direction flag through the partition and both fallbacks would cost a branch in\nthe innermost comparison, and duplicating the helpers would double the amount of subtle index arithmetic to\nmaintain, all for one extra linear pass. Sorting is unstable in either direction, so reversing costs nothing in\nordering either.\nRequires `<` on the element type. Equal elements may be reordered.\nCannot fail. Makes O(n log n) comparisons and uses O(1) storage beyond the sequence.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the sequence to work on" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#sort-descending"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "NthElement",
+      "displayName": "NthElement<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 89,
+      "signature": "pub func NthElement<T>(items: var T[..], n: uint) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts the element that belongs at `n` in a fully sorted `items` at `n`, and partitions around it.",
+        "markdown": "Puts the element that belongs at `n` in a fully sorted `items` at `n`, and partitions around it.\n`items` is borrowed mutably and rewritten; `n` is read by value. Afterwards everything before `n` is at most the\nelement at `n` and everything after is at least it. Neither side is ordered any further, which is the whole\npoint: this is what to reach for when only one order statistic is wanted — a median, a percentile — because it\nis linear on average where a full sort is not.\nReports false, changing nothing, when `n` is not an index into `items`. That is the only way this fails.\nQuickselect over the same partition `Sort` uses, but iterative: only one side of a partition can contain `n`, so\nthere is nothing to recurse into and the stack stays flat. The same depth budget bounds the worst case at\nO(n log n), against O(n) on average.\nRequires `<` on the element type. Equal elements may be reordered.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "n", "markdown": "the index whose element should end up in its sorted place" }
+        ],
+        "returns": "whether `n` was a usable index",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#nth-element"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PartialSort",
+      "displayName": "PartialSort<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 149,
+      "signature": "pub func PartialSort<T>(items: var T[..], count: uint) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts the `count` smallest elements of `items` in order at its front.",
+        "markdown": "Puts the `count` smallest elements of `items` in order at its front.\n`items` is borrowed mutably and rewritten; `count` is read by value. The first `count` positions hold the\nsmallest elements in non-decreasing order, and the rest hold everything else in no particular order.\nReports false, changing nothing, when `count` is larger than the length. A `count` of zero succeeds and does\nnothing.\nA max-heap over the first `count` elements, which each later element is compared against and displaces only if it\nis smaller: O(n log count) comparisons, against the O(n log n) a full sort would cost. That is worth having when\n`count` is much smaller than the length and not otherwise.\nRequires `<` on the element type. Equal elements may be reordered.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "count", "markdown": "how many of the smallest elements to place" }
+        ],
+        "returns": "whether `count` was a usable length",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#partial-sort"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "InsertionSortRange",
+      "displayName": "InsertionSortRange<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 260,
+      "signature": "pub func InsertionSortRange<T>(data: *var T, low: uint, high: uint)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Provides the public `InsertionSortRange` operation.",
+        "markdown": "Provides the public `InsertionSortRange` operation.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "data", "markdown": "the sequence to work on" },
+          { "name": "low", "markdown": "the first index of the range" },
+          { "name": "high", "markdown": "the index one past the range" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#insertion-sort-range"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HeapSortRange",
+      "displayName": "HeapSortRange<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 313,
+      "signature": "pub func HeapSortRange<T>(data: *var T, low: uint, high: uint)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Provides the public `HeapSortRange` operation.",
+        "markdown": "Provides the public `HeapSortRange` operation.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "data", "markdown": "the sequence to work on" },
+          { "name": "low", "markdown": "the first index of the range" },
+          { "name": "high", "markdown": "the index one past the range" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#heap-sort-range"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SortBy",
+      "displayName": "SortBy<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 391,
+      "signature": "pub func SortBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts `items` into the order `compare` describes, smallest first.",
+        "markdown": "Puts `items` into the order `compare` describes, smallest first.\n`items` is borrowed mutably and rewritten; `compare` is called O(n log n) times and must be a strict weak\nordering, exactly as `<` must be. Equivalence is derived from it alone, so the element type need not define any\noperator at all.\nCannot fail. Makes O(n log n) comparisons for every input, uses O(1) storage beyond the sequence, and recurses\nO(log n) deep. Equal elements may be reordered: this is not stable.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#sort-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SortDescendingBy",
+      "displayName": "SortDescendingBy<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 412,
+      "signature": "pub func SortDescendingBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts `items` into the reverse of the order `compare` describes.",
+        "markdown": "Puts `items` into the reverse of the order `compare` describes.\n`items` is borrowed mutably and rewritten; `compare` is called O(n log n) times. An ascending sort followed by a\nreversal, for the same reason `SortDescending` is.\nCannot fail. Makes O(n log n) comparisons and uses O(1) storage beyond the sequence. Equal elements may be\nreordered.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#sort-descending-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "NthElementBy",
+      "displayName": "NthElementBy<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 428,
+      "signature": "pub func NthElementBy<T>(items: var T[..], n: uint, compare: func(T, T) -> Ordering) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts the element that belongs at `n` under `compare` at `n`, and partitions around it.",
+        "markdown": "Puts the element that belongs at `n` under `compare` at `n`, and partitions around it.\n`items` is borrowed mutably and rewritten; `n` is read by value; `compare` must be a strict weak ordering.\nExactly `NthElement`, with the order supplied rather than taken from the element type.\nReports false, changing nothing, when `n` is not an index into `items`.\nO(n) comparisons on average and O(n log n) at worst. Equivalent elements may be reordered.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "n", "markdown": "the index whose element should end up in its sorted place" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "whether `n` was a usable index",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#nth-element-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PartialSortBy",
+      "displayName": "PartialSortBy<T>",
+      "module": "Sort",
+      "source": "Src/Sort.rux",
+      "line": 481,
+      "signature": "pub func PartialSortBy<T>(items: var T[..], count: uint, compare: func(T, T) -> Ordering) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts the `count` smallest elements of `items` under `compare` in order at its front.",
+        "markdown": "Puts the `count` smallest elements of `items` under `compare` in order at its front.\n`items` is borrowed mutably and rewritten; `count` is read by value; `compare` must be a strict weak ordering.\nExactly `PartialSort`, with the order supplied rather than taken from the element type.\nReports false, changing nothing, when `count` is larger than the length.\nO(n log count) comparisons. Equivalent elements may be reordered.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "count", "markdown": "how many of the smallest elements to place" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "whether `count` was a usable length",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#partial-sort-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "RequiredScratch",
+      "displayName": "RequiredScratch",
+      "module": "Stable",
+      "source": "Src/Stable.rux",
+      "line": 28,
+      "signature": "pub func RequiredScratch(length: uint) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How much scratch storage a stable sort of `length` elements needs.",
+        "markdown": "How much scratch storage a stable sort of `length` elements needs.\n`length` is read by value. The answer is `length` itself: a merge writes its output somewhere other than either\nof the two runs it reads, and the last merge reads the whole sequence.\nWritten as a function rather than left to the reader so that a caller sizing a buffer does not have to know that,\nand so that it stays right if it ever stops being the whole length.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "length", "markdown": "how many elements are to be sorted" }],
+        "returns": "how many elements of working storage a stable sort of that length needs",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#required-scratch"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "StableSort",
+      "displayName": "StableSort<T>",
+      "module": "Stable",
+      "source": "Src/Stable.rux",
+      "line": 44,
+      "signature": "pub func StableSort<T>(items: var T[..], scratch: var T[..]) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts `items` into non-decreasing order, leaving equal elements in the order they were in.",
+        "markdown": "Puts `items` into non-decreasing order, leaving equal elements in the order they were in.\n`items` is borrowed mutably and rewritten; `scratch` is borrowed mutably and used as working storage, and what it\nholds afterwards is unspecified. Fewer than two elements are already sorted and need no scratch at all.\nReports false, changing nothing, when `scratch` is shorter than `RequiredScratch(items.length)`. That is the only\nway this fails.\nRequires `<` on the element type, as a strict weak ordering.\nMakes O(n log n) comparisons and moves for every input — there is no bad case — and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "scratch", "markdown": "working storage of at least `RequiredScratch(items.length)` elements" }
+        ],
+        "returns": "whether `scratch` was large enough; the sequence is untouched when it was not",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#stable-sort"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "StableSortBy",
+      "displayName": "StableSortBy<T>",
+      "module": "Stable",
+      "source": "Src/Stable.rux",
+      "line": 104,
+      "signature": "pub func StableSortBy<T>(items: var T[..], scratch: var T[..], compare: func(T, T) -> Ordering) -> bool",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Puts `items` into the order `compare` describes, leaving equivalent elements in the order they were in.",
+        "markdown": "Puts `items` into the order `compare` describes, leaving equivalent elements in the order they were in.\n`items` is borrowed mutably and rewritten; `scratch` is borrowed mutably and used as working storage, and what it\nholds afterwards is unspecified. `compare` is called O(n log n) times and must be a strict weak ordering.\nReports false, changing nothing, when `scratch` is shorter than `RequiredScratch(items.length)`.\nMakes O(n log n) comparisons and moves for every input, and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [
+          { "name": "items", "markdown": "the sequence to work on" },
+          { "name": "scratch", "markdown": "working storage of at least `RequiredScratch(items.length)` elements" },
+          { "name": "compare", "markdown": "how two elements order against each other" }
+        ],
+        "returns": "whether `scratch` was large enough; the sequence is untouched when it was not",
+        "see": ["https://rux-lang.dev/docs/api/algorithms/sorting#stable-sort-by"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}
