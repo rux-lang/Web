@@ -1081,6 +1081,18 @@ export function topicGroup(sections) {
   );
 }
 
+const naturalOrder = new Intl.Collator("en", { numeric: true, sensitivity: "base" });
+
+/**
+ * A topic page's sections in source order, except that a page of nothing but
+ * primitive types and type aliases reads in natural name order: `int8` before
+ * `int16`, whatever order the compiler declared them in.
+ */
+function topicSections(sections) {
+  const typesOnly = sections.every((set) => set.every((item) => ["intrinsic-type", "type"].includes(item.kind)));
+  return typesOnly ? [...sections].sort(([a], [b]) => naturalOrder.compare(a.name, b.name)) : sections;
+}
+
 function renderItemPage(ctx, pageSlug, { owner, sections }) {
   const { snapshot, plan } = ctx;
   const [first] = owner;
@@ -1134,7 +1146,8 @@ function renderTopicPage(ctx, pageSlug, { sections }, entry) {
       `${apiUrl(plan.slug, pageSlug)} is a topic page (only #fragment URLs point at it), but the registry entry for ${snapshot.package.name} has no topics["${pageSlug}"] title`,
     );
   }
-  const [first] = sections[0];
+  const ordered = topicSections(sections);
+  const [first] = ordered[0];
   const title = typeof topic === "string" ? topic : topic.title;
   const lead = (typeof topic === "string" ? null : topic.description) ?? first.doc.summary ?? title;
   const description = plainText(lead);
@@ -1158,7 +1171,7 @@ function renderTopicPage(ctx, pageSlug, { sections }, entry) {
   page.add(generatedComment(plan.slug));
   page.add(`# ${escapeHtml(title)}`);
   page.add(transformProse(lead.replace(/([^.])$/, "$1."), ctx.resolve(null)));
-  for (const set of sections) renderPlacedItem(page, ctx, set, 2, null, 3);
+  for (const set of ordered) renderPlacedItem(page, ctx, set, 2, null, 3);
   return page;
 }
 

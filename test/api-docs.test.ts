@@ -456,6 +456,41 @@ describe("renderApiPackage", async () => {
     expect(helpers.get(`${base}/3.functions/.navigation.yml`)).toBe("title: Functions\n");
   });
 
+  it("orders a topic page of primitive types by natural name order", async () => {
+    const snapshot = copy();
+    const primitive = (name: string, line: number) => ({
+      ...structuredClone(item(fixture, "NaturalAlignment")),
+      kind: "intrinsic-type",
+      name,
+      displayName: name,
+      line,
+      signature: `intrinsic type ${name}`,
+      doc: {
+        ...structuredClone(item(fixture, "NaturalAlignment").doc),
+        summary: `A ${name}.`,
+        markdown: `A ${name}.`,
+        params: [],
+        returns: null,
+        see: [url("integers", name)],
+      },
+    });
+    snapshot.items.push(primitive("int16", 90), primitive("int8", 91), primitive("int128", 92));
+    const rendered = await renderApiPackage(snapshot, null, {
+      ...entry,
+      topics: { ...entry.topics, integers: "Integers" },
+    });
+    const integers = rendered.get(`${base}/2.types/integers.md`)!;
+    const order = [...integers.matchAll(/<h2 id="([^"]+)">/g)].map((match) => match[1]);
+    expect(order).toEqual(["int8", "int16", "int128"]);
+    expect(integers).toContain("# Integers\n\nA int8.\n");
+    // Anything else keeps source order.
+    const blocks = pages.get(`${base}/4.constants/empty-blocks.md`)!;
+    expect([...blocks.matchAll(/<h2 id="([^"]+)">/g)].map((match) => match[1])).toEqual([
+      "empty-block",
+      "is-empty-block",
+    ]);
+  });
+
   it("refuses an anchor that collides with a section heading", async () => {
     const snapshot = copy();
     item(snapshot, "Arena").members.find((member: { name: string }) => member.name === "Reset").doc.see = [
