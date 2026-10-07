@@ -246,6 +246,13 @@ export default defineNuxtConfig({
       ]),
       crawlLinks: true,
       failOnError: false,
+      // The /packages/* fallback in public/_redirects is followed even where a
+      // file exists, so a registry route's _payload.json is answered with the
+      // HTML shell and every client navigation into the registry logged
+      // NUXT_E7002 parsing it. The payload holds only the navigation tree the
+      // app already has; an unemitted payload stays out of the app manifest,
+      // so the client never asks for it.
+      ignore: [/^\/packages(\/.*)?\/_payload\.json/],
     },
   },
 

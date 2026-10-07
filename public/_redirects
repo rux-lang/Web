@@ -1,7 +1,11 @@
 # Cloudflare Pages redirects.
 # Dynamic registry routes use Nuxt's generated client-side fallback. Package
 # pages and catalog facets remain deep-linkable without introducing SSR.
-/packages/*  /200.html  200
+# The target is /200, not /200.html: Pages answers /200.html with a 308 to its
+# pretty URL, and a rewrite passes that redirect on, so every deep link landed
+# on /200 and rendered "Page not found". The rule also shadows the files
+# prerendered under /packages; nuxt.config.ts keeps their payloads unemitted.
+/packages/*  /200  200
 
 # Get Started moved into the Learn Rux course (its "Getting started" group).
 # Specific rules come first: Cloudflare applies the first match.
