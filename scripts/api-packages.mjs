@@ -315,13 +315,56 @@ export const PACKAGES = [
       },
     },
   },
-  { name: "C", area: "platform", icon: "i-simple-icons-c", description: "C standard library bindings" },
+  {
+    name: "C",
+    area: "platform",
+    icon: "i-simple-icons-c",
+    description: "C standard library bindings",
+    topics: {
+      stdio: {
+        title: "Standard I/O",
+        description: "C's `<stdio.h>`: streams, formatted conversion and the constants that size them.",
+      },
+      stdlib: {
+        title: "General utilities",
+        description: "C's `<stdlib.h>`: allocation, number parsing, sorting, pseudo-random numbers and exit codes.",
+      },
+      string: { title: "Strings and memory", description: "C's `<string.h>`: byte-string and raw memory operations." },
+      math: {
+        title: "Mathematics",
+        description: "C's `<math.h>`: the elementary functions and the special floating-point values.",
+      },
+      time: {
+        title: "Time",
+        description: "C's `<time.h>`: calendar time, processor time and the conversions between them.",
+      },
+      types: { title: "Types", description: "C's scalar types under their C names, sized for the current target." },
+      errno: { title: "errno", description: "Reading C's thread-local `errno`, and which C runtime it lives in." },
+    },
+  },
   {
     name: "Linux",
     area: "platform",
     icon: "i-simple-icons-linux",
     description: "Linux platform bindings",
     platform: "Linux",
+    topics: {
+      types: { title: "Types", description: "Linux's scalar types for process, file and user identifiers." },
+      clock: { title: "Clocks", description: "Reading clocks and sleeping." },
+      dynamic: { title: "Dynamic loading", description: "The mode flags `dlopen` takes." },
+      errors: { title: "Errors", description: "The error numbers, and telling a raw result from an error." },
+      files: { title: "Files", description: "Opening, reading, writing and inspecting files through descriptors." },
+      directories: {
+        title: "Directories and links",
+        description: "The working directory, directory entries, removal, renaming and links.",
+      },
+      memory: { title: "Memory", description: "Mapping, protecting and advising on pages of memory." },
+      process: { title: "Process", description: "Ending the process and asking its identifier." },
+      syscalls: {
+        title: "System calls",
+        description: "The raw system-call entry points and the call numbers they take.",
+      },
+    },
   },
   {
     name: "FreeBSD",
@@ -329,6 +372,23 @@ export const PACKAGES = [
     icon: "i-simple-icons-freebsd",
     description: "FreeBSD platform bindings",
     platform: "FreeBSD",
+    topics: {
+      types: { title: "Types", description: "FreeBSD's scalar types for process, file and user identifiers." },
+      clock: { title: "Clocks", description: "Reading clocks and sleeping." },
+      dynamic: { title: "Dynamic loading", description: "The mode flags `dlopen` takes." },
+      errors: { title: "Errors", description: "The error numbers, and telling a raw result from an error." },
+      files: { title: "Files", description: "Opening, reading, writing and inspecting files through descriptors." },
+      directories: {
+        title: "Directories and links",
+        description: "The working directory, directory entries, removal, renaming and links.",
+      },
+      memory: { title: "Memory", description: "Mapping, protecting and advising on pages of memory." },
+      process: { title: "Process", description: "Ending the process and asking its identifier." },
+      syscalls: {
+        title: "System calls",
+        description: "The raw system-call entry points and the call numbers they take.",
+      },
+    },
   },
   {
     name: "macOS",
@@ -336,6 +396,19 @@ export const PACKAGES = [
     icon: "i-simple-icons-apple",
     description: "macOS platform bindings",
     platform: "macOS",
+    topics: {
+      types: { title: "Types", description: "macOS's scalar types for process, file and user identifiers." },
+      clock: { title: "Clocks", description: "Reading clocks and sleeping." },
+      dynamic: { title: "Dynamic loading", description: "libSystem, and the mode flags `dlopen` takes." },
+      errors: { title: "Errors", description: "The error numbers, and telling a raw result from an error." },
+      files: { title: "Files", description: "Opening, reading, writing and inspecting files through descriptors." },
+      directories: {
+        title: "Directories and links",
+        description: "The working directory, directory entries, removal, renaming and links.",
+      },
+      memory: { title: "Memory", description: "Mapping, protecting and advising on pages of memory." },
+      process: { title: "Process", description: "Ending the process and asking its identifier." },
+    },
   },
   {
     name: "Windows",
@@ -343,6 +416,20 @@ export const PACKAGES = [
     icon: "i-simple-icons-windows",
     description: "Windows platform bindings",
     platform: "Windows",
+    topics: {
+      types: { title: "Types", description: "The Win32 scalar and handle types." },
+      console: { title: "Console", description: "Allocating, reading and writing the console." },
+      files: { title: "Files", description: "Opening, reading, writing and flushing files through handles." },
+      "file-system": {
+        title: "File system",
+        description: "Deleting, copying and moving files, directories, attributes, search and links.",
+      },
+      memory: { title: "Memory", description: "Heap allocation, virtual memory and raw memory operations." },
+      process: { title: "Processes and threads", description: "Exiting, threads, waiting and loading libraries." },
+      clock: { title: "Clocks", description: "Performance counters, system time and tick counts." },
+      text: { title: "Text conversion", description: "Converting between code pages and UTF-16." },
+      errors: { title: "Errors", description: "The last Win32 error and the codes it reports." },
+    },
   },
 ].map((entry, index) => {
   const slug = entry.name.toLowerCase();

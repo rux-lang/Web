@@ -1,7 +1,7 @@
 import type { ContentNavigationItem } from "@nuxt/content";
 import { describe, expect, it } from "vitest";
 import { apiHubBook, groupByStemFolder } from "../app/composables/useDocsSection";
-import { apiPackageCatalog } from "../app/utils/api-catalog";
+import { apiGenerated, apiPackageCatalog } from "../app/utils/api-catalog";
 import { apiSourceUrl } from "../app/utils/api-page";
 
 const page = (path: string, stem: string, title = path.split("/").pop()!): ContentNavigationItem => ({
@@ -11,8 +11,8 @@ const page = (path: string, stem: string, title = path.split("/").pop()!): Conte
 });
 
 // The /docs/api node as Nuxt Content returns it: one generated package whose
-// pages are flat under it, and two hand-written 0.3 folders — Bsd, which the
-// registry no longer lists, and C.
+// pages are flat under it, a hand-written 0.3 folder for Io, and Legacy, a
+// hand-written folder the registry does not list.
 const apiBook: ContentNavigationItem = {
   title: "API Reference",
   path: "/docs/api",
@@ -33,19 +33,19 @@ const apiBook: ContentNavigationItem = {
       ],
     },
     {
-      title: "C",
-      path: "/docs/api/c",
-      stem: "docs/5.api/03.c/index",
+      title: "Io",
+      path: "/docs/api/io",
+      stem: "docs/5.api/05.io/index",
       children: [
-        page("/docs/api/c", "docs/5.api/03.c/index", "Overview"),
-        page("/docs/api/c/abs", "docs/5.api/03.c/abs"),
+        page("/docs/api/io", "docs/5.api/05.io/index", "Overview"),
+        page("/docs/api/io/print", "docs/5.api/05.io/print"),
       ],
     },
     {
-      title: "Bsd",
-      path: "/docs/api/bsd",
-      stem: "docs/5.api/02.bsd/index",
-      children: [page("/docs/api/bsd", "docs/5.api/02.bsd/index", "Overview")],
+      title: "Legacy",
+      path: "/docs/api/legacy",
+      stem: "docs/5.api/02.legacy/index",
+      children: [page("/docs/api/legacy", "docs/5.api/02.legacy/index", "Overview")],
     },
   ],
 };
@@ -107,13 +107,14 @@ describe("apiPackageCatalog", () => {
 
   it("marks the packages the navigation tree has a folder for", () => {
     expect(find("allocator")).toMatchObject({ hasPages: true, generated: true });
-    expect(find("c")).toMatchObject({ hasPages: true, generated: false });
+    // Io stays hand-written until its snapshot lands; the flag follows data/api/.
+    expect(find("io")).toMatchObject({ hasPages: true, generated: apiGenerated.has("io") });
     expect(find("json")).toMatchObject({ hasPages: false });
     expect(find("windows")).toMatchObject({ hasPages: false, platform: "Windows" });
   });
 
   it("appends hand-written folders the registry does not name", () => {
-    expect(catalog.at(-1)).toMatchObject({ slug: "other", packages: [{ name: "Bsd", path: "/docs/api/bsd" }] });
+    expect(catalog.at(-1)).toMatchObject({ slug: "other", packages: [{ name: "Legacy", path: "/docs/api/legacy" }] });
   });
 
   it("drops nothing but empty areas when the tree is missing", () => {
@@ -126,7 +127,7 @@ describe("apiPackageCatalog", () => {
 describe("apiHubBook", () => {
   it("outlines only the packages with pages, under their areas", () => {
     const hub = apiHubBook(apiBook);
-    expect(hub.children!.map((area) => area.title)).toEqual(["Foundation", "Platform bindings", "Other packages"]);
+    expect(hub.children!.map((area) => area.title)).toEqual(["Foundation", "System and I/O", "Other packages"]);
     expect(hub.children![0]!.children).toEqual([
       { title: "Allocator", icon: "i-lucide-boxes", path: "/docs/api/allocator" },
     ]);
