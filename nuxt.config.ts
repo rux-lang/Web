@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { PARTS } from "./scripts/learn-course.mjs";
 import { contentRoutes } from "./scripts/routes.mjs";
 
 // MDC registers object grammars by `lang.name` ONLY and ignores
@@ -186,6 +187,37 @@ export default defineNuxtConfig({
   },
 
   nitro: {
+    rollupConfig: {
+      // Two warnings Nitro's own server build prints on every generate, both
+      // harmless and both upstream. They are matched exactly, so a real
+      // unresolved or unused import in our code still surfaces.
+      // - @nuxt/nitro-server passes its cache driver as a file:// URL on
+      //   Windows only. Rollup cannot resolve that, so it leaves the import
+      //   external, and Node loads it fine at runtime. The Linux builder never
+      //   sees it.
+      // - h3.mjs is nitro-server's re-export of h3, and five of its imports
+      //   tree-shake away.
+      onwarn(warning, warn) {
+        // Setting onwarn replaces Nitro's own, so restate what it drops
+        // (nitropack/dist/rollup: CIRCULAR_DEPENDENCY, EVAL, source-map
+        // comments) — without this, ten circular-import notices from
+        // nitropack, @nuxt/content and nuxt-site-config come back.
+        if (["CIRCULAR_DEPENDENCY", "EVAL"].includes(warning.code ?? "")) return;
+        if (warning.message.includes("Unsupported source map comment")) return;
+        const posix = (path?: string) => path?.replaceAll("\\", "/") ?? "";
+        if (
+          warning.code === "UNRESOLVED_IMPORT" &&
+          posix(warning.exporter).endsWith("@nuxt/nitro-server/dist/runtime/utils/cache-driver.mjs")
+        )
+          return;
+        if (
+          warning.code === "UNUSED_EXTERNAL_IMPORT" &&
+          warning.ids?.some((id) => posix(id).endsWith("@nuxt/nitro-server/dist/h3.mjs"))
+        )
+          return;
+        warn(warning);
+      },
+    },
     prerender: {
       // seed deterministically from the content tree. crawlLinks alone
       // found 5 of 550 pages on the first build, because nothing linked to the
@@ -241,6 +273,9 @@ export default defineNuxtConfig({
         // find. `.rux` is mapped to lucide:file-code above; the `Rux.toml`
         // manifest in every home-page code tree falls through to this one.
         "vscode-icons:file-type-toml",
+        // Same mechanism for a code-group tab label: Nuxt UI's built-in map
+        // turns the `[npm]` tab on /docs/learn/ai into this icon.
+        "vscode-icons:file-type-npm",
         // Header dropdown icons. These live in app/composables/useNavigation.ts,
         // and the scanner only globs .vue/.md/.yml — an icon named only in a
         // .ts file is invisible to it and fails to resolve at prerender.
@@ -276,6 +311,14 @@ export default defineNuxtConfig({
         "lucide:sigma",
         "lucide:brackets",
         "lucide:circle-dashed",
+        // The course part icons. They are written only in each part's
+        // .navigation.yml, a dotfile the scanner's glob skips, and in
+        // scripts/learn-course.mjs, which feeds :learn-roadmap. Only the ones
+        // that happened to appear literally elsewhere were bundled; the rest
+        // were fetched during prerender and timed out after 1500ms under load
+        // ("[Icon] loading icon lucide:sprout timed out"), leaving blank gaps
+        // in the sidebar and road map. `i-lucide-file-json` → `lucide:file-json`.
+        ...PARTS.map((part) => part.icon.replace(/^i-([a-z]+)-/, "$1:")),
       ],
     },
   },
@@ -294,6 +337,22 @@ export default defineNuxtConfig({
       // hashes (504 "Outdated Optimize Dep") until a hard reload. Declaring it
       // up front optimises it at startup instead.
       include: ["mermaid"],
+    },
+    build: {
+      // The two chunks over Vite's 500 kB default are Mermaid internals, both
+      // behind dynamic import(): its ELK layout engine (~1.46 MB, fetched only
+      // for `layout: "elk"`, which MermaidDiagram never sets) and its Langium
+      // parser (~630 kB, only for the diagram types that use it). Neither is
+      // on any page's initial load. The limit sits just above ELK, so anything
+      // larger still warns.
+      chunkSizeWarningLimit: 1500,
+      rolldownOptions: {
+        // Rolldown warns PLUGIN_TIMINGS whenever JavaScript plugin hooks take
+        // most of a build, which is every Nuxt build: nuxt:virtual alone
+        // resolves ~10k ids, and vite-plugin-checker (typescript.typeCheck)
+        // runs vue-tsc in buildEnd. Nothing in the report is actionable here.
+        checks: { bundlerTimings: false },
+      },
     },
   },
 
