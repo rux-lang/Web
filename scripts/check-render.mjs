@@ -201,22 +201,27 @@ for (const route of ["/docs/api/io", "/docs/api/io/print"]) {
   });
 }
 
-// Awkward titles
+// Awkward titles. A route with a #fragment checks the heading with that id
+// instead of the h1: an operator renders as an anchored member heading.
 for (const [route, want] of [
   ["/docs/api/linux/syscalls", null],
-  ["/docs/api/text/string/plus", "+"],
+  ["/docs/api/text/string#copy", "="],
   ["/blog/release-v0.1.0", null],
   ["/docs/cli/global", null],
 ]) {
   check("titles", route, () => {
-    const h = read(route);
+    const [page, anchor] = route.split("#");
+    const h = read(page);
     if (!h) return { ok: false, detail: "route missing" };
     const title = (h.match(/<title[^>]*>([\s\S]*?)<\/title>/)?.[1] ?? "").trim();
-    const h1 = (h.match(/<h1[^>]*>([\s\S]*?)<\/h1>/)?.[1] ?? "").replace(/<[^>]+>/g, "").trim();
+    const heading = anchor
+      ? new RegExp(`<(h[1-6])[^>]*\\bid="${anchor}"[^>]*>([\\s\\S]*?)<\\/\\1>`)
+      : /<(h1)[^>]*>([\s\S]*?)<\/h1>/;
+    const h1 = (h.match(heading)?.[2] ?? "").replace(/<[^>]+>/g, "").trim();
     const bad = /undefined|\[object|&amp;lt;/.test(title);
     return {
       ok: title.length > 0 && h1.length > 0 && !bad && (!want || h1.includes(want)),
-      detail: "title=" + JSON.stringify(title) + " h1=" + JSON.stringify(h1),
+      detail: "title=" + JSON.stringify(title) + " heading=" + JSON.stringify(h1),
     };
   });
 }

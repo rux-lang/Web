@@ -62,9 +62,9 @@ The arguments are [`Stringable`](/docs/api/format/stringable), so a type of your
 
 ## Ownership
 
-`Print` and `PrintLine` own nothing: a [`String`](/docs/api/text/string) passed to either is only read, and it is still yours to [`Free`](/docs/api/text/string/free) afterwards.
+`Print` and `PrintLine` own nothing: a [`String`](/docs/api/text/string) passed to either is only read, and it is still yours to [`Free`](/docs/api/text/string#destructor) afterwards.
 
-[`ReadLine`](/docs/api/io/readline) is the other way around. The `String` it returns is a fresh allocation the caller owns and passes to [`String::Free`](/docs/api/text/string/free) exactly once, on the terms [`Text`](/docs/api/text#ownership) sets out — including the line that came back empty.
+[`ReadLine`](/docs/api/io/readline) is the other way around. The `String` it returns is a fresh allocation the caller owns and passes to [`String::Free`](/docs/api/text/string#destructor) exactly once, on the terms [`Text`](/docs/api/text) sets out — including the line that came back empty.
 
 ## Functions
 

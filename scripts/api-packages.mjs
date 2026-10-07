@@ -39,7 +39,22 @@ export const PACKAGES = [
     description: "Allocation contracts and the allocators that meet them",
   },
   { name: "Math", area: "foundation", icon: "i-lucide-sigma", description: "Mathematical constants and functions" },
-  { name: "Text", area: "text", icon: "i-lucide-type", description: "Strings and fundamental text manipulation" },
+  {
+    name: "Text",
+    area: "text",
+    icon: "i-lucide-type",
+    description: "Strings and fundamental text manipulation",
+    topics: {
+      utf8: {
+        title: "UTF-8",
+        description: "Encoding, decoding and validating UTF-8, and the limits of a Unicode scalar value.",
+      },
+      transform: {
+        title: "Transforming text",
+        description: "New strings made from old: concatenation, repetition, replacement and ASCII case.",
+      },
+    },
+  },
   { name: "Format", area: "text", icon: "i-lucide-whole-word", description: "String conversion and formatting" },
   {
     name: "Unicode",

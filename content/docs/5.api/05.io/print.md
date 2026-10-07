@@ -61,7 +61,7 @@ A value that is not already text is rendered by [`Format::ToString`](/docs/api/f
 
 The format overload substitutes each `{}` with the next argument, and writes a literal brace for `{{` and `}}`. The substitution is [`Format`](/docs/api/format)'s, and the arguments are [`Stringable`](/docs/api/format/stringable), so a type of your own can go into a `{}` as soon as it implements that interface.
 
-A `String` argument is only read. It stays yours, and you still [`Free`](/docs/api/text/string/free) it.
+A `String` argument is only read. It stays yours, and you still [`Free`](/docs/api/text/string#destructor) it.
 
 Output is unbuffered and goes straight to the stream, and a write that the platform cuts short is retried until the whole value is out. Nothing is reported back: if the stream is closed or fails outright, the call gives up quietly rather than returning an error.
 

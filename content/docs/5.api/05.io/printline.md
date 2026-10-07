@@ -60,7 +60,7 @@ func PrintLine(value: char32);
 
 ## Remarks
 
-Each overload is its [`Print`](/docs/api/io/print) counterpart followed by a newline, and everything that page says about the text of a value, about `{}` substitution, and about a `String` argument staying yours to [`Free`](/docs/api/text/string/free) holds here unchanged.
+Each overload is its [`Print`](/docs/api/io/print) counterpart followed by a newline, and everything that page says about the text of a value, about `{}` substitution, and about a `String` argument staying yours to [`Free`](/docs/api/text/string#destructor) holds here unchanged.
 
 The newline written is a single LF (`\n`), on every platform, including Windows. Nothing translates it to CRLF on the way out.
 

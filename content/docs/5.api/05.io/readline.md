@@ -12,11 +12,11 @@ func ReadLine() -> String;
 
 ## Returns
 
-A `String` holding the bytes read, without the line ending, in a block the caller owns and passes to [`String::Free`](/docs/api/text/string/free) exactly once — an empty line included, since an empty `String` is still a value to free.
+A `String` holding the bytes read, without the line ending, in a block the caller owns and passes to [`String::Free`](/docs/api/text/string#destructor) exactly once — an empty line included, since an empty `String` is still a value to free.
 
 The line ending is removed: the LF that terminated the line, and a CR immediately before it, so a CRLF-terminated line comes back the same as an LF-terminated one. A CR anywhere else is data and is kept, which is what makes a lone `\r` in the middle of a line survive the round trip.
 
-There is no length limit — the line is accumulated in a [`StringBuilder`](/docs/api/text/stringbuilder) that grows as it goes.
+There is no length limit — the line is accumulated in a [`StringBuilder`](/docs/api/text/string-builder) that grows as it goes.
 
 An empty `String` comes back from two different things: an empty line, and standard input that was already at EOF. The call does not distinguish them. If EOF arrives partway through a line, whatever had been read is returned as if the line had ended there.
 
@@ -72,4 +72,4 @@ func Main() -> int {
 - [`Io`](/docs/api/io) — the package overview
 - [`Print`](/docs/api/io/print) — write a prompt before reading
 - [`Text::String`](/docs/api/text/string) — the type returned, and how to free it
-- [`Text::StringBuilder`](/docs/api/text/stringbuilder) — what the line is accumulated in
+- [`Text::StringBuilder`](/docs/api/text/string-builder) — what the line is accumulated in
