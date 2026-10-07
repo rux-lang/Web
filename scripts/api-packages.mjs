@@ -100,7 +100,33 @@ export const PACKAGES = [
     icon: "i-lucide-lock",
     description: "Cryptographic hashes, message authentication codes and key derivation",
   },
-  { name: "C", area: "platform", icon: "i-simple-icons-c", description: "C standard library bindings" },
+  {
+    name: "C",
+    area: "platform",
+    icon: "i-simple-icons-c",
+    description: "C standard library bindings",
+    topics: {
+      stdio: {
+        title: "Standard I/O",
+        description: "C's `<stdio.h>`: streams, formatted conversion and the constants that size them.",
+      },
+      stdlib: {
+        title: "General utilities",
+        description: "C's `<stdlib.h>`: allocation, number parsing, sorting, pseudo-random numbers and exit codes.",
+      },
+      string: { title: "Strings and memory", description: "C's `<string.h>`: byte-string and raw memory operations." },
+      math: {
+        title: "Mathematics",
+        description: "C's `<math.h>`: the elementary functions and the special floating-point values.",
+      },
+      time: {
+        title: "Time",
+        description: "C's `<time.h>`: calendar time, processor time and the conversions between them.",
+      },
+      types: { title: "Types", description: "C's scalar types under their C names, sized for the current target." },
+      errno: { title: "errno", description: "Reading C's thread-local `errno`, and which C runtime it lives in." },
+    },
+  },
   {
     name: "Linux",
     area: "platform",
