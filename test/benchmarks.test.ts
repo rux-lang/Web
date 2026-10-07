@@ -290,9 +290,9 @@ describe("benchmarks page", () => {
     const text = wrapper.text();
     expect(text).toContain("Benchmarks");
     expect(text).toContain("10 / 10");
-    expect(text).toContain("AMD Ryzen 5 5500");
+    expect(text).toContain("Intel(R) Core(TM) i9-11900KF");
     expect(text).toContain("Windows 11 (build 26300)");
-    expect(text).toContain("16 GiB");
+    expect(text).toContain("64 GiB");
     expect(text).toContain("does not optimize yet");
     expect(text).toContain("Fannkuch");
     expect(wrapper.find("#methodology").exists()).toBe(true);
