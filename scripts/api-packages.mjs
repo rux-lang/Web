@@ -110,6 +110,12 @@ export const PACKAGES = [
     area: "security",
     icon: "i-lucide-lock",
     description: "Cryptographic hashes, message authentication codes and key derivation",
+    topics: {
+      secrets: {
+        title: "Secrets",
+        description: "Comparing secrets in constant time and wiping them so the compiler cannot skip it.",
+      },
+    },
   },
   { name: "C", area: "platform", icon: "i-simple-icons-c", description: "C standard library bindings" },
   {

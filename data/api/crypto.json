@@ -1,0 +1,3788 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Crypto",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Cryptographic hashes, message authentication codes and key derivation",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/crypto",
+    "dependencies": [{ "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }]
+  },
+  "modules": [
+    {
+      "name": "Blake3",
+      "source": "Src/Blake3.rux",
+      "header": "BLAKE3: the compression function, the chunk state, and the tree that joins chunks together.\nBLAKE3 is a tree hash, and that is the whole of what makes it different. A message is cut into chunks of a\nkibibyte; each chunk is compressed to a chaining value independently, and the chaining values are joined\npairwise up a binary tree until one remains. Nothing in that depends on the order the chunks are processed,\nwhich is why the algorithm parallelizes — and it is also why the implementation is more intricate than a\nsequential hash, since the tree has to be maintained rather than just a running state.\nThe tree is kept as a stack of subtree chaining values, and the trick that keeps it small is arithmetic: after\nfinishing the chunk at index n, the number of subtrees to merge is the number of trailing one bits in n. That\nsingle fact replaces any bookkeeping about which subtrees are complete.\nThe flags carry the position information a tree hash needs and a sequential one does not. A chaining value\nmeans nothing without knowing whether it came from the start of a chunk, the end of one, a parent node, or the\nroot — and mixing that into the compression is what stops one part of the tree being substituted for another."
+    },
+    {
+      "name": "Blake3Modes",
+      "source": "Src/Blake3Modes.rux",
+      "header": "BLAKE3's other two modes, which are the same tree with a different starting key and a different flag.\nThe point of having modes at all is domain separation. The same bytes hashed unkeyed, hashed with a key, and\nused as key material produce three unrelated outputs, and no amount of work with one mode says anything about\nanother. That is what lets one algorithm serve as a hash, as a message authentication code, and as a key\nderivation function without the three interfering — which is otherwise the sort of thing that turns a\nperfectly good hash into a vulnerability when someone uses it for two purposes at once.\nKeyed hashing is a MAC, and a proper one: BLAKE3 is not vulnerable to length extension, so unlike SHA-2 it can\nbe keyed by simply starting from the key rather than needing HMAC's nested construction."
+    },
+    {
+      "name": "Digest",
+      "source": "Src/Digest.rux",
+      "header": "What a digest is, and the two operations every user of one gets wrong.\n**This package has not been independently reviewed.** Every algorithm matches its published vectors, and that\nis a weaker statement than it sounds: the failures that matter in cryptographic code — a comparison that\nleaks timing, a secret that outlives its use, a construction applied outside the assumptions it was proved\nunder — all pass vectors without complaint. Until a review by someone who did not write this is recorded,\nnothing here should be relied on where an adversary is in the picture.\nA digest is used incrementally far more often than in one call — a file is hashed as it is read, a message as\nit is assembled — so the incremental form is the contract and the one-shot form is written on top of it,\nrather than the other way round. `Update` may be called any number of times with any split of the same bytes\nand must produce the same digest, which is a stronger promise than it looks: it is what lets a caller change\nits buffer size without changing its output.\nThe other two operations are here because they are the ones callers reach for from the standard library and\nfind something subtly unsuitable. Comparing two digests with an ordinary loop returns as soon as it finds a\ndifference, so how long it takes reveals where the difference is — and an attacker who can time a tag check\ncan find the right tag one byte at a time, which is thousands of guesses instead of astronomically many.\nClearing a secret with an ordinary loop is dead code to a compiler, since nothing reads the buffer afterwards,\nand it is entitled to remove it."
+    },
+    {
+      "name": "Hkdf",
+      "source": "Src/Hkdf.rux",
+      "header": "HKDF: turning a shared secret into as many keys as a protocol needs.\nThe two steps do different jobs and it matters which is which. Extract takes input keying material that may be\nbiased — a Diffie-Hellman shared secret is a group element, not a uniform string — and concentrates whatever\nentropy it has into one fixed-length pseudorandom key. Expand takes that key and stretches it to any length,\nseparated by an info string so that keys for different purposes are unrelated. Skipping extract because the\ninput \"looks random enough\" is the common mistake, and it is the step that makes the rest sound.\nThe salt is not a secret and does not need to be unpredictable — a protocol identifier or a session\ntranscript is ideal. It is what stops two protocols deriving the same keys from the same secret. The info\nstring does the same job one level down, between purposes within one protocol.\nThe length limit is real and not a formality: expand produces at most 255 blocks, because the counter it feeds\ninto each round is a single byte. Asking for more has no answer, so this refuses rather than repeating."
+    },
+    {
+      "name": "Hmac",
+      "source": "Src/Hmac.rux",
+      "header": "HMAC: a message authentication code built from any digest that has a block size.\nThe construction exists because the obvious thing does not work. Hashing a key followed by a message is not a\nMAC for any Merkle-Damgard hash — SHA-1, SHA-2, MD5 — because such a hash's output *is* its internal state,\nso anyone holding a tag can continue hashing from it and produce a valid tag for a longer message without ever\nlearning the key. HMAC's nesting is what closes that: the outer hash sees only a fixed-length input, so its\nstate is never exposed in a form that can be extended.\nThe two pads are what make the inner and outer hashes use different keys, and they are different in every bit\npair, which is what keeps the two derived keys from being related in a way that helps an attacker.\nNot needed for BLAKE3 or SHA-3, which resist length extension and can be keyed directly — but supported for\nthem anyway, since a protocol that specifies HMAC specifies HMAC."
+    },
+    {
+      "name": "Keccak",
+      "source": "Src/Keccak.rux",
+      "header": "Keccak-f[1600] and the four SHA-3 hashes built on it.\nSHA-3 is not a Merkle-Damgard hash like SHA-2. There is no compression function taking a chaining value and a\nblock: there is a permutation over a fixed 1600-bit state, and a message is absorbed into part of that state a\nrate at a time and then squeezed back out. The part that is never touched directly by the message is the\ncapacity, and it is what the security level is set by — which is why the four hashes differ only in how much\nof the state they expose, not in their permutation.\nThat structure makes SHA-3 immune to the length-extension attack SHA-2 permits, because the output squeezed\nout is a window onto a state the attacker cannot complete. It is the reason to reach for SHA-3 over SHA-2 when\na raw hash is used where a MAC belongs."
+    },
+    {
+      "name": "Legacy",
+      "source": "Src/Legacy.rux",
+      "header": "MD5 and SHA-1, kept only for the formats and protocols that will not change.\n**Both are broken and neither should be chosen for anything new.** MD5 collisions can be produced in seconds\non a laptop, and have been used to forge certificates; SHA-1 collisions were demonstrated in 2017 and cost far\nless now. Neither offers collision resistance, so neither can be used for a signature, a content address, a\ndeduplication key, or anything else where two different inputs producing one output is a problem.\nWhat they remain usable for is reading what already exists: a legacy file format, a protocol handshake that\ncannot be renegotiated, a checksum in a system nobody will update. The names carry `Legacy` so that reaching\nfor one is a decision a reader can see, and so that a search for \"Sha1\" in a codebase finds every place the\ndecision was made.\nNeither is a `Digest` implementation, deliberately. A generic function taking any digest should not silently\naccept these, and code that wants one must name it."
+    },
+    {
+      "name": "Sha256",
+      "source": "Src/Sha256.rux",
+      "header": "SHA-256 and SHA-224, from FIPS 180-4.\nOne compression function serves both: they differ only in the initial state and in how much of the final\nstate is kept. That is worth saying plainly, because it is also why SHA-224 is not simply \"SHA-256 truncated\"\n— a different initial state means the two produce unrelated values, so neither can be derived from the other\nafter the fact.\nThe padding is where implementations go wrong, and it is the same shape in every member of the family: a one\nbit, then zeros, then the message length in bits as a big-endian 64-bit count. The awkward case is a message\nwhose final block leaves fewer than nine bytes free, which needs a whole extra block; the test covers exactly\nthose lengths."
+    },
+    {
+      "name": "Sha512",
+      "source": "Src/Sha512.rux",
+      "header": "SHA-512 and its three truncations, from FIPS 180-4.\nThe same shape as SHA-256 one size up: sixty-four bit words, eighty rounds, blocks of a hundred and twenty\neight bytes, and a length count of a hundred and twenty eight bits. The rotation amounts and shift distances\ndiffer, and so does everything derived from them; nothing here is SHA-256 with a wider type.\nFour functions share the compression: SHA-512 keeps all eight words, SHA-384 keeps six, and SHA-512/224 and\nSHA-512/256 keep the first twenty-eight and thirty-two bytes. Each starts from a different initial state --\nthe truncations' states are themselves derived by hashing their own names, which is what stops any of them\nfrom being a prefix of another. A caller who wants a short digest from a long one must use these rather than\ncutting SHA-512 down, since cutting it down gives a value with a known relationship to the full digest."
+    },
+    {
+      "name": "Shake",
+      "source": "Src/Shake.rux",
+      "header": "SHAKE128 and SHAKE256: the same sponge, squeezed for as long as the caller wants.\nA hash gives a fixed number of bytes because that is what a hash is for. An extendable-output function gives\nas many as asked, from the same absorbed state, as one continuous stream — so `Read` twice for sixteen bytes\ngives exactly what `Read` once for thirty-two gives. That property is the whole contract, and it is what makes\nthese usable as key-stream generators and as the expansion step of a key derivation.\nThe number in the name is the security level, not the output length: SHAKE128 offers 128 bits of security\nhowever many bytes are taken from it, and taking more does not add any. Nothing enforces that, because there\nis no length at which it becomes wrong — only a length past which it stops helping.\nThe domain byte is what separates these from SHA-3. The same state absorbing the same message produces a\ndifferent stream depending on that one byte, which is what stops a SHAKE output from ever colliding with a\nSHA-3 digest by construction."
+    }
+  ],
+  "items": [
+    {
+      "kind": "function",
+      "name": "Blake3Compress",
+      "displayName": "Blake3Compress",
+      "module": "Blake3",
+      "source": "Src/Blake3.rux",
+      "line": 76,
+      "signature": "pub func Blake3Compress(chaining: *uint32, message: *uint32, counter: uint64, blockLength: uint32, flags: uint32, into: *var uint32)",
+      "typeParams": [],
+      "doc": {
+        "summary": "The compression function: sixteen words of state over seven rounds, producing sixteen words of output.",
+        "markdown": "The compression function: sixteen words of state over seven rounds, producing sixteen words of output.\nThe first eight output words are the chaining value; all sixteen are used when the output is being extended.",
+        "typeParams": [],
+        "params": [
+          { "name": "chaining", "markdown": "the chaining value going in" },
+          { "name": "message", "markdown": "the message to authenticate" },
+          { "name": "counter", "markdown": "the chunk counter" },
+          { "name": "blockLength", "markdown": "how many bytes of the block are used" },
+          { "name": "flags", "markdown": "the domain flags for this compression" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/blake3#blake3-compress"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Blake3Chunk",
+      "displayName": "Blake3Chunk",
+      "module": "Blake3",
+      "source": "Src/Blake3.rux",
+      "line": 131,
+      "signature": "pub struct Blake3Chunk",
+      "typeParams": [],
+      "doc": {
+        "summary": "The state of one chunk being filled.",
+        "markdown": "The state of one chunk being filled.\nStructural `Copy`; used as an independent snapshot within the enclosing hasher.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/blake3#blake3-chunk"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "chaining",
+          "type": "uint32[N]",
+          "public": false,
+          "line": 133,
+          "doc": "The chaining value carried between the chunk's blocks.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "counter",
+          "type": "uint64",
+          "public": false,
+          "line": 135,
+          "doc": "Which chunk this is, which the compression mixes in so no chunk can stand in for another.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "block",
+          "type": "char8[N]",
+          "public": false,
+          "line": 137,
+          "doc": "The block being filled.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "blockLength",
+          "type": "uint",
+          "public": false,
+          "line": 139,
+          "doc": "How much of it is filled.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "blocksCompressed",
+          "type": "uint",
+          "public": false,
+          "line": 141,
+          "doc": "How many blocks have been compressed, which decides whether the start flag still applies.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "flags",
+          "type": "uint32",
+          "public": false,
+          "line": 143,
+          "doc": "Flags every compression in this chunk carries.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Update",
+          "line": 197,
+          "signature": "pub func Update(self: &var Blake3Chunk, bytes: char8[..]) -> uint",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var Blake3Chunk",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds bytes to the chunk, compressing whole blocks as they complete.",
+            "markdown": "Adds bytes to the chunk, compressing whole blocks as they complete.\nA block is only compressed once the *next* byte arrives, never when it merely becomes full: the last\nblock of a chunk carries the end flag, and which block is last is not known until the chunk stops\ngrowing. Compressing eagerly is the classic way to get the flags wrong.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": "how many bytes were absorbed",
+            "see": ["https://rux-lang.dev/docs/api/crypto/blake3#blake3-chunk-update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Output",
+          "line": 226,
+          "signature": "pub func Output(self: &Blake3Chunk, extraFlags: uint32, into: *var uint32)",
+          "typeParams": [],
+          "params": [
+            { "name": "extraFlags", "type": "uint32" },
+            { "name": "into", "type": "*var uint32" }
+          ],
+          "receiver": "&Blake3Chunk",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The chunk's chaining value, with the end flag applied to its final block.",
+            "markdown": "The chunk's chaining value, with the end flag applied to its final block.\n`extraFlags` carries the root flag when this chunk is the whole message.",
+            "typeParams": [],
+            "params": [
+              { "name": "extraFlags", "markdown": "the domain flags to add for this output" },
+              { "name": "into", "markdown": "receives the output" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/blake3#blake3-chunk-output"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Blake3",
+      "displayName": "Blake3",
+      "module": "Blake3",
+      "source": "Src/Blake3.rux",
+      "line": 249,
+      "signature": "pub struct Blake3",
+      "typeParams": [],
+      "doc": {
+        "summary": "An incremental BLAKE3 hash.",
+        "markdown": "An incremental BLAKE3 hash.\nStructural `Copy`; copying takes an independent snapshot of the hash tree state.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/blake3"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "chunk",
+          "type": "Blake3Chunk",
+          "public": false,
+          "line": 251,
+          "doc": "The chunk currently being filled.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "stack",
+          "type": "uint32[N]",
+          "public": false,
+          "line": 253,
+          "doc": "The stack of completed subtree chaining values, deepest last.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "stackDepth",
+          "type": "uint",
+          "public": false,
+          "line": 255,
+          "doc": "How many subtrees the stack holds.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "key",
+          "type": "uint32[N]",
+          "public": false,
+          "line": 257,
+          "doc": "The key, which is the initial value for an unkeyed hash.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "flags",
+          "type": "uint32",
+          "public": false,
+          "line": 259,
+          "doc": "Flags every compression carries: none for an unkeyed hash.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Blake3",
+          "line": 282,
+          "signature": "pub func Blake3() -> Blake3",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Blake3",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An unkeyed BLAKE3 hash.",
+            "markdown": "An unkeyed BLAKE3 hash.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher with nothing absorbed",
+            "see": ["https://rux-lang.dev/docs/api/crypto/blake3#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Update",
+          "line": 334,
+          "signature": "pub func Update(self: &var Blake3, bytes: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var Blake3",
+          "returnType": null,
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Adds `bytes` to the message.",
+            "markdown": "Adds `bytes` to the message.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/blake3#update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 355,
+          "signature": "pub func Finish(self: &var Blake3, into: var char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var Blake3",
+          "returnType": null,
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Writes the root output into `into`, which may be any length.",
+            "markdown": "Writes the root output into `into`, which may be any length.\nBLAKE3's output is extendable like SHAKE's: the root compression repeats with an increasing counter to\nproduce as many bytes as asked. Thirty-two is the usual choice and is what `DigestLength` reports.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the output" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/blake3#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "DigestLength",
+          "line": 439,
+          "signature": "pub func DigestLength(self: &Blake3) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Blake3",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Thirty-two bytes, the conventional length; `Finish` writes any length asked of it.",
+            "markdown": "Thirty-two bytes, the conventional length; `Finish` writes any length asked of it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes a digest occupies",
+            "see": ["https://rux-lang.dev/docs/api/crypto/blake3#digest-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "BlockLength",
+          "line": 446,
+          "signature": "pub func BlockLength(self: &Blake3) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Blake3",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Sixty-four bytes.",
+            "markdown": "Sixty-four bytes.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes the compression function consumes at a time",
+            "see": ["https://rux-lang.dev/docs/api/crypto/blake3#block-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "NewKeyed",
+          "line": 46,
+          "signature": "pub func NewKeyed(key: char8[..]) -> Blake3",
+          "typeParams": [],
+          "params": [{ "name": "key", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "Blake3",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A keyed BLAKE3 hash: a message authentication code.",
+            "markdown": "A keyed BLAKE3 hash: a message authentication code.\n`key` must be exactly thirty-two bytes; a shorter one is padded with zeros, which is a caller error\nrather than a supported shortening — a key with less entropy than the algorithm expects is weaker than\nit looks, and padding it hides that rather than fixing it.\nUnlike SHA-2, this needs no nested construction: BLAKE3 resists length extension, so starting the tree\nfrom the key is a sound MAC on its own.",
+            "typeParams": [],
+            "params": [{ "name": "key", "markdown": "the key" }],
+            "returns": "a hasher keyed with those thirty-two bytes",
+            "see": ["https://rux-lang.dev/docs/api/crypto/blake3#new-keyed"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "NewDeriveKey",
+          "line": 60,
+          "signature": "pub func NewDeriveKey(context: char8[..]) -> Blake3",
+          "typeParams": [],
+          "params": [{ "name": "context", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "Blake3",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A BLAKE3 state deriving output under `context`.",
+            "markdown": "A BLAKE3 state deriving output under `context`.\nThe context string names what the derived key is *for*, and it is hashed separately from the key\nmaterial so that two derivations from the same material under different contexts are unrelated. It\nshould be a hard-coded, globally unique string — an application name, a purpose, and a date — and it\nmust not be a variable, since two callers who accidentally share one lose the separation entirely.",
+            "typeParams": [],
+            "params": [
+              { "name": "context", "markdown": "the application-specific context string, which must be a constant" }
+            ],
+            "returns": "a hasher in key-derivation mode for that context",
+            "see": ["https://rux-lang.dev/docs/api/crypto/blake3#new-derive-key"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Digest"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Blake3Of",
+      "displayName": "Blake3Of",
+      "module": "Blake3",
+      "source": "Src/Blake3.rux",
+      "line": 455,
+      "signature": "pub func Blake3Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The BLAKE3 hash of `bytes`, at whatever length `into` asks for.",
+        "markdown": "The BLAKE3 hash of `bytes`, at whatever length `into` asks for.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/blake3#blake3-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Blake3KeyedOf",
+      "displayName": "Blake3KeyedOf",
+      "module": "Blake3Modes",
+      "source": "Src/Blake3Modes.rux",
+      "line": 77,
+      "signature": "pub func Blake3KeyedOf(key: char8[..], bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The keyed BLAKE3 hash of `bytes` under `key`, in one call.",
+        "markdown": "The keyed BLAKE3 hash of `bytes` under `key`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "key", "markdown": "the key" },
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/blake3#blake3-keyed-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Blake3DeriveKey",
+      "displayName": "Blake3DeriveKey",
+      "module": "Blake3Modes",
+      "source": "Src/Blake3Modes.rux",
+      "line": 88,
+      "signature": "pub func Blake3DeriveKey(context: char8[..], material: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "A key derived from `material` under `context`, at whatever length `into` asks for.",
+        "markdown": "A key derived from `material` under `context`, at whatever length `into` asks for.",
+        "typeParams": [],
+        "params": [
+          { "name": "context", "markdown": "the application-specific context string, which must be a constant" },
+          { "name": "material", "markdown": "the input keying material" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/blake3#blake3-derive-key"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "interface",
+      "name": "Digest",
+      "displayName": "Digest",
+      "module": "Digest",
+      "source": "Src/Digest.rux",
+      "line": 25,
+      "signature": "pub interface Digest",
+      "typeParams": [],
+      "doc": {
+        "summary": "An incremental digest.",
+        "markdown": "An incremental digest.\nTake one by generic bound and mutable reference — `func Sum<D: Digest>(digest: &var D)` — so work applies to\nthe caller's state without copying it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/digest"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "requirement",
+          "name": "Update",
+          "line": 31,
+          "signature": "func Update(self: &var Self, bytes: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var Self",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds `bytes` to what is being hashed.",
+            "markdown": "Adds `bytes` to what is being hashed.\nAny split of the same byte sequence across any number of calls gives the same digest. An empty slice is\nlegal and changes nothing.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/digest#update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "requirement",
+          "name": "Finish",
+          "line": 39,
+          "signature": "func Finish(self: &var Self, into: var char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var Self",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes the digest into `into` and leaves the state unusable for further updates.",
+            "markdown": "Writes the digest into `into` and leaves the state unusable for further updates.\n`into` must be at least `DigestLength` bytes; anything beyond that is untouched. Finishing twice is a\ncaller error rather than a supported operation — a digest is a one-shot summary of everything fed to it,\nand an implementation is free to consume its state producing one.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the output" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/digest#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "requirement",
+          "name": "DigestLength",
+          "line": 44,
+          "signature": "func DigestLength(self: &Self) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Self",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bytes `Finish` writes.",
+            "markdown": "How many bytes `Finish` writes.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes a digest occupies",
+            "see": ["https://rux-lang.dev/docs/api/crypto/digest#digest-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "requirement",
+          "name": "BlockLength",
+          "line": 51,
+          "signature": "func BlockLength(self: &Self) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Self",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bytes the algorithm processes at a time.",
+            "markdown": "How many bytes the algorithm processes at a time.\nNeeded by the constructions built on digests — HMAC pads its key to exactly this — and by callers\nchoosing a buffer size that avoids splitting work.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes the compression function consumes at a time",
+            "see": ["https://rux-lang.dev/docs/api/crypto/digest#block-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Equal",
+      "displayName": "Equal",
+      "module": "Digest",
+      "source": "Src/Digest.rux",
+      "line": 65,
+      "signature": "pub func Equal(left: char8[..], right: char8[..]) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether two byte sequences are equal, in time that does not depend on where they differ.",
+        "markdown": "Whether two byte sequences are equal, in time that does not depend on where they differ.\nThe ordinary comparison returns at the first difference, so its duration reveals the length of the matching\nprefix. Against a message authentication tag that is enough to find the correct tag one byte at a time --\na few thousand attempts rather than the number the tag's length suggests. This reads every byte of both\nsequences whatever it finds, accumulating differences rather than branching on them.\nSequences of different lengths are unequal, and that answer is immediate: a length is not a secret, and\npretending otherwise would mean reading past one of them.",
+        "typeParams": [],
+        "params": [
+          { "name": "left", "markdown": "one of the two byte runs" },
+          { "name": "right", "markdown": "the other" }
+        ],
+        "returns": "whether the two runs match, compared in time that does not depend on where they differ",
+        "see": ["https://rux-lang.dev/docs/api/crypto/secrets#equal"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Wipe",
+      "displayName": "Wipe",
+      "module": "Digest",
+      "source": "Src/Digest.rux",
+      "line": 101,
+      "signature": "pub func Wipe(bytes: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Overwrites `bytes` with zeros in a way the compiler may not remove.",
+        "markdown": "Overwrites `bytes` with zeros in a way the compiler may not remove.\nA plain loop clearing a buffer nothing reads afterwards is dead code, and an optimizer is entitled to delete\nit — which is how a key a program believed it had erased stays in memory, in a core dump, or in a page\nwritten to swap. The barrier below is handed the buffer's address and its body is opaque, so the writes must\nhave happened before it runs and the call cannot be dropped.",
+        "typeParams": [],
+        "params": [{ "name": "bytes", "markdown": "the bytes to clear" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/secrets#wipe"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "HkdfMaximumBlocks",
+      "displayName": "HkdfMaximumBlocks",
+      "module": "Hkdf",
+      "source": "Src/Hkdf.rux",
+      "line": 17,
+      "signature": "pub const HkdfMaximumBlocks: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The most blocks `Expand` can produce, since its counter is one byte.",
+        "markdown": "The most blocks `Expand` can produce, since its counter is one byte.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/hkdf#hkdf-maximum-blocks"],
+        "deprecated": null
+      },
+      "value": "255",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HkdfExtract",
+      "displayName": "HkdfExtract<D>",
+      "module": "Hkdf",
+      "source": "Src/Hkdf.rux",
+      "line": 28,
+      "signature": "pub func HkdfExtract<D: Digest>(prototype: D, salt: char8[..], material: char8[..], into: var char8[..])",
+      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "doc": {
+        "summary": "Extracts a pseudorandom key from `material`, salted with `salt`.",
+        "markdown": "Extracts a pseudorandom key from `material`, salted with `salt`.\n`into` must be exactly the digest's length. An empty salt is legal and means a string of that many zeros,\nwhich is what the specification says — so an absent salt is not the same as no salt at all.",
+        "typeParams": [{ "name": "D", "markdown": "the digest type" }],
+        "params": [
+          { "name": "prototype", "markdown": "any value of the digest type, read only to select it" },
+          { "name": "salt", "markdown": "the salt, which may be empty" },
+          { "name": "material", "markdown": "the input keying material" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/hkdf#hkdf-extract"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HkdfExpand",
+      "displayName": "HkdfExpand<D>",
+      "module": "Hkdf",
+      "source": "Src/Hkdf.rux",
+      "line": 57,
+      "signature": "pub func HkdfExpand<D: Digest>(prototype: D, key: char8[..], info: char8[..], into: var char8[..]) -> bool",
+      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "doc": {
+        "summary": "Expands `key` into `into`, separated by `info`.",
+        "markdown": "Expands `key` into `into`, separated by `info`.\nReturns `false` when `into` is longer than 255 digests, which is the most the one-byte counter can address;\nnothing is written in that case. `info` names what the derived key is for, and two expansions of one key\nunder different info strings are unrelated.",
+        "typeParams": [{ "name": "D", "markdown": "the digest type" }],
+        "params": [
+          { "name": "prototype", "markdown": "any value of the digest type, read only to select it" },
+          { "name": "key", "markdown": "the key" },
+          { "name": "info", "markdown": "the context and application-specific information" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": "whether `into` was a length this construction can produce",
+        "see": ["https://rux-lang.dev/docs/api/crypto/hkdf#hkdf-expand"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Hkdf",
+      "displayName": "Hkdf<D>",
+      "module": "Hkdf",
+      "source": "Src/Hkdf.rux",
+      "line": 100,
+      "signature": "pub func Hkdf<D: Digest>(prototype: D, salt: char8[..], material: char8[..], info: char8[..], into: var char8[..]) -> bool",
+      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "doc": {
+        "summary": "Extract and expand in one call: the whole of HKDF.",
+        "markdown": "Extract and expand in one call: the whole of HKDF.\nReturns `false` for an output longer than 255 digests, exactly as `HkdfExpand` does.",
+        "typeParams": [{ "name": "D", "markdown": "the digest type" }],
+        "params": [
+          { "name": "prototype", "markdown": "any value of the digest type, read only to select it" },
+          { "name": "salt", "markdown": "the salt, which may be empty" },
+          { "name": "material", "markdown": "the input keying material" },
+          { "name": "info", "markdown": "the context and application-specific information" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": "whether `into` was a length this construction can produce",
+        "see": ["https://rux-lang.dev/docs/api/crypto/hkdf"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "HmacMaximumBlock",
+      "displayName": "HmacMaximumBlock",
+      "module": "Hmac",
+      "source": "Src/Hmac.rux",
+      "line": 24,
+      "signature": "pub const HmacMaximumBlock: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The longest block any supported digest uses, which is what the padded key buffers are sized to.",
+        "markdown": "The longest block any supported digest uses, which is what the padded key buffers are sized to.\nSHAKE128's rate is the largest at a hundred and sixty eight bytes; SHA-512's block is a hundred and twenty\neight and SHA-256's sixty four. The buffers below are written as that literal because an array length must\nbe a compile-time integer and a constant does not satisfy that yet.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/hmac#hmac-maximum-block"],
+        "deprecated": null
+      },
+      "value": "168",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Hmac",
+      "displayName": "Hmac<D>",
+      "module": "Hmac",
+      "source": "Src/Hmac.rux",
+      "line": 32,
+      "signature": "pub struct Hmac<D: Digest>",
+      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "doc": {
+        "summary": "An incremental HMAC over any digest.",
+        "markdown": "An incremental HMAC over any digest.\n`prototype` supplies both the algorithm and its parameters; it is copied rather than consumed, so one\nprototype can start any number of authentications.\nStructural `Copy` whenever `D` is copyable; copying snapshots both digest states independently.",
+        "typeParams": [{ "name": "D", "markdown": "the digest type" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/hmac"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "inner",
+          "type": "D",
+          "public": false,
+          "line": 34,
+          "doc": "The inner hash, which sees the padded key followed by the message.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "outer",
+          "type": "D",
+          "public": false,
+          "line": 36,
+          "doc": "The outer hash, which sees the padded key followed by the inner digest.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "digestLength",
+          "type": "uint",
+          "public": false,
+          "line": 38,
+          "doc": "How many bytes the digest writes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Hmac",
+          "line": 50,
+          "signature": "pub func Hmac(prototype: D, key: char8[..]) -> Hmac<D>",
+          "typeParams": [],
+          "params": [
+            { "name": "prototype", "type": "D" },
+            { "name": "key", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "Hmac<D>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An HMAC keyed with `key`.",
+            "markdown": "An HMAC keyed with `key`.\nA key longer than the digest's block is replaced by its own digest, which is what the specification says\nand is worth knowing: two keys differing only past the block length authenticate identically, because\nthey are the same key after this step. A shorter key is padded with zeros.",
+            "typeParams": [],
+            "params": [
+              { "name": "prototype", "markdown": "any value of the digest type, read only to select it" },
+              { "name": "key", "markdown": "the key" }
+            ],
+            "returns": "an authenticator keyed with those bytes",
+            "see": ["https://rux-lang.dev/docs/api/crypto/hmac#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Update",
+          "line": 100,
+          "signature": "pub func Update<D: Digest>(self: &var Hmac<D>, bytes: char8[..])",
+          "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var Hmac<D>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds `bytes` to the message being authenticated.",
+            "markdown": "Adds `bytes` to the message being authenticated.",
+            "typeParams": [{ "name": "D", "markdown": "the digest type" }],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/hmac#update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 108,
+          "signature": "pub func Finish<D: Digest>(self: &var Hmac<D>, into: var char8[..])",
+          "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var Hmac<D>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes the authentication tag into `into`.",
+            "markdown": "Writes the authentication tag into `into`.",
+            "typeParams": [{ "name": "D", "markdown": "the digest type" }],
+            "params": [{ "name": "into", "markdown": "receives the output" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/hmac#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TagLength",
+          "line": 119,
+          "signature": "pub func TagLength<D: Digest>(self: &Hmac<D>) -> uint",
+          "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+          "params": [],
+          "receiver": "&Hmac<D>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bytes `Finish` writes: the underlying digest's length.",
+            "markdown": "How many bytes `Finish` writes: the underlying digest's length.",
+            "typeParams": [{ "name": "D", "markdown": "the digest type" }],
+            "params": [],
+            "returns": "how many bytes a tag occupies, which is the digest's length",
+            "see": ["https://rux-lang.dev/docs/api/crypto/hmac#tag-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HmacOf",
+      "displayName": "HmacOf<D>",
+      "module": "Hmac",
+      "source": "Src/Hmac.rux",
+      "line": 131,
+      "signature": "pub func HmacOf<D: Digest>(prototype: D, key: char8[..], message: char8[..], into: var char8[..])",
+      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "doc": {
+        "summary": "The HMAC of `message` under `key`, in one call.",
+        "markdown": "The HMAC of `message` under `key`, in one call.",
+        "typeParams": [{ "name": "D", "markdown": "the digest type" }],
+        "params": [
+          { "name": "prototype", "markdown": "any value of the digest type, read only to select it" },
+          { "name": "key", "markdown": "the key" },
+          { "name": "message", "markdown": "the message to authenticate" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/hmac#hmac-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "KeccakPermute",
+      "displayName": "KeccakPermute",
+      "module": "Keccak",
+      "source": "Src/Keccak.rux",
+      "line": 46,
+      "signature": "pub func KeccakPermute(lanes: *var uint64)",
+      "typeParams": [],
+      "doc": {
+        "summary": "The Keccak-f[1600] permutation, applied in place to twenty-five lanes.",
+        "markdown": "The Keccak-f[1600] permutation, applied in place to twenty-five lanes.\nTwenty-four rounds of five steps: theta mixes each column into its neighbours, rho rotates each lane by its\nown offset, pi moves the lanes around, chi is the only non-linear step, and iota breaks the symmetry that\nwould otherwise make every round identical.",
+        "typeParams": [],
+        "params": [{ "name": "lanes", "markdown": "the state's twenty-five lanes, permuted in place" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha3#keccak-permute"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Sha3",
+      "displayName": "Sha3",
+      "module": "Keccak",
+      "source": "Src/Keccak.rux",
+      "line": 105,
+      "signature": "pub struct Sha3",
+      "typeParams": [],
+      "doc": {
+        "summary": "An incremental SHA-3 hash at any of its four sizes.",
+        "markdown": "An incremental SHA-3 hash at any of its four sizes.\nStructural `Copy`; copying takes an independent snapshot of the sponge state.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha3"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "lanes",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 107,
+          "doc": "The state, as twenty-five sixty-four bit lanes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "rate",
+          "type": "uint",
+          "public": false,
+          "line": 109,
+          "doc": "How many bytes of the state the message is absorbed into before the permutation runs.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "absorbed",
+          "type": "uint",
+          "public": false,
+          "line": 111,
+          "doc": "How far into the current rate the absorption has reached.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "outputLength",
+          "type": "uint",
+          "public": false,
+          "line": 113,
+          "doc": "How many bytes `Finish` writes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "domain",
+          "type": "uint8",
+          "public": false,
+          "line": 115,
+          "doc": "The byte appended to the message before the padding, which separates SHA-3 from SHAKE.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New224",
+          "line": 138,
+          "signature": "pub func New224() -> Sha3",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha3",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA3-224 state.",
+            "markdown": "A SHA3-224 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing a 224-bit digest",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha3#new-224"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "New256",
+          "line": 145,
+          "signature": "pub func New256() -> Sha3",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha3",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA3-256 state.",
+            "markdown": "A SHA3-256 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing a 256-bit digest",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha3#new-256"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "New384",
+          "line": 152,
+          "signature": "pub func New384() -> Sha3",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha3",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA3-384 state.",
+            "markdown": "A SHA3-384 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing a 384-bit digest",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha3#new-384"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "New512",
+          "line": 159,
+          "signature": "pub func New512() -> Sha3",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha3",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA3-512 state.",
+            "markdown": "A SHA3-512 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing a 512-bit digest",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha3#new-512"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Update",
+          "line": 176,
+          "signature": "pub func Update(self: &var Sha3, bytes: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var Sha3",
+          "returnType": null,
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Absorbs `bytes` into the state.",
+            "markdown": "Absorbs `bytes` into the state.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha3#update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 195,
+          "signature": "pub func Finish(self: &var Sha3, into: var char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var Sha3",
+          "returnType": null,
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Pads, permutes once more, and squeezes the digest out.",
+            "markdown": "Pads, permutes once more, and squeezes the digest out.\nThe padding is the domain byte, then zeros, then a final bit at the top of the rate — so a rate with\nonly one byte free receives both in the same byte, which is the case that separates a correct padding\nfrom one that works at every other length.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the output" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha3#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "DigestLength",
+          "line": 221,
+          "signature": "pub func DigestLength(self: &Sha3) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Sha3",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Twenty-eight, thirty-two, forty-eight or sixty-four bytes.",
+            "markdown": "Twenty-eight, thirty-two, forty-eight or sixty-four bytes.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes a digest occupies",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha3#digest-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "BlockLength",
+          "line": 228,
+          "signature": "pub func BlockLength(self: &Sha3) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Sha3",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "The rate, which differs per size — unlike the SHA-2 family, whose block is fixed.",
+            "markdown": "The rate, which differs per size — unlike the SHA-2 family, whose block is fixed.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes the compression function consumes at a time",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha3#block-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Digest"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha3Of224",
+      "displayName": "Sha3Of224",
+      "module": "Keccak",
+      "source": "Src/Keccak.rux",
+      "line": 237,
+      "signature": "pub func Sha3Of224(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA3-224 digest of `bytes`, in one call.",
+        "markdown": "The SHA3-224 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha3#sha3-of-224"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha3Of256",
+      "displayName": "Sha3Of256",
+      "module": "Keccak",
+      "source": "Src/Keccak.rux",
+      "line": 247,
+      "signature": "pub func Sha3Of256(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA3-256 digest of `bytes`, in one call.",
+        "markdown": "The SHA3-256 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha3#sha3-of-256"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha3Of384",
+      "displayName": "Sha3Of384",
+      "module": "Keccak",
+      "source": "Src/Keccak.rux",
+      "line": 257,
+      "signature": "pub func Sha3Of384(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA3-384 digest of `bytes`, in one call.",
+        "markdown": "The SHA3-384 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha3#sha3-of-384"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha3Of512",
+      "displayName": "Sha3Of512",
+      "module": "Keccak",
+      "source": "Src/Keccak.rux",
+      "line": 267,
+      "signature": "pub func Sha3Of512(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA3-512 digest of `bytes`, in one call.",
+        "markdown": "The SHA3-512 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha3#sha3-of-512"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "LegacyMd5",
+      "displayName": "LegacyMd5",
+      "module": "Legacy",
+      "source": "Src/Legacy.rux",
+      "line": 53,
+      "signature": "pub struct LegacyMd5",
+      "typeParams": [],
+      "doc": {
+        "summary": "An incremental MD5.",
+        "markdown": "An incremental MD5. **Broken; see the note at the top of this file.**\nStructural `Copy`; copying takes an independent snapshot of the digest state.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/legacy-md5"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "state",
+          "type": "uint32[N]",
+          "public": false,
+          "line": 55,
+          "doc": "The four working words.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffer",
+          "type": "char8[N]",
+          "public": false,
+          "line": 57,
+          "doc": "Bytes not yet part of a full block.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffered",
+          "type": "uint",
+          "public": false,
+          "line": 59,
+          "doc": "How many of them there are.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint64",
+          "public": false,
+          "line": 61,
+          "doc": "The message length in bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "LegacyMd5",
+          "line": 68,
+          "signature": "pub func LegacyMd5() -> LegacyMd5",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "LegacyMd5",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An MD5 state.",
+            "markdown": "An MD5 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "an MD5 hasher, which is broken and is here only to read what already exists",
+            "see": ["https://rux-lang.dev/docs/api/crypto/legacy-md5#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Update",
+          "line": 141,
+          "signature": "pub func Update(self: &var LegacyMd5, bytes: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var LegacyMd5",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds `bytes` to the message.",
+            "markdown": "Adds `bytes` to the message.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/legacy-md5#update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 159,
+          "signature": "pub func Finish(self: &var LegacyMd5, into: var char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var LegacyMd5",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes the sixteen-byte digest into `into`.",
+            "markdown": "Writes the sixteen-byte digest into `into`.\nThe length is appended little-endian, unlike the SHA family's big-endian count.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the output" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/legacy-md5#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "LegacyMd5Of",
+      "displayName": "LegacyMd5Of",
+      "module": "Legacy",
+      "source": "Src/Legacy.rux",
+      "line": 196,
+      "signature": "pub func LegacyMd5Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The MD5 digest of `bytes`.",
+        "markdown": "The MD5 digest of `bytes`. **Broken; see the note at the top of this file.**",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/legacy-md5#legacy-md5-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "LegacySha1",
+      "displayName": "LegacySha1",
+      "module": "Legacy",
+      "source": "Src/Legacy.rux",
+      "line": 205,
+      "signature": "pub struct LegacySha1",
+      "typeParams": [],
+      "doc": {
+        "summary": "An incremental SHA-1.",
+        "markdown": "An incremental SHA-1. **Broken for collision resistance; see the note at the top of this file.**\nStructural `Copy`; copying takes an independent snapshot of the digest state.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/legacy-sha1"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "state",
+          "type": "uint32[N]",
+          "public": false,
+          "line": 207,
+          "doc": "The five working words.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffer",
+          "type": "char8[N]",
+          "public": false,
+          "line": 209,
+          "doc": "Bytes not yet part of a full block.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffered",
+          "type": "uint",
+          "public": false,
+          "line": 211,
+          "doc": "How many of them there are.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint64",
+          "public": false,
+          "line": 213,
+          "doc": "The message length in bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "LegacySha1",
+          "line": 220,
+          "signature": "pub func LegacySha1() -> LegacySha1",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "LegacySha1",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA-1 state.",
+            "markdown": "A SHA-1 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a SHA-1 hasher, which is broken and is here only to read what already exists",
+            "see": ["https://rux-lang.dev/docs/api/crypto/legacy-sha1#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Update",
+          "line": 297,
+          "signature": "pub func Update(self: &var LegacySha1, bytes: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var LegacySha1",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds `bytes` to the message.",
+            "markdown": "Adds `bytes` to the message.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/legacy-sha1#update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 314,
+          "signature": "pub func Finish(self: &var LegacySha1, into: var char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var LegacySha1",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes the twenty-byte digest into `into`.",
+            "markdown": "Writes the twenty-byte digest into `into`.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the output" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/legacy-sha1#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "LegacySha1Of",
+      "displayName": "LegacySha1Of",
+      "module": "Legacy",
+      "source": "Src/Legacy.rux",
+      "line": 352,
+      "signature": "pub func LegacySha1Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA-1 digest of `bytes`.",
+        "markdown": "The SHA-1 digest of `bytes`. **Broken for collision resistance; see the note at the top of this file.**",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/legacy-sha1#legacy-sha1-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Sha256",
+      "displayName": "Sha256",
+      "module": "Sha256",
+      "source": "Src/Sha256.rux",
+      "line": 45,
+      "signature": "pub struct Sha256",
+      "typeParams": [],
+      "doc": {
+        "summary": "An incremental SHA-256 or SHA-224.",
+        "markdown": "An incremental SHA-256 or SHA-224.\nStructural `Copy`; copying takes an independent snapshot of the digest state.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha256"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "state",
+          "type": "uint32[N]",
+          "public": false,
+          "line": 47,
+          "doc": "The eight working words.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffer",
+          "type": "char8[N]",
+          "public": false,
+          "line": 49,
+          "doc": "Bytes not yet part of a full block.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffered",
+          "type": "uint",
+          "public": false,
+          "line": 51,
+          "doc": "How many of them there are.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint64",
+          "public": false,
+          "line": 53,
+          "doc": "The total message length in bytes, which the padding needs in bits.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "outputLength",
+          "type": "uint",
+          "public": false,
+          "line": 55,
+          "doc": "How many bytes `Finish` writes: thirty-two for SHA-256, twenty-eight for SHA-224.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Sha256",
+          "line": 62,
+          "signature": "pub func Sha256() -> Sha256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha256",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA-256 state.",
+            "markdown": "A SHA-256 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing a 256-bit digest",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha256#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "New224",
+          "line": 75,
+          "signature": "pub func New224() -> Sha256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha256",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA-224 state: the same compression function from a different start, keeping seven words of the result.",
+            "markdown": "A SHA-224 state: the same compression function from a different start, keeping seven words of the result.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing a 224-bit digest",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha256#new-224"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Update",
+          "line": 149,
+          "signature": "pub func Update(self: &var Sha256, bytes: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var Sha256",
+          "returnType": null,
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Adds `bytes` to the message.",
+            "markdown": "Adds `bytes` to the message.\nAny split of the same bytes gives the same digest: whatever does not complete a block is buffered, and\nthe buffer is only compressed once it is full.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha256#update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 182,
+          "signature": "pub func Finish(self: &var Sha256, into: var char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var Sha256",
+          "returnType": null,
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Writes the digest into `into`.",
+            "markdown": "Writes the digest into `into`.\nThe padding is a one bit, then zeros, then the message length in bits as a big-endian sixty-four bit\ncount. When fewer than nine bytes remain in the final block there is no room for that count, so the\nblock is finished with zeros and a whole further block carries it — the case that separates a correct\nimplementation from one that passes the short vectors.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the output" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha256#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "DigestLength",
+          "line": 220,
+          "signature": "pub func DigestLength(self: &Sha256) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Sha256",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Thirty-two bytes for SHA-256, twenty-eight for SHA-224.",
+            "markdown": "Thirty-two bytes for SHA-256, twenty-eight for SHA-224.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes a digest occupies",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha256#digest-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "BlockLength",
+          "line": 227,
+          "signature": "pub func BlockLength(self: &Sha256) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Sha256",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Sixty-four bytes, for both.",
+            "markdown": "Sixty-four bytes, for both.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes the compression function consumes at a time",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha256#block-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Digest"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha256Of",
+      "displayName": "Sha256Of",
+      "module": "Sha256",
+      "source": "Src/Sha256.rux",
+      "line": 236,
+      "signature": "pub func Sha256Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA-256 digest of `bytes`, in one call.",
+        "markdown": "The SHA-256 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha256#sha256-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha224Of",
+      "displayName": "Sha224Of",
+      "module": "Sha256",
+      "source": "Src/Sha256.rux",
+      "line": 246,
+      "signature": "pub func Sha224Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA-224 digest of `bytes`, in one call.",
+        "markdown": "The SHA-224 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha256#sha224-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Sha512",
+      "displayName": "Sha512",
+      "module": "Sha512",
+      "source": "Src/Sha512.rux",
+      "line": 71,
+      "signature": "pub struct Sha512",
+      "typeParams": [],
+      "doc": {
+        "summary": "An incremental SHA-512, SHA-384, SHA-512/224 or SHA-512/256.",
+        "markdown": "An incremental SHA-512, SHA-384, SHA-512/224 or SHA-512/256.\nStructural `Copy`; copying takes an independent snapshot of the digest state.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha512"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "state",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 73,
+          "doc": "The eight working words.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffer",
+          "type": "char8[N]",
+          "public": false,
+          "line": 75,
+          "doc": "Bytes not yet part of a full block.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffered",
+          "type": "uint",
+          "public": false,
+          "line": 77,
+          "doc": "How many of them there are.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint64",
+          "public": false,
+          "line": 80,
+          "doc": "The message length in bytes. The standard counts to 2^128 bits; a length that needs more than the low\nsixty-four bits of that would be an exabyte of message, so the high half is written as zero.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "outputLength",
+          "type": "uint",
+          "public": false,
+          "line": 82,
+          "doc": "How many bytes `Finish` writes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Sha512",
+          "line": 99,
+          "signature": "pub func Sha512() -> Sha512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha512",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA-512 state.",
+            "markdown": "A SHA-512 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing a 512-bit digest",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha512#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "New384",
+          "line": 106,
+          "signature": "pub func New384() -> Sha512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha512",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA-384 state.",
+            "markdown": "A SHA-384 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing a 384-bit digest",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha512#new-384"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "NewTrunc224",
+          "line": 113,
+          "signature": "pub func NewTrunc224() -> Sha512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha512",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA-512/224 state.",
+            "markdown": "A SHA-512/224 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing SHA-512/224",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha512#new-trunc224"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "NewTrunc256",
+          "line": 120,
+          "signature": "pub func NewTrunc256() -> Sha512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Sha512",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHA-512/256 state.",
+            "markdown": "A SHA-512/256 state.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher producing SHA-512/256",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha512#new-trunc256"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Update",
+          "line": 190,
+          "signature": "pub func Update(self: &var Sha512, bytes: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var Sha512",
+          "returnType": null,
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Adds `bytes` to the message.",
+            "markdown": "Adds `bytes` to the message.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha512#update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 220,
+          "signature": "pub func Finish(self: &var Sha512, into: var char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var Sha512",
+          "returnType": null,
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Writes the digest into `into`.",
+            "markdown": "Writes the digest into `into`.\nThe padding carries a hundred and twenty eight bit length, so the final block needs seventeen free bytes\nrather than nine; a block with fewer takes a whole further block.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the output" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha512#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "DigestLength",
+          "line": 265,
+          "signature": "pub func DigestLength(self: &Sha512) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Sha512",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "Sixty-four, forty-eight, thirty-two or twenty-eight bytes, depending on which variant this is.",
+            "markdown": "Sixty-four, forty-eight, thirty-two or twenty-eight bytes, depending on which variant this is.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes a digest occupies",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha512#digest-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "BlockLength",
+          "line": 272,
+          "signature": "pub func BlockLength(self: &Sha512) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Sha512",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "Digest",
+          "public": true,
+          "doc": {
+            "summary": "A hundred and twenty eight bytes, for every variant.",
+            "markdown": "A hundred and twenty eight bytes, for every variant.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes the compression function consumes at a time",
+            "see": ["https://rux-lang.dev/docs/api/crypto/sha512#block-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Digest"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha512Of",
+      "displayName": "Sha512Of",
+      "module": "Sha512",
+      "source": "Src/Sha512.rux",
+      "line": 281,
+      "signature": "pub func Sha512Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA-512 digest of `bytes`, in one call.",
+        "markdown": "The SHA-512 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha512#sha512-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha384Of",
+      "displayName": "Sha384Of",
+      "module": "Sha512",
+      "source": "Src/Sha512.rux",
+      "line": 291,
+      "signature": "pub func Sha384Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA-384 digest of `bytes`, in one call.",
+        "markdown": "The SHA-384 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha512#sha384-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha512Trunc224Of",
+      "displayName": "Sha512Trunc224Of",
+      "module": "Sha512",
+      "source": "Src/Sha512.rux",
+      "line": 301,
+      "signature": "pub func Sha512Trunc224Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA-512/224 digest of `bytes`, in one call.",
+        "markdown": "The SHA-512/224 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha512#sha512-trunc224-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Sha512Trunc256Of",
+      "displayName": "Sha512Trunc256Of",
+      "module": "Sha512",
+      "source": "Src/Sha512.rux",
+      "line": 311,
+      "signature": "pub func Sha512Trunc256Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "The SHA-512/256 digest of `bytes`, in one call.",
+        "markdown": "The SHA-512/256 digest of `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/sha512#sha512-trunc256-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Shake",
+      "displayName": "Shake",
+      "module": "Shake",
+      "source": "Src/Shake.rux",
+      "line": 18,
+      "signature": "pub struct Shake",
+      "typeParams": [],
+      "doc": {
+        "summary": "An extendable-output function: absorb a message, then read as many bytes as wanted.",
+        "markdown": "An extendable-output function: absorb a message, then read as many bytes as wanted.\nStructural `Copy`; copying takes an independent snapshot of the sponge and read position.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/shake"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "lanes",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 20,
+          "doc": "The sponge state, as twenty-five lanes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "rate",
+          "type": "uint",
+          "public": false,
+          "line": 22,
+          "doc": "How many bytes of the state the message reaches.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "position",
+          "type": "uint",
+          "public": false,
+          "line": 25,
+          "doc": "How far into the rate absorption has reached, or — once reading has begun — how far into it the\nsqueeze has reached.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "reading",
+          "type": "bool",
+          "public": false,
+          "line": 27,
+          "doc": "Whether the padding has been applied and reading has started.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New128",
+          "line": 47,
+          "signature": "pub func New128() -> Shake",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Shake",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHAKE128 state: 128 bits of security, absorbing 168 bytes at a time.",
+            "markdown": "A SHAKE128 state: 128 bits of security, absorbing 168 bytes at a time.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a SHAKE128 sponge, which produces output of any length",
+            "see": ["https://rux-lang.dev/docs/api/crypto/shake#new-128"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "New256",
+          "line": 54,
+          "signature": "pub func New256() -> Shake",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Shake",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A SHAKE256 state: 256 bits of security, absorbing 136 bytes at a time.",
+            "markdown": "A SHAKE256 state: 256 bits of security, absorbing 136 bytes at a time.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a SHAKE256 sponge, which produces output of any length",
+            "see": ["https://rux-lang.dev/docs/api/crypto/shake#new-256"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Update",
+          "line": 64,
+          "signature": "pub func Update(self: &var Shake, bytes: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var Shake",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Absorbs `bytes` into the state.",
+            "markdown": "Absorbs `bytes` into the state.\nAbsorbing after reading has begun is a caller error: the stream is a function of everything absorbed\nbefore the first read, and adding to it afterwards would silently change what a caller already has. This\nignores such a call rather than corrupting the stream.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to absorb" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/shake#update"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Read",
+          "line": 100,
+          "signature": "pub func Read(self: &var Shake, into: var char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var Shake",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Fills `into` with the next bytes of the stream.",
+            "markdown": "Fills `into` with the next bytes of the stream.\nReading is continuous: any sequence of reads totalling the same number of bytes gives the same bytes.\nThe first read applies the padding, after which `Update` does nothing.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the output" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/crypto/shake#read"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Rate",
+          "line": 122,
+          "signature": "pub func Rate(self: &Shake) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Shake",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bytes the state absorbs or squeezes before permuting.",
+            "markdown": "How many bytes the state absorbs or squeezes before permuting.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes the sponge absorbs or squeezes per permutation",
+            "see": ["https://rux-lang.dev/docs/api/crypto/shake#rate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Shake128Of",
+      "displayName": "Shake128Of",
+      "module": "Shake",
+      "source": "Src/Shake.rux",
+      "line": 131,
+      "signature": "pub func Shake128Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "`into.length` bytes of SHAKE128 over `bytes`, in one call.",
+        "markdown": "`into.length` bytes of SHAKE128 over `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/shake#shake128-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Shake256Of",
+      "displayName": "Shake256Of",
+      "module": "Shake",
+      "source": "Src/Shake.rux",
+      "line": 141,
+      "signature": "pub func Shake256Of(bytes: char8[..], into: var char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "`into.length` bytes of SHAKE256 over `bytes`, in one call.",
+        "markdown": "`into.length` bytes of SHAKE256 over `bytes`, in one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to absorb" },
+          { "name": "into", "markdown": "receives the output" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/crypto/shake#shake256-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}
