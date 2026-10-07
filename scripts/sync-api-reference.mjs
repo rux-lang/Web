@@ -1,5 +1,5 @@
 /**
- * npm run sync:api -- <path-to-Rux> [--package Allocator] [--target <triple>] [--compiler <rux>] [--from <dir>] [--check]
+ * npm run sync:api -- <path-to-Rux-checkout> [--rux <path-to-rux-binary>] [--package Allocator] [--target <triple>] [--from <dir>] [--check]
  *
  * Takes a `rux doc --format json` snapshot of each requested package for every
  * target, merges them into one (scripts/api-docs.mjs, mergeSnapshots), copies
@@ -12,11 +12,12 @@
  * Snapshots are taken for TARGETS, or for the `--target` triples given. A
  * platform package (the registry's `platform`, such as Linux) is documented
  * only for its own operating system's targets. Without `--from`, it runs
- * `<rux>/Bin/rux doc --format json --target <t>` once per target at the root
- * of the Rux workspace (`--compiler` names another `rux`, for a Rux worktree
- * with no build of its own); `--from` reads a previous run instead, either one
- * `<dir>/<target>/<Name>.json` per target or a single `<dir>/<Name>.json`.
- * The README always comes from `<rux>/Packages/<Name>/README.md`, so verify
+ * `rux doc --format json --target <t>` once per target at the root of the Rux
+ * checkout, with `--rux <binary>` (alias `--compiler`) or else the checkout's
+ * own Bin/rux, so a Rux worktree with no build can borrow another's. `--from`
+ * reads a previous run instead, either one `<dir>/<target>/<Name>.json` per
+ * target or a single `<dir>/<Name>.json`. Sources, READMEs and manifests
+ * always come from the checkout: the README from `Packages/<Name>/README.md`, so verify
  * can re-render later without a Rux checkout. `--check` writes nothing and
  * exits 1 when anything would change.
  */
@@ -41,7 +42,7 @@ import { TARGETS, mergeSnapshots, renderApiPackage, targetOs } from "./api-docs.
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const usage =
-  "Usage: npm run sync:api -- <path-to-Rux> [--package <Name>]… [--target <triple>]… [--compiler <rux>] [--from <dir>] [--check]";
+  "Usage: npm run sync:api -- <path-to-Rux-checkout> [--rux <path-to-rux-binary>] [--package <Name>]… [--target <triple>]… [--from <dir>] [--check]";
 
 function parseArguments(argv) {
   const options = { rux: null, packages: [], targets: [], compiler: null, from: null, check: false };
@@ -52,7 +53,7 @@ function parseArguments(argv) {
     else if (argument === "--package") options.packages.push(...list(argv[++index]));
     else if (argument === "--target") options.targets.push(...list(argv[++index]));
     else if (argument === "--from") options.from = argv[++index];
-    else if (argument === "--compiler") options.compiler = argv[++index];
+    else if (argument === "--rux" || argument === "--compiler") options.compiler = argv[++index];
     else if (argument.startsWith("--")) throw new Error(`Unknown option ${argument}`);
     else if (!options.rux) options.rux = argument;
     else throw new Error(`Unexpected argument ${argument}`);
