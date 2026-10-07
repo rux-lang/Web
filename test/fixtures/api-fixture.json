@@ -11,14 +11,43 @@
     "repository": "https://github.com/rux-lang/Rux",
     "homepage": "https://rux-lang.dev/docs/api/gadget",
     "dependencies": [
-      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
-      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
-      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+      {
+        "name": "Core",
+        "namespace": "Rux",
+        "version": "0.1.0",
+        "targetOS": []
+      },
+      {
+        "name": "Allocator",
+        "namespace": "Rux",
+        "version": "0.1.0",
+        "targetOS": []
+      },
+      {
+        "name": "Windows",
+        "namespace": "Rux",
+        "version": "0.1.0",
+        "targetOS": ["Windows"]
+      },
+      {
+        "name": "Widget",
+        "namespace": "Acme",
+        "version": "1.0.0",
+        "targetOS": []
+      }
     ]
   },
   "modules": [
-    { "name": "Store", "source": "Src/Store.rux", "header": "What every store promises." },
-    { "name": "Arena", "source": "Src/Arena.rux", "header": null }
+    {
+      "name": "Store",
+      "source": "Src/Store.rux",
+      "header": "What every store promises."
+    },
+    {
+      "name": "Arena",
+      "source": "Src/Arena.rux",
+      "header": null
+    }
   ],
   "items": [
     {
@@ -50,7 +79,12 @@
           "line": 8,
           "signature": "func Put(value: uint) -> ! Fault",
           "typeParams": [],
-          "params": [{ "name": "value", "type": "uint" }],
+          "params": [
+            {
+              "name": "value",
+              "type": "uint"
+            }
+          ],
           "receiver": null,
           "returnType": "! Fault",
           "value": null,
@@ -60,7 +94,12 @@
             "summary": "Stores `value`.",
             "markdown": "Stores `value`.",
             "typeParams": [],
-            "params": [{ "name": "value", "markdown": "what to keep" }],
+            "params": [
+              {
+                "name": "value",
+                "markdown": "what to keep"
+              }
+            ],
             "returns": "nothing, or the `Fault` that stopped it",
             "see": [],
             "deprecated": null
@@ -118,7 +157,13 @@
           "line": 22,
           "doc": "How many bytes the arena may hand out."
         },
-        { "name": "head", "type": "*var uint8", "public": false, "line": 23, "doc": "The next free byte." }
+        {
+          "name": "head",
+          "type": "*var uint8",
+          "public": false,
+          "line": 23,
+          "doc": "The next free byte."
+        }
       ],
       "baseType": null,
       "cases": [],
@@ -173,7 +218,12 @@
           "line": 29,
           "signature": "func =(self: &var Arena, other: &Arena)",
           "typeParams": [],
-          "params": [{ "name": "other", "type": "&Arena" }],
+          "params": [
+            {
+              "name": "other",
+              "type": "&Arena"
+            }
+          ],
           "receiver": "&var Arena",
           "returnType": null,
           "value": null,
@@ -195,7 +245,12 @@
           "line": 30,
           "signature": "pub func Arena(capacity: uint) -> Arena",
           "typeParams": [],
-          "params": [{ "name": "capacity", "type": "uint" }],
+          "params": [
+            {
+              "name": "capacity",
+              "type": "uint"
+            }
+          ],
           "receiver": null,
           "returnType": "Arena",
           "value": null,
@@ -205,7 +260,12 @@
             "summary": "An empty arena.",
             "markdown": "An empty arena.",
             "typeParams": [],
-            "params": [{ "name": "capacity", "markdown": "how many bytes it may hand out" }],
+            "params": [
+              {
+                "name": "capacity",
+                "markdown": "how many bytes it may hand out"
+              }
+            ],
             "returns": "the arena",
             "see": ["https://rux-lang.dev/docs/api/gadget/arena#new"],
             "deprecated": null
@@ -261,7 +321,12 @@
           "line": 50,
           "signature": "pub func ==(self: &Arena, other: &Arena) -> bool",
           "typeParams": [],
-          "params": [{ "name": "other", "type": "&Arena" }],
+          "params": [
+            {
+              "name": "other",
+              "type": "&Arena"
+            }
+          ],
           "receiver": "&Arena",
           "returnType": "bool",
           "value": null,
@@ -271,7 +336,12 @@
             "summary": "Whether two arenas are the same arena.",
             "markdown": "Whether two arenas are the same arena.",
             "typeParams": [],
-            "params": [{ "name": "other", "markdown": "the arena to compare with" }],
+            "params": [
+              {
+                "name": "other",
+                "markdown": "the arena to compare with"
+              }
+            ],
             "returns": null,
             "see": [],
             "deprecated": null
@@ -283,7 +353,12 @@
           "line": 60,
           "signature": "pub func Put(self: &var Arena, value: uint) -> ! Fault",
           "typeParams": [],
-          "params": [{ "name": "value", "type": "uint" }],
+          "params": [
+            {
+              "name": "value",
+              "type": "uint"
+            }
+          ],
           "receiver": "&var Arena",
           "returnType": "! Fault",
           "value": null,
@@ -293,7 +368,12 @@
             "summary": "Stores `value` in the next free block.",
             "markdown": "Stores `value` in the next free block.",
             "typeParams": [],
-            "params": [{ "name": "value", "markdown": "what to keep" }],
+            "params": [
+              {
+                "name": "value",
+                "markdown": "what to keep"
+              }
+            ],
             "returns": null,
             "see": [],
             "deprecated": null
@@ -365,7 +445,15 @@
         "deprecated": null
       },
       "value": null,
-      "fields": [{ "name": "arena", "type": "*var Arena", "public": false, "line": 81, "doc": null }],
+      "fields": [
+        {
+          "name": "arena",
+          "type": "*var Arena",
+          "public": false,
+          "line": 81,
+          "doc": null
+        }
+      ],
       "baseType": null,
       "cases": [],
       "members": [
@@ -402,18 +490,36 @@
       "source": "Src/Box.rux",
       "line": 10,
       "signature": "pub struct Box<T>",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "typeParams": [
+        {
+          "name": "T",
+          "bounds": []
+        }
+      ],
       "doc": {
         "summary": "One heap value of `T`.",
         "markdown": "One heap value of `T`.\nMove-only; a `Box<T>` releases its storage when it goes.",
-        "typeParams": [{ "name": "T", "markdown": "the type the box owns one of" }],
+        "typeParams": [
+          {
+            "name": "T",
+            "markdown": "the type the box owns one of"
+          }
+        ],
         "params": [],
         "returns": null,
         "see": ["https://rux-lang.dev/docs/api/gadget/box"],
         "deprecated": null
       },
       "value": null,
-      "fields": [{ "name": "pointer", "type": "*var T", "public": false, "line": 12, "doc": null }],
+      "fields": [
+        {
+          "name": "pointer",
+          "type": "*var T",
+          "public": false,
+          "line": 12,
+          "doc": null
+        }
+      ],
       "baseType": null,
       "cases": [],
       "members": [
@@ -424,8 +530,14 @@
           "signature": "pub func Create(store: Store, value: T) -> Box<T> ! Fault",
           "typeParams": [],
           "params": [
-            { "name": "store", "type": "Store" },
-            { "name": "value", "type": "T" }
+            {
+              "name": "store",
+              "type": "Store"
+            },
+            {
+              "name": "value",
+              "type": "T"
+            }
           ],
           "receiver": null,
           "returnType": "Box<T> ! Fault",
@@ -437,8 +549,14 @@
             "markdown": "Puts `value` in a box.",
             "typeParams": [],
             "params": [
-              { "name": "store", "markdown": "where the storage comes from" },
-              { "name": "value", "markdown": "the value to move in" }
+              {
+                "name": "store",
+                "markdown": "where the storage comes from"
+              },
+              {
+                "name": "value",
+                "markdown": "the value to move in"
+              }
             ],
             "returns": "the box, or why the store refused",
             "see": [],
@@ -450,7 +568,12 @@
           "name": "Map",
           "line": 20,
           "signature": "pub func Map<U>(self: &Box<T>) -> U",
-          "typeParams": [{ "name": "U", "bounds": ["Copy"] }],
+          "typeParams": [
+            {
+              "name": "U",
+              "bounds": ["Copy"]
+            }
+          ],
           "params": [],
           "receiver": "&Box<T>",
           "returnType": "U",
@@ -460,7 +583,12 @@
           "doc": {
             "summary": "Converts the held value.",
             "markdown": "Converts the held value.",
-            "typeParams": [{ "name": "U", "markdown": "the result type" }],
+            "typeParams": [
+              {
+                "name": "U",
+                "markdown": "the result type"
+              }
+            ],
             "params": [],
             "returns": null,
             "see": [],
@@ -492,8 +620,20 @@
       "fields": [],
       "baseType": "uint8",
       "cases": [
-        { "name": "Full", "value": "1", "payload": null, "line": 32, "doc": "No room is left | try later." },
-        { "name": "Empty", "value": "2", "payload": null, "line": 33, "doc": "Nothing was stored." }
+        {
+          "name": "Full",
+          "value": "1",
+          "payload": null,
+          "line": 32,
+          "doc": "No room is left | try later."
+        },
+        {
+          "name": "Empty",
+          "value": "2",
+          "payload": null,
+          "line": 33,
+          "doc": "Nothing was stored."
+        }
       ],
       "members": [
         {
@@ -559,7 +699,12 @@
         "summary": "Whether `block` is `EmptyBlock`.",
         "markdown": "Whether `block` is `EmptyBlock`.",
         "typeParams": [],
-        "params": [{ "name": "block", "markdown": "the address to test" }],
+        "params": [
+          {
+            "name": "block",
+            "markdown": "the address to test"
+          }
+        ],
         "returns": "whether it is the empty block",
         "see": ["https://rux-lang.dev/docs/api/gadget/empty-blocks#is-empty-block"],
         "deprecated": null
@@ -584,9 +729,74 @@
         "summary": "The alignment a value of `size` bytes wants.",
         "markdown": "The alignment a value of `size` bytes wants.",
         "typeParams": [],
-        "params": [{ "name": "size", "markdown": "the size in bytes" }],
+        "params": [
+          {
+            "name": "size",
+            "markdown": "the size in bytes"
+          }
+        ],
         "returns": "a power of two",
         "see": [],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": []
+    },
+    {
+      "kind": "function",
+      "name": "Sqrt",
+      "displayName": "Sqrt",
+      "module": "Store",
+      "source": "Src/Store.rux",
+      "line": 70,
+      "signature": "pub func Sqrt(x: float64) -> float64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The square root of `x`.",
+        "markdown": "The square root of `x`.\nCorrectly rounded; a negative `x` gives NaN.",
+        "typeParams": [],
+        "params": [
+          {
+            "name": "x",
+            "markdown": "the value whose square root is taken"
+          }
+        ],
+        "returns": "the non-negative square root of `x`",
+        "see": ["https://rux-lang.dev/docs/api/gadget/sqrt"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": []
+    },
+    {
+      "kind": "function",
+      "name": "Sqrt",
+      "displayName": "Sqrt",
+      "module": "Store",
+      "source": "Src/Store.rux",
+      "line": 75,
+      "signature": "pub func Sqrt(x: float32) -> float32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The square root of `x` at `float32` precision.",
+        "markdown": "The square root of `x` at `float32` precision.",
+        "typeParams": [],
+        "params": [
+          {
+            "name": "x",
+            "markdown": "the value whose square root is taken"
+          }
+        ],
+        "returns": "the non-negative square root of `x`",
+        "see": ["https://rux-lang.dev/docs/api/gadget/sqrt"],
         "deprecated": null
       },
       "value": null,

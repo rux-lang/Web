@@ -81,7 +81,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "constant",
@@ -106,7 +116,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -133,21 +153,67 @@
           "type": "*var ArenaBlock",
           "public": false,
           "line": 33,
-          "doc": "The block taken before this one, or null for the first."
+          "doc": "The block taken before this one, or null for the first.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "capacity",
           "type": "uint",
           "public": false,
           "line": 35,
-          "doc": "Payload bytes in this block, not counting the header."
+          "doc": "Payload bytes in this block, not counting the header.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
-        { "name": "used", "type": "uint", "public": false, "line": 37, "doc": "Payload bytes handed out so far." }
+        {
+          "name": "used",
+          "type": "uint",
+          "public": false,
+          "line": 37,
+          "doc": "Payload bytes handed out so far.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
       ],
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -169,29 +235,91 @@
       },
       "value": null,
       "fields": [
-        { "name": "backing", "type": "Allocator", "public": false, "line": 46, "doc": "Where the blocks come from." },
+        {
+          "name": "backing",
+          "type": "Allocator",
+          "public": false,
+          "line": 46,
+          "doc": "Where the blocks come from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
         {
           "name": "current",
           "type": "*var ArenaBlock",
           "public": false,
           "line": 48,
-          "doc": "The block being handed out of, or null before the first request."
+          "doc": "The block being handed out of, or null before the first request.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "nextBlockSize",
           "type": "uint",
           "public": false,
           "line": 50,
-          "doc": "The payload the next block will be taken with."
+          "doc": "The payload the next block will be taken with.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "lastAllocation",
           "type": "uint",
           "public": false,
           "line": 53,
-          "doc": "The address the most recent allocation returned, or null. Kept so that releasing or growing the most recent\nallocation can rewind rather than waste the space."
+          "doc": "The address the most recent allocation returned, or null. Kept so that releasing or growing the most recent\nallocation can rewind rather than waste the space.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
-        { "name": "blocks", "type": "uint", "public": false, "line": 55, "doc": "How many blocks the arena holds." }
+        {
+          "name": "blocks",
+          "type": "uint",
+          "public": false,
+          "line": 55,
+          "doc": "How many blocks the arena holds.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
       ],
       "baseType": null,
       "cases": [],
@@ -222,7 +350,17 @@
             "returns": "the arena, holding no block yet",
             "see": ["https://rux-lang.dev/docs/api/allocator/arena#new"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -244,7 +382,17 @@
             "returns": "a copyable adapter pointing at this arena",
             "see": ["https://rux-lang.dev/docs/api/allocator/arena#handle"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -266,7 +414,17 @@
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/allocator/arena#reset"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -288,7 +446,17 @@
             "returns": "how many payload bytes the arena's blocks have handed out",
             "see": ["https://rux-lang.dev/docs/api/allocator/arena#bytes-used"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -310,7 +478,17 @@
             "returns": "how many blocks the arena holds",
             "see": ["https://rux-lang.dev/docs/api/allocator/arena#block-count"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "destructor",
@@ -332,10 +510,30 @@
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/allocator/arena#destructor"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -362,7 +560,17 @@
           "type": "*var Arena",
           "public": false,
           "line": 210,
-          "doc": "The arena this borrows. Never null for a handle `Arena::Handle` produced."
+          "doc": "The arena this borrows. Never null for a handle `Arena::Handle` produced.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
       "baseType": null,
@@ -388,7 +596,17 @@
             "returns": "the address of the storage, or why none was taken",
             "see": ["https://rux-lang.dev/docs/api/allocator/arena#arena-handle-allocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -416,7 +634,17 @@
             "returns": "nothing when the release was accepted, or why it was refused",
             "see": ["https://rux-lang.dev/docs/api/allocator/arena#arena-handle-deallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -446,10 +674,30 @@
             "returns": "the address the block is at afterwards, or why it was not resized",
             "see": ["https://rux-lang.dev/docs/api/allocator/arena#arena-handle-reallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": ["Allocator"]
+      "implements": ["Allocator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -476,14 +724,34 @@
           "type": "*var T",
           "public": false,
           "line": 27,
-          "doc": "The allocation, or null for a box whose value has been taken out."
+          "doc": "The allocation, or null for a box whose value has been taken out.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "allocator",
           "type": "Allocator",
           "public": false,
           "line": 29,
-          "doc": "The allocator the storage came from, which is the one it must go back to."
+          "doc": "The allocator the storage came from, which is the one it must go back to.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
       "baseType": null,
@@ -515,7 +783,17 @@
             "returns": "the box, or why the allocator refused",
             "see": ["https://rux-lang.dev/docs/api/allocator/box#create"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -537,7 +815,17 @@
             "returns": "the address of the held value, or null when the box is empty",
             "see": ["https://rux-lang.dev/docs/api/allocator/box#get"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -559,7 +847,17 @@
             "returns": "whether the box holds nothing",
             "see": ["https://rux-lang.dev/docs/api/allocator/box#is-empty"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -581,7 +879,17 @@
             "returns": "whether there was a value to take",
             "see": ["https://rux-lang.dev/docs/api/allocator/box#try-take"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "destructor",
@@ -603,10 +911,30 @@
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/allocator/box#destructor"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "interface",
@@ -651,7 +979,17 @@
             "returns": "the address of the storage, or why none was taken",
             "see": ["https://rux-lang.dev/docs/api/allocator/allocator#allocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "requirement",
@@ -679,7 +1017,17 @@
             "returns": "nothing when the release was accepted, or why it was refused",
             "see": ["https://rux-lang.dev/docs/api/allocator/allocator#deallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "requirement",
@@ -709,10 +1057,30 @@
             "returns": "the address the block is at afterwards, or why it was not resized",
             "see": ["https://rux-lang.dev/docs/api/allocator/allocator#reallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "constant",
@@ -737,7 +1105,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "function",
@@ -762,7 +1140,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "function",
@@ -787,7 +1175,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "enum",
@@ -816,21 +1214,51 @@
           "value": "1",
           "payload": null,
           "line": 13,
-          "doc": "The layout cannot be served by this allocator at all: an alignment stricter than it can give, or a size it\ncould never hold. A different allocator might succeed; retrying with this one will not."
+          "doc": "The layout cannot be served by this allocator at all: an alignment stricter than it can give, or a size it\ncould never hold. A different allocator might succeed; retrying with this one will not.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "OutOfMemory",
           "value": "2",
           "payload": null,
           "line": 15,
-          "doc": "The allocator has no storage left. A smaller request might succeed, and so might this one later."
+          "doc": "The allocator has no storage left. A smaller request might succeed, and so might this one later.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "InvalidBlock",
           "value": "3",
           "payload": null,
           "line": 18,
-          "doc": "The arguments do not describe an allocation this allocator handed out — a pointer it did not give, or a\nlayout that does not match the one it was given with. This is a caller's mistake rather than a shortage."
+          "doc": "The arguments do not describe an allocation this allocator handed out — a pointer it did not give, or a\nlayout that does not match the one it was given with. This is a caller's mistake rather than a shortage.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
       "members": [
@@ -854,10 +1282,30 @@
             "returns": "whether asking again later could succeed",
             "see": ["https://rux-lang.dev/docs/api/allocator/alloc-error#is-transient"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -884,22 +1332,68 @@
           "type": "uint",
           "public": false,
           "line": 19,
-          "doc": "The first byte of the storage, or null for a buffer with no storage at all."
+          "doc": "The first byte of the storage, or null for a buffer with no storage at all.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
-        { "name": "capacity", "type": "uint", "public": false, "line": 21, "doc": "How many bytes the storage holds." },
+        {
+          "name": "capacity",
+          "type": "uint",
+          "public": false,
+          "line": 21,
+          "doc": "How many bytes the storage holds.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
         {
           "name": "used",
           "type": "uint",
           "public": false,
           "line": 23,
-          "doc": "How many bytes have been handed out, including alignment padding."
+          "doc": "How many bytes have been handed out, including alignment padding.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "lastAllocation",
           "type": "uint",
           "public": false,
           "line": 25,
-          "doc": "The address the most recent allocation returned, or zero. Kept so releasing or growing it can rewind."
+          "doc": "The address the most recent allocation returned, or zero. Kept so releasing or growing it can rewind.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
       "baseType": null,
@@ -931,7 +1425,17 @@
             "returns": "the buffer, having handed out nothing",
             "see": ["https://rux-lang.dev/docs/api/allocator/fixed-buffer#new"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -953,7 +1457,17 @@
             "returns": "a copyable adapter pointing at this buffer",
             "see": ["https://rux-lang.dev/docs/api/allocator/fixed-buffer#handle"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -975,7 +1489,17 @@
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/allocator/fixed-buffer#reset"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -997,7 +1521,17 @@
             "returns": "how many bytes have been handed out",
             "see": ["https://rux-lang.dev/docs/api/allocator/fixed-buffer#bytes-used"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1019,10 +1553,30 @@
             "returns": "how many bytes are left to hand out",
             "see": ["https://rux-lang.dev/docs/api/allocator/fixed-buffer#bytes-remaining"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -1049,7 +1603,17 @@
           "type": "*var FixedBuffer",
           "public": false,
           "line": 94,
-          "doc": "The allocator this borrows. Never null for a handle `FixedBuffer::Handle` produced."
+          "doc": "The allocator this borrows. Never null for a handle `FixedBuffer::Handle` produced.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
       "baseType": null,
@@ -1075,7 +1639,17 @@
             "returns": "the address of the storage, or why none was taken",
             "see": ["https://rux-lang.dev/docs/api/allocator/fixed-buffer#fixed-buffer-handle-allocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1103,7 +1677,17 @@
             "returns": "nothing when the release was accepted, or why it was refused",
             "see": ["https://rux-lang.dev/docs/api/allocator/fixed-buffer#fixed-buffer-handle-deallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1133,10 +1717,30 @@
             "returns": "the address the block is at afterwards, or why it was not resized",
             "see": ["https://rux-lang.dev/docs/api/allocator/fixed-buffer#fixed-buffer-handle-reallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": ["Allocator"]
+      "implements": ["Allocator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -1163,14 +1767,34 @@
           "type": "uint",
           "public": true,
           "line": 20,
-          "doc": "The number of bytes asked for, before any rounding."
+          "doc": "The number of bytes asked for, before any rounding.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "alignment",
           "type": "uint",
           "public": true,
           "line": 22,
-          "doc": "The alignment the address must be a multiple of. Always a power of two."
+          "doc": "The alignment the address must be a multiple of. Always a power of two.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
       "baseType": null,
@@ -1196,7 +1820,17 @@
             "returns": "`T`'s own size and alignment",
             "see": ["https://rux-lang.dev/docs/api/allocator/layout#for-value"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "associated",
@@ -1218,7 +1852,17 @@
             "returns": "the array layout, or `none` if its size cannot be represented",
             "see": ["https://rux-lang.dev/docs/api/allocator/layout#for-array"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "associated",
@@ -1246,7 +1890,17 @@
             "returns": "the layout, or `none` when `alignment` is not a usable power of two",
             "see": ["https://rux-lang.dev/docs/api/allocator/layout#new"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "associated",
@@ -1268,7 +1922,17 @@
             "returns": "a layout of that size at its natural alignment, or `none` when there is none",
             "see": ["https://rux-lang.dev/docs/api/allocator/layout#for-bytes"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1290,7 +1954,17 @@
             "returns": "the size rounded up to a whole number of alignments",
             "see": ["https://rux-lang.dev/docs/api/allocator/layout#padded-size"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1312,7 +1986,17 @@
             "returns": "whether `address` meets this layout's alignment",
             "see": ["https://rux-lang.dev/docs/api/allocator/layout#is-satisfied-by"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "operator",
@@ -1334,7 +2018,17 @@
             "returns": "whether both the size and the alignment match",
             "see": ["https://rux-lang.dev/docs/api/allocator/layout#equals"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "operator",
@@ -1356,10 +2050,30 @@
             "returns": "whether either the size or the alignment differs",
             "see": ["https://rux-lang.dev/docs/api/allocator/layout#not-equals"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "function",
@@ -1384,7 +2098,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "constant",
@@ -1409,7 +2133,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "constant",
@@ -1434,7 +2168,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "constant",
@@ -1459,7 +2203,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "constant",
@@ -1484,7 +2238,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "constant",
@@ -1509,7 +2273,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -1536,28 +2310,84 @@
           "type": "*var PoolChunk",
           "public": false,
           "line": 50,
-          "doc": "The chunk taken before this one, or null for the first."
+          "doc": "The chunk taken before this one, or null for the first.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "total",
           "type": "uint",
           "public": false,
           "line": 52,
-          "doc": "The total size the chunk was taken with, header included."
+          "doc": "The total size the chunk was taken with, header included.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "classIndex",
           "type": "uint",
           "public": false,
           "line": 54,
-          "doc": "Which class this chunk was carved into."
+          "doc": "Which class this chunk was carved into.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
-        { "name": "blocks", "type": "uint", "public": false, "line": 56, "doc": "How many blocks it was carved into." }
+        {
+          "name": "blocks",
+          "type": "uint",
+          "public": false,
+          "line": 56,
+          "doc": "How many blocks it was carved into.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
       ],
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -1579,36 +2409,108 @@
       },
       "value": null,
       "fields": [
-        { "name": "backing", "type": "Allocator", "public": false, "line": 65, "doc": "Where the chunks come from." },
+        {
+          "name": "backing",
+          "type": "Allocator",
+          "public": false,
+          "line": 65,
+          "doc": "Where the chunks come from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
         {
           "name": "free",
           "type": "uint[N]",
           "public": false,
           "line": 69,
-          "doc": "The first free block of each class, by address, or zero for a class with none.\nHeld as addresses rather than pointers because a free block's link lives in the block's own storage, which is\nnot a value of any type until the block is handed out again."
+          "doc": "The first free block of each class, by address, or zero for a class with none.\nHeld as addresses rather than pointers because a free block's link lives in the block's own storage, which is\nnot a value of any type until the block is handed out again.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "chunks",
           "type": "*var PoolChunk",
           "public": false,
           "line": 71,
-          "doc": "The most recently taken chunk, or null before the first request."
+          "doc": "The most recently taken chunk, or null before the first request.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "blocksPerChunk",
           "type": "uint",
           "public": false,
           "line": 73,
-          "doc": "How many blocks each new chunk is carved into."
+          "doc": "How many blocks each new chunk is carved into.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "live",
           "type": "uint",
           "public": false,
           "line": 75,
-          "doc": "How many pooled blocks are currently handed out."
+          "doc": "How many pooled blocks are currently handed out.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
-        { "name": "chunkCount", "type": "uint", "public": false, "line": 77, "doc": "How many chunks the pool holds." }
+        {
+          "name": "chunkCount",
+          "type": "uint",
+          "public": false,
+          "line": 77,
+          "doc": "How many chunks the pool holds.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
       ],
       "baseType": null,
       "cases": [],
@@ -1639,7 +2541,17 @@
             "returns": "the pool, holding no chunk yet",
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#new"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1661,7 +2573,17 @@
             "returns": "a copyable adapter pointing at this pool",
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#handle"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1683,7 +2605,17 @@
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#reset"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1705,7 +2637,17 @@
             "returns": "how many blocks are currently handed out",
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#live-blocks"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1727,7 +2669,17 @@
             "returns": "how many chunks the pool holds",
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#chunk-count"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1749,7 +2701,17 @@
             "returns": "the block size that class serves",
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#class-size"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "destructor",
@@ -1771,10 +2733,30 @@
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#destructor"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -1801,7 +2783,17 @@
           "type": "*var Pool",
           "public": false,
           "line": 243,
-          "doc": "The pool this borrows. Never null for a handle `Pool::Handle` produced."
+          "doc": "The pool this borrows. Never null for a handle `Pool::Handle` produced.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
       "baseType": null,
@@ -1827,7 +2819,17 @@
             "returns": "the address of the storage, or why none was taken",
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#pool-handle-allocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1855,7 +2857,17 @@
             "returns": "nothing when the release was accepted, or why it was refused",
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#pool-handle-deallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -1885,10 +2897,30 @@
             "returns": "the address the block is at afterwards, or why it was not resized",
             "see": ["https://rux-lang.dev/docs/api/allocator/pool#pool-handle-reallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": ["Allocator"]
+      "implements": ["Allocator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "function",
@@ -1913,7 +2945,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -1940,34 +2982,84 @@
           "type": "uint64",
           "public": false,
           "line": 24,
-          "doc": "A fixed pattern, checked on release."
+          "doc": "A fixed pattern, checked on release.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "base",
           "type": "uint",
           "public": false,
           "line": 26,
-          "doc": "The address the page layer gave, which is what has to be released."
+          "doc": "The address the page layer gave, which is what has to be released.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "length",
           "type": "uint",
           "public": false,
           "line": 28,
-          "doc": "The length the page layer was given, which is what it has to be released with."
+          "doc": "The length the page layer was given, which is what it has to be released with.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "name": "size",
           "type": "uint",
           "public": false,
           "line": 30,
-          "doc": "The size the caller asked for, checked against the layout on release."
+          "doc": "The size the caller asked for, checked against the layout on release.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "constant",
@@ -1992,7 +3084,17 @@
       "baseType": null,
       "cases": [],
       "members": [],
-      "implements": []
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     },
     {
       "kind": "struct",
@@ -2019,7 +3121,17 @@
           "type": "uint8",
           "public": false,
           "line": 47,
-          "doc": "Present so the type is not empty; carries nothing and is never read."
+          "doc": "Present so the type is not empty; carries nothing and is never read.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
       "baseType": null,
@@ -2045,7 +3157,17 @@
             "returns": "the allocator, which holds no state of its own",
             "see": ["https://rux-lang.dev/docs/api/allocator/system-allocator#new"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -2067,7 +3189,17 @@
             "returns": "the address of the storage, or why none was taken",
             "see": ["https://rux-lang.dev/docs/api/allocator/system-allocator#allocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -2095,7 +3227,17 @@
             "returns": "nothing when the release was accepted, or why it was refused",
             "see": ["https://rux-lang.dev/docs/api/allocator/system-allocator#deallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         },
         {
           "kind": "method",
@@ -2125,10 +3267,40 @@
             "returns": "the address the block is at afterwards, or why it was not resized",
             "see": ["https://rux-lang.dev/docs/api/allocator/system-allocator#reallocate"],
             "deprecated": null
-          }
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": ["Allocator"]
+      "implements": ["Allocator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
     }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
   ]
 }

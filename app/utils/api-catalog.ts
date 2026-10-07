@@ -1,5 +1,5 @@
 import type { ContentNavigationItem } from "@nuxt/content";
-import { AREAS, GENERATED, KIND_GROUPS, PACKAGES } from "~~/scripts/api-packages.mjs";
+import { AREAS, KIND_GROUPS, PACKAGES } from "~~/scripts/api-packages.mjs";
 
 export interface ApiArea {
   slug: string;
@@ -28,7 +28,7 @@ export interface ApiCatalogPackage {
   platform?: string;
   /** The navigation tree has a folder for it — generated or hand-written. */
   hasPages: boolean;
-  /** Its pages are rendered from a `rux doc` snapshot (GENERATED). */
+  /** Its pages are rendered from a `rux doc` snapshot (data/api/<slug>.json exists). */
   generated: boolean;
   /** Filled in by useApiPackages() from the overview page. */
   version?: string;
@@ -43,7 +43,13 @@ export interface ApiCatalogArea extends ApiArea {
 // learn-course.mjs.
 export const apiAreas = AREAS as ApiArea[];
 export const apiRegistry = PACKAGES as ApiRegistryPackage[];
-export const apiGenerated = GENERATED as Set<string>;
+/**
+ * The packages rendered from a `rux doc` snapshot: those with a
+ * data/api/<slug>.json. Only each file's `schema` number is imported, so the
+ * snapshots themselves stay out of the bundle.
+ */
+const snapshots = import.meta.glob<number>("../../data/api/*.json", { eager: true, import: "schema" });
+export const apiGenerated = new Set(Object.keys(snapshots).map((path) => path.replace(/^.*\/([^/]+)\.json$/, "$1")));
 export const apiKindGroups = KIND_GROUPS as { folder: string; title: string; kinds: string[] }[];
 
 /**

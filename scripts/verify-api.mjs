@@ -1,9 +1,11 @@
 /**
  * npm run verify:api [-- <path-to-Rux>]
  *
- * Fails when a generated API Reference package (GENERATED in
- * scripts/api-packages.mjs) has no snapshot in data/api/, when any file in its
- * folder differs from what its snapshot renders (or is not rendered at all),
+ * Checks every generated API Reference package — every data/api/<slug>.json
+ * (scripts/api-generated.mjs). Fails when a snapshot names no registry
+ * package, when any file in the package folder differs from what its snapshot
+ * renders (or is not rendered at all), when another folder still serves the
+ * package URL,
  * when a snapshot's version disagrees with its manifest or with the snapshot
  * of a package it depends on, or when a rux-lang.dev `@see` URL resolves to
  * no page or anchor. Needs no Rux checkout; given one (or with ../Rux beside
@@ -12,7 +14,8 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { API_ROOT, GENERATED, PACKAGES, packageBySlug } from "./api-packages.mjs";
+import { GENERATED } from "./api-generated.mjs";
+import { API_ROOT, PACKAGES, packageBySlug } from "./api-packages.mjs";
 import { pageAnchors, parseApiUrl, renderApiPackage } from "./api-docs.mjs";
 import { contentRoutes } from "./routes.mjs";
 
@@ -41,16 +44,17 @@ function manifestVersion(name) {
 }
 
 for (const slug of GENERATED) {
-  if (!packageBySlug(slug)) fail(`GENERATED names "${slug}", which is not in PACKAGES`);
+  if (!packageBySlug(slug)) fail(`data/api/${slug}.json names no package in scripts/api-packages.mjs`);
 }
 
 // Load and render every generated package first: `@see` URLs may point across packages.
 const packages = [];
 for (const entry of PACKAGES.filter((candidate) => GENERATED.has(candidate.slug))) {
   const snapshotPath = resolve(root, `data/api/${entry.slug}.json`);
-  if (!existsSync(snapshotPath)) {
-    fail(`${entry.name} is generated but data/api/${entry.slug}.json does not exist; run npm run sync:api`);
-    continue;
+  for (const folder of readdirSync(resolve(root, API_ROOT))) {
+    if (folder !== entry.folder && folder.replace(/^\d+\./, "") === entry.slug) {
+      fail(`${API_ROOT}/${folder} still serves ${entry.path}, which ${entry.folder} now generates; delete it`);
+    }
   }
   const snapshot = JSON.parse(readFileSync(snapshotPath, "utf8"));
   const readmePath = resolve(root, `data/api/${entry.slug}.readme.md`);
