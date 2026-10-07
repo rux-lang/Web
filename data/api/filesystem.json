@@ -1,0 +1,3564 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "FileSystem",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Files, directories and filesystem operations",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/filesystem",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Entropy", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "FreeBSD", "namespace": "Rux", "version": "0.1.0", "targetOS": ["FreeBSD"] },
+      { "name": "Io", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Linux", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Linux"] },
+      { "name": "macOS", "namespace": "Rux", "version": "0.1.0", "targetOS": ["macOS"] },
+      { "name": "Path", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Time", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Atomic",
+      "source": "Src/Atomic.rux",
+      "header": "Publishing a file under its final name without ever showing a reader a half-written one.\nThe rule every reliable writer follows: write the new contents somewhere else, force them to the device, then\nmove the finished file onto the final name in one step the filesystem cannot interrupt. A reader opening the\nname at any moment sees the old file or the new one, never a truncated one and never a missing one — which is\nwhat writing in place cannot promise, since a crash between truncating and finishing leaves exactly the\nhalf-written file the whole exercise is meant to avoid.\nTwo details are not optional. The temporary must live in the **same directory** as the target, because a\nrename is atomic only within a volume and a temporary directory is frequently on a different one — get that\nwrong and the \"atomic\" publish silently becomes a copy-and-delete. And the contents must be synced **before**\nthe rename, not after: a rename that reaches the disk ahead of the data it names leaves the final name\npointing at a file whose contents never arrived.\nWhat is not promised is that the directory entry itself survives a crash. That needs the containing directory\nsynced too, which needs a directory opened as a file — ordinary on the Unix systems, not a thing Windows\ndoes. Rather than offer durability on one platform and pretend on another, this stops at the atomicity every\nsupported system gives, and says so."
+    },
+    {
+      "name": "Directory",
+      "source": "Src/Directory.rux",
+      "header": "Directories: made, deleted, and read entry by entry with nothing lost in the names.\nEnumeration hands back each entry's name as an `OsString` — the units the system actually stores, not a text\nconversion that a hostile or merely foreign name would fail. The `.` and `..` entries are skipped, because no\ncaller walking a directory has ever wanted the directory itself twice. Order is whatever the filesystem\nchooses; nothing here sorts, because a sorted walk is a policy and this is a primitive."
+    },
+    {
+      "name": "File",
+      "source": "Src/File.rux",
+      "header": "An owned file handle, opened under options that say what they mean.\nOpening a file asks two separate questions — what may happen through the handle, and what to do about the\nfile's existence — and most APIs tangle them. `OpenOptions` keeps them apart: `read`, `write` and `append`\nanswer the first; `create`, `createNew` and `truncate` answer the second. The contradictions are refused here,\nbefore the platform is asked, so an impossible request fails the same way on every system instead of however\neach platform happens to take it.\n`File` owns its handle the way `String` owns its bytes: `Close` releases it exactly once and reports what the\nplatform said, and its destructor is the safety net that closes with the outcome discarded. A file being written\ndeserves the explicit `Close`, for the same reason a buffered writer deserves the explicit `Flush`: the\ndestructor has nowhere to report failure."
+    },
+    {
+      "name": "FileStream",
+      "source": "Src/FileStream.rux",
+      "header": "The open file as the streams everything else already speaks.\n`File` implements `Reader`, `Writer` and `Seeker`, which is the whole point of those interfaces: the buffered\npair, line reading, binary values and format writing all stack on a file exactly as they stacked on memory and\nthe standard streams, none of them knowing the difference. Reads and writes are one attempt each, partial on\npurpose — the looping belongs to `ReadExact` and `WriteAll`, written once for every stream.\n`Flush` reports nothing gathered, because nothing is: these writes go to the platform as they are made. What a\ncaller usually wants after writing is `Sync`, which is a different promise — not \"handed to the kernel\" but\n\"acknowledged by the device\", the one that holds through a power failure."
+    },
+    {
+      "name": "Location",
+      "source": "Src/Location.rux",
+      "header": "Where the process is, and what a path really refers to.\nTwo operations that look alike and are not. `Absolute` is arithmetic: it joins a relative path onto the\nworking directory and simplifies the result lexically, touching no filesystem and answering for a path that\ndoes not exist. `Canonicalize` asks the filesystem: every symbolic link is resolved, every component must\nexist, and the answer is the one true name of an existing file. `Path::Normalize` already documented that its\n`x/..` simplification is a lie in the presence of symbolic links — this is where the truth lives, and the\ndifference between the two is the whole reason both are offered.\nThe working directory is process-wide state. Reading it is harmless; setting it reaches into every thread at\nonce and invalidates every relative path any of them was about to use, so `SetCurrentDirectory` exists for the\nprograms that genuinely need it and nothing in this package calls it."
+    },
+    {
+      "name": "Metadata",
+      "source": "Src/Metadata.rux",
+      "header": "What a file is, when it was touched, and who may do what to it.\nThe three systems disagree here more than anywhere else in this package, and the disagreement is reported\nrather than papered over. Unix permissions are nine bits of owner/group/other; Windows has access-control\nlists that the portable surface cannot express and one read-only attribute that it can. Rather than invent a\nlowest common denominator and lie about it, `Permissions` carries both spellings, `Capabilities` says which\nof them the running system actually honors, and a caller who cares can ask before it acts.\nTimestamps are read on every system and written where the system allows it. Creation time is the one field\nwith no universal answer — Linux's `stat` does not carry it — so it arrives as a presence flag beside the\nvalue rather than as a zero that pretends to be a date."
+    },
+    {
+      "name": "Temporary",
+      "source": "Src/Temporary.rux",
+      "header": "Temporary files and directories: unguessable names, and cleanup that is not left to chance.\nThe name comes from the entropy source rather than from a counter or the process id, because a predictable\nname in a shared directory is the whole of the classic temp-file attack: an attacker who can guess the name\ncreates it first, as a symbolic link pointing somewhere it should not, and the program writes through it. The\nname is also *claimed* rather than merely chosen — created with `createNew`, which fails rather than opens if\nanything is already there — so winning the guess is not enough either. A collision is retried, since with 128\nbits it means an attacker, not bad luck.\nCleanup is deterministic: the handle owns both the file and its name, and dropping it deletes both. That is\nstronger than the platform conveniences it replaces — Windows' delete-on-close needs the last handle to go,\nand the Unix trick of unlinking immediately leaves nothing a caller could pass to another process by name."
+    },
+    {
+      "name": "Transfer",
+      "source": "Src/Transfer.rux",
+      "header": "Moving file content and names around: copy, rename, and the two kinds of link.\nThe follow policies are stated rather than inherited. `CopyFile` follows a symbolic link and copies what it\npoints at, because copying the pointer would surprise every caller who asked for the bytes. `CreateHardLink`\ndoes not follow: it links the name given, symbolic link and all, because a caller linking a link said so.\n`DeleteFile` was already documented to remove the name, never the target. `Rename` moves the name whatever it\nnames, atomically within a volume, which is what makes it the publishing step of atomic replacement."
+    },
+    {
+      "name": "Translate",
+      "source": "Src/Translate.rux",
+      "header": "What a platform failure means, translated in one place.\nEvery operating system reports failure as a small integer whose meaning lives in its own header files, and a\nprogram that switches on those numbers at each call site rewrites this table badly, several times, in\ndisagreement with itself. So the table is written once per platform, and everything in this package reports\nthrough it: an `IoError` whose kind is the meaning a caller acts on and whose raw field is the platform's own\ncode, preserved because the translation is honest about being lossy — many codes fold to `Other`, and the\nnumber is how the rest stays diagnosable."
+    }
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "AtomicWrite",
+      "displayName": "AtomicWrite",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 31,
+      "signature": "pub struct AtomicWrite",
+      "typeParams": [],
+      "doc": {
+        "summary": "A file being written to replace `target`, which appears under that name only when it is complete.",
+        "markdown": "A file being written to replace `target`, which appears under that name only when it is complete.\nMove-only. `Commit` syncs the contents and moves them onto the target; `Abandon`, or destroying the value,\ndeletes the partial file and leaves the target as it was. An early return therefore leaves the old contents\nin place, which is the behavior that makes this worth using.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "scratch",
+          "type": "TemporaryFile",
+          "public": false,
+          "line": 33,
+          "doc": "The partial file, in the target's own directory.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "target",
+          "type": "PathBuffer",
+          "public": false,
+          "line": 35,
+          "doc": "Where it is going.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "pending",
+          "type": "bool",
+          "public": false,
+          "line": 37,
+          "doc": "Whether the replacement is still owed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Begin",
+          "line": 51,
+          "signature": "pub func Begin(allocator: Allocator, target: Path) -> AtomicWrite ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "target", "type": "Path" }
+          ],
+          "receiver": null,
+          "returnType": "AtomicWrite ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Begins replacing `target`.",
+            "markdown": "Begins replacing `target`.\nThe temporary is created in the target's own directory, which is what keeps the final rename atomic. The\ntarget need not exist; if it does, it is untouched until `Commit`.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "target", "markdown": "the path the finished contents will take" }
+            ],
+            "returns": "a write in progress against a temporary file",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#begin"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Stream",
+          "line": 72,
+          "signature": "pub func Stream(self: &var AtomicWrite) -> FileStream",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var AtomicWrite",
+          "returnType": "FileStream",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A stored writer over the partial file.",
+            "markdown": "A stored writer over the partial file.\nOnly for a value that must keep the stream, such as a buffered writer. Writing to the replacement for the\nduration of a call borrows the `AtomicWrite` itself, which is a `Writer`.\nThe `AtomicWrite` must outlive the result and must not be moved while it exists. See `FileStream`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a stream over the partial file, held by address",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#stream"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Target",
+          "line": 79,
+          "signature": "pub func Target(self: &AtomicWrite) -> Path",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&AtomicWrite",
+          "returnType": "Path",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The name the finished file will take.",
+            "markdown": "The name the finished file will take.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the path the contents will take when committed",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#target"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Commit",
+          "line": 93,
+          "signature": "pub func Commit(self: &var AtomicWrite, allocator: Allocator) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": "&var AtomicWrite",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Forces the contents to the device and moves them onto the target.",
+            "markdown": "Forces the contents to the device and moves them onto the target.\nThe sync happens **before** the rename, so the final name can never point at contents that never\narrived. Afterwards the target holds the new file and the temporary is gone; a reader that opened the\nname at any moment saw the old file or the new one.\nWhat this does not promise is that the directory entry survives a crash: that needs the containing\ndirectory synced too, which Windows does not offer, so the guarantee stops at atomicity on every system\nrather than being durable on some and pretending on the rest.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "success when the target now holds the contents; on failure it still holds the old ones",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#commit"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Abandon",
+          "line": 110,
+          "signature": "pub func Abandon(self: &var AtomicWrite, allocator: Allocator) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": "&var AtomicWrite",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Throws the partial file away and leaves the target as it was.",
+            "markdown": "Throws the partial file away and leaves the target as it was.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "success when the temporary file was removed and the target left alone",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#abandon"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Release",
+          "line": 118,
+          "signature": "pub func Release(self: &var AtomicWrite)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var AtomicWrite",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives the buffers back.",
+            "markdown": "Gives the buffers back. The temporary's own destructor removes any partial file.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#release"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~AtomicWrite",
+          "line": 126,
+          "signature": "func ~AtomicWrite(self: &var AtomicWrite)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var AtomicWrite",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Discards an uncommitted replacement, leaving the target untouched.",
+            "markdown": "Discards an uncommitted replacement, leaving the target untouched.\nThis is the property that makes the type worth using: an early return or a failure part-way through\nwriting leaves the old contents exactly where they were, with no partial file left behind.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 141,
+          "signature": "pub func Write(self: &var AtomicWrite, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var AtomicWrite",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Writes into the partial file.",
+            "markdown": "Writes into the partial file.\nWriting to a replacement is what the type is for, so it is a `Writer` itself rather than something a caller\nreaches a stream out of: `let sink: &var Writer = replacement;` borrows it, and nothing has to be kept alive\nbeside it.\nOne attempt, partial on purpose, exactly as the underlying file's is; `WriteAll` does the looping.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the run to write" }],
+            "returns": "how much of it the file took",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 149,
+          "signature": "pub func Flush(self: &var AtomicWrite) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var AtomicWrite",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Flushes the partial file, which holds nothing back.",
+            "markdown": "Flushes the partial file, which holds nothing back.\n`Commit` is what makes the contents durable, and it syncs before it renames.",
+            "typeParams": [],
+            "params": [],
+            "returns": "what the file reported",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Writer"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteAtomically",
+      "displayName": "WriteAtomically",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 161,
+      "signature": "pub func WriteAtomically(allocator: Allocator, target: Path, contents: char8[..]) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Replaces `target` with `contents`, atomically.",
+        "markdown": "Replaces `target` with `contents`, atomically.\nThe one-shot form of the type above, for the common case where the whole file is already in hand.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "target", "markdown": "the path the finished contents will take" },
+          { "name": "contents", "markdown": "the bytes the file should end up holding" }
+        ],
+        "returns": "success when the target now holds exactly `contents`",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/atomic-write#write-atomically"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MakeDirectory",
+      "displayName": "MakeDirectory",
+      "module": "Directory",
+      "source": "Src/Directory.rux",
+      "line": 28,
+      "signature": "pub func MakeDirectory(allocator: Allocator, path: Path) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Creates the directory `path` names.",
+        "markdown": "Creates the directory `path` names. Its parent must already exist; `AlreadyExists` if the name is taken.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" }
+        ],
+        "returns": "success when the directory now exists",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/directories#make-directory"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "DeleteDirectory",
+      "displayName": "DeleteDirectory",
+      "module": "Directory",
+      "source": "Src/Directory.rux",
+      "line": 50,
+      "signature": "pub func DeleteDirectory(allocator: Allocator, path: Path) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Deletes the empty directory `path` names; a directory with anything still in it is refused.",
+        "markdown": "Deletes the empty directory `path` names; a directory with anything still in it is refused.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" }
+        ],
+        "returns": "success when the directory is gone",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/directories#delete-directory"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "DeleteFile",
+      "displayName": "DeleteFile",
+      "module": "Directory",
+      "source": "Src/Directory.rux",
+      "line": 71,
+      "signature": "pub func DeleteFile(allocator: Allocator, path: Path) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Deletes the file `path` names.",
+        "markdown": "Deletes the file `path` names. Removing the name does not disturb any handle still open on the file.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" }
+        ],
+        "returns": "success when the file is gone",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/file-operations#delete-file"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "DirectoryIterator",
+      "displayName": "DirectoryIterator",
+      "module": "Directory",
+      "source": "Src/Directory.rux",
+      "line": 91,
+      "signature": "pub struct DirectoryIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "A directory read one entry at a time.",
+        "markdown": "A directory read one entry at a time.\nMove-only: `Release` (or destruction) gives back the platform handle and the record buffer. `Next` hands each\nname over as a fresh `OsString` owned by the caller.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/directories#directory-iterator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 93,
+          "doc": "Where the record buffer came from, and where the names come from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "handle",
+          "type": "RawFile",
+          "public": false,
+          "line": 95,
+          "doc": "The platform's enumeration handle.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "data",
+          "type": "*var char8",
+          "public": false,
+          "line": 97,
+          "doc": "The record buffer.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "capacity",
+          "type": "uint",
+          "public": false,
+          "line": 99,
+          "doc": "Its size.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint",
+          "public": false,
+          "line": 101,
+          "doc": "How many bytes of it are records (the Unix systems).",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "offset",
+          "type": "uint",
+          "public": false,
+          "line": 103,
+          "doc": "The parse position within them (the Unix systems).",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "pending",
+          "type": "bool",
+          "public": false,
+          "line": 105,
+          "doc": "Whether an entry is already waiting in the buffer (Windows).",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "open",
+          "type": "bool",
+          "public": false,
+          "line": 107,
+          "doc": "Whether the handle is still this value's to give back.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 194,
+          "signature": "pub func Next(self: &var DirectoryIterator) -> OsString? ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var DirectoryIterator",
+          "returnType": "OsString? ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Hands over the next entry's name, or reports that the directory is done.",
+            "markdown": "Hands over the next entry's name, or reports that the directory is done.\nSucceeds with a name freshly owned by the caller, or with `none` at the end; a failure says what stopped the\nenumeration. The `.` and `..` entries are skipped.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the next entry's name, or `none` when the directory is done",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/directories#directory-iterator-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Release",
+          "line": 285,
+          "signature": "pub func Release(self: &var DirectoryIterator)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var DirectoryIterator",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives back the handle and the buffer.",
+            "markdown": "Gives back the handle and the buffer.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/filesystem/directories#directory-iterator-release"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~DirectoryIterator",
+          "line": 305,
+          "signature": "func ~DirectoryIterator(self: &var DirectoryIterator)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var DirectoryIterator",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "`Release`, as the safety net.",
+            "markdown": "`Release`, as the safety net.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/filesystem/directories#directory-iterator-destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ReadDirectory",
+      "displayName": "ReadDirectory",
+      "module": "Directory",
+      "source": "Src/Directory.rux",
+      "line": 125,
+      "signature": "pub func ReadDirectory(allocator: Allocator, path: Path) -> DirectoryIterator ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Begins enumerating the directory `path` names.",
+        "markdown": "Begins enumerating the directory `path` names.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" }
+        ],
+        "returns": "a cursor over the directory's entries",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/directories#read-directory"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "OpenOptions",
+      "displayName": "OpenOptions",
+      "module": "File",
+      "source": "Src/File.rux",
+      "line": 41,
+      "signature": "pub struct OpenOptions",
+      "typeParams": [],
+      "doc": {
+        "summary": "What an open may do, and what it does about existence.",
+        "markdown": "What an open may do, and what it does about existence.\n`read`, `write` and `append` say what may happen through the handle; `create`, `createNew` and `truncate` say\nwhat happens to the file itself. `append` positions every write at the end, whatever was written in between,\nwhich is the property log writers need and `write` alone does not have.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/file#open-options"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "read",
+          "type": "bool",
+          "public": false,
+          "line": 43,
+          "doc": "The handle may read.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "write",
+          "type": "bool",
+          "public": true,
+          "line": 45,
+          "doc": "The handle may write.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "append",
+          "type": "bool",
+          "public": false,
+          "line": 47,
+          "doc": "The handle may write, and every write lands at the end.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "truncate",
+          "type": "bool",
+          "public": true,
+          "line": 49,
+          "doc": "An existing file's contents are discarded on open. Requires `write`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "create",
+          "type": "bool",
+          "public": true,
+          "line": 51,
+          "doc": "A missing file is created. Requires `write` or `append`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "createNew",
+          "type": "bool",
+          "public": true,
+          "line": 54,
+          "doc": "The file must not exist: it is created, and an existing one is `AlreadyExists`. Wins over `create` and\n`truncate`, and is the option that makes creation a claim rather than a race.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "OpenOptions",
+          "line": 61,
+          "signature": "pub func OpenOptions() -> OpenOptions",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "OpenOptions",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Nothing at all: the caller states every intention.",
+            "markdown": "Nothing at all: the caller states every intention.",
+            "typeParams": [],
+            "params": [],
+            "returns": "options that permit nothing, which must be added to before opening",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#open-options-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Reading",
+          "line": 68,
+          "signature": "pub func Reading() -> OpenOptions",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "OpenOptions",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Reading an existing file.",
+            "markdown": "Reading an existing file.",
+            "typeParams": [],
+            "params": [],
+            "returns": "options that open an existing file for reading",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#open-options-reading"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Writing",
+          "line": 77,
+          "signature": "pub func Writing() -> OpenOptions",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "OpenOptions",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writing a file from its beginning: created if missing, emptied if not.",
+            "markdown": "Writing a file from its beginning: created if missing, emptied if not.",
+            "typeParams": [],
+            "params": [],
+            "returns": "options that create or truncate a file for writing",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#open-options-writing"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Appending",
+          "line": 88,
+          "signature": "pub func Appending() -> OpenOptions",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "OpenOptions",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adding to a file's end: created if missing, appended to if not.",
+            "markdown": "Adding to a file's end: created if missing, appended to if not.",
+            "typeParams": [],
+            "params": [],
+            "returns": "options that create or open a file and write at its end",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#open-options-appending"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "File",
+      "displayName": "File",
+      "module": "File",
+      "source": "Src/File.rux",
+      "line": 110,
+      "signature": "pub struct File",
+      "typeParams": [],
+      "doc": {
+        "summary": "An owned, open file.",
+        "markdown": "An owned, open file.\nMove-only: the handle closes exactly once, through `Close` or through its destructor. `Close` is the\nerror-visible path; destruction discards the outcome, which is fine for a file that was read and a silent\nloss for one that was written.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/file"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "handle",
+          "type": "RawFile",
+          "public": false,
+          "line": 112,
+          "doc": "The platform's handle.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "open",
+          "type": "bool",
+          "public": false,
+          "line": 114,
+          "doc": "Whether it is still this value's to close.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Open",
+          "line": 165,
+          "signature": "pub func Open(allocator: Allocator, path: Path, options: OpenOptions) -> File ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "path", "type": "Path" },
+            { "name": "options", "type": "OpenOptions" }
+          ],
+          "receiver": null,
+          "returnType": "File ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Opens `path` under `options`.",
+            "markdown": "Opens `path` under `options`.\nThe allocator is borrowed for the platform form of the path and holds nothing afterward. A failure says why\nin the platform's own terms, translated.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "path", "markdown": "the path to act on" },
+              { "name": "options", "markdown": "what may be done with the file, and what to do about existence" }
+            ],
+            "returns": "the open file",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#open"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsOpen",
+          "line": 234,
+          "signature": "pub func IsOpen(self: &File) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&File",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the handle is still open.",
+            "markdown": "Whether the handle is still open.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the file is open",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#is-open"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Close",
+          "line": 243,
+          "signature": "pub func Close(self: &var File) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var File",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Closes the handle and reports what the platform said.",
+            "markdown": "Closes the handle and reports what the platform said.\nClosing twice is not an error here: the second call is a no-op reporting success, because the first already\ngave the handle back. This is the error-visible path; a written file deserves it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "success when the descriptor was released; closing twice is not an error",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#close"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~File",
+          "line": 256,
+          "signature": "func ~File(self: &var File)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var File",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Closes with the outcome discarded: the safety net, not the contract.",
+            "markdown": "Closes with the outcome discarded: the safety net, not the contract.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Read",
+          "line": 31,
+          "signature": "pub func Read(self: &var File, into: var char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var File",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Reader",
+          "public": true,
+          "doc": {
+            "summary": "Reads what one attempt yields into `into`; a short count is not an error and the end is `EndOfStream`.",
+            "markdown": "Reads what one attempt yields into `into`; a short count is not an error and the end is `EndOfStream`.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the bytes" }],
+            "returns": "how many bytes were read; `IsEnd` at the end of the file",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#read"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 60,
+          "signature": "pub func Write(self: &var File, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var File",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Writes what one attempt takes of `bytes`; a short count means call again, which `WriteAll` does.",
+            "markdown": "Writes what one attempt takes of `bytes`; a short count means call again, which `WriteAll` does.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to write" }],
+            "returns": "how many bytes were taken, which may be fewer than offered",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 81,
+          "signature": "pub func Flush(self: &var File) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var File",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Nothing: these writes hold nothing back.",
+            "markdown": "Nothing: these writes hold nothing back. Durability is `Sync`, which is a different promise.",
+            "typeParams": [],
+            "params": [],
+            "returns": "success when everything written reached the system",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Seek",
+          "line": 95,
+          "signature": "pub func Seek(self: &var File, origin: SeekFrom, offset: int64) -> uint64 ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "origin", "type": "SeekFrom" },
+            { "name": "offset", "type": "int64" }
+          ],
+          "receiver": "&var File",
+          "returnType": "uint64 ! IoError",
+          "value": null,
+          "conformance": "Seeker",
+          "public": true,
+          "doc": {
+            "summary": "Moves the position `offset` bytes from `origin` and reports where it landed.",
+            "markdown": "Moves the position `offset` bytes from `origin` and reports where it landed.\nA position before the start of the file is refused by the platform; one past the end is allowed, and a\nlater write there leaves a hole. A handle opened for appending still seeks — but its writes land at the\nend regardless, because append is a property of the writes, not of the position.",
+            "typeParams": [],
+            "params": [
+              { "name": "origin", "markdown": "where the offset is measured from" },
+              { "name": "offset", "markdown": "how far to move" }
+            ],
+            "returns": "the resulting offset from the start",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#seek"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Sync",
+          "line": 125,
+          "signature": "pub func Sync(self: &var File) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var File",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Forces everything written through to the storage device.",
+            "markdown": "Forces everything written through to the storage device.\nNot \"handed to the kernel\" but \"acknowledged by the device\": the promise that holds through a power\nfailure, and the one a caller who just wrote something they cannot lose actually wants.",
+            "typeParams": [],
+            "params": [],
+            "returns": "success when the system reported the data durable",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#sync"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Size",
+          "line": 142,
+          "signature": "pub func Size(self: &var File) -> uint64 ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var File",
+          "returnType": "uint64 ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The file's length in bytes.",
+            "markdown": "The file's length in bytes.\nOn the Unix systems this is measured by seeking to the end and back, which moves the shared kernel\nposition for a moment; a reader racing this on the same open file may see it. The stat-based answer\narrives with the metadata work.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the file's size in bytes",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#size"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetLength",
+          "line": 166,
+          "signature": "pub func SetLength(self: &var File, length: uint64) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "length", "type": "uint64" }],
+          "receiver": "&var File",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sets the file's length: shrinking discards what was past the new end, growing leaves a hole.",
+            "markdown": "Sets the file's length: shrinking discards what was past the new end, growing leaves a hole.\nThe position does not move. A position past the new end stays where it was, and the next write there\ngrows the file again — the same rule as seeking past the end.",
+            "typeParams": [],
+            "params": [{ "name": "length", "markdown": "the size the file should have afterwards" }],
+            "returns": "success when the file is that size; extending reads back as zeros",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#set-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Stream",
+          "line": 195,
+          "signature": "pub func Stream(self: *var File) -> FileStream",
+          "typeParams": [],
+          "params": [],
+          "receiver": "*var File",
+          "returnType": "FileStream",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A stored borrow of this file, for a value that must keep a stream beyond one call.",
+            "markdown": "A stored borrow of this file, for a value that must keep a stream beyond one call.\nFor anything that only needs a stream for the duration of a call, borrow the file directly as\n`let sink: &var Writer = file;` instead: that is checked, and this is not.\nThe file must outlive the result and must not be moved while it exists. See `FileStream`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a stream over this file, holding its address, which is what makes it storable",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#stream"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Metadata",
+          "line": 391,
+          "signature": "pub func Metadata(self: &File) -> Metadata ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&File",
+          "returnType": "Metadata ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Describes this open file.",
+            "markdown": "Describes this open file.\nAnswers about the file the handle holds, so nothing can rename or replace the name out from under the\nquery the way a path-based one can.",
+            "typeParams": [],
+            "params": [],
+            "returns": "what the system knows about the open file",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file#metadata"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Reader", "Writer", "Seeker"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "FileStream",
+      "displayName": "FileStream",
+      "module": "FileStream",
+      "source": "Src/FileStream.rux",
+      "line": 220,
+      "signature": "pub struct FileStream",
+      "typeParams": [],
+      "doc": {
+        "summary": "A stored borrow of an open file that speaks the stream interfaces.",
+        "markdown": "A stored borrow of an open file that speaks the stream interfaces.\n**Reach for this only when a stream has to be kept.** A `File` already implements `Reader`, `Writer` and\n`Seeker`, so anything taking one for the duration of a call takes the file itself:\n```rux\nlet sink: &var Writer = file;\nWriteAll(sink, contents);\n```\nThat borrows, and the file is still the caller's afterwards. What it cannot do is outlive the call, because a\nreference cannot be stored in a field — so a `BufferedReader`, which keeps its source, needs a value it can\nhold. Binding the file itself into an interface value would move it, since a `File` owns its handle and\nprohibits copying, and the caller would no longer have a file to close. This is the value that fills that gap:\nit holds the file's address rather than the file, so it can be stored, and the file stays where it is.\nThe address is private, and `File::Stream` is the only way to obtain one. That is deliberate: a `FileStream`\nassembled from an arbitrary pointer would be an unchecked promise about a file that may not exist, and the type\nis already the least checkable thing in this package without adding a second way to get it wrong.\nThe file must outlive the stream, and must not be moved while one exists — a move relocates the file and\nleaves the stored address pointing at where it used to be. Nothing here tracks either, which is exactly why\nthis is not the default way to reach a file's streams. A stream over a closed file is not unsafe: every\noperation refuses with `InvalidHandle`, because the file itself checks.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/file-stream"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "file",
+          "type": "*var File",
+          "public": false,
+          "line": 222,
+          "doc": "The file being borrowed. Private, so `File::Stream` is the only way to make one.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Read",
+          "line": 230,
+          "signature": "pub func Read(self: &var FileStream, into: var char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var FileStream",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Reader",
+          "public": true,
+          "doc": {
+            "summary": "Reads through the borrowed file.",
+            "markdown": "Reads through the borrowed file.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the bytes" }],
+            "returns": "how many bytes were read; `IsEnd` at the end of the file",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file-stream#read"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 240,
+          "signature": "pub func Write(self: &var FileStream, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var FileStream",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Writes through the borrowed file.",
+            "markdown": "Writes through the borrowed file.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to write" }],
+            "returns": "how many bytes were taken, which may be fewer than offered",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file-stream#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 247,
+          "signature": "pub func Flush(self: &var FileStream) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var FileStream",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Flushes the borrowed file, which holds nothing back.",
+            "markdown": "Flushes the borrowed file, which holds nothing back.",
+            "typeParams": [],
+            "params": [],
+            "returns": "success when everything written reached the system",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file-stream#flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Seek",
+          "line": 258,
+          "signature": "pub func Seek(self: &var FileStream, origin: SeekFrom, offset: int64) -> uint64 ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "origin", "type": "SeekFrom" },
+            { "name": "offset", "type": "int64" }
+          ],
+          "receiver": "&var FileStream",
+          "returnType": "uint64 ! IoError",
+          "value": null,
+          "conformance": "Seeker",
+          "public": true,
+          "doc": {
+            "summary": "Seeks the borrowed file.",
+            "markdown": "Seeks the borrowed file.",
+            "typeParams": [],
+            "params": [
+              { "name": "origin", "markdown": "where the offset is measured from" },
+              { "name": "offset", "markdown": "how far to move" }
+            ],
+            "returns": "the resulting offset from the start",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/file-stream#seek"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Reader", "Writer", "Seeker"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "SymbolicLinkLimit",
+      "displayName": "SymbolicLinkLimit",
+      "module": "Location",
+      "source": "Src/Location.rux",
+      "line": 30,
+      "signature": "pub const SymbolicLinkLimit: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many symbolic links one canonicalization will follow before giving up.",
+        "markdown": "How many symbolic links one canonicalization will follow before giving up.\nA link that points at itself, or at a chain that returns to it, would otherwise be followed forever. The\nlimit is what every system uses for the same reason, and reaching it is reported as `LimitExceeded`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/location#symbolic-link-limit"],
+        "deprecated": null
+      },
+      "value": "40",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CurrentDirectory",
+      "displayName": "CurrentDirectory",
+      "module": "Location",
+      "source": "Src/Location.rux",
+      "line": 36,
+      "signature": "pub func CurrentDirectory(allocator: Allocator) -> OsString ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "The process's working directory, as an absolute path.",
+        "markdown": "The process's working directory, as an absolute path.",
+        "typeParams": [],
+        "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+        "returns": "the working directory",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/location#current-directory"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SetCurrentDirectory",
+      "displayName": "SetCurrentDirectory",
+      "module": "Location",
+      "source": "Src/Location.rux",
+      "line": 66,
+      "signature": "pub func SetCurrentDirectory(allocator: Allocator, path: Path) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Makes `path` the process's working directory.",
+        "markdown": "Makes `path` the process's working directory.\nProcess-wide and immediately visible to every thread, which invalidates every relative path any of them was\nabout to resolve. Nothing in this package calls it.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" }
+        ],
+        "returns": "success when the working directory changed",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/location#set-current-directory"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Absolute",
+      "displayName": "Absolute",
+      "module": "Location",
+      "source": "Src/Location.rux",
+      "line": 90,
+      "signature": "pub func Absolute(allocator: Allocator, path: Path) -> PathBuffer ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "`path` made absolute against the working directory and simplified lexically.",
+        "markdown": "`path` made absolute against the working directory and simplified lexically.\nArithmetic, not a question for the filesystem: the path need not exist, nothing is opened, and no symbolic\nlink is resolved — so a `..` that crosses one is simplified away as though it did not. `Canonicalize` is the\noperation that tells the truth about links, at the cost of requiring the file to be there.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" }
+        ],
+        "returns": "the path made absolute without touching the file system",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/location#absolute"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Canonicalize",
+      "displayName": "Canonicalize",
+      "module": "Location",
+      "source": "Src/Location.rux",
+      "line": 218,
+      "signature": "pub func Canonicalize(allocator: Allocator, path: Path) -> PathBuffer ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "The one true name of the existing file `path` refers to.",
+        "markdown": "The one true name of the existing file `path` refers to.\nEvery symbolic link is resolved, every `.` and `..` is applied against what those links actually mean, and\nthe result is absolute. Unlike `Absolute`, the file must exist: this is a question for the filesystem, and a\nname with nothing behind it has no true form. A link chain that returns to itself is `LimitExceeded` rather\nthan a hang.\nOn Windows the answer arrives in the verbatim form and spelled as the filesystem stores it — the case the\nname actually has, short names expanded — because that is what the system reports, and rewriting it would be\nthis package guessing.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" }
+        ],
+        "returns": "the path with every link and relative component resolved, which needs the file system and so can fail",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/location#canonicalize"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "FileKind",
+      "displayName": "FileKind",
+      "module": "Metadata",
+      "source": "Src/Metadata.rux",
+      "line": 31,
+      "signature": "pub enum FileKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "What kind of thing a name refers to.",
+        "markdown": "What kind of thing a name refers to.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/metadata#file-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "File",
+          "value": "0",
+          "payload": null,
+          "line": 33,
+          "doc": "An ordinary file of bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Directory",
+          "value": "1",
+          "payload": null,
+          "line": 35,
+          "doc": "A directory.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "SymbolicLink",
+          "value": "2",
+          "payload": null,
+          "line": 37,
+          "doc": "A symbolic link — only ever reported by a no-follow query, since following one lands on its target.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Other",
+          "value": "3",
+          "payload": null,
+          "line": 39,
+          "doc": "A device, socket, pipe, or anything else the filesystem holds that is none of the above.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Permissions",
+      "displayName": "Permissions",
+      "module": "Metadata",
+      "source": "Src/Metadata.rux",
+      "line": 48,
+      "signature": "pub struct Permissions",
+      "typeParams": [],
+      "doc": {
+        "summary": "Who may do what to a file, in both spellings the supported systems use.",
+        "markdown": "Who may do what to a file, in both spellings the supported systems use.\n`mode` is the Unix permission bits, the low nine of which are the owner/group/other triple. `readOnly` is\nWindows' one portable attribute. Both are always filled: on Windows the mode is synthesized from the\nattribute (`0o444` when read-only, `0o666` otherwise) so a program that reasons in Unix terms is not blocked,\nand on Unix `readOnly` reports whether the owner-write bit is clear. `Capabilities` says which one is real.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/permissions"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "mode",
+          "type": "uint32",
+          "public": true,
+          "line": 50,
+          "doc": "The Unix permission bits.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "readOnly",
+          "type": "bool",
+          "public": false,
+          "line": 52,
+          "doc": "Whether writing is refused.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "FromMode",
+          "line": 60,
+          "signature": "pub func FromMode(mode: uint32) -> Permissions",
+          "typeParams": [],
+          "params": [{ "name": "mode", "type": "uint32" }],
+          "receiver": null,
+          "returnType": "Permissions",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Permissions from Unix mode bits, with `readOnly` derived from the owner-write bit.",
+            "markdown": "Permissions from Unix mode bits, with `readOnly` derived from the owner-write bit.",
+            "typeParams": [],
+            "params": [{ "name": "mode", "markdown": "the permission bits" }],
+            "returns": "permissions carrying those bits",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/permissions#from-mode"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromReadOnly",
+          "line": 68,
+          "signature": "pub func FromReadOnly(readOnly: bool) -> Permissions",
+          "typeParams": [],
+          "params": [{ "name": "readOnly", "type": "bool" }],
+          "receiver": null,
+          "returnType": "Permissions",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Permissions from the read-only flag alone, with the mode synthesized from it.",
+            "markdown": "Permissions from the read-only flag alone, with the mode synthesized from it.",
+            "typeParams": [],
+            "params": [{ "name": "readOnly", "markdown": "whether the file may only be read" }],
+            "returns": "permissions that are writable or not, which is all Windows records",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/permissions#from-read-only"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsWritable",
+          "line": 75,
+          "signature": "pub func IsWritable(self: &Permissions) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Permissions",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the owner may write.",
+            "markdown": "Whether the owner may write.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the owner may write the file",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/permissions#is-writable"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Metadata",
+      "displayName": "Metadata",
+      "module": "Metadata",
+      "source": "Src/Metadata.rux",
+      "line": 82,
+      "signature": "pub struct Metadata",
+      "typeParams": [],
+      "doc": {
+        "summary": "Everything a single query can say about a file.",
+        "markdown": "Everything a single query can say about a file.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/metadata"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "kind",
+          "type": "FileKind",
+          "public": true,
+          "line": 84,
+          "doc": "What the name refers to.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "size",
+          "type": "uint64",
+          "public": true,
+          "line": 86,
+          "doc": "The length in bytes; zero for a directory, whose size means nothing portable.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "linkCount",
+          "type": "uint64",
+          "public": true,
+          "line": 88,
+          "doc": "How many names the content has. Always one on a system that does not count them.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "permissions",
+          "type": "Permissions",
+          "public": true,
+          "line": 90,
+          "doc": "Who may do what.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "accessed",
+          "type": "Timestamp",
+          "public": true,
+          "line": 92,
+          "doc": "When the contents were last read.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "modified",
+          "type": "Timestamp",
+          "public": true,
+          "line": 94,
+          "doc": "When the contents were last written.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "created",
+          "type": "Timestamp",
+          "public": false,
+          "line": 96,
+          "doc": "When the file came into being, where the system records that.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hasCreated",
+          "type": "bool",
+          "public": true,
+          "line": 98,
+          "doc": "Whether `created` means anything.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Capabilities",
+      "displayName": "Capabilities",
+      "module": "Metadata",
+      "source": "Src/Metadata.rux",
+      "line": 103,
+      "signature": "pub struct Capabilities",
+      "typeParams": [],
+      "doc": {
+        "summary": "What the running system can actually answer, so a caller can ask before it assumes.",
+        "markdown": "What the running system can actually answer, so a caller can ask before it assumes.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/capabilities"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "unixPermissions",
+          "type": "bool",
+          "public": true,
+          "line": 105,
+          "doc": "Whether `Permissions::mode` is the system's own answer rather than one synthesized from a flag.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "creationTime",
+          "type": "bool",
+          "public": true,
+          "line": 107,
+          "doc": "Whether the system records a creation time.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hardLinkCounts",
+          "type": "bool",
+          "public": false,
+          "line": 109,
+          "doc": "Whether names have a meaningful link count.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "settableTimes",
+          "type": "bool",
+          "public": false,
+          "line": 111,
+          "doc": "Whether setting timestamps is supported at all.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CapabilitiesOfSystem",
+      "displayName": "CapabilitiesOfSystem",
+      "module": "Metadata",
+      "source": "Src/Metadata.rux",
+      "line": 117,
+      "signature": "pub func CapabilitiesOfSystem() -> Capabilities",
+      "typeParams": [],
+      "doc": {
+        "summary": "What this system can answer.",
+        "markdown": "What this system can answer.",
+        "typeParams": [],
+        "params": [],
+        "returns": "what this system's metadata actually carries, so a caller can tell an absent value from a false one",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/capabilities#capabilities-of-system"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MetadataOf",
+      "displayName": "MetadataOf",
+      "module": "Metadata",
+      "source": "Src/Metadata.rux",
+      "line": 362,
+      "signature": "pub func MetadataOf(allocator: Allocator, path: Path, followLinks: bool) -> Metadata ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Describes the file `path` names.",
+        "markdown": "Describes the file `path` names.\n`followLinks` decides what a symbolic link at the end of the path means: following it describes the target,\nand not following it describes the link, which is the only way `SymbolicLink` is ever reported.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" },
+          { "name": "followLinks", "markdown": "whether a final symbolic link is followed rather than described" }
+        ],
+        "returns": "what the system knows about the path",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/metadata#metadata-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SetPermissions",
+      "displayName": "SetPermissions",
+      "module": "Metadata",
+      "source": "Src/Metadata.rux",
+      "line": 417,
+      "signature": "pub func SetPermissions(allocator: Allocator, path: Path, permissions: Permissions) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets who may do what to the file `path` names.",
+        "markdown": "Sets who may do what to the file `path` names.\nOn the Unix systems the mode bits are written as given. On Windows only the read-only attribute exists, so\nthat alone is written and the rest of `permissions` is ignored — ask `CapabilitiesOfSystem` first if the\ndifference matters. A symbolic link is always followed: its own bits mean nothing on any supported system.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" },
+          { "name": "permissions", "markdown": "the permissions to apply" }
+        ],
+        "returns": "success when the permissions were applied",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/permissions#set-permissions"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SetTimes",
+      "displayName": "SetTimes",
+      "module": "Metadata",
+      "source": "Src/Metadata.rux",
+      "line": 456,
+      "signature": "pub func SetTimes(allocator: Allocator, path: Path, accessed: Timestamp, modified: Timestamp, followLinks: bool) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets the access and modification times of the file `path` names.",
+        "markdown": "Sets the access and modification times of the file `path` names.\nCreation time is not settable here: Windows would allow it and the Unix systems would not, and an operation\nthat silently means different things on different systems is worse than one that is not offered.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" },
+          { "name": "accessed", "markdown": "the access time to set, or `None` to leave it" },
+          { "name": "modified", "markdown": "the modification time to set, or `None` to leave it" },
+          { "name": "followLinks", "markdown": "whether a final symbolic link is followed rather than described" }
+        ],
+        "returns": "success when the times were applied",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/metadata#set-times"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "TemporaryNameAttempts",
+      "displayName": "TemporaryNameAttempts",
+      "module": "Temporary",
+      "source": "Src/Temporary.rux",
+      "line": 26,
+      "signature": "pub const TemporaryNameAttempts: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many names are tried before a temporary file gives up.",
+        "markdown": "How many names are tried before a temporary file gives up.\nWith 128 bits of name, one collision is already a surprise and three in a row is not chance; failing is the\nhonest response to an entropy source that has stopped being one.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-file#temporary-name-attempts"],
+        "deprecated": null
+      },
+      "value": "4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TemporaryDirectory",
+      "displayName": "TemporaryDirectory",
+      "module": "Temporary",
+      "source": "Src/Temporary.rux",
+      "line": 35,
+      "signature": "pub func TemporaryDirectory(allocator: Allocator) -> PathBuffer ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "The directory the system sets aside for temporary files.",
+        "markdown": "The directory the system sets aside for temporary files.\nOn Windows this is what the platform reports, which consults `TMP`, `TEMP` and `USERPROFILE` in turn. On the\nUnix systems it is `/tmp`: reading `TMPDIR` needs environment access this package does not have yet, so a\ncaller who must honor it passes the directory to the functions below instead.",
+        "typeParams": [],
+        "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+        "returns": "the system's directory for temporary files",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-file#temporary-directory"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TemporaryFile",
+      "displayName": "TemporaryFile",
+      "module": "Temporary",
+      "source": "Src/Temporary.rux",
+      "line": 84,
+      "signature": "pub struct TemporaryFile",
+      "typeParams": [],
+      "doc": {
+        "summary": "A temporary file that owns both its contents and its name.",
+        "markdown": "A temporary file that owns both its contents and its name.\nMove-only. `Close` deletes the file and reports what the deletion said; destruction does the same with the outcome\ndiscarded. `Keep` gives up ownership of the name instead, for the caller who has decided the file should\noutlive this value — which is what a rename into place is built on.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-file"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "file",
+          "type": "File",
+          "public": true,
+          "line": 86,
+          "doc": "The open file.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "path",
+          "type": "PathBuffer",
+          "public": false,
+          "line": 88,
+          "doc": "Its full path.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "owned",
+          "type": "bool",
+          "public": false,
+          "line": 90,
+          "doc": "Whether the name is still this value's to delete.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Create",
+          "line": 105,
+          "signature": "pub func Create(allocator: Allocator, directory: Path, prefix: char8[..]) -> TemporaryFile ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "directory", "type": "Path" },
+            { "name": "prefix", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "TemporaryFile ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Creates a new temporary file in `directory`, named from `prefix` and sixteen hex digits of entropy.",
+            "markdown": "Creates a new temporary file in `directory`, named from `prefix` and sixteen hex digits of entropy.\nThe file is opened for reading and writing and is created, never opened: a name that already exists is a\ncollision, and the next name is tried.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "directory", "markdown": "the directory to create it in" },
+              { "name": "prefix", "markdown": "the text the generated name starts with" }
+            ],
+            "returns": "the created file, which is removed when closed unless kept",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-file#create"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsPath",
+          "line": 136,
+          "signature": "pub func AsPath(self: &TemporaryFile) -> Path",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TemporaryFile",
+          "returnType": "Path",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The file's path, for handing to something that needs a name.",
+            "markdown": "The file's path, for handing to something that needs a name.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the path it was created at",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-file#path"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Close",
+          "line": 144,
+          "signature": "pub func Close(self: &var TemporaryFile, allocator: Allocator) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": "&var TemporaryFile",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Closes the file and deletes it, reporting the first thing that went wrong.",
+            "markdown": "Closes the file and deletes it, reporting the first thing that went wrong.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "success when it was removed",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-file#close"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Keep",
+          "line": 159,
+          "signature": "pub func Keep(self: &var TemporaryFile) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TemporaryFile",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Closes the file and leaves it where it is, giving up the name.",
+            "markdown": "Closes the file and leaves it where it is, giving up the name.",
+            "typeParams": [],
+            "params": [],
+            "returns": "success when it will be left in place rather than removed",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-file#keep"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~TemporaryFile",
+          "line": 169,
+          "signature": "func ~TemporaryFile(self: &var TemporaryFile)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TemporaryFile",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Closes and deletes with the outcome discarded: the safety net, not the contract.",
+            "markdown": "Closes and deletes with the outcome discarded: the safety net, not the contract.\nA destructor has nowhere to report a failed deletion, so a caller who needs to know calls `Close`. What\nthis guarantees is that a temporary file is never left behind by an early return or a failure path, which\nis the reason the type exists.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-file#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TemporaryDirectoryHandle",
+      "displayName": "TemporaryDirectoryHandle",
+      "module": "Temporary",
+      "source": "Src/Temporary.rux",
+      "line": 185,
+      "signature": "pub struct TemporaryDirectoryHandle",
+      "typeParams": [],
+      "doc": {
+        "summary": "A temporary directory that owns its name.",
+        "markdown": "A temporary directory that owns its name.\nMove-only, with the same contract as `TemporaryFile`: `Close` removes it and reports, destruction removes it\nquietly, `Keep` gives up ownership. Removal is of the directory itself and requires it to be empty — nothing\nhere deletes a tree, because a temporary directory that silently erased whatever a caller put inside it\nwould be a worse surprise than a refusal.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-directory-handle"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "path",
+          "type": "PathBuffer",
+          "public": false,
+          "line": 187,
+          "doc": "The directory's full path.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "owned",
+          "type": "bool",
+          "public": false,
+          "line": 189,
+          "doc": "Whether the name is still this value's to remove.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Create",
+          "line": 202,
+          "signature": "pub func Create(allocator: Allocator, directory: Path, prefix: char8[..]) -> TemporaryDirectoryHandle ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "directory", "type": "Path" },
+            { "name": "prefix", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "TemporaryDirectoryHandle ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Creates a new temporary directory in `directory`, named from `prefix` and sixteen hex digits of entropy.",
+            "markdown": "Creates a new temporary directory in `directory`, named from `prefix` and sixteen hex digits of entropy.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "directory", "markdown": "the directory to create it in" },
+              { "name": "prefix", "markdown": "the text the generated name starts with" }
+            ],
+            "returns": "the created directory, which is removed when closed unless kept",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-directory-handle#create"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsPath",
+          "line": 228,
+          "signature": "pub func AsPath(self: &TemporaryDirectoryHandle) -> Path",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TemporaryDirectoryHandle",
+          "returnType": "Path",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The directory's path, for building names inside it.",
+            "markdown": "The directory's path, for building names inside it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the path it was created at",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-directory-handle#path"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Close",
+          "line": 236,
+          "signature": "pub func Close(self: &var TemporaryDirectoryHandle, allocator: Allocator) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": "&var TemporaryDirectoryHandle",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Removes the directory and reports what the removal said.",
+            "markdown": "Removes the directory and reports what the removal said.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "success when it was removed",
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-directory-handle#close"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Keep",
+          "line": 248,
+          "signature": "pub func Keep(self: &var TemporaryDirectoryHandle)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TemporaryDirectoryHandle",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Leaves the directory where it is, giving up the name.",
+            "markdown": "Leaves the directory where it is, giving up the name.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-directory-handle#keep"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~TemporaryDirectoryHandle",
+          "line": 254,
+          "signature": "func ~TemporaryDirectoryHandle(self: &var TemporaryDirectoryHandle)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TemporaryDirectoryHandle",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Removes the directory with the outcome discarded: the safety net, not the contract.",
+            "markdown": "Removes the directory with the outcome discarded: the safety net, not the contract.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/filesystem/temporary-directory-handle#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Rename",
+      "displayName": "Rename",
+      "module": "Transfer",
+      "source": "Src/Transfer.rux",
+      "line": 30,
+      "signature": "pub func Rename(allocator: Allocator, from: Path, to: Path) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Renames `from` to `to`, moving it between directories if the paths differ there.",
+        "markdown": "Renames `from` to `to`, moving it between directories if the paths differ there.\nAn existing `to` is replaced, atomically within one volume: a reader sees the old file or the new, never a\ngap. Across volumes Windows copies and deletes instead — not atomic — and the Unix systems refuse.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "from", "markdown": "the path that exists now" },
+          { "name": "to", "markdown": "the path it should have afterwards" }
+        ],
+        "returns": "success when the file is at its new path",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/file-operations#rename"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CreateHardLink",
+      "displayName": "CreateHardLink",
+      "module": "Transfer",
+      "source": "Src/Transfer.rux",
+      "line": 57,
+      "signature": "pub func CreateHardLink(allocator: Allocator, existing: Path, link: Path) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Creates `link` as a hard link: a second name for the file `existing` names.",
+        "markdown": "Creates `link` as a hard link: a second name for the file `existing` names.\nThe two names are then equals — neither is \"the original\" — and the content lives until the last name is\ndeleted. A symbolic link at `existing` is not followed: the link is made to the name given. Directories\ncannot be hard-linked on any supported system.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "existing", "markdown": "the file that exists now" },
+          { "name": "link", "markdown": "the link to create" }
+        ],
+        "returns": "success when the new name refers to the same file",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/file-operations#create-hard-link"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CreateSymbolicLink",
+      "displayName": "CreateSymbolicLink",
+      "module": "Transfer",
+      "source": "Src/Transfer.rux",
+      "line": 86,
+      "signature": "pub func CreateSymbolicLink(allocator: Allocator, target: Path, link: Path, targetIsDirectory: bool) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Creates `link` as a symbolic link holding `target` as its text.",
+        "markdown": "Creates `link` as a symbolic link holding `target` as its text.\nThe target is stored, not checked: a dangling link is created as readily as a good one. `targetIsDirectory`\nmatters only on Windows, which types its links; the Unix systems ignore it. Windows also gates creation\nbehind a privilege unless the machine runs Developer Mode, so `PermissionDenied` here is an environment, not\na bug.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "target", "markdown": "the path the link will point at, which need not exist" },
+          { "name": "link", "markdown": "the link to create" },
+          {
+            "name": "targetIsDirectory",
+            "markdown": "whether the target is a directory, which Windows must be told in advance"
+          }
+        ],
+        "returns": "success when the link was created; Windows needs a privilege for this",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/file-operations#create-symbolic-link"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CopyFile",
+      "displayName": "CopyFile",
+      "module": "Transfer",
+      "source": "Src/Transfer.rux",
+      "line": 116,
+      "signature": "pub func CopyFile(allocator: Allocator, from: Path, to: Path) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Copies the file `from` names to `to`, following a symbolic link to the bytes it points at.",
+        "markdown": "Copies the file `from` names to `to`, following a symbolic link to the bytes it points at.\nAn existing `to` is replaced. The copy is the bytes and nothing else: permissions, timestamps and the rest of\nthe metadata are the destination's own, fresh — carrying them is a policy the metadata work owns.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "from", "markdown": "the path that exists now" },
+          { "name": "to", "markdown": "the path it should have afterwards" }
+        ],
+        "returns": "success when the destination holds a copy",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/file-operations#copy-file"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "NativeKind",
+      "displayName": "NativeKind",
+      "module": "Translate",
+      "source": "Src/Translate.rux",
+      "line": 17,
+      "signature": "pub func NativeKind(raw: int32) -> IoErrorKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "The meaning of a platform error code on the platform this program was compiled for.",
+        "markdown": "The meaning of a platform error code on the platform this program was compiled for.\nCodes with no portable meaning translate to `Other`; the caller still has the raw code beside it.",
+        "typeParams": [],
+        "params": [{ "name": "raw", "markdown": "the platform's own error number or code" }],
+        "returns": "the kind this package gives that platform code",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/native-errors#native-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TranslateNative",
+      "displayName": "TranslateNative",
+      "module": "Translate",
+      "source": "Src/Translate.rux",
+      "line": 76,
+      "signature": "pub func TranslateNative(raw: int32) -> IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "A platform error code as the structured error everything here reports.",
+        "markdown": "A platform error code as the structured error everything here reports.",
+        "typeParams": [],
+        "params": [{ "name": "raw", "markdown": "the platform's own error number or code" }],
+        "returns": "the error this package gives that platform code, keeping the raw value",
+        "see": ["https://rux-lang.dev/docs/api/filesystem/native-errors#translate-native"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}
