@@ -181,6 +181,19 @@ export const PACKAGES = [
     icon: "i-simple-icons-apple",
     description: "macOS platform bindings",
     platform: "macOS",
+    topics: {
+      types: { title: "Types", description: "macOS's scalar types for process, file and user identifiers." },
+      clock: { title: "Clocks", description: "Reading clocks and sleeping." },
+      dynamic: { title: "Dynamic loading", description: "libSystem, and the mode flags `dlopen` takes." },
+      errors: { title: "Errors", description: "The error numbers, and telling a raw result from an error." },
+      files: { title: "Files", description: "Opening, reading, writing and inspecting files through descriptors." },
+      directories: {
+        title: "Directories and links",
+        description: "The working directory, directory entries, removal, renaming and links.",
+      },
+      memory: { title: "Memory", description: "Mapping, protecting and advising on pages of memory." },
+      process: { title: "Process", description: "Ending the process and asking its identifier." },
+    },
   },
   {
     name: "Windows",
