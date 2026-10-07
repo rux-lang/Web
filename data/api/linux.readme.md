@@ -1,0 +1,69 @@
+# Linux
+
+Linux platform bindings: the raw syscall interface, with no libc in between.
+
+## Installation
+
+```sh
+rux add Rux/Linux
+```
+
+## What it provides
+
+| Module    | Covers                                                                                                                                                                                        |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Types`   | the kernel ABI's own types: `ProcessId`, `FileDescriptor`, `FileOffset`, `FileMode`, `UserId`, `Timespec`                                                                                     |
+| `Errors`  | the errno numbers, and `IsError` / `Errno` for reading a raw result                                                                                                                           |
+| `Syscall` | `Syscall0` through `Syscall6` as inline assembly, the call numbers, and `SignExtendFd`                                                                                                        |
+| `File`    | `Read`, `Write`, `Close`, `OpenAt`, `Lseek`, `Fsync`, `Ftruncate`, `UnlinkAt`, `MkdirAt`, `RenameAt`, `Fstat`, `FstatAt`, `Dup3`, `Pipe2`, the open flags, and the three standard descriptors |
+| `Memory`  | `Mmap`, `Munmap`, `Brk`, `Mprotect`, `Madvise`, `QueryPageSize`, and the protection, mapping and advice flags                                                                                 |
+| `Clock`   | `ClockGetTime`, `ClockGetResolution`, `Nanosleep`, `ClockNanosleep`, and the clock identifiers                                                                                                |
+| `Process` | `Exit` and `GetPid`                                                                                                                                                                           |
+| `Entropy` | `GetRandom`, the only source here fit for a key or a token                                                                                                                                    |
+| `Dynamic` | `dlopen`, `dlsym`, `dlclose`, `dlerror`, and the `RTLD_*` flags                                                                                                                               |
+
+The module names describe where each declaration comes from; they are not part of an import path.
+
+There is no `errno` here. The kernel returns the error in the result register as a small negative number, and libc is what turns that into a positive `errno` and a `-1` return. This package calls the kernel directly, so a caller tests a raw result with `IsError` and reads the number with `Errno`. Only `-4095` through `-1` is an error, which is what makes `Mmap` workable: a mapping address may legitimately have its top bit set.
+
+Only calls both architectures have are wrapped. AArch64 came after the directory-relative interface and never got `open`, `stat`, `unlink`, `mkdir`, `rename`, `dup2` or `pipe`, so this package offers the `*at` forms alone and `AtFdCwd` is what makes an ordinary path work through them. One wrapper is then right on both.
+
+The errno numbers and the `RTLD_*` flags keep the kernel's own spelling, because `EINVAL` is what a man page names and what a reader porting code will look for. The rest of the constants use Rux names, which is what they were published under.
+
+`QueryPageSize` is the one wrapper here that is not a system call. Linux publishes the page size in the auxiliary vector the kernel hands to a new process, which libc captures at startup and answers from; this package captures nothing at startup, so it reads the same vector through `/proc/self/auxv`. That costs an open, a read and a close, and it reports the open's own error number when `/proc` is not there — which is ordinary in a container and is why the call is fallible rather than answering 4096 and hoping.
+
+## The shared POSIX contract
+
+Nothing here is interchangeable with the other POSIX packages, but the three are _spelled_ the same, which is a different claim and a deliberate one. An equivalent call has the same wrapper name, the same parameter names and the same parameter shapes on all three systems, so a consumer such as [`Rux/FileSystem`](../FileSystem) or [`Rux/Time`](../Time) writes one call site instead of a `when #target.os` ladder around three names for one idea. `Tests/Unit/PlatformBindingContractTests.cpp` compares the three packages' parsed sources and fails when they drift apart.
+
+The values are the opposite: every constant is this system's own, and the same file asserts that the ones a reader might carry across really do differ.
+
+## What is tested
+
+`Tests/Packages/Linux/Descriptors` covers descriptor numbering, short reads and writes, end of file, size boundaries and the native error for each way of misusing a descriptor or a name. `Tests/Packages/Linux/Mapping` covers anonymous mappings, protection changes, advice, the requests the kernel refuses, and both edges of the reserved error-result window. `Tests/Packages/Linux/Syscall` covers the wrapper surface and the shared POSIX contract.
+
+All of it compiles for both architectures, and none of it has ever run on a host that is not Linux. Until it does, the syscall numbers, flag values and errno constants here rest on published documentation rather than on a passing test.
+
+## Values and pointers
+
+Kernel records such as `Timespec` are structural values and copy by value. Syscall wrappers deliberately retain raw pointers: the kernel receives untyped integer addresses, buffers carry separate byte counts, and optional outputs may be null. Callers must therefore pass explicit addresses such as `ClockGetTime(ClockMonotonic, @time)` and uphold each function's safety contract. No wrapper owns an address or descriptor; release mappings and close descriptors explicitly, or prefer the higher-level `Rux/Memory` and `Rux/Io` packages.
+
+## Platform
+
+Linux only. Guard use behind a compile-time check, so a build for another target never resolves these declarations:
+
+```rux
+import Core::{ #target };
+
+when #target.os == .Linux {
+    import Linux::{ StdOut, Write };
+}
+```
+
+## Documentation
+
+<https://rux-lang.dev/docs/api/linux>
+
+## License
+
+Licensed under the [MIT License](LICENSE.md).
