@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ContentNavigationItem } from "@nuxt/content";
 import { findPageBreadcrumb } from "@nuxt/content/utils";
+import type { BreadcrumbItem } from "@nuxt/ui";
 import { mapContentNavigation } from "@nuxt/ui/utils/content";
 
 const route = useRoute();
@@ -72,9 +73,20 @@ const isApiPage = computed(() => /^\/docs\/api(\/|$)/.test(path.value));
 // Like API pages they promote their H1 into UPageHeader, which adds the part
 // and lesson number, the Examples source and the "ask an assistant" menu.
 const lesson = computed(() => page.value?.lesson);
+// Generated API pages (scripts/api-docs.mjs) carry an `api` block naming their
+// package, declaration kind, version and source line; the 0.3-era hand-written
+// pages do not, and fall back to `apiPageInfo()` below.
+const api = computed(() => page.value?.api);
 
 function isMinimarkTag(node: unknown, tag: string): boolean {
   return Array.isArray(node) && node[0] === tag;
+}
+
+// The text of a minimark node: [tag, props, ...children], children either
+// strings or nodes.
+function minimarkText(node: unknown): string {
+  if (typeof node === "string") return node;
+  return Array.isArray(node) ? node.slice(2).map(minimarkText).join("") : "";
 }
 
 const renderedPage = computed(() => {
@@ -88,7 +100,14 @@ const renderedPage = computed(() => {
   // A lesson's description lives in frontmatter, so only its H1 moves.
   let contentStart = 0;
   if (isMinimarkTag(body.value[contentStart], "h1")) contentStart += 1;
-  if (isApiPage.value && isMinimarkTag(body.value[contentStart], "p")) contentStart += 1;
+  // UPageHeader shows the description, so the paragraph that repeats it goes:
+  // a hand-written page's derived one is its first paragraph, word for word,
+  // and a generated page may open on its summary. Anything else — the /docs/api
+  // hub's introduction — stays in the body.
+  const lead = body.value[contentStart];
+  if (isApiPage.value && isMinimarkTag(lead, "p") && minimarkText(lead).trim() === currentPage.description?.trim()) {
+    contentStart += 1;
+  }
 
   return {
     ...currentPage,
@@ -99,19 +118,38 @@ const renderedPage = computed(() => {
   };
 });
 
-const apiBreadcrumbs = computed(() =>
-  mapContentNavigation(findPageBreadcrumb(navigation.value ?? [], path.value)).map(({ label, to }) => ({
+// The sidebar group a lesson sits in is its part ("Control flow"); the folder
+// node an API page sits in is its package.
+const { book, apiPackage } = useDocsSection();
+
+// API Reference › Package › Item for a generated page; the hand-written ones
+// keep the trail their navigation folders give them.
+const apiBreadcrumbs = computed(() => {
+  if (api.value) {
+    const trail: BreadcrumbItem[] = [
+      { label: "API Reference", to: "/docs/api" },
+      { label: apiPackage.value?.title ?? api.value.package, to: apiPackage.value?.path },
+    ];
+    if (api.value.kind !== "package") trail.push({ label: page.value!.title });
+    return trail;
+  }
+  return mapContentNavigation(findPageBreadcrumb(navigation.value ?? [], path.value)).map(({ label, to }) => ({
     label,
     to,
-  })),
-);
+  }));
+});
 
 const apiInfo = computed(() => apiPageInfo(path.value));
 const { ruxVersion } = useRuntimeConfig().public;
-const apiVersion = computed(() => apiInfo.value.version ?? ruxVersion);
+const apiVersion = computed(() => api.value?.version ?? apiInfo.value.version ?? ruxVersion);
+const apiPackageName = computed(() => api.value?.package ?? apiInfo.value.packageName ?? "Rux");
+const apiSource = computed(() => (api.value ? apiSourceUrl(api.value) : apiInfo.value.sourceUrl));
+// "struct", "interface", "intrinsic type", …; an overview, and a topic page
+// that only gathers fragments, are not one declaration and get no badge.
+const apiKind = computed(() =>
+  api.value && !["package", "topic"].includes(api.value.kind) ? api.value.kind.replace(/-/g, " ") : undefined,
+);
 
-// The sidebar group a lesson sits in is its part ("Control flow").
-const { book } = useDocsSection();
 const lessonPart = computed(
   () => book.value?.children?.find((group) => group.children?.some((item) => item.path === path.value))?.title,
 );
@@ -208,12 +246,21 @@ useHead({
             {{ page.title }}
 
             <UBadge
+              v-if="apiKind"
+              :label="apiKind"
+              color="neutral"
+              variant="outline"
+              size="lg"
+              class="align-middle font-mono"
+            />
+
+            <UBadge
               :label="`v${apiVersion}`"
               color="info"
               variant="subtle"
               size="lg"
               class="align-middle"
-              :aria-label="`${apiInfo.packageName ?? 'Rux'} API version ${apiVersion}`"
+              :aria-label="`${apiPackageName} API version ${apiVersion}`"
             />
           </template>
 
@@ -221,7 +268,7 @@ useHead({
             <UButton
               label="Source"
               icon="i-simple-icons-github"
-              :to="apiInfo.sourceUrl"
+              :to="apiSource"
               target="_blank"
               color="neutral"
               variant="soft"

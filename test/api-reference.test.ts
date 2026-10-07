@@ -2,6 +2,7 @@ import type { ContentNavigationItem } from "@nuxt/content";
 import { describe, expect, it } from "vitest";
 import { apiHubBook, groupByStemFolder } from "../app/composables/useDocsSection";
 import { apiPackageCatalog } from "../app/utils/api-catalog";
+import { apiSourceUrl } from "../app/utils/api-page";
 
 const page = (path: string, stem: string, title = path.split("/").pop()!): ContentNavigationItem => ({
   title,
@@ -129,5 +130,27 @@ describe("apiHubBook", () => {
     expect(hub.children![0]!.children).toEqual([
       { title: "Allocator", icon: "i-lucide-boxes", path: "/docs/api/allocator" },
     ]);
+  });
+});
+
+describe("apiSourceUrl", () => {
+  it("links a declaration to its line", () => {
+    expect(
+      apiSourceUrl({ package: "Allocator", kind: "struct", version: "0.1.0", source: "Src/Arena.rux", line: 44 }),
+    ).toBe("https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L44");
+  });
+
+  it("links an overview, or a page with no file, to the package tree", () => {
+    const tree = "https://github.com/rux-lang/Rux/tree/main/Packages/Allocator";
+    expect(apiSourceUrl({ package: "Allocator", kind: "package", version: "0.1.0", source: "Src/Arena.rux" })).toBe(
+      tree,
+    );
+    expect(apiSourceUrl({ package: "Allocator", kind: "topic", version: "0.1.0" })).toBe(tree);
+  });
+
+  it("omits the fragment when the line is unknown", () => {
+    expect(apiSourceUrl({ package: "Allocator", kind: "function", version: "0.1.0", source: "Src/Box.rux" })).toBe(
+      "https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux",
+    );
   });
 });
