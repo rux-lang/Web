@@ -80,6 +80,22 @@ export default defineContentConfig({
             requires: z.array(z.string()).optional(),
           })
           .optional(),
+        // Generated API Reference pages (/docs/api/<package>/*), written by
+        // scripts/sync-api-reference.mjs from the `rux doc --format json`
+        // snapshot. `kind` is the declaration that owns the page ("struct",
+        // "interface", …, or "package" for an overview and "topic" for a page
+        // only fragment URLs point at); `source` is the file under the package
+        // root and `line` the declaration's line in it. The page header in
+        // app/pages/[...slug].vue reads all five.
+        api: z
+          .object({
+            package: z.string(),
+            kind: z.string(),
+            version: z.string(),
+            source: z.string().optional(),
+            line: z.number().optional(),
+          })
+          .optional(),
       }),
     }),
 
