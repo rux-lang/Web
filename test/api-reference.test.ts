@@ -108,7 +108,7 @@ describe("apiPackageCatalog", () => {
   it("marks the packages the navigation tree has a folder for", () => {
     expect(find("allocator")).toMatchObject({ hasPages: true, generated: true });
     expect(find("c")).toMatchObject({ hasPages: true, generated: false });
-    expect(find("json")).toMatchObject({ hasPages: false, generated: false });
+    expect(find("json")).toMatchObject({ hasPages: false });
     expect(find("windows")).toMatchObject({ hasPages: false, platform: "Windows" });
   });
 

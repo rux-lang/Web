@@ -202,7 +202,18 @@ export const PACKAGES = [
     description: "Unpredictable bytes from the operating system",
   },
   { name: "Json", area: "data", icon: "i-lucide-braces", description: "JSON parsing and serialization" },
-  { name: "Toml", area: "data", icon: "i-lucide-file-cog", description: "TOML parsing, serialization and streaming" },
+  {
+    name: "Toml",
+    area: "data",
+    icon: "i-lucide-file-cog",
+    description: "TOML parsing, serialization and streaming",
+    topics: {
+      scalars: {
+        title: "Scalars",
+        description: "Reading TOML integers, floats and date-times from their source text.",
+      },
+    },
+  },
   {
     name: "Uuid",
     area: "data",
@@ -214,6 +225,12 @@ export const PACKAGES = [
     area: "security",
     icon: "i-lucide-lock",
     description: "Cryptographic hashes, message authentication codes and key derivation",
+    topics: {
+      secrets: {
+        title: "Secrets",
+        description: "Comparing secrets in constant time and wiping them so the compiler cannot skip it.",
+      },
+    },
   },
   { name: "C", area: "platform", icon: "i-simple-icons-c", description: "C standard library bindings" },
   {
