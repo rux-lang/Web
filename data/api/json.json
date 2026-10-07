@@ -1,0 +1,4300 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Json",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "JSON parsing and serialization",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/json",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Collections", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Format", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Io", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Events",
+      "source": "Src/Events.rux",
+      "header": "Reading a document as a stream of events, without building a tree.\nThe tree is convenient and it is also the thing that makes a large document expensive: a gigabyte of JSON\nbecomes several gigabytes of nodes, and a program that only wants the third field of each record pays for all\nof it. Streaming trades random access for constant memory — events arrive in document order, once, and the\ncaller keeps only what it wants.\nThe buffer here grows only as far as the largest single token requires, not as far as the document. An array\nof ten million small numbers streams in a few hundred bytes; only a single enormous string forces the buffer\nup, and the string limit is what bounds that.\nNesting is tracked so that structural mistakes are still caught — a closing brace against an open bracket is\nrefused here exactly as it would be by the tree parser, because a streaming reader that accepted malformed\nstructure would push the problem onto every caller."
+    },
+    {
+      "name": "Lexer",
+      "source": "Src/Lexer.rux",
+      "header": "Turning JSON text into tokens, under limits a caller sets.\nThe limits are the point of having a separate lexing stage at all. JSON is a recursive format read from\nuntrusted input more often than almost anything else, and every one of its failure modes is a resource\nexhaustion rather than a parse error: a document of ten thousand open brackets exhausts a recursive parser's\nstack before any bracket closes, a string with no closing quote consumes a whole file, and an array of a\nhundred million elements exhausts memory while remaining perfectly well-formed. None of those is malformed\nJSON. All of them are refusals a caller has to be able to configure, so the limits live in a value passed in\nrather than in constants compiled here.\nThe lexer never allocates. A string token points into the input and reports whether it needs unescaping, so a\ndocument whose strings hold no escapes — which is most of them — is parsed without copying any of them."
+    },
+    {
+      "name": "Parser",
+      "source": "Src/Parser.rux",
+      "header": "Parsing a document into a value tree.\nThe recursion is bounded by the depth limit rather than by the stack, which is the only way a recursive\ndescent parser can safely read untrusted input: the check happens before the call, so a document designed to\nexhaust the stack is refused while there is still stack left to refuse it with.\nDuplicate object names are rejected by default. RFC 8259 says their behaviour is unpredictable and leaves\nimplementations to choose, which means a document with duplicates means different things to different\nreaders — and that difference has been used to smuggle one value past a validator and a different one to the\nconsumer behind it. Refusing is the only choice that cannot be exploited that way, so it is the default; the\nalternatives exist because some real documents contain duplicates and someone has to read them."
+    },
+    {
+      "name": "Value",
+      "source": "Src/Value.rux",
+      "header": "What a JSON value is, and the one part of it the specification refuses to pin down.\nRFC 8259 says a number is a sequence of digits with an optional fraction and exponent, and then says\nimplementations may set whatever limits they like on range and precision. That is the whole of it: JSON has no\ninteger type, no float type, and no stated precision, so every parser decides for itself and they disagree.\nA parser that turns everything into a double silently corrupts an identifier past 2^53 — which is how a\nTwitter status id became a different status id in a great deal of software.\nSo a number here keeps its text, and answers questions about itself from that. It reports whether it fits an\ninteger, whether it fits a float, and what it is exactly; a caller asks for the shape it needs and is told if\nthe value does not fit rather than being handed something close. The text is also what makes round-tripping\nexact: a document read and written back keeps its numbers as they were written."
+    },
+    {
+      "name": "Writer",
+      "source": "Src/Writer.rux",
+      "header": "Writing a value back out, compactly or for a human.\nTwo things here are not negotiable. Strings are escaped exactly as RFC 8259 requires and no more: the quote,\nthe backslash and every control character below space, using the short escapes where they exist and a\nfour-digit form otherwise. The solidus is *not* escaped, though many writers do it — it is legal either way,\nand escaping it makes output differ from every other writer's for no benefit.\nAnd a non-finite number cannot be written, because JSON has no way to spell one. A writer that emits `NaN` or\n`Infinity` produces something that is not JSON and that other parsers reject, which turns a computation\nproblem into an interoperation problem somewhere far away. Refusing is the only honest answer; a caller who\nhas a non-finite value has to decide what it means, and only the caller can.\nFailures are the ones every writer in this workspace reports, which is what lets a JSON document be written\ninto anything a `TextWriter` reaches without a translation at the seam. This used to be a status enum of its\nown with one case, `Failed`, standing for everything a destination could say — so a buffer that was simply full\nand a stream that had died arrived identically, and a caller who could have written the document somewhere\nlarger had no way to know that was the problem. What the destination said now travels unchanged. A non-finite\nnumber is `ValueOutOfRange`, which is what that case is for: the value is perfectly good and the requested form\ncannot hold it."
+    }
+  ],
+  "items": [
+    {
+      "kind": "enum",
+      "name": "JsonEvent",
+      "displayName": "JsonEvent",
+      "module": "Events",
+      "source": "Src/Events.rux",
+      "line": 19,
+      "signature": "pub enum JsonEvent",
+      "typeParams": [],
+      "doc": {
+        "summary": "What just happened in the document.",
+        "markdown": "What just happened in the document.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#json-event"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "End",
+          "value": "0",
+          "payload": null,
+          "line": 21,
+          "doc": "The document is finished.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ObjectStart",
+          "value": "1",
+          "payload": null,
+          "line": 23,
+          "doc": "An object opened.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ObjectEnd",
+          "value": "2",
+          "payload": null,
+          "line": 25,
+          "doc": "An object closed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ArrayStart",
+          "value": "3",
+          "payload": null,
+          "line": 27,
+          "doc": "An array opened.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ArrayEnd",
+          "value": "4",
+          "payload": null,
+          "line": 29,
+          "doc": "An array closed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Name",
+          "value": "5",
+          "payload": null,
+          "line": 31,
+          "doc": "A member name; its text is available until the next event.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Text",
+          "value": "6",
+          "payload": null,
+          "line": 33,
+          "doc": "A string value; its text is available until the next event.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Number",
+          "value": "7",
+          "payload": null,
+          "line": 35,
+          "doc": "A number; its text is available until the next event.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "True",
+          "value": "8",
+          "payload": null,
+          "line": 37,
+          "doc": "`true`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "False",
+          "value": "9",
+          "payload": null,
+          "line": 39,
+          "doc": "`false`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Null",
+          "value": "10",
+          "payload": null,
+          "line": 41,
+          "doc": "`null`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Error",
+          "value": "11",
+          "payload": null,
+          "line": 43,
+          "doc": "Something went wrong; the reason is on the reader.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "JsonEventReader",
+      "displayName": "JsonEventReader",
+      "module": "Events",
+      "source": "Src/Events.rux",
+      "line": 48,
+      "signature": "pub struct JsonEventReader",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a document as events, pulling bytes as it needs them.",
+        "markdown": "Reads a document as events, pulling bytes as it needs them.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-event-reader"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "source",
+          "type": "Reader",
+          "public": false,
+          "line": 50,
+          "doc": "Where bytes come from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "data",
+          "type": "*var char8",
+          "public": false,
+          "line": 52,
+          "doc": "Bytes read and not yet consumed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "capacity",
+          "type": "uint",
+          "public": false,
+          "line": 54,
+          "doc": "How much room the buffer has.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "filled",
+          "type": "uint",
+          "public": false,
+          "line": 56,
+          "doc": "How much of it holds bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "position",
+          "type": "uint",
+          "public": false,
+          "line": 58,
+          "doc": "How far into it reading has reached.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "consumedBefore",
+          "type": "uint",
+          "public": false,
+          "line": 61,
+          "doc": "How many bytes of the document were consumed and dropped from the buffer before it, so that a failure is\npositioned in the document rather than in the buffer.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "exhausted",
+          "type": "bool",
+          "public": false,
+          "line": 63,
+          "doc": "Whether the source is exhausted.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 65,
+          "doc": "Where the buffer came from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "limits",
+          "type": "JsonLimits",
+          "public": false,
+          "line": 67,
+          "doc": "What the caller will accept.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "stack",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 69,
+          "doc": "Which containers are open, as one bit each: set for an object, clear for an array.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "depth",
+          "type": "uint",
+          "public": false,
+          "line": 71,
+          "doc": "How many are open.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "tokenStart",
+          "type": "uint",
+          "public": false,
+          "line": 73,
+          "doc": "Where the current token's text starts in the buffer.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "tokenEnd",
+          "type": "uint",
+          "public": false,
+          "line": 75,
+          "doc": "Where it ends.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "tokenEscaped",
+          "type": "bool",
+          "public": false,
+          "line": 77,
+          "doc": "Whether that text holds escapes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "stop",
+          "type": "JsonStop",
+          "public": false,
+          "line": 80,
+          "doc": "Why reading stopped, as its parts. The public failure is built from these and the position, once, in\n`Failure` — a reader that carried the payload around would be copying an offset it already knows.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "lexical",
+          "type": "JsonLexError",
+          "public": false,
+          "line": 82,
+          "doc": "The lexer's reason, when `stop` is `Lexical`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "sourceFailure",
+          "type": "IoError?",
+          "public": false,
+          "line": 84,
+          "doc": "What the source reported, when `stop` is `Source`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "expectingValue",
+          "type": "bool",
+          "public": false,
+          "line": 86,
+          "doc": "Whether a value is expected next rather than a name or a separator.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 102,
+          "signature": "pub func New(allocator: Allocator, source: Reader, limits: JsonLimits) -> JsonEventReader ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "source", "type": "Reader" },
+            { "name": "limits", "type": "JsonLimits" }
+          ],
+          "receiver": null,
+          "returnType": "JsonEventReader ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A reader over `source` under `limits`.",
+            "markdown": "A reader over `source` under `limits`.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "source", "markdown": "the text to read" },
+              { "name": "limits", "markdown": "the bounds the parse refuses to exceed" }
+            ],
+            "returns": "a reader positioned before the first event; `Other` when its buffer could not be allocated",
+            "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Failure",
+          "line": 124,
+          "signature": "pub func Failure(self: &JsonEventReader) -> JsonParseError?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonEventReader",
+          "returnType": "JsonParseError?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Why reading stopped, positioned, or `none` while nothing has gone wrong.",
+            "markdown": "Why reading stopped, positioned, or `none` while nothing has gone wrong.\nThis is what a caller asks after `Next` reports `Error`. A lexical refusal carries the lexer's own reason\ninside it rather than in a second call, so a caller holding the failure is holding all of it. The offset\ncounts bytes from the start of the document, however many times the buffer has been refilled. A source that\nfailed is reported as `Source`, and what it reported is on `SourceError`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the failure, positioned at the byte of the document the reader stopped on, or `none`",
+            "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#failure"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SourceError",
+          "line": 134,
+          "signature": "pub func SourceError(self: &JsonEventReader) -> IoError?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonEventReader",
+          "returnType": "IoError?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "What the source reported when reading it failed, or `none` when it has not failed.",
+            "markdown": "What the source reported when reading it failed, or `none` when it has not failed.\nThe end of the stream is not a failure and is never reported here; any other `IoError` from the source's\n`Read` stops the reader, makes `Next` report `Error` and `Failure` report `Source`, and is kept here\nunchanged, so a caller can tell a document that is malformed from a stream that broke.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the source's failure, or `none`",
+            "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#source-error"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Text",
+          "line": 143,
+          "signature": "pub func Text(self: &JsonEventReader) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonEventReader",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The text of the event just reported, valid until the next one.",
+            "markdown": "The text of the event just reported, valid until the next one.\nFor a name, a string or a number. Escapes are left as written — resolving them would mean allocating,\nand a caller skipping past a field should not pay for its contents.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the current event's text, borrowed from the input",
+            "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TextIsEscaped",
+          "line": 150,
+          "signature": "pub func TextIsEscaped(self: &JsonEventReader) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonEventReader",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether that text holds escapes a caller must resolve.",
+            "markdown": "Whether that text holds escapes a caller must resolve.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the text still holds escape sequences a caller must decode",
+            "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#text-is-escaped"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Depth",
+          "line": 157,
+          "signature": "pub func Depth(self: &JsonEventReader) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonEventReader",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How deeply nested the reader currently is.",
+            "markdown": "How deeply nested the reader currently is.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many arrays and objects are currently open",
+            "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#depth"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Release",
+          "line": 219,
+          "signature": "pub func Release(self: &var JsonEventReader)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var JsonEventReader",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives the buffer back.",
+            "markdown": "Gives the buffer back.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#release"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~JsonEventReader",
+          "line": 230,
+          "signature": "func ~JsonEventReader(self: &var JsonEventReader)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var JsonEventReader",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases the buffer.",
+            "markdown": "Releases the buffer.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 359,
+          "signature": "pub func Next(self: &var JsonEventReader) -> JsonEvent",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var JsonEventReader",
+          "returnType": "JsonEvent",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next event.",
+            "markdown": "The next event.\nSeparators are consumed silently: a caller sees values and structure, not commas and colons, which is\nthe level a streaming reader is useful at.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the next event, or the end-of-input event",
+            "see": ["https://rux-lang.dev/docs/api/json/json-event-reader#next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "JsonTokenKind",
+      "displayName": "JsonTokenKind",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 16,
+      "signature": "pub enum JsonTokenKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "What kind of token this is.",
+        "markdown": "What kind of token this is.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-lexer#json-token-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "End",
+          "value": "0",
+          "payload": null,
+          "line": 18,
+          "doc": "The input is exhausted.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ObjectStart",
+          "value": "1",
+          "payload": null,
+          "line": 20,
+          "doc": "`{`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ObjectEnd",
+          "value": "2",
+          "payload": null,
+          "line": 22,
+          "doc": "`}`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ArrayStart",
+          "value": "3",
+          "payload": null,
+          "line": 24,
+          "doc": "`[`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ArrayEnd",
+          "value": "4",
+          "payload": null,
+          "line": 26,
+          "doc": "`]`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Colon",
+          "value": "5",
+          "payload": null,
+          "line": 28,
+          "doc": "`:`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Comma",
+          "value": "6",
+          "payload": null,
+          "line": 30,
+          "doc": "`,`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Text",
+          "value": "7",
+          "payload": null,
+          "line": 32,
+          "doc": "A string, whose span excludes the quotes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Number",
+          "value": "8",
+          "payload": null,
+          "line": 34,
+          "doc": "A number, whose span is its whole text.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "True",
+          "value": "9",
+          "payload": null,
+          "line": 36,
+          "doc": "`true`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "False",
+          "value": "10",
+          "payload": null,
+          "line": 38,
+          "doc": "`false`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Null",
+          "value": "11",
+          "payload": null,
+          "line": 40,
+          "doc": "`null`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Error",
+          "value": "12",
+          "payload": null,
+          "line": 42,
+          "doc": "Something that is not JSON, or a limit that was reached.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "JsonLexError",
+      "displayName": "JsonLexError",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 47,
+      "signature": "pub enum JsonLexError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why lexing stopped.",
+        "markdown": "Why lexing stopped.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-lexer#json-lex-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "None",
+          "value": "0",
+          "payload": null,
+          "line": 49,
+          "doc": "Nothing went wrong.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnexpectedByte",
+          "value": "1",
+          "payload": null,
+          "line": 51,
+          "doc": "A byte that begins no token.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnterminatedText",
+          "value": "2",
+          "payload": null,
+          "line": 53,
+          "doc": "A string that the input ended before closing.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BadEscape",
+          "value": "3",
+          "payload": null,
+          "line": 55,
+          "doc": "An escape sequence JSON does not define.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BadUnicodeEscape",
+          "value": "4",
+          "payload": null,
+          "line": 57,
+          "doc": "A `\\u` escape that is not four hexadecimal digits.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "MalformedNumber",
+          "value": "5",
+          "payload": null,
+          "line": 59,
+          "doc": "A number whose shape JSON's grammar does not allow.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidUtf8",
+          "value": "6",
+          "payload": null,
+          "line": 61,
+          "doc": "Bytes that are not well-formed UTF-8.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnescapedControl",
+          "value": "7",
+          "payload": null,
+          "line": 63,
+          "doc": "A control character appearing unescaped inside a string, which JSON forbids.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TooManyBytes",
+          "value": "8",
+          "payload": null,
+          "line": 65,
+          "doc": "The document is longer than the configured limit.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TextTooLong",
+          "value": "9",
+          "payload": null,
+          "line": 67,
+          "doc": "A string is longer than the configured limit.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TooDeep",
+          "value": "10",
+          "payload": null,
+          "line": 69,
+          "doc": "Containers are nested deeper than the configured limit.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TooManyEntries",
+          "value": "11",
+          "payload": null,
+          "line": 71,
+          "doc": "A container holds more entries than the configured limit.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "JsonLimits",
+      "displayName": "JsonLimits",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 78,
+      "signature": "pub struct JsonLimits",
+      "typeParams": [],
+      "doc": {
+        "summary": "What a caller will accept from a document.",
+        "markdown": "What a caller will accept from a document.\nEvery field is a refusal a caller might need to make against untrusted input, and every default is generous\nenough for ordinary documents and far short of what exhausts a machine.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-limits"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "maximumBytes",
+          "type": "uint",
+          "public": true,
+          "line": 80,
+          "doc": "The longest document, in bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "maximumTextBytes",
+          "type": "uint",
+          "public": true,
+          "line": 82,
+          "doc": "The longest single string, in bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "maximumDepth",
+          "type": "uint",
+          "public": true,
+          "line": 84,
+          "doc": "How deeply containers may nest. This is the one that protects a recursive parser's stack.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "maximumEntries",
+          "type": "uint",
+          "public": true,
+          "line": 86,
+          "doc": "How many elements or members one container may hold.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Default",
+          "line": 94,
+          "signature": "pub func Default() -> JsonLimits",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "JsonLimits",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Limits generous enough for ordinary documents: sixty-four mebibytes, sixteen mebibyte strings, a hundred\nand twenty-eight levels of nesting, and a million entries per container.",
+            "markdown": "Limits generous enough for ordinary documents: sixty-four mebibytes, sixteen mebibyte strings, a hundred\nand twenty-eight levels of nesting, and a million entries per container.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the limits an ordinary parse uses",
+            "see": ["https://rux-lang.dev/docs/api/json/json-limits#default"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Unlimited",
+          "line": 108,
+          "signature": "pub func Unlimited() -> JsonLimits",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "JsonLimits",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "No limits at all, for input that is already trusted.",
+            "markdown": "No limits at all, for input that is already trusted.\nNamed so that choosing it is visible: a document read from the network should never use this, and a\nreviewer should be able to find every place that did.",
+            "typeParams": [],
+            "params": [],
+            "returns": "limits that refuse nothing, for input that is already trusted",
+            "see": ["https://rux-lang.dev/docs/api/json/json-limits#unlimited"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "JsonToken",
+      "displayName": "JsonToken",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 120,
+      "signature": "pub struct JsonToken",
+      "typeParams": [],
+      "doc": {
+        "summary": "One token, and where in the input it came from.",
+        "markdown": "One token, and where in the input it came from.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-lexer#json-token"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "kind",
+          "type": "JsonTokenKind",
+          "public": true,
+          "line": 122,
+          "doc": "What kind of token this is.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "start",
+          "type": "uint",
+          "public": true,
+          "line": 124,
+          "doc": "Where its text starts, as a byte offset into the input.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "end",
+          "type": "uint",
+          "public": true,
+          "line": 126,
+          "doc": "Where its text ends.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "escaped",
+          "type": "bool",
+          "public": true,
+          "line": 129,
+          "doc": "For a string, whether it contains any escape that must be resolved. A string without one can be used\ndirectly from the input, which is what keeps ordinary documents free of copying.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "error",
+          "type": "JsonLexError",
+          "public": true,
+          "line": 131,
+          "doc": "Why lexing stopped, when the kind is `Error`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "JsonLexer",
+      "displayName": "JsonLexer",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 136,
+      "signature": "pub struct JsonLexer",
+      "typeParams": [],
+      "doc": {
+        "summary": "A JSON lexer over a byte slice.",
+        "markdown": "A JSON lexer over a byte slice.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-lexer"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "input",
+          "type": "char8[..]",
+          "public": false,
+          "line": 138,
+          "doc": "The document.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "position",
+          "type": "uint",
+          "public": true,
+          "line": 140,
+          "doc": "How far reading has reached.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "limits",
+          "type": "JsonLimits",
+          "public": false,
+          "line": 142,
+          "doc": "What the caller will accept.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "JsonLexer",
+          "line": 151,
+          "signature": "pub func JsonLexer(input: char8[..], limits: JsonLimits) -> JsonLexer",
+          "typeParams": [],
+          "params": [
+            { "name": "input", "type": "char8[..]" },
+            { "name": "limits", "type": "JsonLimits" }
+          ],
+          "receiver": null,
+          "returnType": "JsonLexer",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A lexer over `input` under `limits`.",
+            "markdown": "A lexer over `input` under `limits`.",
+            "typeParams": [],
+            "params": [
+              { "name": "input", "markdown": "the text to read" },
+              { "name": "limits", "markdown": "the bounds the parse refuses to exceed" }
+            ],
+            "returns": "a lexer positioned at the start of the input",
+            "see": ["https://rux-lang.dev/docs/api/json/json-lexer#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Position",
+          "line": 158,
+          "signature": "pub func Position(self: &JsonLexer) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonLexer",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Where reading has reached, as a byte offset.",
+            "markdown": "Where reading has reached, as a byte offset.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many bytes have been consumed",
+            "see": ["https://rux-lang.dev/docs/api/json/json-lexer#position"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 341,
+          "signature": "pub func Next(self: &var JsonLexer) -> JsonToken",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var JsonLexer",
+          "returnType": "JsonToken",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next token.",
+            "markdown": "The next token.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the next token, or the end-of-input token",
+            "see": ["https://rux-lang.dev/docs/api/json/json-lexer#next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "DuplicateKeyPolicy",
+      "displayName": "DuplicateKeyPolicy",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 19,
+      "signature": "pub enum DuplicateKeyPolicy",
+      "typeParams": [],
+      "doc": {
+        "summary": "What to do about an object containing the same name twice.",
+        "markdown": "What to do about an object containing the same name twice.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/parse#duplicate-key-policy"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "Reject",
+          "value": "0",
+          "payload": null,
+          "line": 21,
+          "doc": "Refuse the document. The default, and the only policy that cannot be used to make two readers disagree.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "KeepFirst",
+          "value": "1",
+          "payload": null,
+          "line": 23,
+          "doc": "Keep the first occurrence and discard the rest.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "KeepLast",
+          "value": "2",
+          "payload": null,
+          "line": 25,
+          "doc": "Keep the last occurrence, which is what most JavaScript-derived parsers do.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "KeepAll",
+          "value": "3",
+          "payload": null,
+          "line": 27,
+          "doc": "Keep every occurrence, in order. The document is preserved exactly, and lookup finds the first.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "JsonParseError",
+      "displayName": "JsonParseError",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 36,
+      "signature": "pub variant JsonParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why parsing stopped, and where.",
+        "markdown": "Why parsing stopped, and where.\nFailure-only: there is no case meaning nothing went wrong, because a parse that did not fail hands back a\ndocument instead. Every case carries the zero-based byte offset into the input where the parser stopped, which\nis the first thing anybody debugging a document asks for and used to live in a separate structure that a caller\nhad to remember to read.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-parse-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Lexical",
+          "value": null,
+          "payload": "(JsonLexError, uint)",
+          "line": 39,
+          "doc": "The lexer refused the input, for the reason carried. Nested rather than reported beside this, so a caller\nholding the failure cannot be holding half of it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Unexpected",
+          "value": null,
+          "payload": "(uint)",
+          "line": 41,
+          "doc": "A token that cannot appear where it did.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Truncated",
+          "value": null,
+          "payload": "(uint)",
+          "line": 43,
+          "doc": "The document ended in the middle of a value.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TrailingContent",
+          "value": null,
+          "payload": "(uint)",
+          "line": 45,
+          "doc": "Text after the end of the top-level value. The offset is where that text begins.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "DuplicateName",
+          "value": null,
+          "payload": "(uint)",
+          "line": 47,
+          "doc": "An object contained the same name twice, under the rejecting policy. The offset is the second occurrence.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TooDeep",
+          "value": null,
+          "payload": "(uint)",
+          "line": 49,
+          "doc": "Containers nested deeper than the limit allowed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TooManyEntries",
+          "value": null,
+          "payload": "(uint)",
+          "line": 51,
+          "doc": "A container held more entries than the limit allowed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "OutOfMemory",
+          "value": null,
+          "payload": "(uint)",
+          "line": 53,
+          "doc": "The allocator refused.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BadSurrogate",
+          "value": null,
+          "payload": "(uint)",
+          "line": 56,
+          "doc": "A `\\u` escape naming half of a surrogate pair with no valid partner. JSON's escapes are UTF-16, and a lone\nsurrogate is not a character; the offset is the escape that has no partner.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Source",
+          "value": null,
+          "payload": "(uint)",
+          "line": 59,
+          "doc": "The stream a `JsonEventReader` reads from failed with something other than its end. Only a streaming reader\nreports this; the source's own `IoError` is kept on the reader, through `JsonEventReader::SourceError`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Offset",
+          "line": 67,
+          "signature": "pub func Offset(self: &JsonParseError) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonParseError",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "ParseFailure",
+          "public": true,
+          "doc": {
+            "summary": "Where in the input parsing stopped.",
+            "markdown": "Where in the input parsing stopped.\nBorrows the failure and leaves it untouched. Cannot fail; runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the zero-based byte offset into the document",
+            "see": ["https://rux-lang.dev/docs/api/json/json-parse-error#offset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 110,
+          "signature": "pub func WriteDisplay(self: &JsonParseError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&JsonParseError",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the description of why parsing stopped, without the position.",
+            "markdown": "Writes the description of why parsing stopped, without the position.\nThe offset is a number a caller renders where it makes sense for them — beside a line and column they\ncomputed, or not at all — so it is not written into the middle of a sentence here. `Debug` carries it.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole description was accepted",
+            "see": ["https://rux-lang.dev/docs/api/json/json-parse-error#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 166,
+          "signature": "pub func WriteDebug(self: &JsonParseError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&JsonParseError",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "Names the case and its position: `JsonParseError::Unexpected(12)`.",
+            "markdown": "Names the case and its position: `JsonParseError::Unexpected(12)`.\nA lexical failure names both, so nothing about it has to be looked up elsewhere:\n`JsonParseError::Lexical(BadEscape, 12)`.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole name was accepted",
+            "see": ["https://rux-lang.dev/docs/api/json/json-parse-error#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["ParseFailure", "Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "JsonParser",
+      "displayName": "JsonParser",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 213,
+      "signature": "pub struct JsonParser",
+      "typeParams": [],
+      "doc": {
+        "summary": "A parser over a document.",
+        "markdown": "A parser over a document.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-parser"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "lexer",
+          "type": "JsonLexer",
+          "public": false,
+          "line": 215,
+          "doc": "Where tokens come from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 217,
+          "doc": "Where values are built.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "limits",
+          "type": "JsonLimits",
+          "public": false,
+          "line": 219,
+          "doc": "What to accept.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "duplicates",
+          "type": "DuplicateKeyPolicy",
+          "public": false,
+          "line": 221,
+          "doc": "What to do about duplicate names.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "input",
+          "type": "char8[..]",
+          "public": false,
+          "line": 223,
+          "doc": "The whole document, which string spans point into.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "depth",
+          "type": "uint",
+          "public": false,
+          "line": 225,
+          "doc": "How deep the current value is nested.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "stop",
+          "type": "JsonStop",
+          "public": false,
+          "line": 228,
+          "doc": "Why parsing stopped, or `None`. Kept as its parts rather than as the public failure, so nothing inside has\nto carry a payload around; the failure is built from them once, where the parse ends.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "lexical",
+          "type": "JsonLexError",
+          "public": false,
+          "line": 230,
+          "doc": "The lexer's reason, when `stop` is `Lexical`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "position",
+          "type": "uint",
+          "public": false,
+          "line": 232,
+          "doc": "Where in the input it stopped.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "JsonParser",
+          "line": 242,
+          "signature": "pub func JsonParser(allocator: Allocator, input: char8[..], limits: JsonLimits) -> JsonParser",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "input", "type": "char8[..]" },
+            { "name": "limits", "type": "JsonLimits" }
+          ],
+          "receiver": null,
+          "returnType": "JsonParser",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A parser over `input` under `limits`, rejecting duplicate names.",
+            "markdown": "A parser over `input` under `limits`, rejecting duplicate names.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "input", "markdown": "the text to read" },
+              { "name": "limits", "markdown": "the bounds the parse refuses to exceed" }
+            ],
+            "returns": "a parser ready to read the input",
+            "see": ["https://rux-lang.dev/docs/api/json/json-parser#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetDuplicatePolicy",
+          "line": 259,
+          "signature": "pub func SetDuplicatePolicy(self: &var JsonParser, policy: DuplicateKeyPolicy)",
+          "typeParams": [],
+          "params": [{ "name": "policy", "type": "DuplicateKeyPolicy" }],
+          "receiver": "&var JsonParser",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Chooses what to do about duplicate object names.",
+            "markdown": "Chooses what to do about duplicate object names.",
+            "typeParams": [],
+            "params": [{ "name": "policy", "markdown": "what to do when a name appears twice" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/json/json-parser#set-duplicate-policy"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Failure",
+          "line": 268,
+          "signature": "pub func Failure(self: &JsonParser) -> JsonParseError?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonParser",
+          "returnType": "JsonParseError?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether parsing stopped, and why.",
+            "markdown": "Whether parsing stopped, and why.\n`none` while nothing has gone wrong, which for a parser that has finished means the document was read.\nA caller using `Parse` never needs this: the failure comes back in the result.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the failure, positioned, or `none`",
+            "see": ["https://rux-lang.dev/docs/api/json/json-parser#failure"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Parse",
+          "line": 551,
+          "signature": "pub func Parse(self: &var JsonParser) -> JsonValue ! JsonParseError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var JsonParser",
+          "returnType": "JsonValue ! JsonParseError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Parses the whole document and returns its top-level value, or why it could not.",
+            "markdown": "Parses the whole document and returns its top-level value, or why it could not.\nAnything after that value is `TrailingContent` — a document is one value, and two concatenated ones are\nnot a document however well-formed each is.\nA failure gives back nothing at all. Whatever had been built when the parser stopped is released here, which\nis the only place that can be done once: an array that failed at its third element owns two, and handing\nthose back beside an error would leave a caller holding a document that is not one.\nFails with any case of `JsonParseError`, positioned at the byte where parsing stopped.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the document, or the failure that stopped it",
+            "see": ["https://rux-lang.dev/docs/api/json/json-parser#parse"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Parse",
+      "displayName": "Parse",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 626,
+      "signature": "pub func Parse(allocator: Allocator, input: char8[..]) -> JsonValue ! JsonParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Parses `input` into a value, rejecting duplicate names.",
+        "markdown": "Parses `input` into a value, rejecting duplicate names.\nThe default limits apply. A failure gives back the reason and its position and no value at all, so a document\nthat is not a document cannot be mistaken for one that is — which the old shape allowed, since it answered a\nrefused parse with `null`, and `null` is a document.\nFails with any case of `JsonParseError`, positioned at the byte where parsing stopped.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the value is built" },
+          { "name": "input", "markdown": "the document, as UTF-8 bytes" }
+        ],
+        "returns": "the document, or the failure that stopped it",
+        "see": ["https://rux-lang.dev/docs/api/json/parse"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ParseWith",
+      "displayName": "ParseWith",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 644,
+      "signature": "pub func ParseWith(allocator: Allocator, input: char8[..], limits: JsonLimits, duplicates: DuplicateKeyPolicy) -> JsonValue ! JsonParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Parses `input` under chosen limits and a chosen duplicate-name policy.",
+        "markdown": "Parses `input` under chosen limits and a chosen duplicate-name policy.\nThe long form of `Parse`, for a caller who needs something other than the defaults. The policy is a\nparameter rather than a mutable setting on a shared parser, so two documents read under different policies\nin the same program cannot influence one another.\nFails with any case of `JsonParseError`, positioned at the byte where parsing stopped. A limit that the document\nexceeds arrives as `TooDeep` or `TooManyEntries` from the parser, or nested inside `Lexical` when it was the\nlexer that measured it.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the value is built" },
+          { "name": "input", "markdown": "the document, as UTF-8 bytes" },
+          { "name": "limits", "markdown": "what to accept" },
+          { "name": "duplicates", "markdown": "what to do about an object naming the same member twice" }
+        ],
+        "returns": "the document, or the failure that stopped it",
+        "see": ["https://rux-lang.dev/docs/api/json/parse#parse-with"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "JsonKind",
+      "displayName": "JsonKind",
+      "module": "Value",
+      "source": "Src/Value.rux",
+      "line": 20,
+      "signature": "pub enum JsonKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which kind of JSON value this is.",
+        "markdown": "Which kind of JSON value this is.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-value#json-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "Null",
+          "value": "0",
+          "payload": null,
+          "line": 22,
+          "doc": "The literal `null`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Boolean",
+          "value": "1",
+          "payload": null,
+          "line": 24,
+          "doc": "`true` or `false`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Number",
+          "value": "2",
+          "payload": null,
+          "line": 26,
+          "doc": "A number, whose precision JSON does not define.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Text",
+          "value": "3",
+          "payload": null,
+          "line": 28,
+          "doc": "A string.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Array",
+          "value": "4",
+          "payload": null,
+          "line": 30,
+          "doc": "An ordered sequence of values.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Object",
+          "value": "5",
+          "payload": null,
+          "line": 32,
+          "doc": "A collection of name-value members.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "JsonNumber",
+      "displayName": "JsonNumber",
+      "module": "Value",
+      "source": "Src/Value.rux",
+      "line": 40,
+      "signature": "pub struct JsonNumber",
+      "typeParams": [],
+      "doc": {
+        "summary": "A JSON number, held as the text it was written with.",
+        "markdown": "A JSON number, held as the text it was written with.\nJSON does not say what precision a number has, so nothing here decides on the caller's behalf. Ask for the\nshape wanted — `AsInt64`, `AsUint64`, `AsFloat64` — and each reports whether the value fits. Keeping the\ntext is also what lets a document round-trip exactly, which a parser converting to a double cannot do.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-number"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "text",
+          "type": "String",
+          "public": false,
+          "line": 42,
+          "doc": "The number exactly as it was written.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 51,
+          "signature": "pub func New(allocator: Allocator, text: char8[..]) -> JsonNumber ! TextError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "text", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "JsonNumber ! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A number from its text, which is copied.",
+            "markdown": "A number from its text, which is copied.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "text", "markdown": "the text to act on" }
+            ],
+            "returns": "the number, holding the text it was given",
+            "see": ["https://rux-lang.dev/docs/api/json/json-number#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Text",
+          "line": 61,
+          "signature": "pub func Text(self: &JsonNumber) -> StringView",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonNumber",
+          "returnType": "StringView",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number exactly as written.",
+            "markdown": "The number exactly as written.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the number's text, exactly as the input spelled it",
+            "see": ["https://rux-lang.dev/docs/api/json/json-number#text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsInt64",
+          "line": 71,
+          "signature": "pub func AsInt64(self: &JsonNumber, result: *var int64) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var int64" }],
+          "receiver": "&JsonNumber",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value as a signed integer, or `false` if it does not fit one.",
+            "markdown": "The value as a signed integer, or `false` if it does not fit one.\nA number with a fraction or an exponent does not fit, even when its value happens to be whole: `1.0` is\nnot an integer in JSON's grammar and pretending otherwise loses the distinction a document was making.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether the text is an integer that fits",
+            "see": ["https://rux-lang.dev/docs/api/json/json-number#as-int64"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsUint64",
+          "line": 80,
+          "signature": "pub func AsUint64(self: &JsonNumber, result: *var uint64) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var uint64" }],
+          "receiver": "&JsonNumber",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value as an unsigned integer, or `false` if it does not fit one.",
+            "markdown": "The value as an unsigned integer, or `false` if it does not fit one.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether the text is a non-negative integer that fits",
+            "see": ["https://rux-lang.dev/docs/api/json/json-number#as-uint64"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsFloat64",
+          "line": 91,
+          "signature": "pub func AsFloat64(self: &JsonNumber, result: *var float64) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var float64" }],
+          "receiver": "&JsonNumber",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value as a float, or `false` if the text is not a number at all.",
+            "markdown": "The value as a float, or `false` if the text is not a number at all.\nSucceeds for values a float cannot hold exactly, since that is what a float is for; a caller who needs\nexactness should ask for an integer or read the text.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether the text converted; the value is the nearest representable one",
+            "see": ["https://rux-lang.dev/docs/api/json/json-number#as-float64"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsIntegral",
+          "line": 99,
+          "signature": "pub func IsIntegral(self: &JsonNumber) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonNumber",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the text has no fraction and no exponent, so it denotes an integer.",
+            "markdown": "Whether the text has no fraction and no exponent, so it denotes an integer.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the text has no fraction and no exponent",
+            "see": ["https://rux-lang.dev/docs/api/json/json-number#is-integral"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Release",
+          "line": 112,
+          "signature": "pub func Release(self: &var JsonNumber)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var JsonNumber",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives the text back.",
+            "markdown": "Gives the text back.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/json/json-number#release"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "JsonMember",
+      "displayName": "JsonMember",
+      "module": "Value",
+      "source": "Src/Value.rux",
+      "line": 119,
+      "signature": "pub struct JsonMember",
+      "typeParams": [],
+      "doc": {
+        "summary": "A name-value pair inside an object.",
+        "markdown": "A name-value pair inside an object.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-value#json-member"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "name",
+          "type": "String",
+          "public": true,
+          "line": 121,
+          "doc": "The member's name.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "value",
+          "type": "JsonValue",
+          "public": true,
+          "line": 123,
+          "doc": "The member's value.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "destructor",
+          "name": "~JsonMember",
+          "line": 399,
+          "signature": "func ~JsonMember(self: &var JsonMember)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var JsonMember",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases the member's name and value.",
+            "markdown": "Releases the member's name and value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#json-member-destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "JsonValue",
+      "displayName": "JsonValue",
+      "module": "Value",
+      "source": "Src/Value.rux",
+      "line": 133,
+      "signature": "pub struct JsonValue",
+      "typeParams": [],
+      "doc": {
+        "summary": "A JSON value: one of the six kinds, owning whatever it holds.",
+        "markdown": "A JSON value: one of the six kinds, owning whatever it holds.\nMove-only, because it owns strings and nested values. The allocator it was built with is carried along, so a\nsubtree can be released without the caller having to remember where it came from — which is what makes a\ndocument assembled from several sources safe to take apart.\nThe tag is inspected with `Kind` and the payload read with the matching accessor; asking for the wrong one\nreports failure rather than reinterpreting the bytes.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/json-value"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "kind",
+          "type": "JsonKind",
+          "public": true,
+          "line": 135,
+          "doc": "Which of the six kinds this is.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "boolean",
+          "type": "bool",
+          "public": false,
+          "line": 137,
+          "doc": "The payload of a `Boolean`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "number",
+          "type": "JsonNumber",
+          "public": false,
+          "line": 139,
+          "doc": "The payload of a `Number`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "text",
+          "type": "String",
+          "public": false,
+          "line": 141,
+          "doc": "The payload of a `Text`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "elements",
+          "type": "Vector<JsonValue>",
+          "public": false,
+          "line": 143,
+          "doc": "The elements of an `Array`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "members",
+          "type": "Vector<JsonMember>",
+          "public": false,
+          "line": 145,
+          "doc": "The members of an `Object`, in the order they were seen.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 147,
+          "doc": "Where everything above came from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Null",
+          "line": 158,
+          "signature": "pub func Null(allocator: Allocator) -> JsonValue",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "JsonValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The literal `null`.",
+            "markdown": "The literal `null`.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "the null value",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#null"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Boolean",
+          "line": 175,
+          "signature": "pub func Boolean(allocator: Allocator, value: bool) -> JsonValue",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "value", "type": "bool" }
+          ],
+          "receiver": null,
+          "returnType": "JsonValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A boolean value.",
+            "markdown": "A boolean value.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "value", "markdown": "the value to act on" }
+            ],
+            "returns": "that boolean as a value",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#boolean"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Number",
+          "line": 187,
+          "signature": "pub func Number(allocator: Allocator, text: char8[..]) -> JsonValue ! TextError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "text", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "JsonValue ! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A number, from the text it was written with.",
+            "markdown": "A number, from the text it was written with.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "text", "markdown": "the text to act on" }
+            ],
+            "returns": "that text as a number value, or the null value when the allocator refused",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#number"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Text",
+          "line": 199,
+          "signature": "pub func Text(allocator: Allocator, value: char8[..]) -> JsonValue ! TextError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "value", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "JsonValue ! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A string value.",
+            "markdown": "A string value.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "value", "markdown": "the value to act on" }
+            ],
+            "returns": "that text as a string value, or the null value when the allocator refused",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Array",
+          "line": 210,
+          "signature": "pub func Array(allocator: Allocator) -> JsonValue",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "JsonValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty array.",
+            "markdown": "An empty array.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "an empty array",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#array"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Object",
+          "line": 220,
+          "signature": "pub func Object(allocator: Allocator) -> JsonValue",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "JsonValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty object.",
+            "markdown": "An empty object.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "an empty object",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#object"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Kind",
+          "line": 229,
+          "signature": "pub func Kind(self: &JsonValue) -> JsonKind",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonValue",
+          "returnType": "JsonKind",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Which kind this value is.",
+            "markdown": "Which kind this value is.",
+            "typeParams": [],
+            "params": [],
+            "returns": "which of the six JSON kinds this is",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#kind"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsNull",
+          "line": 236,
+          "signature": "pub func IsNull(self: &JsonValue) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is `null`.",
+            "markdown": "Whether this is `null`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether this is the null value",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#is-null"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsBoolean",
+          "line": 245,
+          "signature": "pub func AsBoolean(self: &JsonValue, result: *var bool) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var bool" }],
+          "receiver": "&JsonValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The boolean payload, or `false` when this is not a boolean — which `Kind` distinguishes from a genuine\n`false`.",
+            "markdown": "The boolean payload, or `false` when this is not a boolean — which `Kind` distinguishes from a genuine\n`false`.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether this is a boolean",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#as-boolean"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsNumber",
+          "line": 254,
+          "signature": "pub func AsNumber(self: &JsonValue) -> *JsonNumber",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonValue",
+          "returnType": "*JsonNumber",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number payload, borrowed.",
+            "markdown": "The number payload, borrowed.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the number, or null when this is not one",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#as-number"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsText",
+          "line": 261,
+          "signature": "pub func AsText(self: &JsonValue) -> StringView",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonValue",
+          "returnType": "StringView",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The string payload, or an empty view when this is not a string.",
+            "markdown": "The string payload, or an empty view when this is not a string.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the string, or an empty view when this is not one",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#as-text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 269,
+          "signature": "pub func Length(self: &JsonValue) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&JsonValue",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many elements an array holds, or members an object holds; zero for anything else.",
+            "markdown": "How many elements an array holds, or members an object holds; zero for anything else.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many elements or members this holds; zero for anything else",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Push",
+          "line": 281,
+          "signature": "pub func Push(self: &var JsonValue, value: JsonValue) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "JsonValue" }],
+          "receiver": "&var JsonValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Appends `value` to an array, taking ownership of it.",
+            "markdown": "Appends `value` to an array, taking ownership of it.\nReports `false` when this is not an array or the allocator refused; `value` is consumed either way, so\na caller does not have to decide who owns it on failure.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the value to act on" }],
+            "returns": "whether the element was appended",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#push"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Insert",
+          "line": 294,
+          "signature": "pub func Insert(self: &var JsonValue, name: String, value: JsonValue) -> bool",
+          "typeParams": [],
+          "params": [
+            { "name": "name", "type": "String" },
+            { "name": "value", "type": "JsonValue" }
+          ],
+          "receiver": "&var JsonValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Appends a member to an object, taking ownership of both name and value.",
+            "markdown": "Appends a member to an object, taking ownership of both name and value.\nThe order members are added in is the order they are kept and written, which is what makes a document\nround-trip recognisably. Nothing here rejects a duplicate name — that policy lives in the parser, where\nthe caller can choose it.",
+            "typeParams": [],
+            "params": [
+              { "name": "name", "markdown": "the member's name" },
+              { "name": "value", "markdown": "the value to act on" }
+            ],
+            "returns": "whether the member was added",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#insert"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "At",
+          "line": 304,
+          "signature": "pub func At(self: &JsonValue, index: uint) -> *JsonValue",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&JsonValue",
+          "returnType": "*JsonValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The element at `index`, borrowed, or null when there is none.",
+            "markdown": "The element at `index`, borrowed, or null when there is none.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "which one, counting from zero" }],
+            "returns": "the element at `index`, or null when there is none",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Find",
+          "line": 316,
+          "signature": "pub func Find(self: &JsonValue, name: StringView) -> *JsonValue",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "StringView" }],
+          "receiver": "&JsonValue",
+          "returnType": "*JsonValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value of the member named `name`, borrowed, or null when there is none.",
+            "markdown": "The value of the member named `name`, borrowed, or null when there is none.\nWith duplicate names present — which only a permissive parser policy allows — this finds the first,\nsince that is the one a reader encounters.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the member's name" }],
+            "returns": "the first member with that name, or null when there is none",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#find"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "MemberAt",
+          "line": 332,
+          "signature": "pub func MemberAt(self: &JsonValue, index: uint) -> *JsonMember",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&JsonValue",
+          "returnType": "*JsonMember",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The member at `index`, borrowed, or null when there is none.",
+            "markdown": "The member at `index`, borrowed, or null when there is none.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "which one, counting from zero" }],
+            "returns": "the member at `index`, or null when there is none",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#member-at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "RemoveFirst",
+          "line": 347,
+          "signature": "pub func RemoveFirst(self: &var JsonValue, name: StringView) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "StringView" }],
+          "receiver": "&var JsonValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Removes the first member named `name`, if there is one.",
+            "markdown": "Removes the first member named `name`, if there is one.\nUsed by the duplicate-name policy that keeps the last occurrence: dropping the earlier one is what keeps\nthe object a map rather than a list that happens to repeat itself.\nThe members after it are popped and pushed back rather than shifted, because shifting would move\nowning values around inside the vector, and a move out of a container is the one thing the ownership\nrules will not allow silently. Duplicates are rare enough that the cost never matters.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the member's name" }],
+            "returns": "whether a member with that name was removed",
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#remove-first"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~JsonValue",
+          "line": 385,
+          "signature": "func ~JsonValue(self: &var JsonValue)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var JsonValue",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases everything this value owns.",
+            "markdown": "Releases everything this value owns.\nWritten out rather than left to the compiler, because a value owns its strings and its children own\ntheirs: the recursion here is the shape of the document, and stating it makes the ownership of a nested\ntree something a reader can check.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/json/json-value#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "MaximumWriteDepth",
+      "displayName": "MaximumWriteDepth",
+      "module": "Writer",
+      "source": "Src/Writer.rux",
+      "line": 25,
+      "signature": "pub const MaximumWriteDepth: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How deep a document may nest before the writer refuses.",
+        "markdown": "How deep a document may nest before the writer refuses.\nThe writer descends recursively, so this bounds its own stack rather than the document's shape. It is far past\nthe parser's default depth, which is what actually decides whether a document of this size can exist: a tree\nbuilt in memory rather than parsed is the only way to reach this at all.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/write-value#maximum-write-depth"],
+        "deprecated": null
+      },
+      "value": "512",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "JsonStyle",
+      "displayName": "JsonStyle",
+      "module": "Writer",
+      "source": "Src/Writer.rux",
+      "line": 29,
+      "signature": "pub struct JsonStyle",
+      "typeParams": [],
+      "doc": {
+        "summary": "How a document should be laid out.",
+        "markdown": "How a document should be laid out.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/json/write-value#json-style"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "indent",
+          "type": "uint",
+          "public": false,
+          "line": 31,
+          "doc": "Spaces of indentation per level; zero writes everything on one line.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "spaceAfterColon",
+          "type": "bool",
+          "public": false,
+          "line": 33,
+          "doc": "Whether a space follows the colon after a member name. Ignored when indenting, which always adds one.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Compact",
+          "line": 40,
+          "signature": "pub func Compact() -> JsonStyle",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "JsonStyle",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The compact style: no whitespace anywhere.",
+            "markdown": "The compact style: no whitespace anywhere. What a document on a wire should be.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a style that writes no whitespace at all",
+            "see": ["https://rux-lang.dev/docs/api/json/write-value#json-style-compact"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Pretty",
+          "line": 47,
+          "signature": "pub func Pretty() -> JsonStyle",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "JsonStyle",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The readable style: two spaces per level.",
+            "markdown": "The readable style: two spaces per level.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a style that indents and puts each member on its own line",
+            "see": ["https://rux-lang.dev/docs/api/json/write-value#json-style-pretty"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteEscaped",
+      "displayName": "WriteEscaped",
+      "module": "Writer",
+      "source": "Src/Writer.rux",
+      "line": 65,
+      "signature": "pub func WriteEscaped(writer: &var TextWriter, text: char8[..]) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the escaped form of `text`, including its surrounding quotes.",
+        "markdown": "Writes the escaped form of `text`, including its surrounding quotes.\nEscapes exactly what the standard requires: the quote, the backslash, and every control character below\nspace. Bytes above that pass through unchanged, so a UTF-8 document stays UTF-8 rather than being expanded\ninto escapes — which is legal but makes output several times larger for no gain.\nReports whatever the destination reported, stopping at the first refusal, so a destination that has already\nrefused something is not written to again and a partly written string is not followed by its closing quote.",
+        "typeParams": [],
+        "params": [
+          { "name": "writer", "markdown": "the destination" },
+          { "name": "text", "markdown": "the UTF-8 bytes to escape and write" }
+        ],
+        "returns": "success when the whole quoted string was accepted",
+        "see": ["https://rux-lang.dev/docs/api/json/write-value#write-escaped"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteValue",
+      "displayName": "WriteValue",
+      "module": "Writer",
+      "source": "Src/Writer.rux",
+      "line": 184,
+      "signature": "pub func WriteValue(writer: &var TextWriter, value: &JsonValue, style: JsonStyle) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes `value` to `writer` in the given style.",
+        "markdown": "Writes `value` to `writer` in the given style.\nThe value is borrowed and nothing is allocated: the document writes itself into the destination as it is\nwalked. A number is written as the text it was read with, which is what keeps an identifier past 2^53 coming\nback as itself.\nReports whatever the destination reported, unchanged, so a buffer that is merely full stays distinguishable\nfrom a stream that has died — and stops at the first refusal rather than writing the rest of a document into a\ndestination that has already said no. Reports `ValueOutOfRange` for a number JSON cannot spell, and for a\ndocument nested past `MaximumWriteDepth`.",
+        "typeParams": [],
+        "params": [
+          { "name": "writer", "markdown": "the destination" },
+          { "name": "value", "markdown": "the document to write, borrowed for the call" },
+          { "name": "style", "markdown": "compact or pretty" }
+        ],
+        "returns": "success when the whole document was accepted",
+        "see": ["https://rux-lang.dev/docs/api/json/write-value"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}
