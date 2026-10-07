@@ -47,7 +47,26 @@ export const PACKAGES = [
     icon: "i-lucide-languages",
     description: "Unicode character properties, case, normalization and segmentation",
   },
-  { name: "Collections", area: "collections", icon: "i-lucide-layers", description: "Generic data structures" },
+  {
+    name: "Collections",
+    area: "collections",
+    icon: "i-lucide-layers",
+    description: "Generic data structures",
+    topics: {
+      iterators: {
+        title: "Slice iterators",
+        description: "The iterators an array, vector or deque hands out to walk its elements by copy or by pointer.",
+      },
+      hashing: {
+        title: "Hashing",
+        description: "Ready-made seeded hash and equality callbacks for the key types a hash map or set is keyed on.",
+      },
+      comparing: {
+        title: "Comparing",
+        description: "Ready-made ordering callbacks for the key types a tree map or set is keyed on.",
+      },
+    },
+  },
   {
     name: "Algorithms",
     area: "collections",
