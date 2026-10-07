@@ -1,5 +1,5 @@
 /**
- * npm run sync:api -- <path-to-Rux> [--package Allocator] [--target <triple>] [--from <dir>] [--check]
+ * npm run sync:api -- <path-to-Rux> [--package Allocator] [--target <triple>] [--compiler <rux>] [--from <dir>] [--check]
  *
  * Takes a `rux doc --format json` snapshot of each requested package for every
  * target, merges them into one (scripts/api-docs.mjs, mergeSnapshots), copies
@@ -13,7 +13,8 @@
  * platform package (the registry's `platform`, such as Linux) is documented
  * only for its own operating system's targets. Without `--from`, it runs
  * `<rux>/Bin/rux doc --format json --target <t>` once per target at the root
- * of the Rux workspace; `--from` reads a previous run instead, either one
+ * of the Rux workspace (`--compiler` names another `rux`, for a Rux worktree
+ * with no build of its own); `--from` reads a previous run instead, either one
  * `<dir>/<target>/<Name>.json` per target or a single `<dir>/<Name>.json`.
  * The README always comes from `<rux>/Packages/<Name>/README.md`, so verify
  * can re-render later without a Rux checkout. `--check` writes nothing and
@@ -40,10 +41,10 @@ import { TARGETS, mergeSnapshots, renderApiPackage, targetOs } from "./api-docs.
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const usage =
-  "Usage: npm run sync:api -- <path-to-Rux> [--package <Name>]… [--target <triple>]… [--from <dir>] [--check]";
+  "Usage: npm run sync:api -- <path-to-Rux> [--package <Name>]… [--target <triple>]… [--compiler <rux>] [--from <dir>] [--check]";
 
 function parseArguments(argv) {
-  const options = { rux: null, packages: [], targets: [], from: null, check: false };
+  const options = { rux: null, packages: [], targets: [], compiler: null, from: null, check: false };
   const list = (value) => (value ?? "").split(",").filter(Boolean);
   for (let index = 0; index < argv.length; index++) {
     const argument = argv[index];
@@ -51,11 +52,12 @@ function parseArguments(argv) {
     else if (argument === "--package") options.packages.push(...list(argv[++index]));
     else if (argument === "--target") options.targets.push(...list(argv[++index]));
     else if (argument === "--from") options.from = argv[++index];
+    else if (argument === "--compiler") options.compiler = argv[++index];
     else if (argument.startsWith("--")) throw new Error(`Unknown option ${argument}`);
     else if (!options.rux) options.rux = argument;
     else throw new Error(`Unexpected argument ${argument}`);
   }
-  if (!options.rux || options.from === undefined) throw new Error(usage);
+  if (!options.rux || options.from === undefined || options.compiler === undefined) throw new Error(usage);
   for (const target of options.targets) {
     if (!TARGETS.includes(target)) throw new Error(`Unknown target ${target}; expected one of ${TARGETS.join(", ")}`);
   }
@@ -128,7 +130,9 @@ if (options.from) {
     for (const target of needed) sources.set(target, perTarget.includes(target) ? join(from, target) : null);
   else single = from;
 } else {
-  const binary = join(rux, "Bin", process.platform === "win32" ? "rux.exe" : "rux");
+  const binary = options.compiler
+    ? resolve(options.compiler)
+    : join(rux, "Bin", process.platform === "win32" ? "rux.exe" : "rux");
   scratch = mkdtempSync(join(tmpdir(), "rux-api-"));
   for (const target of needed) {
     const output = join(scratch, target);
