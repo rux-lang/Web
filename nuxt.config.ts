@@ -1,5 +1,6 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { AREAS, PACKAGES } from "./scripts/api-packages.mjs";
 import { PARTS } from "./scripts/learn-course.mjs";
 import { contentRoutes } from "./scripts/routes.mjs";
 
@@ -319,6 +320,12 @@ export default defineNuxtConfig({
         // ("[Icon] loading icon lucide:sprout timed out"), leaving blank gaps
         // in the sidebar and road map. `i-lucide-file-json` → `lucide:file-json`.
         ...PARTS.map((part) => part.icon.replace(/^i-([a-z]+)-/, "$1:")),
+        // The API Reference's area and package icons, for the same reason: they
+        // are written only in scripts/api-packages.mjs (and in the generated
+        // packages' .navigation.yml), and reach the hub cards, the hub
+        // sidebar and the package switcher as data. The collection prefix may
+        // itself hold a dash: `i-simple-icons-c` → `simple-icons:c`.
+        ...[...AREAS, ...PACKAGES].map((entry) => entry.icon.replace(/^i-(simple-icons|[a-z]+)-/, "$1:")),
       ],
     },
   },

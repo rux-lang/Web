@@ -15,7 +15,7 @@ import type { TocLink } from "@nuxt/content";
 defineProps<{ links?: TocLink[] }>();
 
 const route = useRoute();
-const { book } = useDocsSection();
+const { book, defaultOpen } = useDocsSection();
 
 // The book title heads the desktop sidebar as a collapsible group. In the
 // drawer it is the header instead, so the body renders the pages flat.
@@ -99,7 +99,7 @@ watch(
       <template #body>
         <UContentNavigation
           :navigation="pages"
-          default-open
+          :default-open="defaultOpen"
           highlight
           trailing-icon="i-lucide-chevron-right"
           :ui="{ linkTrailingIcon: 'group-data-[state=open]:rotate-90' }"
