@@ -201,6 +201,20 @@ export const PACKAGES = [
     icon: "i-simple-icons-windows",
     description: "Windows platform bindings",
     platform: "Windows",
+    topics: {
+      types: { title: "Types", description: "The Win32 scalar and handle types." },
+      console: { title: "Console", description: "Allocating, reading and writing the console." },
+      files: { title: "Files", description: "Opening, reading, writing and flushing files through handles." },
+      "file-system": {
+        title: "File system",
+        description: "Deleting, copying and moving files, directories, attributes, search and links.",
+      },
+      memory: { title: "Memory", description: "Heap allocation, virtual memory and raw memory operations." },
+      process: { title: "Processes and threads", description: "Exiting, threads, waiting and loading libraries." },
+      clock: { title: "Clocks", description: "Performance counters, system time and tick counts." },
+      text: { title: "Text conversion", description: "Converting between code pages and UTF-16." },
+      errors: { title: "Errors", description: "The last Win32 error and the codes it reports." },
+    },
   },
 ].map((entry, index) => {
   const slug = entry.name.toLowerCase();
