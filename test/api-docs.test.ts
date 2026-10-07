@@ -459,11 +459,12 @@ describe("renderApiPackage", async () => {
     }
   });
 
-  it("links a dependency only when its reference is generated", () => {
+  it("links a dependency when the registry knows it", () => {
     const dependencies = between(pages.get(`${base}/0.index.md`)!, "## Dependencies", "## Index");
-    expect(dependencies).toContain("- `Core` 0.1.0");
+    expect(dependencies).toContain("- [`Core`](/docs/api/core) 0.1.0");
     expect(dependencies).toContain("- [`Allocator`](/docs/api/allocator) 0.1.0");
-    expect(dependencies).toContain("- `Windows` 0.1.0 (Windows only)");
+    expect(dependencies).toContain("- [`Windows`](/docs/api/windows) 0.1.0 (Windows only)");
+    expect(dependencies).toContain("- `Widget` 1.0.0");
   });
 
   it("renders an overload set as one section with every signature and merged parameters", () => {

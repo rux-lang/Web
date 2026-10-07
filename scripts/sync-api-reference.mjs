@@ -5,7 +5,9 @@
  * target, merges them into one (scripts/api-docs.mjs, mergeSnapshots), copies
  * it and the package README into data/api/, and regenerates the package's
  * pages under content/docs/5.api/<folder>/. Without `--package` it syncs every
- * package in GENERATED.
+ * package that already has a snapshot. Syncing a package for the first time
+ * makes it generated, and removes a hand-written 0.3 folder at the same URL
+ * (`10.core` for Core, whose folder is now `01.core`).
  *
  * Snapshots are taken for TARGETS, or for the `--target` triples given. A
  * platform package (the registry's `platform`, such as Linux) is documented
@@ -32,7 +34,8 @@ import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { format } from "prettier";
-import { API_ROOT, GENERATED, PACKAGES } from "./api-packages.mjs";
+import { GENERATED } from "./api-generated.mjs";
+import { API_ROOT, PACKAGES } from "./api-packages.mjs";
 import { TARGETS, mergeSnapshots, renderApiPackage, targetOs } from "./api-docs.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -77,6 +80,15 @@ function removeEmptyDirectories(directory) {
 
 const toRepo = (file) => relative(root, file).split("\\").join("/");
 
+/**
+ * Every folder that serves the package's URL: its own, and a 0.3-era one
+ * under another number (`10.core` beside `01.core`), whose files are stale.
+ */
+const packageFolders = (entry) =>
+  readdirSync(resolve(root, API_ROOT), { withFileTypes: true })
+    .filter((folder) => folder.isDirectory() && folder.name.replace(/^\d+\./, "") === entry.slug)
+    .map((folder) => resolve(root, API_ROOT, folder.name));
+
 /** The targets a package is documented for: its own OS's for a platform package, every requested one otherwise. */
 const targetsFor = (entry, targets) =>
   entry.platform ? targets.filter((target) => targetOs(target) === entry.platform.toLowerCase()) : targets;
@@ -98,10 +110,6 @@ for (const name of requested) {
   const entry = PACKAGES.find((candidate) => candidate.name === name || candidate.slug === name.toLowerCase());
   if (!entry) {
     console.error(`${name} is not in the API registry (scripts/api-packages.mjs)`);
-    process.exit(2);
-  }
-  if (!GENERATED.has(entry.slug)) {
-    console.error(`${entry.name} is not in GENERATED; add "${entry.slug}" to it in scripts/api-packages.mjs first`);
     process.exit(2);
   }
   entries.push(entry);
@@ -189,8 +197,8 @@ try {
 
     const pages = await renderApiPackage(snapshot, readme, entry);
     for (const [path, text] of pages) writes.set(resolve(root, path), text);
-    for (const file of listFiles(resolve(root, API_ROOT, entry.folder))) {
-      if (!writes.has(file)) deletes.push(file);
+    for (const folder of packageFolders(entry)) {
+      for (const file of listFiles(folder)) if (!writes.has(file)) deletes.push(file);
     }
     console.log(
       `${entry.name} ${snapshot.package.version}: ${snapshot.items.length} items for ${snapshot.targets.join(", ")}, ${pages.size} files`,
@@ -218,7 +226,7 @@ for (const file of deletes) {
   if (!options.check) rmSync(file);
 }
 if (!options.check) {
-  for (const entry of entries) removeEmptyDirectories(resolve(root, API_ROOT, entry.folder));
+  for (const entry of entries) for (const folder of packageFolders(entry)) removeEmptyDirectories(folder);
 }
 
 if (options.check) {

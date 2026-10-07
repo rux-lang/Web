@@ -17,7 +17,7 @@
  * checks the explicit anchors against those slugs.
  */
 import { format } from "prettier";
-import { API_ROOT, GENERATED, KIND_GROUPS } from "./api-packages.mjs";
+import { API_ROOT, KIND_GROUPS, PACKAGES } from "./api-packages.mjs";
 
 const SITE = "https://rux-lang.dev";
 const API_URL = /^https:\/\/rux-lang\.dev\/docs\/api\/([^/?#]*)(?:\/([^?#]*))?(?:#(.*))?$/;
@@ -1214,7 +1214,10 @@ function renderOverview(ctx, readme, entry) {
       pkg.dependencies
         .map((dependency) => {
           const slug = dependency.name.toLowerCase();
-          const name = GENERATED.has(slug) ? `[${code(dependency.name)}](/docs/api/${slug})` : code(dependency.name);
+          // Every registry package has, or is about to have, a page at /docs/api/<slug>. Linking on that alone keeps
+          // one package's pages from changing whenever another package is synced.
+          const known = PACKAGES.some((entry) => entry.slug === slug);
+          const name = known ? `[${code(dependency.name)}](/docs/api/${slug})` : code(dependency.name);
           const only = dependency.targetOS?.length ? ` (${dependency.targetOS.join(", ")} only)` : "";
           return `- ${name} ${dependency.version}${only}`;
         })

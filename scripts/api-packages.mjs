@@ -147,7 +147,11 @@ export const KIND_GROUPS = [
   { folder: "4.constants", title: "Constants", kinds: ["constant", "topic"] },
 ];
 
-/** Packages whose reference is generated from a snapshot; the rest are still the hand-written 0.3 pages or pending. */
-export const GENERATED = new Set(["allocator"]);
+/*
+ * Which packages are generated is not written down here: a package is
+ * generated exactly when data/api/<slug>.json exists. Scripts read that from
+ * scripts/api-generated.mjs, the app from an import.meta.glob in
+ * app/utils/api-catalog.ts, so parallel syncs never edit one shared line.
+ */
 
 export const packageBySlug = (slug) => PACKAGES.find((entry) => entry.slug === slug);
