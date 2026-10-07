@@ -38,6 +38,7 @@ export const PACKAGES = [
     icon: "i-lucide-boxes",
     description: "Allocation contracts and the allocators that meet them",
   },
+  { name: "Math", area: "foundation", icon: "i-lucide-sigma", description: "Mathematical constants and functions" },
   { name: "Text", area: "text", icon: "i-lucide-type", description: "Strings and fundamental text manipulation" },
   { name: "Format", area: "text", icon: "i-lucide-whole-word", description: "String conversion and formatting" },
   {

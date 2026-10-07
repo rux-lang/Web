@@ -48,7 +48,7 @@ export const apiKindGroups = KIND_GROUPS as { folder: string; title: string; kin
 
 /**
  * The trailing hub area for the 0.3-era folders the registry no longer names
- * (Math, Bsd). Their pages still build, so they stay reachable until the
+ * (Bsd, the old name of FreeBSD). Their pages still build, so they stay reachable until the
  * generated reference replaces them.
  */
 export const apiOtherArea: ApiArea = { slug: "other", title: "Other packages", icon: "i-lucide-package" };

@@ -11,7 +11,7 @@ const page = (path: string, stem: string, title = path.split("/").pop()!): Conte
 });
 
 // The /docs/api node as Nuxt Content returns it: one generated package whose
-// pages are flat under it, and two hand-written 0.3 folders — Math, which the
+// pages are flat under it, and two hand-written 0.3 folders — Bsd, which the
 // registry no longer lists, and C.
 const apiBook: ContentNavigationItem = {
   title: "API Reference",
@@ -42,10 +42,10 @@ const apiBook: ContentNavigationItem = {
       ],
     },
     {
-      title: "Math",
-      path: "/docs/api/math",
-      stem: "docs/5.api/08.math/index",
-      children: [page("/docs/api/math", "docs/5.api/08.math/index", "Overview")],
+      title: "Bsd",
+      path: "/docs/api/bsd",
+      stem: "docs/5.api/02.bsd/index",
+      children: [page("/docs/api/bsd", "docs/5.api/02.bsd/index", "Overview")],
     },
   ],
 };
@@ -102,7 +102,7 @@ describe("apiPackageCatalog", () => {
 
   it("lists every registry package by area, in registry order", () => {
     expect(catalog[0]!.slug).toBe("foundation");
-    expect(catalog[0]!.packages.map((entry) => entry.name)).toEqual(["Core", "Memory", "Allocator"]);
+    expect(catalog[0]!.packages.map((entry) => entry.name)).toEqual(["Core", "Memory", "Allocator", "Math"]);
   });
 
   it("marks the packages the navigation tree has a folder for", () => {
@@ -113,12 +113,12 @@ describe("apiPackageCatalog", () => {
   });
 
   it("appends hand-written folders the registry does not name", () => {
-    expect(catalog.at(-1)).toMatchObject({ slug: "other", packages: [{ name: "Math", path: "/docs/api/math" }] });
+    expect(catalog.at(-1)).toMatchObject({ slug: "other", packages: [{ name: "Bsd", path: "/docs/api/bsd" }] });
   });
 
   it("drops nothing but empty areas when the tree is missing", () => {
     const empty = apiPackageCatalog(undefined);
-    expect(empty.flatMap((area) => area.packages)).toHaveLength(24);
+    expect(empty.flatMap((area) => area.packages)).toHaveLength(25);
     expect(empty.every((area) => area.slug !== "other")).toBe(true);
   });
 });
