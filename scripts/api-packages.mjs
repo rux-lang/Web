@@ -172,13 +172,83 @@ export const PACKAGES = [
       },
     },
   },
-  { name: "Text", area: "text", icon: "i-lucide-type", description: "Strings and fundamental text manipulation" },
-  { name: "Format", area: "text", icon: "i-lucide-whole-word", description: "String conversion and formatting" },
+  {
+    name: "Text",
+    area: "text",
+    icon: "i-lucide-type",
+    description: "Strings and fundamental text manipulation",
+    topics: {
+      utf8: {
+        title: "UTF-8",
+        description: "Encoding, decoding and validating UTF-8, and the limits of a Unicode scalar value.",
+      },
+      transform: {
+        title: "Transforming text",
+        description: "New strings made from old: concatenation, repetition, replacement and ASCII case.",
+      },
+    },
+  },
+  {
+    name: "Format",
+    area: "text",
+    icon: "i-lucide-whole-word",
+    description: "String conversion and formatting",
+    topics: {
+      parse: {
+        title: "Parsing integers, booleans and characters",
+        description: "Reading an integer of any width and base, a boolean or one character from text.",
+      },
+      "parse-float": {
+        title: "Parsing floats",
+        description: "Reading decimal text into the nearest float32, float64 or wide float, exactly.",
+      },
+      "integer-text": {
+        title: "Writing integers",
+        description: "Spelling an integer as text: sign, base prefix, zero padding and digits.",
+      },
+      "float-text": {
+        title: "Writing floats",
+        description: "The shortest, fixed-precision and scientific renderings of a float32 or float64.",
+      },
+      "character-text": {
+        title: "Writing characters and booleans",
+        description:
+          "How characters, character slices and booleans render, and how a value that is no character is escaped.",
+      },
+      "float-bits": {
+        title: "Float classification and bits",
+        description: "Whether a float is NaN, infinite or finite, and the bits it is stored as.",
+      },
+    },
+  },
   {
     name: "Unicode",
     area: "text",
     icon: "i-lucide-languages",
     description: "Unicode character properties, case, normalization and segmentation",
+    topics: {
+      properties: {
+        title: "Character properties",
+        description:
+          "The canonical combining class and the White_Space, Alphabetic and Numeric properties of a scalar value.",
+      },
+      case: {
+        title: "Case mapping",
+        description: "Simple and full upper, lower and title case mappings, and case folding.",
+      },
+      normalization: {
+        title: "Normalization",
+        description: "Canonical and compatibility decomposition, and the NFD, NFC, NFKD and NFKC normal forms.",
+      },
+      graphemes: {
+        title: "Grapheme clusters",
+        description: "Extended grapheme cluster boundaries, and how many user-perceived characters a text holds.",
+      },
+      tables: {
+        title: "Generated tables",
+        description: "The Unicode 17.0.0 Character Database tables the lookups search.",
+      },
+    },
   },
   {
     name: "Collections",
