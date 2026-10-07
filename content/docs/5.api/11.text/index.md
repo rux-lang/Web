@@ -52,7 +52,7 @@ Every allocation goes through [`Memory`](/docs/api/memory), so this package runs
 
 ## Ownership
 
-There are no destructors, so a block is released by hand. Every `String` and `StringBuilder` this package hands out owns its block and has to be passed to `Free` exactly once — [`String::Free`](/docs/api/text/string/free) or [`StringBuilder::Free`](/docs/api/text/stringbuilder/free), not [`Memory::Free`](/docs/api/memory/free).
+There are no destructors, so a block is released by hand. Every `String` and `StringBuilder` this package hands out owns its block and has to be passed to `Free` exactly once — [`String::Free`](/docs/api/text/string/free) or [`StringBuilder::Free`](/docs/api/text/stringbuilder/free), not [`Memory::Free`](/docs/api/memory/allocation#free).
 
 Assignment copies the struct, not the block, so two `String` values can name the same allocation and freeing both is a double free. Take [`Clone`](/docs/api/text/string/clone) when both have to be freed. `Free` ignores an empty value and leaves an empty value behind, so calling it twice is harmless, and it is safe on anything the package returns.
 

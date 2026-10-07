@@ -49,4 +49,4 @@ func Main() -> int {
 - [`StringBuilder`](/docs/api/text/stringbuilder) — the builder type
 - [`Reserve`](/docs/api/text/stringbuilder/reserve) — the same, counted from what is already written
 - [`Shrink`](/docs/api/text/stringbuilder/shrink) — the way back down
-- [`Memory::Realloc`](/docs/api/memory/realloc) — the resize this is built on
+- [`Memory::Realloc`](/docs/api/memory/allocation#realloc) — the resize this is built on
