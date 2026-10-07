@@ -93,6 +93,29 @@ export const PACKAGES = [
     area: "text",
     icon: "i-lucide-languages",
     description: "Unicode character properties, case, normalization and segmentation",
+    topics: {
+      properties: {
+        title: "Character properties",
+        description:
+          "The canonical combining class and the White_Space, Alphabetic and Numeric properties of a scalar value.",
+      },
+      case: {
+        title: "Case mapping",
+        description: "Simple and full upper, lower and title case mappings, and case folding.",
+      },
+      normalization: {
+        title: "Normalization",
+        description: "Canonical and compatibility decomposition, and the NFD, NFC, NFKD and NFKC normal forms.",
+      },
+      graphemes: {
+        title: "Grapheme clusters",
+        description: "Extended grapheme cluster boundaries, and how many user-perceived characters a text holds.",
+      },
+      tables: {
+        title: "Generated tables",
+        description: "The Unicode 17.0.0 Character Database tables the lookups search.",
+      },
+    },
   },
   { name: "Collections", area: "collections", icon: "i-lucide-layers", description: "Generic data structures" },
   {
