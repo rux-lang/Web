@@ -8,7 +8,7 @@ const route = useRoute();
 const navigation = inject<Ref<ContentNavigationItem[] | null>>("navigation", ref([]));
 
 // Inbound URLs may carry a trailing slash (the old site linked
-// directory indexes as /docs/api/bsd/). queryCollection stores them slashless, so
+// directory indexes that way). queryCollection stores them slashless, so
 // normalise before querying or those pages 404 on client-side navigation while
 // the prerendered HTML still serves — a bug that hides in testing.
 const path = computed(() => route.path.replace(/\/+$/, "") || "/");

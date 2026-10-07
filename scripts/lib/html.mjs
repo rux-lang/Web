@@ -59,8 +59,8 @@ export function normalizeRoute(route) {
 /**
  * The URL a browser would be at when viewing this file — which is what
  * relative hrefs resolve against. Differs from the normalized route:
- *   dist/docs/api/bsd/index.html -> /docs/api/bsd/      (directory index)
- *   dist/docs/api/bsd/read.html  -> /docs/api/bsd/read  (leaf; relatives resolve to /docs/api/bsd/)
+ *   dist/docs/api/freebsd/index.html -> /docs/api/freebsd/      (directory index)
+ *   dist/docs/api/freebsd/read.html  -> /docs/api/freebsd/read  (leaf; relatives resolve to /docs/api/freebsd/)
  */
 export function browserUrlFromHtmlPath(distDir, file) {
   const rel = path.relative(distDir, file).split(path.sep).join("/");

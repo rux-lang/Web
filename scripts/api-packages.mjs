@@ -157,6 +157,23 @@ export const PACKAGES = [
     icon: "i-simple-icons-freebsd",
     description: "FreeBSD platform bindings",
     platform: "FreeBSD",
+    topics: {
+      types: { title: "Types", description: "FreeBSD's scalar types for process, file and user identifiers." },
+      clock: { title: "Clocks", description: "Reading clocks and sleeping." },
+      dynamic: { title: "Dynamic loading", description: "The mode flags `dlopen` takes." },
+      errors: { title: "Errors", description: "The error numbers, and telling a raw result from an error." },
+      files: { title: "Files", description: "Opening, reading, writing and inspecting files through descriptors." },
+      directories: {
+        title: "Directories and links",
+        description: "The working directory, directory entries, removal, renaming and links.",
+      },
+      memory: { title: "Memory", description: "Mapping, protecting and advising on pages of memory." },
+      process: { title: "Process", description: "Ending the process and asking its identifier." },
+      syscalls: {
+        title: "System calls",
+        description: "The raw system-call entry points and the call numbers they take.",
+      },
+    },
   },
   {
     name: "macOS",

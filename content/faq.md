@@ -168,7 +168,7 @@ rux new Json --source
 
 Not a monolithic one. Rux has no built-in runtime — the standard library is a set of packages, and a program depends only on the ones it lists in `Rux.toml`.
 
-The portable layer is what you should reach for first: [`Core`](/docs/api/core), [`C`](/docs/api/c), [`Format`](/docs/api/format), [`Io`](/docs/api/io), [`Math`](/docs/api/math), [`Memory`](/docs/api/memory) and [`Text`](/docs/api/text), together with `Algorithms`, `Allocator`, `Collections`, `Crypto`, `Entropy`, `FileSystem`, `Hash`, `Json`, `Path`, `Random`, `Time`, `Toml`, `Unicode` and `Uuid`. Below it, the platform layer declares one operating system's own entry points: [`FreeBSD`](/docs/api/bsd), [`Linux`](/docs/api/linux), [`macOS`](/docs/api/macos) and [`Windows`](/docs/api/windows).
+The portable layer is what you should reach for first: [`Core`](/docs/api/core), [`C`](/docs/api/c), [`Format`](/docs/api/format), [`Io`](/docs/api/io), [`Math`](/docs/api/math), [`Memory`](/docs/api/memory) and [`Text`](/docs/api/text), together with `Algorithms`, `Allocator`, `Collections`, `Crypto`, `Entropy`, `FileSystem`, `Hash`, `Json`, `Path`, `Random`, `Time`, `Toml`, `Unicode` and `Uuid`. Below it, the platform layer declares one operating system's own entry points: [`FreeBSD`](/docs/api/freebsd), [`Linux`](/docs/api/linux), [`macOS`](/docs/api/macos) and [`Windows`](/docs/api/windows).
 
 These packages are developed alongside the compiler in the [`rux-lang/Rux`](https://github.com/rux-lang/Rux/tree/dev/Packages) repository. None of them has a stable API yet — names, signatures and behaviour may change between releases. See the [API Reference](/docs/api), and the course's [standard-library parts](/docs/learn/algorithms) for guided tours.
 
