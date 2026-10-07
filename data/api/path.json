@@ -1,0 +1,2321 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Path",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Native operating-system strings and filesystem paths",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/path",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Memory", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "OsString",
+      "source": "Src/OsString.rux",
+      "header": "Text as the operating system stores it, kept lossless.\nA filename is not text. On the Unix systems it is bytes with two exclusions — no slash, no NUL — and nothing\nobliges those bytes to be UTF-8. On Windows it is UTF-16 code units, and nothing obliges them to pair: names\nwith unpaired surrogates exist on real disks. A path type built on `String` would refuse those names, and a\nprogram that cannot open a file because of its name is wrong in the way that loses data.\nSo the native string stores exactly what the system does — bytes there, code units here — behind one alias,\nand the conversions are asymmetric on purpose: UTF-8 in always succeeds, since valid text encodes into either\nrepresentation; UTF-8 out is fallible, since the system's names are under no obligation to be text at all."
+    },
+    {
+      "name": "Parts",
+      "source": "Src/Parts.rux",
+      "header": "The named parts of a path, and the joins and simplifications that stay lexical.\nEverything here reads units and produces views into them or fresh buffers from them; nothing asks the\nfilesystem anything. That matters most for `Normalize`: it resolves `..` by dropping the segment before it,\nwhich is the truth about directories and a lie about symbolic links — `a/link/..` need not be `a` when `link`\npoints elsewhere. The lie is documented, deliberate, and cheap; the truth costs a filesystem and arrives with\ncanonicalization in the S tasks."
+    },
+    {
+      "name": "Path",
+      "source": "Src/Path.rux",
+      "header": "A path is a name with structure: segments, separated.\n`Path` borrows and `PathBuffer` owns, exactly as `OsStringView` and `OsString` do underneath them — a path adds\nmeaning, not storage. The meaning is small and lexical: which units separate segments, and how to walk the\nsegments between them. Nothing here touches a filesystem; whether a path names anything real is a question for\nthe S tasks, asked through the system.\nWindows accepts both slashes and prefers the backslash; the Unix systems know only the forward one. That pair of\nfacts is the whole platform difference at this layer, and it is confined to two functions."
+    },
+    {
+      "name": "PathBuffer",
+      "source": "Src/PathBuffer.rux",
+      "header": "A path that owns its units and can grow.\nThe growable operation a path needs is exactly one: push a segment, with a separator supplied where one is\nmissing. Everything else — parent, filename, joins that produce fresh paths — reads structure and lives with\nit; the buffer is where segments accumulate on the way to a system call."
+    },
+    {
+      "name": "Prefix",
+      "source": "Src/Prefix.rux",
+      "header": "What stands before a path's first real segment.\nThe Unix systems have one answer: nothing, or the root. Windows has a family — a drive (`C:`), a UNC share\n(`\\server\\share`), and the verbatim prefix (`\\?\\`) that turns parsing off for everything after it — and which\none a path carries changes what \"absolute\" means for it. `C:name` is neither relative nor absolute but\ndrive-relative, a shape only Windows has.\nNothing here folds case. `C:` and `c:` are the same drive to the filesystem and different units to this layer,\nexactly as two names differing in case are: which spellings the system treats as one is the system's opinion,\nand a path library that imitates it bakes today's opinion into tomorrow's comparison."
+    },
+    {
+      "name": "Presentation",
+      "source": "Src/Presentation.rux",
+      "header": "Showing a name the system may not have written in text, without pretending either that it is text or that it\nis not.\nA native name is bytes on the Unix systems and UTF-16 code units on Windows, and neither is obliged to be valid.\nReal disks hold names that are not text: a byte sequence that is not UTF-8, a code unit with no partner. That is\nwhy `OsString` exists and why converting out of it is fallible. But a program still has to say something when it\nreports which file it could not open, and refusing to render the name is not an answer a user can act on.\nSo the two protocols answer two different questions and neither one compromises. `Display` is the name as a\nreader should see it: every unit that is not text becomes U+FFFD, the replacement character, which is exactly\nwhat the substitution is for. It is lossy and says so; it is for a message, never for reopening the file.\n`Debug` is the name as it actually is: every native unit survives, with the ones that are not text spelled as\nescapes, so two different names never render alike. The exact conversions in `OsStringView::ToText` and the\nfilesystem operations are untouched by either — a path still travels to a system call as the units it is.\nOne rule follows from that and is worth stating: a precision is refused rather than applied. Truncating a path\nproduces a different path, and one that may well exist; a rendering that silently answers about another file is\nworse than a rendering that refuses."
+    }
+  ],
+  "items": [
+    {
+      "kind": "type",
+      "name": "OsUnit",
+      "displayName": "OsUnit",
+      "module": "OsString",
+      "source": "Src/OsString.rux",
+      "line": 18,
+      "signature": "pub type OsUnit = uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "The unit a native string is made of: a UTF-16 code unit on Windows, and a byte on the Unix systems.",
+        "markdown": "The unit a native string is made of: a UTF-16 code unit on Windows, and a byte on the Unix systems.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/path/os-string#os-unit"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "type",
+      "name": "OsUnit",
+      "displayName": "OsUnit",
+      "module": "OsString",
+      "source": "Src/OsString.rux",
+      "line": 23,
+      "signature": "pub type OsUnit = char8",
+      "typeParams": [],
+      "doc": {
+        "summary": "The unit a native string is made of: a UTF-16 code unit on Windows, and a byte on the Unix systems.",
+        "markdown": "The unit a native string is made of: a UTF-16 code unit on Windows, and a byte on the Unix systems.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/path/os-string#os-unit"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64", "macos-x86_64", "macos-aarch64", "freebsd-x86_64", "freebsd-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "OsStringView",
+      "displayName": "OsStringView",
+      "module": "OsString",
+      "source": "Src/OsString.rux",
+      "line": 29,
+      "signature": "pub struct OsStringView",
+      "typeParams": [],
+      "doc": {
+        "summary": "A borrowed run of native units.",
+        "markdown": "A borrowed run of native units.\n`Copy`, owning nothing. The units it names must outlive it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/path/os-string-view"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "units",
+          "type": "OsUnit[..]",
+          "public": true,
+          "line": 31,
+          "doc": "The units, exactly as the system holds them.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "OsStringView",
+          "line": 38,
+          "signature": "pub func OsStringView() -> OsStringView",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "OsStringView",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A view over nothing.",
+            "markdown": "A view over nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "an empty view",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string-view#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromUnits",
+          "line": 46,
+          "signature": "pub func FromUnits(units: OsUnit[..]) -> OsStringView",
+          "typeParams": [],
+          "params": [{ "name": "units", "type": "OsUnit[..]" }],
+          "receiver": null,
+          "returnType": "OsStringView",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A view over `units` as they stand: no validation, because there is nothing to validate against.",
+            "markdown": "A view over `units` as they stand: no validation, because there is nothing to validate against.",
+            "typeParams": [],
+            "params": [{ "name": "units", "markdown": "the borrowed units to view" }],
+            "returns": "a view over those units, which it does not copy",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string-view#from-units"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 53,
+          "signature": "pub func Length(self: &OsStringView) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&OsStringView",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many native units the view spans — bytes or code units, not characters.",
+            "markdown": "How many native units the view spans — bytes or code units, not characters.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many units the value holds",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string-view#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsEmpty",
+          "line": 60,
+          "signature": "pub func IsEmpty(self: &OsStringView) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&OsStringView",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the view spans nothing.",
+            "markdown": "Whether the view spans nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether it holds no units at all",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string-view#is-empty"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Units",
+          "line": 67,
+          "signature": "pub func Units(self: &OsStringView) -> OsUnit[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&OsStringView",
+          "returnType": "OsUnit[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The units themselves.",
+            "markdown": "The units themselves.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the units, borrowed",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string-view#units"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 77,
+          "signature": "pub func Equals(self: &OsStringView, other: &OsStringView) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&OsStringView" }],
+          "receiver": "&OsStringView",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two views hold the same units.",
+            "markdown": "Whether two views hold the same units.\nUnit equality and nothing smarter: no case folding, no normalization. Two names the filesystem treats as\none are still two names here, because which names those are is the filesystem's opinion, not the string's.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "whether both hold the same units in the same order",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string-view#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "ToText",
+          "line": 95,
+          "signature": "pub func ToText(self: &OsStringView, allocator: Allocator) -> String ! TextError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": "&OsStringView",
+          "returnType": "String ! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This native text as UTF-8, or nothing where it is not text.",
+            "markdown": "This native text as UTF-8, or nothing where it is not text.\nThe fallible direction, and fallible for a different reason per platform: Unix bytes may simply not be\nUTF-8, and Windows units may hold an unpaired surrogate, which no UTF-8 sequence can spell. It fails with\n`InvalidUtf8` for both, because both mean the same thing to the caller — this name is not text, and a\nprogram that must show it anyway shows it lossily by its own policy, knowingly.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "the units converted to text, or a failure when they are not valid in it",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string-view#to-text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 208,
+          "signature": "pub func WriteDisplay(self: &OsStringView, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&OsStringView",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the name as text, with every native unit that is not text replaced by U+FFFD.",
+            "markdown": "Writes the name as text, with every native unit that is not text replaced by U+FFFD.\nLossy, deliberately and only here. A name the system holds is not obliged to be text, and a program\nreporting which file it could not open still has to name it; U+FFFD is what the standard provides for\nexactly that. What this produces is for a reader, never for reopening the file — two different names can\nrender alike, and `Debug` is the rendering that does not.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision. A precision is\nrefused rather than applied because a truncated path is a different path, and may be one that exists.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole name was accepted",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string-view#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 226,
+          "signature": "pub func WriteDebug(self: &OsStringView, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&OsStringView",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "Writes the name exactly, quoted, with every unit that is not text spelled as an escape.",
+            "markdown": "Writes the name exactly, quoted, with every unit that is not text spelled as an escape.\nNothing is lost: a Unix byte outside a well-formed sequence is written `\\x{nn}` and a Windows code unit\nwith no partner is written `\\u{xxxx}`, so the native units can be read back off the output and two\ndifferent names never render alike. The quote, the backslash and the control characters are escaped the way\nthis repository escapes them everywhere else.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole name was accepted",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string-view#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "OsString",
+      "displayName": "OsString",
+      "module": "OsString",
+      "source": "Src/OsString.rux",
+      "line": 135,
+      "signature": "pub struct OsString",
+      "typeParams": [],
+      "doc": {
+        "summary": "Native text that owns its units.",
+        "markdown": "Native text that owns its units.\nCopyable with value semantics: each copy owns an independent native-unit block.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/path/os-string"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "data",
+          "type": "*var OsUnit",
+          "public": false,
+          "line": 137,
+          "doc": "The units, or null for no length.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint",
+          "public": false,
+          "line": 139,
+          "doc": "How many units there are.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 141,
+          "doc": "Where the block came from, and where it goes back to.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "operator",
+          "name": "=",
+          "line": 148,
+          "signature": "pub func =(self: &var OsString, other: &OsString)",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&OsString" }],
+          "receiver": "&var OsString",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Deep-copies native units into independent storage from the same allocator.",
+            "markdown": "Deep-copies native units into independent storage from the same allocator.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#copy"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constructor",
+          "name": "OsString",
+          "line": 165,
+          "signature": "pub func OsString(allocator: Allocator) -> OsString",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "OsString",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Native text of no length, which has allocated nothing.",
+            "markdown": "Native text of no length, which has allocated nothing.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "an empty owned string that has taken no storage yet",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromView",
+          "line": 176,
+          "signature": "pub func FromView(allocator: Allocator, view: OsStringView) -> OsString ! TextError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "view", "type": "OsStringView" }
+          ],
+          "receiver": null,
+          "returnType": "OsString ! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An owning copy of what `view` spans, exactly as it stands.",
+            "markdown": "An owning copy of what `view` spans, exactly as it stands.\nThis is the lossless direction: whatever the system handed over survives, valid text or not. It fails with\n`OutOfMemory` when the copy cannot be made.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "view", "markdown": "the borrowed text to copy" }
+            ],
+            "returns": "a copy of `view` this string owns, or an empty one when the allocator refused",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#from-view"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 199,
+          "signature": "pub func Length(self: &OsString) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&OsString",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many native units the text holds.",
+            "markdown": "How many native units the text holds.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many units the value holds",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsEmpty",
+          "line": 206,
+          "signature": "pub func IsEmpty(self: &OsString) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&OsString",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the text holds nothing.",
+            "markdown": "Whether the text holds nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether it holds no units at all",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#is-empty"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "View",
+          "line": 213,
+          "signature": "pub func View(self: &OsString) -> OsStringView",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&OsString",
+          "returnType": "OsStringView",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A view over this text, which is what everything read-only takes.",
+            "markdown": "A view over this text, which is what everything read-only takes.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a borrowed view of the owned units",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#view"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clear",
+          "line": 219,
+          "signature": "pub func Clear(self: &var OsString)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var OsString",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives the block back and leaves text of no length.",
+            "markdown": "Gives the block back and leaves text of no length.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#clear"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~OsString",
+          "line": 232,
+          "signature": "func ~OsString(self: &var OsString)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var OsString",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives the block back.",
+            "markdown": "Gives the block back.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromText",
+          "line": 244,
+          "signature": "pub func FromText(allocator: Allocator, text: char8[..]) -> OsString ! TextError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "text", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "OsString ! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An owning native copy of UTF-8 text.",
+            "markdown": "An owning native copy of UTF-8 text.\nThe direction that always succeeds: valid text encodes into either representation, byte for byte on the\nUnix systems and through UTF-16 on Windows. It fails only when the allocation does.\nThe bytes must be well-formed UTF-8, which everything in `Rux/Text` produces and vouches for.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "text", "markdown": "the text to act on" }
+            ],
+            "returns": "the text converted to the platform's own units, or why it could not be",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#from-text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 239,
+          "signature": "pub func WriteDisplay(self: &OsString, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&OsString",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "The lossy rendering of the units this text owns.",
+            "markdown": "The lossy rendering of the units this text owns.\nThe failures `OsStringView::WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole name was accepted",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 252,
+          "signature": "pub func WriteDebug(self: &OsString, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&OsString",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The exact rendering of the units this text owns.",
+            "markdown": "The exact rendering of the units this text owns.\nThe failures `OsStringView::WriteDebug` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole name was accepted",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsSeparator",
+      "displayName": "IsSeparator",
+      "module": "Path",
+      "source": "Src/Path.rux",
+      "line": 17,
+      "signature": "pub func IsSeparator(unit: OsUnit) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether `unit` separates path segments on this system.",
+        "markdown": "Whether `unit` separates path segments on this system.\nBoth slashes on Windows, the forward one alone elsewhere.",
+        "typeParams": [],
+        "params": [{ "name": "unit", "markdown": "the unit to test" }],
+        "returns": "whether the unit separates components on this system",
+        "see": ["https://rux-lang.dev/docs/api/path/syntax#is-separator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PreferredSeparator",
+      "displayName": "PreferredSeparator",
+      "module": "Path",
+      "source": "Src/Path.rux",
+      "line": 29,
+      "signature": "pub func PreferredSeparator() -> OsUnit",
+      "typeParams": [],
+      "doc": {
+        "summary": "The separator this system prefers when one has to be written.",
+        "markdown": "The separator this system prefers when one has to be written.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the separator this system writes, which is not the only one it accepts",
+        "see": ["https://rux-lang.dev/docs/api/path/syntax#preferred-separator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Path",
+      "displayName": "Path",
+      "module": "Path",
+      "source": "Src/Path.rux",
+      "line": 41,
+      "signature": "pub struct Path",
+      "typeParams": [],
+      "doc": {
+        "summary": "A borrowed path.",
+        "markdown": "A borrowed path.\n`Copy`, owning nothing: structure over an `OsStringView`'s units.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/path/path"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "name",
+          "type": "OsStringView",
+          "public": true,
+          "line": 43,
+          "doc": "The name, exactly as the system would hold it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Parent",
+          "line": 15,
+          "signature": "pub func Parent(self: &Path) -> Path?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Path",
+          "returnType": "Path?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This path without its last component, or `none` where nothing is left to remove.",
+            "markdown": "This path without its last component, or `none` where nothing is left to remove.\nThe parent of `/a` is `/`, and the root's parent is `none`: the root is not inside anything. The parent of\na bare segment is the empty path, which is what lets a loop walk parents to a fixed end.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the path without its last component, or `none` when there is none to remove",
+            "see": ["https://rux-lang.dev/docs/api/path/path#parent"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FileName",
+          "line": 40,
+          "signature": "pub func FileName(self: &Path) -> OsStringView?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Path",
+          "returnType": "OsStringView?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The last component's name, or `none` for the empty path and the root.",
+            "markdown": "The last component's name, or `none` for the empty path and the root.\nTrailing separators are ignored: `a/b/` names `b`, because that is what everything from shells to\nlibraries has always meant by it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the last component, or `none` for a root or a path ending in a separator",
+            "see": ["https://rux-lang.dev/docs/api/path/path#file-name"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Stem",
+          "line": 60,
+          "signature": "pub func Stem(self: &Path) -> OsStringView?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Path",
+          "returnType": "OsStringView?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The file name before its extension, or `none` where there is no file name.",
+            "markdown": "The file name before its extension, or `none` where there is no file name.\nA leading dot is part of the name, not an extension marker: the stem of `.bashrc` is `.bashrc`. Of\n`a.tar.gz` it is `a.tar` — one extension comes off, the last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the file name without its extension, or `none` when there is no file name",
+            "see": ["https://rux-lang.dev/docs/api/path/path#stem"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Extension",
+          "line": 74,
+          "signature": "pub func Extension(self: &Path) -> OsStringView?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Path",
+          "returnType": "OsStringView?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The extension after the last dot, without the dot, or `none` where there is none.",
+            "markdown": "The extension after the last dot, without the dot, or `none` where there is none.\n`none` for `.bashrc` and for `Makefile` alike: a name that is all extension has none.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the file name's extension without the dot, or `none` when it has none",
+            "see": ["https://rux-lang.dev/docs/api/path/path#extension"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constructor",
+          "name": "Path",
+          "line": 50,
+          "signature": "pub func Path() -> Path",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Path",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A path over nothing.",
+            "markdown": "A path over nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "an empty path",
+            "see": ["https://rux-lang.dev/docs/api/path/path#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromView",
+          "line": 58,
+          "signature": "pub func FromView(view: OsStringView) -> Path",
+          "typeParams": [],
+          "params": [{ "name": "view", "type": "OsStringView" }],
+          "receiver": null,
+          "returnType": "Path",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A path over `view`'s units as they stand.",
+            "markdown": "A path over `view`'s units as they stand.",
+            "typeParams": [],
+            "params": [{ "name": "view", "markdown": "the borrowed text to copy" }],
+            "returns": "a path over those units, which it does not copy",
+            "see": ["https://rux-lang.dev/docs/api/path/path#from-view"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 65,
+          "signature": "pub func Length(self: &Path) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Path",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many native units the path spans.",
+            "markdown": "How many native units the path spans.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many units the path holds",
+            "see": ["https://rux-lang.dev/docs/api/path/path#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsEmpty",
+          "line": 72,
+          "signature": "pub func IsEmpty(self: &Path) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Path",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the path is empty, which names nothing at all.",
+            "markdown": "Whether the path is empty, which names nothing at all.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the path holds no units",
+            "see": ["https://rux-lang.dev/docs/api/path/path#is-empty"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsView",
+          "line": 79,
+          "signature": "pub func AsView(self: &Path) -> OsStringView",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Path",
+          "returnType": "OsStringView",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The name under the structure.",
+            "markdown": "The name under the structure.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the path's units, borrowed",
+            "see": ["https://rux-lang.dev/docs/api/path/path#as-view"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 89,
+          "signature": "pub func Equals(self: &Path, other: Path) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Path" }],
+          "receiver": "&Path",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two paths are the same units.",
+            "markdown": "Whether two paths are the same units.\nLexical, not semantic: `a/b` and `a//b` name the same file and are different paths here. Making them equal\nis normalization's job, asked for by name.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "whether both hold the same units in the same order, without normalizing either",
+            "see": ["https://rux-lang.dev/docs/api/path/path#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Components",
+          "line": 97,
+          "signature": "pub func Components(self: &Path) -> ComponentIterator",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Path",
+          "returnType": "ComponentIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A walk over the path's components, first to last.",
+            "markdown": "A walk over the path's components, first to last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a cursor over the path's components",
+            "see": ["https://rux-lang.dev/docs/api/path/path#components"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 267,
+          "signature": "pub func WriteDisplay(self: &Path, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Path",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "The lossy rendering of the path's units.",
+            "markdown": "The lossy rendering of the path's units.\nThe separators are written as they stand: a path is shown as it is, not normalized towards the platform's\npreferred separator, because which separators a name contains is part of what it is.\nThe failures `OsStringView::WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole path was accepted",
+            "see": ["https://rux-lang.dev/docs/api/path/path#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 280,
+          "signature": "pub func WriteDebug(self: &Path, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Path",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The exact, quoted rendering of the path's units.",
+            "markdown": "The exact, quoted rendering of the path's units.\nThe failures `OsStringView::WriteDebug` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole path was accepted",
+            "see": ["https://rux-lang.dev/docs/api/path/path#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "ComponentIterator",
+      "displayName": "ComponentIterator",
+      "module": "Path",
+      "source": "Src/Path.rux",
+      "line": 107,
+      "signature": "pub struct ComponentIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "A walk over a path's segments.",
+        "markdown": "A walk over a path's segments.\nRuns of separators count as one, and a trailing separator ends the walk rather than yielding an empty segment:\n`a//b/` walks as `a`, `b`. A leading separator is the root, which the walk reports as an empty first component\nso that an absolute path is distinguishable from a relative one holding the same segments.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/path/path#component-iterator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "units",
+          "type": "OsUnit[..]",
+          "public": false,
+          "line": 109,
+          "doc": "The units being walked.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "cursor",
+          "type": "uint",
+          "public": false,
+          "line": 111,
+          "doc": "Where the next component starts being looked for.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 118,
+          "signature": "pub func Next(self: &var ComponentIterator) -> OsStringView?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var ComponentIterator",
+          "returnType": "OsStringView?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next component, or `none` when the walk is done.",
+            "markdown": "The next component, or `none` when the walk is done.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the next component, or `none` at the end",
+            "see": ["https://rux-lang.dev/docs/api/path/path#component-iterator-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "PathBuffer",
+      "displayName": "PathBuffer",
+      "module": "PathBuffer",
+      "source": "Src/PathBuffer.rux",
+      "line": 13,
+      "signature": "pub struct PathBuffer",
+      "typeParams": [],
+      "doc": {
+        "summary": "An owning, growable path.",
+        "markdown": "An owning, growable path.\nMove-only: it prohibits copying and gives its block back with `~PathBuffer`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/path/path-buffer"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "data",
+          "type": "*var OsUnit",
+          "public": true,
+          "line": 15,
+          "doc": "The units, or null before the first push.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint",
+          "public": true,
+          "line": 17,
+          "doc": "How many units are in use.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "capacity",
+          "type": "uint",
+          "public": false,
+          "line": 19,
+          "doc": "How many units the block holds.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": true,
+          "line": 21,
+          "doc": "Where the block came from, and where it goes back to.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "PathBuffer",
+          "line": 32,
+          "signature": "pub func PathBuffer(allocator: Allocator) -> PathBuffer",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "PathBuffer",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty buffer that has allocated nothing.",
+            "markdown": "An empty buffer that has allocated nothing.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "an empty buffer that has taken no storage yet",
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromPath",
+          "line": 41,
+          "signature": "pub func FromPath(allocator: Allocator, path: Path) -> PathBuffer ! TextError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "path", "type": "Path" }
+          ],
+          "receiver": null,
+          "returnType": "PathBuffer ! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A buffer opening with `path`'s units.",
+            "markdown": "A buffer opening with `path`'s units.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "path", "markdown": "the path to act on" }
+            ],
+            "returns": "a copy of `path` this buffer owns, or an empty one when the allocator refused",
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#from-path"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 50,
+          "signature": "pub func Length(self: &PathBuffer) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&PathBuffer",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many units the buffer holds.",
+            "markdown": "How many units the buffer holds.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many units the buffer holds",
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsEmpty",
+          "line": 57,
+          "signature": "pub func IsEmpty(self: &PathBuffer) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&PathBuffer",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the buffer holds nothing.",
+            "markdown": "Whether the buffer holds nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the buffer holds no units",
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#is-empty"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsPath",
+          "line": 65,
+          "signature": "pub func AsPath(self: &PathBuffer) -> Path",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&PathBuffer",
+          "returnType": "Path",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The buffer as a borrowed path, which is what every reading operation takes.",
+            "markdown": "The buffer as a borrowed path, which is what every reading operation takes.\nThe path borrows the buffer and must not outlive it or survive a push.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a borrowed path over the buffer's units",
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#as-path"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Push",
+          "line": 112,
+          "signature": "pub func Push(self: &var PathBuffer, segment: OsStringView) -> ! TextError",
+          "typeParams": [],
+          "params": [{ "name": "segment", "type": "OsStringView" }],
+          "receiver": "&var PathBuffer",
+          "returnType": "! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Appends `segment` as one more component, supplying the separator where one is missing.",
+            "markdown": "Appends `segment` as one more component, supplying the separator where one is missing.\nA segment that is itself absolute — opening with a separator — replaces the buffer instead of extending\nit, which is what joining means everywhere paths are joined: `join(a, /b)` is `/b`.",
+            "typeParams": [],
+            "params": [{ "name": "segment", "markdown": "the component to append" }],
+            "returns": "nothing when the component was appended, or why not",
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#push"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Release",
+          "line": 129,
+          "signature": "pub func Release(self: &var PathBuffer)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PathBuffer",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives the block back and leaves an empty buffer.",
+            "markdown": "Gives the block back and leaves an empty buffer.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#release"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~PathBuffer",
+          "line": 144,
+          "signature": "func ~PathBuffer(self: &var PathBuffer)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PathBuffer",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives the block back.",
+            "markdown": "Gives the block back.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 293,
+          "signature": "pub func WriteDisplay(self: &PathBuffer, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&PathBuffer",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "The lossy rendering of the units the buffer owns.",
+            "markdown": "The lossy rendering of the units the buffer owns.\nThe failures `OsStringView::WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole path was accepted",
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 306,
+          "signature": "pub func WriteDebug(self: &PathBuffer, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&PathBuffer",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The exact, quoted rendering of the units the buffer owns.",
+            "markdown": "The exact, quoted rendering of the units the buffer owns.\nThe failures `OsStringView::WriteDebug` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole path was accepted",
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Join",
+      "displayName": "Join",
+      "module": "PathBuffer",
+      "source": "Src/PathBuffer.rux",
+      "line": 157,
+      "signature": "pub func Join(allocator: Allocator, base: Path, segment: OsStringView) -> PathBuffer ! TextError",
+      "typeParams": [],
+      "doc": {
+        "summary": "A fresh buffer holding `base` with `segment` pushed onto it.",
+        "markdown": "A fresh buffer holding `base` with `segment` pushed onto it.\nThe join every path library means: a separator supplied where one is missing, and an absolute `segment`\nreplacing `base` entirely.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "base", "markdown": "the path to extend" },
+          { "name": "segment", "markdown": "the component to append" }
+        ],
+        "returns": "`base` with `segment` appended, or why it could not be",
+        "see": ["https://rux-lang.dev/docs/api/path/path-buffer#join"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Normalize",
+      "displayName": "Normalize",
+      "module": "PathBuffer",
+      "source": "Src/PathBuffer.rux",
+      "line": 173,
+      "signature": "pub func Normalize(allocator: Allocator, path: Path) -> PathBuffer ! TextError",
+      "typeParams": [],
+      "doc": {
+        "summary": "A fresh buffer holding `path` lexically simplified: separator runs collapsed to the preferred separator, `.`\nsegments dropped, and `..` resolved against the segment before it.",
+        "markdown": "A fresh buffer holding `path` lexically simplified: separator runs collapsed to the preferred separator, `.`\nsegments dropped, and `..` resolved against the segment before it.\nLexically is the load-bearing word. Dropping `x/..` is the truth about directories and a lie about symbolic\nlinks — `a/link/..` need not be `a` when `link` points elsewhere — so this is for display, comparison and\ndeduplication, and the filesystem-true answer is canonicalization, which asks the system. A `..` with nothing\nbefore it survives in a relative path and vanishes at the root, where there is nowhere further up.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "path", "markdown": "the path to act on" }
+        ],
+        "returns": "the path with its redundant components resolved, or why it could not be",
+        "see": ["https://rux-lang.dev/docs/api/path/path-buffer#normalize"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "PrefixKind",
+      "displayName": "PrefixKind",
+      "module": "Prefix",
+      "source": "Src/Prefix.rux",
+      "line": 14,
+      "signature": "pub enum PrefixKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "The kind of prefix a path opens with.",
+        "markdown": "The kind of prefix a path opens with.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/path/syntax#prefix-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "None",
+          "value": "0",
+          "payload": null,
+          "line": 16,
+          "doc": "No prefix: the path is a plain name, rooted or not.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Drive",
+          "value": "1",
+          "payload": null,
+          "line": 18,
+          "doc": "A drive, `C:`, with or without a root after it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Share",
+          "value": "2",
+          "payload": null,
+          "line": 20,
+          "doc": "A UNC share, `\\server\\share`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Verbatim",
+          "value": "3",
+          "payload": null,
+          "line": 22,
+          "doc": "The verbatim prefix `\\?\\` and everything it qualifies.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PrefixLength",
+      "displayName": "PrefixLength",
+      "module": "Prefix",
+      "source": "Src/Prefix.rux",
+      "line": 33,
+      "signature": "pub func PrefixLength(path: Path, kind: *var PrefixKind) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many units of `path` are prefix, and which kind, reported through `kind`.",
+        "markdown": "How many units of `path` are prefix, and which kind, reported through `kind`.\nZero and `None` on the Unix systems always: a leading `//server` is just a path there, whatever tools make of\nit. On Windows the drive is two units, a share runs through the end of its share name, and the verbatim prefix\ncovers its four units plus the drive or share inside it.",
+        "typeParams": [],
+        "params": [
+          { "name": "path", "markdown": "the path to act on" },
+          { "name": "kind", "markdown": "which prefix form to measure" }
+        ],
+        "returns": "how many leading units the prefix occupies, or zero when there is none",
+        "see": ["https://rux-lang.dev/docs/api/path/syntax#prefix-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HasRoot",
+      "displayName": "HasRoot",
+      "module": "Prefix",
+      "source": "Src/Prefix.rux",
+      "line": 106,
+      "signature": "pub func HasRoot(path: Path) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether `path` has a root: a separator standing where the segments begin.",
+        "markdown": "Whether `path` has a root: a separator standing where the segments begin.",
+        "typeParams": [],
+        "params": [{ "name": "path", "markdown": "the path to act on" }],
+        "returns": "whether the path begins at a root",
+        "see": ["https://rux-lang.dev/docs/api/path/syntax#has-root"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsAbsolute",
+      "displayName": "IsAbsolute",
+      "module": "Prefix",
+      "source": "Src/Prefix.rux",
+      "line": 123,
+      "signature": "pub func IsAbsolute(path: Path) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether `path` names one place regardless of any current directory.",
+        "markdown": "Whether `path` names one place regardless of any current directory.\nOn the Unix systems, rooted is absolute. On Windows a rooted drive (`C:\\x`), a share and a verbatim path are\nabsolute; `C:name` is drive-relative and `\\name` drive-absent, and neither names one place on its own.",
+        "typeParams": [],
+        "params": [{ "name": "path", "markdown": "the path to act on" }],
+        "returns": "whether the path names a location without needing a working directory",
+        "see": ["https://rux-lang.dev/docs/api/path/syntax#is-absolute"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

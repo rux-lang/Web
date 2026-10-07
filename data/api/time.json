@@ -1,0 +1,3898 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Time",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Durations, monotonic clocks and wall clocks",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/time",
+    "dependencies": [
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "FreeBSD", "namespace": "Rux", "version": "0.1.0", "targetOS": ["FreeBSD"] },
+      { "name": "Linux", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Linux"] },
+      { "name": "macOS", "namespace": "Rux", "version": "0.1.0", "targetOS": ["macOS"] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Calendar",
+      "source": "Src/Calendar.rux",
+      "header": "The proleptic Gregorian calendar, extended backwards as if it had always been in force.\nA date is a year, a month and a day that actually exists: February 29th only in a leap year, the 31st only in\nthe months that have one. The conversion to and from a flat day count is the civil-calendar arithmetic that\ntreats March as the first month, which puts the leap day last and turns the month lengths into one formula --\nthe standard trick, worth having exactly once.\nLeap seconds are deliberately absent from `TimeOfDay`: a second is 0 to 59, and what to do about 23:59:60 is a\nparsing policy decided where text comes in, not a representation question."
+    },
+    {
+      "name": "CalendarArithmetic",
+      "source": "Src/CalendarArithmetic.rux",
+      "header": "Moving through the calendar, with the awkward cases decided rather than discovered.\nDays are the honest unit: adding days is adding to the epoch count, total and exact. Months and years are not --\nthe 31st of January has no counterpart one month on, and the leap day none one year on — so those operations\nneed a policy, and the policy here is **clamp to the month's end**: January 31st plus a month is the last day of\nFebruary, and February 29th plus a year is February 28th. Clamping is what a human means by \"same day next\nmonth\" when the day is missing, and it keeps the operation total; the alternative, refusing, would make month\narithmetic fail on a third of the calendar.\nWhat is deliberately deferred: IANA time zones and discovering the machine's local zone. Both are a database\nwith a release cycle, not arithmetic, and pretending otherwise is how software is wrong twice a year."
+    },
+    {
+      "name": "CalendarParse",
+      "source": "Src/CalendarParse.rux",
+      "header": "Reading a calendar value out of text, and saying exactly what was wrong with it.\nThe old parser answered `bool` and wrote through output slots, which made every failure the same failure. A\ncaller could not tell a typo from a February the thirtieth, and could not point at the character: both are\n\"false\", and both leave the caller re-reading its own input to guess.\nSo every parser here answers a `Result` and every failure carries a zero-based byte offset into the text it was\ngiven. The categories are the ones a caller acts on differently. A malformed shape is the writer's mistake and\nthe offset is where the shape stopped matching. An invalid month, a nonexistent day and an out-of-range time are\nwell-formed text naming something that does not exist, which is a different mistake and usually a different\nbug. An excessive fraction and an out-of-range offset are each a field that parsed and then would not fit.\nEnd of input is an offset like any other: it is the text's length, which is where the missing character would\nhave gone.\nThe four entry points share their machinery rather than reimplementing it, so `ParseRfc3339` cannot disagree\nwith `ParseDate` about what a date is."
+    },
+    {
+      "name": "CalendarText",
+      "source": "Src/CalendarText.rux",
+      "header": "What a calendar value looks like, and what it refuses to pretend to know.\nThe whole design here is one decision applied four times: a value renders what it holds and never invents what it\ndoes not. A `DateTime` is a date and a time with no offset field, so it renders without one — not with `Z`, which\nwould claim UTC, and not with the machine's local offset, which would claim a place. A reader who wants an offset\nin the text attaches one and renders an `OffsetDateTime`, which has somewhere to keep it.\nThat is why `OffsetDateTime` exists at all. RFC 3339 requires an offset, so a type that cannot carry one cannot\nproduce RFC 3339, and the alternative — letting `DateTime` take an offset argument at render time — puts the\ndecision in the wrong place: a format call has no way to pass one.\nThe renderers write digits directly rather than borrowing Format's integer machinery, which they could not do\nanyway without Time depending on it. Every field here has a known width, so the loops are fixed and nothing\nallocates: a year is four digits or as many as it needs, everything else is exactly two."
+    },
+    {
+      "name": "Duration",
+      "source": "Src/Duration.rux",
+      "header": "A span of time, exact to the nanosecond.\nA duration is seconds plus a nanosecond fraction, and the fraction is always in [0, 1e9): the value is\n`seconds + nanoseconds / 1e9` with the sign carried entirely by the seconds. That single invariant is what makes\nequality bytewise, ordering two comparisons, and arithmetic a carry — minus one and a half seconds is seconds\n-2 and half a billion nanoseconds, not two fields that each carry a sign and can disagree.\nThe arithmetic is checked. A duration overflows at about 292 billion years, which no honest computation reaches,\nso an overflow is a bug in the caller's arithmetic — and the answer to a bug is a report, not a wrap that turns\na timeout into a deadline in the past."
+    },
+    {
+      "name": "DurationText",
+      "source": "Src/DurationText.rux",
+      "header": "A span of time as text, and back.\nThe form is signed decimal seconds with an `s`: `1.5s`, `-0.25s`, `0s`. One unit rather than a broken-down\n`1h30m` because a duration is a number, and a number with one unit compares, sorts and round-trips without a\ngrammar. `seconds` names the same form explicitly, for a caller who wants the intent in the placeholder.\nThe negative case is the one worth care. A `Duration` is normalized as `seconds + nanoseconds / 1e9` with the\nfraction always in [0, 1e9), so minus one and a half seconds is *not* seconds = -1 and nanoseconds = 5e8: it is\nseconds = -2 and nanoseconds = 5e8, because -2 + 0.5 is -1.5. Rendering the fields as they sit would produce\n\"-2.5s\", which is wrong by two seconds and looks plausible. The magnitude has to be recomputed, and it is\ncomputed in `uint64` so that the most negative duration — whose magnitude has no positive counterpart in\n`int64` — comes out right rather than wrapping to itself."
+    },
+    {
+      "name": "Instant",
+      "source": "Src/Instant.rux",
+      "header": "A point on the clock that only moves forward.\nThe monotonic clock answers one question — how much time passed between two readings — and answers it even\nwhile somebody sets the wall clock, which is exactly when the wall clock answers it wrongly. An `Instant` means\nnothing as a number: it has no epoch, no calendar, and no meaning in another process. What it has is that a\nlater reading minus an earlier one is the time that really elapsed.\nSleeping used to live here, because it is the same clock's other direction. It moved to `Sleep.rux` when it\ngrew a failure to report and a chunking loop to drive, which is more than a clock reading needs next to it."
+    },
+    {
+      "name": "InstantText",
+      "source": "Src/InstantText.rux",
+      "header": "What a monotonic reading looks like to somebody inspecting a program, and why it has no reader's form.\n`Instant` implements `Debug` and deliberately does not implement `Display`. The absence is the design, not an\nomission waiting to be filled in. `Display` is the text a value has for a reader, and a reading of the monotonic\nclock has none: it is a count from an origin the system chose at boot, it means nothing in another process, and\nit names no moment anybody can look up. A reader handed \"812349871234\" learns nothing true. What is meaningful is\nthe difference between two readings, and that difference is a `Duration`, which renders itself.\nSo the only rendering here is the diagnostic one. It shows the tick count, because that is the only thing the\nvalue holds, and it wraps it in the type's name and the unit so that nobody reads it as a moment: `Instant(...)`\nis visibly a reading of something rather than a time, and `nanoseconds:` says what the number counts. Debug\noutput is diagnostic and promises no round trip, which is exactly the right promise for a number whose meaning\nends with the process that produced it."
+    },
+    {
+      "name": "Sleep",
+      "source": "Src/Sleep.rux",
+      "header": "Waiting for a whole span, and saying so when the wait did not happen.\nSleeping looks like the simplest thing in this package and has three ways to be quietly wrong, all of which this\nmodule used to have.\nA signal can cut a Unix wait short. The loop goes back for the remainder rather than returning early, because a\ncaller asked for a span, not for a span unless the process happened to receive a signal.\nWindows takes its interval as a 32-bit millisecond count, which runs out after about 49.7 days. Clamping a longer\nspan to that ceiling is what the previous version did, and it returned as though it had slept for the whole\nhundred days it was asked for. A span longer than the ceiling is now waited for in chunks.\nAnd a wait can simply fail. `nanosleep` reports `EINVAL` for a request it will not honor, and the previous\nversion could not tell that from a completed sleep — both left the remainder at zero — so it returned success\nhaving waited for nothing at all. The wait now reports a `TimeError`, and a caller that ignores it is at least\nmaking that choice.\nThe system wait is reached through the `Waiter` interface so that the chunking and the retry loop can be tested\nagainst an injected one. A test for a hundred-day sleep must not take a hundred days, and a test for an\ninterrupted sleep cannot arrange a signal."
+    },
+    {
+      "name": "Timestamp",
+      "source": "Src/Timestamp.rux",
+      "header": "The wall clock, in UTC, as a count from the Unix epoch.\nA timestamp is what the machine believes the time is: it jumps when the clock is set, drifts until NTP pulls it\nback, and two machines disagree about it. That is not a defect to paper over — it is what a wall clock is, and\nthe reason `Instant` exists for measuring. What a timestamp is for is naming a moment so another machine, or a\nlater run, can recognize it.\nThe representation is seconds since 1970-01-01T00:00:00 UTC and a nanosecond fraction, normalized exactly as a\n`Duration` is: fraction in [0, 1e9), sign in the seconds, so a moment before the epoch is negative seconds and a\nfraction counting up. Windows counts from 1601 in hundred-nanosecond ticks, and the conversion is one constant\nthe platform package already carries."
+    },
+    {
+      "name": "TimestampText",
+      "source": "Src/TimestampText.rux",
+      "header": "The wall clock as text, in one form unless the caller says otherwise.\nA timestamp is two things at once — a moment on the calendar and a count of seconds — and a type that renders\nwhichever one the caller seems to want is a type nobody can predict. So there is one default and it is the\ncalendar form: RFC 3339 in UTC, which is what a timestamp is for. Naming a moment so another machine recognizes\nit is the reason the value exists, and 1970-01-01T00:00:00Z reads as a date to every reader and every parser\nthere is, where 0 reads as a date to neither.\nThe second count is still available and still exact, but it has to be asked for by name: `{:unix}`. That is the\nwhole of the \"one default\" rule. A style that selects between two renderings is a choice made at the placeholder,\nwhere it is visible; a value that guesses is a choice made nowhere.\nThe calendar form has a range and the second count does not, which is the one place this file can fail on a value\nrather than on a request. The package spells four-digit years — `Date::PlusDays` already treats that as the honest\nbound, and RFC 3339 requires exactly four digits — so a moment outside years 0000 through 9999 has no RFC 3339\ntext at all. It is refused with `ValueOutOfRange` before anything is written, because a destination that has\nalready received \"+2724\" and then learns the value cannot be spelled is a destination holding a lie."
+    }
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "Date",
+      "displayName": "Date",
+      "module": "Calendar",
+      "source": "Src/Calendar.rux",
+      "line": 14,
+      "signature": "pub struct Date",
+      "typeParams": [],
+      "doc": {
+        "summary": "A calendar date that exists.",
+        "markdown": "A calendar date that exists.\n`Copy`. Only constructible through the fallible `New` factory, which lets everything downstream assume validity.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/date"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "year",
+          "type": "int32",
+          "public": true,
+          "line": 16,
+          "doc": "The year, astronomically numbered: year 0 exists and is 1 BCE.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "month",
+          "type": "uint8",
+          "public": true,
+          "line": 18,
+          "doc": "The month, 1 through 12.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "day",
+          "type": "uint8",
+          "public": true,
+          "line": 20,
+          "doc": "The day, 1 through the month's length.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 53,
+          "signature": "pub func New(year: int32, month: uint8, day: uint8) -> Date?",
+          "typeParams": [],
+          "params": [
+            { "name": "year", "type": "int32" },
+            { "name": "month", "type": "uint8" },
+            { "name": "day", "type": "uint8" }
+          ],
+          "receiver": null,
+          "returnType": "Date?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The date, when it exists.",
+            "markdown": "The date, when it exists.",
+            "typeParams": [],
+            "params": [
+              { "name": "year", "markdown": "the year, as a signed count from year zero" },
+              { "name": "month", "markdown": "the month, 1 through 12" },
+              { "name": "day", "markdown": "the day of the month, counting from one" }
+            ],
+            "returns": "the date, or `None` when the components do not name one",
+            "see": ["https://rux-lang.dev/docs/api/time/date#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "DaysFromEpoch",
+          "line": 63,
+          "signature": "pub func DaysFromEpoch(self: &Date) -> int64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Date",
+          "returnType": "int64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Days since 1970-01-01, negative before it.",
+            "markdown": "Days since 1970-01-01, negative before it.\nThe civil-calendar formula: the year is shifted so March opens it, which puts the leap day at the end where\nit cannot disturb the month arithmetic.",
+            "typeParams": [],
+            "params": [],
+            "returns": "days since 1970-01-01, negative before it",
+            "see": ["https://rux-lang.dev/docs/api/time/date#days-from-epoch"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromEpochDays",
+          "line": 81,
+          "signature": "pub func FromEpochDays(days: int64) -> Date",
+          "typeParams": [],
+          "params": [{ "name": "days", "type": "int64" }],
+          "receiver": null,
+          "returnType": "Date",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The date `days` after 1970-01-01, negative before it.",
+            "markdown": "The date `days` after 1970-01-01, negative before it.\nThe inverse of `DaysFromEpoch`, exactly: the pair round-trips every day of every representable year.",
+            "typeParams": [],
+            "params": [{ "name": "days", "markdown": "how many days" }],
+            "returns": "the date that many days after 1970-01-01",
+            "see": ["https://rux-lang.dev/docs/api/time/date#from-epoch-days"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "DayOfWeek",
+          "line": 98,
+          "signature": "pub func DayOfWeek(self: &Date) -> uint8",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Date",
+          "returnType": "uint8",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The day of the week, 0 for Sunday through 6 for Saturday.",
+            "markdown": "The day of the week, 0 for Sunday through 6 for Saturday.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the day of the week, with Monday as one",
+            "see": ["https://rux-lang.dev/docs/api/time/date#day-of-week"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "DayOfYear",
+          "line": 108,
+          "signature": "pub func DayOfYear(self: &Date) -> uint16",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Date",
+          "returnType": "uint16",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The day of the year, 1 through 365 or 366.",
+            "markdown": "The day of the year, 1 through 365 or 366.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the day of the year, counting from one",
+            "see": ["https://rux-lang.dev/docs/api/time/date#day-of-year"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 117,
+          "signature": "pub func Equals(self: &Date, other: Date) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Date" }],
+          "receiver": "&Date",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two dates are the same day.",
+            "markdown": "Whether two dates are the same day.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "whether the two are the same",
+            "see": ["https://rux-lang.dev/docs/api/time/date#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Compare",
+          "line": 125,
+          "signature": "pub func Compare(self: &Date, other: Date) -> Ordering",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Date" }],
+          "receiver": "&Date",
+          "returnType": "Ordering",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How this date orders against `other`.",
+            "markdown": "How this date orders against `other`.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "how this one orders against `other`",
+            "see": ["https://rux-lang.dev/docs/api/time/date#compare"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "PlusDays",
+          "line": 19,
+          "signature": "pub func PlusDays(self: &Date, days: int64) -> Date?",
+          "typeParams": [],
+          "params": [{ "name": "days", "type": "int64" }],
+          "receiver": "&Date",
+          "returnType": "Date?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The date `days` later, negative for earlier, or `None` outside the years the calendar spells.",
+            "markdown": "The date `days` later, negative for earlier, or `None` outside the years the calendar spells.\nExact: a day is a day, and the round trip through the epoch count neither loses nor invents one.",
+            "typeParams": [],
+            "params": [{ "name": "days", "markdown": "how many days" }],
+            "returns": "the date that many days later, or `None` when it leaves the range",
+            "see": ["https://rux-lang.dev/docs/api/time/date#plus-days"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "PlusMonths",
+          "line": 33,
+          "signature": "pub func PlusMonths(self: &Date, months: int64) -> Date?",
+          "typeParams": [],
+          "params": [{ "name": "months", "type": "int64" }],
+          "receiver": "&Date",
+          "returnType": "Date?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The date `months` later, clamped to the month's end where the day is missing.",
+            "markdown": "The date `months` later, clamped to the month's end where the day is missing.\nJanuary 31st plus one month is the last day of February; the clamp is the policy the module header states.",
+            "typeParams": [],
+            "params": [{ "name": "months", "markdown": "how many months" }],
+            "returns": "the date that many months later, clamped to the month's last day, or `None` when it leaves the range",
+            "see": ["https://rux-lang.dev/docs/api/time/date#plus-months"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "PlusYears",
+          "line": 53,
+          "signature": "pub func PlusYears(self: &Date, years: int64) -> Date?",
+          "typeParams": [],
+          "params": [{ "name": "years", "type": "int64" }],
+          "receiver": "&Date",
+          "returnType": "Date?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The date `years` later, with February 29th clamping to the 28th where the year is not leap.",
+            "markdown": "The date `years` later, with February 29th clamping to the 28th where the year is not leap.",
+            "typeParams": [],
+            "params": [{ "name": "years", "markdown": "how many years" }],
+            "returns": "the date that many years later, clamped for 29 February, or `None` when it leaves the range",
+            "see": ["https://rux-lang.dev/docs/api/time/date#plus-years"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "DaysSince",
+          "line": 66,
+          "signature": "pub func DaysSince(self: &Date, earlier: Date) -> int64",
+          "typeParams": [],
+          "params": [{ "name": "earlier", "type": "Date" }],
+          "receiver": "&Date",
+          "returnType": "int64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The whole days from `earlier` to this date, negative when it is the later one.",
+            "markdown": "The whole days from `earlier` to this date, negative when it is the later one.",
+            "typeParams": [],
+            "params": [{ "name": "earlier", "markdown": "the earlier reading" }],
+            "returns": "how many days `earlier` is before this date, negative if it is after",
+            "see": ["https://rux-lang.dev/docs/api/time/date#days-since"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 154,
+          "signature": "pub func WriteDisplay(self: &Date, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Date",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the date as `YYYY-MM-DD`.",
+            "markdown": "Writes the date as `YYYY-MM-DD`.\nA year outside 0 through 9999 carries a sign and as many digits as it needs, which is what ISO 8601 requires\nfor one: four digits is the agreed width, and anything wider is ambiguous without a sign to mark it.\nReports whatever the writer reported, and `UnsupportedRequest` for a style other than `iso8601` or\n`rfc3339`, or for a precision, which a date has nothing to apply one to.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole date was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/date#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 172,
+          "signature": "pub func WriteDebug(self: &Date, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Date",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`: a date has one reading, and quoting it would say nothing extra.",
+            "markdown": "The same text as `Display`: a date has one reading, and quoting it would say nothing extra.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole date was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/date#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsLeapYear",
+      "displayName": "IsLeapYear",
+      "module": "Calendar",
+      "source": "Src/Calendar.rux",
+      "line": 27,
+      "signature": "pub func IsLeapYear(year: int32) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether `year` is a leap year: every fourth, except every hundredth, except every four-hundredth.",
+        "markdown": "Whether `year` is a leap year: every fourth, except every hundredth, except every four-hundredth.",
+        "typeParams": [],
+        "params": [{ "name": "year", "markdown": "the year, as a signed count from year zero" }],
+        "returns": "whether that year has 366 days under the proleptic Gregorian calendar",
+        "see": ["https://rux-lang.dev/docs/api/time/date#is-leap-year"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "DaysInMonth",
+      "displayName": "DaysInMonth",
+      "module": "Calendar",
+      "source": "Src/Calendar.rux",
+      "line": 39,
+      "signature": "pub func DaysInMonth(year: int32, month: uint8) -> uint8",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many days `month` holds in `year`.",
+        "markdown": "How many days `month` holds in `year`.\nZero for a month that does not exist, which is what lets `Date::New` use it as the validator.",
+        "typeParams": [],
+        "params": [
+          { "name": "year", "markdown": "the year, as a signed count from year zero" },
+          { "name": "month", "markdown": "the month, 1 through 12" }
+        ],
+        "returns": "how many days that month has in that year",
+        "see": ["https://rux-lang.dev/docs/api/time/date#days-in-month"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TimeOfDay",
+      "displayName": "TimeOfDay",
+      "module": "Calendar",
+      "source": "Src/Calendar.rux",
+      "line": 138,
+      "signature": "pub struct TimeOfDay",
+      "typeParams": [],
+      "doc": {
+        "summary": "A time within a day, to the nanosecond.",
+        "markdown": "A time within a day, to the nanosecond.\n`Copy`, and only constructible valid. The second stops at 59: leap seconds are a policy for the text boundary,\nnot a representable value here.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/time-of-day"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "hour",
+          "type": "uint8",
+          "public": true,
+          "line": 140,
+          "doc": "The hour, 0 through 23.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "minute",
+          "type": "uint8",
+          "public": true,
+          "line": 142,
+          "doc": "The minute, 0 through 59.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "second",
+          "type": "uint8",
+          "public": true,
+          "line": 144,
+          "doc": "The second, 0 through 59.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "nanosecond",
+          "type": "uint32",
+          "public": true,
+          "line": 146,
+          "doc": "The fraction, in nanoseconds.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 157,
+          "signature": "pub func New(hour: uint8, minute: uint8, second: uint8, nanosecond: uint32) -> TimeOfDay?",
+          "typeParams": [],
+          "params": [
+            { "name": "hour", "type": "uint8" },
+            { "name": "minute", "type": "uint8" },
+            { "name": "second", "type": "uint8" },
+            { "name": "nanosecond", "type": "uint32" }
+          ],
+          "receiver": null,
+          "returnType": "TimeOfDay?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The time, when it exists.",
+            "markdown": "The time, when it exists.",
+            "typeParams": [],
+            "params": [
+              { "name": "hour", "markdown": "the hour, 0 through 23" },
+              { "name": "minute", "markdown": "the minute, 0 through 59" },
+              { "name": "second", "markdown": "the second, 0 through 59" },
+              { "name": "nanosecond", "markdown": "the nanosecond within the second" }
+            ],
+            "returns": "the time, or `None` when the components do not name one",
+            "see": ["https://rux-lang.dev/docs/api/time/time-of-day#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Midnight",
+          "line": 172,
+          "signature": "pub func Midnight() -> TimeOfDay",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "TimeOfDay",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Midnight exactly.",
+            "markdown": "Midnight exactly.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the first instant of a day",
+            "see": ["https://rux-lang.dev/docs/api/time/time-of-day#midnight"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SecondsFromMidnight",
+          "line": 179,
+          "signature": "pub func SecondsFromMidnight(self: &TimeOfDay) -> uint32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TimeOfDay",
+          "returnType": "uint32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The seconds from midnight to this time, ignoring the fraction.",
+            "markdown": "The seconds from midnight to this time, ignoring the fraction.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many whole seconds into the day this is",
+            "see": ["https://rux-lang.dev/docs/api/time/time-of-day#seconds-from-midnight"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 187,
+          "signature": "pub func WriteDisplay(self: &TimeOfDay, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&TimeOfDay",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the time as `HH:MM:SS`, with a fractional part when there is one.",
+            "markdown": "Writes the time as `HH:MM:SS`, with a fractional part when there is one.\nA precision names exactly that many fractional digits, 0 through 9, and truncates. Without one the fraction\nis written to the digits it has with trailing zeros trimmed, and omitted when it is zero.\nReports whatever the writer reported, `UnsupportedRequest` for a style other than `iso8601` or `rfc3339`,\nand `UnsupportedRequest` for a precision past nine, which no fraction has.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole time was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/time-of-day#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 205,
+          "signature": "pub func WriteDebug(self: &TimeOfDay, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&TimeOfDay",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`.",
+            "markdown": "The same text as `Display`.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole time was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/time-of-day#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "UtcOffset",
+      "displayName": "UtcOffset",
+      "module": "Calendar",
+      "source": "Src/Calendar.rux",
+      "line": 188,
+      "signature": "pub struct UtcOffset",
+      "typeParams": [],
+      "doc": {
+        "summary": "A fixed shift from UTC, in whole minutes.",
+        "markdown": "A fixed shift from UTC, in whole minutes.\nFixed is the word doing the work: this names what an offset is at one moment, and never which zone produced it\nor when that zone changes its mind. Zone rules are a database with a release cycle, and belong to a later phase.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/utc-offset"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "seconds",
+          "type": "int32",
+          "public": true,
+          "line": 190,
+          "doc": "The shift in seconds east of UTC, negative west, within a day either way.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Utc",
+          "line": 197,
+          "signature": "pub func Utc() -> UtcOffset",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "UtcOffset",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "UTC itself.",
+            "markdown": "UTC itself.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the zero offset",
+            "see": ["https://rux-lang.dev/docs/api/time/utc-offset#utc"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Of",
+          "line": 209,
+          "signature": "pub func Of(hours: int32, minutes: int32) -> UtcOffset?",
+          "typeParams": [],
+          "params": [
+            { "name": "hours", "type": "int32" },
+            { "name": "minutes", "type": "int32" }
+          ],
+          "receiver": null,
+          "returnType": "UtcOffset?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The offset `hours` and `minutes` from UTC, when it is one an offset can be.",
+            "markdown": "The offset `hours` and `minutes` from UTC, when it is one an offset can be.\nThe two carry the same sign — minus five thirty is `Of(-5, -30)` — and the whole must stay within a day.\nReal offsets stop at eighteen hours, but text may carry any legal-looking one and refusing to represent it\nwould turn parsing into policy.",
+            "typeParams": [],
+            "params": [
+              { "name": "hours", "markdown": "how many hours" },
+              { "name": "minutes", "markdown": "how many minutes" }
+            ],
+            "returns": "the offset, or `None` when it is outside the range UTC offsets take",
+            "see": ["https://rux-lang.dev/docs/api/time/utc-offset#of"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TotalSeconds",
+          "line": 219,
+          "signature": "pub func TotalSeconds(self: &UtcOffset) -> int32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&UtcOffset",
+          "returnType": "int32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The whole seconds east of UTC, negative west.",
+            "markdown": "The whole seconds east of UTC, negative west.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the offset in seconds, negative west of Greenwich",
+            "see": ["https://rux-lang.dev/docs/api/time/utc-offset#total-seconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 221,
+          "signature": "pub func WriteDisplay(self: &UtcOffset, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&UtcOffset",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the offset as `Z` for UTC, and as a signed `+HH:MM` otherwise.",
+            "markdown": "Writes the offset as `Z` for UTC, and as a signed `+HH:MM` otherwise.\n`Z` rather than `+00:00` because that is what RFC 3339 names UTC, and because the two are the same offset\nwritten two ways rather than two different offsets. A value that must be `+00:00` in its output is not\nasking about the offset but about the format, which is a question for whatever assembles the text.\nReports whatever the writer reported, and `UnsupportedRequest` for a style other than `iso8601` or\n`rfc3339`, or for a precision, which an offset has nothing to apply one to.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole offset was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/utc-offset#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 242,
+          "signature": "pub func WriteDebug(self: &UtcOffset, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&UtcOffset",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`.",
+            "markdown": "The same text as `Display`.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole offset was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/utc-offset#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "DateTime",
+      "displayName": "DateTime",
+      "module": "Calendar",
+      "source": "Src/Calendar.rux",
+      "line": 228,
+      "signature": "pub struct DateTime",
+      "typeParams": [],
+      "doc": {
+        "summary": "A date and a time of day together, in some understood offset.",
+        "markdown": "A date and a time of day together, in some understood offset.\n`Copy`. What offset the pair is in is the caller's knowledge, carried beside it where it matters — attaching\none permanently would make every arithmetic answer depend on a field that is usually UTC anyway.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/date-time"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "date",
+          "type": "Date",
+          "public": true,
+          "line": 230,
+          "doc": "The day.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "time",
+          "type": "TimeOfDay",
+          "public": true,
+          "line": 232,
+          "doc": "The time within it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "ToTimestamp",
+          "line": 242,
+          "signature": "pub func ToTimestamp(self: &DateTime, offset: UtcOffset) -> Timestamp",
+          "typeParams": [],
+          "params": [{ "name": "offset", "type": "UtcOffset" }],
+          "receiver": "&DateTime",
+          "returnType": "Timestamp",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The moment this date and time name in UTC, shifted by `offset`.",
+            "markdown": "The moment this date and time name in UTC, shifted by `offset`.\nThe shift subtracts: half past nine at plus two is half past seven in UTC. The range of a timestamp dwarfs\nthe calendar's, so the conversion cannot overflow for any date `Date::New` accepts.",
+            "typeParams": [],
+            "params": [{ "name": "offset", "markdown": "the offset from UTC" }],
+            "returns": "the moment this local time names at that offset",
+            "see": ["https://rux-lang.dev/docs/api/time/date-time#to-timestamp"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromTimestamp",
+          "line": 254,
+          "signature": "pub func FromTimestamp(moment: Timestamp, offset: UtcOffset) -> DateTime",
+          "typeParams": [],
+          "params": [
+            { "name": "moment", "type": "Timestamp" },
+            { "name": "offset", "type": "UtcOffset" }
+          ],
+          "receiver": null,
+          "returnType": "DateTime",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The date and time `moment` names, shifted into `offset`.",
+            "markdown": "The date and time `moment` names, shifted into `offset`.",
+            "typeParams": [],
+            "params": [
+              { "name": "moment", "markdown": "the moment to convert" },
+              { "name": "offset", "markdown": "the offset from UTC" }
+            ],
+            "returns": "the local date and time that moment names at that offset",
+            "see": ["https://rux-lang.dev/docs/api/time/date-time#from-timestamp"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 279,
+          "signature": "pub func Equals(self: &DateTime, other: DateTime) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "DateTime" }],
+          "receiver": "&DateTime",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two pairs name the same date and time.",
+            "markdown": "Whether two pairs name the same date and time.\nSame field values — two pairs in different offsets naming one moment are different here, which is what\ncarrying the offset beside the pair means.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "whether the two are the same",
+            "see": ["https://rux-lang.dev/docs/api/time/date-time#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 259,
+          "signature": "pub func WriteDisplay(self: &DateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&DateTime",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the local date and time as `YYYY-MM-DDTHH:MM:SS`, with no offset.",
+            "markdown": "Writes the local date and time as `YYYY-MM-DDTHH:MM:SS`, with no offset.\nThe absence is deliberate and is the point of the type. A `DateTime` holds no offset, so writing one would\nmean inventing it: `Z` would claim UTC and the machine's local offset would claim a place, and both would\nbe a guess presented as a fact. `OffsetDateTime` is the type that has somewhere to keep an offset, and it\nis what produces RFC 3339.\nReports whatever the writer reported, `UnsupportedRequest` for a style other than `iso8601` or `rfc3339`,\nand `UnsupportedRequest` for a precision past nine.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole date and time were accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/date-time#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 274,
+          "signature": "pub func WriteDebug(self: &DateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&DateTime",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`.",
+            "markdown": "The same text as `Display`.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole date and time were accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/date-time#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "TimeParseError",
+      "displayName": "TimeParseError",
+      "module": "CalendarParse",
+      "source": "Src/CalendarParse.rux",
+      "line": 22,
+      "signature": "pub variant TimeParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why text could not be read as a calendar value.",
+        "markdown": "Why text could not be read as a calendar value.\nFailure-only: every case is a failure, and each carries the zero-based UTF-8 byte offset into the text where it\nwas found. Success is `Result::Success`.\nCopy, carrying one offset.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/time-parse-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "InvalidSyntax",
+          "value": null,
+          "payload": "(uint)",
+          "line": 26,
+          "doc": "The text does not have the shape required: a missing separator, a non-digit where a digit belongs, text\nafter the value, or input that stops early. The offset is where the shape stopped matching, which is the\ntext's length when it ran out.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidMonth",
+          "value": null,
+          "payload": "(uint)",
+          "line": 28,
+          "doc": "A well-formed two-digit month naming no month. The offset is the first of its digits.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "NonexistentDay",
+          "value": null,
+          "payload": "(uint)",
+          "line": 31,
+          "doc": "A well-formed day that the month does not have, such as the thirtieth of February. The offset is the first\nof its digits.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidTime",
+          "value": null,
+          "payload": "(uint)",
+          "line": 34,
+          "doc": "A well-formed hour, minute or second outside its range. The offset is the first digit of the offending\nfield. Second 60 is not here: it is the leap second, and it folds rather than failing.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ExcessiveFraction",
+          "value": null,
+          "payload": "(uint)",
+          "line": 36,
+          "doc": "More fraction digits than a nanosecond can hold. The offset is the first digit that could not be kept.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidOffset",
+          "value": null,
+          "payload": "(uint)",
+          "line": 38,
+          "doc": "A well-formed offset outside what an offset may be. The offset is the sign that opened it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Offset",
+          "line": 46,
+          "signature": "pub func Offset(self: &TimeParseError) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TimeParseError",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "ParseFailure",
+          "public": true,
+          "doc": {
+            "summary": "Where in the input the failure was found.",
+            "markdown": "Where in the input the failure was found.\nBorrows the error. Cannot fail; runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the zero-based UTF-8 byte offset, which is the text's length at end of input",
+            "see": ["https://rux-lang.dev/docs/api/time/time-parse-error#offset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["ParseFailure"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ParseDate",
+      "displayName": "ParseDate",
+      "module": "CalendarParse",
+      "source": "Src/CalendarParse.rux",
+      "line": 233,
+      "signature": "pub func ParseDate(text: char8[..]) -> Date ! TimeParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads `YYYY-MM-DD`.",
+        "markdown": "Reads `YYYY-MM-DD`.\nStrict: four year digits, two month digits, two day digits, dashes between, and nothing after.\nReports `InvalidSyntax` for a shape that does not match, `InvalidMonth` for a month outside 1 through 12, and\n`NonexistentDay` for a day the month does not have. Each carries the byte offset where it was found.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the text to read" }],
+        "returns": "the date, or why the text is not one",
+        "see": ["https://rux-lang.dev/docs/api/time/date#parse-date"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ParseTimeOfDay",
+      "displayName": "ParseTimeOfDay",
+      "module": "CalendarParse",
+      "source": "Src/CalendarParse.rux",
+      "line": 246,
+      "signature": "pub func ParseTimeOfDay(text: char8[..]) -> TimeOfDay ! TimeParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads `HH:MM:SS` with an optional fractional second.",
+        "markdown": "Reads `HH:MM:SS` with an optional fractional second.\nReports `InvalidSyntax` for a shape that does not match, `InvalidTime` for a field outside its range, and\n`ExcessiveFraction` for more fraction digits than a nanosecond holds. Second 60 folds rather than failing.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the text to read" }],
+        "returns": "the time of day, or why the text is not one",
+        "see": ["https://rux-lang.dev/docs/api/time/time-of-day#parse-time-of-day"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ParseDateTime",
+      "displayName": "ParseDateTime",
+      "module": "CalendarParse",
+      "source": "Src/CalendarParse.rux",
+      "line": 261,
+      "signature": "pub func ParseDateTime(text: char8[..]) -> DateTime ! TimeParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads `YYYY-MM-DDTHH:MM:SS[.fraction]`, with no offset.",
+        "markdown": "Reads `YYYY-MM-DDTHH:MM:SS[.fraction]`, with no offset.\nThe separator may be `T`, `t` or a space, which is as far as the RFC 3339 liberality goes. No offset is read,\nand one present is text after the value: a `DateTime` has nowhere to keep an offset, so accepting one would\ndiscard it silently. `ParseRfc3339` is what reads a moment that carries one.\nThe failures `ParseDate` and `ParseTimeOfDay` report, at their offsets within this text.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the text to read" }],
+        "returns": "the local date and time, or why the text is not one",
+        "see": ["https://rux-lang.dev/docs/api/time/date-time#parse-date-time"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ParseRfc3339",
+      "displayName": "ParseRfc3339",
+      "module": "CalendarParse",
+      "source": "Src/CalendarParse.rux",
+      "line": 280,
+      "signature": "pub func ParseRfc3339(text: char8[..]) -> OffsetDateTime ! TimeParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads `YYYY-MM-DDTHH:MM:SS[.fraction](Z|+HH:MM|-HH:MM)`.",
+        "markdown": "Reads `YYYY-MM-DDTHH:MM:SS[.fraction](Z|+HH:MM|-HH:MM)`.\nThe offset is required, which is what RFC 3339 requires and what makes the result a moment rather than a local\nreading. Second 60 folds to the last nanosecond of second 59, as this package's leap-second policy states;\nformatting never produces second 60, so the fold is one-way and the round trip is clean for every ordinary\nmoment.\nThe failures the date, time and offset readers report, plus `InvalidSyntax` for text after the offset. Each\ncarries the byte offset where it was found.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the text to read" }],
+        "returns": "the moment with the offset it was stated in, or why the text is not one",
+        "see": ["https://rux-lang.dev/docs/api/time/offset-date-time#parse-rfc3339"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "OffsetDateTime",
+      "displayName": "OffsetDateTime",
+      "module": "CalendarText",
+      "source": "Src/CalendarText.rux",
+      "line": 21,
+      "signature": "pub struct OffsetDateTime",
+      "typeParams": [],
+      "doc": {
+        "summary": "A date and time together with the offset from UTC they are stated in.",
+        "markdown": "A date and time together with the offset from UTC they are stated in.\n`DateTime` deliberately carries no offset, since what offset a bare date and time is in is usually the caller's\nknowledge rather than the value's. This is the pairing for when it is not: an instant written down for\ninterchange, where the offset is part of what was recorded and losing it changes the meaning.\n`Copy`, and exactly as wide as its two halves.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/offset-date-time"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "dateTime",
+          "type": "DateTime",
+          "public": true,
+          "line": 23,
+          "doc": "The local date and time, as stated in `offset`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "offset",
+          "type": "UtcOffset",
+          "public": true,
+          "line": 25,
+          "doc": "The offset from UTC that `dateTime` is stated in.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "OffsetDateTime",
+          "line": 36,
+          "signature": "pub func OffsetDateTime(dateTime: DateTime, offset: UtcOffset) -> OffsetDateTime",
+          "typeParams": [],
+          "params": [
+            { "name": "dateTime", "type": "DateTime" },
+            { "name": "offset", "type": "UtcOffset" }
+          ],
+          "receiver": null,
+          "returnType": "OffsetDateTime",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The local date and time `dateTime` paired with the offset it is stated in.",
+            "markdown": "The local date and time `dateTime` paired with the offset it is stated in.\nCannot fail: both halves are already valid, and no combination of a valid date-time and a valid offset is\ninvalid. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [
+              { "name": "dateTime", "markdown": "the local date and time" },
+              { "name": "offset", "markdown": "the offset from UTC that `dateTime` is stated in" }
+            ],
+            "returns": "the pairing",
+            "see": ["https://rux-lang.dev/docs/api/time/offset-date-time#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "ToTimestamp",
+          "line": 44,
+          "signature": "pub func ToTimestamp(self: &OffsetDateTime) -> Timestamp",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&OffsetDateTime",
+          "returnType": "Timestamp",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The moment this names in UTC.",
+            "markdown": "The moment this names in UTC.\nCannot fail; runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the instant, as a timestamp",
+            "see": ["https://rux-lang.dev/docs/api/time/offset-date-time#to-timestamp"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 300,
+          "signature": "pub func WriteDisplay(self: &OffsetDateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&OffsetDateTime",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the moment as RFC 3339: `YYYY-MM-DDTHH:MM:SS[.fraction]` followed by `Z` or a signed `HH:MM`.",
+            "markdown": "Writes the moment as RFC 3339: `YYYY-MM-DDTHH:MM:SS[.fraction]` followed by `Z` or a signed `HH:MM`.\nThis is the type that can produce RFC 3339, because it is the one that carries an offset. The offset is\nwritten as it is held rather than normalized to UTC: what was recorded includes where, and shifting it away\nwould discard that.\nReports whatever the writer reported, `UnsupportedRequest` for a style other than `iso8601` or `rfc3339`,\nand `UnsupportedRequest` for a precision past nine.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole moment was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/offset-date-time#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 315,
+          "signature": "pub func WriteDebug(self: &OffsetDateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&OffsetDateTime",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`.",
+            "markdown": "The same text as `Display`.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole moment was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/offset-date-time#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "NanosecondsPerSecond",
+      "displayName": "NanosecondsPerSecond",
+      "module": "Duration",
+      "source": "Src/Duration.rux",
+      "line": 14,
+      "signature": "pub const NanosecondsPerSecond: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many nanoseconds one second holds.",
+        "markdown": "How many nanoseconds one second holds.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/duration#nanoseconds-per-second"],
+        "deprecated": null
+      },
+      "value": "1000000000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Duration",
+      "displayName": "Duration",
+      "module": "Duration",
+      "source": "Src/Duration.rux",
+      "line": 19,
+      "signature": "pub struct Duration",
+      "typeParams": [],
+      "doc": {
+        "summary": "A span of time: seconds and a fraction, normalized.",
+        "markdown": "A span of time: seconds and a fraction, normalized.\n`Copy`. The value is `seconds + nanoseconds / 1e9`, and `nanoseconds` is always in [0, 1e9).",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/duration"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "seconds",
+          "type": "int64",
+          "public": true,
+          "line": 21,
+          "doc": "The whole seconds, carrying the sign.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "nanoseconds",
+          "type": "uint32",
+          "public": false,
+          "line": 23,
+          "doc": "The fraction, in nanoseconds, always in [0, 1e9).",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Zero",
+          "line": 30,
+          "signature": "pub func Zero() -> Duration",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Duration",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "No time at all.",
+            "markdown": "No time at all.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a span of no time at all",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#zero"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromSeconds",
+          "line": 38,
+          "signature": "pub func FromSeconds(seconds: int64) -> Duration",
+          "typeParams": [],
+          "params": [{ "name": "seconds", "type": "int64" }],
+          "receiver": null,
+          "returnType": "Duration",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Exactly `seconds` seconds.",
+            "markdown": "Exactly `seconds` seconds.",
+            "typeParams": [],
+            "params": [{ "name": "seconds", "markdown": "how many seconds" }],
+            "returns": "that many seconds",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#from-seconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromMinutes",
+          "line": 46,
+          "signature": "pub func FromMinutes(minutes: int64) -> Duration?",
+          "typeParams": [],
+          "params": [{ "name": "minutes", "type": "int64" }],
+          "receiver": null,
+          "returnType": "Duration?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Exactly `minutes` minutes, or `None` past the range.",
+            "markdown": "Exactly `minutes` minutes, or `None` past the range.",
+            "typeParams": [],
+            "params": [{ "name": "minutes", "markdown": "how many minutes" }],
+            "returns": "that many minutes, or `None` when the count does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#from-minutes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromHours",
+          "line": 56,
+          "signature": "pub func FromHours(hours: int64) -> Duration?",
+          "typeParams": [],
+          "params": [{ "name": "hours", "type": "int64" }],
+          "receiver": null,
+          "returnType": "Duration?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Exactly `hours` hours, or `None` past the range.",
+            "markdown": "Exactly `hours` hours, or `None` past the range.",
+            "typeParams": [],
+            "params": [{ "name": "hours", "markdown": "how many hours" }],
+            "returns": "that many hours, or `None` when the count does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#from-hours"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromMilliseconds",
+          "line": 67,
+          "signature": "pub func FromMilliseconds(milliseconds: int64) -> Duration",
+          "typeParams": [],
+          "params": [{ "name": "milliseconds", "type": "int64" }],
+          "receiver": null,
+          "returnType": "Duration",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Exactly `milliseconds` milliseconds.",
+            "markdown": "Exactly `milliseconds` milliseconds.\nCannot overflow: every `int64` count of milliseconds fits.",
+            "typeParams": [],
+            "params": [{ "name": "milliseconds", "markdown": "how many milliseconds" }],
+            "returns": "that many milliseconds",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#from-milliseconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromMicroseconds",
+          "line": 75,
+          "signature": "pub func FromMicroseconds(microseconds: int64) -> Duration",
+          "typeParams": [],
+          "params": [{ "name": "microseconds", "type": "int64" }],
+          "receiver": null,
+          "returnType": "Duration",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Exactly `microseconds` microseconds.",
+            "markdown": "Exactly `microseconds` microseconds.",
+            "typeParams": [],
+            "params": [{ "name": "microseconds", "markdown": "how many microseconds" }],
+            "returns": "that many microseconds",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#from-microseconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromNanoseconds",
+          "line": 83,
+          "signature": "pub func FromNanoseconds(nanoseconds: int64) -> Duration",
+          "typeParams": [],
+          "params": [{ "name": "nanoseconds", "type": "int64" }],
+          "receiver": null,
+          "returnType": "Duration",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Exactly `nanoseconds` nanoseconds.",
+            "markdown": "Exactly `nanoseconds` nanoseconds.",
+            "typeParams": [],
+            "params": [{ "name": "nanoseconds", "markdown": "how many nanoseconds" }],
+            "returns": "that many nanoseconds",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#from-nanoseconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsZero",
+          "line": 103,
+          "signature": "pub func IsZero(self: &Duration) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Duration",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this span is exactly nothing.",
+            "markdown": "Whether this span is exactly nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the span is exactly zero",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#is-zero"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsNegative",
+          "line": 111,
+          "signature": "pub func IsNegative(self: &Duration) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Duration",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this span is negative.",
+            "markdown": "Whether this span is negative.\nThe sign lives in the seconds alone, which the normalization guarantees.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the span runs backwards",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#is-negative"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WholeSeconds",
+          "line": 118,
+          "signature": "pub func WholeSeconds(self: &Duration) -> int64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Duration",
+          "returnType": "int64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The whole seconds, rounded toward negative infinity.",
+            "markdown": "The whole seconds, rounded toward negative infinity.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the whole seconds, truncated toward zero",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#whole-seconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SubsecondNanoseconds",
+          "line": 125,
+          "signature": "pub func SubsecondNanoseconds(self: &Duration) -> uint32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Duration",
+          "returnType": "uint32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The fraction beyond the whole seconds, in nanoseconds, always in [0, 1e9).",
+            "markdown": "The fraction beyond the whole seconds, in nanoseconds, always in [0, 1e9).",
+            "typeParams": [],
+            "params": [],
+            "returns": "the nanoseconds within the second, in `[0, 999999999]`",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#subsecond-nanoseconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TotalMilliseconds",
+          "line": 132,
+          "signature": "pub func TotalMilliseconds(self: &Duration) -> int64?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Duration",
+          "returnType": "int64?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This span as milliseconds, truncated toward zero, or `None` where an `int64` of them cannot hold it.",
+            "markdown": "This span as milliseconds, truncated toward zero, or `None` where an `int64` of them cannot hold it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the whole span in milliseconds, or `None` when it does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#total-milliseconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TotalMicroseconds",
+          "line": 139,
+          "signature": "pub func TotalMicroseconds(self: &Duration) -> int64?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Duration",
+          "returnType": "int64?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This span as microseconds, truncated toward zero.",
+            "markdown": "This span as microseconds, truncated toward zero.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the whole span in microseconds, or `None` when it does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#total-microseconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TotalNanoseconds",
+          "line": 146,
+          "signature": "pub func TotalNanoseconds(self: &Duration) -> int64?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Duration",
+          "returnType": "int64?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This span as nanoseconds, or `None` where an `int64` of them cannot hold it — about 292 years.",
+            "markdown": "This span as nanoseconds, or `None` where an `int64` of them cannot hold it — about 292 years.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the whole span in nanoseconds, or `None` when it does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#total-nanoseconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Plus",
+          "line": 164,
+          "signature": "pub func Plus(self: &Duration, other: Duration) -> Duration?",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Duration" }],
+          "receiver": "&Duration",
+          "returnType": "Duration?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The sum of two spans, or `None` past the range.",
+            "markdown": "The sum of two spans, or `None` past the range.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "the sum, or `None` when it does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#plus"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Minus",
+          "line": 179,
+          "signature": "pub func Minus(self: &Duration, other: Duration) -> Duration?",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Duration" }],
+          "receiver": "&Duration",
+          "returnType": "Duration?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The difference of two spans, or `None` past the range.",
+            "markdown": "The difference of two spans, or `None` past the range.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "the difference, or `None` when it does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#minus"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Negated",
+          "line": 193,
+          "signature": "pub func Negated(self: &Duration) -> Duration?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Duration",
+          "returnType": "Duration?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This span negated, or `None` for the one value whose negation does not fit.",
+            "markdown": "This span negated, or `None` for the one value whose negation does not fit.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the span running the other way, or `None` when it does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#negated"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Times",
+          "line": 202,
+          "signature": "pub func Times(self: &Duration, factor: int64) -> Duration?",
+          "typeParams": [],
+          "params": [{ "name": "factor", "type": "int64" }],
+          "receiver": "&Duration",
+          "returnType": "Duration?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This span scaled by a whole factor, or `None` past the range.",
+            "markdown": "This span scaled by a whole factor, or `None` past the range.",
+            "typeParams": [],
+            "params": [{ "name": "factor", "markdown": "what to multiply by" }],
+            "returns": "the product, or `None` when it does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#times"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 219,
+          "signature": "pub func Equals(self: &Duration, other: Duration) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Duration" }],
+          "receiver": "&Duration",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two spans are the same time.",
+            "markdown": "Whether two spans are the same time.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "whether the two spans are the same length",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Compare",
+          "line": 228,
+          "signature": "pub func Compare(self: &Duration, other: Duration) -> Ordering",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Duration" }],
+          "receiver": "&Duration",
+          "returnType": "Ordering",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How this span orders against `other`.",
+            "markdown": "How this span orders against `other`.\nTwo comparisons, which the normalization pays for: the seconds decide, and the fractions only tie-break.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "how this span orders against `other`",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#compare"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 108,
+          "signature": "pub func WriteDisplay(self: &Duration, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Duration",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the span as signed decimal seconds followed by `s`.",
+            "markdown": "Writes the span as signed decimal seconds followed by `s`.\nThe magnitude is recomputed from the normalized representation rather than read off it: a negative duration\nstores minus one and a half seconds as seconds = -2 with a fraction of 0.5, so printing the fields as they\nsit would say \"-2.5s\".\nA precision names exactly that many fractional digits, 0 through 9, and truncates. Without one the fraction\nis written to the digits it has with trailing zeros trimmed, and omitted when it is zero, so a whole number\nof seconds renders as one.\nReports whatever the writer reported, and `UnsupportedRequest` for a style other than `seconds` or for a\nprecision past nine.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole rendering was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 127,
+          "signature": "pub func WriteDebug(self: &Duration, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Duration",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`: a span has one reading.",
+            "markdown": "The same text as `Display`: a span has one reading.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole rendering was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/duration#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ParseDuration",
+      "displayName": "ParseDuration",
+      "module": "DurationText",
+      "source": "Src/DurationText.rux",
+      "line": 141,
+      "signature": "pub func ParseDuration(text: char8[..]) -> Duration ! TimeParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a span written as signed decimal seconds followed by `s`.",
+        "markdown": "Reads a span written as signed decimal seconds followed by `s`.\nAccepts what `Display` writes: an optional sign, at least one digit, an optional fraction of up to nine digits,\nand a closing `s`. A leading `+` is accepted and means the same as no sign.\nReports `InvalidSyntax` with the byte offset where the shape stopped matching, and `ExcessiveFraction` at the\nfirst digit that a nanosecond cannot hold. A magnitude too large for the representation is `InvalidSyntax` at\nthe digit that overflowed, since the text is well formed and the value simply is not one.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the text to read" }],
+        "returns": "the span, or why the text is not one",
+        "see": ["https://rux-lang.dev/docs/api/time/duration#parse-duration"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Instant",
+      "displayName": "Instant",
+      "module": "Instant",
+      "source": "Src/Instant.rux",
+      "line": 23,
+      "signature": "pub struct Instant",
+      "typeParams": [],
+      "doc": {
+        "summary": "A reading of the monotonic clock.",
+        "markdown": "A reading of the monotonic clock.\n`Copy`. Meaningful only against another reading from the same process: there is no epoch and no calendar here,\nwhich is the point — nothing anybody does to the wall clock changes what `Since` answers.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/instant"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "ticks",
+          "type": "uint64",
+          "public": false,
+          "line": 25,
+          "doc": "Nanoseconds since some origin fixed for the life of the process.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Now",
+          "line": 33,
+          "signature": "pub func Now() -> Instant",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Instant",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The clock, read now.",
+            "markdown": "The clock, read now.\nCannot fail on any supported system: the monotonic clock exists from boot and needs no permission.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the monotonic clock, read now",
+            "see": ["https://rux-lang.dev/docs/api/time/instant#now"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Since",
+          "line": 60,
+          "signature": "pub func Since(self: &Instant, earlier: Instant) -> Duration?",
+          "typeParams": [],
+          "params": [{ "name": "earlier", "type": "Instant" }],
+          "receiver": "&Instant",
+          "returnType": "Duration?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The time between `earlier` and this reading, or `None` when `earlier` is not earlier.",
+            "markdown": "The time between `earlier` and this reading, or `None` when `earlier` is not earlier.\nRefusing the reversed pair rather than answering with garbage is what makes a mixed-up argument order a\nvisible bug instead of a wildly large duration.",
+            "typeParams": [],
+            "params": [{ "name": "earlier", "markdown": "the earlier reading" }],
+            "returns": "the time between the two readings, or `None` when `earlier` is not earlier",
+            "see": ["https://rux-lang.dev/docs/api/time/instant#since"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Elapsed",
+          "line": 71,
+          "signature": "pub func Elapsed(self: &Instant) -> Duration",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Instant",
+          "returnType": "Duration",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The time from this reading to now.",
+            "markdown": "The time from this reading to now.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the time from this reading to now",
+            "see": ["https://rux-lang.dev/docs/api/time/instant#elapsed"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 26,
+          "signature": "pub func WriteDebug(self: &Instant, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Instant",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "Writes the reading as `Instant(nanoseconds: N)`.",
+            "markdown": "Writes the reading as `Instant(nanoseconds: N)`.\nThe tick count is shown as it is held, in the unit it is held in, named and wrapped so it cannot be mistaken\nfor a moment on any calendar. There is no `Display` counterpart: a monotonic reading has no text for a\nreader, only a difference from another reading, and that difference is a `Duration`.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision — a reading has\none form, and neither a style nor a fraction has anything to select here.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole reading was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/instant#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "TimeError",
+      "displayName": "TimeError",
+      "module": "Sleep",
+      "source": "Src/Sleep.rux",
+      "line": 32,
+      "signature": "pub enum TimeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why a wait did not happen.",
+        "markdown": "Why a wait did not happen. `Copy`.\nEvery case is a failure. An interruption is not one: a waiter that was cut short succeeds with the part of the span\nstill to wait, and `SleepFor` goes back for it, because a caller that asked for a span asked for the whole span.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/sleep#time-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "InvalidDuration",
+          "value": "2",
+          "payload": null,
+          "line": 34,
+          "doc": "The system refused the request itself, rather than being unable to finish it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Failed",
+          "value": "3",
+          "payload": null,
+          "line": 36,
+          "doc": "The system reported a failure this module has no name for.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "MaximumWaitMilliseconds",
+      "displayName": "MaximumWaitMilliseconds",
+      "module": "Sleep",
+      "source": "Src/Sleep.rux",
+      "line": 45,
+      "signature": "pub const MaximumWaitMilliseconds: int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The longest interval one system wait may be asked for, in milliseconds.",
+        "markdown": "The longest interval one system wait may be asked for, in milliseconds.\nWindows takes a 32-bit count and reserves `0xFFFFFFFF` to mean \"wait forever\", so the largest finite request is\none less. Every system's wait is chunked to this so that the loop is the same everywhere and so that a test of\nthe chunking is a test of what actually runs.\nAbout 49.7 days. A span longer than this is waited for in more than one chunk.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/sleep#maximum-wait-milliseconds"],
+        "deprecated": null
+      },
+      "value": "4294967294",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WaitChunkMilliseconds",
+      "displayName": "WaitChunkMilliseconds",
+      "module": "Sleep",
+      "source": "Src/Sleep.rux",
+      "line": 58,
+      "signature": "pub func WaitChunkMilliseconds(span: Duration) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "How long the next single wait should be asked for, given how much of the span is left.",
+        "markdown": "How long the next single wait should be asked for, given how much of the span is left.\nReturns the whole millisecond count to ask the system for: the remaining span rounded **up**, since a wait\npromises at least what was asked and never less, or `MaximumWaitMilliseconds` when the remainder is longer than\none wait can express. Never zero for a positive span, so a loop driven by this always makes progress.\nA negative or zero span gives zero, which is the value a caller uses to stop.\nThis is where the old clamp was, and it is public so that the hundred-day case can be checked without waiting a\nhundred days.\nCannot fail. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "span", "markdown": "how much of the wait is left" }],
+        "returns": "the milliseconds to ask the system for",
+        "see": ["https://rux-lang.dev/docs/api/time/sleep#wait-chunk-milliseconds"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "interface",
+      "name": "Waiter",
+      "displayName": "Waiter",
+      "module": "Sleep",
+      "source": "Src/Sleep.rux",
+      "line": 82,
+      "signature": "pub interface Waiter",
+      "typeParams": [],
+      "doc": {
+        "summary": "One wait, however the caller reaches the system.",
+        "markdown": "One wait, however the caller reaches the system.\nAn implementation waits for at most `span` and reports what is left of it. Reporting less than the whole span as\nremaining is how a wait says it did some of the work, including when a signal stopped it early; failing is how it\nsays the system refused. `SleepFor` drives whichever implementation it is given until nothing is left.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/waiter"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "requirement",
+          "name": "WaitFor",
+          "line": 91,
+          "signature": "func WaitFor(self: &var Self, span: Duration) -> Duration ! TimeError",
+          "typeParams": [],
+          "params": [{ "name": "span", "type": "Duration" }],
+          "receiver": "&var Self",
+          "returnType": "Duration ! TimeError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waits for at most `span`, and reports what remains of it.",
+            "markdown": "Waits for at most `span`, and reports what remains of it.\nSucceeds with the unwaited part, which is zero when the whole span was waited for and more than zero when\nsomething stopped the wait early with time still to go.\nFails when the system refused the wait. An implementation must not succeed with zero unless the span really\nelapsed.",
+            "typeParams": [],
+            "params": [{ "name": "span", "markdown": "how much time to wait for" }],
+            "returns": "what is left of `span`, or why the wait did not happen",
+            "see": ["https://rux-lang.dev/docs/api/time/waiter#wait-for"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "SystemWaiter",
+      "displayName": "SystemWaiter",
+      "module": "Sleep",
+      "source": "Src/Sleep.rux",
+      "line": 98,
+      "signature": "pub struct SystemWaiter",
+      "typeParams": [],
+      "doc": {
+        "summary": "The wait every supported system actually provides.",
+        "markdown": "The wait every supported system actually provides. `Copy`.\nHolds nothing: the system is the state. Construct one with `SystemWaiter()` and hand it to `SleepUsing`, or use\n`SleepFor`, which does that.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/waiter#system-waiter"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "reserved",
+          "type": "uint8",
+          "public": false,
+          "line": 101,
+          "doc": "Present because a struct with no fields has no address to distinguish two of, and this type is passed by\nreference to a generic. It is never read.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "SystemWaiter",
+          "line": 109,
+          "signature": "pub func SystemWaiter() -> SystemWaiter",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "SystemWaiter",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A waiter that reaches the operating system.",
+            "markdown": "A waiter that reaches the operating system.\nCannot fail. Runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the waiter",
+            "see": ["https://rux-lang.dev/docs/api/time/waiter#system-waiter-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Waiter"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "MaximumWaitAttempts",
+      "displayName": "MaximumWaitAttempts",
+      "module": "Sleep",
+      "source": "Src/Sleep.rux",
+      "line": 159,
+      "signature": "pub const MaximumWaitAttempts: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many waits `SleepFor` will make before giving up on a span that never shrinks.",
+        "markdown": "How many waits `SleepFor` will make before giving up on a span that never shrinks.\nA `Waiter` that reports success without waiting and without reducing the remainder would spin forever. This is\nnot a limit any real wait reaches: the system waiter always either advances or fails.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/sleep#maximum-wait-attempts"],
+        "deprecated": null
+      },
+      "value": "4096",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SleepUsing",
+      "displayName": "SleepUsing<W>",
+      "module": "Sleep",
+      "source": "Src/Sleep.rux",
+      "line": 173,
+      "signature": "pub func SleepUsing<W: Waiter>(waiter: &var W, span: Duration) -> ! TimeError",
+      "typeParams": [{ "name": "W", "bounds": ["Waiter"] }],
+      "doc": {
+        "summary": "Waits out `span` through `waiter`, retrying interruptions and chunking what one wait cannot express.",
+        "markdown": "Waits out `span` through `waiter`, retrying interruptions and chunking what one wait cannot express.\nA negative or zero span returns at once, having waited for nothing. Otherwise this calls `waiter` until it\nreports that nothing is left, so an interruption is invisible to the caller and a span longer than one wait\ntakes several.\nFails with whatever the waiter failed with, having stopped there rather than asking again. Fails with `Failed`\nwhen the waiter neither advanced nor failed `MaximumWaitAttempts` times running, which no real wait does and which\nis what keeps a broken implementation from hanging a program.",
+        "typeParams": [{ "name": "W", "markdown": "the waiter's type" }],
+        "params": [
+          { "name": "waiter", "markdown": "how to reach the wait" },
+          { "name": "span", "markdown": "how long to wait for" }
+        ],
+        "returns": "nothing when the whole span was waited out, or why it was not",
+        "see": ["https://rux-lang.dev/docs/api/time/sleep#sleep-using"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SleepFor",
+      "displayName": "SleepFor",
+      "module": "Sleep",
+      "source": "Src/Sleep.rux",
+      "line": 202,
+      "signature": "pub func SleepFor(span: Duration) -> ! TimeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Stops the calling thread for at least `span`.",
+        "markdown": "Stops the calling thread for at least `span`.\nAt least: the system wakes the thread no earlier, and how much later is the scheduler's business. A negative or\nzero span returns at once.\nA signal can interrupt the wait on the Unix systems, and this goes back for the remainder until the whole span\nhas passed — the interruption is invisible, which is what makes this safe to use for pacing. A span longer than\none system wait can express is waited for in chunks rather than clamped, so a hundred-day sleep is a hundred\ndays.\nFails with `InvalidDuration` when the system refused the request, which a normalized non-negative span should not\nproduce, and `Failed` for anything else. A caller with nothing to do about a failed wait says so with\n`SleepFor(span) catch { else => {} }`; the point is that it is no longer indistinguishable from success.",
+        "typeParams": [],
+        "params": [{ "name": "span", "markdown": "how long to wait for" }],
+        "returns": "nothing when the whole span was waited out, or why it was not",
+        "see": ["https://rux-lang.dev/docs/api/time/sleep"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Timestamp",
+      "displayName": "Timestamp",
+      "module": "Timestamp",
+      "source": "Src/Timestamp.rux",
+      "line": 26,
+      "signature": "pub struct Timestamp",
+      "typeParams": [],
+      "doc": {
+        "summary": "A moment in UTC: seconds since the Unix epoch and a fraction, normalized.",
+        "markdown": "A moment in UTC: seconds since the Unix epoch and a fraction, normalized.\n`Copy`. The value is `seconds + nanoseconds / 1e9` from 1970-01-01T00:00:00 UTC, and `nanoseconds` is always in\n[0, 1e9).",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/timestamp"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "seconds",
+          "type": "int64",
+          "public": true,
+          "line": 28,
+          "doc": "Whole seconds since the epoch, carrying the sign.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "nanoseconds",
+          "type": "uint32",
+          "public": true,
+          "line": 30,
+          "doc": "The fraction, in nanoseconds, always in [0, 1e9).",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Epoch",
+          "line": 37,
+          "signature": "pub func Epoch() -> Timestamp",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Timestamp",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The epoch itself: 1970-01-01T00:00:00 UTC exactly.",
+            "markdown": "The epoch itself: 1970-01-01T00:00:00 UTC exactly.",
+            "typeParams": [],
+            "params": [],
+            "returns": "1970-01-01T00:00:00Z",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#epoch"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Now",
+          "line": 44,
+          "signature": "pub func Now() -> Timestamp",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Timestamp",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The wall clock, read now.",
+            "markdown": "The wall clock, read now.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the wall clock, read now",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#now"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromUnixSeconds",
+          "line": 69,
+          "signature": "pub func FromUnixSeconds(seconds: int64) -> Timestamp",
+          "typeParams": [],
+          "params": [{ "name": "seconds", "type": "int64" }],
+          "receiver": null,
+          "returnType": "Timestamp",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A moment from a plain second count, the shape most protocols carry.",
+            "markdown": "A moment from a plain second count, the shape most protocols carry.",
+            "typeParams": [],
+            "params": [{ "name": "seconds", "markdown": "how many seconds" }],
+            "returns": "that many seconds after the epoch",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#from-unix-seconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "UnixSeconds",
+          "line": 76,
+          "signature": "pub func UnixSeconds(self: &Timestamp) -> int64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Timestamp",
+          "returnType": "int64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The whole seconds since the epoch, rounded toward negative infinity.",
+            "markdown": "The whole seconds since the epoch, rounded toward negative infinity.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whole seconds since the epoch, negative before it",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#unix-seconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SubsecondNanoseconds",
+          "line": 83,
+          "signature": "pub func SubsecondNanoseconds(self: &Timestamp) -> uint32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Timestamp",
+          "returnType": "uint32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The fraction beyond the whole seconds, in nanoseconds.",
+            "markdown": "The fraction beyond the whole seconds, in nanoseconds.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the nanoseconds within the second, in `[0, 999999999]`",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#subsecond-nanoseconds"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Since",
+          "line": 93,
+          "signature": "pub func Since(self: &Timestamp, earlier: Timestamp) -> Duration?",
+          "typeParams": [],
+          "params": [{ "name": "earlier", "type": "Timestamp" }],
+          "receiver": "&Timestamp",
+          "returnType": "Duration?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The span from `earlier` to this moment, or `None` past a duration's range.",
+            "markdown": "The span from `earlier` to this moment, or `None` past a duration's range.\nMay be negative: the wall clock jumps, and two readings taken across a clock-set really can come back\nreversed. That is information, not an error, which is the difference from `Instant::Since`.",
+            "typeParams": [],
+            "params": [{ "name": "earlier", "markdown": "the earlier reading" }],
+            "returns": "the time between the two moments, or `None` when `earlier` is not earlier",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#since"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Plus",
+          "line": 102,
+          "signature": "pub func Plus(self: &Timestamp, span: Duration) -> Timestamp?",
+          "typeParams": [],
+          "params": [{ "name": "span", "type": "Duration" }],
+          "receiver": "&Timestamp",
+          "returnType": "Timestamp?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This moment shifted by `span`, or `None` past the range.",
+            "markdown": "This moment shifted by `span`, or `None` past the range.",
+            "typeParams": [],
+            "params": [{ "name": "span", "markdown": "the duration" }],
+            "returns": "the moment that far later, or `None` when it does not fit",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#plus"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 114,
+          "signature": "pub func Equals(self: &Timestamp, other: Timestamp) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Timestamp" }],
+          "receiver": "&Timestamp",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two timestamps name the same moment.",
+            "markdown": "Whether two timestamps name the same moment.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "whether the two name the same moment",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Compare",
+          "line": 122,
+          "signature": "pub func Compare(self: &Timestamp, other: Timestamp) -> Ordering",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Timestamp" }],
+          "receiver": "&Timestamp",
+          "returnType": "Ordering",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How this moment orders against `other`.",
+            "markdown": "How this moment orders against `other`.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "how this moment orders against `other`",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#compare"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsInCalendarRange",
+          "line": 32,
+          "signature": "pub func IsInCalendarRange(self: &Timestamp) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Timestamp",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this moment falls inside the years the calendar spells, and so has an RFC 3339 text.",
+            "markdown": "Whether this moment falls inside the years the calendar spells, and so has an RFC 3339 text.\nThe bound is years 0000 through 9999, which is the range `Date` arithmetic already treats as the package's\nown and the range RFC 3339's four year digits allow. A caller that must not meet a formatting failure asks\nhere first; one that renders through a placeholder learns the same thing as `ValueOutOfRange`.\nBorrows the moment and leaves it untouched. Cannot fail; runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true when the calendar form exists for this moment",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#is-in-calendar-range"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 86,
+          "signature": "pub func WriteDisplay(self: &Timestamp, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Timestamp",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the moment as RFC 3339 in UTC, or as the Unix second count under the `unix` style.",
+            "markdown": "Writes the moment as RFC 3339 in UTC, or as the Unix second count under the `unix` style.\nThe calendar form is the default and the only one an unadorned placeholder produces: `1970-01-01T00:00:00Z`\nrather than `0`. `rfc3339` and `iso8601` name that same form explicitly, and `unix` asks for the signed\nsecond count instead — a value with two readings does not get to guess which one a caller meant.\nA precision names exactly that many fractional digits, 0 through 9, and truncates, in either form. Without\none the fraction is written to the digits it has with trailing zeros trimmed, and omitted when it is zero.\nReports whatever the writer reported, `UnsupportedRequest` for a style other than the three named above or\nfor a precision past nine, and `ValueOutOfRange` for a moment outside years 0000 through 9999, which RFC\n3339's four year digits cannot spell. The range is checked before anything is written, so a refused moment\nleaves the destination as it was.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole moment was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 100,
+          "signature": "pub func WriteDebug(self: &Timestamp, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Timestamp",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`: a moment has one reading, and the style chooses between the two forms here too.",
+            "markdown": "The same text as `Display`: a moment has one reading, and the style chooses between the two forms here too.\nThe failures `WriteDisplay` reports, including `ValueOutOfRange` before any output.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole moment was accepted",
+            "see": ["https://rux-lang.dev/docs/api/time/timestamp#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

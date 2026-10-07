@@ -1,0 +1,1378 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Uuid",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "UUID representation, parsing, formatting and generation",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/uuid",
+    "dependencies": [
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Entropy", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Time", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Random",
+      "source": "Src/Random.rux",
+      "header": "Random UUIDs, and the byte-order conversion that catches everyone.\nA version 4 UUID is 122 bits of entropy with six bits spent on saying so: four for the version and two for\nthe variant. Those six are not wasted — they are what lets a reader tell a random UUID from a time-based one\nwithout being told, and what keeps the two spaces from overlapping — but they do mean a version 4 UUID has\nslightly less entropy than its size suggests, which matters only if someone is counting.\nThe GUID conversion is here because it is the single most common way UUIDs go wrong across a platform\nboundary. Microsoft's GUID is the same sixteen bytes with the first three fields stored little-endian, so a\nUUID written by a Windows API and read as a UUID — or the reverse — produces a value that is well-formed,\nlooks plausible, has the wrong version nibble in a place nobody checks, and refers to nothing. The conversion\nis therefore a named function that must be called deliberately, never something applied automatically."
+    },
+    {
+      "name": "Text",
+      "source": "Src/Text.rux",
+      "header": "The text form, parsed strictly and written canonically.\nRFC 9562 defines exactly one textual representation: thirty-two hexadecimal digits in five hyphen-separated\ngroups of 8-4-4-4-12, optionally prefixed by `urn:uuid:`. Everything else in circulation — the brace-wrapped\nform Windows tools print, the hyphen-free form some databases store, upper case mixed with lower — is\nsomething a program chose to accept, not something the standard blesses.\nThis parses strictly on purpose. A lenient parser is pleasant right up to the moment two systems disagree\nabout which strings are UUIDs, and then the disagreement is a security boundary: one accepts a string the\nother rejects, or worse, two different strings map to one identifier. Accepting exactly one form means two\nimplementations of this cannot drift apart.\nCase is the one exception, and it is asymmetric by design: both cases are *read*, because the standard says\nthey mean the same thing and rejecting upper case would break interoperation, but only lower case is\n*written*, because RFC 9562 says output should be lower case and a canonical form that varies is not\ncanonical.\nA refusal says where. The reason alone tells a caller what kind of mistake was made; the offset tells them which\ncharacter to point their own user at, which is the difference between \"that is not a UUID\" and an underline\nunder the character that is wrong. The offsets are into the text as given, so the URN form's digits are numbered\nfrom the start of the whole string rather than from the start of the value inside it.\nWriting refuses a destination too small rather than filling what fits. A truncated UUID is not a shorter UUID; it\nis a different string, and one a strict parser refuses and a lenient one might not. The old writers stopped at\nthe end of the buffer and said nothing, so a caller who had miscounted got thirty of the thirty-six characters\nand no way to learn it. Every writer here checks the room it needs before it writes a byte, so a refusal leaves\nthe destination exactly as it was and a success is always the complete form."
+    },
+    {
+      "name": "TimeOrdered",
+      "source": "Src/TimeOrdered.rux",
+      "header": "Version 7: a UUID whose leading bits are a timestamp, so sorting the identifiers sorts the events.\nThe reason this version exists is databases. A version 4 UUID as a primary key scatters inserts across the\nwhole of a B-tree, so every insert dirties a different page and the index never stays in cache; a version 7\nkey appends, because its first six bytes are milliseconds since the Unix epoch, big-endian. The remaining\nbits are random, which is what keeps it unguessable between milliseconds.\nWithin one millisecond the ordering is not guaranteed by the format — two UUIDs made in the same millisecond\nhave random tails and could sort either way. `MonotonicUuid` fixes that for a caller who needs it, by\nremembering the last value it produced and stepping the random part forward when the clock has not moved. It\nis a value the caller owns rather than a global, for the reason the random package gives at length: shared\nmutable state makes results depend on who else is running."
+    },
+    {
+      "name": "Uuid",
+      "source": "Src/Uuid.rux",
+      "header": "A UUID: sixteen bytes, and the small amount of structure RFC 9562 gives them.\nThe bytes are held in the order the standard defines, which is the order they are written in and the order\nthey travel in on the wire. That is worth saying because Microsoft's GUID is the same sixteen bytes with the\nfirst three fields byte-swapped, and a program reading one as the other gets a value that looks entirely\nplausible and is wrong — so the conversion between them is explicit and lives in its own function rather\nthan happening implicitly anywhere.\nOrdering is by the byte sequence, which for a version 7 UUID means ordering by time, since its timestamp sits\nat the front in big-endian order. That is the whole reason version 7 exists, and it only works if comparison\nnever reorders the bytes."
+    }
+  ],
+  "items": [
+    {
+      "kind": "function",
+      "name": "Random",
+      "displayName": "Random",
+      "module": "Random",
+      "source": "Src/Random.rux",
+      "line": 20,
+      "signature": "pub func Random() -> Uuid ! EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "A version 4 UUID drawn from the operating system's entropy.",
+        "markdown": "A version 4 UUID drawn from the operating system's entropy.\nFails with why entropy was unavailable rather than producing a zero-filled UUID with the version bits set, which\nwould be a valid-looking identifier that is entirely predictable.",
+        "typeParams": [],
+        "params": [],
+        "returns": "a version 4 value drawn from the system's generator, or why entropy was unavailable",
+        "see": ["https://rux-lang.dev/docs/api/uuid/random"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "RandomFromBytes",
+      "displayName": "RandomFromBytes",
+      "module": "Random",
+      "source": "Src/Random.rux",
+      "line": 37,
+      "signature": "pub func RandomFromBytes(bytes: byte[..]) -> Uuid",
+      "typeParams": [],
+      "doc": {
+        "summary": "A version 4 UUID built from sixteen bytes the caller supplies.",
+        "markdown": "A version 4 UUID built from sixteen bytes the caller supplies.\nFor reproducing a UUID from a recorded seed, or for drawing from a generator other than the system's. The\nversion and variant bits are set regardless of what the bytes say, so the result is always a well-formed\nversion 4 UUID.",
+        "typeParams": [],
+        "params": [{ "name": "bytes", "markdown": "sixteen bytes to take as the value, in big-endian order" }],
+        "returns": "those bytes with the version and variant fields set for version 4",
+        "see": ["https://rux-lang.dev/docs/api/uuid/random#random-from-bytes"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SwapGuidOrder",
+      "displayName": "SwapGuidOrder",
+      "module": "Random",
+      "source": "Src/Random.rux",
+      "line": 52,
+      "signature": "pub func SwapGuidOrder(value: &Uuid) -> Uuid",
+      "typeParams": [],
+      "doc": {
+        "summary": "The same identifier with its first three fields byte-swapped, which is how Windows stores a GUID.",
+        "markdown": "The same identifier with its first three fields byte-swapped, which is how Windows stores a GUID.\nThe conversion is its own inverse, so one function serves both directions: a UUID becomes the GUID bytes a\nWindows API expects, and GUID bytes read from one become the UUID they represent. It must be called\ndeliberately — applying it by accident, or failing to apply it when crossing the boundary, both produce a\nwell-formed identifier that refers to something else entirely.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the value to act on" }],
+        "returns": "the same sixteen bytes with the first three fields byte-swapped",
+        "see": ["https://rux-lang.dev/docs/api/uuid/uuid#swap-guid-order"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "UuidTextLength",
+      "displayName": "UuidTextLength",
+      "module": "Text",
+      "source": "Src/Text.rux",
+      "line": 28,
+      "signature": "pub const UuidTextLength: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How long the canonical text form is: thirty-two digits and four hyphens.",
+        "markdown": "How long the canonical text form is: thirty-two digits and four hyphens.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/uuid/text#uuid-text-length"],
+        "deprecated": null
+      },
+      "value": "36",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "UuidUrnLength",
+      "displayName": "UuidUrnLength",
+      "module": "Text",
+      "source": "Src/Text.rux",
+      "line": 32,
+      "signature": "pub const UuidUrnLength: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How long the URN form is: the canonical form after `urn:uuid:`.",
+        "markdown": "How long the URN form is: the canonical form after `urn:uuid:`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/uuid/text#uuid-urn-length"],
+        "deprecated": null
+      },
+      "value": "45",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "UuidParseError",
+      "displayName": "UuidParseError",
+      "module": "Text",
+      "source": "Src/Text.rux",
+      "line": 40,
+      "signature": "pub variant UuidParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why text could not be read as a UUID.",
+        "markdown": "Why text could not be read as a UUID.\nFailure-only: every case is a failure, and each carries the zero-based UTF-8 byte offset into the text where it\nwas found. Success is the other channel of `Uuid ! UuidParseError`, so there is no case here meaning nothing went\nwrong.\nCopy, carrying one offset and owning nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/uuid/text#uuid-parse-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "WrongLength",
+          "value": null,
+          "payload": "(uint)",
+          "line": 44,
+          "doc": "The text is neither thirty-six characters nor forty-five with the URN prefix. The offset is the text's\nlength when it is too short, which is where the missing character would have gone, and the first character\nthe canonical form has no room for when it is too long.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Misplaced",
+          "value": null,
+          "payload": "(uint)",
+          "line": 47,
+          "doc": "A hyphen is missing where the form puts one, or one appears where a digit belongs. The offset is that\ncharacter.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "NotHexadecimal",
+          "value": null,
+          "payload": "(uint)",
+          "line": 49,
+          "doc": "A character that is not a hexadecimal digit. The offset is that character.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BadPrefix",
+          "value": null,
+          "payload": "(uint)",
+          "line": 52,
+          "doc": "The text has the length of the URN form but its `urn:uuid:` prefix is misspelled. The offset is the first\ncharacter that does not match.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Offset",
+          "line": 60,
+          "signature": "pub func Offset(self: &UuidParseError) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&UuidParseError",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "ParseFailure",
+          "public": true,
+          "doc": {
+            "summary": "Where in the input the failure was found.",
+            "markdown": "Where in the input the failure was found.\nBorrows the error and leaves it untouched. Cannot fail; runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the zero-based UTF-8 byte offset, which is the text's length at end of input",
+            "see": ["https://rux-lang.dev/docs/api/uuid/text#uuid-parse-error-offset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["ParseFailure"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Parse",
+      "displayName": "Parse",
+      "module": "Text",
+      "source": "Src/Text.rux",
+      "line": 94,
+      "signature": "pub func Parse(text: char8[..]) -> Uuid ! UuidParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a UUID from its canonical or URN text form.",
+        "markdown": "Reads a UUID from its canonical or URN text form.\nBoth cases of the digits are accepted, because the standard says the two mean the same thing; nothing else is.\nThe URN prefix is compared case-insensitively, which is RFC 8141's rule for a scheme name and a different rule\nfrom the digits — both are the standard's.\nReports `WrongLength` for text that is neither form's length, `BadPrefix` for a misspelled `urn:uuid:`,\n`Misplaced` for a hyphen that is missing or one that stands where a digit belongs, and `NotHexadecimal` for any\nother character that is not a digit. Each carries the byte offset into `text` where it was found. A refused\nparse produces no value at all rather than a half-filled one.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the text to read" }],
+        "returns": "the identifier, or why the text is not one",
+        "see": ["https://rux-lang.dev/docs/api/uuid/text#parse"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Parse",
+      "displayName": "Parse",
+      "module": "Text",
+      "source": "Src/Text.rux",
+      "line": 163,
+      "signature": "pub func Parse(text: StringView) -> Uuid ! UuidParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a UUID from the text a `StringView` borrows.",
+        "markdown": "Reads a UUID from the text a `StringView` borrows.\nThe same parser, reached without the caller unwrapping the view first: a `StringView` is already validated\nUTF-8, and a UUID's text is ASCII, so the bytes it borrows are exactly what the canonical form is made of.\nThe failures the slice form reports, with offsets into the borrowed text.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the text to read" }],
+        "returns": "the identifier, or why the text is not one",
+        "see": ["https://rux-lang.dev/docs/api/uuid/text#parse"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Format",
+      "displayName": "Format",
+      "module": "Text",
+      "source": "Src/Text.rux",
+      "line": 198,
+      "signature": "pub func Format(value: &Uuid, into: var char8[..]) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the canonical text form into `into`, in lower case.",
+        "markdown": "Writes the canonical text form into `into`, in lower case.\nLower case because RFC 9562 says so, and because a canonical form that varies by case is not canonical — two\nsystems comparing text would disagree about equal UUIDs.\nReports `InsufficientCapacity` when `into` is shorter than `UuidTextLength`, leaving it exactly as it was. A\nshort destination is refused rather than filled with what fits, because a truncated UUID is a different string\nrather than a shorter one. Room past the thirty-six characters is not touched.",
+        "typeParams": [],
+        "params": [
+          { "name": "value", "markdown": "the identifier to write" },
+          { "name": "into", "markdown": "the destination, at least `UuidTextLength` bytes" }
+        ],
+        "returns": "success when the whole form was written",
+        "see": ["https://rux-lang.dev/docs/api/uuid/text#format"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "FormatUpper",
+      "displayName": "FormatUpper",
+      "module": "Text",
+      "source": "Src/Text.rux",
+      "line": 211,
+      "signature": "pub func FormatUpper(value: &Uuid, into: var char8[..]) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the canonical text form into `into`, in upper case.",
+        "markdown": "Writes the canonical text form into `into`, in upper case.\nOffered because some formats demand it; `Format` is what a program should write when it has the choice.\nThe failure `Format` reports, for the same reason and with the same guarantee.",
+        "typeParams": [],
+        "params": [
+          { "name": "value", "markdown": "the identifier to write" },
+          { "name": "into", "markdown": "the destination, at least `UuidTextLength` bytes" }
+        ],
+        "returns": "success when the whole form was written",
+        "see": ["https://rux-lang.dev/docs/api/uuid/text#format-upper"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "FormatUrn",
+      "displayName": "FormatUrn",
+      "module": "Text",
+      "source": "Src/Text.rux",
+      "line": 232,
+      "signature": "pub func FormatUrn(value: &Uuid, into: var char8[..]) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the URN form into `into`: the canonical form after `urn:uuid:`.",
+        "markdown": "Writes the URN form into `into`: the canonical form after `urn:uuid:`.\nReports `InsufficientCapacity` when `into` is shorter than `UuidUrnLength`, leaving it exactly as it was. The\nform is refused whole, so a destination never receives a prefix with nothing after it.",
+        "typeParams": [],
+        "params": [
+          { "name": "value", "markdown": "the identifier to write" },
+          { "name": "into", "markdown": "the destination, at least `UuidUrnLength` bytes" }
+        ],
+        "returns": "success when the whole form was written",
+        "see": ["https://rux-lang.dev/docs/api/uuid/text#format-urn"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TimeOrdered",
+      "displayName": "TimeOrdered",
+      "module": "TimeOrdered",
+      "source": "Src/TimeOrdered.rux",
+      "line": 21,
+      "signature": "pub func TimeOrdered() -> Uuid ! EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "A version 7 UUID: the current time in its leading bits, entropy in the rest.",
+        "markdown": "A version 7 UUID: the current time in its leading bits, entropy in the rest.\nFails with why entropy was unavailable rather than producing a timestamp-shaped value with no randomness — which\nwould be guessable and would look fine.",
+        "typeParams": [],
+        "params": [],
+        "returns": "a version 7 value carrying the current time, or why entropy was unavailable",
+        "see": ["https://rux-lang.dev/docs/api/uuid/time-ordered"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TimeOrderedAt",
+      "displayName": "TimeOrderedAt",
+      "module": "TimeOrdered",
+      "source": "Src/TimeOrdered.rux",
+      "line": 32,
+      "signature": "pub func TimeOrderedAt(milliseconds: uint64) -> Uuid ! EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "A version 7 UUID for a given millisecond, with entropy in the rest.",
+        "markdown": "A version 7 UUID for a given millisecond, with entropy in the rest.\nFor reproducing an identifier from a recorded time, and for testing.",
+        "typeParams": [],
+        "params": [
+          { "name": "milliseconds", "markdown": "the timestamp to embed, in milliseconds since the Unix epoch" }
+        ],
+        "returns": "a version 7 value carrying `milliseconds`, or why entropy was unavailable",
+        "see": ["https://rux-lang.dev/docs/api/uuid/time-ordered#time-ordered-at"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "MillisecondOf",
+      "displayName": "MillisecondOf",
+      "module": "TimeOrdered",
+      "source": "Src/TimeOrdered.rux",
+      "line": 53,
+      "signature": "pub func MillisecondOf(value: &Uuid) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "The millisecond a version 7 UUID carries.",
+        "markdown": "The millisecond a version 7 UUID carries.\nMeaningless for any other version, which is why the version should be checked first.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the value to act on" }],
+        "returns": "the timestamp a version 7 value carries; meaningless for any other version",
+        "see": ["https://rux-lang.dev/docs/api/uuid/time-ordered#millisecond-of"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "MonotonicUuid",
+      "displayName": "MonotonicUuid",
+      "module": "TimeOrdered",
+      "source": "Src/TimeOrdered.rux",
+      "line": 71,
+      "signature": "pub struct MonotonicUuid",
+      "typeParams": [],
+      "doc": {
+        "summary": "A generator of version 7 UUIDs that are strictly increasing, even within one millisecond.",
+        "markdown": "A generator of version 7 UUIDs that are strictly increasing, even within one millisecond.\nThe format guarantees ordering only between milliseconds; two UUIDs made in the same one have random tails\nand may sort either way. This closes that by remembering the last value it produced: when the clock has not\nadvanced, it increments the previous UUID instead of drawing a fresh one, so every value it returns is\nstrictly greater than the last.\nA caller owns one of these rather than sharing a global, so two components generating identifiers do not\nserialize against each other or interleave into one sequence.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/uuid/monotonic-uuid"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "previous",
+          "type": "Uuid",
+          "public": false,
+          "line": 73,
+          "doc": "The last value returned, or nil before the first.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "started",
+          "type": "bool",
+          "public": false,
+          "line": 75,
+          "doc": "Whether anything has been returned yet.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "MonotonicUuid",
+          "line": 82,
+          "signature": "pub func MonotonicUuid() -> MonotonicUuid",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "MonotonicUuid",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A generator that has produced nothing yet.",
+            "markdown": "A generator that has produced nothing yet.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the generator, which has produced nothing yet",
+            "see": ["https://rux-lang.dev/docs/api/uuid/monotonic-uuid#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 90,
+          "signature": "pub func Next(self: &var MonotonicUuid) -> Uuid ! EntropyError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var MonotonicUuid",
+          "returnType": "Uuid ! EntropyError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next identifier, strictly greater than the one before it.",
+            "markdown": "The next identifier, strictly greater than the one before it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the next value, which sorts after every value this generator has produced, or why entropy was\nunavailable",
+            "see": ["https://rux-lang.dev/docs/api/uuid/monotonic-uuid#next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Uuid",
+      "displayName": "Uuid",
+      "module": "Uuid",
+      "source": "Src/Uuid.rux",
+      "line": 15,
+      "signature": "pub struct Uuid",
+      "typeParams": [],
+      "doc": {
+        "summary": "A universally unique identifier: sixteen bytes in the standard's own order.",
+        "markdown": "A universally unique identifier: sixteen bytes in the standard's own order.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/uuid/uuid"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "bytes",
+          "type": "byte[N]",
+          "public": true,
+          "line": 17,
+          "doc": "The sixteen bytes, most significant first.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 265,
+          "signature": "pub func WriteDisplay(self: &Uuid, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Uuid",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the canonical lower-case form, or the URN form under the `urn` style.",
+            "markdown": "Writes the canonical lower-case form, or the URN form under the `urn` style.\nThe default is the hyphenated form RFC 9562 defines, in lower case, because that is the one representation\nthe standard has and the one every other implementation writes. `hyphenated` names it explicitly and `urn`\nselects the `urn:uuid:` form. Upper case is not a style, since a canonical form that varies by case is not\ncanonical; `FormatUpper` remains for a format that demands it.\nReports whatever the writer reported, and `UnsupportedRequest` for any other style or for a precision, which\na value of exactly one length has nothing to apply.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole form was accepted",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 281,
+          "signature": "pub func WriteDebug(self: &Uuid, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Uuid",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`: an identifier has one reading, and quoting it would say nothing extra.",
+            "markdown": "The same text as `Display`: an identifier has one reading, and quoting it would say nothing extra.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole form was accepted",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Nil",
+          "line": 39,
+          "signature": "pub func Nil() -> Uuid",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Uuid",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The nil UUID: sixteen zero bytes.",
+            "markdown": "The nil UUID: sixteen zero bytes.\nA defined value rather than an absence, and worth having as one — the alternative is every caller\ninventing a sentinel of their own.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the all-zero value",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#nil"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Max",
+          "line": 47,
+          "signature": "pub func Max() -> Uuid",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Uuid",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The max UUID: sixteen bytes of ones, which RFC 9562 defines as nil's counterpart.",
+            "markdown": "The max UUID: sixteen bytes of ones, which RFC 9562 defines as nil's counterpart.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the all-ones value",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromBytes",
+          "line": 63,
+          "signature": "pub func FromBytes(bytes: byte[..]) -> Uuid",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "byte[..]" }],
+          "receiver": null,
+          "returnType": "Uuid",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A UUID from sixteen bytes in the standard's order.",
+            "markdown": "A UUID from sixteen bytes in the standard's order.\nFewer than sixteen leaves the rest zero; more are ignored. No structure is imposed — the version and\nvariant fields are whatever the bytes say, which is what lets this read a UUID from somewhere else.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "sixteen bytes to take as the value, in big-endian order" }],
+            "returns": "those sixteen bytes as a value, with no field interpreted or corrected",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#from-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Bytes",
+          "line": 76,
+          "signature": "pub func Bytes(self: &Uuid) -> byte[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Uuid",
+          "returnType": "byte[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The sixteen bytes, in the standard's order.",
+            "markdown": "The sixteen bytes, in the standard's order.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the sixteen bytes, in big-endian order",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsNil",
+          "line": 83,
+          "signature": "pub func IsNil(self: &Uuid) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Uuid",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is the nil UUID.",
+            "markdown": "Whether this is the nil UUID.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether every byte is zero",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#is-nil"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsMax",
+          "line": 95,
+          "signature": "pub func IsMax(self: &Uuid) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Uuid",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is the max UUID.",
+            "markdown": "Whether this is the max UUID.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether every byte is one",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#is-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Version",
+          "line": 109,
+          "signature": "pub func Version(self: &Uuid) -> uint8",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Uuid",
+          "returnType": "uint8",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The version, from the high nibble of the seventh byte.",
+            "markdown": "The version, from the high nibble of the seventh byte.\nMeaningful only for the standard variant; a nil or max UUID reports a number that means nothing, which\nis why `Variant` should be consulted first.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the version nibble, 0 through 15; a value this package did not make may hold anything",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#version"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Variant",
+          "line": 118,
+          "signature": "pub func Variant(self: &Uuid) -> UuidVariant",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Uuid",
+          "returnType": "UuidVariant",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The variant, from the high bits of the ninth byte.",
+            "markdown": "The variant, from the high bits of the ninth byte.\nThe encoding is variable-length rather than two fixed bits: a leading zero means the oldest layout, `10`\nthe standard one, `110` Microsoft's, and `111` the reserved future.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the variant the layout declares",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#variant"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 130,
+          "signature": "pub func Equals(self: &Uuid, other: &Uuid) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&Uuid" }],
+          "receiver": "&Uuid",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two UUIDs are the same.",
+            "markdown": "Whether two UUIDs are the same.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "whether all sixteen bytes match",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Compare",
+          "line": 146,
+          "signature": "pub func Compare(self: &Uuid, other: &Uuid) -> Ordering",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&Uuid" }],
+          "receiver": "&Uuid",
+          "returnType": "Ordering",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Orders two UUIDs by their bytes, most significant first.",
+            "markdown": "Orders two UUIDs by their bytes, most significant first.\nFor a version 7 UUID this is chronological order, because its timestamp occupies the leading bytes in\nbig-endian form. Reordering here — to match a platform's GUID layout, say — would destroy that, which\nis why the byte order is fixed rather than negotiable.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "how the two order as sixteen big-endian bytes, which is lexicographic order for the text",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#compare"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Hash",
+          "line": 161,
+          "signature": "pub func Hash(self: &Uuid) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Uuid",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A hash of the sixteen bytes, for use as a table key.",
+            "markdown": "A hash of the sixteen bytes, for use as a table key.\nFNV-1a, which is not a cryptographic hash and does not need to be: a UUID is already the output of one,\nor of an entropy source, so what a table wants here is speed and an even spread over buckets.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the value's hash",
+            "see": ["https://rux-lang.dev/docs/api/uuid/uuid#hash"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "UuidVariant",
+      "displayName": "UuidVariant",
+      "module": "Uuid",
+      "source": "Src/Uuid.rux",
+      "line": 22,
+      "signature": "pub enum UuidVariant",
+      "typeParams": [],
+      "doc": {
+        "summary": "What layout a UUID's bytes follow.",
+        "markdown": "What layout a UUID's bytes follow.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/uuid/uuid#uuid-variant"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "NetworkComputingSystem",
+          "value": "0",
+          "payload": null,
+          "line": 24,
+          "doc": "Apollo NCS, from before the standard — the layout the nil UUID also happens to match.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Standard",
+          "value": "1",
+          "payload": null,
+          "line": 26,
+          "doc": "The layout RFC 9562 defines, which is what essentially every UUID in use is.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Microsoft",
+          "value": "2",
+          "payload": null,
+          "line": 28,
+          "doc": "Microsoft's early variant: reserved, and rare.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Future",
+          "value": "3",
+          "payload": null,
+          "line": 30,
+          "doc": "Reserved for the future and never assigned.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}
