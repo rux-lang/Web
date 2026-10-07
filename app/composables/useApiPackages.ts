@@ -8,9 +8,8 @@ import type { ApiCatalogArea } from "~/utils/api-catalog";
  *
  * The navigation tree carries no frontmatter beyond titles, so one small query
  * reads every package overview's `api.version` (a generated package) and its
- * description (the registry has none for a 0.3 folder it does not list). A
- * hand-written overview has no `api` block; `apiPageInfo` still knows its
- * version. Both consumers share the key, so a page fetches it once.
+ * description (the registry has none for a folder it does not list). Both
+ * consumers share the key, so a page fetches it once.
  */
 export const useApiPackages = () => {
   const navigation = inject<Ref<ContentNavigationItem[] | null>>("navigation", ref([]));
@@ -41,7 +40,7 @@ export const useApiPackages = () => {
         return {
           ...entry,
           description: entry.description ?? page?.description,
-          version: page?.api?.version ?? apiPageInfo(entry.path).version,
+          version: page?.api?.version,
         };
       }),
     }));

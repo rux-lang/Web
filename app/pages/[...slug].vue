@@ -74,8 +74,8 @@ const isApiPage = computed(() => /^\/docs\/api(\/|$)/.test(path.value));
 // and lesson number, the Examples source and the "ask an assistant" menu.
 const lesson = computed(() => page.value?.lesson);
 // Generated API pages (scripts/api-docs.mjs) carry an `api` block naming their
-// package, declaration kind, version and source line; the 0.3-era hand-written
-// pages do not, and fall back to `apiPageInfo()` below.
+// package, declaration kind, version and source line; only the /docs/api hub
+// has none.
 const api = computed(() => page.value?.api);
 
 function isMinimarkTag(node: unknown, tag: string): boolean {
@@ -143,11 +143,12 @@ const apiBreadcrumbs = computed(() => {
   }));
 });
 
-const apiInfo = computed(() => apiPageInfo(path.value));
-const { ruxVersion } = useRuntimeConfig().public;
-const apiVersion = computed(() => api.value?.version ?? apiInfo.value.version ?? ruxVersion);
-const apiPackageName = computed(() => api.value?.package ?? apiInfo.value.packageName ?? "Rux");
-const apiSource = computed(() => (api.value ? apiSourceUrl(api.value) : apiInfo.value.sourceUrl));
+// Every page under /docs/api carries `api` frontmatter except the hub itself,
+// which is no one package: it gets no version badge, and its Source button
+// opens the Packages tree.
+const apiVersion = computed(() => api.value?.version);
+const apiPackageName = computed(() => api.value?.package);
+const apiSource = computed(() => (api.value ? apiSourceUrl(api.value) : apiPackagesTreeUrl));
 // "struct", "interface", "intrinsic type", …; an overview, and a topic page
 // that only gathers fragments, are not one declaration and get no badge.
 const apiKind = computed(() =>
@@ -259,6 +260,7 @@ useHead({
             />
 
             <UBadge
+              v-if="apiVersion"
               :label="`v${apiVersion}`"
               color="info"
               variant="subtle"
