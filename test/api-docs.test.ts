@@ -417,6 +417,17 @@ describe("renderApiPackage", async () => {
     );
   });
 
+  it("takes a topic page's lead and description from the registry when it gives them", async () => {
+    const described = await renderApiPackage(fixture, null, {
+      ...entry,
+      topics: { "empty-blocks": { title: "Empty blocks", description: "How a zero-sized allocation is answered" } },
+    });
+    const topic = described.get(`${base}/4.constants/empty-blocks.md`)!;
+    expect(topic).toContain("description: How a zero-sized allocation is answered\n");
+    expect(topic).toContain("# Empty blocks\n\nHow a zero-sized allocation is answered.\n");
+    expect(pageAnchors(topic)).toEqual(new Set(["empty-blocks", "empty-block", "is-empty-block"]));
+  });
+
   it("refuses an anchor that collides with a section heading", async () => {
     const snapshot = copy();
     item(snapshot, "Arena").members.find((member: { name: string }) => member.name === "Reset").doc.see = [
