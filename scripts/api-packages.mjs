@@ -30,7 +30,68 @@ export const AREAS = [
 ];
 
 export const PACKAGES = [
-  { name: "Core", area: "foundation", icon: "i-lucide-atom", description: "Core language intrinsics" },
+  {
+    name: "Core",
+    area: "foundation",
+    icon: "i-lucide-atom",
+    description: "Core language intrinsics",
+    topics: {
+      integers: {
+        title: "Integers",
+        description:
+          "The signed and unsigned integer types from 8 to 512 bits, the pointer-sized `int` and `uint`, and the `byte` alias, with their width and limit constants.",
+      },
+      "floating-point": {
+        title: "Floating-point types",
+        description:
+          "The IEEE 754 types `float32` and `float64` and the `float` alias, with their width, limit and special-value constants. The widths `float8`, `float16`, `float80`, `float128`, `float256` and `float512` are reserved and not implemented yet.",
+      },
+      booleans: {
+        title: "Booleans",
+        description:
+          "The boolean types `bool8` to `bool64` and the `bool` alias, with their width constants. The widths `bool128`, `bool256` and `bool512` are reserved and not implemented yet.",
+      },
+      characters: {
+        title: "Characters",
+        description:
+          "The character types `char8` to `char64` and the `char` alias, with their width and limit constants. The widths `char128`, `char256` and `char512` are reserved and not implemented yet.",
+      },
+      arithmetic: {
+        title: "Integer arithmetic",
+        description:
+          "Checked, wrapping and saturating arithmetic at every integer width, the limits of an integer type, and the `uint64` intrinsics allocation sizes are computed with.",
+      },
+      bits: {
+        title: "Bit operations",
+        description:
+          "Counting, rotating, reversing and testing the bits of an integer of any width, and a right shift that brings in zeros whatever the sign.",
+      },
+      "byte-order": {
+        title: "Byte order",
+        description:
+          "Converting integers between the target's byte order and little- or big-endian, in a register or through raw bytes at any alignment.",
+      },
+      conversion: {
+        title: "Checked conversion",
+        description:
+          "Converting between primitive types with a report of whether the value survived, with wrapping on purpose, or clamped to the destination's range.",
+      },
+      "float-classification": {
+        title: "Float classification",
+        description:
+          "Asking whether a floating-point value is NaN, infinite, finite or zero, and reading its sign, at every float width.",
+      },
+      diagnostics: {
+        title: "Diagnostics",
+        description:
+          "Run-time assertions and panics that report and terminate, and the compile-time `#Error` and `#Warn` that reject or flag a configuration.",
+      },
+      outcomes: {
+        title: "Outcomes",
+        description: "Asking which channel a native fallible `T ! E` holds without unwrapping it.",
+      },
+    },
+  },
   { name: "Memory", area: "foundation", icon: "i-lucide-memory-stick", description: "Memory management functions" },
   {
     name: "Allocator",
