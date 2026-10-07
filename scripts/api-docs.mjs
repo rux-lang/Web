@@ -458,13 +458,16 @@ function itemSignature(item) {
     return [`${item.signature} {`, ...body, "}"].join("\n");
   }
   if (item.kind === "enum" || item.kind === "variant") {
-    if (!item.cases.length) return `${item.signature} {}`;
+    // The compiler's declaration signature stops at the name; an enum's base type comes separately.
+    const head =
+      item.baseType && !item.signature.includes(":") ? `${item.signature}: ${item.baseType}` : item.signature;
+    if (!item.cases.length) return `${head} {}`;
     const body = item.cases.map((entry, index) => {
       const payload = entry.payload ? (entry.payload.startsWith("{") ? ` ${entry.payload}` : entry.payload) : "";
       const value = entry.value !== null && entry.value !== undefined ? ` = ${entry.value}` : "";
       return `${indent}${entry.name}${payload}${value}${index < item.cases.length - 1 ? "," : ""}`;
     });
-    return [`${item.signature} {`, ...body, "}"].join("\n");
+    return [`${head} {`, ...body, "}"].join("\n");
   }
   if (item.kind === "interface") {
     const requirements = item.members.filter((member) => member.kind === "requirement" && isPublic(member));
@@ -526,7 +529,8 @@ function linkIndex(snapshot, plan) {
     for (const member of item.members.filter(isPublic)) {
       const memberUrl = plan.places.get(member).url;
       add(`${item.name}::${member.name}`, memberUrl);
-      if (!["constructor", "destructor", "operator"].includes(member.kind)) add(member.name, memberUrl);
+      if (member.kind === "destructor") add(memberDisplay(member), memberUrl);
+      else if (!["constructor", "operator"].includes(member.kind)) add(member.name, memberUrl);
     }
   }
   return names;

@@ -225,7 +225,7 @@
           "public": true,
           "doc": {
             "summary": "Rewinds every allocation.",
-            "markdown": "Rewinds every allocation.\nAfterwards `BytesUsed` is zero.",
+            "markdown": "Rewinds every allocation.\nAfterwards `BytesUsed` is zero, and `~Arena` still releases every block.",
             "typeParams": [],
             "params": [],
             "returns": null,
@@ -477,7 +477,7 @@
       "module": "Store",
       "source": "Src/Store.rux",
       "line": 30,
-      "signature": "pub enum Fault: uint8",
+      "signature": "pub enum Fault",
       "typeParams": [],
       "doc": {
         "summary": "Why a store did not do what was asked.",

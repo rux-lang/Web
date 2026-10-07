@@ -294,7 +294,14 @@ describe("renderApiPackage", async () => {
     expect(related).toContain('<h4 id="arena-handle-reset"><code>Reset</code></h4>');
   });
 
-  it("shows only public fields, and enum cases with their values", () => {
+  it("links a destructor by its ~Name", () => {
+    expect(pages.get(`${base}/2.types/arena.md`)).toContain(
+      "and [`~Arena`](/docs/api/gadget/arena#destructor) still releases every block.",
+    );
+  });
+
+  it("shows only public fields, and enum cases with their values and base type", () => {
+    expect(pages.get(`${base}/2.types/fault.md`)).toContain("```rux\npub enum Fault: uint8 {\n    Full = 1,\n");
     const arena = pages.get(`${base}/2.types/arena.md`)!;
     expect(between(arena, "## Fields", "## Constructors")).not.toContain("head");
     expect(pages.get(`${base}/2.types/fault.md`)).toContain("| `Full`  | `1`   | No room is left \\| try later. |");
