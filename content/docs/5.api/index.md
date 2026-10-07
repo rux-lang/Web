@@ -31,5 +31,3 @@ Each package has an overview page listing everything it exports, and each type, 
 - **Header** — the declaration's kind, the package version it describes, and a **Source** button that opens the declaration on GitHub.
 - **Sidebar** — inside a package, the sidebar lists that package only, grouped into interfaces, types, functions and constants. The menu above it switches to another package.
 - **Platform badges** — Linux, FreeBSD, macOS and Windows each bind one operating system's own entry points, with no portability layer, and build only for that platform. Guard every call to them with [conditional compilation](/docs/lang/comptime/conditional).
-
-A package marked _Reference pending_ is available to programs but not documented here yet. Packages still on their earlier, hand-written pages keep that layout until their reference is generated.
