@@ -15,7 +15,7 @@ import type { TocLink } from "@nuxt/content";
 defineProps<{ links?: TocLink[] }>();
 
 const route = useRoute();
-const { book, defaultOpen } = useDocsSection();
+const { book, defaultOpen, apiPackage } = useDocsSection();
 
 // The book title heads the desktop sidebar as a collapsible group. In the
 // drawer it is the header instead, so the body renders the pages flat.
@@ -97,6 +97,8 @@ watch(
       />
 
       <template #body>
+        <ApiPackageSwitcher v-if="apiPackage" :current="apiPackage.path" class="mb-4" />
+
         <UContentNavigation
           :navigation="pages"
           :default-open="defaultOpen"
