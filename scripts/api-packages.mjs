@@ -66,18 +66,51 @@ export const PACKAGES = [
     icon: "i-lucide-dices",
     description: "Pseudorandom number generators and distributions",
   },
-  { name: "Io", area: "system", icon: "i-lucide-terminal", description: "Streams, console I/O, readers and writers" },
+  {
+    name: "Io",
+    area: "system",
+    icon: "i-lucide-terminal",
+    description: "Streams, console I/O, readers and writers",
+    topics: {
+      binary: {
+        title: "Binary encoding",
+        description:
+          "Fixed-width integers and floats read from a reader and written to a writer in a chosen byte order.",
+      },
+    },
+  },
   {
     name: "FileSystem",
     area: "system",
     icon: "i-lucide-folder-tree",
     description: "Files, directories and filesystem operations",
+    topics: {
+      directories: { title: "Directories", description: "Creating, deleting and listing directories." },
+      "file-operations": {
+        title: "File operations",
+        description: "Deleting, renaming, copying and linking files by name.",
+      },
+      location: {
+        title: "Working directory",
+        description: "The process's current directory, and a path made absolute or canonical against it.",
+      },
+      "native-errors": {
+        title: "Native error codes",
+        description: "A platform's own error code, read as the IoError every operation here reports.",
+      },
+    },
   },
   {
     name: "Path",
     area: "system",
     icon: "i-lucide-route",
     description: "Native operating-system strings and filesystem paths",
+    topics: {
+      syntax: {
+        title: "Path syntax",
+        description: "Which units separate segments on this system, and the prefix and root a path opens with.",
+      },
+    },
   },
   { name: "Time", area: "system", icon: "i-lucide-clock", description: "Durations, monotonic clocks and wall clocks" },
   {
@@ -93,6 +126,9 @@ export const PACKAGES = [
     area: "data",
     icon: "i-lucide-fingerprint-pattern",
     description: "UUID representation, parsing, formatting and generation",
+    topics: {
+      text: { title: "Text form", description: "Reading and writing a UUID in its canonical and URN text forms." },
+    },
   },
   {
     name: "Crypto",
