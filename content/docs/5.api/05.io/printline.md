@@ -86,4 +86,4 @@ func Main() -> int {
 - [`Io`](/docs/api/io) — the package overview
 - [`Print`](/docs/api/io/print) — the same overloads, with no newline after the value
 - [`ReadLine`](/docs/api/io/readline) — read a line back from standard input
-- [`Format::ToString`](/docs/api/format/tostring) — the text every non-text overload prints
+- [`Format::ToString`](/docs/api/format/render) — the text every non-text overload prints

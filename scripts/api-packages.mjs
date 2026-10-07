@@ -55,7 +55,39 @@ export const PACKAGES = [
       },
     },
   },
-  { name: "Format", area: "text", icon: "i-lucide-whole-word", description: "String conversion and formatting" },
+  {
+    name: "Format",
+    area: "text",
+    icon: "i-lucide-whole-word",
+    description: "String conversion and formatting",
+    topics: {
+      parse: {
+        title: "Parsing integers, booleans and characters",
+        description: "Reading an integer of any width and base, a boolean or one character from text.",
+      },
+      "parse-float": {
+        title: "Parsing floats",
+        description: "Reading decimal text into the nearest float32, float64 or wide float, exactly.",
+      },
+      "integer-text": {
+        title: "Writing integers",
+        description: "Spelling an integer as text: sign, base prefix, zero padding and digits.",
+      },
+      "float-text": {
+        title: "Writing floats",
+        description: "The shortest, fixed-precision and scientific renderings of a float32 or float64.",
+      },
+      "character-text": {
+        title: "Writing characters and booleans",
+        description:
+          "How characters, character slices and booleans render, and how a value that is no character is escaped.",
+      },
+      "float-bits": {
+        title: "Float classification and bits",
+        description: "Whether a float is NaN, infinite or finite, and the bits it is stored as.",
+      },
+    },
+  },
   {
     name: "Unicode",
     area: "text",

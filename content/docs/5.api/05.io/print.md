@@ -57,9 +57,9 @@ func Print(value: char32);
 
 Nothing is appended — the next `Print` continues on the same line. Use [`PrintLine`](/docs/api/io/printline) to end one.
 
-A value that is not already text is rendered by [`Format::ToString`](/docs/api/format/tostring), so it prints exactly as that function describes: a bool as `true` or `false`, a character as its UTF-8 bytes, a float to the digits its type carries with the trailing zeros dropped and `NaN`, `Inf`, and `-Inf` for the values that have no digits. The `String` this costs is allocated and freed inside the call.
+A value that is not already text is rendered by [`Format::ToString`](/docs/api/format/render), so it prints exactly as that function describes: a bool as `true` or `false`, a character as its UTF-8 bytes, a float to the digits its type carries with the trailing zeros dropped and `NaN`, `Inf`, and `-Inf` for the values that have no digits. The `String` this costs is allocated and freed inside the call.
 
-The format overload substitutes each `{}` with the next argument, and writes a literal brace for `{{` and `}}`. The substitution is [`Format`](/docs/api/format)'s, and the arguments are [`Stringable`](/docs/api/format/stringable), so a type of your own can go into a `{}` as soon as it implements that interface.
+The format overload substitutes each `{}` with the next argument, and writes a literal brace for `{{` and `}}`. The substitution is [`Format`](/docs/api/format)'s, and the arguments are [`Stringable`](/docs/api/text/display), so a type of your own can go into a `{}` as soon as it implements that interface.
 
 A `String` argument is only read. It stays yours, and you still [`Free`](/docs/api/text/string#destructor) it.
 
@@ -89,4 +89,4 @@ func Main() -> int {
 - [`Io`](/docs/api/io) — the package overview
 - [`PrintLine`](/docs/api/io/printline) — the same overloads, with a newline after the value
 - [`ReadLine`](/docs/api/io/readline) — read a line back from standard input
-- [`Format::ToString`](/docs/api/format/tostring) — the text every non-text overload prints
+- [`Format::ToString`](/docs/api/format/render) — the text every non-text overload prints

@@ -45,7 +45,7 @@ Implemented on BSD, Linux, macOS, and Windows.
 
 ## Values as text
 
-A value is turned into text by [`Format`](/docs/api/format), which this package is built on, and it is the same text you would get from [`ToString`](/docs/api/format/tostring): a `bool` prints as `true` or `false` rather than as `0` or `1`, a `char` prints as its UTF-8 bytes, and a float is rendered to the digits its type carries with the trailing zeros dropped, so `0.1` prints as `0.1`.
+A value is turned into text by [`Format`](/docs/api/format), which this package is built on, and it is the same text you would get from [`ToString`](/docs/api/format/render): a `bool` prints as `true` or `false` rather than as `0` or `1`, a `char` prints as its UTF-8 bytes, and a float is rendered to the digits its type carries with the trailing zeros dropped, so `0.1` prints as `0.1`.
 
 Both `Print` and `PrintLine` also take a format string, where each `{}` takes the next argument in order and `{{` and `}}` write a literal brace:
 
@@ -54,7 +54,7 @@ PrintLine("{} of {} done", 3, 10);  // 3 of 10 done
 PrintLine("{{{}}}", "braced");      // {braced}
 ```
 
-The arguments are [`Stringable`](/docs/api/format/stringable), so a type of your own goes into a `{}` the moment it implements that interface. Any `String` a placeholder allocates on the way is freed for you.
+The arguments are [`Stringable`](/docs/api/text/display), so a type of your own goes into a `{}` the moment it implements that interface. Any `String` a placeholder allocates on the way is freed for you.
 
 ## Widths and aliases
 
