@@ -89,6 +89,9 @@ function minimarkText(node: unknown): string {
   return Array.isArray(node) ? node.slice(2).map(minimarkText).join("") : "";
 }
 
+const sameSentence = (a: string, b: string | undefined) =>
+  b !== undefined && a.trim().replace(/\.$/, "") === b.trim().replace(/\.$/, "");
+
 const renderedPage = computed(() => {
   const currentPage = page.value!;
   const body = currentPage.body;
@@ -102,10 +105,11 @@ const renderedPage = computed(() => {
   if (isMinimarkTag(body.value[contentStart], "h1")) contentStart += 1;
   // UPageHeader shows the description, so the paragraph that repeats it goes:
   // a hand-written page's derived one is its first paragraph, word for word,
-  // and a generated page may open on its summary. Anything else — the /docs/api
+  // and a generated overview opens on the manifest's description, which has
+  // no full stop where the paragraph has one. Anything else — the /docs/api
   // hub's introduction — stays in the body.
   const lead = body.value[contentStart];
-  if (isApiPage.value && isMinimarkTag(lead, "p") && minimarkText(lead).trim() === currentPage.description?.trim()) {
+  if (isApiPage.value && isMinimarkTag(lead, "p") && sameSentence(minimarkText(lead), currentPage.description)) {
     contentStart += 1;
   }
 
