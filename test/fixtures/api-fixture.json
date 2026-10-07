@@ -1,0 +1,600 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Gadget",
+    "namespace": "Rux",
+    "version": "0.2.0",
+    "description": "Storage contracts and the stores that meet them",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/gadget",
+    "dependencies": [
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+    ]
+  },
+  "modules": [
+    { "name": "Store", "source": "Src/Store.rux", "header": "What every store promises." },
+    { "name": "Arena", "source": "Src/Arena.rux", "header": null }
+  ],
+  "items": [
+    {
+      "kind": "interface",
+      "name": "Store",
+      "displayName": "Store",
+      "module": "Store",
+      "source": "Src/Store.rux",
+      "line": 5,
+      "signature": "pub interface Store",
+      "typeParams": [],
+      "doc": {
+        "summary": "The operations every store provides.",
+        "markdown": "The operations every store provides.\nAn `Arena` is one; `Put` takes a value and `Take` gives it back.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/gadget/store"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "requirement",
+          "name": "Put",
+          "line": 8,
+          "signature": "func Put(value: uint) -> ! Fault",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "uint" }],
+          "receiver": null,
+          "returnType": "! Fault",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Stores `value`.",
+            "markdown": "Stores `value`.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "what to keep" }],
+            "returns": "nothing, or the `Fault` that stopped it",
+            "see": [],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "requirement",
+          "name": "Take",
+          "line": 11,
+          "signature": "func Take() -> uint ! Fault",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "uint ! Fault",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives back the last value `Put` kept.",
+            "markdown": "Gives back the last value `Put` kept.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          }
+        }
+      ],
+      "implements": []
+    },
+    {
+      "kind": "struct",
+      "name": "Arena",
+      "displayName": "Arena",
+      "module": "Arena",
+      "source": "Src/Arena.rux",
+      "line": 20,
+      "signature": "pub struct Arena",
+      "typeParams": [],
+      "doc": {
+        "summary": "A store that advances a pointer and reclaims everything at once.",
+        "markdown": "A store that advances a pointer and reclaims everything at once.\nCall `Reset` to start over, and `BytesUsed` to see how far it went; a `Box<T>` may live in one. `Layout::New()` is not in this package.\n\n```rux\nlet arena = Arena(1024);\narena.Reset(); // `Reset` here is code, not a link\n```",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/gadget/arena", "https://rux-lang.dev/docs/lang/structs/methods"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "capacity",
+          "type": "uint",
+          "public": true,
+          "line": 22,
+          "doc": "How many bytes the arena may hand out."
+        },
+        { "name": "head", "type": "*var uint8", "public": false, "line": 23, "doc": "The next free byte." }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "BytesUsed",
+          "line": 40,
+          "signature": "pub func BytesUsed(self: &Arena) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Arena",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bytes have been handed out.",
+            "markdown": "How many bytes have been handed out.\nNever more than `capacity`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the total, padding included",
+            "see": [],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "constant",
+          "name": "Alignment",
+          "line": 28,
+          "signature": "pub const Alignment: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The alignment every block has.",
+            "markdown": "The alignment every block has.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "operator",
+          "name": "=",
+          "line": 29,
+          "signature": "func =(self: &var Arena, other: &Arena)",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&Arena" }],
+          "receiver": "&var Arena",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": false,
+          "doc": {
+            "summary": "Copying is prohibited.",
+            "markdown": "Copying is prohibited.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "constructor",
+          "name": "Arena",
+          "line": 30,
+          "signature": "pub func Arena(capacity: uint) -> Arena",
+          "typeParams": [],
+          "params": [{ "name": "capacity", "type": "uint" }],
+          "receiver": null,
+          "returnType": "Arena",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty arena.",
+            "markdown": "An empty arena.",
+            "typeParams": [],
+            "params": [{ "name": "capacity", "markdown": "how many bytes it may hand out" }],
+            "returns": "the arena",
+            "see": ["https://rux-lang.dev/docs/api/gadget/arena#new"],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 35,
+          "signature": "pub func Reset(self: &var Arena)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Arena",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Rewinds every allocation.",
+            "markdown": "Rewinds every allocation.\nAfterwards `BytesUsed` is zero.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/gadget/arena#reset"],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "method",
+          "name": "Shrink",
+          "line": 45,
+          "signature": "pub func Shrink(self: &var Arena)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Arena",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives unused blocks back.",
+            "markdown": "Gives unused blocks back.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": "Use `Reset` instead; it keeps the largest block."
+          }
+        },
+        {
+          "kind": "operator",
+          "name": "==",
+          "line": 50,
+          "signature": "pub func ==(self: &Arena, other: &Arena) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&Arena" }],
+          "receiver": "&Arena",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two arenas are the same arena.",
+            "markdown": "Whether two arenas are the same arena.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the arena to compare with" }],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "method",
+          "name": "Put",
+          "line": 60,
+          "signature": "pub func Put(self: &var Arena, value: uint) -> ! Fault",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "uint" }],
+          "receiver": "&var Arena",
+          "returnType": "! Fault",
+          "value": null,
+          "conformance": "Store",
+          "public": true,
+          "doc": {
+            "summary": "Stores `value` in the next free block.",
+            "markdown": "Stores `value` in the next free block.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "what to keep" }],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "method",
+          "name": "Take",
+          "line": 65,
+          "signature": "pub func Take(self: &var Arena) -> uint ! Fault",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Arena",
+          "returnType": "uint ! Fault",
+          "value": null,
+          "conformance": "Store",
+          "public": true,
+          "doc": {
+            "summary": "Gives back the last value.",
+            "markdown": "Gives back the last value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "destructor",
+          "name": "~Arena",
+          "line": 70,
+          "signature": "func ~Arena(self: &var Arena)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Arena",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases every block.",
+            "markdown": "Releases every block.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          }
+        }
+      ],
+      "implements": ["Store"]
+    },
+    {
+      "kind": "struct",
+      "name": "ArenaHandle",
+      "displayName": "ArenaHandle",
+      "module": "Arena",
+      "source": "Src/Arena.rux",
+      "line": 80,
+      "signature": "pub struct ArenaHandle",
+      "typeParams": [],
+      "doc": {
+        "summary": "A storable view of an `Arena`.",
+        "markdown": "A storable view of an `Arena`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/gadget/arena#arena-handle"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [{ "name": "arena", "type": "*var Arena", "public": false, "line": 81, "doc": null }],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 85,
+          "signature": "pub func Reset(self: &ArenaHandle)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ArenaHandle",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Rewinds the arena behind the handle.",
+            "markdown": "Rewinds the arena behind the handle; see `Arena::Reset`.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          }
+        }
+      ],
+      "implements": ["Store"]
+    },
+    {
+      "kind": "struct",
+      "name": "Box",
+      "displayName": "Box<T>",
+      "module": "Box",
+      "source": "Src/Box.rux",
+      "line": 10,
+      "signature": "pub struct Box<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "One heap value of `T`.",
+        "markdown": "One heap value of `T`.\nMove-only; a `Box<T>` releases its storage when it goes.",
+        "typeParams": [{ "name": "T", "markdown": "the type the box owns one of" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/gadget/box"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [{ "name": "pointer", "type": "*var T", "public": false, "line": 12, "doc": null }],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Create",
+          "line": 15,
+          "signature": "pub func Create(store: Store, value: T) -> Box<T> ! Fault",
+          "typeParams": [],
+          "params": [
+            { "name": "store", "type": "Store" },
+            { "name": "value", "type": "T" }
+          ],
+          "receiver": null,
+          "returnType": "Box<T> ! Fault",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Puts `value` in a box.",
+            "markdown": "Puts `value` in a box.",
+            "typeParams": [],
+            "params": [
+              { "name": "store", "markdown": "where the storage comes from" },
+              { "name": "value", "markdown": "the value to move in" }
+            ],
+            "returns": "the box, or why the store refused",
+            "see": [],
+            "deprecated": null
+          }
+        },
+        {
+          "kind": "method",
+          "name": "Map",
+          "line": 20,
+          "signature": "pub func Map<U>(self: &Box<T>) -> U",
+          "typeParams": [{ "name": "U", "bounds": ["Copy"] }],
+          "params": [],
+          "receiver": "&Box<T>",
+          "returnType": "U",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Converts the held value.",
+            "markdown": "Converts the held value.",
+            "typeParams": [{ "name": "U", "markdown": "the result type" }],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          }
+        }
+      ],
+      "implements": []
+    },
+    {
+      "kind": "enum",
+      "name": "Fault",
+      "displayName": "Fault",
+      "module": "Store",
+      "source": "Src/Store.rux",
+      "line": 30,
+      "signature": "pub enum Fault: uint8",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why a store did not do what was asked.",
+        "markdown": "Why a store did not do what was asked.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/gadget/fault"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        { "name": "Full", "value": "1", "payload": null, "line": 32, "doc": "No room is left | try later." },
+        { "name": "Empty", "value": "2", "payload": null, "line": 33, "doc": "Nothing was stored." }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "IsTransient",
+          "line": 36,
+          "signature": "pub func IsTransient(self: Fault) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "Fault",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether a later attempt could succeed.",
+            "markdown": "Whether a later attempt could succeed.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true only for `Full`",
+            "see": [],
+            "deprecated": null
+          }
+        }
+      ],
+      "implements": []
+    },
+    {
+      "kind": "constant",
+      "name": "EmptyBlock",
+      "displayName": "EmptyBlock",
+      "module": "Store",
+      "source": "Src/Store.rux",
+      "line": 50,
+      "signature": "pub const EmptyBlock: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The address a zero-sized block reports.",
+        "markdown": "The address a zero-sized block reports.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/gadget/empty-blocks#empty-block"],
+        "deprecated": null
+      },
+      "value": "0xFFFF0000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": []
+    },
+    {
+      "kind": "function",
+      "name": "IsEmptyBlock",
+      "displayName": "IsEmptyBlock",
+      "module": "Store",
+      "source": "Src/Store.rux",
+      "line": 55,
+      "signature": "pub func IsEmptyBlock(block: *var opaque) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether `block` is `EmptyBlock`.",
+        "markdown": "Whether `block` is `EmptyBlock`.",
+        "typeParams": [],
+        "params": [{ "name": "block", "markdown": "the address to test" }],
+        "returns": "whether it is the empty block",
+        "see": ["https://rux-lang.dev/docs/api/gadget/empty-blocks#is-empty-block"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": []
+    },
+    {
+      "kind": "function",
+      "name": "NaturalAlignment",
+      "displayName": "NaturalAlignment",
+      "module": "Store",
+      "source": "Src/Store.rux",
+      "line": 60,
+      "signature": "pub func NaturalAlignment(size: uint, limit: Map<uint, uint>) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The alignment a value of `size` bytes wants.",
+        "markdown": "The alignment a value of `size` bytes wants.",
+        "typeParams": [],
+        "params": [{ "name": "size", "markdown": "the size in bytes" }],
+        "returns": "a power of two",
+        "see": [],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": []
+    }
+  ]
+}
