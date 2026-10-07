@@ -1063,6 +1063,24 @@ function groupFor(kind) {
   return group;
 }
 
+/**
+ * The sidebar group a topic page is filed under: the group most of its
+ * sections belong to, by the kind of each section's declaration — Functions
+ * for a page of functions, Types for primitive families. A tie goes to the
+ * first section's group when it is one of the tied, else to the tied group
+ * seen first.
+ */
+export function topicGroup(sections) {
+  const groups = sections.map(([item]) => groupFor(item.kind));
+  const counts = new Map();
+  for (const group of groups) counts.set(group, (counts.get(group) ?? 0) + 1);
+  const most = Math.max(...counts.values());
+  return (
+    groups.find((group) => group === groups[0] && counts.get(group) === most) ??
+    groups.find((group) => counts.get(group) === most)
+  );
+}
+
 function renderItemPage(ctx, pageSlug, { owner, sections }) {
   const { snapshot, plan } = ctx;
   const [first] = owner;
@@ -1289,7 +1307,7 @@ export async function renderApiPackage(snapshot, readme, entry) {
 
   const groups = new Set();
   for (const [pageSlug, page] of [...plan.pages].sort(([a], [b]) => a.localeCompare(b))) {
-    const group = groupFor(page.owner ? page.owner[0].kind : "topic");
+    const group = page.owner ? groupFor(page.owner[0].kind) : topicGroup(page.sections);
     groups.add(group);
     const rendered = page.owner ? renderItemPage(ctx, pageSlug, page) : renderTopicPage(ctx, pageSlug, page, entry);
     write(`${group.folder}/${pageSlug}.md`, rendered);

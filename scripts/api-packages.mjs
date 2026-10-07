@@ -138,13 +138,15 @@ export const PACKAGES = [
  * Sidebar groups inside one package, in order. Each is a sub-folder of the
  * package folder with its own .navigation.yml; a group with no pages is not
  * written at all. Pages keep flat URLs (/docs/api/allocator/arena) through
- * frontmatter `path:`, exactly as the course's lessons do.
+ * frontmatter `path:`, exactly as the course's lessons do. A topic page is
+ * filed under the group of the declarations it holds (scripts/api-docs.mjs,
+ * topicGroup).
  */
 export const KIND_GROUPS = [
   { folder: "1.interfaces", title: "Interfaces", kinds: ["interface"] },
   { folder: "2.types", title: "Types", kinds: ["struct", "enum", "variant", "union", "type", "intrinsic-type"] },
   { folder: "3.functions", title: "Functions", kinds: ["function", "extern"] },
-  { folder: "4.constants", title: "Constants", kinds: ["constant", "topic"] },
+  { folder: "4.constants", title: "Constants", kinds: ["constant"] },
 ];
 
 /*

@@ -438,6 +438,24 @@ describe("renderApiPackage", async () => {
     expect(pageAnchors(topic)).toEqual(new Set(["empty-blocks", "empty-block", "is-empty-block"]));
   });
 
+  it("files a topic page under the group of the declarations it holds", async () => {
+    // EmptyBlock (a constant) and IsEmptyBlock (a function) tie; the first section decides.
+    expect(pages.has(`${base}/4.constants/empty-blocks.md`)).toBe(true);
+
+    const snapshot = copy();
+    item(snapshot, "NaturalAlignment").doc.see = [url("helpers", "natural-alignment")];
+    for (const sqrt of snapshot.items.filter((entry: { name: string }) => entry.name === "Sqrt")) {
+      sqrt.doc.see = [url("helpers", "sqrt")];
+    }
+    item(snapshot, "Fault").doc.see = [url("helpers", "fault")];
+    const helpers = await renderApiPackage(snapshot, null, {
+      ...entry,
+      topics: { ...entry.topics, helpers: "Helpers" },
+    });
+    expect(helpers.has(`${base}/3.functions/helpers.md`)).toBe(true);
+    expect(helpers.get(`${base}/3.functions/.navigation.yml`)).toBe("title: Functions\n");
+  });
+
   it("refuses an anchor that collides with a section heading", async () => {
     const snapshot = copy();
     item(snapshot, "Arena").members.find((member: { name: string }) => member.name === "Reset").doc.see = [
