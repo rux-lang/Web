@@ -87,7 +87,18 @@ export const PACKAGES = [
     description: "Unpredictable bytes from the operating system",
   },
   { name: "Json", area: "data", icon: "i-lucide-braces", description: "JSON parsing and serialization" },
-  { name: "Toml", area: "data", icon: "i-lucide-file-cog", description: "TOML parsing, serialization and streaming" },
+  {
+    name: "Toml",
+    area: "data",
+    icon: "i-lucide-file-cog",
+    description: "TOML parsing, serialization and streaming",
+    topics: {
+      scalars: {
+        title: "Scalars",
+        description: "Reading TOML integers, floats and date-times from their source text.",
+      },
+    },
+  },
   {
     name: "Uuid",
     area: "data",

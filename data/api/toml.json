@@ -1,0 +1,4964 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Toml",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "TOML parsing, serialization and streaming",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/toml",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Collections", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Format", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Math", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Time", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Events",
+      "source": "Src/Events.rux",
+      "header": "Reading a document as a stream of events, without building a tree.\nA tree is convenient and it is also what makes a large document expensive. Streaming trades random access for\nconstant memory: events arrive in document order, once, and the caller keeps only what it wants. A program\nreading one setting out of a large configuration file never allocates for the rest of it.\nWhat a streaming reader cannot do is notice that a table was defined twice, because knowing that requires\nremembering every table already seen — which is the tree it was trying not to build. So this checks syntax\nand structure and nothing else, and a caller that needs TOML's redefinition rules enforced wants the parser.\nSaying so here is better than a reader that quietly accepts a document the parser would refuse.\nText is left as it was written, escapes and all. Resolving them costs an allocation, and a caller skipping a\nfield should not pay for the field it is skipping; `TomlDecodeText` is there for the ones it keeps."
+    },
+    {
+      "name": "Lexer",
+      "source": "Src/Lexer.rux",
+      "header": "Turning TOML text into tokens, with the position of each one.\nTOML has more lexical surface than JSON and almost all of it is string and number forms. There are four ways\nto write a string — basic, multi-line basic, literal, multi-line literal — and they differ in whether\nescapes are honoured and whether newlines are allowed, which is exactly the sort of distinction an\nimplementation collapses and then surprises someone whose Windows path lost its backslashes.\nSpans are carried on every token because TOML is a configuration format, and a configuration error that does\nnot say where it is costs more than the parse itself. Every diagnostic this package produces can point at a\nline and column because the token knew."
+    },
+    {
+      "name": "Parser",
+      "source": "Src/Parser.rux",
+      "header": "Building a document from tokens, and refusing the three different ways of defining a table twice.\nMost of a TOML parser is bookkeeping about tables. `[a.b]` creates `a` implicitly and `b` deliberately, and\nwhat may happen to each of them afterwards is different: a later `[a]` is fine because `a` was only implied,\nwhile a later `[a.b]` is a redefinition. A table written inline is closed the moment its brace shuts, and one\nreached through a dotted key is closed as soon as the line ends. Three rules, three reasons, three separate\nerrors — because \"duplicate key\" tells a writer nothing about which of them they broke.\nThe recursion of inline tables and arrays is bounded by the depth limit rather than by the stack, checked\nbefore descending, so a document built to exhaust the stack is refused while there is still stack to refuse\nit with.\nWhat this produces is a tree of values and nothing else. Comments are skipped by the lexer and never arrive\nhere, so no amount of care further down could keep them; the same goes for blank lines, for indentation, and\nfor whether a number was written in hexadecimal. Reading a document and writing it back gives an equivalent\ndocument, not the same file, and this package is not the one to reach for when the file belongs to someone\nelse."
+    },
+    {
+      "name": "Scalar",
+      "source": "Src/Scalar.rux",
+      "header": "Turning a scalar token's text into a value, with TOML's grammar applied rather than assumed.\nEvery rule here is one a permissive reader would let through and a strict one would not: an underscore has to\nsit between two digits, a decimal integer may not carry a leading zero, a float needs digits on both sides of\nits point. None of that is decoration. `010` meaning eight to one reader and ten to another is how a port\nnumber becomes the wrong port number, and TOML's answer is that it means neither — it is simply not a TOML\ninteger, and saying so is the job of this file.\nEach refusal says where. A scalar is short, so a reader given only \"malformed\" has to find the offending\ncharacter themselves — and the reader most often given one is a person looking at a configuration file that\nstopped a program starting. The offsets are into the scalar's own text, counted in bytes from its first\ncharacter, and the parser adds the token's own position to reach a line and a column in the document.\nGetting that right takes one piece of bookkeeping: underscores are stripped before the digits are checked, so\nan offset into the stripped text is not an offset into what the caller wrote. `Stripped` keeps, for each byte\nit copies, where that byte came from, and every offset reported below is mapped back through it. `1_0_x0` must\npoint at the `x`, not at the fourth character of something the caller never saw."
+    },
+    {
+      "name": "Value",
+      "source": "Src/Value.rux",
+      "header": "What a TOML value is, and what a table remembers about how it was made.\nTOML has real types where JSON has one number and a great deal of hope: an integer is an integer, a float is a\nfloat, and a date is a date. That is most of what makes TOML pleasant to write configuration in, and it is why\na value here carries a `Date` and a `TimeOfDay` from `Time` rather than the text it was written with.\nA table also remembers how it came to exist. TOML forbids defining the same table twice, and forbids adding to\none that was written inline or reached through a dotted key — three different mistakes with three different\nreasons. The flags below are what let the parser say which one happened instead of reporting a duplicate and\nleaving the writer to work out why."
+    },
+    {
+      "name": "Writer",
+      "source": "Src/Writer.rux",
+      "header": "Writing a document back out, deterministically.\nThe same tree always produces the same bytes. That is not an aesthetic preference: configuration files live in\nversion control, and a writer whose output depends on hash order or on how the tree was built produces a diff\nevery time it runs, which trains everyone to stop reading the diffs.\nSo entries are written in the order the table holds them, keys are bare whenever TOML allows a bare key and\nquoted otherwise, and strings are always basic strings. A writer that guessed between the four string forms\nwould produce output that changed shape when a value gained a backslash, which is the sort of churn nobody\nasked for; a basic string is always valid and always round-trips.\nTables are written as headers rather than inline, except inside an array where TOML offers no other spelling.\nA document written, read and written again produces the same bytes the second time.\nWhat this cannot do is reproduce a file. The tree has no comments in it, no blank lines, and no memory of\nwhether a number was written in hexadecimal or a string in a literal form, so the output is the writer's\nlayout of the same values rather than the layout it was read from. That is fine for generating configuration\nand for writing back a file this program owns; running it over a file someone else wrote and hand-formatted\nwill produce a diff of the whole file.\nFailures are the ones every writer in this workspace reports, so a document goes into anything a `TextWriter`\nreaches with no translation at the seam. What the destination said travels unchanged: a buffer that is merely\nfull reports `InsufficientCapacity` and a stream that has died reports `WriterFailure`, where the status this\nreplaced had one case, `Failed`, standing for both — and a caller who could have written the document somewhere\nlarger had no way to know that was the problem. A header path that will not fit the buffer is `ValueOutOfRange`,\nwhich is what that case is for: the document is good and the form asked for cannot hold it."
+    }
+  ],
+  "items": [
+    {
+      "kind": "enum",
+      "name": "TomlEvent",
+      "displayName": "TomlEvent",
+      "module": "Events",
+      "source": "Src/Events.rux",
+      "line": 15,
+      "signature": "pub enum TomlEvent",
+      "typeParams": [],
+      "doc": {
+        "summary": "What just happened in the document.",
+        "markdown": "What just happened in the document.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#toml-event"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "End",
+          "value": "0",
+          "payload": null,
+          "line": 17,
+          "doc": "The document is finished.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Error",
+          "value": "1",
+          "payload": null,
+          "line": 19,
+          "doc": "Something went wrong; the reason is on the reader.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "HeaderStart",
+          "value": "2",
+          "payload": null,
+          "line": 21,
+          "doc": "A `[name]` or `[[name]]` header opened; `IsTableArray` says which, and the key parts follow.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "HeaderEnd",
+          "value": "3",
+          "payload": null,
+          "line": 23,
+          "doc": "The header's key path is complete.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "KeyStart",
+          "value": "4",
+          "payload": null,
+          "line": 25,
+          "doc": "A key-value pair began; the key parts follow, and then the value.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "KeyPart",
+          "value": "5",
+          "payload": null,
+          "line": 27,
+          "doc": "One part of a key path, whose span is the key as written.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Text",
+          "value": "6",
+          "payload": null,
+          "line": 29,
+          "doc": "A string value, still escaped as it was written.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Integer",
+          "value": "7",
+          "payload": null,
+          "line": 31,
+          "doc": "An integer, as written.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Float",
+          "value": "8",
+          "payload": null,
+          "line": 33,
+          "doc": "A float, as written.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Boolean",
+          "value": "9",
+          "payload": null,
+          "line": 35,
+          "doc": "`true` or `false`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "DateTime",
+          "value": "10",
+          "payload": null,
+          "line": 37,
+          "doc": "A date-time in any of the four forms, as written.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ArrayStart",
+          "value": "11",
+          "payload": null,
+          "line": 39,
+          "doc": "An array opened.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ArrayEnd",
+          "value": "12",
+          "payload": null,
+          "line": 41,
+          "doc": "An array closed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InlineTableStart",
+          "value": "13",
+          "payload": null,
+          "line": 43,
+          "doc": "An inline table opened.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InlineTableEnd",
+          "value": "14",
+          "payload": null,
+          "line": 45,
+          "doc": "An inline table closed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TomlEventReader",
+      "displayName": "TomlEventReader",
+      "module": "Events",
+      "source": "Src/Events.rux",
+      "line": 62,
+      "signature": "pub struct TomlEventReader",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a document as events, in order, without building a tree.",
+        "markdown": "Reads a document as events, in order, without building a tree.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "lexer",
+          "type": "TomlLexer",
+          "public": false,
+          "line": 64,
+          "doc": "Where tokens come from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "input",
+          "type": "char8[..]",
+          "public": false,
+          "line": 66,
+          "doc": "The whole document, which spans point into.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ahead",
+          "type": "TomlToken",
+          "public": false,
+          "line": 68,
+          "doc": "The token about to be read.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "current",
+          "type": "TomlToken",
+          "public": false,
+          "line": 70,
+          "doc": "The token the current event came from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "state",
+          "type": "TomlEventState",
+          "public": false,
+          "line": 72,
+          "doc": "What the reader is in the middle of.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "tableArray",
+          "type": "bool",
+          "public": false,
+          "line": 74,
+          "doc": "Whether the header being read is a `[[name]]` one.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "namedSomething",
+          "type": "bool",
+          "public": false,
+          "line": 76,
+          "doc": "Whether the header being read has named anything yet, since `[]` names nothing.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "containers",
+          "type": "uint64",
+          "public": false,
+          "line": 78,
+          "doc": "The open containers, one bit each: set for an inline table, clear for an array.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "depth",
+          "type": "uint",
+          "public": false,
+          "line": 80,
+          "doc": "How many of those bits are in use.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "stop",
+          "type": "TomlStop",
+          "public": false,
+          "line": 83,
+          "doc": "Why reading stopped, as its parts. The public failure is built from them in `Failure`, the same way the\ntree parser builds its own, so the two report a refusal identically.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "lexical",
+          "type": "TomlLexError",
+          "public": false,
+          "line": 85,
+          "doc": "The lexer's reason, when `stop` is `Lexical`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "TomlEventReader",
+          "line": 93,
+          "signature": "pub func TomlEventReader(input: char8[..]) -> TomlEventReader",
+          "typeParams": [],
+          "params": [{ "name": "input", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "TomlEventReader",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A reader over `input`.",
+            "markdown": "A reader over `input`.",
+            "typeParams": [],
+            "params": [{ "name": "input", "markdown": "the text to read" }],
+            "returns": "a reader positioned before the first event",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Failure",
+          "line": 118,
+          "signature": "pub func Failure(self: &TomlEventReader) -> TomlParseFailure?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlEventReader",
+          "returnType": "TomlParseFailure?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Why reading stopped, positioned, or `none` while nothing has gone wrong.",
+            "markdown": "Why reading stopped, positioned, or `none` while nothing has gone wrong.\nThis is what a caller asks after `Next` reports `Error`. A lexical refusal carries the lexer's own reason\ninside it rather than in a second call, so a caller holding the failure is holding all of it — and it is\nthe same `TomlParseFailure` the tree parser answers, so the two ways of reading a document report a\nrefusal in one vocabulary rather than two.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the failure, positioned at the token the reader stopped on, or `none`",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#failure"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Span",
+          "line": 135,
+          "signature": "pub func Span(self: &TomlEventReader) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlEventReader",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The bytes the current event's token spans, as written: a string is still escaped and a number is still\ntext.",
+            "markdown": "The bytes the current event's token spans, as written: a string is still escaped and a number is still\ntext.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the raw text the current event covers, borrowed from the input",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#span"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Form",
+          "line": 142,
+          "signature": "pub func Form(self: &TomlEventReader) -> TomlTextForm",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlEventReader",
+          "returnType": "TomlTextForm",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Which string form the current text event was written in, which decoding it needs.",
+            "markdown": "Which string form the current text event was written in, which decoding it needs.",
+            "typeParams": [],
+            "params": [],
+            "returns": "which quoting form the current text was written in",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#form"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Line",
+          "line": 149,
+          "signature": "pub func Line(self: &TomlEventReader) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlEventReader",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Which line the current event is on, counting from one.",
+            "markdown": "Which line the current event is on, counting from one.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the current event's line, counting from one",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#line"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Column",
+          "line": 156,
+          "signature": "pub func Column(self: &TomlEventReader) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlEventReader",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Which column the current event is at, counting from one, in bytes.",
+            "markdown": "Which column the current event is at, counting from one, in bytes.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the current event's column, counting from one",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#column"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsTableArray",
+          "line": 163,
+          "signature": "pub func IsTableArray(self: &TomlEventReader) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlEventReader",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the header being read was written `[[name]]` rather than `[name]`.",
+            "markdown": "Whether the header being read was written `[[name]]` rather than `[name]`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the current header opens an array of tables rather than a table",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#is-table-array"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Depth",
+          "line": 170,
+          "signature": "pub func Depth(self: &TomlEventReader) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlEventReader",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How deep inside arrays and inline tables the reader is.",
+            "markdown": "How deep inside arrays and inline tables the reader is.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many tables are currently open",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#depth"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 252,
+          "signature": "pub func Next(self: &var TomlEventReader) -> TomlEvent",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TomlEventReader",
+          "returnType": "TomlEvent",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next event, or `End` when the document is finished.",
+            "markdown": "The next event, or `End` when the document is finished.\nAfter an `Error` every later call returns `End`: everything past a refusal would be read from a position\nthe document never meant.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the next event, or the end-of-input event",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-event-reader#next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "TomlTokenKind",
+      "displayName": "TomlTokenKind",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 15,
+      "signature": "pub enum TomlTokenKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "What kind of token this is.",
+        "markdown": "What kind of token this is.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-lexer#toml-token-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "End",
+          "value": "0",
+          "payload": null,
+          "line": 17,
+          "doc": "The input is exhausted.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BareKey",
+          "value": "1",
+          "payload": null,
+          "line": 19,
+          "doc": "A bare key: letters, digits, underscores and hyphens.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Text",
+          "value": "2",
+          "payload": null,
+          "line": 21,
+          "doc": "A quoted key or a string value; the span excludes the quotes and the text may need unescaping.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Integer",
+          "value": "3",
+          "payload": null,
+          "line": 23,
+          "doc": "An integer, in any of the four bases.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Float",
+          "value": "4",
+          "payload": null,
+          "line": 25,
+          "doc": "A float, including the infinities and NaN that TOML — unlike JSON — can spell.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Boolean",
+          "value": "5",
+          "payload": null,
+          "line": 27,
+          "doc": "`true` or `false`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "DateTime",
+          "value": "6",
+          "payload": null,
+          "line": 29,
+          "doc": "An offset date-time, a local date-time, a local date, or a local time.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Equals",
+          "value": "7",
+          "payload": null,
+          "line": 31,
+          "doc": "`=`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Dot",
+          "value": "8",
+          "payload": null,
+          "line": 33,
+          "doc": "`.`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Comma",
+          "value": "9",
+          "payload": null,
+          "line": 35,
+          "doc": "`,`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "LeftBracket",
+          "value": "10",
+          "payload": null,
+          "line": 37,
+          "doc": "`[`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "RightBracket",
+          "value": "11",
+          "payload": null,
+          "line": 39,
+          "doc": "`]`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "LeftBrace",
+          "value": "12",
+          "payload": null,
+          "line": 41,
+          "doc": "`{`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "RightBrace",
+          "value": "13",
+          "payload": null,
+          "line": 43,
+          "doc": "`}`",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Newline",
+          "value": "14",
+          "payload": null,
+          "line": 45,
+          "doc": "One or more newlines, which TOML treats as significant.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Error",
+          "value": "15",
+          "payload": null,
+          "line": 47,
+          "doc": "Something that is not TOML.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "TomlTextForm",
+      "displayName": "TomlTextForm",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 52,
+      "signature": "pub enum TomlTextForm",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which of the four string forms a text token was written in.",
+        "markdown": "Which of the four string forms a text token was written in.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-lexer#toml-text-form"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "NotText",
+          "value": "0",
+          "payload": null,
+          "line": 54,
+          "doc": "Not a text token.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Basic",
+          "value": "1",
+          "payload": null,
+          "line": 56,
+          "doc": "A basic string: escapes honoured, no raw newlines.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "MultiLineBasic",
+          "value": "2",
+          "payload": null,
+          "line": 58,
+          "doc": "A multi-line basic string: escapes honoured, newlines allowed, a leading newline trimmed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Literal",
+          "value": "3",
+          "payload": null,
+          "line": 61,
+          "doc": "A literal string: no escapes at all, which is what makes it right for Windows paths and regular\nexpressions.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "MultiLineLiteral",
+          "value": "4",
+          "payload": null,
+          "line": 63,
+          "doc": "A multi-line literal string: no escapes, newlines allowed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Bare",
+          "value": "5",
+          "payload": null,
+          "line": 65,
+          "doc": "A bare key, which has no quotes and no escapes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "TomlLexError",
+      "displayName": "TomlLexError",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 70,
+      "signature": "pub enum TomlLexError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why lexing stopped.",
+        "markdown": "Why lexing stopped.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-lexer#toml-lex-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "None",
+          "value": "0",
+          "payload": null,
+          "line": 72,
+          "doc": "Nothing went wrong.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnexpectedByte",
+          "value": "1",
+          "payload": null,
+          "line": 74,
+          "doc": "A byte that begins no token.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnterminatedText",
+          "value": "2",
+          "payload": null,
+          "line": 76,
+          "doc": "A string the input ended before closing.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BadEscape",
+          "value": "3",
+          "payload": null,
+          "line": 78,
+          "doc": "An escape sequence TOML does not define.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BadUnicodeEscape",
+          "value": "4",
+          "payload": null,
+          "line": 80,
+          "doc": "A unicode escape that is not the right number of digits, or names no scalar value.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "MalformedNumber",
+          "value": "5",
+          "payload": null,
+          "line": 82,
+          "doc": "A number whose shape TOML grammar does not allow.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "NewlineInText",
+          "value": "6",
+          "payload": null,
+          "line": 84,
+          "doc": "A raw newline inside a single-line string.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnescapedControl",
+          "value": "7",
+          "payload": null,
+          "line": 86,
+          "doc": "A control character appearing unescaped where TOML forbids it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "MalformedDateTime",
+          "value": "8",
+          "payload": null,
+          "line": 88,
+          "doc": "A date or time that is not the shape RFC 3339 defines.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TomlToken",
+      "displayName": "TomlToken",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 93,
+      "signature": "pub struct TomlToken",
+      "typeParams": [],
+      "doc": {
+        "summary": "One token, and where it came from.",
+        "markdown": "One token, and where it came from.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-lexer#toml-token"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "kind",
+          "type": "TomlTokenKind",
+          "public": true,
+          "line": 95,
+          "doc": "What kind of token this is.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "form",
+          "type": "TomlTextForm",
+          "public": true,
+          "line": 97,
+          "doc": "Which string form, for a text token.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "start",
+          "type": "uint",
+          "public": true,
+          "line": 99,
+          "doc": "Where its text starts, as a byte offset.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "end",
+          "type": "uint",
+          "public": true,
+          "line": 101,
+          "doc": "Where its text ends.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "line",
+          "type": "uint",
+          "public": true,
+          "line": 103,
+          "doc": "Which line it starts on, counting from one.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "column",
+          "type": "uint",
+          "public": true,
+          "line": 105,
+          "doc": "Which column it starts at, counting from one, in bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "error",
+          "type": "TomlLexError",
+          "public": true,
+          "line": 107,
+          "doc": "Why lexing stopped, when the kind is `Error`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TomlLexer",
+      "displayName": "TomlLexer",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 112,
+      "signature": "pub struct TomlLexer",
+      "typeParams": [],
+      "doc": {
+        "summary": "A TOML lexer over a byte slice.",
+        "markdown": "A TOML lexer over a byte slice.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-lexer"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "input",
+          "type": "char8[..]",
+          "public": false,
+          "line": 114,
+          "doc": "The document.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "position",
+          "type": "uint",
+          "public": false,
+          "line": 116,
+          "doc": "How far reading has reached.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "line",
+          "type": "uint",
+          "public": true,
+          "line": 118,
+          "doc": "Which line that is on.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "lineStart",
+          "type": "uint",
+          "public": false,
+          "line": 120,
+          "doc": "Where the current line started, so a column is a subtraction.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "TomlLexer",
+          "line": 128,
+          "signature": "pub func TomlLexer(input: char8[..]) -> TomlLexer",
+          "typeParams": [],
+          "params": [{ "name": "input", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "TomlLexer",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A lexer over `input`.",
+            "markdown": "A lexer over `input`.",
+            "typeParams": [],
+            "params": [{ "name": "input", "markdown": "the text to read" }],
+            "returns": "a lexer positioned at the start of the input",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-lexer#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 422,
+          "signature": "pub func Next(self: &var TomlLexer) -> TomlToken",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TomlLexer",
+          "returnType": "TomlToken",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next token, or `End` at the end of the input.",
+            "markdown": "The next token, or `End` at the end of the input.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the next token, or the end-of-input token",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-lexer#next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TextOf",
+          "line": 494,
+          "signature": "pub func TextOf(self: &TomlLexer, token: &TomlToken) -> char8[..]",
+          "typeParams": [],
+          "params": [{ "name": "token", "type": "&TomlToken" }],
+          "receiver": "&TomlLexer",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The bytes a token spans, which for a text token excludes the quotes and is still escaped.",
+            "markdown": "The bytes a token spans, which for a text token excludes the quotes and is still escaped.",
+            "typeParams": [],
+            "params": [{ "name": "token", "markdown": "the token to read" }],
+            "returns": "the token's text, borrowed from the input",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-lexer#text-of"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TomlDecodeText",
+      "displayName": "TomlDecodeText",
+      "module": "Lexer",
+      "source": "Src/Lexer.rux",
+      "line": 509,
+      "signature": "pub func TomlDecodeText(allocator: Allocator, span: char8[..], form: TomlTextForm, bad: *var bool) -> String ! TextError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Decodes a text token's span into an owned string, honouring the escapes its form allows.",
+        "markdown": "Decodes a text token's span into an owned string, honouring the escapes its form allows.\nA literal string is copied unchanged — that is what makes it the right form for a Windows path — while a\nbasic string has its escapes resolved, including the line-ending backslash that lets a multi-line string be\nwrapped in the source without the wrapping appearing in the value.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "span", "markdown": "the raw text the token covers" },
+          { "name": "form", "markdown": "which quoting form the text was written in" },
+          { "name": "bad", "markdown": "receives the offset of the first byte that could not be decoded" }
+        ],
+        "returns": "the decoded text, or why it could not be stored",
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-lexer#toml-decode-text"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "TomlParseError",
+      "displayName": "TomlParseError",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 31,
+      "signature": "pub variant TomlParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why parsing stopped.",
+        "markdown": "Why parsing stopped.\nFailure-only: a parse that did not stop hands back a document instead. The distinctions between the four\ntable-definition cases are the ones worth keeping — `DuplicateKey`, `RedefinedTable`, `ExtendedInlineTable`\nand `ExtendedDottedTable` are four different mistakes with four different fixes, and a reader told only that\na key was defined twice would have to work out which rule they had met.\nThe two cases that have something more to say carry it rather than reporting it beside themselves, so a caller\nholding the failure cannot be holding half of one.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-parse-failure#toml-parse-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Lexical",
+          "value": null,
+          "payload": "(TomlLexError)",
+          "line": 33,
+          "doc": "The lexer refused the input, for the reason carried.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Unexpected",
+          "value": null,
+          "payload": null,
+          "line": 35,
+          "doc": "A token that cannot appear where it did.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Truncated",
+          "value": null,
+          "payload": null,
+          "line": 37,
+          "doc": "The document ended in the middle of something.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "DuplicateKey",
+          "value": null,
+          "payload": null,
+          "line": 39,
+          "doc": "A key given a value twice in the same table.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "RedefinedTable",
+          "value": null,
+          "payload": null,
+          "line": 41,
+          "doc": "A table defined by a header that had already been defined by one.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ExtendedInlineTable",
+          "value": null,
+          "payload": null,
+          "line": 43,
+          "doc": "An attempt to add to a table that was written inline, which its closing brace ended.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ExtendedDottedTable",
+          "value": null,
+          "payload": null,
+          "line": 45,
+          "doc": "An attempt to add to a table that a dotted key created, which its line ended.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "NotATable",
+          "value": null,
+          "payload": null,
+          "line": 47,
+          "doc": "A key path that runs through something that is not a table.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "NotATableArray",
+          "value": null,
+          "payload": null,
+          "line": 49,
+          "doc": "A `[[name]]` header naming an array that was not built from headers, or a table.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BadValue",
+          "value": null,
+          "payload": "(TomlScalarError)",
+          "line": 52,
+          "doc": "A scalar whose text is not the number or date TOML's grammar defines, for the reason carried. The scalar\nfailure's own offset is into the scalar's text; the failure around it is positioned in the document.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BadText",
+          "value": null,
+          "payload": null,
+          "line": 54,
+          "doc": "A string whose escapes name no scalar value.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TooDeep",
+          "value": null,
+          "payload": null,
+          "line": 56,
+          "doc": "Values nested deeper than the limit allowed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "OutOfMemory",
+          "value": null,
+          "payload": null,
+          "line": 58,
+          "doc": "The allocator refused.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TomlParseFailure",
+      "displayName": "TomlParseFailure",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 65,
+      "signature": "pub struct TomlParseFailure",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why a document was refused, and where in it.",
+        "markdown": "Why a document was refused, and where in it.\nThree positions for one place, because the three are wanted by different readers: `offset` is what a program\nslices the input with, and `line` and `column` are what a person is shown. They always name the same byte.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-parse-failure"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "reason",
+          "type": "TomlParseError",
+          "public": true,
+          "line": 67,
+          "doc": "Why parsing stopped.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "offset",
+          "type": "uint",
+          "public": true,
+          "line": 69,
+          "doc": "The zero-based byte offset into the document where it stopped.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "line",
+          "type": "uint",
+          "public": true,
+          "line": 71,
+          "doc": "Which line, counting from one.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "column",
+          "type": "uint",
+          "public": true,
+          "line": 73,
+          "doc": "Which column, counting from one, in bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Offset",
+          "line": 81,
+          "signature": "pub func Offset(self: &TomlParseFailure) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlParseFailure",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "ParseFailure",
+          "public": true,
+          "doc": {
+            "summary": "Where in the document parsing stopped.",
+            "markdown": "Where in the document parsing stopped.\nBorrows the failure and leaves it untouched. Cannot fail; runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the zero-based byte offset into the document",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-parse-failure#offset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 110,
+          "signature": "pub func WriteDisplay(self: &TomlParseFailure, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&TomlParseFailure",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the description of why parsing stopped, without the position.",
+            "markdown": "Writes the description of why parsing stopped, without the position.\nThe line and column are numbers a caller places where it makes sense for them, so they are not written into\nthe middle of a sentence here. `Debug` carries them.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole description was accepted",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-parse-failure#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 191,
+          "signature": "pub func WriteDebug(self: &TomlParseFailure, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&TomlParseFailure",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "Names the case and where it happened: `TomlParseError::DuplicateKey at 2:1`.",
+            "markdown": "Names the case and where it happened: `TomlParseError::DuplicateKey at 2:1`.\nA case that carries something names that too, so nothing has to be looked up elsewhere:\n`TomlParseError::BadValue(TomlScalarError::Malformed(4)) at 1:8`.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole rendering was accepted",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-parse-failure#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["ParseFailure", "Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TomlLimits",
+      "displayName": "TomlLimits",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 227,
+      "signature": "pub struct TomlLimits",
+      "typeParams": [],
+      "doc": {
+        "summary": "What a parse will accept.",
+        "markdown": "What a parse will accept.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-parser#toml-limits"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "maximumDepth",
+          "type": "uint",
+          "public": false,
+          "line": 229,
+          "doc": "How deeply arrays and inline tables may nest.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Default",
+          "line": 237,
+          "signature": "pub func Default() -> TomlLimits",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "TomlLimits",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Limits that suit a configuration file: deep enough for anything written by hand, shallow enough that a\ndocument built to exhaust the stack does not.",
+            "markdown": "Limits that suit a configuration file: deep enough for anything written by hand, shallow enough that a\ndocument built to exhaust the stack does not.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the limits an ordinary parse uses",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-parser#toml-limits-default"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Unlimited",
+          "line": 244,
+          "signature": "pub func Unlimited() -> TomlLimits",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "TomlLimits",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Limits that refuse nothing, for input already known to be trustworthy.",
+            "markdown": "Limits that refuse nothing, for input already known to be trustworthy.",
+            "typeParams": [],
+            "params": [],
+            "returns": "limits that refuse nothing, for input that is already trusted",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-parser#toml-limits-unlimited"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TomlParser",
+      "displayName": "TomlParser",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 286,
+      "signature": "pub struct TomlParser",
+      "typeParams": [],
+      "doc": {
+        "summary": "A parser over a document.",
+        "markdown": "A parser over a document.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-parser"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "lexer",
+          "type": "TomlLexer",
+          "public": false,
+          "line": 288,
+          "doc": "Where tokens come from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 290,
+          "doc": "Where values are built.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "limits",
+          "type": "TomlLimits",
+          "public": false,
+          "line": 292,
+          "doc": "What to accept.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "input",
+          "type": "char8[..]",
+          "public": false,
+          "line": 294,
+          "doc": "The whole document, which token spans point into.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ahead",
+          "type": "TomlToken",
+          "public": false,
+          "line": 296,
+          "doc": "The token about to be read.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "depth",
+          "type": "uint",
+          "public": false,
+          "line": 298,
+          "doc": "How deep the current value is nested.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "outcome",
+          "type": "TomlStopped",
+          "public": false,
+          "line": 300,
+          "doc": "Why parsing stopped.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "TomlParser",
+          "line": 310,
+          "signature": "pub func TomlParser(allocator: Allocator, input: char8[..], limits: TomlLimits) -> TomlParser",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "input", "type": "char8[..]" },
+            { "name": "limits", "type": "TomlLimits" }
+          ],
+          "receiver": null,
+          "returnType": "TomlParser",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A parser over `input` under `limits`.",
+            "markdown": "A parser over `input` under `limits`.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "input", "markdown": "the text to read" },
+              { "name": "limits", "markdown": "the bounds the parse refuses to exceed" }
+            ],
+            "returns": "a parser ready to read the input",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-parser#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Failure",
+          "line": 335,
+          "signature": "pub func Failure(self: &TomlParser) -> TomlParseFailure?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlParser",
+          "returnType": "TomlParseFailure?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Why parsing stopped, positioned, or `none` while nothing has gone wrong.",
+            "markdown": "Why parsing stopped, positioned, or `none` while nothing has gone wrong.\nA caller using `Parse` never needs this: the failure comes back in the result.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the failure, or `none`",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-parser#failure"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Failed",
+          "line": 343,
+          "signature": "pub func Failed(self: &TomlParser) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlParser",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether parsing has failed.",
+            "markdown": "Whether parsing has failed.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the parse stopped on a failure",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-parser#failed"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Parse",
+          "line": 830,
+          "signature": "pub func Parse(self: &var TomlParser) -> TomlValue ! TomlParseFailure",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TomlParser",
+          "returnType": "TomlValue ! TomlParseFailure",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Reads the whole document into a table.",
+            "markdown": "Reads the whole document into a table.\nOn failure the table holds whatever had been read before the refusal, and `Outcome` says what stopped it\nand where. A partial document is not a usable one; it is returned rather than discarded so a caller can\nshow what was understood before the line that was not.\nWhat comes back is the values and nothing else. Comments never reach the parser, and neither does the\nblank line someone put between two sections or the fact that a number was written in hexadecimal. This\nreads configuration; it does not edit files.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the document, or the failure and where it was found",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-parser#parse"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TomlParse",
+      "displayName": "TomlParse",
+      "module": "Parser",
+      "source": "Src/Parser.rux",
+      "line": 874,
+      "signature": "pub func TomlParse(allocator: Allocator, input: char8[..]) -> TomlValue ! TomlParseFailure",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads `input` into a table, or says why it could not and where.",
+        "markdown": "Reads `input` into a table, or says why it could not and where.\nA refusal gives back no document at all. Whatever had been read when the parser stopped is released here,\nwhich is the only place it can be done once — and handing it back would be worse than useless, because a\nprogram configured from half a file runs with some settings applied and some defaulted.\nFails with any case of `TomlParseError`, positioned at the byte, line and column where parsing stopped.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the document is built" },
+          { "name": "input", "markdown": "the document, as UTF-8 bytes" }
+        ],
+        "returns": "the document, or the failure that stopped it",
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-parse"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "TomlScalarError",
+      "displayName": "TomlScalarError",
+      "module": "Scalar",
+      "source": "Src/Scalar.rux",
+      "line": 26,
+      "signature": "pub variant TomlScalarError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why a scalar could not be read, and where in it.",
+        "markdown": "Why a scalar could not be read, and where in it.\nFailure-only: there is no case meaning nothing went wrong, because a scalar that read hands back its value\ninstead. Every offset is a zero-based byte offset into the scalar's own text, as the caller wrote it —\nunderscores included — and reachable through `Text::ParseFailure`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-scalar-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Malformed",
+          "value": null,
+          "payload": "(uint)",
+          "line": 30,
+          "doc": "The text does not have the shape TOML defines, at the byte carried. That is the first character that\ncannot be part of what was being read: a digit the base does not have, a point with nothing after it, an\nunderscore that is not between two digits, or the end of the text when it stops early.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "OutOfRange",
+          "value": null,
+          "payload": "(uint)",
+          "line": 33,
+          "doc": "The value is outside what an `int64`, a `float64` or the calendar can hold. The offset is the start of the\ntext, since it is the whole value that does not fit rather than any one character of it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TooLong",
+          "value": null,
+          "payload": "(uint)",
+          "line": 35,
+          "doc": "The text is longer than any TOML scalar needs. The offset is the first character past the bound.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Offset",
+          "line": 43,
+          "signature": "pub func Offset(self: &TomlScalarError) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlScalarError",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "ParseFailure",
+          "public": true,
+          "doc": {
+            "summary": "Where in the scalar's text the failure was found.",
+            "markdown": "Where in the scalar's text the failure was found.\nBorrows the failure and leaves it untouched. Cannot fail; runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the zero-based byte offset into the scalar's own text",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-scalar-error#offset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 61,
+          "signature": "pub func WriteDisplay(self: &TomlScalarError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&TomlScalarError",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the description of why the scalar could not be read, without the position.",
+            "markdown": "Writes the description of why the scalar could not be read, without the position.\nThe offset is a number a caller places where it makes sense for them — beside a line and column, or not at\nall — so it is not written into the middle of a sentence here. `Debug` carries it.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole description was accepted",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-scalar-error#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 80,
+          "signature": "pub func WriteDebug(self: &TomlScalarError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&TomlScalarError",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "Names the case and its position: `TomlScalarError::Malformed(3)`.",
+            "markdown": "Names the case and its position: `TomlScalarError::Malformed(3)`.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole name was accepted",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-scalar-error#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["ParseFailure", "Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TomlParseInteger",
+      "displayName": "TomlParseInteger",
+      "module": "Scalar",
+      "source": "Src/Scalar.rux",
+      "line": 164,
+      "signature": "pub func TomlParseInteger(text: char8[..]) -> int64 ! TomlScalarError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads an integer, in any of the four bases TOML writes.",
+        "markdown": "Reads an integer, in any of the four bases TOML writes.\nA leading zero is refused for a decimal integer, because `010` is eight in one language and ten in another\nand TOML declines to pick: it is not an integer at all. A sign is refused on a based integer for the same\nreason — the grammar does not offer one, so accepting it would be inventing a dialect.\n`Malformed` at the first character that cannot be part of the integer, `TooLong` past the length bound, and\n`OutOfRange` at the start when the digits are a number `int64` cannot hold. Every offset is into `text` as\nwritten, underscores included.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the scalar's own bytes" }],
+        "returns": "the integer, or why it could not be read and where",
+        "see": ["https://rux-lang.dev/docs/api/toml/scalars#toml-parse-integer"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TomlParseFloat",
+      "displayName": "TomlParseFloat",
+      "module": "Scalar",
+      "source": "Src/Scalar.rux",
+      "line": 244,
+      "signature": "pub func TomlParseFloat(text: char8[..]) -> float64 ! TomlScalarError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a float, including the infinities and NaN that TOML can spell and JSON cannot.",
+        "markdown": "Reads a float, including the infinities and NaN that TOML can spell and JSON cannot.\nA point needs a digit on either side of it, which is what refuses `.7` and `7.` — both of which some readers\naccept and some do not, so a document containing one means different things in different places.\n`Malformed` at the first character that cannot be part of the float, `TooLong` past the length bound, and\n`OutOfRange` at the start when the digits are a number `float64` cannot hold. Every offset is into `text` as\nwritten, underscores included.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the scalar's own bytes" }],
+        "returns": "the float, or why it could not be read and where",
+        "see": ["https://rux-lang.dev/docs/api/toml/scalars#toml-parse-float"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "TomlDateTimeShape",
+      "displayName": "TomlDateTimeShape",
+      "module": "Scalar",
+      "source": "Src/Scalar.rux",
+      "line": 359,
+      "signature": "pub enum TomlDateTimeShape",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which of the four date-time shapes a token turned out to be.",
+        "markdown": "Which of the four date-time shapes a token turned out to be.\nThere is no case for \"not a date-time\": text that is none of the four is a failure with a position, not a\nfifth shape a caller has to remember to check for before reading the fields beside it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/scalars#toml-date-time-shape"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "Offset",
+          "value": "1",
+          "payload": null,
+          "line": 361,
+          "doc": "A date and a time with an offset, which names a moment.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Local",
+          "value": "2",
+          "payload": null,
+          "line": 363,
+          "doc": "A date and a time with no offset, which names a wall clock reading.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "DateOnly",
+          "value": "3",
+          "payload": null,
+          "line": 365,
+          "doc": "A date alone.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TimeOnly",
+          "value": "4",
+          "payload": null,
+          "line": 367,
+          "doc": "A time alone.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TomlDateTime",
+      "displayName": "TomlDateTime",
+      "module": "Scalar",
+      "source": "Src/Scalar.rux",
+      "line": 375,
+      "signature": "pub struct TomlDateTime",
+      "typeParams": [],
+      "doc": {
+        "summary": "A date-time as TOML writes it: which of the four shapes it is, and the parts that shape carries.",
+        "markdown": "A date-time as TOML writes it: which of the four shapes it is, and the parts that shape carries.\nThe parts that the shape does not carry are present and meaningless — a `DateOnly` has a time of midnight\nbecause the fields have to hold something — so `shape` is what decides which of them to read. That is why the\nshape travels with the value rather than being returned beside it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/scalars#toml-date-time"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "shape",
+          "type": "TomlDateTimeShape",
+          "public": true,
+          "line": 377,
+          "doc": "Which of the four forms the text was.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "date",
+          "type": "Date",
+          "public": true,
+          "line": 379,
+          "doc": "The date, for every shape but `TimeOnly`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "time",
+          "type": "TimeOfDay",
+          "public": true,
+          "line": 381,
+          "doc": "The time, for every shape but `DateOnly`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "offset",
+          "type": "UtcOffset",
+          "public": true,
+          "line": 383,
+          "doc": "The offset, for `Offset` alone. UTC otherwise, which means nothing there.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TomlParseDateTime",
+      "displayName": "TomlParseDateTime",
+      "module": "Scalar",
+      "source": "Src/Scalar.rux",
+      "line": 397,
+      "signature": "pub func TomlParseDateTime(text: char8[..]) -> TomlDateTime ! TomlScalarError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads any of TOML's four date-time forms, reporting which one it was.",
+        "markdown": "Reads any of TOML's four date-time forms, reporting which one it was.\nThe four are genuinely different things and the difference matters: an offset date-time names a moment, and a\nlocal date-time names a reading of a wall clock that different places reach at different moments. Collapsing\nthem by assuming UTC is how a meeting ends up an hour out, so nothing here supplies an offset that the text\ndid not.\n`Malformed` at the byte where the text stops being one of the four forms — the separator that is not one, the\nfield the calendar rejects, or the end of the text when it stops early. The calendar's own refusals arrive\nhere too: the thirty-first of February is four correct digit pairs and not a date.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the scalar's own bytes" }],
+        "returns": "the date-time and which shape it is, or why it could not be read and where",
+        "see": ["https://rux-lang.dev/docs/api/toml/scalars#toml-parse-date-time"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "TomlKind",
+      "displayName": "TomlKind",
+      "module": "Value",
+      "source": "Src/Value.rux",
+      "line": 18,
+      "signature": "pub enum TomlKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which kind of TOML value this is.",
+        "markdown": "Which kind of TOML value this is.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-value#toml-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "Text",
+          "value": "0",
+          "payload": null,
+          "line": 20,
+          "doc": "A string, whichever of the four forms it was written in.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Integer",
+          "value": "1",
+          "payload": null,
+          "line": 22,
+          "doc": "A 64-bit signed integer.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Float",
+          "value": "2",
+          "payload": null,
+          "line": 24,
+          "doc": "A 64-bit float, which unlike JSON may be an infinity or a NaN.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Boolean",
+          "value": "3",
+          "payload": null,
+          "line": 26,
+          "doc": "`true` or `false`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "OffsetDateTime",
+          "value": "4",
+          "payload": null,
+          "line": 28,
+          "doc": "A date and time with a known offset from UTC, which names a moment.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "LocalDateTime",
+          "value": "5",
+          "payload": null,
+          "line": 30,
+          "doc": "A date and time with no offset, which names a reading of a wall clock.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "LocalDate",
+          "value": "6",
+          "payload": null,
+          "line": 32,
+          "doc": "A date with no time.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "LocalTime",
+          "value": "7",
+          "payload": null,
+          "line": 34,
+          "doc": "A time with no date.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Array",
+          "value": "8",
+          "payload": null,
+          "line": 36,
+          "doc": "An ordered sequence of values.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Table",
+          "value": "9",
+          "payload": null,
+          "line": 38,
+          "doc": "A table of entries, in the order they were seen.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TomlEntry",
+      "displayName": "TomlEntry",
+      "module": "Value",
+      "source": "Src/Value.rux",
+      "line": 43,
+      "signature": "pub struct TomlEntry",
+      "typeParams": [],
+      "doc": {
+        "summary": "One entry of a table: its key and its value.",
+        "markdown": "One entry of a table: its key and its value.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-value#toml-entry"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "key",
+          "type": "String",
+          "public": true,
+          "line": 45,
+          "doc": "The key, already unquoted and unescaped.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "value",
+          "type": "TomlValue",
+          "public": true,
+          "line": 47,
+          "doc": "The value.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "destructor",
+          "name": "~TomlEntry",
+          "line": 447,
+          "signature": "func ~TomlEntry(self: &var TomlEntry)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TomlEntry",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases the key and the value.",
+            "markdown": "Releases the key and the value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#toml-entry-destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TomlValue",
+      "displayName": "TomlValue",
+      "module": "Value",
+      "source": "Src/Value.rux",
+      "line": 54,
+      "signature": "pub struct TomlValue",
+      "typeParams": [],
+      "doc": {
+        "summary": "A TOML value: one of the ten kinds, owning whatever it holds.",
+        "markdown": "A TOML value: one of the ten kinds, owning whatever it holds.\nMove-only, because it owns strings and nested values. The allocator it was built with travels with it, so a\nsubtree can be released without the caller having to remember where it came from.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-value"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "kind",
+          "type": "TomlKind",
+          "public": true,
+          "line": 56,
+          "doc": "Which of the ten kinds this is.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "boolean",
+          "type": "bool",
+          "public": false,
+          "line": 58,
+          "doc": "The payload of a `Boolean`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "integer",
+          "type": "int64",
+          "public": true,
+          "line": 60,
+          "doc": "The payload of an `Integer`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "number",
+          "type": "float64",
+          "public": false,
+          "line": 62,
+          "doc": "The payload of a `Float`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "text",
+          "type": "String",
+          "public": false,
+          "line": 64,
+          "doc": "The payload of a `Text`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "date",
+          "type": "Date",
+          "public": false,
+          "line": 66,
+          "doc": "The date part, for the three kinds that have one.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "time",
+          "type": "TimeOfDay",
+          "public": false,
+          "line": 68,
+          "doc": "The time part, for the three kinds that have one.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "offset",
+          "type": "UtcOffset",
+          "public": false,
+          "line": 70,
+          "doc": "The offset, for an `OffsetDateTime`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "elements",
+          "type": "Vector<TomlValue>",
+          "public": false,
+          "line": 72,
+          "doc": "The elements of an `Array`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "entries",
+          "type": "Vector<TomlEntry>",
+          "public": false,
+          "line": 74,
+          "doc": "The entries of a `Table`, in the order they were seen.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "defined",
+          "type": "bool",
+          "public": false,
+          "line": 77,
+          "doc": "Whether a table was written out — as a header or an inline table — rather than merely implied by a\nlonger key passing through it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "inlined",
+          "type": "bool",
+          "public": false,
+          "line": 79,
+          "doc": "Whether a table was written inline, which closes it to any later addition.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "dotted",
+          "type": "bool",
+          "public": false,
+          "line": 81,
+          "doc": "Whether a table was created by a dotted key, which closes it to any later header.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "tableArray",
+          "type": "bool",
+          "public": false,
+          "line": 84,
+          "doc": "Whether an array was built from `[[name]]` headers, which is the one kind of array a later line may\nappend to.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 86,
+          "doc": "Where everything above came from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Table",
+          "line": 97,
+          "signature": "pub func Table(allocator: Allocator) -> TomlValue",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty table, which is also the shape every other kind is built from: TOML has no null to start from.",
+            "markdown": "An empty table, which is also the shape every other kind is built from: TOML has no null to start from.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "an empty table",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#table"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Array",
+          "line": 121,
+          "signature": "pub func Array(allocator: Allocator) -> TomlValue",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty array.",
+            "markdown": "An empty array.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "an empty array",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#array"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Text",
+          "line": 132,
+          "signature": "pub func Text(allocator: Allocator, value: char8[..]) -> TomlValue ! TextError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "value", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "TomlValue ! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A string value, whose bytes are copied and validated as UTF-8.",
+            "markdown": "A string value, whose bytes are copied and validated as UTF-8.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "value", "markdown": "the value to act on" }
+            ],
+            "returns": "that text as a string value, or an empty table when the allocator refused",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromString",
+          "line": 144,
+          "signature": "pub func FromString(allocator: Allocator, value: String) -> TomlValue",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "value", "type": "String" }
+          ],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A string value copying an already-built string.",
+            "markdown": "A string value copying an already-built string.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "value", "markdown": "the value to act on" }
+            ],
+            "returns": "that owned string as a string value",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#from-string"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Integer",
+          "line": 157,
+          "signature": "pub func Integer(allocator: Allocator, value: int64) -> TomlValue",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "value", "type": "int64" }
+          ],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An integer value.",
+            "markdown": "An integer value.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "value", "markdown": "the value to act on" }
+            ],
+            "returns": "that integer as a value",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#integer"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Float",
+          "line": 169,
+          "signature": "pub func Float(allocator: Allocator, value: float64) -> TomlValue",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "value", "type": "float64" }
+          ],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A float value, which TOML — unlike JSON — allows to be an infinity or a NaN.",
+            "markdown": "A float value, which TOML — unlike JSON — allows to be an infinity or a NaN.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "value", "markdown": "the value to act on" }
+            ],
+            "returns": "that float as a value",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#float"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Boolean",
+          "line": 181,
+          "signature": "pub func Boolean(allocator: Allocator, value: bool) -> TomlValue",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "value", "type": "bool" }
+          ],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A boolean value.",
+            "markdown": "A boolean value.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "value", "markdown": "the value to act on" }
+            ],
+            "returns": "that boolean as a value",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#boolean"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "OffsetDateTime",
+          "line": 195,
+          "signature": "pub func OffsetDateTime(allocator: Allocator, date: Date, time: TimeOfDay, offset: UtcOffset) -> TomlValue",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "date", "type": "Date" },
+            { "name": "time", "type": "TimeOfDay" },
+            { "name": "offset", "type": "UtcOffset" }
+          ],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A date and time with a known offset, which names a moment on the timeline.",
+            "markdown": "A date and time with a known offset, which names a moment on the timeline.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "date", "markdown": "the calendar date" },
+              { "name": "time", "markdown": "the time of day" },
+              { "name": "offset", "markdown": "the offset from UTC" }
+            ],
+            "returns": "a value carrying the date, the time and the offset from UTC",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#offset-date-time"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "LocalDateTime",
+          "line": 210,
+          "signature": "pub func LocalDateTime(allocator: Allocator, date: Date, time: TimeOfDay) -> TomlValue",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "date", "type": "Date" },
+            { "name": "time", "type": "TimeOfDay" }
+          ],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A date and time with no offset, which names a wall clock reading rather than a moment.",
+            "markdown": "A date and time with no offset, which names a wall clock reading rather than a moment.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "date", "markdown": "the calendar date" },
+              { "name": "time", "markdown": "the time of day" }
+            ],
+            "returns": "a value carrying the date and the time, with no offset",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#local-date-time"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "LocalDate",
+          "line": 223,
+          "signature": "pub func LocalDate(allocator: Allocator, date: Date) -> TomlValue",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "date", "type": "Date" }
+          ],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A date with no time.",
+            "markdown": "A date with no time.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "date", "markdown": "the calendar date" }
+            ],
+            "returns": "a value carrying the date alone",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#local-date"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "LocalTime",
+          "line": 235,
+          "signature": "pub func LocalTime(allocator: Allocator, time: TimeOfDay) -> TomlValue",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "time", "type": "TimeOfDay" }
+          ],
+          "receiver": null,
+          "returnType": "TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A time with no date.",
+            "markdown": "A time with no date.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "time", "markdown": "the time of day" }
+            ],
+            "returns": "a value carrying the time alone",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#local-time"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Kind",
+          "line": 245,
+          "signature": "pub func Kind(self: &TomlValue) -> TomlKind",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlValue",
+          "returnType": "TomlKind",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Which kind this value is.",
+            "markdown": "Which kind this value is.",
+            "typeParams": [],
+            "params": [],
+            "returns": "which of the TOML kinds this is",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#kind"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsBoolean",
+          "line": 254,
+          "signature": "pub func AsBoolean(self: &TomlValue, result: *var bool) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var bool" }],
+          "receiver": "&TomlValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The boolean payload, or `false` when this is not a boolean — which `Kind` distinguishes from a genuine\n`false`.",
+            "markdown": "The boolean payload, or `false` when this is not a boolean — which `Kind` distinguishes from a genuine\n`false`.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether this is a boolean",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#as-boolean"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsInteger",
+          "line": 266,
+          "signature": "pub func AsInteger(self: &TomlValue, result: *var int64) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var int64" }],
+          "receiver": "&TomlValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The integer payload, or `false` when this is not an integer.",
+            "markdown": "The integer payload, or `false` when this is not an integer.\nA float is not converted, even when its value happens to be whole: TOML distinguishes `1` from `1.0` and\ncollapsing them here would throw away a distinction the document was making.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether this is an integer",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#as-integer"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsFloat",
+          "line": 276,
+          "signature": "pub func AsFloat(self: &TomlValue, result: *var float64) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var float64" }],
+          "receiver": "&TomlValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The float payload, or `false` when this is not a float.",
+            "markdown": "The float payload, or `false` when this is not a float.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether this is a float",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#as-float"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsText",
+          "line": 285,
+          "signature": "pub func AsText(self: &TomlValue) -> StringView",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlValue",
+          "returnType": "StringView",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The string payload, or an empty view when this is not a string.",
+            "markdown": "The string payload, or an empty view when this is not a string.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the string, or an empty view when this is not one",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#as-text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsDate",
+          "line": 294,
+          "signature": "pub func AsDate(self: &TomlValue, result: *var Date) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var Date" }],
+          "receiver": "&TomlValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The date part, or `false` when this kind has none.",
+            "markdown": "The date part, or `false` when this kind has none.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether this carries a date",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#as-date"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsTime",
+          "line": 307,
+          "signature": "pub func AsTime(self: &TomlValue, result: *var TimeOfDay) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var TimeOfDay" }],
+          "receiver": "&TomlValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The time part, or `false` when this kind has none.",
+            "markdown": "The time part, or `false` when this kind has none.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether this carries a time",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#as-time"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsOffset",
+          "line": 322,
+          "signature": "pub func AsOffset(self: &TomlValue, result: *var UtcOffset) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "result", "type": "*var UtcOffset" }],
+          "receiver": "&TomlValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The offset, or `false` when this is not an offset date-time.",
+            "markdown": "The offset, or `false` when this is not an offset date-time.\nA local date-time deliberately has none: it names a wall clock reading, and inventing an offset for it is\nhow a meeting ends up an hour out.",
+            "typeParams": [],
+            "params": [{ "name": "result", "markdown": "receives the value when this reports true" }],
+            "returns": "whether this carries an offset from UTC",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#as-offset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 331,
+          "signature": "pub func Length(self: &TomlValue) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TomlValue",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many elements an array holds, or entries a table holds; zero for anything else.",
+            "markdown": "How many elements an array holds, or entries a table holds; zero for anything else.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how many elements or entries this holds; zero for anything else",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Push",
+          "line": 343,
+          "signature": "pub func Push(self: &var TomlValue, value: TomlValue) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "TomlValue" }],
+          "receiver": "&var TomlValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Appends `value` to an array, taking ownership of it.",
+            "markdown": "Appends `value` to an array, taking ownership of it.\nReports `false` when this is not an array or the allocator refused; `value` is consumed either way, so a\ncaller does not have to decide who owns it on failure.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the value to act on" }],
+            "returns": "whether the element was appended",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#push"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Insert",
+          "line": 356,
+          "signature": "pub func Insert(self: &var TomlValue, key: String, value: TomlValue) -> bool",
+          "typeParams": [],
+          "params": [
+            { "name": "key", "type": "String" },
+            { "name": "value", "type": "TomlValue" }
+          ],
+          "receiver": "&var TomlValue",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Appends an entry to a table, copying the key and taking ownership of the value.",
+            "markdown": "Appends an entry to a table, copying the key and taking ownership of the value.\nThe order entries are added in is the order they are kept and written, which is what makes a document\nround-trip recognisably. Nothing here rejects a repeated key — that is the parser's business, where the\nthree different ways of repeating one can be told apart.",
+            "typeParams": [],
+            "params": [
+              { "name": "key", "markdown": "the key to look up" },
+              { "name": "value", "markdown": "the value to act on" }
+            ],
+            "returns": "whether the entry was added",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#insert"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "At",
+          "line": 366,
+          "signature": "pub func At(self: &TomlValue, index: uint) -> *TomlValue",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&TomlValue",
+          "returnType": "*TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The element at `index`, borrowed, or null when there is none.",
+            "markdown": "The element at `index`, borrowed, or null when there is none.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "which one, counting from zero" }],
+            "returns": "the element at `index`, or null when there is none",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AtMutable",
+          "line": 378,
+          "signature": "pub func AtMutable(self: &var TomlValue, index: uint) -> *var TomlValue",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&var TomlValue",
+          "returnType": "*var TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The element at `index`, borrowed for modification, or null when there is none.",
+            "markdown": "The element at `index`, borrowed for modification, or null when there is none.\nThis is how an array of tables grows: the header that opens a new one appends, and the lines under it\nare written into the last element in place.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "which one, counting from zero" }],
+            "returns": "the element at `index` for writing, or null when there is none",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#at-mutable"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Find",
+          "line": 388,
+          "signature": "pub func Find(self: &TomlValue, key: StringView) -> *TomlValue",
+          "typeParams": [],
+          "params": [{ "name": "key", "type": "StringView" }],
+          "receiver": "&TomlValue",
+          "returnType": "*TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value under `key`, borrowed, or null when the table has none.",
+            "markdown": "The value under `key`, borrowed, or null when the table has none.",
+            "typeParams": [],
+            "params": [{ "name": "key", "markdown": "the key to look up" }],
+            "returns": "the entry with that key, or null when there is none",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#find"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FindMutable",
+          "line": 404,
+          "signature": "pub func FindMutable(self: &var TomlValue, key: StringView) -> *var TomlValue",
+          "typeParams": [],
+          "params": [{ "name": "key", "type": "StringView" }],
+          "receiver": "&var TomlValue",
+          "returnType": "*var TomlValue",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value under `key`, borrowed for modification, or null when the table has none.",
+            "markdown": "The value under `key`, borrowed for modification, or null when the table has none.",
+            "typeParams": [],
+            "params": [{ "name": "key", "markdown": "the key to look up" }],
+            "returns": "the entry with that key for writing, or null when there is none",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#find-mutable"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "EntryAt",
+          "line": 420,
+          "signature": "pub func EntryAt(self: &TomlValue, index: uint) -> *TomlEntry",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&TomlValue",
+          "returnType": "*TomlEntry",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The entry at `index`, borrowed, or null when there is none.",
+            "markdown": "The entry at `index`, borrowed, or null when there is none.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "which one, counting from zero" }],
+            "returns": "the entry at `index`, or null when there is none",
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#entry-at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~TomlValue",
+          "line": 431,
+          "signature": "func ~TomlValue(self: &var TomlValue)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TomlValue",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases everything this value owns.",
+            "markdown": "Releases everything this value owns.\nWritten out rather than left to the compiler, because a value owns its string and its children own\ntheirs: the recursion here is the shape of the document, and stating it makes the ownership of a nested\ntree something a reader can check.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/toml/toml-value#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "MaximumHeaderPath",
+      "displayName": "MaximumHeaderPath",
+      "module": "Writer",
+      "source": "Src/Writer.rux",
+      "line": 31,
+      "signature": "pub const MaximumHeaderPath: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How long a table's header path may be, in bytes.",
+        "markdown": "How long a table's header path may be, in bytes.\nA header is written as text, so the path is assembled into a fixed buffer rather than a list of names, and this\nis that buffer. It is far past any path a person writes: reaching it takes a nesting of tables whose names add\nup to a kilobyte, which a document built in memory can do and one that was parsed effectively cannot.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-write-document#maximum-header-path"],
+        "deprecated": null
+      },
+      "value": "1024",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "TomlWriteDocument",
+      "displayName": "TomlWriteDocument",
+      "module": "Writer",
+      "source": "Src/Writer.rux",
+      "line": 395,
+      "signature": "pub func TomlWriteDocument(writer: &var TextWriter, table: &TomlValue) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes `table` as a TOML document.",
+        "markdown": "Writes `table` as a TOML document.\nThe same tree always produces the same bytes, and a document written, read and written again produces the\nsame bytes the second time — which is what makes this safe to run repeatedly over a file this program owns.\nIt is not safe in the sense of preserving one it does not: comments, blank lines, indentation and the\nspelling of a number are not in the tree, so they cannot come out of it. The output is these values laid out\nby this writer, which is an equivalent document and not the same file.\nThe document is borrowed and nothing is allocated: it writes itself into the destination as it is walked.\nReports whatever the destination reported, unchanged, so a buffer that is merely full stays distinguishable\nfrom a stream that has died — and stops at the first refusal rather than writing the rest of a document into a\ndestination that has already said no. Reports `ValueOutOfRange` for a table whose header path is longer than\n`MaximumHeaderPath`.",
+        "typeParams": [],
+        "params": [
+          { "name": "writer", "markdown": "the destination" },
+          { "name": "table", "markdown": "the document to write, borrowed for the call" }
+        ],
+        "returns": "success when the whole document was accepted",
+        "see": ["https://rux-lang.dev/docs/api/toml/toml-write-document"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}
