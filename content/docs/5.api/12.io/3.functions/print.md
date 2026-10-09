@@ -36,6 +36,10 @@ pub func Print(value: bool512) -> IoError?
 pub func Print(value: char8) -> IoError?
 pub func Print(value: char16) -> IoError?
 pub func Print(value: char32) -> IoError?
+pub func Print(value: char64) -> IoError?
+pub func Print(value: char128) -> IoError?
+pub func Print(value: char256) -> IoError?
+pub func Print(value: char512) -> IoError?
 pub func Print(value: int8) -> IoError?
 pub func Print(value: int16) -> IoError?
 pub func Print(value: int32) -> IoError?
@@ -76,6 +80,10 @@ nothing by ignoring it; one whose output feeds a pipe that may close has somethi
 | `pub func Print(value: char8) -> IoError?`                     | Writes a `char8` to standard output.                                             |
 | `pub func Print(value: char16) -> IoError?`                    | Writes a `char16` to standard output.                                            |
 | `pub func Print(value: char32) -> IoError?`                    | Writes a `char32` to standard output.                                            |
+| `pub func Print(value: char64) -> IoError?`                    | Writes a `char64` to standard output.                                            |
+| `pub func Print(value: char128) -> IoError?`                   | Writes a `char128` to standard output.                                           |
+| `pub func Print(value: char256) -> IoError?`                   | Writes a `char256` to standard output.                                           |
+| `pub func Print(value: char512) -> IoError?`                   | Writes a `char512` to standard output.                                           |
 | `pub func Print(value: int8) -> IoError?`                      | Writes a `int8` to standard output.                                              |
 | `pub func Print(value: int16) -> IoError?`                     | Writes a `int16` to standard output.                                             |
 | `pub func Print(value: int32) -> IoError?`                     | Writes a `int32` to standard output.                                             |
@@ -110,6 +118,10 @@ nothing by ignoring it; one whose output feeds a pipe that may close has somethi
 | `value`            | `char8`      | the value to write |
 | `value`            | `char16`     | the value to write |
 | `value`            | `char32`     | the value to write |
+| `value`            | `char64`     | the value to write |
+| `value`            | `char128`    | the value to write |
+| `value`            | `char256`    | the value to write |
+| `value`            | `char512`    | the value to write |
 | `value`            | `int8`       | the value to write |
 | `value`            | `int16`      | the value to write |
 | `value`            | `int32`      | the value to write |

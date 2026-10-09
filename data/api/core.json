@@ -131,7 +131,7 @@
     {
       "name": "Char128",
       "source": "Src/Primitives/Char128.rux",
-      "header": "char128 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`char128`: one Unicode scalar value, in sixteen bytes.\nThe same repertoire `char32` holds, in four times the storage: the range stops at U+10FFFF and the surrogates are\nrejected, because a scalar value is what this carries. Its literals take the `c128` prefix; there is no `c128`\nstring encoding."
     },
     {
       "name": "Char16",
@@ -141,7 +141,7 @@
     {
       "name": "Char256",
       "source": "Src/Primitives/Char256.rux",
-      "header": "char256 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`char256`: one Unicode scalar value, in thirty-two bytes.\nThe same repertoire `char32` holds, in eight times the storage: the range stops at U+10FFFF and the surrogates are\nrejected, because a scalar value is what this carries. Its literals take the `c256` prefix; there is no `c256`\nstring encoding."
     },
     {
       "name": "Char32",
@@ -151,12 +151,12 @@
     {
       "name": "Char512",
       "source": "Src/Primitives/Char512.rux",
-      "header": "char512 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`char512`: one Unicode scalar value, in sixty-four bytes.\nThe same repertoire `char32` holds, in sixteen times the storage: the range stops at U+10FFFF and the surrogates are\nrejected, because a scalar value is what this carries. Its literals take the `c512` prefix; there is no `c512`\nstring encoding."
     },
     {
       "name": "Char64",
       "source": "Src/Primitives/Char64.rux",
-      "header": "`char64`: one Unicode scalar value, in eight bytes.\nThe same repertoire `char32` holds, in twice the storage: the range stops at U+10FFFF and the surrogates are\nrejected, because a scalar value is what this carries. There is no `c64` literal prefix."
+      "header": "`char64`: one Unicode scalar value, in eight bytes.\nThe same repertoire `char32` holds, in twice the storage: the range stops at U+10FFFF and the surrogates are\nrejected, because a scalar value is what this carries. Its literals take the `c64` prefix; there is no `c64`\nstring encoding."
     },
     {
       "name": "Char8",
@@ -4897,6 +4897,170 @@
     },
     {
       "kind": "primitive",
+      "name": "char128",
+      "displayName": "char128",
+      "module": "Char128",
+      "source": "Src/Primitives/Char128.rux",
+      "line": 8,
+      "signature": "extend char128",
+      "typeParams": [],
+      "doc": {
+        "summary": "One Unicode scalar value, in sixteen bytes.",
+        "markdown": "One Unicode scalar value, in sixteen bytes.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/characters#char128"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 11,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "128",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char128-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 14,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char128-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Min",
+          "line": 17,
+          "signature": "pub const Min: char128",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "0u32 as char128",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The first code unit or Unicode scalar value.",
+            "markdown": "The first code unit or Unicode scalar value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char128-min"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Max",
+          "line": 20,
+          "signature": "pub const Max: char128",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "1114111u32 as char128",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The last code unit or Unicode scalar value.",
+            "markdown": "The last code unit or Unicode scalar value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char128-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
       "name": "char16",
       "displayName": "char16",
       "module": "Char16",
@@ -5033,6 +5197,170 @@
             "params": [],
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/core/characters#char16-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
+      "name": "char256",
+      "displayName": "char256",
+      "module": "Char256",
+      "source": "Src/Primitives/Char256.rux",
+      "line": 8,
+      "signature": "extend char256",
+      "typeParams": [],
+      "doc": {
+        "summary": "One Unicode scalar value, in thirty-two bytes.",
+        "markdown": "One Unicode scalar value, in thirty-two bytes.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/characters#char256"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 11,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "256",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char256-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 14,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "32",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char256-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Min",
+          "line": 17,
+          "signature": "pub const Min: char256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "0u32 as char256",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The first code unit or Unicode scalar value.",
+            "markdown": "The first code unit or Unicode scalar value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char256-min"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Max",
+          "line": 20,
+          "signature": "pub const Max: char256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "1114111u32 as char256",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The last code unit or Unicode scalar value.",
+            "markdown": "The last code unit or Unicode scalar value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char256-max"],
             "deprecated": null
           },
           "targets": [
@@ -5225,11 +5553,175 @@
     },
     {
       "kind": "primitive",
+      "name": "char512",
+      "displayName": "char512",
+      "module": "Char512",
+      "source": "Src/Primitives/Char512.rux",
+      "line": 8,
+      "signature": "extend char512",
+      "typeParams": [],
+      "doc": {
+        "summary": "One Unicode scalar value, in sixty-four bytes.",
+        "markdown": "One Unicode scalar value, in sixty-four bytes.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/characters#char512"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 11,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "512",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char512-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 14,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "64",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char512-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Min",
+          "line": 17,
+          "signature": "pub const Min: char512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "0u32 as char512",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The first code unit or Unicode scalar value.",
+            "markdown": "The first code unit or Unicode scalar value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char512-min"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Max",
+          "line": 20,
+          "signature": "pub const Max: char512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "1114111u32 as char512",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The last code unit or Unicode scalar value.",
+            "markdown": "The last code unit or Unicode scalar value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/characters#char512-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
       "name": "char64",
       "displayName": "char64",
       "module": "Char64",
       "source": "Src/Primitives/Char64.rux",
-      "line": 7,
+      "line": 8,
       "signature": "extend char64",
       "typeParams": [],
       "doc": {
@@ -5249,7 +5741,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 10,
+          "line": 11,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -5281,7 +5773,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 13,
+          "line": 14,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -5313,7 +5805,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 16,
+          "line": 17,
           "signature": "pub const Min: char64",
           "typeParams": [],
           "params": [],
@@ -5345,7 +5837,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 19,
+          "line": 20,
           "signature": "pub const Max: char64",
           "typeParams": [],
           "params": [],

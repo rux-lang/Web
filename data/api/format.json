@@ -58,14 +58,29 @@
       "header": "A `bool8` is the word `true` or the word `false`.\nLower case, unquoted, and the same for `Debug`: there is no second way to read a boolean."
     },
     {
+      "name": "Char128",
+      "source": "Src/Char128.rux",
+      "header": "A `char128` holds one Unicode scalar value in sixteen bytes, which is one to four bytes of UTF-8.\nIt is a `char64` with more room for numbers no character has. A scalar value stops at U+10FFFF, so every bit\nabove the twenty-first is zero in a real character, and a cast that sets one makes a value that is no character\nat all. The check runs at the full 128 bits, before anything is narrowed: dropping the high word first would\nturn a value whose low bits spell `A` into that `A`."
+    },
+    {
       "name": "Char16",
       "source": "Src/Char16.rux",
       "header": "A `char16` holds one UTF-16 code unit, which is one to three bytes of UTF-8.\nA code unit that is half of a surrogate pair says nothing on its own: the character it belongs to is spread across\ntwo of them, and one of them is all this sees. So it is written as the replacement character rather than as an\nill-formed sequence."
     },
     {
+      "name": "Char256",
+      "source": "Src/Char256.rux",
+      "header": "A `char256` holds one Unicode scalar value in thirty-two bytes, which is one to four bytes of UTF-8.\nIt is a `char64` with more room for numbers no character has. A scalar value stops at U+10FFFF, so every bit\nabove the twenty-first is zero in a real character, and a cast that sets one makes a value that is no character\nat all. The check runs at the full 256 bits, before anything is narrowed: dropping the high words first would\nturn a value whose low bits spell `A` into that `A`."
+    },
+    {
       "name": "Char32",
       "source": "Src/Char32.rux",
       "header": "A `char32` holds one Unicode scalar value, which is one to four bytes of UTF-8.\nA `char32` is checked when it is made, so a value that is not a scalar value cannot ordinarily be in one. It is\nstill checked here, because a cast can produce one and the writer's promise is worth more than the check costs."
+    },
+    {
+      "name": "Char512",
+      "source": "Src/Char512.rux",
+      "header": "A `char512` holds one Unicode scalar value in sixty-four bytes, which is one to four bytes of UTF-8.\nIt is a `char64` with more room for numbers no character has. A scalar value stops at U+10FFFF, so every bit\nabove the twenty-first is zero in a real character, and a cast that sets one makes a value that is no character\nat all. The check runs at the full 512 bits, before anything is narrowed: dropping the high words first would\nturn a value whose low bits spell `A` into that `A`."
     },
     {
       "name": "Char64",
@@ -85,7 +100,7 @@
     {
       "name": "CharacterText",
       "source": "Src/CharacterText.rux",
-      "header": "What the character widths and character slices share: the replacement rule, and the escape that undoes it.\nEvery character width has values that are not characters. A `char8` above 0x7F is one piece of a character\nspread over several; a `char16` in the surrogate range is half of one; a `char32` or a `char64` can be cast from\na number that is no scalar value at all. There is one rule for all of them and it has two halves.\n`Display` replaces. A value that is not a whole character is written as U+FFFD, which is what \"there was\nsomething here and it could not be represented\" looks like in text, and it keeps the promise every reader of the\noutput relies on: what comes out is well-formed UTF-8. That is lossy, and it is meant to be — two different\ninvalid values render alike, and neither can be read back.\n`Debug` preserves. It is the rendering for somebody looking at a program rather than reading its output, and\ntelling them U+FFFD tells them nothing they did not already know. So an invalid value is written as an escape\ncarrying its own number — `'\\x{80}'` for a stray byte, `'\\u{d800}'` for a lone surrogate — and every value can\nbe told from every other. That is the same split, and the same escape spellings, that `Rux/Path` uses for a\nnative name, and for the same reason.\nNeither half is a validation. `Text`'s strict conversions still refuse what is not text, and a value that\nreaches a `Display` implementation has already passed whatever check its own type applies; the replacement here\nis presentation, and never a substitute for the check."
+      "header": "What the character widths and character slices share: the replacement rule, and the escape that undoes it.\nEvery character width has values that are not characters. A `char8` above 0x7F is one piece of a character\nspread over several; a `char16` in the surrogate range is half of one; a `char32` or any wider width can be cast\nfrom a number that is no scalar value at all. There is one rule for all of them and it has two halves.\n`Display` replaces. A value that is not a whole character is written as U+FFFD, which is what \"there was\nsomething here and it could not be represented\" looks like in text, and it keeps the promise every reader of the\noutput relies on: what comes out is well-formed UTF-8. That is lossy, and it is meant to be — two different\ninvalid values render alike, and neither can be read back.\n`Debug` preserves. It is the rendering for somebody looking at a program rather than reading its output, and\ntelling them U+FFFD tells them nothing they did not already know. So an invalid value is written as an escape\ncarrying its own number — `'\\x{80}'` for a stray byte, `'\\u{d800}'` for a lone surrogate — and every value can\nbe told from every other. That is the same split, and the same escape spellings, that `Rux/Path` uses for a\nnative name, and for the same reason.\nNeither half is a validation. `Text`'s strict conversions still refuse what is not text, and a value that\nreaches a `Display` implementation has already passed whatever check its own type applies; the replacement here\nis presentation, and never a substitute for the check."
     },
     {
       "name": "Cursor",
@@ -389,11 +404,122 @@
     },
     {
       "kind": "function",
+      "name": "IsScalarValue512",
+      "displayName": "IsScalarValue512",
+      "module": "CharacterText",
+      "source": "Src/CharacterText.rux",
+      "line": 82,
+      "signature": "pub func IsScalarValue512(value: uint512) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether `value`, read from a character wider than sixty-four bits, is a Unicode scalar value.",
+        "markdown": "Whether `value`, read from a character wider than sixty-four bits, is a Unicode scalar value.\nThe counterpart of `IsWideScalarValue` for `char128`, `char256` and `char512`, which widen into a `uint512` to\nbe checked. Any bit above the sixty-fourth makes the value no character at all, and the check sees it because\nnothing is narrowed until the value is known to be at most U+10FFFF.\nCannot fail; runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the numeric value of a character, at its own width" }],
+        "returns": "true when a character of that value exists",
+        "see": ["https://rux-lang.dev/docs/api/format/character-text#is-scalar-value-512"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteWideInvalidEscape",
+      "displayName": "WriteWideInvalidEscape",
+      "module": "CharacterText",
+      "source": "Src/CharacterText.rux",
+      "line": 97,
+      "signature": "pub func WriteWideInvalidEscape(writer: &var TextWriter, value: uint512) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the escape for a value that is not a character, from a character wider than sixty-four bits.",
+        "markdown": "Writes the escape for a value that is not a character, from a character wider than sixty-four bits.\nA value that fits sixty-four bits is spelled exactly as `WriteInvalidEscape` spells it, so a `char128` and a\n`char64` holding the same number render alike. A wider value keeps going in the same doubling steps: 32 hex\ndigits past sixty-four bits, 64 past 128 and 128 past 256, so every bit the value holds is shown. The digits\nare written one at a time from the value itself, and nothing is allocated.\nReports whatever the writer reported, stopping at the first refusal.",
+        "typeParams": [],
+        "params": [
+          { "name": "writer", "markdown": "the destination" },
+          { "name": "value", "markdown": "the numeric value to spell" }
+        ],
+        "returns": "success when the whole escape was accepted",
+        "see": ["https://rux-lang.dev/docs/api/format/character-text#write-wide-invalid-escape"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteWideCharacterDebug",
+      "displayName": "WriteWideCharacterDebug",
+      "module": "CharacterText",
+      "source": "Src/CharacterText.rux",
+      "line": 120,
+      "signature": "pub func WriteWideCharacterDebug(writer: &var TextWriter, value: uint512) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the `Debug` form of a character wider than sixty-four bits.",
+        "markdown": "Writes the `Debug` form of a character wider than sixty-four bits.\nA value that fits sixty-four bits is written exactly as a `char64` of the same number would be, quoted, and a\nwider one as its full escape, so no two values of any character width share a rendering they should not.\nReports whatever the writer reported, stopping at the first refusal.",
+        "typeParams": [],
+        "params": [
+          { "name": "writer", "markdown": "the destination" },
+          { "name": "value", "markdown": "the numeric value of the character, at its own width" }
+        ],
+        "returns": "success when the whole rendering was accepted",
+        "see": ["https://rux-lang.dev/docs/api/format/character-text#write-wide-character-debug"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
       "name": "WriteCharacterDebug",
       "displayName": "WriteCharacterDebug",
       "module": "CharacterText",
       "source": "Src/CharacterText.rux",
-      "line": 85,
+      "line": 141,
       "signature": "pub func WriteCharacterDebug(writer: &var TextWriter, value: uint64, whole: bool) -> ! FormatError",
       "typeParams": [],
       "doc": {
@@ -432,7 +558,7 @@
       "displayName": "WriteEscapedScalar",
       "module": "CharacterText",
       "source": "Src/CharacterText.rux",
-      "line": 105,
+      "line": 161,
       "signature": "pub func WriteEscapedScalar(writer: &var TextWriter, scalar: uint32) -> ! FormatError",
       "typeParams": [],
       "doc": {
@@ -470,7 +596,7 @@
       "displayName": "MeasurePadding",
       "module": "CharacterText",
       "source": "Src/CharacterText.rux",
-      "line": 130,
+      "line": 186,
       "signature": "pub func MeasurePadding(spec: FormatSpec, occupied: uint, before: *var uint, after: *var uint)",
       "typeParams": [],
       "doc": {

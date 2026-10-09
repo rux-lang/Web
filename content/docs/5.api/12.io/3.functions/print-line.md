@@ -55,6 +55,14 @@ pub func PrintLine(value: char16) -> IoError?
 
 pub func PrintLine(value: char32) -> IoError?
 
+pub func PrintLine(value: char64) -> IoError?
+
+pub func PrintLine(value: char128) -> IoError?
+
+pub func PrintLine(value: char256) -> IoError?
+
+pub func PrintLine(value: char512) -> IoError?
+
 pub func PrintLine(value: int8) -> IoError?
 
 pub func PrintLine(value: int16) -> IoError?
@@ -107,6 +115,10 @@ and `{:spec}` placeholders take them in order, and `{{` and `}}` write a literal
 | `pub func PrintLine(value: char8) -> IoError?`                     | Writes a `char8` to standard output, then a newline.                                 |
 | `pub func PrintLine(value: char16) -> IoError?`                    | Writes a `char16` to standard output, then a newline.                                |
 | `pub func PrintLine(value: char32) -> IoError?`                    | Writes a `char32` to standard output, then a newline.                                |
+| `pub func PrintLine(value: char64) -> IoError?`                    | Writes a `char64` to standard output, then a newline.                                |
+| `pub func PrintLine(value: char128) -> IoError?`                   | Writes a `char128` to standard output, then a newline.                               |
+| `pub func PrintLine(value: char256) -> IoError?`                   | Writes a `char256` to standard output, then a newline.                               |
+| `pub func PrintLine(value: char512) -> IoError?`                   | Writes a `char512` to standard output, then a newline.                               |
 | `pub func PrintLine(value: int8) -> IoError?`                      | Writes a `int8` to standard output, then a newline.                                  |
 | `pub func PrintLine(value: int16) -> IoError?`                     | Writes a `int16` to standard output, then a newline.                                 |
 | `pub func PrintLine(value: int32) -> IoError?`                     | Writes a `int32` to standard output, then a newline.                                 |
@@ -141,6 +153,10 @@ and `{:spec}` placeholders take them in order, and `{{` and `}}` write a literal
 | `value`            | `char8`      | the value to write |
 | `value`            | `char16`     | the value to write |
 | `value`            | `char32`     | the value to write |
+| `value`            | `char64`     | the value to write |
+| `value`            | `char128`    | the value to write |
+| `value`            | `char256`    | the value to write |
+| `value`            | `char512`    | the value to write |
 | `value`            | `int8`       | the value to write |
 | `value`            | `int16`      | the value to write |
 | `value`            | `int32`      | the value to write |

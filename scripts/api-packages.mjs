@@ -54,7 +54,7 @@ export const PACKAGES = [
       characters: {
         title: "Characters",
         description:
-          "The character types `char8` to `char64`, with their width and limit constants. The built-in `char` is `char32` and shares its constants. The widths `char128`, `char256` and `char512` are reserved and not implemented yet.",
+          "The character types `char8` to `char512`, with their width and limit constants. The built-in `char` is `char32` and shares its constants.",
       },
       arithmetic: {
         title: "Integer arithmetic",
