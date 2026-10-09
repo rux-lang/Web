@@ -78,7 +78,7 @@ It is written for looking things up. To learn the language from the beginning, f
 
 ## Appendix
 
-- [Primitive types](/docs/lang/appendix/primitives) — every primitive type and alias in one table, implemented and reserved.
+- [Primitive types](/docs/lang/appendix/primitives) — every primitive type and alias in one table.
 - [Tokens](/docs/lang/appendix/tokens) — every token the lexer produces.
 - [Rux Compiled Unit](/docs/lang/appendix/rcu) — the compiler's native object format.
 
