@@ -304,7 +304,7 @@ useHead({
               variant="soft"
               size="sm"
             />
-            <ApiPageActions :key="path" :markdown-url="markdownUrl" :prompt="lessonPrompt" :flash="false" />
+            <ApiPageActions :key="path" :markdown-url="markdownUrl" :prompt="lessonPrompt" />
           </template>
         </UPageHeader>
 

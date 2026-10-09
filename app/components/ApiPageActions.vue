@@ -7,10 +7,8 @@ const props = withDefaults(
     // What the "Open in …" entries ask the assistant to do. Learn Rux lessons
     // pass a tutoring prompt; API pages keep the plain read-and-answer one.
     prompt?: string;
-    // The FLASH CLI entry is offered on API pages only.
-    flash?: boolean;
   }>(),
-  { prompt: undefined, flash: true },
+  { prompt: undefined },
 );
 
 const toast = useToast();
@@ -85,16 +83,6 @@ const items = computed<DropdownMenuItem[][]>(() => [
       to: `https://claude.ai/new?q=${encodeURIComponent(prompt.value)}`,
       target: "_blank",
     },
-    ...(props.flash
-      ? [
-          {
-            label: "Open in FLASH CLI",
-            icon: "i-simple-icons-gnometerminal",
-            to: `flash://?prompt=${encodeURIComponent(prompt.value)}`,
-            target: "_blank",
-          },
-        ]
-      : []),
   ],
 ]);
 
