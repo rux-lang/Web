@@ -17,6 +17,7 @@ import {
   benchmarkGeomean,
   benchmarkHighlights,
   benchmarkMachine,
+  benchmarkMachineName,
   benchmarkMachines,
   benchmarkMetrics,
   bestLanguages,
@@ -61,6 +62,11 @@ describe("benchmark data", () => {
     ]);
   });
 
+  it("splits a machine label into form factor and processor", () => {
+    expect(benchmarkMachineName("Laptop · Core i5-8250U")).toEqual({ kind: "Laptop", processor: "Core i5-8250U" });
+    expect(benchmarkMachineName("Ryzen 5 5500")).toEqual({ processor: "Ryzen 5 5500" });
+  });
+
   it("falls back to the first machine for an unknown id", () => {
     expect(benchmarkMachine("no-such-machine")).toBe(benchmarkMachines[0]);
   });
@@ -88,14 +94,16 @@ describe("benchmark data", () => {
   it("derives the headline figures from the data", () => {
     const highlights = benchmarkHighlights(ryzen);
     expect(highlights.memoryWins).toBe(10);
-    expect(highlights.memoryRange!.map(formatRatio)).toEqual(["1.10×", "4.36×"]);
-    expect(highlights.executableRank).toBe(2);
-    expect(highlights.executableField).toBe(6);
-    expect(highlights.executableAhead).toEqual(["Rust"]);
-    expect(highlights.compileFastest?.language).toBe("Go");
-    expect(highlights.compileSlowest?.language).toBe("JavaAot");
-    expect(highlights.executionFastest).toEqual(["Cpp"]);
-    expect(Math.round(highlights.executionFactor!)).toBe(17);
+    // Rux uses the least memory: every other language's geomean is above 1.
+    expect(highlights.memory).toMatchObject({ rivals: ["Cpp"], rank: 1, field: 8 });
+    expect(highlights.memory!.spread.map(formatRatio)).toEqual(["1.10×", "4.36×"]);
+    // Executable size counts native builds only, where Rust is smaller.
+    expect(highlights.executable).toMatchObject({ rivals: ["Rust"], rank: 2, field: 6 });
+    expect(highlights.executable!.ratio).toBeLessThan(1);
+    expect(highlights.compile?.rivals).toEqual(["Go"]);
+    expect(highlights.compile!.spread[1]).toBeGreaterThan(1);
+    expect(highlights.execution).toMatchObject({ rivals: ["Cpp"], rank: 8, field: 8 });
+    expect(Math.round(1 / highlights.execution!.ratio)).toBe(17);
   });
 
   it("has small helpers that behave at the edges", () => {

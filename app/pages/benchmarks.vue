@@ -15,6 +15,7 @@ import {
   benchmarkHighlights,
   benchmarkLanguage,
   benchmarkMachine,
+  benchmarkMachineName,
   benchmarkMachines,
   benchmarkMetric,
   benchmarkMetrics,
@@ -25,6 +26,7 @@ import {
   machineLanguages,
   ordinal,
 } from "~/utils/benchmarks";
+import type { BenchmarkComparison } from "~/utils/benchmarks";
 import { formatBenchmarkValue, formatRatio } from "~/utils/benchmark-chart";
 
 definePageMeta({ heroBackground: "opacity-70" });
@@ -62,7 +64,21 @@ watch(machineId, (id) => {
 });
 
 const machine = computed(() => benchmarkMachine(machineId.value)!);
-const machineItems = computed(() => benchmarkMachines.map((entry) => ({ label: entry.label, value: entry.id })));
+
+// The page is a Vue file, not Markdown, so its table of contents is listed by
+// hand. Each id is a section heading's: like the docs headings, small enough that the
+// scrollspy marks only the section being read.
+const tocLinks = [
+  { id: "machine", text: "Machine", depth: 2 },
+  { id: "summary", text: "Summary", depth: 2 },
+  { id: "results", text: "Results by app", depth: 2 },
+  { id: "apps", text: "The programs", depth: 2 },
+  { id: "methodology", text: "Methodology", depth: 2 },
+];
+const machineItems = computed(() =>
+  benchmarkMachines.map((entry) => ({ label: benchmarkMachineName(entry.label).processor, value: entry.id })),
+);
+const machineKind = computed(() => benchmarkMachineName(machine.value.label).kind);
 const languages = computed(() => machineLanguages(machine.value));
 const highlights = computed(() => benchmarkHighlights(machine.value));
 
@@ -89,6 +105,7 @@ function names(keys: string[]) {
 }
 
 const facts = computed(() => [
+  ...(machineKind.value ? [{ label: "Type", value: machineKind.value }] : []),
   { label: "CPU", value: machine.value.machine.cpu },
   { label: "Threads", value: String(machine.value.machine.logicalCores) },
   { label: "Memory", value: formatMemory(machine.value.machine.memoryBytes) },
@@ -100,48 +117,73 @@ const facts = computed(() => [
   },
 ]);
 
+/** How each headline card words Rux against the others. */
+const wording = {
+  memory: { better: "less", worse: "more", best: "leanest", one: "language", field: "languages" },
+  executable: { better: "smaller", worse: "larger", best: "smallest", one: "native build", field: "native builds" },
+  compile: { better: "faster", worse: "slower", best: "fastest", one: "language", field: "languages" },
+  execution: { better: "faster", worse: "slower", best: "fastest", one: "language", field: "languages" },
+};
+type Wording = (typeof wording)[keyof typeof wording];
+
+/**
+ * One headline card: Rux against the best other language, "1.73× slower than
+ * the fastest, Go". The four metrics have four units (MiB, KiB, s, s), so each
+ * card says the same kind of thing instead — how many times better or worse,
+ * and than whom — and the absolute figure moves to the small print.
+ */
+function versus(comparison: BenchmarkComparison | null, words: Wording) {
+  if (!comparison) return { figure: "—", caption: "" };
+  const { ratio, rivals } = comparison;
+  if (Math.abs(ratio - 1) < 0.005) return { figure: "Tied", caption: `with ${names(rivals)}` };
+  const better = ratio > 1;
+  return {
+    figure: formatRatio(better ? ratio : 1 / ratio),
+    unit: better ? words.better : words.worse,
+    better,
+    caption: `than ${better ? "the next best" : `the ${words.best}`}, ${names(rivals)}`,
+  };
+}
+
+/** The spread over all the others when Rux is on one side of every one of them, else its place. */
+function spread(comparison: BenchmarkComparison | null, words: Wording) {
+  if (!comparison) return "";
+  const [low, high] = comparison.spread;
+  const range = (from: number, to: number) => `${formatRatio(from).slice(0, -1)}–${formatRatio(to)}`;
+  if (low > 1) return `${range(low, high)} ${words.better} than every other ${words.one}.`;
+  if (high < 1) return `${range(1 / high, 1 / low)} ${words.worse} than every other ${words.one}.`;
+  return `${ordinal(comparison.rank)} of ${comparison.field} ${words.field}.`;
+}
+
 const tiles = computed(() => {
   const value = highlights.value;
+  const compileSeconds =
+    value.compileMedian === null ? "" : formatBenchmarkValue(value.compileMedian, benchmarkMetric("compile").digits);
+  const executableKiB = value.executableMedian === null ? "" : formatBenchmarkValue(value.executableMedian, 0);
   return [
     {
       title: "Peak memory",
       metric: "memory" as const,
-      figure: `${value.memoryWins} / ${value.appCount}`,
-      caption: "apps where Rux uses the least memory",
-      detail: value.memoryRange
-        ? `The others need ${formatRatio(value.memoryRange[0])}–${formatRatio(value.memoryRange[1])} as much, by geometric mean.`
-        : "",
+      ...versus(value.memory, wording.memory),
+      detail: `${spread(value.memory, wording.memory)} Least memory in ${value.memoryWins} / ${value.appCount} apps.`,
     },
     {
       title: "Executable size",
       metric: "executable" as const,
-      figure: value.executableMedian === null ? "—" : `${formatBenchmarkValue(value.executableMedian, 0)} KiB`,
-      caption: "median Rux executable, no runtime needed",
-      detail:
-        value.executableRank > 0
-          ? `${ordinal(value.executableRank)} smallest of ${value.executableField} self-contained native builds` +
-            (value.executableAhead.length ? `, after ${names(value.executableAhead)}.` : ".")
-          : "",
+      ...versus(value.executable, wording.executable),
+      detail: `${spread(value.executable, wording.executable)} Median ${executableKiB} KiB, no runtime needed.`,
     },
     {
       title: "Compile time",
       metric: "compile" as const,
-      figure:
-        value.compileMedian === null
-          ? "—"
-          : `${formatBenchmarkValue(value.compileMedian, benchmarkMetric("compile").digits)} s`,
-      caption: "median clean release build of one app",
-      detail:
-        value.compileFastest && value.compileSlowest
-          ? `${benchmarkLanguage(value.compileFastest.language).label} builds in ${formatRatio(value.compileFastest.geomean)} Rux's time, ${benchmarkLanguage(value.compileSlowest.language).label} in ${formatRatio(value.compileSlowest.geomean)}.`
-          : "",
+      ...versus(value.compile, wording.compile),
+      detail: `${spread(value.compile, wording.compile)} Median clean release build ${compileSeconds} s.`,
     },
     {
       title: "Execution time",
       metric: "execution" as const,
-      figure: value.executionFactor === null ? "—" : formatRatio(value.executionFactor),
-      caption: `Rux's run time against the fastest, ${names(value.executionFastest)}`,
-      detail: "By geometric mean over all ten apps. The Rux backend has no optimizer yet.",
+      ...versus(value.execution, wording.execution),
+      detail: `${spread(value.execution, wording.execution)} The Rux backend has no optimizer yet.`,
     },
   ];
 });
@@ -176,9 +218,15 @@ const tiles = computed(() => {
             @click="selectMetric(tile.metric)"
           >
             <span class="text-sm text-muted">{{ tile.title }}</span>
-            <span class="mt-1.5 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl">{{
-              tile.figure
-            }}</span>
+            <span class="mt-1.5 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl"
+              >{{ tile.figure
+              }}<span
+                v-if="'unit' in tile && tile.unit"
+                class="ml-1.5 text-base font-medium tracking-normal"
+                :class="tile.better ? 'text-success' : 'text-warning'"
+                >{{ tile.unit }}</span
+              ></span
+            >
             <span class="mt-1 text-sm text-toned">{{ tile.caption }}</span>
             <span class="mt-3 hidden text-xs text-muted sm:block">{{ tile.detail }}</span>
           </button>
@@ -187,251 +235,252 @@ const tiles = computed(() => {
       </section>
     </UPageHero>
 
-    <UPageBody class="space-y-16 pb-16">
-      <UAlert
-        color="primary"
-        variant="subtle"
-        icon="i-lucide-info"
-        title="Rux is pre-1.0, and its backend does not optimize yet"
-      >
-        <template #description>
-          Rux compiles through its own pipeline straight to x86-64, with no LLVM and, so far, no optimization passes and
-          a register allocator that spills everything to the stack. Its run times are a baseline to track from release
-          to release, not a verdict. Memory use and binary size already reflect the language design: no garbage
-          collector, no runtime. The
-          <ULink to="/blog/language-without-llvm" class="font-medium underline">compiler design post</ULink>
-          explains why.
-        </template>
-      </UAlert>
+    <UPage>
+      <UPageBody class="space-y-16 pb-16">
+        <UAlert
+          color="primary"
+          variant="subtle"
+          icon="i-lucide-info"
+          title="Rux is pre-1.0, and its backend does not optimize yet"
+        >
+          <template #description>
+            Rux compiles through its own pipeline straight to x86-64, with no LLVM and, so far, no optimization passes
+            and a register allocator that spills everything to the stack. Its run times are a baseline to track from
+            release to release, not a verdict. Memory use and binary size already reflect the language design: no
+            garbage collector, no runtime. The
+            <ULink to="/blog/language-without-llvm" class="font-medium underline">compiler design post</ULink>
+            explains why.
+          </template>
+        </UAlert>
 
-      <!-- Machine -->
-      <section id="machine" aria-labelledby="machine-heading" class="scroll-mt-24">
-        <div class="flex flex-wrap items-end justify-between gap-4">
-          <h2 id="machine-heading" class="text-2xl font-semibold text-highlighted">Machine</h2>
-          <UTabs
-            v-if="machineItems.length > 1"
-            v-model="machineId"
-            :items="machineItems"
-            :content="false"
-            size="sm"
-            color="neutral"
-            :ui="{ list: 'overflow-x-auto', trigger: 'shrink-0' }"
-            aria-label="Machine"
-          />
-          <UBadge v-else color="neutral" variant="subtle" size="lg">{{ machine.label }}</UBadge>
-        </div>
-
-        <UCard variant="subtle" class="mt-5">
-          <dl class="grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
-            <div v-for="fact in facts" :key="fact.label">
-              <dt class="text-xs font-medium tracking-wide text-muted uppercase">{{ fact.label }}</dt>
-              <dd class="mt-1 text-highlighted">{{ fact.value }}</dd>
-            </div>
-          </dl>
-
-          <details class="group mt-6 border-t border-default pt-4">
-            <summary
-              class="flex cursor-pointer list-none items-center gap-1.5 text-sm font-medium text-toned hover:text-highlighted [&::-webkit-details-marker]:hidden"
-            >
-              <UIcon name="i-lucide-chevron-right" class="size-4 transition-transform group-open:rotate-90" />
-              Toolchains
-              <span class="font-normal text-muted">
-                · benchmarks commit
-                <ULink :to="`${repository}/commit/${machine.machine.commit}`" target="_blank" class="font-mono">
-                  {{ machine.machine.commit }}
-                </ULink>
-              </span>
-            </summary>
-            <dl class="mt-3 grid gap-x-8 gap-y-2 text-sm sm:grid-cols-[auto_1fr]">
-              <template v-for="(version, tool) in machine.toolchains" :key="tool">
-                <dt class="text-muted">{{ tool }}</dt>
-                <dd class="font-mono text-xs break-all text-toned sm:text-sm">{{ version }}</dd>
-              </template>
-            </dl>
-          </details>
-        </UCard>
-      </section>
-
-      <!-- Summary -->
-      <section id="summary" aria-labelledby="summary-heading" class="scroll-mt-24">
-        <h2 id="summary-heading" class="text-2xl font-semibold text-highlighted">Summary</h2>
-        <p class="mt-2 max-w-3xl text-muted">
-          Each cell is the geometric mean, over all ten apps, of the language's value divided by Rux's. Rux is 1.00× by
-          definition.
-        </p>
-        <BenchmarkSummary :machine="machine" class="mt-5" @select="selectMetric" />
-      </section>
-
-      <!-- Results by metric -->
-      <section id="results" aria-labelledby="results-heading" class="scroll-mt-24">
-        <h2 id="results-heading" class="text-2xl font-semibold text-highlighted">Results by app</h2>
-
-        <UTabs
-          v-model="metric"
-          :items="metricItems"
-          :content="false"
-          variant="link"
-          color="neutral"
-          class="mt-4"
-          :ui="{ list: 'w-full overflow-x-auto overflow-y-hidden', trigger: 'shrink-0' }"
-        />
-
-        <p class="mt-4 text-muted">{{ metricInfo.description }} Median of runs; lower is better.</p>
-
-        <div class="mt-5 flex flex-wrap items-center gap-x-2 gap-y-2" role="group" aria-label="Compare Rux with">
-          <span class="mr-1 inline-flex items-center gap-1.5 text-sm text-toned">
-            <span class="inline-block size-3 rounded-full bg-(--bench-rux)" aria-hidden="true" />
-            Rux compared with
-          </span>
-          <UButton
-            v-for="language in compareOptions"
-            :key="language.key"
-            size="xs"
-            color="neutral"
-            :variant="language.key === compare ? 'solid' : 'outline'"
-            :aria-pressed="language.key === compare"
-            @click="compareChoice = language.key"
-          >
-            <span
-              v-if="language.key === compare"
-              class="inline-block size-2 rounded-full bg-(--bench-compare) ring-1 ring-(--ui-bg)"
-              aria-hidden="true"
+        <!-- Machine -->
+        <section aria-labelledby="machine">
+          <div class="flex flex-wrap items-end justify-between gap-4">
+            <h2 id="machine" class="scroll-mt-24 text-2xl font-semibold text-highlighted">Machine</h2>
+            <UTabs
+              v-if="machineItems.length > 1"
+              v-model="machineId"
+              :items="machineItems"
+              :content="false"
+              size="sm"
+              color="neutral"
+              :ui="{ list: 'overflow-x-auto', trigger: 'shrink-0' }"
+              aria-label="Machine"
             />
-            {{ language.label }}
-          </UButton>
-        </div>
+            <UBadge v-else color="neutral" variant="subtle" size="lg">{{ machine.label }}</UBadge>
+          </div>
 
-        <UCard variant="outline" class="mt-5">
-          <BenchmarkDotPlot :machine="machine" :metric="metric" :compare="compare" />
-          <p class="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-muted">
-            <span class="inline-flex items-center gap-1.5">
-              <span class="inline-block size-2.5 rounded-full bg-(--bench-other)" aria-hidden="true" />
-              Other languages
-            </span>
-            <span class="inline-flex items-center gap-1.5">
-              <span class="inline-block size-2.5 rounded-full border-2 border-(--bench-other)" aria-hidden="true" />
-              Hollow: JIT, needs an installed runtime
-            </span>
-            <span>Hover, tap or focus the chart for values.</span>
+          <UCard variant="subtle" class="mt-5">
+            <dl class="grid gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div v-for="fact in facts" :key="fact.label">
+                <dt class="text-xs font-medium tracking-wide text-muted uppercase">{{ fact.label }}</dt>
+                <dd class="mt-1 text-highlighted">{{ fact.value }}</dd>
+              </div>
+            </dl>
+
+            <details class="group mt-6 border-t border-default pt-4">
+              <summary
+                class="flex cursor-pointer list-none items-center gap-1.5 text-sm font-medium text-toned hover:text-highlighted [&::-webkit-details-marker]:hidden"
+              >
+                <UIcon name="i-lucide-chevron-right" class="size-4 transition-transform group-open:rotate-90" />
+                Toolchains
+                <span class="font-normal text-muted">
+                  · benchmarks commit
+                  <ULink :to="`${repository}/commit/${machine.machine.commit}`" target="_blank" class="font-mono">
+                    {{ machine.machine.commit }}
+                  </ULink>
+                </span>
+              </summary>
+              <dl class="mt-3 grid gap-x-8 gap-y-2 text-sm sm:grid-cols-[auto_1fr]">
+                <template v-for="(version, tool) in machine.toolchains" :key="tool">
+                  <dt class="text-muted">{{ tool }}</dt>
+                  <dd class="font-mono text-xs break-all text-toned sm:text-sm">{{ version }}</dd>
+                </template>
+              </dl>
+            </details>
+          </UCard>
+        </section>
+
+        <!-- Summary -->
+        <section aria-labelledby="summary">
+          <h2 id="summary" class="scroll-mt-24 text-2xl font-semibold text-highlighted">Summary</h2>
+          <p class="mt-2 text-muted">
+            Each cell is the geometric mean, over all ten apps, of the language's value divided by Rux's. Rux is 1.00×
+            by definition.
           </p>
-        </UCard>
+          <BenchmarkSummary :machine="machine" class="mt-5" @select="selectMetric" />
+        </section>
 
-        <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
-          <h3 class="font-semibold text-highlighted">
-            {{ metricInfo.label }} {{ relative ? "relative to Rux" : `(${metricInfo.unit})` }}
-          </h3>
-          <USwitch v-model="relative" label="Relative to Rux" size="sm" />
-        </div>
-        <BenchmarkTable :machine="machine" :metric="metric" :relative="relative" :compare="compare" class="mt-3" />
-      </section>
+        <!-- Results by metric -->
+        <section aria-labelledby="results">
+          <h2 id="results" class="scroll-mt-24 text-2xl font-semibold text-highlighted">Results by app</h2>
 
-      <!-- Apps -->
-      <section id="apps" aria-labelledby="apps-heading" class="scroll-mt-24">
-        <h2 id="apps-heading" class="text-2xl font-semibold text-highlighted">The programs</h2>
-        <p class="mt-2 max-w-3xl text-muted">
-          Each is an ordinary console program written the same way in every language. It takes its sizes as arguments,
-          prints a deterministic result and exits; there is no timing code inside.
-        </p>
-        <div class="mt-5 overflow-x-auto rounded-lg border border-default">
-          <table class="w-full min-w-[44rem] border-collapse text-sm">
-            <thead>
-              <tr class="border-b border-default bg-elevated/50 text-left">
-                <th scope="col" class="px-3 py-2 font-medium text-highlighted">App</th>
-                <th scope="col" class="px-3 py-2 font-medium text-highlighted">What it does</th>
-                <th scope="col" class="px-3 py-2 font-medium text-highlighted">Stresses</th>
-                <th scope="col" class="px-3 py-2 font-medium text-highlighted">Standard size</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="app in benchmarkApps" :key="app.key" class="border-b border-default align-top last:border-b-0">
-                <th scope="row" class="px-3 py-2 text-left font-medium text-highlighted">
-                  <ULink :to="`${repository}/tree/main/Apps/${app.key}`" target="_blank">{{ app.key }}</ULink>
-                </th>
-                <td class="px-3 py-2 text-toned">{{ app.description }}</td>
-                <td class="px-3 py-2 text-muted">{{ app.stresses }}</td>
-                <td class="px-3 py-2 whitespace-nowrap text-muted">{{ app.size }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
+          <UTabs
+            v-model="metric"
+            :items="metricItems"
+            :content="false"
+            variant="link"
+            color="neutral"
+            class="mt-4"
+            :ui="{ list: 'w-full overflow-x-auto overflow-y-hidden', trigger: 'shrink-0' }"
+          />
 
-      <!-- Methodology -->
-      <section id="methodology" aria-labelledby="methodology-heading" class="scroll-mt-24">
-        <h2 id="methodology-heading" class="text-2xl font-semibold text-highlighted">Methodology</h2>
-        <div class="mt-5 grid gap-10 lg:grid-cols-3">
-          <div>
-            <h3 class="font-semibold text-highlighted">Keeping it fair</h3>
-            <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-toned marker:text-muted">
-              <li>
-                Every algorithm is written by hand, identically, in every language: same data generation, operation
-                order and data layout. Only standard-library I/O, collections and allocation; no third-party packages,
-                SIMD intrinsics or threads.
-              </li>
-              <li>
-                Inputs come from the same SplitMix64 generator; floating-point results are printed as raw IEEE-754 bits,
-                so every language must agree bit for bit (C++ is built with <code>-ffp-contract=off</code>).
-              </li>
-              <li>
-                All builds target baseline x86-64, and runtimes run with their defaults: no GC or JIT tuning for .NET,
-                Go or the JVM.
-              </li>
-              <li>
-                BinaryTrees allocates the way each language normally does: <code>new</code>/<code>delete</code> in C++,
-                <code>Box</code> in Rust, the garbage collector in Go, C# and Java, and <code>Allocator::Pool</code> in
-                Rux. WordCount uses each standard library's hash map.
-              </li>
-            </ul>
+          <p class="mt-4 text-muted">{{ metricInfo.description }} Median of runs; lower is better.</p>
+
+          <div class="mt-5 flex flex-wrap items-center gap-x-2 gap-y-2" role="group" aria-label="Compare Rux with">
+            <span class="mr-1 inline-flex items-center gap-1.5 text-sm text-toned">
+              <span class="inline-block size-3 rounded-full bg-(--bench-rux)" aria-hidden="true" />
+              Rux compared with
+            </span>
+            <UButton
+              v-for="language in compareOptions"
+              :key="language.key"
+              size="xs"
+              color="neutral"
+              :variant="language.key === compare ? 'solid' : 'outline'"
+              :aria-pressed="language.key === compare"
+              @click="compareChoice = language.key"
+            >
+              <span
+                v-if="language.key === compare"
+                class="inline-block size-2 rounded-full bg-(--bench-compare) ring-1 ring-(--ui-bg)"
+                aria-hidden="true"
+              />
+              {{ language.label }}
+            </UButton>
           </div>
 
-          <div>
-            <h3 class="font-semibold text-highlighted">How it is measured</h3>
-            <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-toned marker:text-muted">
-              <li>
-                <strong class="text-highlighted">Build.</strong> One untimed warm-up build, then
-                {{ machine.settings.buildRuns }} timed clean release builds with the language's usual tool (rux, cargo,
-                clang++, go build, dotnet publish, javac + jar or native-image). Go starts from a cache holding only the
-                precompiled standard library, so the app itself is always compiled from scratch.
-              </li>
-              <li>
-                <strong class="text-highlighted">Run.</strong> {{ machine.settings.warmups }} unmeasured warm-up, then
-                {{ machine.settings.runs }} measured runs, with languages taking turns so drifts in machine state hit
-                all of them alike. Execution time includes process start-up — for the JIT builds, starting the runtime
-                and compiling.
-              </li>
-              <li>
-                <strong class="text-highlighted">Validate.</strong> Every run must exit with code 0 and print exactly
-                the expected output, or the cell is marked FAIL and left out.
-              </li>
-              <li>The page shows medians; the chart tooltips add the minimum, standard deviation and run count.</li>
-            </ul>
-          </div>
+          <UCard variant="outline" class="mt-5">
+            <BenchmarkDotPlot :machine="machine" :metric="metric" :compare="compare" />
+            <p class="mt-4 flex flex-wrap gap-x-5 gap-y-1.5 text-xs text-muted">
+              <span class="inline-flex items-center gap-1.5">
+                <span class="inline-block size-2.5 rounded-full bg-(--bench-other)" aria-hidden="true" />
+                Other languages
+              </span>
+              <span class="inline-flex items-center gap-1.5">
+                <span class="inline-block size-2.5 rounded-full border-2 border-(--bench-other)" aria-hidden="true" />
+                Hollow: JIT, needs an installed runtime
+              </span>
+              <span>Hover, tap or focus the chart for values.</span>
+            </p>
+          </UCard>
 
-          <div>
-            <h3 class="font-semibold text-highlighted">Reading the numbers</h3>
-            <ul class="mt-3 list-disc space-y-2 pl-5 text-sm text-toned marker:text-muted">
-              <li>
-                C# and Java appear twice. <strong class="text-highlighted">AOT</strong> is one native executable
-                (NativeAOT, GraalVM Native Image); <strong class="text-highlighted">JIT</strong> runs on an installed
-                runtime (framework-dependent .NET, <code>java -jar</code>).
-              </li>
-              <li>
-                The JIT builds' executable and deployable sizes exclude the shared runtime they need, which is why the
-                Java jar is a few KiB.
-              </li>
-              <li>
-                Peak memory is the working set on Windows and maxrss on Linux; the two are not comparable across
-                operating systems, and neither are times across machines.
-              </li>
-              <li>Ratios are value ÷ Rux, summarised by geometric mean so that a 2× win and a 2× loss cancel out.</li>
-            </ul>
+          <div class="mt-8 flex flex-wrap items-center justify-between gap-3">
+            <h3 class="font-semibold text-highlighted">
+              {{ metricInfo.label }} {{ relative ? "relative to Rux" : `(${metricInfo.unit})` }}
+            </h3>
+            <USwitch v-model="relative" label="Relative to Rux" size="sm" />
           </div>
-        </div>
-        <p class="mt-8 text-sm text-muted">
-          The apps, the runner and full instructions to reproduce these results on your own machine are in
-          <ULink :to="repository" target="_blank" class="font-medium text-primary">rux-lang/Benchmarks</ULink>.
-        </p>
-      </section>
-    </UPageBody>
+          <BenchmarkTable :machine="machine" :metric="metric" :relative="relative" :compare="compare" class="mt-3" />
+        </section>
+
+        <!-- Apps -->
+        <section aria-labelledby="apps">
+          <h2 id="apps" class="scroll-mt-24 text-2xl font-semibold text-highlighted">The programs</h2>
+          <p class="mt-2 text-muted">
+            Each is an ordinary console program written the same way in every language. It takes its sizes as arguments,
+            prints a deterministic result and exits; there is no timing code inside.
+          </p>
+          <div class="mt-5 overflow-x-auto rounded-lg border border-default">
+            <table class="w-full min-w-[44rem] border-collapse text-sm">
+              <thead>
+                <tr class="border-b border-default bg-elevated/50 text-left">
+                  <th scope="col" class="px-3 py-2 font-medium text-highlighted">App</th>
+                  <th scope="col" class="px-3 py-2 font-medium text-highlighted">What it does</th>
+                  <th scope="col" class="px-3 py-2 font-medium text-highlighted">Stresses</th>
+                  <th scope="col" class="px-3 py-2 font-medium text-highlighted">Standard size</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="app in benchmarkApps"
+                  :key="app.key"
+                  class="border-b border-default align-top last:border-b-0"
+                >
+                  <th scope="row" class="px-3 py-2 text-left font-medium text-highlighted">
+                    <ULink :to="`${repository}/tree/main/Apps/${app.key}`" target="_blank">{{ app.key }}</ULink>
+                  </th>
+                  <td class="px-3 py-2 text-toned">{{ app.description }}</td>
+                  <td class="px-3 py-2 text-muted">{{ app.stresses }}</td>
+                  <td class="px-3 py-2 whitespace-nowrap text-muted">{{ app.size }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Methodology -->
+        <section aria-labelledby="methodology">
+          <h2 id="methodology" class="scroll-mt-24 text-2xl font-semibold text-highlighted">Methodology</h2>
+          <!-- One readable column of prose: three side-by-side columns of small-print
+             bullets were hard to follow on a wide screen. -->
+          <div
+            class="mt-5 space-y-4 leading-7 text-toned [&_code]:font-mono [&_code]:text-sm [&_h3]:pt-4 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-highlighted"
+          >
+            <h3>Keeping it fair</h3>
+            <p>
+              Every algorithm is written by hand, identically, in every language: the same data generation, operation
+              order and data layout. The programs use only standard-library I/O, collections and allocation, with no
+              third-party packages, SIMD intrinsics or threads.
+            </p>
+            <p>
+              Inputs come from the same SplitMix64 generator, and floating-point results are printed as raw IEEE-754
+              bits, so every language must agree bit for bit; C++ is built with <code>-ffp-contract=off</code> for that
+              reason. All builds target baseline x86-64, and runtimes run with their defaults, with no GC or JIT tuning
+              for .NET, Go or the JVM.
+            </p>
+            <p>
+              Each language allocates the way it normally does. BinaryTrees uses <code>new</code>/<code>delete</code> in
+              C++, <code>Box</code> in Rust, the garbage collector in Go, C# and Java, and
+              <code>Allocator::Pool</code> in Rux. WordCount uses each standard library's hash map.
+            </p>
+
+            <h3>How it is measured</h3>
+            <p>
+              Each app is built with the language's usual tool: rux, cargo, clang++, go build, dotnet publish, javac and
+              jar, or native-image. After one untimed warm-up build come {{ machine.settings.buildRuns }} timed clean
+              release builds. Go starts from a cache holding only the precompiled standard library, so the app itself is
+              always compiled from scratch.
+            </p>
+            <p>
+              Each program then gets {{ machine.settings.warmups }} unmeasured warm-up run{{
+                machine.settings.warmups === 1 ? "" : "s"
+              }}
+              and {{ machine.settings.runs }} measured runs, with the languages taking turns so that drifts in the
+              machine's state hit all of them alike. Execution time includes process start-up, which for the JIT builds
+              means starting the runtime and compiling.
+            </p>
+            <p>
+              Every run must exit with code 0 and print exactly the expected output; otherwise the cell is marked FAIL
+              and left out. The page shows medians, and the chart tooltips add the minimum, the standard deviation and
+              the run count.
+            </p>
+
+            <h3>Reading the numbers</h3>
+            <p>
+              C# and Java appear twice. <strong class="text-highlighted">AOT</strong> is one native executable
+              (NativeAOT, GraalVM Native Image); <strong class="text-highlighted">JIT</strong> runs on an installed
+              runtime (framework-dependent .NET, <code>java -jar</code>). The JIT builds' executable and deployable
+              sizes exclude the shared runtime they need, which is why the Java jar is only a few KiB.
+            </p>
+            <p>
+              Peak memory is the working set on Windows and maxrss on Linux, so it is not comparable across operating
+              systems, and times are not comparable across machines. Ratios are a language's value divided by Rux's,
+              summarised by geometric mean so that a 2× win and a 2× loss cancel out.
+            </p>
+            <p>
+              The apps, the runner and full instructions to reproduce these results on your own machine are in
+              <ULink :to="repository" target="_blank" class="font-medium text-primary">rux-lang/Benchmarks</ULink>.
+            </p>
+          </div>
+        </section>
+      </UPageBody>
+
+      <!-- The same "On this page" column as the docs: sticky beside the body from
+         `lg` up, UContentToc's own collapsible bar on a phone. -->
+      <template #right>
+        <UContentToc :links="tocLinks" highlight highlight-variant="circuit" />
+      </template>
+    </UPage>
   </UContainer>
 </template>

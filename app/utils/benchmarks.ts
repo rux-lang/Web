@@ -25,6 +25,17 @@ export const benchmarkMachines: BenchmarkMachine[] = Object.values(files).sort(
   (a, b) => a.order - b.order || a.label.localeCompare(b.label),
 );
 
+/**
+ * A machine label as the import writes it, "Laptop · Core i5-8250U", split into
+ * its form factor and processor. The machine tabs show only the processor —
+ * three full labels overflow a phone — and the form factor moves into the
+ * machine card. A label without " · " is all processor.
+ */
+export function benchmarkMachineName(label: string): { kind?: string; processor: string } {
+  const [kind, ...rest] = label.split(" · ");
+  return rest.length ? { kind, processor: rest.join(" · ") } : { processor: label };
+}
+
 export const benchmarkBaseline = "Rux";
 
 export const benchmarkLanguages: BenchmarkLanguage[] = [
@@ -256,6 +267,42 @@ export function benchmarkStandings(
     .sort((a, b) => a.geomean - b.geomean);
 }
 
+/**
+ * Rux against the other languages on one metric, for the headline cards: the
+ * best of the others (several on a tie), Rux's place, and the spread of the
+ * others' geomeans. Every geomean is "their value ÷ Rux's", so above 1 means
+ * Rux does better and below 1 means it does worse.
+ */
+export interface BenchmarkComparison {
+  /** The best other language(s) and their shared geomean against Rux. */
+  rivals: string[];
+  ratio: number;
+  /** Rux's 1-based place among `field` languages, best first. */
+  rank: number;
+  field: number;
+  /** The others' geomeans, lowest and highest. */
+  spread: [number, number];
+}
+
+export function benchmarkComparison(
+  machine: BenchmarkMachine,
+  metric: BenchmarkMetricKey,
+  filter: (language: BenchmarkLanguage) => boolean = () => true,
+): BenchmarkComparison | null {
+  const standings = benchmarkStandings(machine, metric, filter);
+  const others = standings.filter((standing) => standing.language !== benchmarkBaseline);
+  const rank = standings.findIndex((standing) => standing.language === benchmarkBaseline) + 1;
+  if (!others.length || rank === 0) return null;
+  const ratio = others[0]!.geomean;
+  return {
+    rivals: others.filter((standing) => standing.geomean === ratio).map((standing) => standing.language),
+    ratio,
+    rank,
+    field: standings.length,
+    spread: [ratio, others.at(-1)!.geomean],
+  };
+}
+
 export function ordinal(value: number): string {
   const tens = value % 100;
   if (tens >= 11 && tens <= 13) return `${value}th`;
@@ -264,23 +311,17 @@ export function ordinal(value: number): string {
 
 export interface BenchmarkHighlights {
   appCount: number;
+  memory: BenchmarkComparison | null;
+  /** Among self-contained (AOT) builds only: a JIT build ships its runtime separately. */
+  executable: BenchmarkComparison | null;
+  compile: BenchmarkComparison | null;
+  execution: BenchmarkComparison | null;
   /** Apps where Rux has the lowest peak memory (ties included). */
   memoryWins: number;
-  /** The other languages' peak-memory geomeans against Rux, lowest and highest. */
-  memoryRange: [number, number] | null;
   /** Median over apps of Rux's executable size, KiB. */
   executableMedian: number | null;
-  /** Rux's place among the self-contained (AOT) builds by executable size. */
-  executableRank: number;
-  executableField: number;
-  executableAhead: string[];
   /** Median over apps of Rux's clean build time, s. */
   compileMedian: number | null;
-  compileFastest: BenchmarkStanding | null;
-  compileSlowest: BenchmarkStanding | null;
-  /** How many times longer Rux runs than the fastest language, by geomean. */
-  executionFactor: number | null;
-  executionFastest: string[];
 }
 
 export function benchmarkHighlights(machine: BenchmarkMachine): BenchmarkHighlights {
@@ -292,28 +333,16 @@ export function benchmarkHighlights(machine: BenchmarkMachine): BenchmarkHighlig
   const memoryWins = machine.apps.filter((app) =>
     bestLanguages(machine, "memory", app).includes(benchmarkBaseline),
   ).length;
-  const memoryOthers = benchmarkStandings(machine, "memory", (language) => language.key !== benchmarkBaseline);
-
-  const executable = benchmarkStandings(machine, "executable", (language) => language.mode === "aot");
-  const executableIndex = executable.findIndex((standing) => standing.language === benchmarkBaseline);
-
-  const compile = benchmarkStandings(machine, "compile");
-  const execution = benchmarkStandings(machine, "execution");
-  const fastest = execution[0];
 
   return {
     appCount: machine.apps.length,
+    memory: benchmarkComparison(machine, "memory"),
+    executable: benchmarkComparison(machine, "executable", (language) => language.mode === "aot"),
+    compile: benchmarkComparison(machine, "compile"),
+    execution: benchmarkComparison(machine, "execution"),
     memoryWins,
-    memoryRange: memoryOthers.length ? [memoryOthers[0]!.geomean, memoryOthers.at(-1)!.geomean] : null,
     executableMedian: median(baseline("executable")),
-    executableRank: executableIndex + 1,
-    executableField: executable.length,
-    executableAhead: executable.slice(0, Math.max(0, executableIndex)).map((standing) => standing.language),
     compileMedian: median(baseline("compile")),
-    compileFastest: compile[0] ?? null,
-    compileSlowest: compile.at(-1) ?? null,
-    executionFactor: fastest && fastest.geomean > 0 ? 1 / fastest.geomean : null,
-    executionFastest: fastest ? bestGeomeanLanguages(machine, "execution") : [],
   };
 }
 
