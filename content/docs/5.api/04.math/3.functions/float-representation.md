@@ -24,8 +24,15 @@ Signs, exponents, neighbouring values and ulp distances of floating-point values
 <h2 id="copy-sign"><code>CopySign</code></h2>
 
 ```rux
-pub func CopySign(magnitude: float64, sign: float64) -> float64
-pub func CopySign(magnitude: float32, sign: float32) -> float32
+pub func CopySign(
+    magnitude: float64,
+    sign: float64
+) -> float64
+
+pub func CopySign(
+    magnitude: float32,
+    sign: float32
+) -> float32
 ```
 
 `magnitude` carrying the sign of `sign`.
@@ -50,8 +57,15 @@ Works on every value including NaNs and zeros, since it moves one bit and reads 
 <h2 id="next-after"><code>NextAfter</code></h2>
 
 ```rux
-pub func NextAfter(from: float64, toward: float64) -> float64
-pub func NextAfter(from: float32, toward: float32) -> float32
+pub func NextAfter(
+    from: float64,
+    toward: float64
+) -> float64
+
+pub func NextAfter(
+    from: float32,
+    toward: float32
+) -> float32
 ```
 
 The value adjacent to `from` in the direction of `toward`.
@@ -127,8 +141,15 @@ Finds the next `float32` value below `value`.
 <h2 id="scale-by-power-of-two"><code>ScaleByPowerOfTwo</code></h2>
 
 ```rux
-pub func ScaleByPowerOfTwo(value: float64, exponent: int64) -> float64
-pub func ScaleByPowerOfTwo(value: float32, exponent: int64) -> float32
+pub func ScaleByPowerOfTwo(
+    value: float64,
+    exponent: int64
+) -> float64
+
+pub func ScaleByPowerOfTwo(
+    value: float32,
+    exponent: int64
+) -> float32
 ```
 
 `value` multiplied by two raised to `exponent`, with one rounding.
@@ -204,8 +225,15 @@ What [`ExponentOf`](/docs/api/math/float-representation#exponent-of) reports for
 <h2 id="decompose"><code>Decompose</code></h2>
 
 ```rux
-pub func Decompose(value: float64, exponent: *var int64) -> float64
-pub func Decompose(value: float32, exponent: *var int64) -> float32
+pub func Decompose(
+    value: float64,
+    exponent: *var int64
+) -> float64
+
+pub func Decompose(
+    value: float32,
+    exponent: *var int64
+) -> float32
 ```
 
 Splits `value` into a fraction in `[0.5, 1)` and a power of two, so that `fraction * 2^exponent == value`.
@@ -232,8 +260,15 @@ itself. The sign stays with the fraction. `exponent` must be non-null and writab
 <h2 id="split-integral"><code>SplitIntegral</code></h2>
 
 ```rux
-pub func SplitIntegral(value: float64, integral: *var float64) -> float64
-pub func SplitIntegral(value: float32, integral: *var float32) -> float32
+pub func SplitIntegral(
+    value: float64,
+    integral: *var float64
+) -> float64
+
+pub func SplitIntegral(
+    value: float32,
+    integral: *var float32
+) -> float32
 ```
 
 Splits `value` into its integral and fractional parts, both carrying its sign.
@@ -260,8 +295,15 @@ exactly. An infinity puts itself in `integral` and returns a zero of the same si
 <h2 id="ulp-distance"><code>UlpDistance</code></h2>
 
 ```rux
-pub func UlpDistance(left: float64, right: float64) -> uint64
-pub func UlpDistance(left: float32, right: float32) -> uint64
+pub func UlpDistance(
+    left: float64,
+    right: float64
+) -> uint64
+
+pub func UlpDistance(
+    left: float32,
+    right: float32
+) -> uint64
 ```
 
 How many representable values lie between `left` and `right`.

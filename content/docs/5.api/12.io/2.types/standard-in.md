@@ -61,7 +61,10 @@ Asks the platform once whether the stream is a console; nothing is opened, and n
 <h3 id="read"><code>Read</code></h3>
 
 ```rux
-pub func Read(self: &var StandardIn, into: var char8[..]) -> uint ! IoError
+pub func Read(
+    self: &var StandardIn,
+    into: var char8[..]
+) -> uint ! IoError
 ```
 
 Fills what it can of `into` from standard input.

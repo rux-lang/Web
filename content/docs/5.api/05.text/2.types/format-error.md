@@ -74,7 +74,11 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &FormatError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &FormatError,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the description of why a value could not be turned into text.
@@ -99,7 +103,11 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &FormatError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &FormatError,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Names the case and the payload it carries: `FormatError::InvalidSpecification(12)`.
@@ -153,7 +161,11 @@ Copy, carrying no payload and owning nothing.
 <h4 id="text-failure-kind-write-display"><code>WriteDisplay</code></h4>
 
 ```rux
-pub func WriteDisplay(self: &TextFailureKind, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &TextFailureKind,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The same description [`TextError`](/docs/api/text/text-error) gives the same failure, which is the point of sharing one writer.
@@ -175,7 +187,11 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 <h4 id="text-failure-kind-write-debug"><code>WriteDebug</code></h4>
 
 ```rux
-pub func WriteDebug(self: &TextFailureKind, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &TextFailureKind,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Names the case, qualified by its type: `TextFailureKind::InvalidUtf8`.

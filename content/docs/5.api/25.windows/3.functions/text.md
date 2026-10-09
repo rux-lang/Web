@@ -24,8 +24,23 @@ Converting between code pages and UTF-16.
 <h2 id="multi-byte-to-wide-char"><code>MultiByteToWideChar</code></h2>
 
 ```rux
-pub extern func MultiByteToWideChar(codePage: CodePage, flags: uint32, multiByteStr: *char8, multiByte: int32, wideCharStr: *char16, wideChar: int32) -> int32
-pub extern func MultiByteToWideChar(codePage: uint32, flags: uint32, multiByteStr: *char8, multiByte: int32, wideCharStr: *char16, wideChar: int32) -> int32
+pub extern func MultiByteToWideChar(
+    codePage: CodePage,
+    flags: uint32,
+    multiByteStr: *char8,
+    multiByte: int32,
+    wideCharStr: *char16,
+    wideChar: int32
+) -> int32
+
+pub extern func MultiByteToWideChar(
+    codePage: uint32,
+    flags: uint32,
+    multiByteStr: *char8,
+    multiByte: int32,
+    wideCharStr: *char16,
+    wideChar: int32
+) -> int32
 ```
 
 Maps a character string to a UTF-16 wide character string.
@@ -50,7 +65,16 @@ Maps a character string to a UTF-16 wide character string.
 <h2 id="wide-char-to-multi-byte"><code>WideCharToMultiByte</code></h2>
 
 ```rux
-pub extern func WideCharToMultiByte(codePage: uint32, flags: uint32, wideCharStr: *char16, wideChar: int32, multiByteStr: *char8, multiByte: int32, defaultChar: *char8, usedDefaultChar: *bool32) -> int32
+pub extern func WideCharToMultiByte(
+    codePage: uint32,
+    flags: uint32,
+    wideCharStr: *char16,
+    wideChar: int32,
+    multiByteStr: *char8,
+    multiByte: int32,
+    defaultChar: *char8,
+    usedDefaultChar: *bool32
+) -> int32
 ```
 
 Converts UTF-16 text to another code page.

@@ -132,7 +132,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing.
 <h2 id="copy-to"><code>CopyTo&lt;T&gt;</code></h2>
 
 ```rux
-pub func CopyTo<T>(destination: var T[..], source: T[..]) -> bool
+pub func CopyTo<T>(
+    destination: var T[..],
+    source: T[..]
+) -> bool
 ```
 
 Copies `source` into `destination`, front to back.
@@ -163,7 +166,10 @@ Overlapping the wrong way silently copies elements that were already overwritten
 <h2 id="move-to"><code>MoveTo&lt;T&gt;</code></h2>
 
 ```rux
-pub func MoveTo<T>(destination: var T[..], source: T[..]) -> bool
+pub func MoveTo<T>(
+    destination: var T[..],
+    source: T[..]
+) -> bool
 ```
 
 Copies `source` into `destination`, correctly however the two overlap.
@@ -253,7 +259,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing.
 <h2 id="remove-where"><code>RemoveWhere&lt;T&gt;</code></h2>
 
 ```rux
-pub func RemoveWhere<T>(items: var T[..], predicate: func(T) -> bool) -> uint
+pub func RemoveWhere<T>(
+    items: var T[..],
+    predicate: func(T) -> bool
+) -> uint
 ```
 
 Removes every element of `items` that `predicate` accepts, and reports how many are left.
@@ -281,7 +290,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="partition"><code>Partition&lt;T&gt;</code></h2>
 
 ```rux
-pub func Partition<T>(items: var T[..], predicate: func(T) -> bool) -> uint
+pub func Partition<T>(
+    items: var T[..],
+    predicate: func(T) -> bool
+) -> uint
 ```
 
 Moves every element `predicate` accepts to the front of `items`, and reports how many there were.
@@ -312,7 +324,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="partition-point"><code>PartitionPoint&lt;T&gt;</code></h2>
 
 ```rux
-pub func PartitionPoint<T>(items: T[..], predicate: func(T) -> bool) -> uint
+pub func PartitionPoint<T>(
+    items: T[..],
+    predicate: func(T) -> bool
+) -> uint
 ```
 
 Where the accepted elements of an already-partitioned `items` end.

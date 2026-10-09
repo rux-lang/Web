@@ -12,6 +12,7 @@ import {
   signatureParams,
   transformProse,
   withValue,
+  wrapSignature,
 } from "../scripts/api-docs.mjs";
 
 import fixture from "./fixtures/api-fixture.json";
@@ -288,6 +289,39 @@ describe("signatures", () => {
       { name: "limit", type: "Map<uint, uint>" },
       { name: "f", type: "(int) -> int" },
     ]);
+  });
+
+  it("puts each parameter of a long declaration on its own line", () => {
+    expect(
+      wrapSignature(
+        "func Reallocate(block: *var opaque, oldLayout: Layout, newLayout: Layout) -> (*var opaque) ! AllocError",
+      ),
+    ).toBe(
+      [
+        "func Reallocate(",
+        "    block: *var opaque,",
+        "    oldLayout: Layout,",
+        "    newLayout: Layout",
+        ") -> (*var opaque) ! AllocError",
+      ].join("\n"),
+    );
+    // An interface requirement keeps its indent; generics and nested types stay whole.
+    expect(wrapSignature("    func Pick<K, V>(map: &Map<K, V>, f: (K, V) -> bool, fallback: V) -> V;")).toBe(
+      [
+        "    func Pick<K, V>(",
+        "        map: &Map<K, V>,",
+        "        f: (K, V) -> bool,",
+        "        fallback: V",
+        "    ) -> V;",
+      ].join("\n"),
+    );
+  });
+
+  it("leaves short declarations, single parameters and non-functions on one line", () => {
+    const short = "pub func Abs(value: int32) -> int32";
+    const single = "pub func FromValidatedUtf8Bytes(bytes: char8[..]) -> StringView ! Utf8Error";
+    const constant = "pub const Min: int128 = -170141183460469231731687303715884105728i128;";
+    for (const line of [short, single, constant]) expect(wrapSignature(line)).toBe(line);
   });
 });
 

@@ -44,7 +44,10 @@ pub const ClockMonotonic: int32 = 4;
 <h2 id="clock-get-time"><code>ClockGetTime</code></h2>
 
 ```rux
-pub func ClockGetTime(clockId: int32, time: *var Timespec) -> int64
+pub func ClockGetTime(
+    clockId: int32,
+    time: *var Timespec
+) -> int64
 ```
 
 Reads `clockId` into `time`.
@@ -65,7 +68,10 @@ Returns zero, or a negative error number.
 <h2 id="nanosleep"><code>Nanosleep</code></h2>
 
 ```rux
-pub func Nanosleep(request: *Timespec, remaining: *var Timespec) -> int64
+pub func Nanosleep(
+    request: *Timespec,
+    remaining: *var Timespec
+) -> int64
 ```
 
 Suspends the caller for the requested duration.
@@ -118,7 +124,10 @@ pub const ClockProcessCpuTime: int32 = 15;
 <h2 id="clock-get-resolution"><code>ClockGetResolution</code></h2>
 
 ```rux
-pub func ClockGetResolution(clockId: int32, resolution: *var Timespec) -> int64
+pub func ClockGetResolution(
+    clockId: int32,
+    resolution: *var Timespec
+) -> int64
 ```
 
 Reads the resolution of `clockId` into `resolution`.

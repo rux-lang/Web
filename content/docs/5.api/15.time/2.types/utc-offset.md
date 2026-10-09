@@ -91,7 +91,11 @@ The whole seconds east of UTC, negative west.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &UtcOffset, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &UtcOffset,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the offset as `Z` for UTC, and as a signed `+HH:MM` otherwise.
@@ -117,7 +121,11 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style other
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &UtcOffset, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &UtcOffset,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The same text as `Display`.

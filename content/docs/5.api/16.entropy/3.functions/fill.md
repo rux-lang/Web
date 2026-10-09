@@ -22,7 +22,10 @@ seo:
 Fills `length` bytes of `buffer` from the operating system.
 
 ```rux
-pub func Fill(buffer: *var opaque, length: uint) -> ! EntropyError
+pub func Fill(
+    buffer: *var opaque,
+    length: uint
+) -> ! EntropyError
 ```
 
 `buffer` is borrowed and written; `length` is read by value. This is the call to make when there is no reason to

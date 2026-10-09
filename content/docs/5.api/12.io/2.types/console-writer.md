@@ -62,7 +62,10 @@ already holds a failure writes nothing at all.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var ConsoleWriter, bytes: char8[..]) -> ! FormatError
+pub func Write(
+    self: &var ConsoleWriter,
+    bytes: char8[..]
+) -> ! FormatError
 ```
 
 Writes `bytes` to standard output.

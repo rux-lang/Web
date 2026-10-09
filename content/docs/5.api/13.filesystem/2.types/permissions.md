@@ -92,7 +92,11 @@ Whether the owner may write.
 <h3 id="set-permissions"><code>SetPermissions</code></h3>
 
 ```rux
-pub func SetPermissions(allocator: Allocator, path: Path, permissions: Permissions) -> ! IoError
+pub func SetPermissions(
+    allocator: Allocator,
+    path: Path,
+    permissions: Permissions
+) -> ! IoError
 ```
 
 Sets who may do what to the file `path` names.

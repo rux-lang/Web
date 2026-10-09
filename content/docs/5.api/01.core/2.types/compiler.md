@@ -40,7 +40,10 @@ Fixed when compiling begins. Reading a field produces no runtime code.
 <h3 id="has-feature"><code>HasFeature</code></h3>
 
 ```rux
-pub func HasFeature(self: &Compiler, feature: char8[..]) -> bool
+pub func HasFeature(
+    self: &Compiler,
+    feature: char8[..]
+) -> bool
 ```
 
 Whether this compiler provides the named language or library feature.

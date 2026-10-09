@@ -24,7 +24,11 @@ Values from the Bernoulli, exponential, normal, binomial, Poisson, gamma and bet
 <h2 id="binomial"><code>Binomial&lt;G&gt;</code></h2>
 
 ```rux
-pub func Binomial<G: RandomGenerator>(generator: &var G, trials: uint64, probability: float64) -> uint64
+pub func Binomial<G: RandomGenerator>(
+    generator: &var G,
+    trials: uint64,
+    probability: float64
+) -> uint64
 ```
 
 The number of successes in `trials` independent trials each succeeding with probability `probability`.
@@ -56,7 +60,10 @@ billion trials costs about thirty draws rather than a billion.
 <h2 id="poisson"><code>Poisson&lt;G&gt;</code></h2>
 
 ```rux
-pub func Poisson<G: RandomGenerator>(generator: &var G, mean: float64) -> uint64
+pub func Poisson<G: RandomGenerator>(
+    generator: &var G,
+    mean: float64
+) -> uint64
 ```
 
 The number of events in one interval when they arrive independently at the given mean rate.
@@ -86,7 +93,10 @@ interval, in which case the count is a binomial of what is left, or it fits and 
 <h2 id="bernoulli"><code>Bernoulli&lt;G&gt;</code></h2>
 
 ```rux
-pub func Bernoulli<G: RandomGenerator>(generator: &var G, probability: float64) -> bool
+pub func Bernoulli<G: RandomGenerator>(
+    generator: &var G,
+    probability: float64
+) -> bool
 ```
 
 A coin that comes up `true` with probability `probability`.
@@ -143,7 +153,10 @@ Multiply the result by a mean, or divide by a rate, to scale it.
 <h2 id="exponential-with-rate"><code>ExponentialWithRate&lt;G&gt;</code></h2>
 
 ```rux
-pub func ExponentialWithRate<G: RandomGenerator>(generator: &var G, rate: float64) -> float64
+pub func ExponentialWithRate<G: RandomGenerator>(
+    generator: &var G,
+    rate: float64
+) -> float64
 ```
 
 A value from the exponential distribution with the given rate.
@@ -169,7 +182,11 @@ A rate at or below zero has no distribution and gives zero.
 <h2 id="normal-pair"><code>NormalPair&lt;G&gt;</code></h2>
 
 ```rux
-pub func NormalPair<G: RandomGenerator>(generator: &var G, first: *var float64, second: *var float64)
+pub func NormalPair<G: RandomGenerator>(
+    generator: &var G,
+    first: *var float64,
+    second: *var float64
+)
 ```
 
 A pair of independent standard normal values.
@@ -225,7 +242,11 @@ halves the work.
 <h2 id="normal-with"><code>NormalWith&lt;G&gt;</code></h2>
 
 ```rux
-pub func NormalWith<G: RandomGenerator>(generator: &var G, mean: float64, deviation: float64) -> float64
+pub func NormalWith<G: RandomGenerator>(
+    generator: &var G,
+    mean: float64,
+    deviation: float64
+) -> float64
 ```
 
 A normal value with the given mean and standard deviation.
@@ -263,7 +284,10 @@ Below this the direct methods are cheaper than the reductions, and above it they
 <h2 id="gamma"><code>Gamma&lt;G&gt;</code></h2>
 
 ```rux
-pub func Gamma<G: RandomGenerator>(generator: &var G, shape: float64) -> float64
+pub func Gamma<G: RandomGenerator>(
+    generator: &var G,
+    shape: float64
+) -> float64
 ```
 
 A value from the gamma distribution with the given shape and unit scale.
@@ -292,7 +316,11 @@ A shape at or below zero has no distribution and gives zero.
 <h2 id="gamma-with-scale"><code>GammaWithScale&lt;G&gt;</code></h2>
 
 ```rux
-pub func GammaWithScale<G: RandomGenerator>(generator: &var G, shape: float64, scale: float64) -> float64
+pub func GammaWithScale<G: RandomGenerator>(
+    generator: &var G,
+    shape: float64,
+    scale: float64
+) -> float64
 ```
 
 A value from the gamma distribution with the given shape and scale.
@@ -318,7 +346,11 @@ A value from the gamma distribution with the given shape and scale.
 <h2 id="beta"><code>Beta&lt;G&gt;</code></h2>
 
 ```rux
-pub func Beta<G: RandomGenerator>(generator: &var G, first: float64, second: float64) -> float64
+pub func Beta<G: RandomGenerator>(
+    generator: &var G,
+    first: float64,
+    second: float64
+) -> float64
 ```
 
 A value from the beta distribution with the two given shapes, in `[0, 1]`.

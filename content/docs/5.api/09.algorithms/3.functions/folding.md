@@ -24,7 +24,11 @@ Reducing a slice to one value, and mapping one slice onto another.
 <h2 id="fold"><code>Fold&lt;T, A&gt;</code></h2>
 
 ```rux
-pub func Fold<T, A>(items: T[..], initial: A, combine: func(A, T) -> A) -> A
+pub func Fold<T, A>(
+    items: T[..],
+    initial: A,
+    combine: func(A, T) -> A
+) -> A
 ```
 
 Folds every element of `items` into an accumulator, left to right.
@@ -57,7 +61,11 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="fold-right"><code>FoldRight&lt;T, A&gt;</code></h2>
 
 ```rux
-pub func FoldRight<T, A>(items: T[..], initial: A, combine: func(A, T) -> A) -> A
+pub func FoldRight<T, A>(
+    items: T[..],
+    initial: A,
+    combine: func(A, T) -> A
+) -> A
 ```
 
 Folds every element of `items` into an accumulator, right to left.
@@ -147,7 +155,11 @@ Cannot fail. Runs in time proportional to the length and allocates nothing.
 <h2 id="transform"><code>Transform&lt;T, U&gt;</code></h2>
 
 ```rux
-pub func Transform<T, U>(destination: var U[..], source: T[..], transform: func(T) -> U) -> bool
+pub func Transform<T, U>(
+    destination: var U[..],
+    source: T[..],
+    transform: func(T) -> U
+) -> bool
 ```
 
 Writes `transform` of each element of `source` into `destination`.

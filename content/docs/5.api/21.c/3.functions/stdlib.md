@@ -129,7 +129,10 @@ Cannot report failure. Use strtoll.
 <h2 id="calloc"><code>calloc</code></h2>
 
 ```rux
-pub extern func calloc(num: size_t, size: size_t) -> *var opaque
+pub extern func calloc(
+    num: size_t,
+    size: size_t
+) -> *var opaque
 ```
 
 Allocates memory for an array of num objects of size and zero-initializes it.
@@ -244,7 +247,10 @@ would like to predict. Rux/Random names its generators; Rux/Entropy reaches the 
 <h2 id="realloc"><code>realloc</code></h2>
 
 ```rux
-pub extern func realloc(ptr: *var opaque, size: size_t) -> *var opaque
+pub extern func realloc(
+    ptr: *var opaque,
+    size: size_t
+) -> *var opaque
 ```
 
 Changes the size of the memory block pointed to by ptr to size bytes.
@@ -283,7 +289,11 @@ Seeds the pseudo-random number generator used by rand.
 <h2 id="strtol"><code>strtol</code></h2>
 
 ```rux
-pub extern func strtol(str: *char8, endptr: *var *char8, base: c_int) -> c_long
+pub extern func strtol(
+    str: *char8,
+    endptr: *var *char8,
+    base: c_int
+) -> c_long
 ```
 
 Converts a byte string to a long integer, reporting where it stopped.
@@ -305,7 +315,11 @@ Converts a byte string to a long integer, reporting where it stopped.
 <h2 id="strtoul"><code>strtoul</code></h2>
 
 ```rux
-pub extern func strtoul(str: *char8, endptr: *var *char8, base: c_int) -> c_ulong
+pub extern func strtoul(
+    str: *char8,
+    endptr: *var *char8,
+    base: c_int
+) -> c_ulong
 ```
 
 Converts a byte string to an unsigned long integer, reporting where it stopped.
@@ -327,7 +341,11 @@ Converts a byte string to an unsigned long integer, reporting where it stopped.
 <h2 id="strtoll"><code>strtoll</code></h2>
 
 ```rux
-pub extern func strtoll(str: *char8, endptr: *var *char8, base: c_int) -> c_longlong
+pub extern func strtoll(
+    str: *char8,
+    endptr: *var *char8,
+    base: c_int
+) -> c_longlong
 ```
 
 Converts a byte string to a long long integer, reporting where it stopped.
@@ -349,7 +367,11 @@ Converts a byte string to a long long integer, reporting where it stopped.
 <h2 id="strtoull"><code>strtoull</code></h2>
 
 ```rux
-pub extern func strtoull(str: *char8, endptr: *var *char8, base: c_int) -> c_ulonglong
+pub extern func strtoull(
+    str: *char8,
+    endptr: *var *char8,
+    base: c_int
+) -> c_ulonglong
 ```
 
 Converts a byte string to an unsigned long long integer, reporting where it stopped.
@@ -371,7 +393,10 @@ Converts a byte string to an unsigned long long integer, reporting where it stop
 <h2 id="strtod"><code>strtod</code></h2>
 
 ```rux
-pub extern func strtod(str: *char8, endptr: *var *char8) -> c_double
+pub extern func strtod(
+    str: *char8,
+    endptr: *var *char8
+) -> c_double
 ```
 
 Converts a byte string to a double, reporting where it stopped.
@@ -392,7 +417,10 @@ Converts a byte string to a double, reporting where it stopped.
 <h2 id="strtof"><code>strtof</code></h2>
 
 ```rux
-pub extern func strtof(str: *char8, endptr: *var *char8) -> c_float
+pub extern func strtof(
+    str: *char8,
+    endptr: *var *char8
+) -> c_float
 ```
 
 Converts a byte string to a float, reporting where it stopped.
@@ -413,7 +441,12 @@ Converts a byte string to a float, reporting where it stopped.
 <h2 id="qsort"><code>qsort</code></h2>
 
 ```rux
-pub extern func qsort(base: *var opaque, num: size_t, size: size_t, compare: func(*opaque, *opaque) -> c_int)
+pub extern func qsort(
+    base: *var opaque,
+    num: size_t,
+    size: size_t,
+    compare: func(*opaque, *opaque) -> c_int
+)
 ```
 
 Sorts an array in place; the comparison must be a strict weak ordering and the sort is not stable.
@@ -434,7 +467,13 @@ Sorts an array in place; the comparison must be a strict weak ordering and the s
 <h2 id="bsearch"><code>bsearch</code></h2>
 
 ```rux
-pub extern func bsearch(key: *opaque, base: *opaque, num: size_t, size: size_t, compare: func(*opaque, *opaque) -> c_int) -> *opaque
+pub extern func bsearch(
+    key: *opaque,
+    base: *opaque,
+    num: size_t,
+    size: size_t,
+    compare: func(*opaque, *opaque) -> c_int
+) -> *opaque
 ```
 
 Finds an element of a sorted array; the array must already be ordered by the same comparison.

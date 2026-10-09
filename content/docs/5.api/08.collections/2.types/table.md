@@ -43,7 +43,10 @@ Move-only: it owns its storage and entries, prohibits copying, and destroys both
 <h3 id="new"><code>Table</code></h3>
 
 ```rux
-pub func Table(allocator: Allocator, seed: TableSeed) -> Table<K, V>
+pub func Table(
+    allocator: Allocator,
+    seed: TableSeed
+) -> Table<K, V>
 ```
 
 An empty table that has not allocated anything.
@@ -141,7 +144,12 @@ Whether the slot at `index` holds an entry.
 <h3 id="find"><code>Find</code></h3>
 
 ```rux
-pub func Find(self: &Table<K, V>, key: K, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> uint?
+pub func Find(
+    self: &Table<K, V>,
+    key: K,
+    hash: func(K, uint64, uint64) -> uint64,
+    equals: func(K, K) -> bool
+) -> uint?
 ```
 
 The slot holding `key`, or `none` when the table does not have it.
@@ -164,7 +172,11 @@ Runs in constant expected time and allocates nothing.
 <h3 id="rehash"><code>Rehash</code></h3>
 
 ```rux
-pub func Rehash(self: &var Table<K, V>, capacity: uint, hash: func(K, uint64, uint64) -> uint64) -> ! CollectionError
+pub func Rehash(
+    self: &var Table<K, V>,
+    capacity: uint,
+    hash: func(K, uint64, uint64) -> uint64
+) -> ! CollectionError
 ```
 
 Rebuilds the table at `capacity` slots, reinserting every entry.
@@ -184,7 +196,10 @@ Runs in time proportional to the capacity.
 <h3 id="ensure-room"><code>EnsureRoom</code></h3>
 
 ```rux
-pub func EnsureRoom(self: &var Table<K, V>, hash: func(K, uint64, uint64) -> uint64) -> ! CollectionError
+pub func EnsureRoom(
+    self: &var Table<K, V>,
+    hash: func(K, uint64, uint64) -> uint64
+) -> ! CollectionError
 ```
 
 Makes sure one more entry will fit, growing the table when it will not.
@@ -201,7 +216,11 @@ Makes sure one more entry will fit, growing the table when it will not.
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(self: &var Table<K, V>, additional: uint, hash: func(K, uint64, uint64) -> uint64) -> ! CollectionError
+pub func Reserve(
+    self: &var Table<K, V>,
+    additional: uint,
+    hash: func(K, uint64, uint64) -> uint64
+) -> ! CollectionError
 ```
 
 Makes room for `additional` more entries on top of those already present.
@@ -219,7 +238,10 @@ Makes room for `additional` more entries on top of those already present.
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
 ```rux
-pub func ShrinkToFit(self: &var Table<K, V>, hash: func(K, uint64, uint64) -> uint64) -> ! CollectionError
+pub func ShrinkToFit(
+    self: &var Table<K, V>,
+    hash: func(K, uint64, uint64) -> uint64
+) -> ! CollectionError
 ```
 
 Releases the capacity the entry count does not need.

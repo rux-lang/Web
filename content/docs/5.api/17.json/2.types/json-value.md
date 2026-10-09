@@ -61,7 +61,10 @@ The literal `null`.
 <h3 id="boolean"><code>Boolean</code></h3>
 
 ```rux
-pub func Boolean(allocator: Allocator, value: bool) -> JsonValue
+pub func Boolean(
+    allocator: Allocator,
+    value: bool
+) -> JsonValue
 ```
 
 A boolean value.
@@ -78,7 +81,10 @@ A boolean value.
 <h3 id="number"><code>Number</code></h3>
 
 ```rux
-pub func Number(allocator: Allocator, text: char8[..]) -> JsonValue ! TextError
+pub func Number(
+    allocator: Allocator,
+    text: char8[..]
+) -> JsonValue ! TextError
 ```
 
 A number, from the text it was written with.
@@ -95,7 +101,10 @@ A number, from the text it was written with.
 <h3 id="text"><code>Text</code></h3>
 
 ```rux
-pub func Text(allocator: Allocator, value: char8[..]) -> JsonValue ! TextError
+pub func Text(
+    allocator: Allocator,
+    value: char8[..]
+) -> JsonValue ! TextError
 ```
 
 A string value.
@@ -170,7 +179,10 @@ Whether this is `null`.
 <h3 id="as-boolean"><code>AsBoolean</code></h3>
 
 ```rux
-pub func AsBoolean(self: &JsonValue, result: *var bool) -> bool
+pub func AsBoolean(
+    self: &JsonValue,
+    result: *var bool
+) -> bool
 ```
 
 The boolean payload, or `false` when this is not a boolean — which [`Kind`](/docs/api/json/json-value#kind) distinguishes from a genuine
@@ -223,7 +235,10 @@ How many elements an array holds, or members an object holds; zero for anything 
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(self: &var JsonValue, value: JsonValue) -> bool
+pub func Push(
+    self: &var JsonValue,
+    value: JsonValue
+) -> bool
 ```
 
 Appends `value` to an array, taking ownership of it.
@@ -241,7 +256,11 @@ a caller does not have to decide who owns it on failure.
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(self: &var JsonValue, name: String, value: JsonValue) -> bool
+pub func Insert(
+    self: &var JsonValue,
+    name: String,
+    value: JsonValue
+) -> bool
 ```
 
 Appends a member to an object, taking ownership of both name and value.
@@ -277,7 +296,10 @@ The element at `index`, borrowed, or null when there is none.
 <h3 id="find"><code>Find</code></h3>
 
 ```rux
-pub func Find(self: &JsonValue, name: StringView) -> *JsonValue
+pub func Find(
+    self: &JsonValue,
+    name: StringView
+) -> *JsonValue
 ```
 
 The value of the member named `name`, borrowed, or null when there is none.
@@ -295,7 +317,10 @@ since that is the one a reader encounters.
 <h3 id="member-at"><code>MemberAt</code></h3>
 
 ```rux
-pub func MemberAt(self: &JsonValue, index: uint) -> *JsonMember
+pub func MemberAt(
+    self: &JsonValue,
+    index: uint
+) -> *JsonMember
 ```
 
 The member at `index`, borrowed, or null when there is none.
@@ -311,7 +336,10 @@ The member at `index`, borrowed, or null when there is none.
 <h3 id="remove-first"><code>RemoveFirst</code></h3>
 
 ```rux
-pub func RemoveFirst(self: &var JsonValue, name: StringView) -> bool
+pub func RemoveFirst(
+    self: &var JsonValue,
+    name: StringView
+) -> bool
 ```
 
 Removes the first member named `name`, if there is one.

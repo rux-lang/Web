@@ -112,7 +112,11 @@ Cannot fail. Runs in time proportional to the shorter length and allocates nothi
 <h2 id="compare-by"><code>CompareBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func CompareBy<T>(left: T[..], right: T[..], compare: func(T, T) -> Ordering) -> Ordering
+pub func CompareBy<T>(
+    left: T[..],
+    right: T[..],
+    compare: func(T, T) -> Ordering
+) -> Ordering
 ```
 
 How `left` orders against `right`, with `compare` deciding each pair.

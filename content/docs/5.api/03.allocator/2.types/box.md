@@ -43,7 +43,10 @@ overwriting assignment the value's life ends at.
 <h3 id="create"><code>Create</code></h3>
 
 ```rux
-pub func Create(allocator: Allocator, value: T) -> Box<T> ! AllocError
+pub func Create(
+    allocator: Allocator,
+    value: T
+) -> Box<T> ! AllocError
 ```
 
 Puts `value` on the heap and hands back the box that owns it.
@@ -96,7 +99,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="try-take"><code>TryTake</code></h3>
 
 ```rux
-pub func TryTake(self: &var Box<T>, destination: *var T) -> bool
+pub func TryTake(
+    self: &var Box<T>,
+    destination: *var T
+) -> bool
 ```
 
 Moves the value out of the box, leaving the box empty, and releases the storage.

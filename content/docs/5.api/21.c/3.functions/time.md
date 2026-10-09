@@ -82,7 +82,10 @@ Returns the approximate processor time used by the program.
 <h2 id="difftime"><code>difftime</code></h2>
 
 ```rux
-pub extern func difftime(time_end: time_t, time_beg: time_t) -> float64
+pub extern func difftime(
+    time_end: time_t,
+    time_beg: time_t
+) -> float64
 ```
 
 Computes the difference in seconds between two calendar times.
@@ -207,7 +210,10 @@ pub const CLOCKS_PER_SEC: int64 = 1000000;
 <h2 id="timespec-get"><code>TimespecGet</code></h2>
 
 ```rux
-pub func TimespecGet(ts: &var timespec, base: c_int) -> c_int
+pub func TimespecGet(
+    ts: &var timespec,
+    base: c_int
+) -> c_int
 ```
 
 Fills `ts` with the current time on the given base.

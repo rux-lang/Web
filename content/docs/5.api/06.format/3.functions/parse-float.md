@@ -37,7 +37,14 @@ the value cannot be a tie at all — so the bound is where the two arguments mee
 <h2 id="exact-float64"><code>ExactFloat64</code></h2>
 
 ```rux
-pub func ExactFloat64(digits: &FixedNat, exponent: int, truncated: bool, negative: bool, value: *var float64, overflowed: *var bool) -> bool
+pub func ExactFloat64(
+    digits: &FixedNat,
+    exponent: int,
+    truncated: bool,
+    negative: bool,
+    value: *var float64,
+    overflowed: *var bool
+) -> bool
 ```
 
 Reads the decimal `digits * 10^exponent` into the nearest `float64`, with ties to even.
@@ -61,7 +68,14 @@ Answers false for a value past the format's range or a workspace failure, with `
 <h2 id="exact-float32"><code>ExactFloat32</code></h2>
 
 ```rux
-pub func ExactFloat32(digits: &FixedNat, exponent: int, truncated: bool, negative: bool, value: *var float32, overflowed: *var bool) -> bool
+pub func ExactFloat32(
+    digits: &FixedNat,
+    exponent: int,
+    truncated: bool,
+    negative: bool,
+    value: *var float32,
+    overflowed: *var bool
+) -> bool
 ```
 
 Reads the decimal `digits * 10^exponent` into the nearest `float32`, with ties to even.
@@ -117,7 +131,10 @@ Copy, holding the retained digits and the two flags the rounding needs.
 <h2 id="scan-decimal"><code>ScanDecimal</code></h2>
 
 ```rux
-pub func ScanDecimal(str: char8[..], reading: *var DecimalReading) -> ! ParseError
+pub func ScanDecimal(
+    str: char8[..],
+    reading: *var DecimalReading
+) -> ! ParseError
 ```
 
 Reads the decimal grammar out of `str`, without deciding what float it names.
@@ -202,7 +219,11 @@ The failures [`ParseFloat64`](/docs/api/format/parse-float#parse-float64) report
 <h2 id="parse-wide-float"><code>ParseWideFloat</code></h2>
 
 ```rux
-pub func ParseWideFloat(allocator: Allocator, str: char8[..], layout: &FloatLayout) -> uint512 ! ParseError
+pub func ParseWideFloat(
+    allocator: Allocator,
+    str: char8[..],
+    layout: &FloatLayout
+) -> uint512 ! ParseError
 ```
 
 Reads `str` as a value under `layout`, rounding to nearest with ties to even, and reports the bits.
@@ -224,7 +245,10 @@ format becomes the signed zero. `NaN`, `Inf` and `-Inf` are read exactly as form
 <h2 id="parse-float80"><code>ParseFloat80</code></h2>
 
 ```rux
-pub func ParseFloat80(allocator: Allocator, str: char8[..]) -> Float80 ! ParseError
+pub func ParseFloat80(
+    allocator: Allocator,
+    str: char8[..]
+) -> Float80 ! ParseError
 ```
 
 Reads `str` as an x87 extended value.
@@ -243,7 +267,10 @@ Reads `str` as an x87 extended value.
 <h2 id="parse-float128"><code>ParseFloat128</code></h2>
 
 ```rux
-pub func ParseFloat128(allocator: Allocator, str: char8[..]) -> Float128 ! ParseError
+pub func ParseFloat128(
+    allocator: Allocator,
+    str: char8[..]
+) -> Float128 ! ParseError
 ```
 
 Reads `str` as a binary128 value.
@@ -262,7 +289,10 @@ Reads `str` as a binary128 value.
 <h2 id="parse-float256"><code>ParseFloat256</code></h2>
 
 ```rux
-pub func ParseFloat256(allocator: Allocator, str: char8[..]) -> Float256 ! ParseError
+pub func ParseFloat256(
+    allocator: Allocator,
+    str: char8[..]
+) -> Float256 ! ParseError
 ```
 
 Reads `str` as a binary256 value.
@@ -281,7 +311,10 @@ Reads `str` as a binary256 value.
 <h2 id="parse-float512"><code>ParseFloat512</code></h2>
 
 ```rux
-pub func ParseFloat512(allocator: Allocator, str: char8[..]) -> Float512 ! ParseError
+pub func ParseFloat512(
+    allocator: Allocator,
+    str: char8[..]
+) -> Float512 ! ParseError
 ```
 
 Reads `str` as a binary512 value.

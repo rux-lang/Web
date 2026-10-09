@@ -159,7 +159,11 @@ the bounds themselves.
 <h2 id="gcd-checked"><code>GcdChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func GcdChecked<T>(left: T, right: T, result: *var T) -> bool
+pub func GcdChecked<T>(
+    left: T,
+    right: T,
+    result: *var T
+) -> bool
 ```
 
 The greatest common divisor of `left` and `right`, reporting whether it is representable.
@@ -190,7 +194,11 @@ non-null and writable.
 <h2 id="lcm-checked"><code>LcmChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func LcmChecked<T>(left: T, right: T, result: *var T) -> bool
+pub func LcmChecked<T>(
+    left: T,
+    right: T,
+    result: *var T
+) -> bool
 ```
 
 The least common multiple of `left` and `right`, reporting whether it is representable.
@@ -220,7 +228,11 @@ division is done before the multiplication so a representable answer is not lost
 <h2 id="pow-checked"><code>PowChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func PowChecked<T>(base: T, exponent: uint, result: *var T) -> bool
+pub func PowChecked<T>(
+    base: T,
+    exponent: uint,
+    result: *var T
+) -> bool
 ```
 
 `base` raised to `exponent`, reporting whether the true power is representable.

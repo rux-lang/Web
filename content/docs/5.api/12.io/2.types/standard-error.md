@@ -48,7 +48,10 @@ The process's standard error.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var StandardError, bytes: char8[..]) -> uint ! IoError
+pub func Write(
+    self: &var StandardError,
+    bytes: char8[..]
+) -> uint ! IoError
 ```
 
 Writes what it can of `bytes` to standard error.

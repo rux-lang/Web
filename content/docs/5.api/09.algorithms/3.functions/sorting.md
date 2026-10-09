@@ -114,7 +114,10 @@ Requires `<` on the element type. Equal elements may be reordered.
 <h2 id="partial-sort"><code>PartialSort&lt;T&gt;</code></h2>
 
 ```rux
-pub func PartialSort<T>(items: var T[..], count: uint) -> bool
+pub func PartialSort<T>(
+    items: var T[..],
+    count: uint
+) -> bool
 ```
 
 Puts the `count` smallest elements of `items` in order at its front.
@@ -147,7 +150,11 @@ Requires `<` on the element type. Equal elements may be reordered.
 <h2 id="insertion-sort-range"><code>InsertionSortRange&lt;T&gt;</code></h2>
 
 ```rux
-pub func InsertionSortRange<T>(data: *var T, low: uint, high: uint)
+pub func InsertionSortRange<T>(
+    data: *var T,
+    low: uint,
+    high: uint
+)
 ```
 
 Provides the public `InsertionSortRange` operation.
@@ -171,7 +178,11 @@ Provides the public `InsertionSortRange` operation.
 <h2 id="heap-sort-range"><code>HeapSortRange&lt;T&gt;</code></h2>
 
 ```rux
-pub func HeapSortRange<T>(data: *var T, low: uint, high: uint)
+pub func HeapSortRange<T>(
+    data: *var T,
+    low: uint,
+    high: uint
+)
 ```
 
 Provides the public `HeapSortRange` operation.
@@ -195,7 +206,10 @@ Provides the public `HeapSortRange` operation.
 <h2 id="sort-by"><code>SortBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func SortBy<T>(items: var T[..], compare: func(T, T) -> Ordering)
+pub func SortBy<T>(
+    items: var T[..],
+    compare: func(T, T) -> Ordering
+)
 ```
 
 Puts `items` into the order `compare` describes, smallest first.
@@ -223,7 +237,10 @@ O(log n) deep. Equal elements may be reordered: this is not stable.
 <h2 id="sort-descending-by"><code>SortDescendingBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func SortDescendingBy<T>(items: var T[..], compare: func(T, T) -> Ordering)
+pub func SortDescendingBy<T>(
+    items: var T[..],
+    compare: func(T, T) -> Ordering
+)
 ```
 
 Puts `items` into the reverse of the order `compare` describes.
@@ -250,7 +267,11 @@ reordered.
 <h2 id="nth-element-by"><code>NthElementBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func NthElementBy<T>(items: var T[..], n: uint, compare: func(T, T) -> Ordering) -> bool
+pub func NthElementBy<T>(
+    items: var T[..],
+    n: uint,
+    compare: func(T, T) -> Ordering
+) -> bool
 ```
 
 Puts the element that belongs at `n` under `compare` at `n`, and partitions around it.
@@ -280,7 +301,11 @@ O(n) comparisons on average and O(n log n) at worst. Equivalent elements may be 
 <h2 id="partial-sort-by"><code>PartialSortBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func PartialSortBy<T>(items: var T[..], count: uint, compare: func(T, T) -> Ordering) -> bool
+pub func PartialSortBy<T>(
+    items: var T[..],
+    count: uint,
+    compare: func(T, T) -> Ordering
+) -> bool
 ```
 
 Puts the `count` smallest elements of `items` under `compare` in order at its front.
@@ -333,7 +358,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="stable-sort"><code>StableSort&lt;T&gt;</code></h2>
 
 ```rux
-pub func StableSort<T>(items: var T[..], scratch: var T[..]) -> bool
+pub func StableSort<T>(
+    items: var T[..],
+    scratch: var T[..]
+) -> bool
 ```
 
 Puts `items` into non-decreasing order, leaving equal elements in the order they were in.
@@ -364,7 +392,11 @@ Makes O(n log n) comparisons and moves for every input — there is no bad case 
 <h2 id="stable-sort-by"><code>StableSortBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func StableSortBy<T>(items: var T[..], scratch: var T[..], compare: func(T, T) -> Ordering) -> bool
+pub func StableSortBy<T>(
+    items: var T[..],
+    scratch: var T[..],
+    compare: func(T, T) -> Ordering
+) -> bool
 ```
 
 Puts `items` into the order `compare` describes, leaving equivalent elements in the order they were in.

@@ -78,7 +78,11 @@ The simple titlecase of `scalar`: the uppercase, except for the few dozen charac
 <h2 id="to-upper-full"><code>ToUpperFull</code></h2>
 
 ```rux
-pub func ToUpperFull(scalar: char32, into: var char32[..], written: *var uint) -> bool
+pub func ToUpperFull(
+    scalar: char32,
+    into: var char32[..],
+    written: *var uint
+) -> bool
 ```
 
 Writes the full uppercase of `scalar` into `into` and reports how many values it took.
@@ -101,7 +105,11 @@ short. Falls back to the simple mapping for the points that need no expansion, w
 <h2 id="to-lower-full"><code>ToLowerFull</code></h2>
 
 ```rux
-pub func ToLowerFull(scalar: char32, into: var char32[..], written: *var uint) -> bool
+pub func ToLowerFull(
+    scalar: char32,
+    into: var char32[..],
+    written: *var uint
+) -> bool
 ```
 
 Writes the full lowercase of `scalar` into `into`.
@@ -122,7 +130,11 @@ Writes the full lowercase of `scalar` into `into`.
 <h2 id="fold"><code>Fold</code></h2>
 
 ```rux
-pub func Fold(scalar: char32, into: var char32[..], written: *var uint) -> bool
+pub func Fold(
+    scalar: char32,
+    into: var char32[..],
+    written: *var uint
+) -> bool
 ```
 
 Writes the full, locale-independent case folding of `scalar` into `into`.

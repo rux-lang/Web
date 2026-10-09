@@ -24,8 +24,21 @@ Allocating, reading and writing the console.
 <h2 id="write-console-w"><code>WriteConsoleW</code></h2>
 
 ```rux
-pub extern func WriteConsoleW(consoleOutput: *var opaque, buffer: *opaque, numberOfCharsToWrite: uint32, numberOfCharsWritten: *var uint32, reserved: *var opaque) -> int32
-pub extern func WriteConsoleW(consoleOutput: *opaque, buffer: *char16, numberOfCharsToWrite: uint32, numberOfCharsWritten: *uint32, reserved: *opaque) -> bool32
+pub extern func WriteConsoleW(
+    consoleOutput: *var opaque,
+    buffer: *opaque,
+    numberOfCharsToWrite: uint32,
+    numberOfCharsWritten: *var uint32,
+    reserved: *var opaque
+) -> int32
+
+pub extern func WriteConsoleW(
+    consoleOutput: *opaque,
+    buffer: *char16,
+    numberOfCharsToWrite: uint32,
+    numberOfCharsWritten: *uint32,
+    reserved: *opaque
+) -> bool32
 ```
 
 Writes a character string to a console screen buffer beginning at the current cursor location.
@@ -54,7 +67,13 @@ Writes a character string to a console screen buffer beginning at the current cu
 <h2 id="read-console-w"><code>ReadConsoleW</code></h2>
 
 ```rux
-pub extern func ReadConsoleW(consoleInput: *var opaque, buffer: *var opaque, numberOfCharsToRead: uint32, numberOfCharsRead: *var uint32, inputControl: *var opaque) -> int32
+pub extern func ReadConsoleW(
+    consoleInput: *var opaque,
+    buffer: *var opaque,
+    numberOfCharsToRead: uint32,
+    numberOfCharsRead: *var uint32,
+    inputControl: *var opaque
+) -> int32
 ```
 
 Reads UTF-16 from a console input buffer.
@@ -92,7 +111,10 @@ Allocates a new console for the calling process.
 <h2 id="beep"><code>Beep</code></h2>
 
 ```rux
-pub extern func Beep(freq: uint32, duration: uint32) -> bool32
+pub extern func Beep(
+    freq: uint32,
+    duration: uint32
+) -> bool32
 ```
 
 Generates simple tones on the speaker.
@@ -113,7 +135,10 @@ Generates simple tones on the speaker.
 <h2 id="get-console-mode"><code>GetConsoleMode</code></h2>
 
 ```rux
-pub extern func GetConsoleMode(consoleHandle: *opaque, mode: *uint32) -> bool32
+pub extern func GetConsoleMode(
+    consoleHandle: *opaque,
+    mode: *uint32
+) -> bool32
 ```
 
 Retrieves the current input or output mode of a console screen buffer.
@@ -154,7 +179,13 @@ Retrieves a handle to the specified standard device (standard input, standard ou
 <h2 id="read-console-a"><code>ReadConsoleA</code></h2>
 
 ```rux
-pub extern func ReadConsoleA(consoleInput: *opaque, buffer: *opaque, numberOfCharsToRead: uint32, numberOfCharsRead: *uint32, inputControl: *opaque) -> bool32
+pub extern func ReadConsoleA(
+    consoleInput: *opaque,
+    buffer: *opaque,
+    numberOfCharsToRead: uint32,
+    numberOfCharsRead: *uint32,
+    inputControl: *opaque
+) -> bool32
 ```
 
 Reads characters from a console input buffer.
@@ -178,7 +209,13 @@ Reads characters from a console input buffer.
 <h2 id="write-console-a"><code>WriteConsoleA</code></h2>
 
 ```rux
-pub extern func WriteConsoleA(consoleOutput: *opaque, buffer: *char8, numberOfCharsToWrite: uint32, numberOfCharsWritten: *uint32, reserved: *opaque) -> bool32
+pub extern func WriteConsoleA(
+    consoleOutput: *opaque,
+    buffer: *char8,
+    numberOfCharsToWrite: uint32,
+    numberOfCharsWritten: *uint32,
+    reserved: *opaque
+) -> bool32
 ```
 
 Writes a character string to a console screen buffer beginning at the current cursor location.

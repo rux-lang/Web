@@ -34,7 +34,11 @@ Move-only: it owns its buffer. The reader it wraps is borrowed through the inter
 <h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func New(allocator: Allocator, source: Reader, capacity: uint) -> BufferedReader ! IoError
+pub func New(
+    allocator: Allocator,
+    source: Reader,
+    capacity: uint
+) -> BufferedReader ! IoError
 ```
 
 A buffered reader over `source` with `capacity` bytes of buffer.
@@ -107,7 +111,10 @@ while handing over nothing breaks the [`Reader`](/docs/api/io/reader) contract, 
 <h3 id="read"><code>Read</code></h3>
 
 ```rux
-pub func Read(self: &var BufferedReader, into: var char8[..]) -> uint ! IoError
+pub func Read(
+    self: &var BufferedReader,
+    into: var char8[..]
+) -> uint ! IoError
 ```
 
 Fills what it can of `into`: from the buffer while it has bytes, straight from the source for a request

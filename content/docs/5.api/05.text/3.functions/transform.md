@@ -24,7 +24,11 @@ New strings made from old: concatenation, repetition, replacement and ASCII case
 <h2 id="concat"><code>Concat</code></h2>
 
 ```rux
-pub func Concat(allocator: Allocator, left: StringView, right: StringView) -> String ! TextError
+pub func Concat(
+    allocator: Allocator,
+    left: StringView,
+    right: StringView
+) -> String ! TextError
 ```
 
 The text of `left` followed by the text of `right`.
@@ -45,7 +49,11 @@ Fails with what went wrong; no partial text comes back.
 <h2 id="repeat"><code>Repeat</code></h2>
 
 ```rux
-pub func Repeat(allocator: Allocator, view: StringView, count: uint) -> String ! TextError
+pub func Repeat(
+    allocator: Allocator,
+    view: StringView,
+    count: uint
+) -> String ! TextError
 ```
 
 The text of `view` written `count` times.
@@ -67,7 +75,12 @@ same as joining a thing to itself.
 <h2 id="replace"><code>Replace</code></h2>
 
 ```rux
-pub func Replace(allocator: Allocator, view: StringView, needle: StringView, replacement: StringView) -> String ! TextError
+pub func Replace(
+    allocator: Allocator,
+    view: StringView,
+    needle: StringView,
+    replacement: StringView
+) -> String ! TextError
 ```
 
 The text of `view` with every occurrence of `needle` replaced by `replacement`.
@@ -109,7 +122,10 @@ Whether `byte` is an ASCII letter.
 <h2 id="to-ascii-upper"><code>ToAsciiUpper</code></h2>
 
 ```rux
-pub func ToAsciiUpper(allocator: Allocator, view: StringView) -> String ! TextError
+pub func ToAsciiUpper(
+    allocator: Allocator,
+    view: StringView
+) -> String ! TextError
 ```
 
 The text of `view` with every ASCII lower-case letter raised, and everything else left alone.
@@ -130,7 +146,10 @@ cannot produce anything that is not UTF-8.
 <h2 id="to-ascii-lower"><code>ToAsciiLower</code></h2>
 
 ```rux
-pub func ToAsciiLower(allocator: Allocator, view: StringView) -> String ! TextError
+pub func ToAsciiLower(
+    allocator: Allocator,
+    view: StringView
+) -> String ! TextError
 ```
 
 The text of `view` with every ASCII upper-case letter lowered.

@@ -22,7 +22,10 @@ seo:
 Reads `input` into a table, or says why it could not and where.
 
 ```rux
-pub func TomlParse(allocator: Allocator, input: char8[..]) -> TomlValue ! TomlParseFailure
+pub func TomlParse(
+    allocator: Allocator,
+    input: char8[..]
+) -> TomlValue ! TomlParseFailure
 ```
 
 A refusal gives back no document at all. Whatever had been read when the parser stopped is released here,

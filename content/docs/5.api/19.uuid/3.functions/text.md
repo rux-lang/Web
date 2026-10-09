@@ -120,7 +120,10 @@ parse produces no value at all rather than a half-filled one.
 <h2 id="format"><code>Format</code></h2>
 
 ```rux
-pub func Format(value: &Uuid, into: var char8[..]) -> ! FormatError
+pub func Format(
+    value: &Uuid,
+    into: var char8[..]
+) -> ! FormatError
 ```
 
 Writes the canonical text form into `into`, in lower case.
@@ -144,7 +147,10 @@ rather than a shorter one. Room past the thirty-six characters is not touched.
 <h2 id="format-upper"><code>FormatUpper</code></h2>
 
 ```rux
-pub func FormatUpper(value: &Uuid, into: var char8[..]) -> ! FormatError
+pub func FormatUpper(
+    value: &Uuid,
+    into: var char8[..]
+) -> ! FormatError
 ```
 
 Writes the canonical text form into `into`, in upper case.
@@ -165,7 +171,10 @@ The failure [`Format`](/docs/api/uuid/text#format) reports, for the same reason 
 <h2 id="format-urn"><code>FormatUrn</code></h2>
 
 ```rux
-pub func FormatUrn(value: &Uuid, into: var char8[..]) -> ! FormatError
+pub func FormatUrn(
+    value: &Uuid,
+    into: var char8[..]
+) -> ! FormatError
 ```
 
 Writes the URN form into `into`: the canonical form after `urn:uuid:`.

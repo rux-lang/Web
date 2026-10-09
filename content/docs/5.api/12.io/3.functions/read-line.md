@@ -45,7 +45,10 @@ whatever runs next, and a buffer here would take bytes that were never this line
 <h3 id="read-line-from"><code>ReadLineFrom</code></h3>
 
 ```rux
-pub func ReadLineFrom(reader: &var Reader, builder: &var StringBuilder) -> ! IoError
+pub func ReadLineFrom(
+    reader: &var Reader,
+    builder: &var StringBuilder
+) -> ! IoError
 ```
 
 Appends the next line of `reader` to `builder`, without its ending, reading one byte at a time.
@@ -71,7 +74,11 @@ a source that is not shared reads faster through [`ReadTextLine`](/docs/api/io/r
 <h3 id="read-text-line"><code>ReadTextLine</code></h3>
 
 ```rux
-pub func ReadTextLine(reader: &var BufferedReader, builder: &var StringBuilder, limit: uint) -> ! IoError
+pub func ReadTextLine(
+    reader: &var BufferedReader,
+    builder: &var StringBuilder,
+    limit: uint
+) -> ! IoError
 ```
 
 Appends the next line of `reader` to `builder`, without its ending.

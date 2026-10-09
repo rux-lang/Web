@@ -36,7 +36,11 @@ loss for one that was written.
 <h3 id="open"><code>Open</code></h3>
 
 ```rux
-pub func Open(allocator: Allocator, path: Path, options: OpenOptions) -> File ! IoError
+pub func Open(
+    allocator: Allocator,
+    path: Path,
+    options: OpenOptions
+) -> File ! IoError
 ```
 
 Opens `path` under `options`.
@@ -113,7 +117,10 @@ arrives with the metadata work.
 <h3 id="set-length"><code>SetLength</code></h3>
 
 ```rux
-pub func SetLength(self: &var File, length: uint64) -> ! IoError
+pub func SetLength(
+    self: &var File,
+    length: uint64
+) -> ! IoError
 ```
 
 Sets the file's length: shrinking discards what was past the new end, growing leaves a hole.
@@ -164,7 +171,10 @@ query the way a path-based one can.
 <h3 id="read"><code>Read</code></h3>
 
 ```rux
-pub func Read(self: &var File, into: var char8[..]) -> uint ! IoError
+pub func Read(
+    self: &var File,
+    into: var char8[..]
+) -> uint ! IoError
 ```
 
 Reads what one attempt yields into `into`; a short count is not an error and the end is `EndOfStream`.
@@ -184,7 +194,10 @@ Reads what one attempt yields into `into`; a short count is not an error and the
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var File, bytes: char8[..]) -> uint ! IoError
+pub func Write(
+    self: &var File,
+    bytes: char8[..]
+) -> uint ! IoError
 ```
 
 Writes what one attempt takes of `bytes`; a short count means call again, which `WriteAll` does.
@@ -216,7 +229,11 @@ Nothing: these writes hold nothing back. Durability is [`Sync`](/docs/api/filesy
 <h3 id="seek"><code>Seek</code></h3>
 
 ```rux
-pub func Seek(self: &var File, origin: SeekFrom, offset: int64) -> uint64 ! IoError
+pub func Seek(
+    self: &var File,
+    origin: SeekFrom,
+    offset: int64
+) -> uint64 ! IoError
 ```
 
 Moves the position `offset` bytes from `origin` and reports where it landed.

@@ -122,7 +122,12 @@ Whether the sign bit is set, which a negative zero answers yes to.
 <h3 id="format-with"><code>FormatWith</code></h3>
 
 ```rux
-pub func FormatWith(self: &Float256, allocator: Allocator, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func FormatWith(
+    self: &Float256,
+    allocator: Allocator,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes this value's text under `spec`, taking the working storage from `allocator`.

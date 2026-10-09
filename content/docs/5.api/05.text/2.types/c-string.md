@@ -45,7 +45,10 @@ part of the block and not part of the text, so [`Length`](/docs/api/text/c-strin
 <h3 id="from-text"><code>FromText</code></h3>
 
 ```rux
-pub func FromText(allocator: Allocator, text: char8[..]) -> CString ! TextError
+pub func FromText(
+    allocator: Allocator,
+    text: char8[..]
+) -> CString ! TextError
 ```
 
 A terminated copy of `text`, or why the text cannot cross the boundary.
@@ -64,7 +67,10 @@ how a checked name and a used name part company.
 <h3 id="from-view"><code>FromView</code></h3>
 
 ```rux
-pub func FromView(allocator: Allocator, view: StringView) -> CString ! TextError
+pub func FromView(
+    allocator: Allocator,
+    view: StringView
+) -> CString ! TextError
 ```
 
 A terminated copy of `view`, or why the text cannot cross the boundary.
@@ -85,7 +91,11 @@ Runs in time proportional to the length — one pass to check, one to copy — a
 <h3 id="from-raw"><code>FromRaw</code></h3>
 
 ```rux
-pub func FromRaw(allocator: Allocator, raw: *char8, limit: uint) -> CString ! TextError
+pub func FromRaw(
+    allocator: Allocator,
+    raw: *char8,
+    limit: uint
+) -> CString ! TextError
 ```
 
 A copy of the C text at `raw`, read to its terminator, or why it is not text.

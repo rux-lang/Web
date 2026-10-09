@@ -90,7 +90,10 @@ answers rather than errors: a scalar walk reads past a truncated sequence, and a
 <h3 id="starts-with"><code>StartsWith</code></h3>
 
 ```rux
-pub func StartsWith(self: &StringView, prefix: StringView) -> bool
+pub func StartsWith(
+    self: &StringView,
+    prefix: StringView
+) -> bool
 ```
 
 Whether this view begins with `prefix`.
@@ -108,7 +111,10 @@ Runs in time proportional to the prefix and allocates nothing.
 <h3 id="ends-with"><code>EndsWith</code></h3>
 
 ```rux
-pub func EndsWith(self: &StringView, suffix: StringView) -> bool
+pub func EndsWith(
+    self: &StringView,
+    suffix: StringView
+) -> bool
 ```
 
 Whether this view ends with `suffix`.
@@ -124,7 +130,10 @@ Whether this view ends with `suffix`.
 <h3 id="index-of"><code>IndexOf</code></h3>
 
 ```rux
-pub func IndexOf(self: &StringView, needle: StringView) -> uint?
+pub func IndexOf(
+    self: &StringView,
+    needle: StringView
+) -> uint?
 ```
 
 The byte index where `needle` first occurs, or `none`.
@@ -143,7 +152,10 @@ is used with is the same as proportional to the text.
 <h3 id="last-index-of"><code>LastIndexOf</code></h3>
 
 ```rux
-pub func LastIndexOf(self: &StringView, needle: StringView) -> uint?
+pub func LastIndexOf(
+    self: &StringView,
+    needle: StringView
+) -> uint?
 ```
 
 The byte index where `needle` last occurs, or `none`.
@@ -159,7 +171,10 @@ The byte index where `needle` last occurs, or `none`.
 <h3 id="contains"><code>Contains</code></h3>
 
 ```rux
-pub func Contains(self: &StringView, needle: StringView) -> bool
+pub func Contains(
+    self: &StringView,
+    needle: StringView
+) -> bool
 ```
 
 Whether `needle` occurs anywhere in this view.
@@ -212,7 +227,10 @@ This view without the ASCII whitespace at either end.
 <h3 id="split"><code>Split</code></h3>
 
 ```rux
-pub func Split(self: &StringView, separator: StringView) -> SplitIterator
+pub func Split(
+    self: &StringView,
+    separator: StringView
+) -> SplitIterator
 ```
 
 A walk over the parts of this view between occurrences of `separator`.
@@ -296,7 +314,11 @@ Whether `index` is where a scalar value starts, and so a place this view may be 
 <h3 id="part"><code>Part</code></h3>
 
 ```rux
-pub func Part(self: &StringView, start: uint, end: uint) -> StringView?
+pub func Part(
+    self: &StringView,
+    start: uint,
+    end: uint
+) -> StringView?
 ```
 
 The part of this view from `start` up to `end`, or `none` when either is not a boundary or they are the
@@ -333,7 +355,10 @@ The scalar value starting at `index`, or `none` when `index` is not a boundary i
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &StringView, other: &StringView) -> bool
+pub func Equals(
+    self: &StringView,
+    other: &StringView
+) -> bool
 ```
 
 Whether two views hold the same bytes.
@@ -351,7 +376,10 @@ one encoding. It is not equality after normalization, which is a different quest
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(self: &StringView, other: &StringView) -> Ordering
+pub func Compare(
+    self: &StringView,
+    other: &StringView
+) -> Ordering
 ```
 
 How this view orders against `other`, shortest first where one is a prefix of the other.
@@ -386,7 +414,11 @@ A walk over this view's scalar values.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &StringView, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &StringView,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes what this view spans, truncated to the spec's precision and padded to its width.
@@ -410,7 +442,11 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style, sinc
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &StringView, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &StringView,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes what this view spans, quoted and escaped.

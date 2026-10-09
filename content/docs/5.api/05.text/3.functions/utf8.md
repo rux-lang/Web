@@ -160,7 +160,10 @@ Whether `byte` is a continuation byte, the `10xxxxxx` shape every byte after a l
 <h2 id="encode"><code>Encode</code></h2>
 
 ```rux
-pub func Encode(scalar: char32, into: var char8[..]) -> uint ! Utf8Error
+pub func Encode(
+    scalar: char32,
+    into: var char8[..]
+) -> uint ! Utf8Error
 ```
 
 Writes `scalar` into `into` as UTF-8 and reports how many bytes it took.
@@ -183,7 +186,10 @@ Cannot allocate. Runs in constant time.
 <h2 id="decode-at"><code>DecodeAt</code></h2>
 
 ```rux
-pub func DecodeAt(bytes: char8[..], index: uint) -> DecodedScalar ! Utf8Error
+pub func DecodeAt(
+    bytes: char8[..],
+    index: uint
+) -> DecodedScalar ! Utf8Error
 ```
 
 Decodes the scalar value starting at `index`, reporting it and how many bytes it occupied.
@@ -267,7 +273,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing.
 <h2 id="boundary-at-or-below"><code>BoundaryAtOrBelow</code></h2>
 
 ```rux
-pub func BoundaryAtOrBelow(bytes: char8[..], index: uint) -> uint
+pub func BoundaryAtOrBelow(
+    bytes: char8[..],
+    index: uint
+) -> uint
 ```
 
 The index of the scalar boundary at or below `index`.

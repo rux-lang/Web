@@ -66,7 +66,11 @@ Borrows the failure and leaves it untouched. Cannot fail; runs in constant time 
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &TomlParseFailure, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &TomlParseFailure,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the description of why parsing stopped, without the position.
@@ -90,7 +94,11 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &TomlParseFailure, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &TomlParseFailure,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Names the case and where it happened: `TomlParseError::DuplicateKey at 2:1`.

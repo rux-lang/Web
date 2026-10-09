@@ -37,7 +37,11 @@ would be a worse surprise than a refusal.
 <h3 id="create"><code>Create</code></h3>
 
 ```rux
-pub func Create(allocator: Allocator, directory: Path, prefix: char8[..]) -> TemporaryDirectoryHandle ! IoError
+pub func Create(
+    allocator: Allocator,
+    directory: Path,
+    prefix: char8[..]
+) -> TemporaryDirectoryHandle ! IoError
 ```
 
 Creates a new temporary directory in `directory`, named from `prefix` and sixteen hex digits of entropy.
@@ -69,7 +73,10 @@ The directory's path, for building names inside it.
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
-pub func Close(self: &var TemporaryDirectoryHandle, allocator: Allocator) -> ! IoError
+pub func Close(
+    self: &var TemporaryDirectoryHandle,
+    allocator: Allocator
+) -> ! IoError
 ```
 
 Removes the directory and reports what the removal said.

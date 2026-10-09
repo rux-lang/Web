@@ -66,7 +66,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var Fnv1a64, bytes: *byte, length: uint)
+pub func Write(
+    self: &var Fnv1a64,
+    bytes: *byte,
+    length: uint
+)
 ```
 
 Adds `length` bytes at `bytes` to the hash.

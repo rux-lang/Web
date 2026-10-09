@@ -128,7 +128,11 @@ Cannot fail: both have the same capacity. Runs in time proportional to the capac
 <h3 id="multiply-add-small"><code>MultiplyAddSmall</code></h3>
 
 ```rux
-pub func MultiplyAddSmall(self: &var FixedNat, factor: uint64, addend: uint64) -> bool
+pub func MultiplyAddSmall(
+    self: &var FixedNat,
+    factor: uint64,
+    addend: uint64
+) -> bool
 ```
 
 Multiplies by `factor` and adds `addend`, in one pass over the limbs.
@@ -149,7 +153,10 @@ was — a caller that sees this has passed the bound Docs/NarrowFloat.md proves 
 <h3 id="multiply-small"><code>MultiplySmall</code></h3>
 
 ```rux
-pub func MultiplySmall(self: &var FixedNat, factor: uint64) -> bool
+pub func MultiplySmall(
+    self: &var FixedNat,
+    factor: uint64
+) -> bool
 ```
 
 Multiplies by `factor`.
@@ -166,7 +173,10 @@ Answers false when the product does not fit, leaving the value as it was.
 <h3 id="add-small"><code>AddSmall</code></h3>
 
 ```rux
-pub func AddSmall(self: &var FixedNat, addend: uint64) -> bool
+pub func AddSmall(
+    self: &var FixedNat,
+    addend: uint64
+) -> bool
 ```
 
 Adds `addend`.
@@ -234,7 +244,10 @@ has no answer in an unsigned type, and this borrows past the top rather than rep
 <h3 id="multiply-power-of-ten"><code>MultiplyPowerOfTen</code></h3>
 
 ```rux
-pub func MultiplyPowerOfTen(self: &var FixedNat, power: uint) -> bool
+pub func MultiplyPowerOfTen(
+    self: &var FixedNat,
+    power: uint
+) -> bool
 ```
 
 Multiplies by ten to the `power`.
@@ -256,7 +269,10 @@ it is reached only past a bound that is proved not to be.
 <h3 id="set-power-of-two"><code>SetPowerOfTwo</code></h3>
 
 ```rux
-pub func SetPowerOfTwo(self: &var FixedNat, bits: uint) -> bool
+pub func SetPowerOfTwo(
+    self: &var FixedNat,
+    bits: uint
+) -> bool
 ```
 
 Replaces this value with two to the `bits`.

@@ -67,7 +67,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &CollectionError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &CollectionError,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the description of why an operation did not happen, or `no error` for success.
@@ -93,7 +97,11 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &CollectionError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &CollectionError,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Names the case, qualified by its type: `CollectionError::OutOfMemory`.

@@ -52,7 +52,11 @@ one place from the start for this to be the whole of its erasure.
 <h2 id="copy"><code>Copy</code></h2>
 
 ```rux
-pub func Copy(destination: *var opaque, source: *opaque, length: uint)
+pub func Copy(
+    destination: *var opaque,
+    source: *opaque,
+    length: uint
+)
 ```
 
 Copies `length` bytes from `source` to `destination`, which must not overlap.
@@ -75,7 +79,11 @@ overlap. Use [`Move`](/docs/api/memory/blocks#move) when they might: this one is
 <h2 id="move"><code>Move</code></h2>
 
 ```rux
-pub func Move(destination: *var opaque, source: *opaque, length: uint)
+pub func Move(
+    destination: *var opaque,
+    source: *opaque,
+    length: uint
+)
 ```
 
 Copies `length` bytes from `source` to `destination`, correctly even when the two overlap.
@@ -102,7 +110,11 @@ way, including exactly.
 <h2 id="set"><code>Set</code></h2>
 
 ```rux
-pub func Set(destination: *var opaque, value: byte, length: uint)
+pub func Set(
+    destination: *var opaque,
+    value: byte,
+    length: uint
+)
 ```
 
 Writes `value` to each of `length` bytes at `destination`.
@@ -145,7 +157,11 @@ delete however unread the bytes are afterwards.
 <h2 id="mismatch-offset"><code>MismatchOffset</code></h2>
 
 ```rux
-pub func MismatchOffset(left: *opaque, right: *opaque, length: uint) -> uint
+pub func MismatchOffset(
+    left: *opaque,
+    right: *opaque,
+    length: uint
+) -> uint
 ```
 
 The offset at which two blocks first differ, or `length` when they do not.
@@ -172,7 +188,11 @@ must not be used on a secret.
 <h2 id="compare"><code>Compare</code></h2>
 
 ```rux
-pub func Compare(left: *opaque, right: *opaque, length: uint) -> Ordering
+pub func Compare(
+    left: *opaque,
+    right: *opaque,
+    length: uint
+) -> Ordering
 ```
 
 Orders two blocks lexicographically, byte by byte.
@@ -200,7 +220,11 @@ secret compared this way leaks where it differs. `Rux/Crypto` is where a constan
 <h2 id="equal"><code>Equal</code></h2>
 
 ```rux
-pub func Equal(left: *opaque, right: *opaque, length: uint) -> bool
+pub func Equal(
+    left: *opaque,
+    right: *opaque,
+    length: uint
+) -> bool
 ```
 
 Whether two blocks hold the same bytes.
@@ -224,7 +248,11 @@ Both pointers must be readable for `length` bytes. Not constant-time.
 <h2 id="find"><code>Find</code></h2>
 
 ```rux
-pub func Find(haystack: *opaque, length: uint, value: byte) -> uint
+pub func Find(
+    haystack: *opaque,
+    length: uint,
+    value: byte
+) -> uint
 ```
 
 The offset of the first byte equal to `value`, or `length` when there is none.

@@ -52,7 +52,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="convert-checked"><code>ConvertChecked&lt;From, To&gt;</code></h2>
 
 ```rux
-pub func ConvertChecked<From, To>(value: From, result: *var To) -> bool
+pub func ConvertChecked<From, To>(
+    value: From,
+    result: *var To
+) -> bool
 ```
 
 Converts a primitive value to another primitive type and reports whether the true value was representable.
@@ -87,7 +90,10 @@ Runs in constant time and allocates nothing. Never traps, so the caller decides 
 <h2 id="convert-wrapping"><code>ConvertWrapping&lt;From, To&gt;</code></h2>
 
 ```rux
-pub func ConvertWrapping<From, To>(value: From, result: *var To)
+pub func ConvertWrapping<From, To>(
+    value: From,
+    result: *var To
+)
 ```
 
 Converts a primitive value to another primitive type, keeping whatever fits.
@@ -116,7 +122,10 @@ Cannot fail: every value has a wrapped conversion. Runs in constant time and all
 <h2 id="convert-saturating"><code>ConvertSaturating&lt;From, To&gt;</code></h2>
 
 ```rux
-pub func ConvertSaturating<From, To>(value: From, result: *var To)
+pub func ConvertSaturating<From, To>(
+    value: From,
+    result: *var To
+)
 ```
 
 Converts a primitive value to an integer type, clamping to that type's range instead of wrapping.

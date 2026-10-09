@@ -65,7 +65,11 @@ Borrows the failure and leaves it untouched. Cannot fail; runs in constant time 
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &TomlScalarError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &TomlScalarError,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the description of why the scalar could not be read, without the position.
@@ -89,7 +93,11 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &TomlScalarError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &TomlScalarError,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Names the case and its position: `TomlScalarError::Malformed(3)`.

@@ -32,7 +32,11 @@ pub struct JsonEventReader {
 <h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func New(allocator: Allocator, source: Reader, limits: JsonLimits) -> JsonEventReader ! IoError
+pub func New(
+    allocator: Allocator,
+    source: Reader,
+    limits: JsonLimits
+) -> JsonEventReader ! IoError
 ```
 
 A reader over `source` under `limits`.

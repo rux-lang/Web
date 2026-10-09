@@ -23,7 +23,11 @@ Something that can fill a buffer with unpredictable bytes.
 
 ```rux
 pub interface EntropySource {
-    func Fill(self: &var Self, buffer: *var opaque, length: uint) -> ! EntropyError;
+    func Fill(
+        self: &var Self,
+        buffer: *var opaque,
+        length: uint
+    ) -> ! EntropyError;
 }
 ```
 
@@ -35,7 +39,11 @@ demand. An implementation either fills the whole buffer and succeeds, or fails w
 <h3 id="fill"><code>Fill</code></h3>
 
 ```rux
-func Fill(self: &var Self, buffer: *var opaque, length: uint) -> ! EntropyError
+func Fill(
+    self: &var Self,
+    buffer: *var opaque,
+    length: uint
+) -> ! EntropyError
 ```
 
 Fills `length` bytes of `buffer` with unpredictable bytes.
@@ -64,7 +72,11 @@ partial survives.
 <h3 id="fill-from"><code>FillFrom</code></h3>
 
 ```rux
-pub func FillFrom(source: &var EntropySource, buffer: *var opaque, length: uint) -> ! EntropyError
+pub func FillFrom(
+    source: &var EntropySource,
+    buffer: *var opaque,
+    length: uint
+) -> ! EntropyError
 ```
 
 Fills `length` bytes of `buffer` from `source`, in as many calls as it takes.
@@ -92,7 +104,12 @@ earlier call filled successfully.
 <h3 id="fill-with-retries"><code>FillWithRetries</code></h3>
 
 ```rux
-pub func FillWithRetries(source: &var EntropySource, buffer: *var opaque, length: uint, attempts: uint) -> ! EntropyError
+pub func FillWithRetries(
+    source: &var EntropySource,
+    buffer: *var opaque,
+    length: uint,
+    attempts: uint
+) -> ! EntropyError
 ```
 
 Fills `length` bytes of `buffer` from `source`, trying again while the failure says trying again might work.

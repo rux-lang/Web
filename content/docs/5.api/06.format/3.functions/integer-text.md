@@ -72,7 +72,13 @@ answer for that value and for every other one.
 <h2 id="write-integer-digits"><code>WriteIntegerDigits</code></h2>
 
 ```rux
-pub func WriteIntegerDigits(writer: &var TextWriter, spec: FormatSpec, digits: char8[..], count: uint, negative: bool) -> ! FormatError
+pub func WriteIntegerDigits(
+    writer: &var TextWriter,
+    spec: FormatSpec,
+    digits: char8[..],
+    count: uint,
+    negative: bool
+) -> ! FormatError
 ```
 
 Writes an integer whose digits are already produced, applying sign, prefix, zero-padding and alignment.
@@ -98,7 +104,12 @@ Reports whatever the writer reported, stopping at the first refusal.
 <h2 id="write-integer-spec"><code>WriteIntegerSpec</code></h2>
 
 ```rux
-pub func WriteIntegerSpec(writer: &var TextWriter, spec: FormatSpec, magnitude: uint64, negative: bool) -> ! FormatError
+pub func WriteIntegerSpec(
+    writer: &var TextWriter,
+    spec: FormatSpec,
+    magnitude: uint64,
+    negative: bool
+) -> ! FormatError
 ```
 
 Writes an integer under the whole of `spec`: base, sign, alternate prefix, zero-padding and alignment.

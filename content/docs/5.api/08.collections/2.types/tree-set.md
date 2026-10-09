@@ -40,7 +40,10 @@ Move-only: it owns every node and every element in them.
 <h3 id="new"><code>TreeSet</code></h3>
 
 ```rux
-pub func TreeSet(allocator: Allocator, compare: func(T, T) -> Ordering) -> TreeSet<T>
+pub func TreeSet(
+    allocator: Allocator,
+    compare: func(T, T) -> Ordering
+) -> TreeSet<T>
 ```
 
 An empty set ordered by `compare`, which has allocated nothing.
@@ -103,7 +106,10 @@ Runs in time proportional to the height, which is at most twice the logarithm of
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(self: &var TreeSet<T>, value: T) -> bool ! CollectionError
+pub func Insert(
+    self: &var TreeSet<T>,
+    value: T
+) -> bool ! CollectionError
 ```
 
 Puts `value` into the set, and reports whether it was not already there.
@@ -220,7 +226,11 @@ A walk over this set, smallest element first, leaving it untouched.
 <h3 id="range"><code>Range</code></h3>
 
 ```rux
-pub func Range(self: &TreeSet<T>, start: T, end: T) -> TreeSetRangeIterator<T>
+pub func Range(
+    self: &TreeSet<T>,
+    start: T,
+    end: T
+) -> TreeSetRangeIterator<T>
 ```
 
 A walk over the elements at or above `start` and below `end`.
@@ -252,7 +262,10 @@ Takes ownership; the set is gone afterwards.
 <h3 id="is-subset-of"><code>IsSubsetOf</code></h3>
 
 ```rux
-pub func IsSubsetOf(self: &TreeSet<T>, other: &TreeSet<T>) -> bool
+pub func IsSubsetOf(
+    self: &TreeSet<T>,
+    other: &TreeSet<T>
+) -> bool
 ```
 
 Whether every element of this set is in `other`.
@@ -270,7 +283,10 @@ Runs in time proportional to this set's length times the logarithm of `other`'s.
 <h3 id="is-superset-of"><code>IsSupersetOf</code></h3>
 
 ```rux
-pub func IsSupersetOf(self: &TreeSet<T>, other: &TreeSet<T>) -> bool
+pub func IsSupersetOf(
+    self: &TreeSet<T>,
+    other: &TreeSet<T>
+) -> bool
 ```
 
 Whether every element of `other` is in this set.
@@ -286,7 +302,10 @@ Whether every element of `other` is in this set.
 <h3 id="is-disjoint-from"><code>IsDisjointFrom</code></h3>
 
 ```rux
-pub func IsDisjointFrom(self: &TreeSet<T>, other: &TreeSet<T>) -> bool
+pub func IsDisjointFrom(
+    self: &TreeSet<T>,
+    other: &TreeSet<T>
+) -> bool
 ```
 
 Whether the two sets share no element.
@@ -304,7 +323,10 @@ walk gives the same answer and one of them is shorter.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &TreeSet<T>, other: &TreeSet<T>) -> bool
+pub func Equals(
+    self: &TreeSet<T>,
+    other: &TreeSet<T>
+) -> bool
 ```
 
 Whether the two sets hold exactly the same elements.
@@ -322,7 +344,10 @@ makes the lengths enough to reject most pairs before looking at an element.
 <h3 id="union-with"><code>UnionWith</code></h3>
 
 ```rux
-pub func UnionWith(self: &var TreeSet<T>, other: &TreeSet<T>) -> ! CollectionError
+pub func UnionWith(
+    self: &var TreeSet<T>,
+    other: &TreeSet<T>
+) -> ! CollectionError
 ```
 
 Adds every element of `other` that is not already here.
@@ -343,7 +368,10 @@ running the same call again finishes it.
 <h3 id="intersect-with"><code>IntersectWith</code></h3>
 
 ```rux
-pub func IntersectWith(self: &var TreeSet<T>, other: &TreeSet<T>)
+pub func IntersectWith(
+    self: &var TreeSet<T>,
+    other: &TreeSet<T>
+)
 ```
 
 Keeps only the elements that are also in `other`.
@@ -377,7 +405,10 @@ Allocates nothing and cannot fail, and walks the same way [`IntersectWith`](/doc
 <h3 id="symmetric-difference-with"><code>SymmetricDifferenceWith</code></h3>
 
 ```rux
-pub func SymmetricDifferenceWith(self: &var TreeSet<T>, other: &TreeSet<T>) -> ! CollectionError
+pub func SymmetricDifferenceWith(
+    self: &var TreeSet<T>,
+    other: &TreeSet<T>
+) -> ! CollectionError
 ```
 
 Keeps the elements that are in exactly one of the two sets.
@@ -412,7 +443,11 @@ A failed clone hands back nothing rather than half of a set.
 <h3 id="write-tree-set-debug"><code>WriteTreeSetDebug&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteTreeSetDebug<T: Debug>(writer: &var TextWriter, value: &TreeSet<T>, spec: FormatSpec) -> ! FormatError
+pub func WriteTreeSetDebug<T: Debug>(
+    writer: &var TextWriter,
+    value: &TreeSet<T>,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed ordered set as `{first, second, third}`, in order.

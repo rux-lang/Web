@@ -54,7 +54,10 @@ The process's working directory, as an absolute path.
 <h2 id="set-current-directory"><code>SetCurrentDirectory</code></h2>
 
 ```rux
-pub func SetCurrentDirectory(allocator: Allocator, path: Path) -> ! IoError
+pub func SetCurrentDirectory(
+    allocator: Allocator,
+    path: Path
+) -> ! IoError
 ```
 
 Makes `path` the process's working directory.
@@ -75,7 +78,10 @@ about to resolve. Nothing in this package calls it.
 <h2 id="absolute"><code>Absolute</code></h2>
 
 ```rux
-pub func Absolute(allocator: Allocator, path: Path) -> PathBuffer ! IoError
+pub func Absolute(
+    allocator: Allocator,
+    path: Path
+) -> PathBuffer ! IoError
 ```
 
 `path` made absolute against the working directory and simplified lexically.
@@ -97,7 +103,10 @@ operation that tells the truth about links, at the cost of requiring the file to
 <h2 id="canonicalize"><code>Canonicalize</code></h2>
 
 ```rux
-pub func Canonicalize(allocator: Allocator, path: Path) -> PathBuffer ! IoError
+pub func Canonicalize(
+    allocator: Allocator,
+    path: Path
+) -> PathBuffer ! IoError
 ```
 
 The one true name of the existing file `path` refers to.

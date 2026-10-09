@@ -47,7 +47,12 @@ not a representable value here.
 <h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func New(hour: uint8, minute: uint8, second: uint8, nanosecond: uint32) -> TimeOfDay?
+pub func New(
+    hour: uint8,
+    minute: uint8,
+    second: uint8,
+    nanosecond: uint32
+) -> TimeOfDay?
 ```
 
 The time, when it exists.
@@ -96,7 +101,11 @@ The seconds from midnight to this time, ignoring the fraction.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &TimeOfDay, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &TimeOfDay,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the time as `HH:MM:SS`, with a fractional part when there is one.
@@ -121,7 +130,11 @@ and `UnsupportedRequest` for a precision past nine, which no fraction has.
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &TimeOfDay, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &TimeOfDay,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The same text as `Display`.

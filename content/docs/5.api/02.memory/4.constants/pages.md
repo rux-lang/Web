@@ -143,7 +143,10 @@ caller that needs the size more than once should keep it.
 <h2 id="page-allocate"><code>PageAllocate</code></h2>
 
 ```rux
-pub func PageAllocate(length: uint, protection: uint32) -> (*var opaque) ! PageError
+pub func PageAllocate(
+    length: uint,
+    protection: uint32
+) -> (*var opaque) ! PageError
 ```
 
 Takes `length` bytes of address space with the given protection, and reports where it landed.
@@ -171,7 +174,10 @@ an address this did not return, is undefined on Windows and silently partial els
 <h2 id="page-release"><code>PageRelease</code></h2>
 
 ```rux
-pub func PageRelease(address: *var opaque, length: uint) -> ! PageError
+pub func PageRelease(
+    address: *var opaque,
+    length: uint
+) -> ! PageError
 ```
 
 Gives back `length` bytes of address space at `address`.
@@ -197,7 +203,11 @@ release only that, so a wrong length there silently releases the wrong amount.
 <h2 id="page-protect"><code>PageProtect</code></h2>
 
 ```rux
-pub func PageProtect(address: *var opaque, length: uint, protection: uint32) -> ! PageError
+pub func PageProtect(
+    address: *var opaque,
+    length: uint,
+    protection: uint32
+) -> ! PageError
 ```
 
 Changes what may be done with `length` bytes at `address`.

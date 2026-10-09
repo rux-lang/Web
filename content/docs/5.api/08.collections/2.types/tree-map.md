@@ -41,7 +41,10 @@ Move-only: it owns every node and everything in them.
 <h3 id="new"><code>TreeMap</code></h3>
 
 ```rux
-pub func TreeMap(allocator: Allocator, compare: func(K, K) -> Ordering) -> TreeMap<K, V>
+pub func TreeMap(
+    allocator: Allocator,
+    compare: func(K, K) -> Ordering
+) -> TreeMap<K, V>
 ```
 
 An empty map ordered by `compare`, which has allocated nothing.
@@ -139,7 +142,11 @@ key is removed or the map dies.
 <h3 id="try-reference-mutable"><code>TryReferenceMutable</code></h3>
 
 ```rux
-pub func TryReferenceMutable(self: &var TreeMap<K, V>, key: K, value: *var *var V) -> bool
+pub func TryReferenceMutable(
+    self: &var TreeMap<K, V>,
+    key: K,
+    value: *var *var V
+) -> bool
 ```
 
 Points `value` at the value stored under `key` so it can be written through, and reports whether there was
@@ -159,7 +166,11 @@ option of a writable pointer does not survive lowering; this is the same answer 
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(self: &var TreeMap<K, V>, key: K, value: V) -> ! CollectionError
+pub func Insert(
+    self: &var TreeMap<K, V>,
+    key: K,
+    value: V
+) -> ! CollectionError
 ```
 
 Stores `value` under `key`, replacing and destroying whatever was there.
@@ -181,7 +192,11 @@ new and nothing at all for one already there.
 <h3 id="replace"><code>Replace</code></h3>
 
 ```rux
-pub func Replace(self: &var TreeMap<K, V>, key: K, value: V) -> V? ! CollectionError
+pub func Replace(
+    self: &var TreeMap<K, V>,
+    key: K,
+    value: V
+) -> V? ! CollectionError
 ```
 
 Stores `value` under `key` and hands back the value it displaced, or `none` for a key that was not there.
@@ -216,7 +231,10 @@ Cannot fail. Runs in time proportional to the height, with at most three rotatio
 <h3 id="remove-entry"><code>RemoveEntry</code></h3>
 
 ```rux
-pub func RemoveEntry(self: &var TreeMap<K, V>, key: K) -> KeyValue<K, V>?
+pub func RemoveEntry(
+    self: &var TreeMap<K, V>,
+    key: K
+) -> KeyValue<K, V>?
 ```
 
 Takes the entry stored under `key` out and hands back the key as well as the value, or `none`.
@@ -269,7 +287,10 @@ The entry with the largest key, or `none` for an empty map.
 <h3 id="floor"><code>Floor</code></h3>
 
 ```rux
-pub func Floor(self: &TreeMap<K, V>, key: K) -> KeyValue<K, V>?
+pub func Floor(
+    self: &TreeMap<K, V>,
+    key: K
+) -> KeyValue<K, V>?
 ```
 
 The entry with the largest key at or below `key`, or `none` when every key is above it.
@@ -288,7 +309,10 @@ Runs in time proportional to the height and allocates nothing.
 <h3 id="ceiling"><code>Ceiling</code></h3>
 
 ```rux
-pub func Ceiling(self: &TreeMap<K, V>, key: K) -> KeyValue<K, V>?
+pub func Ceiling(
+    self: &TreeMap<K, V>,
+    key: K
+) -> KeyValue<K, V>?
 ```
 
 The entry with the smallest key at or above `key`, or `none` when every key is below it.
@@ -317,7 +341,11 @@ A walk over this map, smallest key first, leaving it untouched.
 <h3 id="range"><code>Range</code></h3>
 
 ```rux
-pub func Range(self: &TreeMap<K, V>, start: K, end: K) -> TreeMapRangeIterator<K, V>
+pub func Range(
+    self: &TreeMap<K, V>,
+    start: K,
+    end: K
+) -> TreeMapRangeIterator<K, V>
 ```
 
 A walk over the entries whose keys are at or above `start` and below `end`.
@@ -353,7 +381,11 @@ Takes ownership; the map is gone afterwards.
 <h3 id="write-tree-map-debug"><code>WriteTreeMapDebug&lt;K, V&gt;</code></h3>
 
 ```rux
-pub func WriteTreeMapDebug<K: Debug, V: Debug>(writer: &var TextWriter, value: &TreeMap<K, V>, spec: FormatSpec) -> ! FormatError
+pub func WriteTreeMapDebug<K: Debug, V: Debug>(
+    writer: &var TextWriter,
+    value: &TreeMap<K, V>,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed ordered map as `{key: value, key: value}`, in key order.

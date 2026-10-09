@@ -22,7 +22,13 @@ seo:
 Extract and expand in one call: the whole of HKDF.
 
 ```rux
-pub func Hkdf<D: Digest>(prototype: D, salt: char8[..], material: char8[..], info: char8[..], into: var char8[..]) -> bool
+pub func Hkdf<D: Digest>(
+    prototype: D,
+    salt: char8[..],
+    material: char8[..],
+    info: char8[..],
+    into: var char8[..]
+) -> bool
 ```
 
 Returns `false` for an output longer than 255 digests, exactly as [`HkdfExpand`](/docs/api/crypto/hkdf#hkdf-expand) does.
@@ -60,7 +66,12 @@ The most blocks `Expand` can produce, since its counter is one byte.
 <h3 id="hkdf-extract"><code>HkdfExtract&lt;D&gt;</code></h3>
 
 ```rux
-pub func HkdfExtract<D: Digest>(prototype: D, salt: char8[..], material: char8[..], into: var char8[..])
+pub func HkdfExtract<D: Digest>(
+    prototype: D,
+    salt: char8[..],
+    material: char8[..],
+    into: var char8[..]
+)
 ```
 
 Extracts a pseudorandom key from `material`, salted with `salt`.
@@ -87,7 +98,12 @@ which is what the specification says — so an absent salt is not the same as no
 <h3 id="hkdf-expand"><code>HkdfExpand&lt;D&gt;</code></h3>
 
 ```rux
-pub func HkdfExpand<D: Digest>(prototype: D, key: char8[..], info: char8[..], into: var char8[..]) -> bool
+pub func HkdfExpand<D: Digest>(
+    prototype: D,
+    key: char8[..],
+    info: char8[..],
+    into: var char8[..]
+) -> bool
 ```
 
 Expands `key` into `into`, separated by `info`.

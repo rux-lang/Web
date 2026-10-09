@@ -47,7 +47,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="is-pointer-aligned"><code>IsPointerAligned</code></h2>
 
 ```rux
-pub func IsPointerAligned(pointer: *opaque, alignment: uint) -> bool
+pub func IsPointerAligned(
+    pointer: *opaque,
+    alignment: uint
+) -> bool
 ```
 
 Whether `pointer` is aligned for `alignment`.
@@ -94,7 +97,11 @@ does the checking.
 <h2 id="align-up-checked"><code>AlignUpChecked</code></h2>
 
 ```rux
-pub func AlignUpChecked(value: uint, alignment: uint, result: *var uint) -> bool
+pub func AlignUpChecked(
+    value: uint,
+    alignment: uint,
+    result: *var uint
+) -> bool
 ```
 
 The next multiple of `alignment` at or above `value`, reporting whether it was representable.

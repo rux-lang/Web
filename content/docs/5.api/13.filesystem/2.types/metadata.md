@@ -75,7 +75,11 @@ What kind of thing a name refers to.
 <h3 id="metadata-of"><code>MetadataOf</code></h3>
 
 ```rux
-pub func MetadataOf(allocator: Allocator, path: Path, followLinks: bool) -> Metadata ! IoError
+pub func MetadataOf(
+    allocator: Allocator,
+    path: Path,
+    followLinks: bool
+) -> Metadata ! IoError
 ```
 
 Describes the file `path` names.
@@ -97,7 +101,13 @@ and not following it describes the link, which is the only way `SymbolicLink` is
 <h3 id="set-times"><code>SetTimes</code></h3>
 
 ```rux
-pub func SetTimes(allocator: Allocator, path: Path, accessed: Timestamp, modified: Timestamp, followLinks: bool) -> ! IoError
+pub func SetTimes(
+    allocator: Allocator,
+    path: Path,
+    accessed: Timestamp,
+    modified: Timestamp,
+    followLinks: bool
+) -> ! IoError
 ```
 
 Sets the access and modification times of the file `path` names.

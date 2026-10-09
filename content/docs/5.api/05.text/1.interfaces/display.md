@@ -23,7 +23,10 @@ The text a value has for a reader.
 
 ```rux
 pub interface Display {
-    func WriteDisplay(writer: &var TextWriter, spec: FormatSpec) -> ! FormatError;
+    func WriteDisplay(
+        writer: &var TextWriter,
+        spec: FormatSpec
+    ) -> ! FormatError;
 }
 ```
 
@@ -36,7 +39,10 @@ instead of implementing this.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-func WriteDisplay(writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+func WriteDisplay(
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes this value's text under `spec`.
@@ -70,7 +76,11 @@ refused something.
 <h3 id="write-value"><code>WriteValue</code></h3>
 
 ```rux
-pub func WriteValue(writer: &var TextWriter, value: Display, spec: FormatSpec) -> ! FormatError
+pub func WriteValue(
+    writer: &var TextWriter,
+    value: Display,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes `value` under `spec` through its [`Display`](/docs/api/text/display) implementation.

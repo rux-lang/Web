@@ -77,7 +77,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="add-checked"><code>AddChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func AddChecked<T>(left: T, right: T, result: *var T) -> bool
+pub func AddChecked<T>(
+    left: T,
+    right: T,
+    result: *var T
+) -> bool
 ```
 
 Adds two integers and reports whether the true sum is representable.
@@ -108,7 +112,11 @@ Runs in constant time and allocates nothing.
 <h2 id="sub-checked"><code>SubChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func SubChecked<T>(left: T, right: T, result: *var T) -> bool
+pub func SubChecked<T>(
+    left: T,
+    right: T,
+    result: *var T
+) -> bool
 ```
 
 Subtracts one integer from another and reports whether the true difference is representable.
@@ -138,7 +146,11 @@ Runs in constant time and allocates nothing.
 <h2 id="mul-checked"><code>MulChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func MulChecked<T>(left: T, right: T, result: *var T) -> bool
+pub func MulChecked<T>(
+    left: T,
+    right: T,
+    result: *var T
+) -> bool
 ```
 
 Multiplies two integers and reports whether the true product is representable.
@@ -337,7 +349,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="checked-add"><code>CheckedAdd</code></h2>
 
 ```rux
-pub func CheckedAdd(left: uint64, right: uint64, result: *var uint64) -> bool
+pub func CheckedAdd(
+    left: uint64,
+    right: uint64,
+    result: *var uint64
+) -> bool
 ```
 
 Adds two unsigned 64-bit values and reports whether the true sum is representable.
@@ -363,7 +379,11 @@ written rather than calling out to a helper.
 <h2 id="checked-sub"><code>CheckedSub</code></h2>
 
 ```rux
-pub func CheckedSub(left: uint64, right: uint64, result: *var uint64) -> bool
+pub func CheckedSub(
+    left: uint64,
+    right: uint64,
+    result: *var uint64
+) -> bool
 ```
 
 Subtracts one unsigned 64-bit value from another and reports whether the true difference is representable.
@@ -388,7 +408,11 @@ written rather than calling out to a helper.
 <h2 id="checked-mul"><code>CheckedMul</code></h2>
 
 ```rux
-pub func CheckedMul(left: uint64, right: uint64, result: *var uint64) -> bool
+pub func CheckedMul(
+    left: uint64,
+    right: uint64,
+    result: *var uint64
+) -> bool
 ```
 
 Multiplies two unsigned 64-bit values and reports whether the true product is representable.

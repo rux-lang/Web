@@ -24,7 +24,10 @@ Shuffling a slice and choosing indices, uniformly or by weight.
 <h2 id="shuffle"><code>Shuffle&lt;G, T&gt;</code></h2>
 
 ```rux
-pub func Shuffle<G: RandomGenerator, T>(generator: &var G, items: var T[..])
+pub func Shuffle<G: RandomGenerator, T>(
+    generator: &var G,
+    items: var T[..]
+)
 ```
 
 Shuffles `items` into a uniformly random order.
@@ -52,7 +55,10 @@ Runs in time proportional to the length and allocates nothing.
 <h2 id="choose-index"><code>ChooseIndex&lt;G&gt;</code></h2>
 
 ```rux
-pub func ChooseIndex<G: RandomGenerator>(generator: &var G, count: uint) -> uint
+pub func ChooseIndex<G: RandomGenerator>(
+    generator: &var G,
+    count: uint
+) -> uint
 ```
 
 A uniformly chosen index below `count`, or `count` itself when there is nothing to choose from.
@@ -79,7 +85,10 @@ index, which a zero would be.
 <h2 id="weighted-index"><code>WeightedIndex&lt;G&gt;</code></h2>
 
 ```rux
-pub func WeightedIndex<G: RandomGenerator>(generator: &var G, weights: float64[..]) -> uint
+pub func WeightedIndex<G: RandomGenerator>(
+    generator: &var G,
+    weights: float64[..]
+) -> uint
 ```
 
 An index chosen in proportion to `weights`.

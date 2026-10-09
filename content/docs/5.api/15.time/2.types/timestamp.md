@@ -109,7 +109,10 @@ The fraction beyond the whole seconds, in nanoseconds.
 <h3 id="since"><code>Since</code></h3>
 
 ```rux
-pub func Since(self: &Timestamp, earlier: Timestamp) -> Duration?
+pub func Since(
+    self: &Timestamp,
+    earlier: Timestamp
+) -> Duration?
 ```
 
 The span from `earlier` to this moment, or `None` past a duration's range.
@@ -127,7 +130,10 @@ reversed. That is information, not an error, which is the difference from [`Inst
 <h3 id="plus"><code>Plus</code></h3>
 
 ```rux
-pub func Plus(self: &Timestamp, span: Duration) -> Timestamp?
+pub func Plus(
+    self: &Timestamp,
+    span: Duration
+) -> Timestamp?
 ```
 
 This moment shifted by `span`, or `None` past the range.
@@ -159,7 +165,10 @@ Whether two timestamps name the same moment.
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(self: &Timestamp, other: Timestamp) -> Ordering
+pub func Compare(
+    self: &Timestamp,
+    other: Timestamp
+) -> Ordering
 ```
 
 How this moment orders against `other`.
@@ -195,7 +204,11 @@ Borrows the moment and leaves it untouched. Cannot fail; runs in constant time a
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &Timestamp, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &Timestamp,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the moment as RFC 3339 in UTC, or as the Unix second count under the `unix` style.
@@ -225,7 +238,11 @@ leaves the destination as it was.
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &Timestamp, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &Timestamp,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The same text as `Display`: a moment has one reading, and the style chooses between the two forms here too.

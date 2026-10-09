@@ -54,7 +54,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="with-capacity"><code>WithCapacity</code></h3>
 
 ```rux
-pub func WithCapacity(allocator: Allocator, capacity: uint) -> StringBuilder ! TextError
+pub func WithCapacity(
+    allocator: Allocator,
+    capacity: uint
+) -> StringBuilder ! TextError
 ```
 
 A builder with room for `capacity` bytes already taken.
@@ -137,7 +140,10 @@ well-formed at every moment rather than only once it is finished.
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(self: &var StringBuilder, additional: uint) -> ! TextError
+pub func Reserve(
+    self: &var StringBuilder,
+    additional: uint
+) -> ! TextError
 ```
 
 Makes sure there is room for `additional` more bytes.
@@ -155,7 +161,10 @@ expressed, having in both cases changed nothing: a builder that fails to grow st
 <h3 id="append-validated"><code>AppendValidated</code></h3>
 
 ```rux
-pub func AppendValidated(self: &var StringBuilder, bytes: char8[..]) -> ! TextError
+pub func AppendValidated(
+    self: &var StringBuilder,
+    bytes: char8[..]
+) -> ! TextError
 ```
 
 Appends bytes the caller vouches are UTF-8.
@@ -173,8 +182,15 @@ that it holds text at every moment rests on this, and everything reading from it
 <h3 id="append"><code>Append</code></h3>
 
 ```rux
-pub func Append(self: &var StringBuilder, view: StringView) -> ! TextError
-pub func Append(self: &var StringBuilder, text: char8[..]) -> ! TextError
+pub func Append(
+    self: &var StringBuilder,
+    view: StringView
+) -> ! TextError
+
+pub func Append(
+    self: &var StringBuilder,
+    text: char8[..]
+) -> ! TextError
 ```
 
 Appends `text`.
@@ -197,7 +213,10 @@ Text was checked before it existed, so nothing is checked again and nothing can 
 <h3 id="append-bytes"><code>AppendBytes</code></h3>
 
 ```rux
-pub func AppendBytes(self: &var StringBuilder, bytes: char8[..]) -> ! TextError
+pub func AppendBytes(
+    self: &var StringBuilder,
+    bytes: char8[..]
+) -> ! TextError
 ```
 
 Appends `bytes` when they are UTF-8, and reports `InvalidUtf8` when they are not.
@@ -214,7 +233,10 @@ Costs a pass over the bytes. [`Append`](/docs/api/text/string-builder#append) of
 <h3 id="append-scalar"><code>AppendScalar</code></h3>
 
 ```rux
-pub func AppendScalar(self: &var StringBuilder, scalar: char32) -> ! TextError
+pub func AppendScalar(
+    self: &var StringBuilder,
+    scalar: char32
+) -> ! TextError
 ```
 
 Appends one character.
@@ -232,7 +254,10 @@ which is what keeps a builder from holding something that is not text.
 <h3 id="append-ascii"><code>AppendAscii</code></h3>
 
 ```rux
-pub func AppendAscii(self: &var StringBuilder, byte: char8) -> ! TextError
+pub func AppendAscii(
+    self: &var StringBuilder,
+    byte: char8
+) -> ! TextError
 ```
 
 Appends one ASCII byte.
@@ -305,7 +330,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var StringBuilder, bytes: char8[..]) -> ! FormatError
+pub func Write(
+    self: &var StringBuilder,
+    bytes: char8[..]
+) -> ! FormatError
 ```
 
 Appends `bytes` to the builder.

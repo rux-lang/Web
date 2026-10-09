@@ -50,7 +50,10 @@ Cannot fail on any supported system: the monotonic clock exists from boot and ne
 <h3 id="since"><code>Since</code></h3>
 
 ```rux
-pub func Since(self: &Instant, earlier: Instant) -> Duration?
+pub func Since(
+    self: &Instant,
+    earlier: Instant
+) -> Duration?
 ```
 
 The time between `earlier` and this reading, or `None` when `earlier` is not earlier.
@@ -84,7 +87,11 @@ The time from this reading to now.
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &Instant, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &Instant,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the reading as `Instant(nanoseconds: N)`.

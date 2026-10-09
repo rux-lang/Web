@@ -70,7 +70,15 @@ Executes a raw Linux system call without arguments.
 <h2 id="syscall-6"><code>Syscall6</code></h2>
 
 ```rux
-pub func Syscall6(number: uint64, arg0: uint64, arg1: uint64, arg2: uint64, arg3: uint64, arg4: uint64, arg5: uint64) -> int64
+pub func Syscall6(
+    number: uint64,
+    arg0: uint64,
+    arg1: uint64,
+    arg2: uint64,
+    arg3: uint64,
+    arg4: uint64,
+    arg5: uint64
+) -> int64
 ```
 
 Executes a raw Linux system call with six arguments.

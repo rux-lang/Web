@@ -196,7 +196,11 @@ pub const SeekEnd: int32 = 2;
 <h2 id="read"><code>Read</code></h2>
 
 ```rux
-pub func Read(fd: FileDescriptor, buffer: *var opaque, count: uint) -> int64
+pub func Read(
+    fd: FileDescriptor,
+    buffer: *var opaque,
+    count: uint
+) -> int64
 ```
 
 Reads up to `count` bytes from `fd` into `buffer`.
@@ -219,7 +223,11 @@ number. A short count is ordinary.
 <h2 id="write"><code>Write</code></h2>
 
 ```rux
-pub func Write(fd: FileDescriptor, buffer: *opaque, count: uint) -> int64
+pub func Write(
+    fd: FileDescriptor,
+    buffer: *opaque,
+    count: uint
+) -> int64
 ```
 
 Writes up to `count` bytes from `buffer` to `fd`.
@@ -261,7 +269,12 @@ Returns zero, or a negative error number. A failure does not mean the descriptor
 <h2 id="open-at"><code>OpenAt</code></h2>
 
 ```rux
-pub func OpenAt(directoryFd: FileDescriptor, path: *char8, flags: int32, mode: FileMode) -> int64
+pub func OpenAt(
+    directoryFd: FileDescriptor,
+    path: *char8,
+    flags: int32,
+    mode: FileMode
+) -> int64
 ```
 
 Opens `path` relative to `directoryFd` and returns a descriptor, or a negative error number.
@@ -284,7 +297,11 @@ Opens `path` relative to `directoryFd` and returns a descriptor, or a negative e
 <h2 id="lseek"><code>Lseek</code></h2>
 
 ```rux
-pub func Lseek(fd: FileDescriptor, offset: FileOffset, whence: int32) -> int64
+pub func Lseek(
+    fd: FileDescriptor,
+    offset: FileOffset,
+    whence: int32
+) -> int64
 ```
 
 Moves the file offset of `fd` and returns where it ended up, or a negative error number.
@@ -304,7 +321,10 @@ Moves the file offset of `fd` and returns where it ended up, or a negative error
 <h2 id="fstat"><code>Fstat</code></h2>
 
 ```rux
-pub func Fstat(fd: FileDescriptor, statBuffer: *var opaque) -> int64
+pub func Fstat(
+    fd: FileDescriptor,
+    statBuffer: *var opaque
+) -> int64
 ```
 
 Fills `statBuffer` with what the kernel knows about the file behind `fd`.
@@ -325,7 +345,12 @@ Returns zero, or a negative error number.
 <h2 id="fstat-at"><code>FstatAt</code></h2>
 
 ```rux
-pub func FstatAt(directoryFd: FileDescriptor, path: *char8, statBuffer: *var opaque, flags: int32) -> int64
+pub func FstatAt(
+    directoryFd: FileDescriptor,
+    path: *char8,
+    statBuffer: *var opaque,
+    flags: int32
+) -> int64
 ```
 
 Fills `statBuffer` with what the kernel knows about the file `path` names.
@@ -350,7 +375,12 @@ layout this package does not model.
 <h2 id="fchmod-at"><code>FchmodAt</code></h2>
 
 ```rux
-pub func FchmodAt(directoryFd: FileDescriptor, path: *char8, mode: FileMode, flags: int32) -> int64
+pub func FchmodAt(
+    directoryFd: FileDescriptor,
+    path: *char8,
+    mode: FileMode,
+    flags: int32
+) -> int64
 ```
 
 Sets the permission bits of the file `path` names.
@@ -373,7 +403,12 @@ negative error number.
 <h2 id="utimens-at"><code>UtimensAt</code></h2>
 
 ```rux
-pub func UtimensAt(directoryFd: FileDescriptor, path: *char8, times: *opaque, flags: int32) -> int64
+pub func UtimensAt(
+    directoryFd: FileDescriptor,
+    path: *char8,
+    times: *opaque,
+    flags: int32
+) -> int64
 ```
 
 Sets the access and modification times of the file `path` names.
@@ -419,7 +454,10 @@ what actually waits, and this package does not wrap it.
 <h2 id="ftruncate"><code>Ftruncate</code></h2>
 
 ```rux
-pub func Ftruncate(fd: FileDescriptor, length: FileOffset) -> int64
+pub func Ftruncate(
+    fd: FileDescriptor,
+    length: FileOffset
+) -> int64
 ```
 
 Sets the length of the file behind `fd` to `length`.
@@ -439,7 +477,10 @@ Growing creates a hole rather than allocating, so a later write into it can stil
 <h2 id="dup2"><code>Dup2</code></h2>
 
 ```rux
-pub func Dup2(oldFd: FileDescriptor, newFd: FileDescriptor) -> int64
+pub func Dup2(
+    oldFd: FileDescriptor,
+    newFd: FileDescriptor
+) -> int64
 ```
 
 Makes `newFd` a copy of `oldFd`, closing whatever `newFd` was.

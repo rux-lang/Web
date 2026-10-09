@@ -23,7 +23,10 @@ One wait, however the caller reaches the system.
 
 ```rux
 pub interface Waiter {
-    func WaitFor(self: &var Self, span: Duration) -> Duration ! TimeError;
+    func WaitFor(
+        self: &var Self,
+        span: Duration
+    ) -> Duration ! TimeError;
 }
 ```
 
@@ -36,7 +39,10 @@ says the system refused. [`SleepFor`](/docs/api/time/sleep) drives whichever imp
 <h3 id="wait-for"><code>WaitFor</code></h3>
 
 ```rux
-func WaitFor(self: &var Self, span: Duration) -> Duration ! TimeError
+func WaitFor(
+    self: &var Self,
+    span: Duration
+) -> Duration ! TimeError
 ```
 
 Waits for at most `span`, and reports what remains of it.

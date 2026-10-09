@@ -32,7 +32,11 @@ pub struct TomlParser {
 <h3 id="new"><code>TomlParser</code></h3>
 
 ```rux
-pub func TomlParser(allocator: Allocator, input: char8[..], limits: TomlLimits) -> TomlParser
+pub func TomlParser(
+    allocator: Allocator,
+    input: char8[..],
+    limits: TomlLimits
+) -> TomlParser
 ```
 
 A parser over `input` under `limits`.

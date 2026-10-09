@@ -58,7 +58,10 @@ The next 64-bit word, and the state advanced past it.
 <h3 id="fill-bytes"><code>FillBytes&lt;G&gt;</code></h3>
 
 ```rux
-pub func FillBytes<G: RandomGenerator>(generator: &var G, into: var char8[..])
+pub func FillBytes<G: RandomGenerator>(
+    generator: &var G,
+    into: var char8[..]
+)
 ```
 
 Fills `into` with random bytes.

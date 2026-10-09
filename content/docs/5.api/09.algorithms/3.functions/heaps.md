@@ -188,7 +188,10 @@ Cannot fail. Runs in time proportional to the answer and allocates nothing.
 <h2 id="make-heap-by"><code>MakeHeapBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func MakeHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)
+pub func MakeHeapBy<T>(
+    items: var T[..],
+    compare: func(T, T) -> Ordering
+)
 ```
 
 Rearranges `items` into a max-heap under `compare`.
@@ -214,7 +217,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="push-heap-by"><code>PushHeapBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func PushHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)
+pub func PushHeapBy<T>(
+    items: var T[..],
+    compare: func(T, T) -> Ordering
+)
 ```
 
 Restores the heap property under `compare` after an element has been appended to `items`.
@@ -240,7 +246,10 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="pop-heap-by"><code>PopHeapBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func PopHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)
+pub func PopHeapBy<T>(
+    items: var T[..],
+    compare: func(T, T) -> Ordering
+)
 ```
 
 Moves the largest element of `items` under `compare` to its end and restores the heap over the rest.
@@ -266,7 +275,10 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="sort-heap-by"><code>SortHeapBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func SortHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)
+pub func SortHeapBy<T>(
+    items: var T[..],
+    compare: func(T, T) -> Ordering
+)
 ```
 
 Turns the heap `items` into a sequence sorted by `compare`, smallest first.
@@ -292,7 +304,10 @@ elements may be reordered.
 <h2 id="is-heap-by"><code>IsHeapBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsHeapBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> bool
+pub func IsHeapBy<T>(
+    items: T[..],
+    compare: func(T, T) -> Ordering
+) -> bool
 ```
 
 Whether `items` is arranged as a max-heap under `compare`.
@@ -319,7 +334,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="is-heap-until-by"><code>IsHeapUntilBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsHeapUntilBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint
+pub func IsHeapUntilBy<T>(
+    items: T[..],
+    compare: func(T, T) -> Ordering
+) -> uint
 ```
 
 How much of `items` from the front is arranged as a max-heap under `compare`.

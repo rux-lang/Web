@@ -121,7 +121,10 @@ not a limit any real wait reaches: the system waiter always either advances or f
 <h3 id="sleep-using"><code>SleepUsing&lt;W&gt;</code></h3>
 
 ```rux
-pub func SleepUsing<W: Waiter>(waiter: &var W, span: Duration) -> ! TimeError
+pub func SleepUsing<W: Waiter>(
+    waiter: &var W,
+    span: Duration
+) -> ! TimeError
 ```
 
 Waits out `span` through `waiter`, retrying interruptions and chunking what one wait cannot express.

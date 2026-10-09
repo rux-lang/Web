@@ -46,7 +46,10 @@ with, because setting the system clock cannot affect it.
 <h2 id="clock-get-time"><code>ClockGetTime</code></h2>
 
 ```rux
-pub func ClockGetTime(clockId: int32, time: *var Timespec) -> int64
+pub func ClockGetTime(
+    clockId: int32,
+    time: *var Timespec
+) -> int64
 ```
 
 Reads `clockId` into `time`.
@@ -68,7 +71,10 @@ for a clock this kernel does not have.
 <h2 id="nanosleep"><code>Nanosleep</code></h2>
 
 ```rux
-pub func Nanosleep(request: *Timespec, remaining: *var Timespec) -> int64
+pub func Nanosleep(
+    request: *Timespec,
+    remaining: *var Timespec
+) -> int64
 ```
 
 Suspends the caller for the requested duration.
@@ -135,7 +141,10 @@ pub const TimerAbsolute: int32 = 1;
 <h2 id="clock-get-resolution"><code>ClockGetResolution</code></h2>
 
 ```rux
-pub func ClockGetResolution(clockId: int32, resolution: *var Timespec) -> int64
+pub func ClockGetResolution(
+    clockId: int32,
+    resolution: *var Timespec
+) -> int64
 ```
 
 Reads the resolution of `clockId` into `resolution`.
@@ -157,7 +166,12 @@ the cost of reading it and not a promise about accuracy.
 <h2 id="clock-nanosleep"><code>ClockNanosleep</code></h2>
 
 ```rux
-pub func ClockNanosleep(clockId: int32, flags: int32, request: *Timespec, remaining: *var Timespec) -> int64
+pub func ClockNanosleep(
+    clockId: int32,
+    flags: int32,
+    request: *Timespec,
+    remaining: *var Timespec
+) -> int64
 ```
 
 Suspends the caller against a named clock, optionally until an absolute time.

@@ -22,7 +22,10 @@ seo:
 Fills `length` bytes of `buffer` with unpredictable bytes.
 
 ```rux
-pub func GetRandom(buffer: *var opaque, length: uint) -> bool
+pub func GetRandom(
+    buffer: *var opaque,
+    length: uint
+) -> bool
 ```
 
 `buffer` is borrowed and written; `length` is read by value. Returns true when the whole buffer was filled, and

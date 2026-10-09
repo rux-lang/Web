@@ -24,7 +24,10 @@ Deleting, renaming, copying and linking files by name.
 <h2 id="delete-file"><code>DeleteFile</code></h2>
 
 ```rux
-pub func DeleteFile(allocator: Allocator, path: Path) -> ! IoError
+pub func DeleteFile(
+    allocator: Allocator,
+    path: Path
+) -> ! IoError
 ```
 
 Deletes the file `path` names. Removing the name does not disturb any handle still open on the file.
@@ -43,7 +46,11 @@ Deletes the file `path` names. Removing the name does not disturb any handle sti
 <h2 id="rename"><code>Rename</code></h2>
 
 ```rux
-pub func Rename(allocator: Allocator, from: Path, to: Path) -> ! IoError
+pub func Rename(
+    allocator: Allocator,
+    from: Path,
+    to: Path
+) -> ! IoError
 ```
 
 Renames `from` to `to`, moving it between directories if the paths differ there.
@@ -65,7 +72,11 @@ gap. Across volumes Windows copies and deletes instead — not atomic — and th
 <h2 id="create-hard-link"><code>CreateHardLink</code></h2>
 
 ```rux
-pub func CreateHardLink(allocator: Allocator, existing: Path, link: Path) -> ! IoError
+pub func CreateHardLink(
+    allocator: Allocator,
+    existing: Path,
+    link: Path
+) -> ! IoError
 ```
 
 Creates `link` as a hard link: a second name for the file `existing` names.
@@ -88,7 +99,12 @@ cannot be hard-linked on any supported system.
 <h2 id="create-symbolic-link"><code>CreateSymbolicLink</code></h2>
 
 ```rux
-pub func CreateSymbolicLink(allocator: Allocator, target: Path, link: Path, targetIsDirectory: bool) -> ! IoError
+pub func CreateSymbolicLink(
+    allocator: Allocator,
+    target: Path,
+    link: Path,
+    targetIsDirectory: bool
+) -> ! IoError
 ```
 
 Creates `link` as a symbolic link holding `target` as its text.
@@ -113,7 +129,11 @@ a bug.
 <h2 id="copy-file"><code>CopyFile</code></h2>
 
 ```rux
-pub func CopyFile(allocator: Allocator, from: Path, to: Path) -> ! IoError
+pub func CopyFile(
+    allocator: Allocator,
+    from: Path,
+    to: Path
+) -> ! IoError
 ```
 
 Copies the file `from` names to `to`, following a symbolic link to the bytes it points at.

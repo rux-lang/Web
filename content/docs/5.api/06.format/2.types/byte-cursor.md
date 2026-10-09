@@ -106,7 +106,10 @@ Whether a write was refused for want of room.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var ByteCursor, bytes: char8[..]) -> ! FormatError
+pub func Write(
+    self: &var ByteCursor,
+    bytes: char8[..]
+) -> ! FormatError
 ```
 
 Writes `bytes` into the buffer.

@@ -49,7 +49,11 @@ channel of the native fallible they return.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &Utf8Error, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &Utf8Error,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the description of what is wrong with a byte sequence, or `well-formed UTF-8` for success.
@@ -71,7 +75,11 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &Utf8Error, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &Utf8Error,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Names the case, qualified by its type: `Utf8Error::Truncated`.

@@ -44,7 +44,10 @@ Both are read by value. Cannot fail; runs in constant time and allocates nothing
 <h2 id="compare-uint64"><code>CompareUint64</code></h2>
 
 ```rux
-pub func CompareUint64(left: uint64, right: uint64) -> Ordering
+pub func CompareUint64(
+    left: uint64,
+    right: uint64
+) -> Ordering
 ```
 
 The ordering of two `uint64` values.
@@ -63,7 +66,10 @@ The ordering of two `uint64` values.
 <h2 id="compare-uint32"><code>CompareUint32</code></h2>
 
 ```rux
-pub func CompareUint32(left: uint32, right: uint32) -> Ordering
+pub func CompareUint32(
+    left: uint32,
+    right: uint32
+) -> Ordering
 ```
 
 The ordering of two `uint32` values.
@@ -142,7 +148,10 @@ of the code points, since UTF-8 is ordered that way by construction.
 <h2 id="compare-slice"><code>CompareSlice</code></h2>
 
 ```rux
-pub func CompareSlice(left: char8[..], right: char8[..]) -> Ordering
+pub func CompareSlice(
+    left: char8[..],
+    right: char8[..]
+) -> Ordering
 ```
 
 The ordering of two runs of characters, shortest-first where one is a prefix of the other.

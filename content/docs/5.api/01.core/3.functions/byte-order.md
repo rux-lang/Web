@@ -149,7 +149,10 @@ Cannot fail. Costs exactly what [`ToBigEndian`](/docs/api/core/byte-order#to-big
 <h2 id="store-little-endian"><code>StoreLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func StoreLittleEndian<T>(value: T, destination: *var byte)
+pub func StoreLittleEndian<T>(
+    value: T,
+    destination: *var byte
+)
 ```
 
 Writes an integer to raw bytes, least significant byte first.
@@ -203,7 +206,10 @@ Cannot fail. Runs in time linear in the type's width and allocates nothing.
 <h2 id="load-little-endian"><code>LoadLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func LoadLittleEndian<T>(source: *byte, destination: *var T)
+pub func LoadLittleEndian<T>(
+    source: *byte,
+    destination: *var T
+)
 ```
 
 Reads an integer from raw bytes holding it least significant byte first.
@@ -232,7 +238,10 @@ checked.
 <h2 id="load-big-endian"><code>LoadBigEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func LoadBigEndian<T>(source: *byte, destination: *var T)
+pub func LoadBigEndian<T>(
+    source: *byte,
+    destination: *var T
+)
 ```
 
 Reads an integer from raw bytes holding it most significant byte first.

@@ -24,7 +24,10 @@ Uniform integers and floats in a bounded range.
 <h2 id="uniform-below"><code>UniformBelow&lt;G&gt;</code></h2>
 
 ```rux
-pub func UniformBelow<G: RandomGenerator>(generator: &var G, bound: uint64) -> uint64
+pub func UniformBelow<G: RandomGenerator>(
+    generator: &var G,
+    bound: uint64
+) -> uint64
 ```
 
 A uniform value in `[0, bound)`.
@@ -51,7 +54,11 @@ Runs in constant expected time; the loop below runs more than once with probabil
 <h2 id="uniform-in-range"><code>UniformInRange&lt;G&gt;</code></h2>
 
 ```rux
-pub func UniformInRange<G: RandomGenerator>(generator: &var G, low: uint64, high: uint64) -> uint64
+pub func UniformInRange<G: RandomGenerator>(
+    generator: &var G,
+    low: uint64,
+    high: uint64
+) -> uint64
 ```
 
 A uniform value in `[low, high]`, both ends included.
@@ -81,7 +88,11 @@ rather than by an arithmetic accident.
 <h2 id="uniform-in-signed-range"><code>UniformInSignedRange&lt;G&gt;</code></h2>
 
 ```rux
-pub func UniformInSignedRange<G: RandomGenerator>(generator: &var G, low: int64, high: int64) -> int64
+pub func UniformInSignedRange<G: RandomGenerator>(
+    generator: &var G,
+    low: int64,
+    high: int64
+) -> int64
 ```
 
 A uniform signed value in `[low, high]`, both ends included.
@@ -109,7 +120,11 @@ the difference of the ends overflows a signed type — is ordinary rather than a
 <h2 id="uniform-float-in-range"><code>UniformFloatInRange&lt;G&gt;</code></h2>
 
 ```rux
-pub func UniformFloatInRange<G: RandomGenerator>(generator: &var G, low: float64, high: float64) -> float64
+pub func UniformFloatInRange<G: RandomGenerator>(
+    generator: &var G,
+    low: float64,
+    high: float64
+) -> float64
 ```
 
 A uniform `float64` in `[low, high)`.

@@ -201,7 +201,11 @@ or of an entropy source, so what a table wants here is speed and an even spread 
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &Uuid, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &Uuid,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the canonical lower-case form, or the URN form under the `urn` style.
@@ -228,7 +232,11 @@ a value of exactly one length has nothing to apply.
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &Uuid, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &Uuid,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The same text as `Display`: an identifier has one reading, and quoting it would say nothing extra.

@@ -32,7 +32,11 @@ pub struct JsonParser {
 <h3 id="new"><code>JsonParser</code></h3>
 
 ```rux
-pub func JsonParser(allocator: Allocator, input: char8[..], limits: JsonLimits) -> JsonParser
+pub func JsonParser(
+    allocator: Allocator,
+    input: char8[..],
+    limits: JsonLimits
+) -> JsonParser
 ```
 
 A parser over `input` under `limits`, rejecting duplicate names.
@@ -52,7 +56,10 @@ A parser over `input` under `limits`, rejecting duplicate names.
 <h3 id="set-duplicate-policy"><code>SetDuplicatePolicy</code></h3>
 
 ```rux
-pub func SetDuplicatePolicy(self: &var JsonParser, policy: DuplicateKeyPolicy)
+pub func SetDuplicatePolicy(
+    self: &var JsonParser,
+    policy: DuplicateKeyPolicy
+)
 ```
 
 Chooses what to do about duplicate object names.

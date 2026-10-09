@@ -331,7 +331,10 @@ Computes base 2 logarithm.
 <h2 id="pow"><code>pow</code></h2>
 
 ```rux
-pub extern func pow(base: float64, exponent: float64) -> float64
+pub extern func pow(
+    base: float64,
+    exponent: float64
+) -> float64
 ```
 
 Computes a number raised to the given power.
@@ -372,7 +375,10 @@ Rounds to nearest integer, rounding away from zero in halfway cases.
 <h2 id="scalbln"><code>scalbln</code></h2>
 
 ```rux
-pub extern func scalbln(arg: float64, exp: c_long) -> float64
+pub extern func scalbln(
+    arg: float64,
+    exp: c_long
+) -> float64
 ```
 
 Computes sine.
@@ -395,7 +401,10 @@ Multiplies a floating-point value by an integral power of two, with a long expon
 <h2 id="scalblnf"><code>scalblnf</code></h2>
 
 ```rux
-pub extern func scalblnf(arg: float32, exp: c_long) -> float32
+pub extern func scalblnf(
+    arg: float32,
+    exp: c_long
+) -> float32
 ```
 
 Multiplies a floating-point value by an integral power of two, with a long exponent.

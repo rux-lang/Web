@@ -22,7 +22,11 @@ seo:
 Writes `format` into `writer`, with each `{}` replaced by the next argument.
 
 ```rux
-pub func WriteFormat(writer: &var TextWriter, #Format() format: char8[..], ...) -> ! FormatError
+pub func WriteFormat(
+    writer: &var TextWriter,
+    #Format() format: char8[..],
+    ...
+) -> ! FormatError
 ```
 
 A placeholder is `{}`, or `{:spec}` carrying fill, alignment, sign, width, precision and style — see

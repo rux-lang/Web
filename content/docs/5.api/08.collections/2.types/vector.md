@@ -61,7 +61,10 @@ Cannot fail. Runs in constant time.
 <h3 id="with-capacity"><code>WithCapacity</code></h3>
 
 ```rux
-pub func WithCapacity(allocator: Allocator, capacity: uint) -> Vector<T> ! CollectionError
+pub func WithCapacity(
+    allocator: Allocator,
+    capacity: uint
+) -> Vector<T> ! CollectionError
 ```
 
 An empty vector with room for `capacity` elements already taken.
@@ -79,7 +82,10 @@ An empty vector with room for `capacity` elements already taken.
 <h3 id="from-slice"><code>FromSlice</code></h3>
 
 ```rux
-pub func FromSlice(allocator: Allocator, items: T[..]) -> Vector<T> ! CollectionError
+pub func FromSlice(
+    allocator: Allocator,
+    items: T[..]
+) -> Vector<T> ! CollectionError
 ```
 
 A vector holding a copy of every element of `items`, in order.
@@ -153,7 +159,10 @@ Whether the vector holds no elements.
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(self: &var Vector<T>, additional: uint) -> ! CollectionError
+pub func Reserve(
+    self: &var Vector<T>,
+    additional: uint
+) -> ! CollectionError
 ```
 
 Makes room for `additional` more elements on top of those already present.
@@ -219,7 +228,10 @@ Runs in time proportional to how many elements go.
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(self: &var Vector<T>, value: T) -> ! CollectionError
+pub func Push(
+    self: &var Vector<T>,
+    value: T
+) -> ! CollectionError
 ```
 
 Appends one element, growing the storage when it is full.
@@ -238,7 +250,10 @@ Amortized constant time: the doubling is what spreads the cost of growing across
 <h3 id="push-slice"><code>PushSlice</code></h3>
 
 ```rux
-pub func PushSlice(self: &var Vector<T>, items: T[..]) -> ! CollectionError
+pub func PushSlice(
+    self: &var Vector<T>,
+    items: T[..]
+) -> ! CollectionError
 ```
 
 Appends a copy of every element of `items`, in order.
@@ -311,7 +326,11 @@ The pointer is valid until the vector grows, shrinks, or is destroyed.
 <h3 id="set"><code>Set</code></h3>
 
 ```rux
-pub func Set(self: &var Vector<T>, index: uint, value: T) -> ! CollectionError
+pub func Set(
+    self: &var Vector<T>,
+    index: uint,
+    value: T
+) -> ! CollectionError
 ```
 
 Replaces the element at `index` with `value`.
@@ -399,7 +418,11 @@ move the vector while any of them is in use, and coordinate aliases that access 
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(self: &var Vector<T>, index: uint, value: T) -> ! CollectionError
+pub func Insert(
+    self: &var Vector<T>,
+    index: uint,
+    value: T
+) -> ! CollectionError
 ```
 
 Inserts `value` at `index`, moving everything from there on one place along.
@@ -440,7 +463,10 @@ elements follow the one removed.
 <h3 id="swap-remove-at"><code>SwapRemoveAt</code></h3>
 
 ```rux
-pub func SwapRemoveAt(self: &var Vector<T>, index: uint) -> T?
+pub func SwapRemoveAt(
+    self: &var Vector<T>,
+    index: uint
+) -> T?
 ```
 
 Takes the element at `index` out and moves the last one into its place.
@@ -487,7 +513,11 @@ A pointer to the last element, or `none` for an empty vector.
 <h3 id="slice"><code>Slice</code></h3>
 
 ```rux
-pub func Slice(self: &Vector<T>, start: uint, count: uint) -> T[..]
+pub func Slice(
+    self: &Vector<T>,
+    start: uint,
+    count: uint
+) -> T[..]
 ```
 
 A borrowed read-only view of `count` elements starting at `start`.
@@ -507,7 +537,11 @@ The view is valid until the vector grows, shrinks, or is destroyed.
 <h3 id="mutable-slice-of"><code>MutableSliceOf</code></h3>
 
 ```rux
-pub func MutableSliceOf(self: &var Vector<T>, start: uint, count: uint) -> var T[..]
+pub func MutableSliceOf(
+    self: &var Vector<T>,
+    start: uint,
+    count: uint
+) -> var T[..]
 ```
 
 A borrowed writable view of `count` elements starting at `start`.
@@ -590,7 +624,11 @@ read from freed memory.
 <h3 id="write-vector-debug"><code>WriteVectorDebug&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteVectorDebug<T: Debug>(writer: &var TextWriter, value: &Vector<T>, spec: FormatSpec) -> ! FormatError
+pub func WriteVectorDebug<T: Debug>(
+    writer: &var TextWriter,
+    value: &Vector<T>,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed vector as `[first, second, third]`.

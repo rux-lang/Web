@@ -87,7 +87,11 @@ How many items have been offered.
 <h3 id="offer"><code>Offer&lt;G, T&gt;</code></h3>
 
 ```rux
-pub func Offer<G: RandomGenerator, T>(generator: &var G, reservoir: &var Reservoir<T>, item: T)
+pub func Offer<G: RandomGenerator, T>(
+    generator: &var G,
+    reservoir: &var Reservoir<T>,
+    item: T
+)
 ```
 
 Offers `item` to `reservoir`.

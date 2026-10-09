@@ -24,7 +24,10 @@ Extended grapheme cluster boundaries, and how many user-perceived characters a t
 <h2 id="is-grapheme-boundary"><code>IsGraphemeBoundary</code></h2>
 
 ```rux
-pub func IsGraphemeBoundary(text: char32[..], index: uint) -> bool
+pub func IsGraphemeBoundary(
+    text: char32[..],
+    index: uint
+) -> bool
 ```
 
 Whether a cluster boundary falls before `index` in `text`.

@@ -94,7 +94,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var SipHash24, bytes: *byte, length: uint)
+pub func Write(
+    self: &var SipHash24,
+    bytes: *byte,
+    length: uint
+)
 ```
 
 Adds `length` bytes at `bytes` to the hash.
@@ -269,7 +273,12 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="sip-hash24-of"><code>SipHash24Of</code></h3>
 
 ```rux
-pub func SipHash24Of(bytes: *byte, length: uint, low: uint64, high: uint64) -> uint64
+pub func SipHash24Of(
+    bytes: *byte,
+    length: uint,
+    low: uint64,
+    high: uint64
+) -> uint64
 ```
 
 The SipHash-2-4 of `length` bytes at `bytes`, keyed with `low` and `high`.

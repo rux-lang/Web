@@ -79,7 +79,10 @@ The kind of prefix a path opens with.
 <h2 id="prefix-length"><code>PrefixLength</code></h2>
 
 ```rux
-pub func PrefixLength(path: Path, kind: *var PrefixKind) -> uint
+pub func PrefixLength(
+    path: Path,
+    kind: *var PrefixKind
+) -> uint
 ```
 
 How many units of `path` are prefix, and which kind, reported through `kind`.

@@ -184,7 +184,10 @@ A handle is cheap to copy and may be stored wherever an allocator is wanted, but
 <h4 id="arena-handle-allocate"><code>Allocate</code></h4>
 
 ```rux
-pub func Allocate(self: &ArenaHandle, layout: Layout) -> (*var opaque) ! AllocError
+pub func Allocate(
+    self: &ArenaHandle,
+    layout: Layout
+) -> (*var opaque) ! AllocError
 ```
 
 Takes storage matching `layout` by advancing the arena's pointer.
@@ -204,7 +207,11 @@ The storage lives until the arena is reset or destroyed, whichever comes first, 
 <h4 id="arena-handle-deallocate"><code>Deallocate</code></h4>
 
 ```rux
-pub func Deallocate(self: &ArenaHandle, block: *var opaque, layout: Layout) -> ! AllocError
+pub func Deallocate(
+    self: &ArenaHandle,
+    block: *var opaque,
+    layout: Layout
+) -> ! AllocError
 ```
 
 Accepts a release and reclaims only what it can.
@@ -226,7 +233,12 @@ that releases what it takes.
 <h4 id="arena-handle-reallocate"><code>Reallocate</code></h4>
 
 ```rux
-pub func Reallocate(self: &ArenaHandle, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> (*var opaque) ! AllocError
+pub func Reallocate(
+    self: &ArenaHandle,
+    block: *var opaque,
+    oldLayout: Layout,
+    newLayout: Layout
+) -> (*var opaque) ! AllocError
 ```
 
 Grows or shrinks a block, extending the most recent allocation in place where it can.

@@ -40,7 +40,11 @@ Move-only: it owns its elements and its storage.
 <h3 id="new"><code>HashSet</code></h3>
 
 ```rux
-pub func HashSet(allocator: Allocator, hash: func(T, uint64, uint64) -> uint64, equals: func(T, T) -> bool) -> HashSet<T>
+pub func HashSet(
+    allocator: Allocator,
+    hash: func(T, uint64, uint64) -> uint64,
+    equals: func(T, T) -> bool
+) -> HashSet<T>
 ```
 
 An empty set that has not allocated anything, with a seed drawn from the operating system.
@@ -60,7 +64,12 @@ An empty set that has not allocated anything, with a seed drawn from the operati
 <h3 id="with-seed"><code>WithSeed</code></h3>
 
 ```rux
-pub func WithSeed(allocator: Allocator, seed: TableSeed, hash: func(T, uint64, uint64) -> uint64, equals: func(T, T) -> bool) -> HashSet<T>
+pub func WithSeed(
+    allocator: Allocator,
+    seed: TableSeed,
+    hash: func(T, uint64, uint64) -> uint64,
+    equals: func(T, T) -> bool
+) -> HashSet<T>
 ```
 
 An empty set that has not allocated anything, hashing with `seed`.
@@ -79,7 +88,12 @@ An empty set that has not allocated anything, hashing with `seed`.
 <h3 id="with-capacity"><code>WithCapacity</code></h3>
 
 ```rux
-pub func WithCapacity(allocator: Allocator, capacity: uint, hash: func(T, uint64, uint64) -> uint64, equals: func(T, T) -> bool) -> HashSet<T> ! CollectionError
+pub func WithCapacity(
+    allocator: Allocator,
+    capacity: uint,
+    hash: func(T, uint64, uint64) -> uint64,
+    equals: func(T, T) -> bool
+) -> HashSet<T> ! CollectionError
 ```
 
 An empty set with room for `capacity` elements already taken.
@@ -154,7 +168,10 @@ Runs in constant expected time and allocates nothing.
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(self: &var HashSet<T>, value: T) -> bool ! CollectionError
+pub func Insert(
+    self: &var HashSet<T>,
+    value: T
+) -> bool ! CollectionError
 ```
 
 Adds `value` to the set, reporting whether it was not already there.
@@ -191,7 +208,10 @@ intact. Reports `none` when the set did not have it.
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(self: &var HashSet<T>, additional: uint) -> ! CollectionError
+pub func Reserve(
+    self: &var HashSet<T>,
+    additional: uint
+) -> ! CollectionError
 ```
 
 Makes room for `additional` more elements on top of those already present.
@@ -229,7 +249,11 @@ Destroys every element, keeping the storage.
 <h3 id="try-next"><code>TryNext</code></h3>
 
 ```rux
-pub func TryNext(self: &HashSet<T>, cursor: *var uint, value: *var T) -> bool
+pub func TryNext(
+    self: &HashSet<T>,
+    cursor: *var uint,
+    value: *var T
+) -> bool
 ```
 
 Walks to the next occupied slot at or after `cursor`, reporting the element it holds.
@@ -277,7 +301,10 @@ destroyed when the iterator's life ends.
 <h3 id="is-subset-of"><code>IsSubsetOf</code></h3>
 
 ```rux
-pub func IsSubsetOf(self: &HashSet<T>, other: &HashSet<T>) -> bool
+pub func IsSubsetOf(
+    self: &HashSet<T>,
+    other: &HashSet<T>
+) -> bool
 ```
 
 Whether every element of this set is also in `other`.
@@ -298,7 +325,10 @@ Allocates nothing. Runs in time proportional to this set's size.
 <h3 id="is-superset-of"><code>IsSupersetOf</code></h3>
 
 ```rux
-pub func IsSupersetOf(self: &HashSet<T>, other: &HashSet<T>) -> bool
+pub func IsSupersetOf(
+    self: &HashSet<T>,
+    other: &HashSet<T>
+) -> bool
 ```
 
 Whether every element of `other` is also in this set.
@@ -315,7 +345,10 @@ Both are borrowed. The mirror of [`IsSubsetOf`](/docs/api/collections/hash-set#i
 <h3 id="is-disjoint-from"><code>IsDisjointFrom</code></h3>
 
 ```rux
-pub func IsDisjointFrom(self: &HashSet<T>, other: &HashSet<T>) -> bool
+pub func IsDisjointFrom(
+    self: &HashSet<T>,
+    other: &HashSet<T>
+) -> bool
 ```
 
 Whether the two sets have no element in common.
@@ -335,7 +368,10 @@ Allocates nothing.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &HashSet<T>, other: &HashSet<T>) -> bool
+pub func Equals(
+    self: &HashSet<T>,
+    other: &HashSet<T>
+) -> bool
 ```
 
 Whether the two sets hold exactly the same elements.
@@ -352,7 +388,10 @@ Both are borrowed. Equal sizes and one containment, which together are containme
 <h3 id="union-with"><code>UnionWith</code></h3>
 
 ```rux
-pub func UnionWith(self: &var HashSet<T>, other: &HashSet<T>) -> ! CollectionError
+pub func UnionWith(
+    self: &var HashSet<T>,
+    other: &HashSet<T>
+) -> ! CollectionError
 ```
 
 Adds every element of `other` that this set does not already have.
@@ -374,7 +413,10 @@ Runs in time proportional to `other`.
 <h3 id="intersect-with"><code>IntersectWith</code></h3>
 
 ```rux
-pub func IntersectWith(self: &var HashSet<T>, other: &HashSet<T>)
+pub func IntersectWith(
+    self: &var HashSet<T>,
+    other: &HashSet<T>
+)
 ```
 
 Removes every element this set has that `other` does not.
@@ -407,7 +449,10 @@ Allocates nothing, so it cannot fail.
 <h3 id="symmetric-difference-with"><code>SymmetricDifferenceWith</code></h3>
 
 ```rux
-pub func SymmetricDifferenceWith(self: &var HashSet<T>, other: &HashSet<T>) -> ! CollectionError
+pub func SymmetricDifferenceWith(
+    self: &var HashSet<T>,
+    other: &HashSet<T>
+) -> ! CollectionError
 ```
 
 Keeps the elements that are in exactly one of the two sets.
@@ -517,7 +562,11 @@ destructor is exactly what nobody took.
 <h3 id="write-hash-set-debug"><code>WriteHashSetDebug&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteHashSetDebug<T: Debug>(writer: &var TextWriter, value: &HashSet<T>, spec: FormatSpec) -> ! FormatError
+pub func WriteHashSetDebug<T: Debug>(
+    writer: &var TextWriter,
+    value: &HashSet<T>,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed hash set as `{first, second, third}`.

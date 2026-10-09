@@ -38,7 +38,11 @@ Retrieves a handle to the default heap of the calling process.
 <h2 id="heap-alloc"><code>HeapAlloc</code></h2>
 
 ```rux
-pub extern func HeapAlloc(heap: *opaque, flags: uint32, bytes: uint) -> *var opaque
+pub extern func HeapAlloc(
+    heap: *opaque,
+    flags: uint32,
+    bytes: uint
+) -> *var opaque
 ```
 
 Allocates a block of memory from a heap. The allocated memory is not movable.
@@ -60,7 +64,11 @@ Allocates a block of memory from a heap. The allocated memory is not movable.
 <h2 id="heap-free"><code>HeapFree</code></h2>
 
 ```rux
-pub extern func HeapFree(heap: *opaque, flags: uint32, mem: *opaque) -> bool32
+pub extern func HeapFree(
+    heap: *opaque,
+    flags: uint32,
+    mem: *opaque
+) -> bool32
 ```
 
 Frees a memory block allocated from a heap by the HeapAlloc or HeapReAlloc function.
@@ -82,7 +90,12 @@ Frees a memory block allocated from a heap by the HeapAlloc or HeapReAlloc funct
 <h2 id="heap-re-alloc"><code>HeapReAlloc</code></h2>
 
 ```rux
-pub extern func HeapReAlloc(heap: *opaque, flags: uint32, mem: *opaque, bytes: uint) -> *var opaque
+pub extern func HeapReAlloc(
+    heap: *opaque,
+    flags: uint32,
+    mem: *opaque,
+    bytes: uint
+) -> *var opaque
 ```
 
 Reallocates a block of memory from a heap.
@@ -105,7 +118,11 @@ Reallocates a block of memory from a heap.
 <h2 id="rtl-compare-memory"><code>RtlCompareMemory</code></h2>
 
 ```rux
-pub extern func RtlCompareMemory(source1: *opaque, source2: *opaque, length: uint) -> uint
+pub extern func RtlCompareMemory(
+    source1: *opaque,
+    source2: *opaque,
+    length: uint
+) -> uint
 ```
 
 Compares two blocks of memory and returns the number of bytes that match until the first difference.
@@ -127,7 +144,11 @@ Compares two blocks of memory and returns the number of bytes that match until t
 <h2 id="rtl-copy-memory"><code>RtlCopyMemory</code></h2>
 
 ```rux
-pub extern func RtlCopyMemory(destination: *var opaque, source: *opaque, length: uint)
+pub extern func RtlCopyMemory(
+    destination: *var opaque,
+    source: *opaque,
+    length: uint
+)
 ```
 
 Copies a block of memory from one location to another.
@@ -147,7 +168,11 @@ Copies a block of memory from one location to another.
 <h2 id="rtl-fill-memory"><code>RtlFillMemory</code></h2>
 
 ```rux
-pub extern func RtlFillMemory(destination: *opaque, length: uint, fill: int32)
+pub extern func RtlFillMemory(
+    destination: *opaque,
+    length: uint,
+    fill: int32
+)
 ```
 
 Fills a block of memory with the specified fill value.
@@ -167,7 +192,10 @@ Fills a block of memory with the specified fill value.
 <h2 id="rtl-zero-memory"><code>RtlZeroMemory</code></h2>
 
 ```rux
-pub extern func RtlZeroMemory(destination: *opaque, length: uint)
+pub extern func RtlZeroMemory(
+    destination: *opaque,
+    length: uint
+)
 ```
 
 Fills a block of memory with zeros, given a pointer to the block and the length in bytes.
@@ -311,7 +339,12 @@ Combined with another protection. This is how a stack grows on Windows.
 <h2 id="virtual-alloc"><code>VirtualAlloc</code></h2>
 
 ```rux
-pub extern func VirtualAlloc(address: *var opaque, size: uint, allocationType: uint32, protect: uint32) -> *var opaque
+pub extern func VirtualAlloc(
+    address: *var opaque,
+    size: uint,
+    allocationType: uint32,
+    protect: uint32
+) -> *var opaque
 ```
 
 Reserves, commits, or changes the state of a region of pages.
@@ -336,7 +369,11 @@ which it does at 64 KiB granularity rather than page granularity.
 <h2 id="virtual-free"><code>VirtualFree</code></h2>
 
 ```rux
-pub extern func VirtualFree(address: *var opaque, size: uint, freeType: uint32) -> int32
+pub extern func VirtualFree(
+    address: *var opaque,
+    size: uint,
+    freeType: uint32
+) -> int32
 ```
 
 Releases, decommits, or both, a region of pages.
@@ -360,7 +397,12 @@ giving it anything else fails rather than releasing part of the region.
 <h2 id="virtual-protect"><code>VirtualProtect</code></h2>
 
 ```rux
-pub extern func VirtualProtect(address: *var opaque, size: uint, newProtect: uint32, oldProtect: *var uint32) -> int32
+pub extern func VirtualProtect(
+    address: *var opaque,
+    size: uint,
+    newProtect: uint32,
+    oldProtect: *var uint32
+) -> int32
 ```
 
 Changes the protection on a region of committed pages.
@@ -384,7 +426,10 @@ Writes the previous protection through oldProtect, which must not be null. Retur
 <h2 id="virtual-lock"><code>VirtualLock</code></h2>
 
 ```rux
-pub extern func VirtualLock(address: *var opaque, size: uint) -> int32
+pub extern func VirtualLock(
+    address: *var opaque,
+    size: uint
+) -> int32
 ```
 
 Locks a region into physical memory so it is never written to the page file.
@@ -407,7 +452,10 @@ fails for a large region rather than succeeding slowly.
 <h2 id="virtual-unlock"><code>VirtualUnlock</code></h2>
 
 ```rux
-pub extern func VirtualUnlock(address: *var opaque, size: uint) -> int32
+pub extern func VirtualUnlock(
+    address: *var opaque,
+    size: uint
+) -> int32
 ```
 
 Unlocks a region previously locked into physical memory.

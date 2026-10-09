@@ -22,7 +22,11 @@ seo:
 Writes `value` to `writer` in the given style.
 
 ```rux
-pub func WriteValue(writer: &var TextWriter, value: &JsonValue, style: JsonStyle) -> ! FormatError
+pub func WriteValue(
+    writer: &var TextWriter,
+    value: &JsonValue,
+    style: JsonStyle
+) -> ! FormatError
 ```
 
 The value is borrowed and nothing is allocated: the document writes itself into the destination as it is
@@ -99,7 +103,10 @@ The readable style: two spaces per level.
 <h3 id="write-escaped"><code>WriteEscaped</code></h3>
 
 ```rux
-pub func WriteEscaped(writer: &var TextWriter, text: char8[..]) -> ! FormatError
+pub func WriteEscaped(
+    writer: &var TextWriter,
+    text: char8[..]
+) -> ! FormatError
 ```
 
 Writes the escaped form of `text`, including its surrounding quotes.

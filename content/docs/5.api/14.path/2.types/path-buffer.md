@@ -63,7 +63,10 @@ An empty buffer that has allocated nothing.
 <h3 id="from-path"><code>FromPath</code></h3>
 
 ```rux
-pub func FromPath(allocator: Allocator, path: Path) -> PathBuffer ! TextError
+pub func FromPath(
+    allocator: Allocator,
+    path: Path
+) -> PathBuffer ! TextError
 ```
 
 A buffer opening with `path`'s units.
@@ -119,7 +122,10 @@ The path borrows the buffer and must not outlive it or survive a push.
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(self: &var PathBuffer, segment: OsStringView) -> ! TextError
+pub func Push(
+    self: &var PathBuffer,
+    segment: OsStringView
+) -> ! TextError
 ```
 
 Appends `segment` as one more component, supplying the separator where one is missing.
@@ -151,7 +157,11 @@ Gives the block back and leaves an empty buffer.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &PathBuffer, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &PathBuffer,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The lossy rendering of the units the buffer owns.
@@ -173,7 +183,11 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &PathBuffer, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &PathBuffer,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The exact, quoted rendering of the units the buffer owns.
@@ -203,7 +217,11 @@ Gives the block back.
 <h3 id="join"><code>Join</code></h3>
 
 ```rux
-pub func Join(allocator: Allocator, base: Path, segment: OsStringView) -> PathBuffer ! TextError
+pub func Join(
+    allocator: Allocator,
+    base: Path,
+    segment: OsStringView
+) -> PathBuffer ! TextError
 ```
 
 A fresh buffer holding `base` with `segment` pushed onto it.
@@ -225,7 +243,10 @@ replacing `base` entirely.
 <h3 id="normalize"><code>Normalize</code></h3>
 
 ```rux
-pub func Normalize(allocator: Allocator, path: Path) -> PathBuffer ! TextError
+pub func Normalize(
+    allocator: Allocator,
+    path: Path
+) -> PathBuffer ! TextError
 ```
 
 A fresh buffer holding `path` lexically simplified: separator runs collapsed to the preferred separator, `.`

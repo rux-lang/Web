@@ -40,7 +40,10 @@ The slot must outlive the writer. It is a stored address, so nothing here tracks
 <h3 id="new"><code>StreamWriter</code></h3>
 
 ```rux
-pub func StreamWriter(sink: Writer, failure: *var IoError?) -> StreamWriter
+pub func StreamWriter(
+    sink: Writer,
+    failure: *var IoError?
+) -> StreamWriter
 ```
 
 A text writer over `sink`, recording into `failure`.
@@ -63,7 +66,10 @@ so a writer built over a slot that already holds a failure writes nothing at all
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var StreamWriter, bytes: char8[..]) -> ! FormatError
+pub func Write(
+    self: &var StreamWriter,
+    bytes: char8[..]
+) -> ! FormatError
 ```
 
 Writes `bytes` to the stream.

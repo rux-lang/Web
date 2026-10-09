@@ -23,7 +23,11 @@ A stream whose position can be moved.
 
 ```rux
 pub interface Seeker {
-    func Seek(self: &var Self, origin: SeekFrom, offset: int64) -> uint64 ! IoError;
+    func Seek(
+        self: &var Self,
+        origin: SeekFrom,
+        offset: int64
+    ) -> uint64 ! IoError;
 }
 ```
 
@@ -32,7 +36,11 @@ pub interface Seeker {
 <h3 id="seek"><code>Seek</code></h3>
 
 ```rux
-func Seek(self: &var Self, origin: SeekFrom, offset: int64) -> uint64 ! IoError
+func Seek(
+    self: &var Self,
+    origin: SeekFrom,
+    offset: int64
+) -> uint64 ! IoError
 ```
 
 Moves the position `offset` bytes from `origin` and succeeds with where it landed.

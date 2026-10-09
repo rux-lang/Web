@@ -35,7 +35,10 @@ borrows rather than moves.
 <h3 id="new"><code>Pool</code></h3>
 
 ```rux
-pub func Pool(backing: Allocator, blocksPerChunk: uint) -> Pool
+pub func Pool(
+    backing: Allocator,
+    blocksPerChunk: uint
+) -> Pool
 ```
 
 A pool that will take its chunks from `backing`.
@@ -231,7 +234,10 @@ A handle is cheap to copy and may be stored wherever an allocator is wanted, but
 <h4 id="pool-handle-allocate"><code>Allocate</code></h4>
 
 ```rux
-pub func Allocate(self: &PoolHandle, layout: Layout) -> (*var opaque) ! AllocError
+pub func Allocate(
+    self: &PoolHandle,
+    layout: Layout
+) -> (*var opaque) ! AllocError
 ```
 
 Takes a block of the smallest class that holds `layout`.
@@ -253,7 +259,11 @@ The block lives until it is released, the pool is reset, or the pool is destroye
 <h4 id="pool-handle-deallocate"><code>Deallocate</code></h4>
 
 ```rux
-pub func Deallocate(self: &PoolHandle, block: *var opaque, layout: Layout) -> ! AllocError
+pub func Deallocate(
+    self: &PoolHandle,
+    block: *var opaque,
+    layout: Layout
+) -> ! AllocError
 ```
 
 Puts a block back on the free list of the class its layout names.
@@ -274,7 +284,12 @@ The block may be handed to the next allocation of its class at once.
 <h4 id="pool-handle-reallocate"><code>Reallocate</code></h4>
 
 ```rux
-pub func Reallocate(self: &PoolHandle, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> (*var opaque) ! AllocError
+pub func Reallocate(
+    self: &PoolHandle,
+    block: *var opaque,
+    oldLayout: Layout,
+    newLayout: Layout
+) -> (*var opaque) ! AllocError
 ```
 
 Changes the size of a block, which costs nothing when both sizes land in the same class.

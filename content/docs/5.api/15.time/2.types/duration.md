@@ -253,7 +253,10 @@ The sum of two spans, or `None` past the range.
 <h3 id="minus"><code>Minus</code></h3>
 
 ```rux
-pub func Minus(self: &Duration, other: Duration) -> Duration?
+pub func Minus(
+    self: &Duration,
+    other: Duration
+) -> Duration?
 ```
 
 The difference of two spans, or `None` past the range.
@@ -313,7 +316,10 @@ Whether two spans are the same time.
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(self: &Duration, other: Duration) -> Ordering
+pub func Compare(
+    self: &Duration,
+    other: Duration
+) -> Ordering
 ```
 
 How this span orders against `other`.
@@ -334,7 +340,11 @@ Two comparisons, which the normalization pays for: the seconds decide, and the f
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &Duration, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &Duration,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the span as signed decimal seconds followed by `s`.
@@ -363,7 +373,11 @@ precision past nine.
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &Duration, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &Duration,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The same text as `Display`: a span has one reading.

@@ -104,8 +104,15 @@ The error is at most one ulp. A negative base requires an integer exponent; othe
 <h2 id="pow-integer"><code>PowInteger</code></h2>
 
 ```rux
-pub func PowInteger(base: float64, exponent: int64) -> float64
-pub func PowInteger(base: float32, exponent: int64) -> float32
+pub func PowInteger(
+    base: float64,
+    exponent: int64
+) -> float64
+
+pub func PowInteger(
+    base: float32,
+    exponent: int64
+) -> float32
 ```
 
 `base` raised to the integer power `exponent`.

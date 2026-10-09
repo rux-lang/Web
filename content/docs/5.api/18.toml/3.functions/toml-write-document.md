@@ -22,7 +22,10 @@ seo:
 Writes `table` as a TOML document.
 
 ```rux
-pub func TomlWriteDocument(writer: &var TextWriter, table: &TomlValue) -> ! FormatError
+pub func TomlWriteDocument(
+    writer: &var TextWriter,
+    table: &TomlValue
+) -> ! FormatError
 ```
 
 The same tree always produces the same bytes, and a document written, read and written again produces the

@@ -24,8 +24,15 @@ The operations every allocator provides.
 ```rux
 pub interface Allocator {
     func Allocate(layout: Layout) -> (*var opaque) ! AllocError;
-    func Deallocate(block: *var opaque, layout: Layout) -> ! AllocError;
-    func Reallocate(block: *var opaque, oldLayout: Layout, newLayout: Layout) -> (*var opaque) ! AllocError;
+    func Deallocate(
+        block: *var opaque,
+        layout: Layout
+    ) -> ! AllocError;
+    func Reallocate(
+        block: *var opaque,
+        oldLayout: Layout,
+        newLayout: Layout
+    ) -> (*var opaque) ! AllocError;
 }
 ```
 
@@ -58,7 +65,10 @@ The storage is the caller's until [`Deallocate`](/docs/api/allocator/allocator#d
 <h3 id="deallocate"><code>Deallocate</code></h3>
 
 ```rux
-func Deallocate(block: *var opaque, layout: Layout) -> ! AllocError
+func Deallocate(
+    block: *var opaque,
+    layout: Layout
+) -> ! AllocError
 ```
 
 Gives back storage that this allocator handed out.
@@ -78,7 +88,11 @@ Every pointer into the block becomes invalid, and the storage may be handed to t
 <h3 id="reallocate"><code>Reallocate</code></h3>
 
 ```rux
-func Reallocate(block: *var opaque, oldLayout: Layout, newLayout: Layout) -> (*var opaque) ! AllocError
+func Reallocate(
+    block: *var opaque,
+    oldLayout: Layout,
+    newLayout: Layout
+) -> (*var opaque) ! AllocError
 ```
 
 Changes the size of a block, preserving as much of its contents as both layouts hold.

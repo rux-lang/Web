@@ -39,7 +39,10 @@ pub struct JsonLexer {
 <h3 id="new"><code>JsonLexer</code></h3>
 
 ```rux
-pub func JsonLexer(input: char8[..], limits: JsonLimits) -> JsonLexer
+pub func JsonLexer(
+    input: char8[..],
+    limits: JsonLimits
+) -> JsonLexer
 ```
 
 A lexer over `input` under `limits`.

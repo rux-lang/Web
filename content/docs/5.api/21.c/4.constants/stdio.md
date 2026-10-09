@@ -64,7 +64,10 @@ Reads the next character from the given stream.
 <h2 id="fopen"><code>fopen</code></h2>
 
 ```rux
-pub extern func fopen(filename: *char8, mode: *char8) -> *FILE
+pub extern func fopen(
+    filename: *char8,
+    mode: *char8
+) -> *FILE
 ```
 
 Opens a file indicated by filename with the given mode.
@@ -85,7 +88,11 @@ Opens a file indicated by filename with the given mode.
 <h2 id="fseek"><code>fseek</code></h2>
 
 ```rux
-pub extern func fseek(stream: *FILE, offset: int64, origin: c_int) -> c_int
+pub extern func fseek(
+    stream: *FILE,
+    offset: int64,
+    origin: c_int
+) -> c_int
 ```
 
 Sets the file position indicator for the stream.
@@ -127,7 +134,12 @@ Returns the current file position of the stream.
 <h2 id="fwrite"><code>fwrite</code></h2>
 
 ```rux
-pub extern func fwrite(buffer: *opaque, size: size_t, count: size_t, stream: *FILE) -> size_t
+pub extern func fwrite(
+    buffer: *opaque,
+    size: size_t,
+    count: size_t,
+    stream: *FILE
+) -> size_t
 ```
 
 Writes count objects of the given size from a buffer to the stream.
@@ -210,7 +222,11 @@ Deletes the file identified by the given path.
 <h2 id="sprintf"><code>sprintf</code></h2>
 
 ```rux
-pub extern func sprintf(buffer: *char8, format: *char8, ...) -> c_int
+pub extern func sprintf(
+    buffer: *char8,
+    format: *char8,
+    ...
+) -> c_int
 ```
 
 Prints formatted output to a string.
@@ -234,7 +250,11 @@ destination that knows its own length.
 <h2 id="sscanf"><code>sscanf</code></h2>
 
 ```rux
-pub extern func sscanf(buffer: *char8, format: *char8, ...) -> c_int
+pub extern func sscanf(
+    buffer: *char8,
+    format: *char8,
+    ...
+) -> c_int
 ```
 
 Reads formatted input from a string.

@@ -69,7 +69,10 @@ The next token, or `End` at the end of the input.
 <h3 id="text-of"><code>TextOf</code></h3>
 
 ```rux
-pub func TextOf(self: &TomlLexer, token: &TomlToken) -> char8[..]
+pub func TextOf(
+    self: &TomlLexer,
+    token: &TomlToken
+) -> char8[..]
 ```
 
 The bytes a token spans, which for a text token excludes the quotes and is still escaped.
@@ -227,7 +230,12 @@ One token, and where it came from.
 <h3 id="toml-decode-text"><code>TomlDecodeText</code></h3>
 
 ```rux
-pub func TomlDecodeText(allocator: Allocator, span: char8[..], form: TomlTextForm, bad: *var bool) -> String ! TextError
+pub func TomlDecodeText(
+    allocator: Allocator,
+    span: char8[..],
+    form: TomlTextForm,
+    bad: *var bool
+) -> String ! TextError
 ```
 
 Decodes a text token's span into an owned string, honouring the escapes its form allows.

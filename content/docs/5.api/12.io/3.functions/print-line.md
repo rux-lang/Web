@@ -23,27 +23,52 @@ Writes a value's text to standard output, then a newline.
 
 ```rux
 pub func PrintLine() -> IoError?
+
 pub func PrintLine(value: String) -> IoError?
+
 pub func PrintLine(value: char8[..]) -> IoError?
+
 pub func PrintLine(value: StringView) -> IoError?
-pub func PrintLine(#Format() format: char8[..], ...) -> IoError?
+
+pub func PrintLine(
+    #Format() format: char8[..],
+    ...
+) -> IoError?
+
 pub func PrintLine(value: bool8) -> IoError?
+
 pub func PrintLine(value: bool16) -> IoError?
+
 pub func PrintLine(value: bool32) -> IoError?
+
 pub func PrintLine(value: char8) -> IoError?
+
 pub func PrintLine(value: char16) -> IoError?
+
 pub func PrintLine(value: char32) -> IoError?
+
 pub func PrintLine(value: int8) -> IoError?
+
 pub func PrintLine(value: int16) -> IoError?
+
 pub func PrintLine(value: int32) -> IoError?
+
 pub func PrintLine(value: int64) -> IoError?
+
 pub func PrintLine(value: uint8) -> IoError?
+
 pub func PrintLine(value: uint16) -> IoError?
+
 pub func PrintLine(value: uint32) -> IoError?
+
 pub func PrintLine(value: uint64) -> IoError?
+
 pub func PrintLine(value: int) -> IoError?
+
 pub func PrintLine(value: uint) -> IoError?
+
 pub func PrintLine(value: float32) -> IoError?
+
 pub func PrintLine(value: float64) -> IoError?
 ```
 
@@ -132,7 +157,10 @@ Writes a value's text to standard output, then a newline.
 <h3 id="write-value-line"><code>WriteValueLine&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteValueLine<T: Display>(writer: &var TextWriter, value: &T) -> ! FormatError
+pub func WriteValueLine<T: Display>(
+    writer: &var TextWriter,
+    value: &T
+) -> ! FormatError
 ```
 
 Writes a value's text, then a newline, and writes the newline only if the value went out whole.
@@ -168,7 +196,11 @@ newline's write reported.
 <h3 id="write-format-line"><code>WriteFormatLine</code></h3>
 
 ```rux
-pub func WriteFormatLine(writer: &var TextWriter, #Format() format: char8[..], ...) -> ! FormatError
+pub func WriteFormatLine(
+    writer: &var TextWriter,
+    #Format() format: char8[..],
+    ...
+) -> ! FormatError
 ```
 
 Writes `format` with each `{}` replaced by the next argument, then a newline, on the same rule.

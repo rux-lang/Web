@@ -22,7 +22,11 @@ seo:
 The text `format` becomes with its placeholders filled, as a string of its own.
 
 ```rux
-pub func Render(allocator: Allocator, #Format() format: char8[..], ...) -> String ! FormatError
+pub func Render(
+    allocator: Allocator,
+    #Format() format: char8[..],
+    ...
+) -> String ! FormatError
 ```
 
 This is the allocating entry point, and the only one: every other way of rendering writes into a destination the

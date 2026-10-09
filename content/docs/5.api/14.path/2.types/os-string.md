@@ -52,7 +52,10 @@ Native text of no length, which has allocated nothing.
 <h3 id="from-view"><code>FromView</code></h3>
 
 ```rux
-pub func FromView(allocator: Allocator, view: OsStringView) -> OsString ! TextError
+pub func FromView(
+    allocator: Allocator,
+    view: OsStringView
+) -> OsString ! TextError
 ```
 
 An owning copy of what `view` spans, exactly as it stands.
@@ -71,7 +74,10 @@ This is the lossless direction: whatever the system handed over survives, valid 
 <h3 id="from-text"><code>FromText</code></h3>
 
 ```rux
-pub func FromText(allocator: Allocator, text: char8[..]) -> OsString ! TextError
+pub func FromText(
+    allocator: Allocator,
+    text: char8[..]
+) -> OsString ! TextError
 ```
 
 An owning native copy of UTF-8 text.
@@ -159,7 +165,11 @@ Deep-copies native units into independent storage from the same allocator.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &OsString, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &OsString,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The lossy rendering of the units this text owns.
@@ -181,7 +191,11 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &OsString, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &OsString,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The exact rendering of the units this text owns.

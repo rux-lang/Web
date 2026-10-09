@@ -41,7 +41,11 @@ Move-only: it owns its entries and storage and prohibits copying.
 <h3 id="new"><code>HashMap</code></h3>
 
 ```rux
-pub func HashMap(allocator: Allocator, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> HashMap<K, V>
+pub func HashMap(
+    allocator: Allocator,
+    hash: func(K, uint64, uint64) -> uint64,
+    equals: func(K, K) -> bool
+) -> HashMap<K, V>
 ```
 
 An empty map that has not allocated anything, with a seed drawn from the operating system.
@@ -63,7 +67,12 @@ An empty map that has not allocated anything, with a seed drawn from the operati
 <h3 id="with-seed"><code>WithSeed</code></h3>
 
 ```rux
-pub func WithSeed(allocator: Allocator, seed: TableSeed, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> HashMap<K, V>
+pub func WithSeed(
+    allocator: Allocator,
+    seed: TableSeed,
+    hash: func(K, uint64, uint64) -> uint64,
+    equals: func(K, K) -> bool
+) -> HashMap<K, V>
 ```
 
 An empty map that has not allocated anything, hashing with `seed`.
@@ -85,7 +94,12 @@ needs.
 <h3 id="with-capacity"><code>WithCapacity</code></h3>
 
 ```rux
-pub func WithCapacity(allocator: Allocator, capacity: uint, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> HashMap<K, V> ! CollectionError
+pub func WithCapacity(
+    allocator: Allocator,
+    capacity: uint,
+    hash: func(K, uint64, uint64) -> uint64,
+    equals: func(K, K) -> bool
+) -> HashMap<K, V> ! CollectionError
 ```
 
 An empty map with room for `capacity` entries already taken.
@@ -200,7 +214,11 @@ The pointer is valid until the map grows, shrinks, or has anything inserted or r
 <h3 id="try-reference-mutable"><code>TryReferenceMutable</code></h3>
 
 ```rux
-pub func TryReferenceMutable(self: &var HashMap<K, V>, key: K, value: *var *var V) -> bool
+pub func TryReferenceMutable(
+    self: &var HashMap<K, V>,
+    key: K,
+    value: *var *var V
+) -> bool
 ```
 
 Points `value` at the stored value for `key`, so it can be changed in place.
@@ -222,7 +240,11 @@ it replaces the value without destroying what was there.
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(self: &var HashMap<K, V>, key: K, value: V) -> ! CollectionError
+pub func Insert(
+    self: &var HashMap<K, V>,
+    key: K,
+    value: V
+) -> ! CollectionError
 ```
 
 Stores `value` under `key`, replacing whatever was there.
@@ -263,7 +285,10 @@ Runs in constant expected time.
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(self: &var HashMap<K, V>, additional: uint) -> ! CollectionError
+pub func Reserve(
+    self: &var HashMap<K, V>,
+    additional: uint
+) -> ! CollectionError
 ```
 
 Makes room for `additional` more entries on top of those already present.
@@ -304,7 +329,12 @@ Destroys every entry, keeping the storage.
 <h3 id="try-next-entry"><code>TryNextEntry</code></h3>
 
 ```rux
-pub func TryNextEntry(self: &HashMap<K, V>, cursor: *var uint, key: *var K, value: *var V) -> bool
+pub func TryNextEntry(
+    self: &HashMap<K, V>,
+    cursor: *var uint,
+    key: *var K,
+    value: *var V
+) -> bool
 ```
 
 Walks to the next occupied slot at or after `cursor`, reporting the entry it holds.
@@ -326,7 +356,13 @@ while a walk is in progress: either moves entries between slots, and a cursor is
 <h3 id="get-or-insert"><code>GetOrInsert</code></h3>
 
 ```rux
-pub func GetOrInsert(self: &var HashMap<K, V>, key: K, value: V, existing: *var *var V, inserted: *var bool) -> ! CollectionError
+pub func GetOrInsert(
+    self: &var HashMap<K, V>,
+    key: K,
+    value: V,
+    existing: *var *var V,
+    inserted: *var bool
+) -> ! CollectionError
 ```
 
 Points `existing` at the value stored under `key`, inserting `value` first when there is none.
@@ -353,7 +389,11 @@ The pointer is valid until the map grows, shrinks, or has anything inserted or r
 <h3 id="replace"><code>Replace</code></h3>
 
 ```rux
-pub func Replace(self: &var HashMap<K, V>, key: K, value: V) -> V? ! CollectionError
+pub func Replace(
+    self: &var HashMap<K, V>,
+    key: K,
+    value: V
+) -> V? ! CollectionError
 ```
 
 Stores `value` under `key` and hands back the value that was there.
@@ -374,7 +414,10 @@ A failure leaves the map exactly as it was, and is reported apart from the absen
 <h3 id="remove-entry"><code>RemoveEntry</code></h3>
 
 ```rux
-pub func RemoveEntry(self: &var HashMap<K, V>, key: K) -> KeyValue<K, V>?
+pub func RemoveEntry(
+    self: &var HashMap<K, V>,
+    key: K
+) -> KeyValue<K, V>?
 ```
 
 Takes the entry for `key` out and hands back both halves of it.
@@ -506,7 +549,11 @@ destructor is exactly what nobody took.
 <h3 id="write-hash-map-debug"><code>WriteHashMapDebug&lt;K, V&gt;</code></h3>
 
 ```rux
-pub func WriteHashMapDebug<K: Debug, V: Debug>(writer: &var TextWriter, value: &HashMap<K, V>, spec: FormatSpec) -> ! FormatError
+pub func WriteHashMapDebug<K: Debug, V: Debug>(
+    writer: &var TextWriter,
+    value: &HashMap<K, V>,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed hash map as `{key: value, key: value}`.

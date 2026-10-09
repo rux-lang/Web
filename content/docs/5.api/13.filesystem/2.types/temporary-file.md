@@ -43,7 +43,11 @@ outlive this value — which is what a rename into place is built on.
 <h3 id="create"><code>Create</code></h3>
 
 ```rux
-pub func Create(allocator: Allocator, directory: Path, prefix: char8[..]) -> TemporaryFile ! IoError
+pub func Create(
+    allocator: Allocator,
+    directory: Path,
+    prefix: char8[..]
+) -> TemporaryFile ! IoError
 ```
 
 Creates a new temporary file in `directory`, named from `prefix` and sixteen hex digits of entropy.
@@ -77,7 +81,10 @@ The file's path, for handing to something that needs a name.
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
-pub func Close(self: &var TemporaryFile, allocator: Allocator) -> ! IoError
+pub func Close(
+    self: &var TemporaryFile,
+    allocator: Allocator
+) -> ! IoError
 ```
 
 Closes the file and deletes it, reporting the first thing that went wrong.

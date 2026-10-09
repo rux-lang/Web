@@ -93,7 +93,10 @@ Retrieves the thread identifier of the calling thread.
 <h2 id="get-proc-address"><code>GetProcAddress</code></h2>
 
 ```rux
-pub extern func GetProcAddress(libModule: *opaque, procName: *char8) -> *opaque
+pub extern func GetProcAddress(
+    libModule: *opaque,
+    procName: *char8
+) -> *opaque
 ```
 
 Retrieves the address of an exported symbol.
@@ -134,7 +137,14 @@ Loads a DLL into the calling process.
 <h2 id="create-thread"><code>CreateThread</code></h2>
 
 ```rux
-pub extern func CreateThread(securityAttributes: *opaque, stackSize: uint64, startAddress: *opaque, parameter: *opaque, creationFlags: uint32, threadId: *uint32) -> *opaque
+pub extern func CreateThread(
+    securityAttributes: *opaque,
+    stackSize: uint64,
+    startAddress: *opaque,
+    parameter: *opaque,
+    creationFlags: uint32,
+    threadId: *uint32
+) -> *opaque
 ```
 
 Creates a thread to execute within the virtual address space of the calling process.
@@ -191,7 +201,10 @@ Causes the calling thread to yield execution to another thread that is ready to 
 <h2 id="wait-for-single-object"><code>WaitForSingleObject</code></h2>
 
 ```rux
-pub extern func WaitForSingleObject(handle: *opaque, milliseconds: uint32) -> uint32
+pub extern func WaitForSingleObject(
+    handle: *opaque,
+    milliseconds: uint32
+) -> uint32
 ```
 
 Waits until the specified object is in the signaled state or the time-out interval elapses.

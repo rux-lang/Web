@@ -118,7 +118,14 @@ FreeBSD numbers this differently from Linux, which is one of the reasons the two
 <h2 id="mmap"><code>Mmap</code></h2>
 
 ```rux
-pub func Mmap(address: *opaque, length: uint, protection: int32, flags: int32, fd: int32, offset: uint64) -> int64
+pub func Mmap(
+    address: *opaque,
+    length: uint,
+    protection: int32,
+    flags: int32,
+    fd: int32,
+    offset: uint64
+) -> int64
 ```
 
 Creates a mapping and returns its address, or a negative error number.
@@ -248,7 +255,11 @@ pub const AdviseFree: int32 = 5;
 <h2 id="mprotect"><code>Mprotect</code></h2>
 
 ```rux
-pub func Mprotect(address: *opaque, length: uint, protection: int32) -> int64
+pub func Mprotect(
+    address: *opaque,
+    length: uint,
+    protection: int32
+) -> int64
 ```
 
 Changes what may be done with the pages covering a range.
@@ -271,7 +282,11 @@ Nothing checks that the range was ever mapped, and a hardened system refuses wri
 <h2 id="madvise"><code>Madvise</code></h2>
 
 ```rux
-pub func Madvise(address: *opaque, length: uint, advice: int32) -> int64
+pub func Madvise(
+    address: *opaque,
+    length: uint,
+    advice: int32
+) -> int64
 ```
 
 Tells the kernel how the pages covering a range are about to be used.

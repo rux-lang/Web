@@ -64,7 +64,10 @@ they are the same key after this step. A shorter key is padded with zeros.
 <h3 id="update"><code>Update</code></h3>
 
 ```rux
-pub func Update<D: Digest>(self: &var Hmac<D>, bytes: char8[..])
+pub func Update<D: Digest>(
+    self: &var Hmac<D>,
+    bytes: char8[..]
+)
 ```
 
 Adds `bytes` to the message being authenticated.
@@ -82,7 +85,10 @@ Adds `bytes` to the message being authenticated.
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish<D: Digest>(self: &var Hmac<D>, into: var char8[..])
+pub func Finish<D: Digest>(
+    self: &var Hmac<D>,
+    into: var char8[..]
+)
 ```
 
 Writes the authentication tag into `into`.
@@ -131,7 +137,12 @@ be a compile-time integer and a constant does not satisfy that yet.
 <h3 id="hmac-of"><code>HmacOf&lt;D&gt;</code></h3>
 
 ```rux
-pub func HmacOf<D: Digest>(prototype: D, key: char8[..], message: char8[..], into: var char8[..])
+pub func HmacOf<D: Digest>(
+    prototype: D,
+    key: char8[..],
+    message: char8[..],
+    into: var char8[..]
+)
 ```
 
 The HMAC of `message` under `key`, in one call.

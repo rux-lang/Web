@@ -55,7 +55,10 @@ sufficient; no adapter or owning conversion is required.
 <h3 id="allocate"><code>Allocate</code></h3>
 
 ```rux
-pub func Allocate(self: &SystemAllocator, layout: Layout) -> (*var opaque) ! AllocError
+pub func Allocate(
+    self: &SystemAllocator,
+    layout: Layout
+) -> (*var opaque) ! AllocError
 ```
 
 Takes storage matching `layout` from the operating system.
@@ -76,7 +79,11 @@ The storage is the caller's until [`Deallocate`](/docs/api/allocator/system-allo
 <h3 id="deallocate"><code>Deallocate</code></h3>
 
 ```rux
-pub func Deallocate(self: &SystemAllocator, block: *var opaque, layout: Layout) -> ! AllocError
+pub func Deallocate(
+    self: &SystemAllocator,
+    block: *var opaque,
+    layout: Layout
+) -> ! AllocError
 ```
 
 Gives the storage behind `block` back to the operating system.
@@ -97,7 +104,12 @@ Every pointer into the block becomes invalid.
 <h3 id="reallocate"><code>Reallocate</code></h3>
 
 ```rux
-pub func Reallocate(self: &SystemAllocator, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> (*var opaque) ! AllocError
+pub func Reallocate(
+    self: &SystemAllocator,
+    block: *var opaque,
+    oldLayout: Layout,
+    newLayout: Layout
+) -> (*var opaque) ! AllocError
 ```
 
 Changes the size of a block by taking a new one and copying what fits.

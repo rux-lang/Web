@@ -36,7 +36,10 @@ in place, which is the behavior that makes this worth using.
 <h3 id="begin"><code>Begin</code></h3>
 
 ```rux
-pub func Begin(allocator: Allocator, target: Path) -> AtomicWrite ! IoError
+pub func Begin(
+    allocator: Allocator,
+    target: Path
+) -> AtomicWrite ! IoError
 ```
 
 Begins replacing `target`.
@@ -84,7 +87,10 @@ The name the finished file will take.
 <h3 id="commit"><code>Commit</code></h3>
 
 ```rux
-pub func Commit(self: &var AtomicWrite, allocator: Allocator) -> ! IoError
+pub func Commit(
+    self: &var AtomicWrite,
+    allocator: Allocator
+) -> ! IoError
 ```
 
 Forces the contents to the device and moves them onto the target.
@@ -106,7 +112,10 @@ rather than being durable on some and pretending on the rest.
 <h3 id="abandon"><code>Abandon</code></h3>
 
 ```rux
-pub func Abandon(self: &var AtomicWrite, allocator: Allocator) -> ! IoError
+pub func Abandon(
+    self: &var AtomicWrite,
+    allocator: Allocator
+) -> ! IoError
 ```
 
 Throws the partial file away and leaves the target as it was.
@@ -136,7 +145,10 @@ Gives the buffers back. The temporary's own destructor removes any partial file.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var AtomicWrite, bytes: char8[..]) -> uint ! IoError
+pub func Write(
+    self: &var AtomicWrite,
+    bytes: char8[..]
+) -> uint ! IoError
 ```
 
 Writes into the partial file.
@@ -183,7 +195,11 @@ writing leaves the old contents exactly where they were, with no partial file le
 <h3 id="write-atomically"><code>WriteAtomically</code></h3>
 
 ```rux
-pub func WriteAtomically(allocator: Allocator, target: Path, contents: char8[..]) -> ! IoError
+pub func WriteAtomically(
+    allocator: Allocator,
+    target: Path,
+    contents: char8[..]
+) -> ! IoError
 ```
 
 Replaces `target` with `contents`, atomically.

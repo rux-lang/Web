@@ -222,7 +222,13 @@ Borrows the spec. Cannot fail; runs in time proportional to `name`, and allocate
 <h3 id="padding-around"><code>PaddingAround</code></h3>
 
 ```rux
-pub func PaddingAround(spec: FormatSpec, occupied: uint, numeric: bool, before: *var uint, after: *var uint)
+pub func PaddingAround(
+    spec: FormatSpec,
+    occupied: uint,
+    numeric: bool,
+    before: *var uint,
+    after: *var uint
+)
 ```
 
 How many fill characters go on each side of a rendering that occupies `occupied` scalars.
@@ -247,7 +253,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write-fill"><code>WriteFill</code></h3>
 
 ```rux
-pub func WriteFill(writer: &var TextWriter, spec: FormatSpec, count: uint) -> ! FormatError
+pub func WriteFill(
+    writer: &var TextWriter,
+    spec: FormatSpec,
+    count: uint
+) -> ! FormatError
 ```
 
 Writes `count` copies of the spec's fill byte.
@@ -269,7 +279,12 @@ that has already said no.
 <h3 id="write-aligned"><code>WriteAligned</code></h3>
 
 ```rux
-pub func WriteAligned(writer: &var TextWriter, spec: FormatSpec, rendered: char8[..], numeric: bool) -> ! FormatError
+pub func WriteAligned(
+    writer: &var TextWriter,
+    spec: FormatSpec,
+    rendered: char8[..],
+    numeric: bool
+) -> ! FormatError
 ```
 
 Writes `rendered` into `writer` under `spec`'s width, fill and alignment.

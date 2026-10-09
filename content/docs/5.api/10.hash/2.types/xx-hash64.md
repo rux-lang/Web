@@ -87,7 +87,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var XxHash64, bytes: *byte, length: uint)
+pub func Write(
+    self: &var XxHash64,
+    bytes: *byte,
+    length: uint
+)
 ```
 
 Adds `length` bytes at `bytes` to the hash.
@@ -230,7 +234,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="xx-round"><code>XxRound</code></h3>
 
 ```rux
-pub func XxRound(accumulator: uint64, lane: uint64) -> uint64
+pub func XxRound(
+    accumulator: uint64,
+    lane: uint64
+) -> uint64
 ```
 
 One accumulator round: mix `lane` into `accumulator`.
@@ -252,7 +259,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="xx-merge"><code>XxMerge</code></h3>
 
 ```rux
-pub func XxMerge(hash: uint64, accumulator: uint64) -> uint64
+pub func XxMerge(
+    hash: uint64,
+    accumulator: uint64
+) -> uint64
 ```
 
 Folds one finished accumulator into the running hash.
@@ -295,7 +305,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="xx-hash64-seeded-of"><code>XxHash64SeededOf</code></h3>
 
 ```rux
-pub func XxHash64SeededOf(bytes: *byte, length: uint, seed: uint64) -> uint64
+pub func XxHash64SeededOf(
+    bytes: *byte,
+    length: uint,
+    seed: uint64
+) -> uint64
 ```
 
 The xxHash64 of `length` bytes at `bytes`, using `seed`.

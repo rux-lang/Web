@@ -112,7 +112,10 @@ With [`MOVEFILE_REPLACE_EXISTING`](/docs/api/windows/file-system#move-file-repla
 <h2 id="find-first-file-w"><code>FindFirstFileW</code></h2>
 
 ```rux
-pub extern func FindFirstFileW(fileName: *char16, findFileData: *var opaque) -> *var opaque
+pub extern func FindFirstFileW(
+    fileName: *char16,
+    findFileData: *var opaque
+) -> *var opaque
 ```
 
 Begins a directory enumeration matching a UTF-16 pattern.
@@ -136,7 +139,10 @@ UTF-16 name from offset 44. The record is 592 bytes.
 <h2 id="find-next-file-w"><code>FindNextFileW</code></h2>
 
 ```rux
-pub extern func FindNextFileW(findFile: *var opaque, findFileData: *var opaque) -> int32
+pub extern func FindNextFileW(
+    findFile: *var opaque,
+    findFileData: *var opaque
+) -> int32
 ```
 
 Continues a directory enumeration; fails with ERROR_NO_MORE_FILES at its end.
@@ -157,7 +163,11 @@ Continues a directory enumeration; fails with ERROR_NO_MORE_FILES at its end.
 <h2 id="create-hard-link-w"><code>CreateHardLinkW</code></h2>
 
 ```rux
-pub extern func CreateHardLinkW(fileName: *char16, existingFileName: *char16, securityAttributes: *var opaque) -> int32
+pub extern func CreateHardLinkW(
+    fileName: *char16,
+    existingFileName: *char16,
+    securityAttributes: *var opaque
+) -> int32
 ```
 
 Creates a hard link: a second name for an existing file's contents.
@@ -179,7 +189,11 @@ Creates a hard link: a second name for an existing file's contents.
 <h2 id="create-symbolic-link-w"><code>CreateSymbolicLinkW</code></h2>
 
 ```rux
-pub extern func CreateSymbolicLinkW(symlinkFileName: *char16, targetFileName: *char16, flags: uint32) -> uint8
+pub extern func CreateSymbolicLinkW(
+    symlinkFileName: *char16,
+    targetFileName: *char16,
+    flags: uint32
+) -> uint8
 ```
 
 Creates a symbolic link; returns a BOOLEAN, so only the low byte is meaningful.
@@ -203,7 +217,10 @@ without either it fails with ERROR_PRIVILEGE_NOT_HELD.
 <h2 id="get-temp-path-w"><code>GetTempPathW</code></h2>
 
 ```rux
-pub extern func GetTempPathW(bufferLength: uint32, buffer: *var char16) -> uint32
+pub extern func GetTempPathW(
+    bufferLength: uint32,
+    buffer: *var char16
+) -> uint32
 ```
 
 Writes the path of the directory designated for temporary files.
@@ -247,7 +264,11 @@ Deletes a file, taking a UTF-16 path.
 <h2 id="move-file-ex-w"><code>MoveFileExW</code></h2>
 
 ```rux
-pub extern func MoveFileExW(existingFileName: *char16, newFileName: *char16, flags: uint32) -> int32
+pub extern func MoveFileExW(
+    existingFileName: *char16,
+    newFileName: *char16,
+    flags: uint32
+) -> int32
 ```
 
 Moves or renames a file or directory, taking UTF-16 paths.
@@ -271,7 +292,11 @@ published under its final name. Across volumes it copies and deletes instead, wh
 <h2 id="copy-file-w"><code>CopyFileW</code></h2>
 
 ```rux
-pub extern func CopyFileW(existingFileName: *char16, newFileName: *char16, failIfExists: int32) -> int32
+pub extern func CopyFileW(
+    existingFileName: *char16,
+    newFileName: *char16,
+    failIfExists: int32
+) -> int32
 ```
 
 Copies a file, taking UTF-16 paths.
@@ -293,7 +318,10 @@ Copies a file, taking UTF-16 paths.
 <h2 id="create-directory-w"><code>CreateDirectoryW</code></h2>
 
 ```rux
-pub extern func CreateDirectoryW(pathName: *char16, securityAttributes: *var opaque) -> int32
+pub extern func CreateDirectoryW(
+    pathName: *char16,
+    securityAttributes: *var opaque
+) -> int32
 ```
 
 Creates a directory, taking a UTF-16 path.
@@ -355,7 +383,10 @@ Returns 0xFFFFFFFF on failure, which is INVALID_FILE_ATTRIBUTES and not an attri
 <h2 id="set-file-attributes-w"><code>SetFileAttributesW</code></h2>
 
 ```rux
-pub extern func SetFileAttributesW(fileName: *char16, fileAttributes: uint32) -> int32
+pub extern func SetFileAttributesW(
+    fileName: *char16,
+    fileAttributes: uint32
+) -> int32
 ```
 
 Sets a file's attributes, taking a UTF-16 path.
@@ -376,7 +407,10 @@ Sets a file's attributes, taking a UTF-16 path.
 <h2 id="get-current-directory-w"><code>GetCurrentDirectoryW</code></h2>
 
 ```rux
-pub extern func GetCurrentDirectoryW(bufferLength: uint32, buffer: *var char16) -> uint32
+pub extern func GetCurrentDirectoryW(
+    bufferLength: uint32,
+    buffer: *var char16
+) -> uint32
 ```
 
 Reads the current directory into a UTF-16 buffer.
@@ -419,7 +453,11 @@ Sets the current directory, taking a UTF-16 path.
 <h2 id="copy-file-a"><code>CopyFileA</code></h2>
 
 ```rux
-pub extern func CopyFileA(existingFileName: *char8, newFileName: *char8, failIfExists: bool32) -> bool32
+pub extern func CopyFileA(
+    existingFileName: *char8,
+    newFileName: *char8,
+    failIfExists: bool32
+) -> bool32
 ```
 
 Copies an existing file to a new file.
@@ -441,7 +479,10 @@ Copies an existing file to a new file.
 <h2 id="create-directory-a"><code>CreateDirectoryA</code></h2>
 
 ```rux
-pub extern func CreateDirectoryA(pathName: *char8, securityAttributes: *opaque) -> bool32
+pub extern func CreateDirectoryA(
+    pathName: *char8,
+    securityAttributes: *opaque
+) -> bool32
 ```
 
 Creates a new directory.
@@ -504,7 +545,10 @@ functions.
 <h2 id="find-first-file-a"><code>FindFirstFileA</code></h2>
 
 ```rux
-pub extern func FindFirstFileA(fileName: *char8, findFileData: *Win32FindDataA) -> *opaque
+pub extern func FindFirstFileA(
+    fileName: *char8,
+    findFileData: *Win32FindDataA
+) -> *opaque
 ```
 
 Searches a directory for a file or subdirectory with a name that matches a specific name (or partial name
@@ -526,7 +570,10 @@ if wildcards are used).
 <h2 id="find-next-file-a"><code>FindNextFileA</code></h2>
 
 ```rux
-pub extern func FindNextFileA(findFile: *opaque, findFileData: *Win32FindDataA) -> bool32
+pub extern func FindNextFileA(
+    findFile: *opaque,
+    findFileData: *Win32FindDataA
+) -> bool32
 ```
 
 Continues a file search from a previous call to the FindFirstFile, FindFirstFileEx, or
@@ -548,7 +595,10 @@ FindFirstFileTransacted functions.
 <h2 id="get-current-directory-a"><code>GetCurrentDirectoryA</code></h2>
 
 ```rux
-pub extern func GetCurrentDirectoryA(bufferLength: uint32, buffer: *char8) -> uint32
+pub extern func GetCurrentDirectoryA(
+    bufferLength: uint32,
+    buffer: *char8
+) -> uint32
 ```
 
 Retrieves the current directory.
@@ -589,7 +639,10 @@ Retrieves file attributes.
 <h2 id="move-file-a"><code>MoveFileA</code></h2>
 
 ```rux
-pub extern func MoveFileA(existingFileName: *char8, newFileName: *char8) -> bool32
+pub extern func MoveFileA(
+    existingFileName: *char8,
+    newFileName: *char8
+) -> bool32
 ```
 
 Moves an existing file or directory.
@@ -650,7 +703,10 @@ Changes the current directory.
 <h2 id="set-file-attributes-a"><code>SetFileAttributesA</code></h2>
 
 ```rux
-pub extern func SetFileAttributesA(fileName: *char8, fileAttributes: uint32) -> bool32
+pub extern func SetFileAttributesA(
+    fileName: *char8,
+    fileAttributes: uint32
+) -> bool32
 ```
 
 Sets file attributes.

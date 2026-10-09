@@ -139,8 +139,25 @@ pub const FILE_FLAG_WRITE_THROUGH: uint32 = 0x80000000;
 <h2 id="create-file-w"><code>CreateFileW</code></h2>
 
 ```rux
-pub extern func CreateFileW(fileName: *char16, desiredAccess: uint32, shareMode: uint32, securityAttributes: *var opaque, creationDisposition: uint32, flagsAndAttributes: uint32, templateFile: *var opaque) -> *var opaque
-pub extern func CreateFileW(fileName: *char16, desiredAccess: uint32, shareMode: uint32, securityAttributes: *opaque, creationDisposition: uint32, flagsAndAttributes: uint32, templateFile: *opaque) -> *opaque
+pub extern func CreateFileW(
+    fileName: *char16,
+    desiredAccess: uint32,
+    shareMode: uint32,
+    securityAttributes: *var opaque,
+    creationDisposition: uint32,
+    flagsAndAttributes: uint32,
+    templateFile: *var opaque
+) -> *var opaque
+
+pub extern func CreateFileW(
+    fileName: *char16,
+    desiredAccess: uint32,
+    shareMode: uint32,
+    securityAttributes: *opaque,
+    creationDisposition: uint32,
+    flagsAndAttributes: uint32,
+    templateFile: *opaque
+) -> *opaque
 ```
 
 Creates or opens a file or device, taking a UTF-16 path.
@@ -173,7 +190,10 @@ other opener, which is Windows' behaviour and not most callers' intent.
 <h2 id="get-file-information-by-handle"><code>GetFileInformationByHandle</code></h2>
 
 ```rux
-pub extern func GetFileInformationByHandle(file: *var opaque, fileInformation: *var opaque) -> int32
+pub extern func GetFileInformationByHandle(
+    file: *var opaque,
+    fileInformation: *var opaque
+) -> int32
 ```
 
 Fills a BY_HANDLE_FILE_INFORMATION record for an open handle.
@@ -197,7 +217,12 @@ at 32 and 36, the link count at 40, and the file index's halves at 44 and 48.
 <h2 id="set-file-time"><code>SetFileTime</code></h2>
 
 ```rux
-pub extern func SetFileTime(file: *var opaque, creationTime: *FileTime, lastAccessTime: *FileTime, lastWriteTime: *FileTime) -> int32
+pub extern func SetFileTime(
+    file: *var opaque,
+    creationTime: *FileTime,
+    lastAccessTime: *FileTime,
+    lastWriteTime: *FileTime
+) -> int32
 ```
 
 Sets the creation, last-access and last-write times of an open handle.
@@ -221,7 +246,12 @@ Each pointer may be null to leave that time alone.
 <h2 id="get-final-path-name-by-handle-w"><code>GetFinalPathNameByHandleW</code></h2>
 
 ```rux
-pub extern func GetFinalPathNameByHandleW(file: *var opaque, filePath: *var char16, filePathLength: uint32, flags: uint32) -> uint32
+pub extern func GetFinalPathNameByHandleW(
+    file: *var opaque,
+    filePath: *var char16,
+    filePathLength: uint32,
+    flags: uint32
+) -> uint32
 ```
 
 Writes the final, resolved path of an open handle: symbolic links followed, short names expanded, case as
@@ -309,7 +339,15 @@ Closes an open object handle.
 <h2 id="create-file-a"><code>CreateFileA</code></h2>
 
 ```rux
-pub extern func CreateFileA(fileName: *char8, desiredAccess: uint32, shareMode: uint32, securityAttributes: *opaque, creationDisposition: uint32, flagsAndAttributes: uint32, templateFile: *opaque) -> *opaque
+pub extern func CreateFileA(
+    fileName: *char8,
+    desiredAccess: uint32,
+    shareMode: uint32,
+    securityAttributes: *opaque,
+    creationDisposition: uint32,
+    flagsAndAttributes: uint32,
+    templateFile: *opaque
+) -> *opaque
 ```
 
 Creates or opens a file or I/O device.
@@ -335,7 +373,10 @@ Creates or opens a file or I/O device.
 <h2 id="get-file-size-ex"><code>GetFileSizeEx</code></h2>
 
 ```rux
-pub extern func GetFileSizeEx(file: *opaque, size: *int64) -> bool32
+pub extern func GetFileSizeEx(
+    file: *opaque,
+    size: *int64
+) -> bool32
 ```
 
 Retrieves the size of the specified file.
@@ -356,7 +397,13 @@ Retrieves the size of the specified file.
 <h2 id="read-file"><code>ReadFile</code></h2>
 
 ```rux
-pub extern func ReadFile(file: *opaque, buffer: *opaque, numberOfBytesToRead: uint32, numberOfBytesRead: *uint32, overlapped: *opaque) -> bool32
+pub extern func ReadFile(
+    file: *opaque,
+    buffer: *opaque,
+    numberOfBytesToRead: uint32,
+    numberOfBytesRead: *uint32,
+    overlapped: *opaque
+) -> bool32
 ```
 
 Reads data from the specified file or input/output (I/O) device.
@@ -380,7 +427,12 @@ Reads data from the specified file or input/output (I/O) device.
 <h2 id="set-file-pointer-ex"><code>SetFilePointerEx</code></h2>
 
 ```rux
-pub extern func SetFilePointerEx(file: *opaque, distanceToMov: int64, newFilePointer: *int64, moveMethod: uint32) -> bool32
+pub extern func SetFilePointerEx(
+    file: *opaque,
+    distanceToMov: int64,
+    newFilePointer: *int64,
+    moveMethod: uint32
+) -> bool32
 ```
 
 Moves the file pointer of the specified file.
@@ -403,7 +455,13 @@ Moves the file pointer of the specified file.
 <h2 id="write-file"><code>WriteFile</code></h2>
 
 ```rux
-pub extern func WriteFile(file: *opaque, buffer: *opaque, bytesToWrite: uint32, bytesWritten: *uint32, overlapped: *opaque) -> bool32
+pub extern func WriteFile(
+    file: *opaque,
+    buffer: *opaque,
+    bytesToWrite: uint32,
+    bytesWritten: *uint32,
+    overlapped: *opaque
+) -> bool32
 ```
 
 Writes data to the specified file or input/output (I/O) device.

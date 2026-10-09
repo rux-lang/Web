@@ -68,7 +68,10 @@ Cannot fail; runs in constant time and allocates nothing.
 <h2 id="write-invalid-escape"><code>WriteInvalidEscape</code></h2>
 
 ```rux
-pub func WriteInvalidEscape(writer: &var TextWriter, value: uint64) -> ! FormatError
+pub func WriteInvalidEscape(
+    writer: &var TextWriter,
+    value: uint64
+) -> ! FormatError
 ```
 
 Writes the escape for a value that is not a character, preserving exactly what it was.
@@ -91,7 +94,11 @@ Reports whatever the writer reported, stopping at the first refusal.
 <h2 id="write-character-debug"><code>WriteCharacterDebug</code></h2>
 
 ```rux
-pub func WriteCharacterDebug(writer: &var TextWriter, value: uint64, whole: bool) -> ! FormatError
+pub func WriteCharacterDebug(
+    writer: &var TextWriter,
+    value: uint64,
+    whole: bool
+) -> ! FormatError
 ```
 
 Writes one character's `Debug` form: quoted, and preserved exactly when it is not a character.
@@ -116,7 +123,10 @@ Reports whatever the writer reported, stopping at the first refusal.
 <h2 id="write-escaped-scalar"><code>WriteEscapedScalar</code></h2>
 
 ```rux
-pub func WriteEscapedScalar(writer: &var TextWriter, scalar: uint32) -> ! FormatError
+pub func WriteEscapedScalar(
+    writer: &var TextWriter,
+    scalar: uint32
+) -> ! FormatError
 ```
 
 Writes one scalar as it appears inside a quoted rendering, escaping what would otherwise be ambiguous.
@@ -139,7 +149,12 @@ caller checks before calling.
 <h2 id="measure-padding"><code>MeasurePadding</code></h2>
 
 ```rux
-pub func MeasurePadding(spec: FormatSpec, occupied: uint, before: *var uint, after: *var uint)
+pub func MeasurePadding(
+    spec: FormatSpec,
+    occupied: uint,
+    before: *var uint,
+    after: *var uint
+)
 ```
 
 Reports how much fill a spec asks for on each side of a rendering `occupied` characters wide.
@@ -163,7 +178,11 @@ Cannot fail; runs in constant time and allocates nothing.
 <h2 id="format-scalar"><code>FormatScalar</code></h2>
 
 ```rux
-pub func FormatScalar(writer: &var TextWriter, spec: FormatSpec, scalar: char32) -> ! FormatError
+pub func FormatScalar(
+    writer: &var TextWriter,
+    spec: FormatSpec,
+    scalar: char32
+) -> ! FormatError
 ```
 
 Writes one character under `spec`'s width, fill and alignment.

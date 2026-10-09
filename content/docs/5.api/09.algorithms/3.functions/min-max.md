@@ -80,7 +80,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing.
 <h2 id="min-index-by"><code>MinIndexBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func MinIndexBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint?
+pub func MinIndexBy<T>(
+    items: T[..],
+    compare: func(T, T) -> Ordering
+) -> uint?
 ```
 
 The index of the smallest element of `items`, with `compare` deciding.
@@ -108,7 +111,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="max-index-by"><code>MaxIndexBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func MaxIndexBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint?
+pub func MaxIndexBy<T>(
+    items: T[..],
+    compare: func(T, T) -> Ordering
+) -> uint?
 ```
 
 The index of the largest element of `items`, with `compare` deciding.
@@ -136,7 +142,11 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="min-max-index"><code>MinMaxIndex&lt;T&gt;</code></h2>
 
 ```rux
-pub func MinMaxIndex<T>(items: T[..], smallest: *var uint, largest: *var uint) -> bool
+pub func MinMaxIndex<T>(
+    items: T[..],
+    smallest: *var uint,
+    largest: *var uint
+) -> bool
 ```
 
 The indices of the smallest and largest elements of `items`, in one pass.
@@ -170,7 +180,12 @@ Cannot fail. Runs in time proportional to the length and allocates nothing.
 <h2 id="min-max-index-by"><code>MinMaxIndexBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func MinMaxIndexBy<T>(items: T[..], compare: func(T, T) -> Ordering, smallest: *var uint, largest: *var uint) -> bool
+pub func MinMaxIndexBy<T>(
+    items: T[..],
+    compare: func(T, T) -> Ordering,
+    smallest: *var uint,
+    largest: *var uint
+) -> bool
 ```
 
 The indices of the smallest and largest elements of `items`, in one pass, with `compare` deciding.
@@ -285,7 +300,12 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="clamp-by"><code>ClampBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func ClampBy<T>(value: T, low: T, high: T, compare: func(T, T) -> Ordering) -> T
+pub func ClampBy<T>(
+    value: T,
+    low: T,
+    high: T,
+    compare: func(T, T) -> Ordering
+) -> T
 ```
 
 `value` brought into the range `low` to `high`, with `compare` deciding.

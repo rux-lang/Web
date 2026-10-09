@@ -465,6 +465,75 @@ export function signatureParams(signature) {
     .filter((param) => param.name !== "self");
 }
 
+/** Past this length a declaration with two or more parameters is shown one parameter per line. */
+export const SIGNATURE_WIDTH = 60;
+
+/**
+ * A long function declaration with one parameter per line, the way rustdoc and
+ * Swift's documentation show them:
+ *
+ *     func Reallocate(
+ *         block: *var opaque,
+ *         oldLayout: Layout,
+ *         newLayout: Layout
+ *     ) -> (*var opaque) ! AllocError
+ *
+ * A phone's code block holds about forty mono characters, so a one-line
+ * signature of 80 to 200 had to be read by scrolling sideways. A short one, or
+ * one with a single parameter, stays on its line, which reads better on a wide
+ * screen. Only the signature fence wraps: the overload and deprecation tables
+ * collapse whitespace back into one line.
+ */
+export function wrapSignature(line) {
+  if (line.length <= SIGNATURE_WIDTH || !/^\s*(?:\w+\s+)*func\b/.test(line)) return line;
+  // The parameter list opens at the first `(` outside a generic `<…>`.
+  let open = -1;
+  for (let index = 0, depth = 0; index < line.length; index++) {
+    const char = line[index];
+    if (char === "<") depth++;
+    else if (char === ">" && line[index - 1] !== "-") depth--;
+    else if (char === "(" && depth === 0) {
+      open = index;
+      break;
+    }
+  }
+  if (open === -1) return line;
+  const params = [];
+  let close = -1;
+  let current = "";
+  let quote = "";
+  for (let index = open + 1, nesting = 0; index < line.length; index++) {
+    const char = line[index];
+    if (quote) {
+      if (char === quote && line[index - 1] !== "\\") quote = "";
+    } else if (char === '"' || char === "'") quote = char;
+    else if ("([{<".includes(char)) nesting++;
+    else if (")]}".includes(char) || (char === ">" && line[index - 1] !== "-")) {
+      if (nesting === 0) {
+        close = index;
+        break;
+      }
+      nesting--;
+    } else if (char === "," && nesting === 0) {
+      params.push(current.trim());
+      current = "";
+      continue;
+    }
+    current += char;
+  }
+  params.push(current.trim());
+  if (close === -1 || params.length < 2 || params.some((param) => !param)) return line;
+  // A list this scan misread (a `<` that was an operator in a default value)
+  // would not join back into the line; leave such a one as it is.
+  if (`${line.slice(0, open + 1)}${params.join(", ")}${line.slice(close)}` !== line) return line;
+  const indent = line.match(/^\s*/)[0];
+  return [
+    line.slice(0, open + 1),
+    ...params.map((param, index) => `${indent}    ${param}${index < params.length - 1 ? "," : ""}`),
+    `${indent}${line.slice(close)}`,
+  ].join("\n");
+}
+
 /**
  * A constant's declaration with its initializer. A generated table (Unicode's
  * `uint32[N] = [...]`) would print hundreds of lines, so an initializer that
@@ -720,7 +789,7 @@ function signatureFence(ctx, unordered, signatureOf) {
   const notes = set.map((entry) => availability(entry.targets, ctx.targets));
   const annotate = set.length > 1 && notes.some((note) => note !== notes[0]);
   const blocks = set.map((entry, index) => {
-    const signature = signatureOf(entry);
+    const signature = signatureOf(entry).split("\n").map(wrapSignature).join("\n");
     return annotate ? `// ${notes[index] ?? "Every target"}\n${signature}` : signature;
   });
   const separator = annotate || blocks.some((block) => block.includes("\n")) ? "\n\n" : "\n";

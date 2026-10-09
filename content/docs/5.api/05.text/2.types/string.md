@@ -63,7 +63,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="from-validated"><code>FromValidated</code></h3>
 
 ```rux
-pub func FromValidated(allocator: Allocator, bytes: char8[..]) -> String ! TextError
+pub func FromValidated(
+    allocator: Allocator,
+    bytes: char8[..]
+) -> String ! TextError
 ```
 
 A copy of bytes the caller vouches are UTF-8.
@@ -85,7 +88,10 @@ answers rather than errors.
 <h3 id="from-bytes"><code>FromBytes</code></h3>
 
 ```rux
-pub func FromBytes(allocator: Allocator, bytes: char8[..]) -> String ! TextError
+pub func FromBytes(
+    allocator: Allocator,
+    bytes: char8[..]
+) -> String ! TextError
 ```
 
 A copy of `bytes` as text, or why it could not be made.
@@ -105,7 +111,10 @@ Runs in time proportional to the length — one pass to check, one to copy — a
 <h3 id="from-view"><code>FromView</code></h3>
 
 ```rux
-pub func FromView(allocator: Allocator, view: StringView) -> String ! TextError
+pub func FromView(
+    allocator: Allocator,
+    view: StringView
+) -> String ! TextError
 ```
 
 A copy of what `view` spans.
@@ -203,7 +212,11 @@ Whether `index` is where a character starts, and so a place the text may be cut.
 <h3 id="part"><code>Part</code></h3>
 
 ```rux
-pub func Part(self: &String, start: uint, end: uint) -> StringView?
+pub func Part(
+    self: &String,
+    start: uint,
+    end: uint
+) -> StringView?
 ```
 
 A borrowed view of the part from `start` up to `end`, or `none` when either end is not a boundary.
@@ -222,7 +235,11 @@ makes an owning copy.
 <h3 id="substring"><code>Substring</code></h3>
 
 ```rux
-pub func Substring(self: &String, start: uint, end: uint) -> String ! TextError
+pub func Substring(
+    self: &String,
+    start: uint,
+    end: uint
+) -> String ! TextError
 ```
 
 An owning copy of the part from `start` up to `end`.
@@ -334,7 +351,11 @@ when failure must be handled. The source remains valid and unchanged.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &String, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &String,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes this string's bytes.
@@ -356,7 +377,11 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style, sinc
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &String, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &String,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes this string quoted and escaped.

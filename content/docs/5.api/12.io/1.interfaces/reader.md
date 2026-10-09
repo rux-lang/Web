@@ -23,7 +23,10 @@ Somewhere bytes come from.
 
 ```rux
 pub interface Reader {
-    func Read(self: &var Self, into: var char8[..]) -> uint ! IoError;
+    func Read(
+        self: &var Self,
+        into: var char8[..]
+    ) -> uint ! IoError;
 }
 ```
 
@@ -32,7 +35,10 @@ pub interface Reader {
 <h3 id="read"><code>Read</code></h3>
 
 ```rux
-func Read(self: &var Self, into: var char8[..]) -> uint ! IoError
+func Read(
+    self: &var Self,
+    into: var char8[..]
+) -> uint ! IoError
 ```
 
 Fills what it can of `into` and succeeds with how much.
@@ -70,7 +76,10 @@ moved nothing, which is a stream that will never finish the job.
 <h3 id="read-exact"><code>ReadExact</code></h3>
 
 ```rux
-pub func ReadExact(reader: &var Reader, into: var char8[..]) -> ! IoError
+pub func ReadExact(
+    reader: &var Reader,
+    into: var char8[..]
+) -> ! IoError
 ```
 
 Fills all of `into`, looping over partial reads, or says why it could not.

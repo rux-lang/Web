@@ -45,7 +45,10 @@ interchange, where the offset is part of what was recorded and losing it changes
 <h3 id="new"><code>OffsetDateTime</code></h3>
 
 ```rux
-pub func OffsetDateTime(dateTime: DateTime, offset: UtcOffset) -> OffsetDateTime
+pub func OffsetDateTime(
+    dateTime: DateTime,
+    offset: UtcOffset
+) -> OffsetDateTime
 ```
 
 The local date and time `dateTime` paired with the offset it is stated in.
@@ -83,7 +86,11 @@ Cannot fail; runs in constant time and allocates nothing.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &OffsetDateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &OffsetDateTime,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the moment as RFC 3339: `YYYY-MM-DDTHH:MM:SS[.fraction]` followed by `Z` or a signed `HH:MM`.
@@ -109,7 +116,11 @@ and `UnsupportedRequest` for a precision past nine.
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &OffsetDateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &OffsetDateTime,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The same text as `Display`.

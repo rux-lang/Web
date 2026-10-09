@@ -50,7 +50,10 @@ A generator seeded by spreading `seed` through [`SplitMix64`](/docs/api/random/s
 <h3 id="with-stream"><code>WithStream</code></h3>
 
 ```rux
-pub func WithStream(seed: uint64, stream: uint64) -> Pcg64Dxsm
+pub func WithStream(
+    seed: uint64,
+    stream: uint64
+) -> Pcg64Dxsm
 ```
 
 A generator on the stream `stream` selects.

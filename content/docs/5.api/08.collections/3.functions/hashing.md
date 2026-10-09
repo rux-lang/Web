@@ -24,7 +24,11 @@ Ready-made seeded hash and equality callbacks for the key types a hash map or se
 <h2 id="hash-uint"><code>HashUint</code></h2>
 
 ```rux
-pub func HashUint(value: uint, low: uint64, high: uint64) -> uint64
+pub func HashUint(
+    value: uint,
+    low: uint64,
+    high: uint64
+) -> uint64
 ```
 
 The seeded hash of a `uint`.
@@ -47,7 +51,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="hash-uint64"><code>HashUint64</code></h2>
 
 ```rux
-pub func HashUint64(value: uint64, low: uint64, high: uint64) -> uint64
+pub func HashUint64(
+    value: uint64,
+    low: uint64,
+    high: uint64
+) -> uint64
 ```
 
 The seeded hash of a `uint64`.
@@ -67,7 +75,11 @@ The seeded hash of a `uint64`.
 <h2 id="hash-uint32"><code>HashUint32</code></h2>
 
 ```rux
-pub func HashUint32(value: uint32, low: uint64, high: uint64) -> uint64
+pub func HashUint32(
+    value: uint32,
+    low: uint64,
+    high: uint64
+) -> uint64
 ```
 
 The seeded hash of a `uint32`.
@@ -87,7 +99,11 @@ The seeded hash of a `uint32`.
 <h2 id="hash-int64"><code>HashInt64</code></h2>
 
 ```rux
-pub func HashInt64(value: int64, low: uint64, high: uint64) -> uint64
+pub func HashInt64(
+    value: int64,
+    low: uint64,
+    high: uint64
+) -> uint64
 ```
 
 The seeded hash of an `int64`.
@@ -107,7 +123,11 @@ The seeded hash of an `int64`.
 <h2 id="hash-int32"><code>HashInt32</code></h2>
 
 ```rux
-pub func HashInt32(value: int32, low: uint64, high: uint64) -> uint64
+pub func HashInt32(
+    value: int32,
+    low: uint64,
+    high: uint64
+) -> uint64
 ```
 
 The seeded hash of an `int32`.
@@ -127,7 +147,11 @@ The seeded hash of an `int32`.
 <h2 id="hash-char8"><code>HashChar8</code></h2>
 
 ```rux
-pub func HashChar8(value: char8, low: uint64, high: uint64) -> uint64
+pub func HashChar8(
+    value: char8,
+    low: uint64,
+    high: uint64
+) -> uint64
 ```
 
 The seeded hash of a `char8`.
@@ -147,7 +171,11 @@ The seeded hash of a `char8`.
 <h2 id="hash-slice"><code>HashSlice</code></h2>
 
 ```rux
-pub func HashSlice(text: char8[..], low: uint64, high: uint64) -> uint64
+pub func HashSlice(
+    text: char8[..],
+    low: uint64,
+    high: uint64
+) -> uint64
 ```
 
 The seeded hash of a run of characters, which is what a string key comes to.
@@ -284,7 +312,10 @@ Whether two `char8` keys are the same.
 <h2 id="equals-slice"><code>EqualsSlice</code></h2>
 
 ```rux
-pub func EqualsSlice(left: char8[..], right: char8[..]) -> bool
+pub func EqualsSlice(
+    left: char8[..],
+    right: char8[..]
+) -> bool
 ```
 
 Whether two runs of characters hold the same characters.

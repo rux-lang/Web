@@ -34,7 +34,11 @@ The first Hangul syllable, LV and LVT composition's base.
 <h2 id="decompose-canonical"><code>DecomposeCanonical</code></h2>
 
 ```rux
-pub func DecomposeCanonical(text: char32[..], into: var char32[..], written: *var uint) -> bool
+pub func DecomposeCanonical(
+    text: char32[..],
+    into: var char32[..],
+    written: *var uint
+) -> bool
 ```
 
 Writes the canonical decomposition of `text` into `into`, marks in canonical order: NFD.
@@ -57,7 +61,11 @@ decompositions are fully expanded in the tables, so nothing recurses.
 <h2 id="decompose-compatibility"><code>DecomposeCompatibility</code></h2>
 
 ```rux
-pub func DecomposeCompatibility(text: char32[..], into: var char32[..], written: *var uint) -> bool
+pub func DecomposeCompatibility(
+    text: char32[..],
+    into: var char32[..],
+    written: *var uint
+) -> bool
 ```
 
 Writes the compatibility decomposition of `text` into `into`, marks in canonical order: NFKD.
@@ -78,7 +86,11 @@ Writes the compatibility decomposition of `text` into `into`, marks in canonical
 <h2 id="normalize-canonical"><code>NormalizeCanonical</code></h2>
 
 ```rux
-pub func NormalizeCanonical(text: char32[..], into: var char32[..], written: *var uint) -> bool
+pub func NormalizeCanonical(
+    text: char32[..],
+    into: var char32[..],
+    written: *var uint
+) -> bool
 ```
 
 Writes the NFC of `text` into `into`: canonical decomposition, canonical order, then composition.
@@ -99,7 +111,11 @@ Writes the NFC of `text` into `into`: canonical decomposition, canonical order, 
 <h2 id="normalize-compatibility"><code>NormalizeCompatibility</code></h2>
 
 ```rux
-pub func NormalizeCompatibility(text: char32[..], into: var char32[..], written: *var uint) -> bool
+pub func NormalizeCompatibility(
+    text: char32[..],
+    into: var char32[..],
+    written: *var uint
+) -> bool
 ```
 
 Writes the NFKC of `text` into `into`: compatibility decomposition, canonical order, then composition.

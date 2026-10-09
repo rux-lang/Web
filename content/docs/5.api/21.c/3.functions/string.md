@@ -24,7 +24,11 @@ C's `<string.h>`: byte-string and raw memory operations.
 <h2 id="memchr"><code>memchr</code></h2>
 
 ```rux
-pub extern func memchr(ptr: *opaque, ch: c_int, count: size_t) -> *opaque
+pub extern func memchr(
+    ptr: *opaque,
+    ch: c_int,
+    count: size_t
+) -> *opaque
 ```
 
 Finds the first byte equal to `ch` within the first `count` bytes.
@@ -51,7 +55,11 @@ Runs in time proportional to `count` and allocates nothing.
 <h2 id="memcmp"><code>memcmp</code></h2>
 
 ```rux
-pub extern func memcmp(lhs: *opaque, rhs: *opaque, count: size_t) -> c_int
+pub extern func memcmp(
+    lhs: *opaque,
+    rhs: *opaque,
+    count: size_t
+) -> c_int
 ```
 
 Compares the first `count` bytes of two objects.
@@ -79,7 +87,11 @@ Both pointers must be readable for `count` bytes.
 <h2 id="memcpy"><code>memcpy</code></h2>
 
 ```rux
-pub extern func memcpy(dest: *var opaque, src: *opaque, count: size_t) -> *var opaque
+pub extern func memcpy(
+    dest: *var opaque,
+    src: *opaque,
+    count: size_t
+) -> *var opaque
 ```
 
 Copies `count` bytes from `src` to `dest`.
@@ -105,7 +117,11 @@ Runs in time proportional to `count` and allocates nothing.
 <h2 id="memmove"><code>memmove</code></h2>
 
 ```rux
-pub extern func memmove(dest: *var opaque, src: *opaque, count: size_t) -> *var opaque
+pub extern func memmove(
+    dest: *var opaque,
+    src: *opaque,
+    count: size_t
+) -> *var opaque
 ```
 
 Copies `count` bytes from `src` to `dest`, correctly even when the two overlap.
@@ -131,7 +147,11 @@ Runs in time proportional to `count` and allocates nothing.
 <h2 id="memset"><code>memset</code></h2>
 
 ```rux
-pub extern func memset(dest: *var opaque, ch: c_int, count: size_t) -> *var opaque
+pub extern func memset(
+    dest: *var opaque,
+    ch: c_int,
+    count: size_t
+) -> *var opaque
 ```
 
 Writes `ch` to each of the first `count` bytes of `dest`.
@@ -206,7 +226,11 @@ Both must be non-null and terminated.
 <h2 id="strncmp"><code>strncmp</code></h2>
 
 ```rux
-pub extern func strncmp(lhs: *char8, rhs: *char8, count: size_t) -> c_int
+pub extern func strncmp(
+    lhs: *char8,
+    rhs: *char8,
+    count: size_t
+) -> c_int
 ```
 
 Compares at most `count` bytes of two byte strings.
@@ -232,7 +256,10 @@ Both must be readable until a terminator or `count` bytes, whichever comes first
 <h2 id="strcpy"><code>strcpy</code></h2>
 
 ```rux
-pub extern func strcpy(dest: *var char8, src: *char8) -> *var char8
+pub extern func strcpy(
+    dest: *var char8,
+    src: *char8
+) -> *var char8
 ```
 
 Copies a byte string, terminator included.
@@ -257,7 +284,11 @@ Getting that wrong is the classic buffer overrun; prefer [`memcpy`](/docs/api/c/
 <h2 id="strncpy"><code>strncpy</code></h2>
 
 ```rux
-pub extern func strncpy(dest: *var char8, src: *char8, count: size_t) -> *var char8
+pub extern func strncpy(
+    dest: *var char8,
+    src: *char8,
+    count: size_t
+) -> *var char8
 ```
 
 Copies at most `count` bytes of a byte string, padding with zeros.
@@ -284,7 +315,10 @@ bytes or longer, which is the trap in its name: it is not a bounded [`strcpy`](/
 <h2 id="strcat"><code>strcat</code></h2>
 
 ```rux
-pub extern func strcat(dest: *var char8, src: *char8) -> *var char8
+pub extern func strcat(
+    dest: *var char8,
+    src: *char8
+) -> *var char8
 ```
 
 Appends a byte string to the end of another.
@@ -309,7 +343,11 @@ is a common accident: each call walks the destination from its start.
 <h2 id="strncat"><code>strncat</code></h2>
 
 ```rux
-pub extern func strncat(dest: *var char8, src: *char8, count: size_t) -> *var char8
+pub extern func strncat(
+    dest: *var char8,
+    src: *char8,
+    count: size_t
+) -> *var char8
 ```
 
 Appends at most `count` bytes of a byte string to the end of another.
@@ -386,7 +424,10 @@ Runs in time proportional to the string's length and allocates nothing.
 <h2 id="strstr"><code>strstr</code></h2>
 
 ```rux
-pub extern func strstr(haystack: *char8, needle: *char8) -> *char8
+pub extern func strstr(
+    haystack: *char8,
+    needle: *char8
+) -> *char8
 ```
 
 Finds the first occurrence of one byte string within another.
@@ -411,7 +452,10 @@ Both must be non-null and terminated.
 <h2 id="strspn"><code>strspn</code></h2>
 
 ```rux
-pub extern func strspn(str: *char8, accept: *char8) -> size_t
+pub extern func strspn(
+    str: *char8,
+    accept: *char8
+) -> size_t
 ```
 
 The length of the leading run of bytes drawn only from `accept`.
@@ -436,7 +480,10 @@ Both must be non-null and terminated.
 <h2 id="strcspn"><code>strcspn</code></h2>
 
 ```rux
-pub extern func strcspn(str: *char8, reject: *char8) -> size_t
+pub extern func strcspn(
+    str: *char8,
+    reject: *char8
+) -> size_t
 ```
 
 The length of the leading run of bytes drawn from none of `reject`.
@@ -460,7 +507,10 @@ Both must be non-null and terminated.
 <h2 id="strpbrk"><code>strpbrk</code></h2>
 
 ```rux
-pub extern func strpbrk(str: *char8, accept: *char8) -> *char8
+pub extern func strpbrk(
+    str: *char8,
+    accept: *char8
+) -> *char8
 ```
 
 Finds the first byte of `str` that occurs in `accept`.
@@ -483,7 +533,10 @@ Both must be non-null and terminated.
 <h2 id="strtok"><code>strtok</code></h2>
 
 ```rux
-pub extern func strtok(str: *var char8, delimiters: *char8) -> *char8
+pub extern func strtok(
+    str: *var char8,
+    delimiters: *char8
+) -> *char8
 ```
 
 Splits a byte string into tokens separated by any byte of `delimiters`.

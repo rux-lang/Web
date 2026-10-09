@@ -44,7 +44,11 @@ A byte order: which end of a multi-byte value comes first.
 <h2 id="read-word"><code>ReadWord</code></h2>
 
 ```rux
-pub func ReadWord(reader: &var Reader, endian: Endian, width: uint) -> uint512 ! IoError
+pub func ReadWord(
+    reader: &var Reader,
+    endian: Endian,
+    width: uint
+) -> uint512 ! IoError
 ```
 
 Reads a `width`-byte unsigned word in the given order, into the low bytes of the result.
@@ -66,7 +70,12 @@ itself is a runtime quantity.
 <h2 id="write-word"><code>WriteWord</code></h2>
 
 ```rux
-pub func WriteWord(writer: &var Writer, endian: Endian, width: uint, value: uint512) -> ! IoError
+pub func WriteWord(
+    writer: &var Writer,
+    endian: Endian,
+    width: uint,
+    value: uint512
+) -> ! IoError
 ```
 
 Writes the low `width` bytes of `value` in the given order.
@@ -87,7 +96,10 @@ Writes the low `width` bytes of `value` in the given order.
 <h2 id="read-uint8"><code>ReadUint8</code></h2>
 
 ```rux
-pub func ReadUint8(reader: &var Reader, endian: Endian) -> uint8 ! IoError
+pub func ReadUint8(
+    reader: &var Reader,
+    endian: Endian
+) -> uint8 ! IoError
 ```
 
 Reads a `uint8` in the given order.
@@ -106,7 +118,11 @@ Reads a `uint8` in the given order.
 <h2 id="write-uint8"><code>WriteUint8</code></h2>
 
 ```rux
-pub func WriteUint8(writer: &var Writer, endian: Endian, value: uint8) -> ! IoError
+pub func WriteUint8(
+    writer: &var Writer,
+    endian: Endian,
+    value: uint8
+) -> ! IoError
 ```
 
 Writes a `uint8` in the given order.
@@ -126,7 +142,10 @@ Writes a `uint8` in the given order.
 <h2 id="read-int8"><code>ReadInt8</code></h2>
 
 ```rux
-pub func ReadInt8(reader: &var Reader, endian: Endian) -> int8 ! IoError
+pub func ReadInt8(
+    reader: &var Reader,
+    endian: Endian
+) -> int8 ! IoError
 ```
 
 Reads an `int8`: the unsigned bytes, reinterpreted in two's complement.
@@ -145,7 +164,11 @@ Reads an `int8`: the unsigned bytes, reinterpreted in two's complement.
 <h2 id="write-int8"><code>WriteInt8</code></h2>
 
 ```rux
-pub func WriteInt8(writer: &var Writer, endian: Endian, value: int8) -> ! IoError
+pub func WriteInt8(
+    writer: &var Writer,
+    endian: Endian,
+    value: int8
+) -> ! IoError
 ```
 
 Writes an `int8`: its two's-complement bytes, unchanged.
@@ -165,7 +188,10 @@ Writes an `int8`: its two's-complement bytes, unchanged.
 <h2 id="read-uint16"><code>ReadUint16</code></h2>
 
 ```rux
-pub func ReadUint16(reader: &var Reader, endian: Endian) -> uint16 ! IoError
+pub func ReadUint16(
+    reader: &var Reader,
+    endian: Endian
+) -> uint16 ! IoError
 ```
 
 Reads a `uint16` in the given order.
@@ -184,7 +210,11 @@ Reads a `uint16` in the given order.
 <h2 id="write-uint16"><code>WriteUint16</code></h2>
 
 ```rux
-pub func WriteUint16(writer: &var Writer, endian: Endian, value: uint16) -> ! IoError
+pub func WriteUint16(
+    writer: &var Writer,
+    endian: Endian,
+    value: uint16
+) -> ! IoError
 ```
 
 Writes a `uint16` in the given order.
@@ -204,7 +234,10 @@ Writes a `uint16` in the given order.
 <h2 id="read-int16"><code>ReadInt16</code></h2>
 
 ```rux
-pub func ReadInt16(reader: &var Reader, endian: Endian) -> int16 ! IoError
+pub func ReadInt16(
+    reader: &var Reader,
+    endian: Endian
+) -> int16 ! IoError
 ```
 
 Reads an `int16`: the unsigned bytes, reinterpreted in two's complement.
@@ -223,7 +256,11 @@ Reads an `int16`: the unsigned bytes, reinterpreted in two's complement.
 <h2 id="write-int16"><code>WriteInt16</code></h2>
 
 ```rux
-pub func WriteInt16(writer: &var Writer, endian: Endian, value: int16) -> ! IoError
+pub func WriteInt16(
+    writer: &var Writer,
+    endian: Endian,
+    value: int16
+) -> ! IoError
 ```
 
 Writes an `int16`: its two's-complement bytes, unchanged.
@@ -243,7 +280,10 @@ Writes an `int16`: its two's-complement bytes, unchanged.
 <h2 id="read-uint32"><code>ReadUint32</code></h2>
 
 ```rux
-pub func ReadUint32(reader: &var Reader, endian: Endian) -> uint32 ! IoError
+pub func ReadUint32(
+    reader: &var Reader,
+    endian: Endian
+) -> uint32 ! IoError
 ```
 
 Reads a `uint32` in the given order.
@@ -262,7 +302,11 @@ Reads a `uint32` in the given order.
 <h2 id="write-uint32"><code>WriteUint32</code></h2>
 
 ```rux
-pub func WriteUint32(writer: &var Writer, endian: Endian, value: uint32) -> ! IoError
+pub func WriteUint32(
+    writer: &var Writer,
+    endian: Endian,
+    value: uint32
+) -> ! IoError
 ```
 
 Writes a `uint32` in the given order.
@@ -282,7 +326,10 @@ Writes a `uint32` in the given order.
 <h2 id="read-int32"><code>ReadInt32</code></h2>
 
 ```rux
-pub func ReadInt32(reader: &var Reader, endian: Endian) -> int32 ! IoError
+pub func ReadInt32(
+    reader: &var Reader,
+    endian: Endian
+) -> int32 ! IoError
 ```
 
 Reads an `int32`: the unsigned bytes, reinterpreted in two's complement.
@@ -301,7 +348,11 @@ Reads an `int32`: the unsigned bytes, reinterpreted in two's complement.
 <h2 id="write-int32"><code>WriteInt32</code></h2>
 
 ```rux
-pub func WriteInt32(writer: &var Writer, endian: Endian, value: int32) -> ! IoError
+pub func WriteInt32(
+    writer: &var Writer,
+    endian: Endian,
+    value: int32
+) -> ! IoError
 ```
 
 Writes an `int32`: its two's-complement bytes, unchanged.
@@ -321,7 +372,10 @@ Writes an `int32`: its two's-complement bytes, unchanged.
 <h2 id="read-uint64"><code>ReadUint64</code></h2>
 
 ```rux
-pub func ReadUint64(reader: &var Reader, endian: Endian) -> uint64 ! IoError
+pub func ReadUint64(
+    reader: &var Reader,
+    endian: Endian
+) -> uint64 ! IoError
 ```
 
 Reads a `uint64` in the given order.
@@ -340,7 +394,11 @@ Reads a `uint64` in the given order.
 <h2 id="write-uint64"><code>WriteUint64</code></h2>
 
 ```rux
-pub func WriteUint64(writer: &var Writer, endian: Endian, value: uint64) -> ! IoError
+pub func WriteUint64(
+    writer: &var Writer,
+    endian: Endian,
+    value: uint64
+) -> ! IoError
 ```
 
 Writes a `uint64` in the given order.
@@ -360,7 +418,10 @@ Writes a `uint64` in the given order.
 <h2 id="read-int64"><code>ReadInt64</code></h2>
 
 ```rux
-pub func ReadInt64(reader: &var Reader, endian: Endian) -> int64 ! IoError
+pub func ReadInt64(
+    reader: &var Reader,
+    endian: Endian
+) -> int64 ! IoError
 ```
 
 Reads an `int64`: the unsigned bytes, reinterpreted in two's complement.
@@ -379,7 +440,11 @@ Reads an `int64`: the unsigned bytes, reinterpreted in two's complement.
 <h2 id="write-int64"><code>WriteInt64</code></h2>
 
 ```rux
-pub func WriteInt64(writer: &var Writer, endian: Endian, value: int64) -> ! IoError
+pub func WriteInt64(
+    writer: &var Writer,
+    endian: Endian,
+    value: int64
+) -> ! IoError
 ```
 
 Writes an `int64`: its two's-complement bytes, unchanged.
@@ -399,7 +464,10 @@ Writes an `int64`: its two's-complement bytes, unchanged.
 <h2 id="read-uint128"><code>ReadUint128</code></h2>
 
 ```rux
-pub func ReadUint128(reader: &var Reader, endian: Endian) -> uint128 ! IoError
+pub func ReadUint128(
+    reader: &var Reader,
+    endian: Endian
+) -> uint128 ! IoError
 ```
 
 Reads a `uint128` in the given order.
@@ -418,7 +486,11 @@ Reads a `uint128` in the given order.
 <h2 id="write-uint128"><code>WriteUint128</code></h2>
 
 ```rux
-pub func WriteUint128(writer: &var Writer, endian: Endian, value: uint128) -> ! IoError
+pub func WriteUint128(
+    writer: &var Writer,
+    endian: Endian,
+    value: uint128
+) -> ! IoError
 ```
 
 Writes a `uint128` in the given order.
@@ -438,7 +510,10 @@ Writes a `uint128` in the given order.
 <h2 id="read-int128"><code>ReadInt128</code></h2>
 
 ```rux
-pub func ReadInt128(reader: &var Reader, endian: Endian) -> int128 ! IoError
+pub func ReadInt128(
+    reader: &var Reader,
+    endian: Endian
+) -> int128 ! IoError
 ```
 
 Reads an `int128`: the unsigned bytes, reinterpreted in two's complement.
@@ -457,7 +532,11 @@ Reads an `int128`: the unsigned bytes, reinterpreted in two's complement.
 <h2 id="write-int128"><code>WriteInt128</code></h2>
 
 ```rux
-pub func WriteInt128(writer: &var Writer, endian: Endian, value: int128) -> ! IoError
+pub func WriteInt128(
+    writer: &var Writer,
+    endian: Endian,
+    value: int128
+) -> ! IoError
 ```
 
 Writes an `int128`: its two's-complement bytes, unchanged.
@@ -477,7 +556,10 @@ Writes an `int128`: its two's-complement bytes, unchanged.
 <h2 id="read-uint256"><code>ReadUint256</code></h2>
 
 ```rux
-pub func ReadUint256(reader: &var Reader, endian: Endian) -> uint256 ! IoError
+pub func ReadUint256(
+    reader: &var Reader,
+    endian: Endian
+) -> uint256 ! IoError
 ```
 
 Reads a `uint256` in the given order.
@@ -496,7 +578,11 @@ Reads a `uint256` in the given order.
 <h2 id="write-uint256"><code>WriteUint256</code></h2>
 
 ```rux
-pub func WriteUint256(writer: &var Writer, endian: Endian, value: uint256) -> ! IoError
+pub func WriteUint256(
+    writer: &var Writer,
+    endian: Endian,
+    value: uint256
+) -> ! IoError
 ```
 
 Writes a `uint256` in the given order.
@@ -516,7 +602,10 @@ Writes a `uint256` in the given order.
 <h2 id="read-int256"><code>ReadInt256</code></h2>
 
 ```rux
-pub func ReadInt256(reader: &var Reader, endian: Endian) -> int256 ! IoError
+pub func ReadInt256(
+    reader: &var Reader,
+    endian: Endian
+) -> int256 ! IoError
 ```
 
 Reads an `int256`: the unsigned bytes, reinterpreted in two's complement.
@@ -535,7 +624,11 @@ Reads an `int256`: the unsigned bytes, reinterpreted in two's complement.
 <h2 id="write-int256"><code>WriteInt256</code></h2>
 
 ```rux
-pub func WriteInt256(writer: &var Writer, endian: Endian, value: int256) -> ! IoError
+pub func WriteInt256(
+    writer: &var Writer,
+    endian: Endian,
+    value: int256
+) -> ! IoError
 ```
 
 Writes an `int256`: its two's-complement bytes, unchanged.
@@ -555,7 +648,10 @@ Writes an `int256`: its two's-complement bytes, unchanged.
 <h2 id="read-uint512"><code>ReadUint512</code></h2>
 
 ```rux
-pub func ReadUint512(reader: &var Reader, endian: Endian) -> uint512 ! IoError
+pub func ReadUint512(
+    reader: &var Reader,
+    endian: Endian
+) -> uint512 ! IoError
 ```
 
 Reads a `uint512` in the given order.
@@ -574,7 +670,11 @@ Reads a `uint512` in the given order.
 <h2 id="write-uint512"><code>WriteUint512</code></h2>
 
 ```rux
-pub func WriteUint512(writer: &var Writer, endian: Endian, value: uint512) -> ! IoError
+pub func WriteUint512(
+    writer: &var Writer,
+    endian: Endian,
+    value: uint512
+) -> ! IoError
 ```
 
 Writes a `uint512` in the given order.
@@ -594,7 +694,10 @@ Writes a `uint512` in the given order.
 <h2 id="read-int512"><code>ReadInt512</code></h2>
 
 ```rux
-pub func ReadInt512(reader: &var Reader, endian: Endian) -> int512 ! IoError
+pub func ReadInt512(
+    reader: &var Reader,
+    endian: Endian
+) -> int512 ! IoError
 ```
 
 Reads an `int512`: the unsigned bytes, reinterpreted in two's complement.
@@ -613,7 +716,11 @@ Reads an `int512`: the unsigned bytes, reinterpreted in two's complement.
 <h2 id="write-int512"><code>WriteInt512</code></h2>
 
 ```rux
-pub func WriteInt512(writer: &var Writer, endian: Endian, value: int512) -> ! IoError
+pub func WriteInt512(
+    writer: &var Writer,
+    endian: Endian,
+    value: int512
+) -> ! IoError
 ```
 
 Writes an `int512`: its two's-complement bytes, unchanged.
@@ -633,7 +740,10 @@ Writes an `int512`: its two's-complement bytes, unchanged.
 <h2 id="read-float32"><code>ReadFloat32</code></h2>
 
 ```rux
-pub func ReadFloat32(reader: &var Reader, endian: Endian) -> float32 ! IoError
+pub func ReadFloat32(
+    reader: &var Reader,
+    endian: Endian
+) -> float32 ! IoError
 ```
 
 Reads a `float32` as the IEEE 754 bit pattern of its width.
@@ -652,7 +762,11 @@ Reads a `float32` as the IEEE 754 bit pattern of its width.
 <h2 id="write-float32"><code>WriteFloat32</code></h2>
 
 ```rux
-pub func WriteFloat32(writer: &var Writer, endian: Endian, value: float32) -> ! IoError
+pub func WriteFloat32(
+    writer: &var Writer,
+    endian: Endian,
+    value: float32
+) -> ! IoError
 ```
 
 Writes a `float32` as the IEEE 754 bit pattern of its width.
@@ -672,7 +786,10 @@ Writes a `float32` as the IEEE 754 bit pattern of its width.
 <h2 id="read-float64"><code>ReadFloat64</code></h2>
 
 ```rux
-pub func ReadFloat64(reader: &var Reader, endian: Endian) -> float64 ! IoError
+pub func ReadFloat64(
+    reader: &var Reader,
+    endian: Endian
+) -> float64 ! IoError
 ```
 
 Reads a `float64` as the IEEE 754 bit pattern of its width.
@@ -691,7 +808,11 @@ Reads a `float64` as the IEEE 754 bit pattern of its width.
 <h2 id="write-float64"><code>WriteFloat64</code></h2>
 
 ```rux
-pub func WriteFloat64(writer: &var Writer, endian: Endian, value: float64) -> ! IoError
+pub func WriteFloat64(
+    writer: &var Writer,
+    endian: Endian,
+    value: float64
+) -> ! IoError
 ```
 
 Writes a `float64` as the IEEE 754 bit pattern of its width.

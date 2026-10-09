@@ -182,8 +182,15 @@ preserved, and a NaN or infinity passes through unchanged.
 <h2 id="round-to"><code>RoundTo</code></h2>
 
 ```rux
-pub func RoundTo(value: float64, mode: RoundingMode) -> float64
-pub func RoundTo(value: float32, mode: RoundingMode) -> float32
+pub func RoundTo(
+    value: float64,
+    mode: RoundingMode
+) -> float64
+
+pub func RoundTo(
+    value: float32,
+    mode: RoundingMode
+) -> float32
 ```
 
 Rounds `value` in the requested direction at `float32` precision.
@@ -207,7 +214,12 @@ Rounds `value` in the requested direction at `float32` precision.
 <h2 id="to-integer-checked"><code>ToIntegerChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func ToIntegerChecked<T>(value: float64, sample: T, mode: RoundingMode, result: *var T) -> bool
+pub func ToIntegerChecked<T>(
+    value: float64,
+    sample: T,
+    mode: RoundingMode,
+    result: *var T
+) -> bool
 ```
 
 `value` rounded in the named direction and converted to an integer, reporting whether it fits.

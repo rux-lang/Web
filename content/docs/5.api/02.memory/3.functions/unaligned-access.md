@@ -24,7 +24,10 @@ Reading and writing values at any alignment and in either byte order.
 <h2 id="load-unaligned"><code>LoadUnaligned&lt;T&gt;</code></h2>
 
 ```rux
-pub func LoadUnaligned<T>(source: *opaque, destination: *var T)
+pub func LoadUnaligned<T>(
+    source: *opaque,
+    destination: *var T
+)
 ```
 
 Reads a value of `T` from `source`, whatever `source` is aligned to.
@@ -54,7 +57,10 @@ Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
 <h2 id="store-unaligned"><code>StoreUnaligned&lt;T&gt;</code></h2>
 
 ```rux
-pub func StoreUnaligned<T>(destination: *var opaque, value: *T)
+pub func StoreUnaligned<T>(
+    destination: *var opaque,
+    value: *T
+)
 ```
 
 Writes a value of `T` to `destination`, whatever `destination` is aligned to.
@@ -102,7 +108,10 @@ Cannot fail. Runs in time proportional to `length` and allocates nothing.
 <h2 id="load-little-endian"><code>LoadLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func LoadLittleEndian<T>(source: *opaque, destination: *var T)
+pub func LoadLittleEndian<T>(
+    source: *opaque,
+    destination: *var T
+)
 ```
 
 Reads a `T` from `source`, taking the bytes as little-endian.
@@ -131,7 +140,10 @@ Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
 <h2 id="load-big-endian"><code>LoadBigEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func LoadBigEndian<T>(source: *opaque, destination: *var T)
+pub func LoadBigEndian<T>(
+    source: *opaque,
+    destination: *var T
+)
 ```
 
 Reads a `T` from `source`, taking the bytes as big-endian.
@@ -158,7 +170,10 @@ Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
 <h2 id="store-little-endian"><code>StoreLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func StoreLittleEndian<T>(destination: *var opaque, value: *T)
+pub func StoreLittleEndian<T>(
+    destination: *var opaque,
+    value: *T
+)
 ```
 
 Writes a `T` to `destination` as little-endian bytes.
@@ -185,7 +200,10 @@ Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
 <h2 id="store-big-endian"><code>StoreBigEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func StoreBigEndian<T>(destination: *var opaque, value: *T)
+pub func StoreBigEndian<T>(
+    destination: *var opaque,
+    value: *T
+)
 ```
 
 Writes a `T` to `destination` as big-endian bytes.

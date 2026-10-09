@@ -169,7 +169,11 @@ Whether the tree holds no entries.
 <h3 id="find"><code>Find</code></h3>
 
 ```rux
-pub func Find(self: &Tree<K, V>, key: K, compare: func(K, K) -> Ordering) -> *var TreeNode<K, V>
+pub func Find(
+    self: &Tree<K, V>,
+    key: K,
+    compare: func(K, K) -> Ordering
+) -> *var TreeNode<K, V>
 ```
 
 The node holding `key`, or null when the tree does not have it.
@@ -190,7 +194,11 @@ length. Allocates nothing.
 <h3 id="above"><code>Above</code></h3>
 
 ```rux
-pub func Above(self: &Tree<K, V>, key: K, compare: func(K, K) -> Ordering) -> *var TreeNode<K, V>
+pub func Above(
+    self: &Tree<K, V>,
+    key: K,
+    compare: func(K, K) -> Ordering
+) -> *var TreeNode<K, V>
 ```
 
 The node holding the smallest key strictly above `key`, or null when no key is above it.
@@ -213,7 +221,11 @@ Runs in time proportional to the height and allocates nothing.
 <h3 id="below"><code>Below</code></h3>
 
 ```rux
-pub func Below(self: &Tree<K, V>, key: K, compare: func(K, K) -> Ordering) -> *var TreeNode<K, V>
+pub func Below(
+    self: &Tree<K, V>,
+    key: K,
+    compare: func(K, K) -> Ordering
+) -> *var TreeNode<K, V>
 ```
 
 The node holding the largest key strictly below `key`, or null when no key is below it.
@@ -231,7 +243,12 @@ The mirror of [`Above`](/docs/api/collections/tree#above), with the same costs a
 <h3 id="attach"><code>Attach</code></h3>
 
 ```rux
-pub func Attach(self: &var Tree<K, V>, key: K, value: V, compare: func(K, K) -> Ordering) -> V? ! CollectionError
+pub func Attach(
+    self: &var Tree<K, V>,
+    key: K,
+    value: V,
+    compare: func(K, K) -> Ordering
+) -> V? ! CollectionError
 ```
 
 Puts `key` and `value` into the tree, replacing the value already stored under an equal key.
@@ -257,7 +274,10 @@ nothing at all for one already present.
 <h3 id="detach"><code>Detach</code></h3>
 
 ```rux
-pub func Detach(self: &var Tree<K, V>, node: *var TreeNode<K, V>) -> KeyValue<K, V>
+pub func Detach(
+    self: &var Tree<K, V>,
+    node: *var TreeNode<K, V>
+) -> KeyValue<K, V>
 ```
 
 Takes `node` out of the tree and hands back what it held.

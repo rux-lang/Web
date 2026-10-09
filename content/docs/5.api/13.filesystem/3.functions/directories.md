@@ -24,7 +24,10 @@ Creating, deleting and listing directories.
 <h2 id="make-directory"><code>MakeDirectory</code></h2>
 
 ```rux
-pub func MakeDirectory(allocator: Allocator, path: Path) -> ! IoError
+pub func MakeDirectory(
+    allocator: Allocator,
+    path: Path
+) -> ! IoError
 ```
 
 Creates the directory `path` names. Its parent must already exist; `AlreadyExists` if the name is taken.
@@ -43,7 +46,10 @@ Creates the directory `path` names. Its parent must already exist; `AlreadyExist
 <h2 id="delete-directory"><code>DeleteDirectory</code></h2>
 
 ```rux
-pub func DeleteDirectory(allocator: Allocator, path: Path) -> ! IoError
+pub func DeleteDirectory(
+    allocator: Allocator,
+    path: Path
+) -> ! IoError
 ```
 
 Deletes the empty directory `path` names; a directory with anything still in it is refused.
@@ -114,7 +120,10 @@ func ~DirectoryIterator(self: &var DirectoryIterator)
 <h2 id="read-directory"><code>ReadDirectory</code></h2>
 
 ```rux
-pub func ReadDirectory(allocator: Allocator, path: Path) -> DirectoryIterator ! IoError
+pub func ReadDirectory(
+    allocator: Allocator,
+    path: Path
+) -> DirectoryIterator ! IoError
 ```
 
 Begins enumerating the directory `path` names.

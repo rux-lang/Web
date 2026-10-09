@@ -22,7 +22,10 @@ seo:
 Parses `input` into a value, rejecting duplicate names.
 
 ```rux
-pub func Parse(allocator: Allocator, input: char8[..]) -> JsonValue ! JsonParseError
+pub func Parse(
+    allocator: Allocator,
+    input: char8[..]
+) -> JsonValue ! JsonParseError
 ```
 
 The default limits apply. A failure gives back the reason and its position and no value at all, so a document
@@ -68,7 +71,12 @@ What to do about an object containing the same name twice.
 <h3 id="parse-with"><code>ParseWith</code></h3>
 
 ```rux
-pub func ParseWith(allocator: Allocator, input: char8[..], limits: JsonLimits, duplicates: DuplicateKeyPolicy) -> JsonValue ! JsonParseError
+pub func ParseWith(
+    allocator: Allocator,
+    input: char8[..],
+    limits: JsonLimits,
+    duplicates: DuplicateKeyPolicy
+) -> JsonValue ! JsonParseError
 ```
 
 Parses `input` under chosen limits and a chosen duplicate-name policy.

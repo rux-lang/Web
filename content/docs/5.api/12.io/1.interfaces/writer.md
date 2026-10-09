@@ -23,7 +23,10 @@ Somewhere bytes go.
 
 ```rux
 pub interface Writer {
-    func Write(self: &var Self, bytes: char8[..]) -> uint ! IoError;
+    func Write(
+        self: &var Self,
+        bytes: char8[..]
+    ) -> uint ! IoError;
     func Flush(self: &var Self) -> ! IoError;
 }
 ```
@@ -33,7 +36,10 @@ pub interface Writer {
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-func Write(self: &var Self, bytes: char8[..]) -> uint ! IoError
+func Write(
+    self: &var Self,
+    bytes: char8[..]
+) -> uint ! IoError
 ```
 
 Takes what it can of `bytes` and succeeds with how much.
@@ -70,7 +76,10 @@ Pushes whatever is held toward the destination.
 <h3 id="write-all"><code>WriteAll</code></h3>
 
 ```rux
-pub func WriteAll(writer: &var Writer, bytes: char8[..]) -> ! IoError
+pub func WriteAll(
+    writer: &var Writer,
+    bytes: char8[..]
+) -> ! IoError
 ```
 
 Writes all of `bytes`, looping over partial writes, or says why it could not.

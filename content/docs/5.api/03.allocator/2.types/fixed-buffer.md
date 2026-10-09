@@ -35,7 +35,10 @@ bytes to two callers. Use [`Handle`](/docs/api/allocator/fixed-buffer#handle) wh
 <h3 id="new"><code>FixedBuffer</code></h3>
 
 ```rux
-pub func FixedBuffer(storage: *var opaque, capacity: uint) -> FixedBuffer
+pub func FixedBuffer(
+    storage: *var opaque,
+    capacity: uint
+) -> FixedBuffer
 ```
 
 An allocator over `capacity` bytes at `storage`.
@@ -132,7 +135,10 @@ A copyable interface adapter pointing at a [`FixedBuffer`](/docs/api/allocator/f
 <h4 id="fixed-buffer-handle-allocate"><code>Allocate</code></h4>
 
 ```rux
-pub func Allocate(self: &FixedBufferHandle, layout: Layout) -> (*var opaque) ! AllocError
+pub func Allocate(
+    self: &FixedBufferHandle,
+    layout: Layout
+) -> (*var opaque) ! AllocError
 ```
 
 Takes storage matching `layout` from the buffer.
@@ -154,7 +160,11 @@ The storage lives until the allocator is reset, and no longer.
 <h4 id="fixed-buffer-handle-deallocate"><code>Deallocate</code></h4>
 
 ```rux
-pub func Deallocate(self: &FixedBufferHandle, block: *var opaque, layout: Layout) -> ! AllocError
+pub func Deallocate(
+    self: &FixedBufferHandle,
+    block: *var opaque,
+    layout: Layout
+) -> ! AllocError
 ```
 
 Accepts a release and rewinds only the most recent allocation.
@@ -174,7 +184,12 @@ generic code that releases what it takes.
 <h4 id="fixed-buffer-handle-reallocate"><code>Reallocate</code></h4>
 
 ```rux
-pub func Reallocate(self: &FixedBufferHandle, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> (*var opaque) ! AllocError
+pub func Reallocate(
+    self: &FixedBufferHandle,
+    block: *var opaque,
+    oldLayout: Layout,
+    newLayout: Layout
+) -> (*var opaque) ! AllocError
 ```
 
 Grows or shrinks a block, extending the most recent allocation in place where the buffer has room.

@@ -55,7 +55,10 @@ operation refuses with `InvalidHandle`, because the file itself checks.
 <h3 id="read"><code>Read</code></h3>
 
 ```rux
-pub func Read(self: &var FileStream, into: var char8[..]) -> uint ! IoError
+pub func Read(
+    self: &var FileStream,
+    into: var char8[..]
+) -> uint ! IoError
 ```
 
 Reads through the borrowed file.
@@ -75,7 +78,10 @@ Reads through the borrowed file.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var FileStream, bytes: char8[..]) -> uint ! IoError
+pub func Write(
+    self: &var FileStream,
+    bytes: char8[..]
+) -> uint ! IoError
 ```
 
 Writes through the borrowed file.
@@ -107,7 +113,11 @@ Flushes the borrowed file, which holds nothing back.
 <h3 id="seek"><code>Seek</code></h3>
 
 ```rux
-pub func Seek(self: &var FileStream, origin: SeekFrom, offset: int64) -> uint64 ! IoError
+pub func Seek(
+    self: &var FileStream,
+    origin: SeekFrom,
+    offset: int64
+) -> uint64 ! IoError
 ```
 
 Seeks the borrowed file.

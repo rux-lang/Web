@@ -203,7 +203,10 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="is-sorted-by"><code>IsSortedBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsSortedBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> bool
+pub func IsSortedBy<T>(
+    items: T[..],
+    compare: func(T, T) -> Ordering
+) -> bool
 ```
 
 Whether `items` is in non-decreasing order under `compare`.
@@ -231,7 +234,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="is-sorted-until-by"><code>IsSortedUntilBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsSortedUntilBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint
+pub func IsSortedUntilBy<T>(
+    items: T[..],
+    compare: func(T, T) -> Ordering
+) -> uint
 ```
 
 How far `items` is in non-decreasing order under `compare`.
@@ -259,7 +265,11 @@ Cannot fail. Runs in time proportional to the answer and allocates nothing beyon
 <h2 id="lower-bound-by"><code>LowerBoundBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func LowerBoundBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint
+pub func LowerBoundBy<T>(
+    items: T[..],
+    value: T,
+    compare: func(T, T) -> Ordering
+) -> uint
 ```
 
 The first position where `value` could be inserted into `items` under `compare` without breaking the order.
@@ -288,7 +298,11 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="upper-bound-by"><code>UpperBoundBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func UpperBoundBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint
+pub func UpperBoundBy<T>(
+    items: T[..],
+    value: T,
+    compare: func(T, T) -> Ordering
+) -> uint
 ```
 
 The last position where `value` could be inserted into `items` under `compare` without breaking the order.
@@ -317,7 +331,11 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="binary-search-by"><code>BinarySearchBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func BinarySearchBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint?
+pub func BinarySearchBy<T>(
+    items: T[..],
+    value: T,
+    compare: func(T, T) -> Ordering
+) -> uint?
 ```
 
 The index of an element of `items` that `compare` calls equal to `value`.
@@ -347,7 +365,11 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="equal-range-by"><code>EqualRangeBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func EqualRangeBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint..uint
+pub func EqualRangeBy<T>(
+    items: T[..],
+    value: T,
+    compare: func(T, T) -> Ordering
+) -> uint..uint
 ```
 
 The range of positions in `items` holding elements `compare` calls equal to `value`.

@@ -134,7 +134,10 @@ nothing.
 <h2 id="index-where"><code>IndexWhere&lt;T&gt;</code></h2>
 
 ```rux
-pub func IndexWhere<T>(items: T[..], predicate: func(T) -> bool) -> uint?
+pub func IndexWhere<T>(
+    items: T[..],
+    predicate: func(T) -> bool
+) -> uint?
 ```
 
 The index of the first element of `items` that `predicate` accepts.
@@ -162,7 +165,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="last-index-where"><code>LastIndexWhere&lt;T&gt;</code></h2>
 
 ```rux
-pub func LastIndexWhere<T>(items: T[..], predicate: func(T) -> bool) -> uint?
+pub func LastIndexWhere<T>(
+    items: T[..],
+    predicate: func(T) -> bool
+) -> uint?
 ```
 
 The index of the last element of `items` that `predicate` accepts.
@@ -190,7 +196,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="count-where"><code>CountWhere&lt;T&gt;</code></h2>
 
 ```rux
-pub func CountWhere<T>(items: T[..], predicate: func(T) -> bool) -> uint
+pub func CountWhere<T>(
+    items: T[..],
+    predicate: func(T) -> bool
+) -> uint
 ```
 
 How many elements of `items` the predicate accepts.
@@ -217,7 +226,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="all-of"><code>AllOf&lt;T&gt;</code></h2>
 
 ```rux
-pub func AllOf<T>(items: T[..], predicate: func(T) -> bool) -> bool
+pub func AllOf<T>(
+    items: T[..],
+    predicate: func(T) -> bool
+) -> bool
 ```
 
 Whether `predicate` accepts every element of `items`.
@@ -246,7 +258,10 @@ beyond whatever `predicate` does.
 <h2 id="any-of"><code>AnyOf&lt;T&gt;</code></h2>
 
 ```rux
-pub func AnyOf<T>(items: T[..], predicate: func(T) -> bool) -> bool
+pub func AnyOf<T>(
+    items: T[..],
+    predicate: func(T) -> bool
+) -> bool
 ```
 
 Whether `predicate` accepts at least one element of `items`.
@@ -274,7 +289,10 @@ beyond whatever `predicate` does.
 <h2 id="none-of"><code>NoneOf&lt;T&gt;</code></h2>
 
 ```rux
-pub func NoneOf<T>(items: T[..], predicate: func(T) -> bool) -> bool
+pub func NoneOf<T>(
+    items: T[..],
+    predicate: func(T) -> bool
+) -> bool
 ```
 
 Whether `predicate` accepts no element of `items`.

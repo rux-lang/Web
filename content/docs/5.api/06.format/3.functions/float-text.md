@@ -24,7 +24,11 @@ The shortest, fixed-precision and scientific renderings of a float32 or float64.
 <h2 id="write-decimal"><code>WriteDecimal</code></h2>
 
 ```rux
-pub func WriteDecimal(cursor: &var ByteCursor, value: float64, significant: uint)
+pub func WriteDecimal(
+    cursor: &var ByteCursor,
+    value: float64,
+    significant: uint
+)
 ```
 
 Provides the public `WriteDecimal` operation.
@@ -109,7 +113,11 @@ time and allocates nothing.
 <h2 id="write-shortest-float"><code>WriteShortestFloat</code></h2>
 
 ```rux
-pub func WriteShortestFloat(cursor: &var ByteCursor, parts: FloatParts, scientificFrom: int) -> bool
+pub func WriteShortestFloat(
+    cursor: &var ByteCursor,
+    parts: FloatParts,
+    scientificFrom: int
+) -> bool
 ```
 
 Writes the shortest decimal text of a finite, non-zero float taken apart by [`DecomposeFloat64`](/docs/api/format/float-text#decompose-float64) or its narrow
@@ -157,7 +165,14 @@ The longest a fixed rendering can be: sign, integer digits, point and fraction.
 <h2 id="precision-digits"><code>PrecisionDigits</code></h2>
 
 ```rux
-pub func PrecisionDigits(significand: uint64, exponent: int, precision: uint, into: var char8[..], count: *var uint, power: *var int) -> bool
+pub func PrecisionDigits(
+    significand: uint64,
+    exponent: int,
+    precision: uint,
+    into: var char8[..],
+    count: *var uint,
+    power: *var int
+) -> bool
 ```
 
 Writes the digits of `significand * 2^exponent` down to the place `precision` names, rounded to nearest with
@@ -188,7 +203,11 @@ narrow widths do not reach.
 <h2 id="write-precision-float"><code>WritePrecisionFloat</code></h2>
 
 ```rux
-pub func WritePrecisionFloat(cursor: &var ByteCursor, parts: FloatParts, precision: uint) -> bool
+pub func WritePrecisionFloat(
+    cursor: &var ByteCursor,
+    parts: FloatParts,
+    precision: uint
+) -> bool
 ```
 
 Writes a finite float in fixed notation with exactly `precision` digits after the decimal point.
@@ -213,7 +232,11 @@ fixed workspace. There is no fallback to another rendering: a refused request is
 <h2 id="write-precision"><code>WritePrecision</code></h2>
 
 ```rux
-pub func WritePrecision(writer: &var TextWriter, spec: FormatSpec, parts: FloatParts) -> ! FormatError
+pub func WritePrecision(
+    writer: &var TextWriter,
+    spec: FormatSpec,
+    parts: FloatParts
+) -> ! FormatError
 ```
 
 Renders `parts` under a specification that carries a precision, and applies the specification's sign, width,
@@ -238,7 +261,12 @@ otherwise. There is no fallback: a refused precision produces no output.
 <h2 id="write-scientific-notation"><code>WriteScientificNotation</code></h2>
 
 ```rux
-pub func WriteScientificNotation(writer: &var TextWriter, spec: FormatSpec, parts: FloatParts, mark: char8) -> ! FormatError
+pub func WriteScientificNotation(
+    writer: &var TextWriter,
+    spec: FormatSpec,
+    parts: FloatParts,
+    mark: char8
+) -> ! FormatError
 ```
 
 Renders a finite float in scientific notation under `spec`, and applies the specification's sign, width, fill and
@@ -280,7 +308,14 @@ a caller supplies is checked against this rather than against a guess.
 <h2 id="shortest-digits"><code>ShortestDigits</code></h2>
 
 ```rux
-pub func ShortestDigits(significand: uint64, exponent: int, atBinadeBottom: bool, into: var char8[..], count: *var uint, exponent10: *var int) -> bool
+pub func ShortestDigits(
+    significand: uint64,
+    exponent: int,
+    atBinadeBottom: bool,
+    into: var char8[..],
+    count: *var uint,
+    exponent10: *var int
+) -> bool
 ```
 
 Writes the shortest decimal digits of `significand * 2^exponent` that read back to exactly that value.

@@ -76,7 +76,10 @@ An empty array.
 <h3 id="text"><code>Text</code></h3>
 
 ```rux
-pub func Text(allocator: Allocator, value: char8[..]) -> TomlValue ! TextError
+pub func Text(
+    allocator: Allocator,
+    value: char8[..]
+) -> TomlValue ! TextError
 ```
 
 A string value, whose bytes are copied and validated as UTF-8.
@@ -93,7 +96,10 @@ A string value, whose bytes are copied and validated as UTF-8.
 <h3 id="from-string"><code>FromString</code></h3>
 
 ```rux
-pub func FromString(allocator: Allocator, value: String) -> TomlValue
+pub func FromString(
+    allocator: Allocator,
+    value: String
+) -> TomlValue
 ```
 
 A string value copying an already-built string.
@@ -110,7 +116,10 @@ A string value copying an already-built string.
 <h3 id="integer"><code>Integer</code></h3>
 
 ```rux
-pub func Integer(allocator: Allocator, value: int64) -> TomlValue
+pub func Integer(
+    allocator: Allocator,
+    value: int64
+) -> TomlValue
 ```
 
 An integer value.
@@ -127,7 +136,10 @@ An integer value.
 <h3 id="float"><code>Float</code></h3>
 
 ```rux
-pub func Float(allocator: Allocator, value: float64) -> TomlValue
+pub func Float(
+    allocator: Allocator,
+    value: float64
+) -> TomlValue
 ```
 
 A float value, which TOML — unlike JSON — allows to be an infinity or a NaN.
@@ -144,7 +156,10 @@ A float value, which TOML — unlike JSON — allows to be an infinity or a NaN.
 <h3 id="boolean"><code>Boolean</code></h3>
 
 ```rux
-pub func Boolean(allocator: Allocator, value: bool) -> TomlValue
+pub func Boolean(
+    allocator: Allocator,
+    value: bool
+) -> TomlValue
 ```
 
 A boolean value.
@@ -161,7 +176,12 @@ A boolean value.
 <h3 id="offset-date-time"><code>OffsetDateTime</code></h3>
 
 ```rux
-pub func OffsetDateTime(allocator: Allocator, date: Date, time: TimeOfDay, offset: UtcOffset) -> TomlValue
+pub func OffsetDateTime(
+    allocator: Allocator,
+    date: Date,
+    time: TimeOfDay,
+    offset: UtcOffset
+) -> TomlValue
 ```
 
 A date and time with a known offset, which names a moment on the timeline.
@@ -180,7 +200,11 @@ A date and time with a known offset, which names a moment on the timeline.
 <h3 id="local-date-time"><code>LocalDateTime</code></h3>
 
 ```rux
-pub func LocalDateTime(allocator: Allocator, date: Date, time: TimeOfDay) -> TomlValue
+pub func LocalDateTime(
+    allocator: Allocator,
+    date: Date,
+    time: TimeOfDay
+) -> TomlValue
 ```
 
 A date and time with no offset, which names a wall clock reading rather than a moment.
@@ -198,7 +222,10 @@ A date and time with no offset, which names a wall clock reading rather than a m
 <h3 id="local-date"><code>LocalDate</code></h3>
 
 ```rux
-pub func LocalDate(allocator: Allocator, date: Date) -> TomlValue
+pub func LocalDate(
+    allocator: Allocator,
+    date: Date
+) -> TomlValue
 ```
 
 A date with no time.
@@ -215,7 +242,10 @@ A date with no time.
 <h3 id="local-time"><code>LocalTime</code></h3>
 
 ```rux
-pub func LocalTime(allocator: Allocator, time: TimeOfDay) -> TomlValue
+pub func LocalTime(
+    allocator: Allocator,
+    time: TimeOfDay
+) -> TomlValue
 ```
 
 A time with no date.
@@ -246,7 +276,10 @@ Which kind this value is.
 <h3 id="as-boolean"><code>AsBoolean</code></h3>
 
 ```rux
-pub func AsBoolean(self: &TomlValue, result: *var bool) -> bool
+pub func AsBoolean(
+    self: &TomlValue,
+    result: *var bool
+) -> bool
 ```
 
 The boolean payload, or `false` when this is not a boolean — which [`Kind`](/docs/api/toml/toml-value#kind) distinguishes from a genuine
@@ -263,7 +296,10 @@ The boolean payload, or `false` when this is not a boolean — which [`Kind`](/d
 <h3 id="as-integer"><code>AsInteger</code></h3>
 
 ```rux
-pub func AsInteger(self: &TomlValue, result: *var int64) -> bool
+pub func AsInteger(
+    self: &TomlValue,
+    result: *var int64
+) -> bool
 ```
 
 The integer payload, or `false` when this is not an integer.
@@ -281,7 +317,10 @@ collapsing them here would throw away a distinction the document was making.
 <h3 id="as-float"><code>AsFloat</code></h3>
 
 ```rux
-pub func AsFloat(self: &TomlValue, result: *var float64) -> bool
+pub func AsFloat(
+    self: &TomlValue,
+    result: *var float64
+) -> bool
 ```
 
 The float payload, or `false` when this is not a float.
@@ -325,7 +364,10 @@ The date part, or `false` when this kind has none.
 <h3 id="as-time"><code>AsTime</code></h3>
 
 ```rux
-pub func AsTime(self: &TomlValue, result: *var TimeOfDay) -> bool
+pub func AsTime(
+    self: &TomlValue,
+    result: *var TimeOfDay
+) -> bool
 ```
 
 The time part, or `false` when this kind has none.
@@ -341,7 +383,10 @@ The time part, or `false` when this kind has none.
 <h3 id="as-offset"><code>AsOffset</code></h3>
 
 ```rux
-pub func AsOffset(self: &TomlValue, result: *var UtcOffset) -> bool
+pub func AsOffset(
+    self: &TomlValue,
+    result: *var UtcOffset
+) -> bool
 ```
 
 The offset, or `false` when this is not an offset date-time.
@@ -371,7 +416,10 @@ How many elements an array holds, or entries a table holds; zero for anything el
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(self: &var TomlValue, value: TomlValue) -> bool
+pub func Push(
+    self: &var TomlValue,
+    value: TomlValue
+) -> bool
 ```
 
 Appends `value` to an array, taking ownership of it.
@@ -389,7 +437,11 @@ caller does not have to decide who owns it on failure.
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(self: &var TomlValue, key: String, value: TomlValue) -> bool
+pub func Insert(
+    self: &var TomlValue,
+    key: String,
+    value: TomlValue
+) -> bool
 ```
 
 Appends an entry to a table, copying the key and taking ownership of the value.
@@ -425,7 +477,10 @@ The element at `index`, borrowed, or null when there is none.
 <h3 id="at-mutable"><code>AtMutable</code></h3>
 
 ```rux
-pub func AtMutable(self: &var TomlValue, index: uint) -> *var TomlValue
+pub func AtMutable(
+    self: &var TomlValue,
+    index: uint
+) -> *var TomlValue
 ```
 
 The element at `index`, borrowed for modification, or null when there is none.
@@ -443,7 +498,10 @@ are written into the last element in place.
 <h3 id="find"><code>Find</code></h3>
 
 ```rux
-pub func Find(self: &TomlValue, key: StringView) -> *TomlValue
+pub func Find(
+    self: &TomlValue,
+    key: StringView
+) -> *TomlValue
 ```
 
 The value under `key`, borrowed, or null when the table has none.
@@ -459,7 +517,10 @@ The value under `key`, borrowed, or null when the table has none.
 <h3 id="find-mutable"><code>FindMutable</code></h3>
 
 ```rux
-pub func FindMutable(self: &var TomlValue, key: StringView) -> *var TomlValue
+pub func FindMutable(
+    self: &var TomlValue,
+    key: StringView
+) -> *var TomlValue
 ```
 
 The value under `key`, borrowed for modification, or null when the table has none.
@@ -475,7 +536,10 @@ The value under `key`, borrowed for modification, or null when the table has non
 <h3 id="entry-at"><code>EntryAt</code></h3>
 
 ```rux
-pub func EntryAt(self: &TomlValue, index: uint) -> *TomlEntry
+pub func EntryAt(
+    self: &TomlValue,
+    index: uint
+) -> *TomlEntry
 ```
 
 The entry at `index`, borrowed, or null when there is none.

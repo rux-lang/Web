@@ -60,7 +60,10 @@ Cannot fail. Runs in constant time.
 <h3 id="with-capacity"><code>WithCapacity</code></h3>
 
 ```rux
-pub func WithCapacity(allocator: Allocator, capacity: uint) -> Deque<T> ! CollectionError
+pub func WithCapacity(
+    allocator: Allocator,
+    capacity: uint
+) -> Deque<T> ! CollectionError
 ```
 
 An empty deque with room for `capacity` elements already taken.
@@ -79,7 +82,10 @@ since that is what the ring's masking needs.
 <h3 id="from-slice"><code>FromSlice</code></h3>
 
 ```rux
-pub func FromSlice(allocator: Allocator, items: T[..]) -> Deque<T> ! CollectionError
+pub func FromSlice(
+    allocator: Allocator,
+    items: T[..]
+) -> Deque<T> ! CollectionError
 ```
 
 A deque holding a copy of every element of `items`, front to back.
@@ -152,7 +158,10 @@ Whether the deque holds no elements.
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(self: &var Deque<T>, additional: uint) -> ! CollectionError
+pub func Reserve(
+    self: &var Deque<T>,
+    additional: uint
+) -> ! CollectionError
 ```
 
 Makes room for `additional` more elements on top of those already present.
@@ -197,7 +206,10 @@ Runs in time proportional to the length.
 <h3 id="push-front"><code>PushFront</code></h3>
 
 ```rux
-pub func PushFront(self: &var Deque<T>, value: T) -> ! CollectionError
+pub func PushFront(
+    self: &var Deque<T>,
+    value: T
+) -> ! CollectionError
 ```
 
 Adds an element at the front, growing the ring when it is full.
@@ -216,7 +228,10 @@ Amortized constant time.
 <h3 id="push-back"><code>PushBack</code></h3>
 
 ```rux
-pub func PushBack(self: &var Deque<T>, value: T) -> ! CollectionError
+pub func PushBack(
+    self: &var Deque<T>,
+    value: T
+) -> ! CollectionError
 ```
 
 Adds an element at the back, growing the ring when it is full.
@@ -326,7 +341,11 @@ The pointer is valid until the deque grows, shrinks, or is made contiguous.
 <h3 id="set"><code>Set</code></h3>
 
 ```rux
-pub func Set(self: &var Deque<T>, index: uint, value: T) -> ! CollectionError
+pub func Set(
+    self: &var Deque<T>,
+    index: uint,
+    value: T
+) -> ! CollectionError
 ```
 
 Replaces the element at `index` with `value`.
@@ -359,7 +378,11 @@ ring. This is what says whether [`AsSlice`](/docs/api/collections/deque#as-slice
 <h3 id="as-slices"><code>AsSlices</code></h3>
 
 ```rux
-pub func AsSlices(self: &Deque<T>, front: *var T[..], back: *var T[..])
+pub func AsSlices(
+    self: &Deque<T>,
+    front: *var T[..],
+    back: *var T[..]
+)
 ```
 
 The elements as at most two runs, front run first, without moving anything.
@@ -474,7 +497,11 @@ Four slots, and a power of two like every capacity after it.
 <h3 id="write-deque-debug"><code>WriteDequeDebug&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteDequeDebug<T: Debug>(writer: &var TextWriter, value: &Deque<T>, spec: FormatSpec) -> ! FormatError
+pub func WriteDequeDebug<T: Debug>(
+    writer: &var TextWriter,
+    value: &Deque<T>,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed deque as `[front, ..., back]`, front element first.

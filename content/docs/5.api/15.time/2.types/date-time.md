@@ -43,7 +43,10 @@ one permanently would make every arithmetic answer depend on a field that is usu
 <h3 id="from-timestamp"><code>FromTimestamp</code></h3>
 
 ```rux
-pub func FromTimestamp(moment: Timestamp, offset: UtcOffset) -> DateTime
+pub func FromTimestamp(
+    moment: Timestamp,
+    offset: UtcOffset
+) -> DateTime
 ```
 
 The date and time `moment` names, shifted into `offset`.
@@ -62,7 +65,10 @@ The date and time `moment` names, shifted into `offset`.
 <h3 id="to-timestamp"><code>ToTimestamp</code></h3>
 
 ```rux
-pub func ToTimestamp(self: &DateTime, offset: UtcOffset) -> Timestamp
+pub func ToTimestamp(
+    self: &DateTime,
+    offset: UtcOffset
+) -> Timestamp
 ```
 
 The moment this date and time name in UTC, shifted by `offset`.
@@ -102,7 +108,11 @@ carrying the offset beside the pair means.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &DateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &DateTime,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the local date and time as `YYYY-MM-DDTHH:MM:SS`, with no offset.
@@ -129,7 +139,11 @@ and `UnsupportedRequest` for a precision past nine.
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &DateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &DateTime,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 The same text as `Display`.

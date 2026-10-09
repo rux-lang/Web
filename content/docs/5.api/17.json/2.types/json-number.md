@@ -36,7 +36,10 @@ text is also what lets a document round-trip exactly, which a parser converting 
 <h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func New(allocator: Allocator, text: char8[..]) -> JsonNumber ! TextError
+pub func New(
+    allocator: Allocator,
+    text: char8[..]
+) -> JsonNumber ! TextError
 ```
 
 A number from its text, which is copied.
@@ -67,7 +70,10 @@ The number exactly as written.
 <h3 id="as-int64"><code>AsInt64</code></h3>
 
 ```rux
-pub func AsInt64(self: &JsonNumber, result: *var int64) -> bool
+pub func AsInt64(
+    self: &JsonNumber,
+    result: *var int64
+) -> bool
 ```
 
 The value as a signed integer, or `false` if it does not fit one.
@@ -85,7 +91,10 @@ not an integer in JSON's grammar and pretending otherwise loses the distinction 
 <h3 id="as-uint64"><code>AsUint64</code></h3>
 
 ```rux
-pub func AsUint64(self: &JsonNumber, result: *var uint64) -> bool
+pub func AsUint64(
+    self: &JsonNumber,
+    result: *var uint64
+) -> bool
 ```
 
 The value as an unsigned integer, or `false` if it does not fit one.
@@ -101,7 +110,10 @@ The value as an unsigned integer, or `false` if it does not fit one.
 <h3 id="as-float64"><code>AsFloat64</code></h3>
 
 ```rux
-pub func AsFloat64(self: &JsonNumber, result: *var float64) -> bool
+pub func AsFloat64(
+    self: &JsonNumber,
+    result: *var float64
+) -> bool
 ```
 
 The value as a float, or `false` if the text is not a number at all.

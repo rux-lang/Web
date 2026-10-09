@@ -86,7 +86,11 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="hash-bytes"><code>HashBytes&lt;H&gt;</code></h3>
 
 ```rux
-pub func HashBytes<H: Hasher>(hasher: &var H, bytes: *byte, length: uint) -> uint64
+pub func HashBytes<H: Hasher>(
+    hasher: &var H,
+    bytes: *byte,
+    length: uint
+) -> uint64
 ```
 
 Writes `length` bytes and returns the hash, for a caller with nothing else to add.
@@ -142,7 +146,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write-uint32"><code>WriteUint32&lt;H&gt;</code></h3>
 
 ```rux
-pub func WriteUint32<H: Hasher>(hasher: &var H, value: uint32)
+pub func WriteUint32<H: Hasher>(
+    hasher: &var H,
+    value: uint32
+)
 ```
 
 Writes a 32-bit value into `hasher`, least significant byte first.
@@ -168,7 +175,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write-uint64"><code>WriteUint64&lt;H&gt;</code></h3>
 
 ```rux
-pub func WriteUint64<H: Hasher>(hasher: &var H, value: uint64)
+pub func WriteUint64<H: Hasher>(
+    hasher: &var H,
+    value: uint64
+)
 ```
 
 Writes a 64-bit value into `hasher`, least significant byte first.

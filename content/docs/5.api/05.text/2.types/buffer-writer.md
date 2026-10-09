@@ -121,7 +121,10 @@ Borrows the writer exclusively. Cannot fail; runs in constant time and allocates
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var BufferWriter, bytes: char8[..]) -> ! FormatError
+pub func Write(
+    self: &var BufferWriter,
+    bytes: char8[..]
+) -> ! FormatError
 ```
 
 Appends `bytes`, whole or not at all.

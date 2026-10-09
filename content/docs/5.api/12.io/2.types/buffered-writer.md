@@ -36,7 +36,11 @@ calls it before letting go.
 <h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func New(allocator: Allocator, sink: Writer, capacity: uint) -> BufferedWriter ! IoError
+pub func New(
+    allocator: Allocator,
+    sink: Writer,
+    capacity: uint
+) -> BufferedWriter ! IoError
 ```
 
 A buffered writer over `sink` with `capacity` bytes of buffer.
@@ -80,7 +84,10 @@ Sends everything gathered, then asks the sink to flush too.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &var BufferedWriter, bytes: char8[..]) -> uint ! IoError
+pub func Write(
+    self: &var BufferedWriter,
+    bytes: char8[..]
+) -> uint ! IoError
 ```
 
 Takes `bytes`: into the buffer while they fit, around it in one piece when they never would.

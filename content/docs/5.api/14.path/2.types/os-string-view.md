@@ -108,7 +108,10 @@ The units themselves.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &OsStringView, other: &OsStringView) -> bool
+pub func Equals(
+    self: &OsStringView,
+    other: &OsStringView
+) -> bool
 ```
 
 Whether two views hold the same units.
@@ -126,7 +129,10 @@ one are still two names here, because which names those are is the filesystem's 
 <h3 id="to-text"><code>ToText</code></h3>
 
 ```rux
-pub func ToText(self: &OsStringView, allocator: Allocator) -> String ! TextError
+pub func ToText(
+    self: &OsStringView,
+    allocator: Allocator
+) -> String ! TextError
 ```
 
 This native text as UTF-8, or nothing where it is not text.
@@ -150,7 +156,11 @@ program that must show it anyway shows it lossily by its own policy, knowingly.
 <h3 id="write-display"><code>WriteDisplay</code></h3>
 
 ```rux
-pub func WriteDisplay(self: &OsStringView, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDisplay(
+    self: &OsStringView,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the name as text, with every native unit that is not text replaced by U+FFFD.
@@ -177,7 +187,11 @@ refused rather than applied because a truncated path is a different path, and ma
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-pub func WriteDebug(self: &OsStringView, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+pub func WriteDebug(
+    self: &OsStringView,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes the name exactly, quoted, with every unit that is not text spelled as an escape.

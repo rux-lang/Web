@@ -184,7 +184,10 @@ A finite value taken apart: `significand` times two to the `exponent`.
 <h3 id="unpack-wide"><code>UnpackWide</code></h3>
 
 ```rux
-pub func UnpackWide(bits: uint512, layout: &FloatLayout) -> UnpackedWide
+pub func UnpackWide(
+    bits: uint512,
+    layout: &FloatLayout
+) -> UnpackedWide
 ```
 
 Takes a bit pattern apart under `layout`.
@@ -203,7 +206,12 @@ Takes a bit pattern apart under `layout`.
 <h3 id="pack-wide"><code>PackWide</code></h3>
 
 ```rux
-pub func PackWide(negative: bool, significand: uint512, exponent: int, layout: &FloatLayout) -> uint512
+pub func PackWide(
+    negative: bool,
+    significand: uint512,
+    exponent: int,
+    layout: &FloatLayout
+) -> uint512
 ```
 
 Puts a finite value back together under `layout`, which must already be within range and precision.
@@ -224,7 +232,10 @@ Puts a finite value back together under `layout`, which must already be within r
 <h3 id="infinity-bits"><code>InfinityBits</code></h3>
 
 ```rux
-pub func InfinityBits(negative: bool, layout: &FloatLayout) -> uint512
+pub func InfinityBits(
+    negative: bool,
+    layout: &FloatLayout
+) -> uint512
 ```
 
 The bits of infinity under `layout`.
@@ -261,7 +272,13 @@ The bits of a quiet NaN under `layout`.
 <h3 id="write-wide-float"><code>WriteWideFloat</code></h3>
 
 ```rux
-pub func WriteWideFloat(allocator: Allocator, writer: &var TextWriter, spec: FormatSpec, bits: uint512, layout: &FloatLayout) -> ! FormatError
+pub func WriteWideFloat(
+    allocator: Allocator,
+    writer: &var TextWriter,
+    spec: FormatSpec,
+    bits: uint512,
+    layout: &FloatLayout
+) -> ! FormatError
 ```
 
 Writes `bits`, read under `layout`, as text under `spec`.

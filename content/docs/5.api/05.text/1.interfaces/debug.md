@@ -23,7 +23,10 @@ The text a value has for whoever is inspecting a program.
 
 ```rux
 pub interface Debug {
-    func WriteDebug(writer: &var TextWriter, spec: FormatSpec) -> ! FormatError;
+    func WriteDebug(
+        writer: &var TextWriter,
+        spec: FormatSpec
+    ) -> ! FormatError;
 }
 ```
 
@@ -35,7 +38,10 @@ value by its numeric form where [`Display`](/docs/api/text/display) would replac
 <h3 id="write-debug"><code>WriteDebug</code></h3>
 
 ```rux
-func WriteDebug(writer: &var TextWriter, spec: FormatSpec) -> ! FormatError
+func WriteDebug(
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes this value's inspection text under `spec`.
@@ -66,7 +72,11 @@ The same failures `WriteDisplay` may report, for the same reasons.
 <h3 id="write-debug-value"><code>WriteDebugValue</code></h3>
 
 ```rux
-pub func WriteDebugValue(writer: &var TextWriter, value: Debug, spec: FormatSpec) -> ! FormatError
+pub func WriteDebugValue(
+    writer: &var TextWriter,
+    value: Debug,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes `value` under `spec` through its [`Debug`](/docs/api/text/debug) implementation.
@@ -86,7 +96,10 @@ Writes `value` under `spec` through its [`Debug`](/docs/api/text/debug) implemen
 <h3 id="write-escaped"><code>WriteEscaped</code></h3>
 
 ```rux
-pub func WriteEscaped(writer: &var TextWriter, text: char8[..]) -> ! FormatError
+pub func WriteEscaped(
+    writer: &var TextWriter,
+    text: char8[..]
+) -> ! FormatError
 ```
 
 Writes `text` with the characters that would be ambiguous or invisible replaced by escapes.
@@ -112,7 +125,11 @@ Reports whatever the writer reported, stopping at the first refusal.
 <h3 id="write-optional-debug"><code>WriteOptionalDebug&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteOptionalDebug<T: Debug>(writer: &var TextWriter, value: &T?, spec: FormatSpec) -> ! FormatError
+pub func WriteOptionalDebug<T: Debug>(
+    writer: &var TextWriter,
+    value: &T?,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed optional as `Some(value)` or `none`.
@@ -143,7 +160,11 @@ destination that has already refused something is not written to again.
 <h3 id="write-fallible-debug"><code>WriteFallibleDebug&lt;T, E&gt;</code></h3>
 
 ```rux
-pub func WriteFallibleDebug<T: Debug, E: Debug>(writer: &var TextWriter, value: &(T ! E), spec: FormatSpec) -> ! FormatError
+pub func WriteFallibleDebug<T: Debug, E: Debug>(
+    writer: &var TextWriter,
+    value: &(T ! E),
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed fallible as `Success(value)` or `Failure(reason)`.
@@ -174,7 +195,11 @@ Reports whatever the writer or the payload's implementation reported, stopping a
 <h3 id="write-slice-debug"><code>WriteSliceDebug&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteSliceDebug<T: Debug>(writer: &var TextWriter, items: T[..], spec: FormatSpec) -> ! FormatError
+pub func WriteSliceDebug<T: Debug>(
+    writer: &var TextWriter,
+    items: T[..],
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed run of elements as `[first, second, third]`.

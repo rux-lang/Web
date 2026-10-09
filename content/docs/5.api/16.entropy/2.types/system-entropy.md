@@ -52,7 +52,11 @@ Runs in constant time and allocates nothing.
 <h3 id="fill"><code>Fill</code></h3>
 
 ```rux
-pub func Fill(self: &var SystemEntropy, buffer: *var opaque, length: uint) -> ! EntropyError
+pub func Fill(
+    self: &var SystemEntropy,
+    buffer: *var opaque,
+    length: uint
+) -> ! EntropyError
 ```
 
 Fills `length` bytes of `buffer` from the operating system.
@@ -99,7 +103,10 @@ asking more than once, which `Fill` does.
 <h3 id="fill-from-source"><code>FillFromSource</code></h3>
 
 ```rux
-pub func FillFromSource(buffer: *var opaque, length: uint) -> ! EntropyError
+pub func FillFromSource(
+    buffer: *var opaque,
+    length: uint
+) -> ! EntropyError
 ```
 
 Fills `length` bytes of `buffer` from the system's generator, in one pass.

@@ -75,7 +75,12 @@ Returns zero, or a negative error number. The change is process-wide and immedia
 <h2 id="readlink-at"><code>ReadlinkAt</code></h2>
 
 ```rux
-pub func ReadlinkAt(directoryFd: FileDescriptor, path: *char8, buffer: *var char8, size: uint) -> int64
+pub func ReadlinkAt(
+    directoryFd: FileDescriptor,
+    path: *char8,
+    buffer: *var char8,
+    size: uint
+) -> int64
 ```
 
 Reads the text a symbolic link holds into `buffer`.
@@ -108,7 +113,13 @@ pub const SymlinkNoFollow: int32 = 0x0200;
 <h2 id="link-at"><code>LinkAt</code></h2>
 
 ```rux
-pub func LinkAt(oldDirectoryFd: FileDescriptor, oldPath: *char8, newDirectoryFd: FileDescriptor, newPath: *char8, flags: int32) -> int64
+pub func LinkAt(
+    oldDirectoryFd: FileDescriptor,
+    oldPath: *char8,
+    newDirectoryFd: FileDescriptor,
+    newPath: *char8,
+    flags: int32
+) -> int64
 ```
 
 Creates a hard link: `newPath` becomes a second name for the file `oldPath` names.
@@ -142,7 +153,11 @@ pub const FollowSymlinks: int32 = 0x0400;
 <h2 id="symlink-at"><code>SymlinkAt</code></h2>
 
 ```rux
-pub func SymlinkAt(target: *char8, newDirectoryFd: FileDescriptor, linkPath: *char8) -> int64
+pub func SymlinkAt(
+    target: *char8,
+    newDirectoryFd: FileDescriptor,
+    linkPath: *char8
+) -> int64
 ```
 
 Creates a symbolic link at `linkPath` holding `target` as its text.
@@ -164,7 +179,12 @@ readily as a good one, which is a property callers rely on.
 <h2 id="getdirentries"><code>Getdirentries</code></h2>
 
 ```rux
-pub func Getdirentries(fd: FileDescriptor, buffer: *var opaque, count: uint, position: *var int64) -> int64
+pub func Getdirentries(
+    fd: FileDescriptor,
+    buffer: *var opaque,
+    count: uint,
+    position: *var int64
+) -> int64
 ```
 
 Reads directory entries from `fd` into `buffer`.
@@ -190,7 +210,11 @@ The fourth parameter is named as macOS names `Getdirentries64`'s, which is the s
 <h2 id="unlink-at"><code>UnlinkAt</code></h2>
 
 ```rux
-pub func UnlinkAt(directoryFd: FileDescriptor, path: *char8, flags: int32) -> int64
+pub func UnlinkAt(
+    directoryFd: FileDescriptor,
+    path: *char8,
+    flags: int32
+) -> int64
 ```
 
 Removes the name `path` from its directory.
@@ -213,7 +237,11 @@ anything still holding it open keeps using it.
 <h2 id="mkdir-at"><code>MkdirAt</code></h2>
 
 ```rux
-pub func MkdirAt(directoryFd: FileDescriptor, path: *char8, mode: FileMode) -> int64
+pub func MkdirAt(
+    directoryFd: FileDescriptor,
+    path: *char8,
+    mode: FileMode
+) -> int64
 ```
 
 Creates a directory named `path` with permission bits `mode`.
@@ -235,7 +263,12 @@ Reports [`EEXIST`](/docs/api/freebsd/errors#eexist) when the name is taken, whic
 <h2 id="rename-at"><code>RenameAt</code></h2>
 
 ```rux
-pub func RenameAt(oldDirectoryFd: FileDescriptor, oldPath: *char8, newDirectoryFd: FileDescriptor, newPath: *char8) -> int64
+pub func RenameAt(
+    oldDirectoryFd: FileDescriptor,
+    oldPath: *char8,
+    newDirectoryFd: FileDescriptor,
+    newPath: *char8
+) -> int64
 ```
 
 Renames `oldPath` to `newPath`, each resolved against its own directory descriptor.

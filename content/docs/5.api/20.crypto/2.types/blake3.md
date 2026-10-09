@@ -149,7 +149,14 @@ Sixty-four bytes.
 <h3 id="blake3-compress"><code>Blake3Compress</code></h3>
 
 ```rux
-pub func Blake3Compress(chaining: *uint32, message: *uint32, counter: uint64, blockLength: uint32, flags: uint32, into: *var uint32)
+pub func Blake3Compress(
+    chaining: *uint32,
+    message: *uint32,
+    counter: uint64,
+    blockLength: uint32,
+    flags: uint32,
+    into: *var uint32
+)
 ```
 
 The compression function: sixteen words of state over seven rounds, producing sixteen words of output.
@@ -186,7 +193,10 @@ Structural `Copy`; used as an independent snapshot within the enclosing hasher.
 <h4 id="blake3-chunk-update"><code>Update</code></h4>
 
 ```rux
-pub func Update(self: &var Blake3Chunk, bytes: char8[..]) -> uint
+pub func Update(
+    self: &var Blake3Chunk,
+    bytes: char8[..]
+) -> uint
 ```
 
 Adds bytes to the chunk, compressing whole blocks as they complete.
@@ -205,7 +215,11 @@ growing. Compressing eagerly is the classic way to get the flags wrong.
 <h4 id="blake3-chunk-output"><code>Output</code></h4>
 
 ```rux
-pub func Output(self: &Blake3Chunk, extraFlags: uint32, into: *var uint32)
+pub func Output(
+    self: &Blake3Chunk,
+    extraFlags: uint32,
+    into: *var uint32
+)
 ```
 
 The chunk's chaining value, with the end flag applied to its final block.
@@ -238,7 +252,11 @@ The BLAKE3 hash of `bytes`, at whatever length `into` asks for.
 <h3 id="blake3-keyed-of"><code>Blake3KeyedOf</code></h3>
 
 ```rux
-pub func Blake3KeyedOf(key: char8[..], bytes: char8[..], into: var char8[..])
+pub func Blake3KeyedOf(
+    key: char8[..],
+    bytes: char8[..],
+    into: var char8[..]
+)
 ```
 
 The keyed BLAKE3 hash of `bytes` under `key`, in one call.
@@ -256,7 +274,11 @@ The keyed BLAKE3 hash of `bytes` under `key`, in one call.
 <h3 id="blake3-derive-key"><code>Blake3DeriveKey</code></h3>
 
 ```rux
-pub func Blake3DeriveKey(context: char8[..], material: char8[..], into: var char8[..])
+pub func Blake3DeriveKey(
+    context: char8[..],
+    material: char8[..],
+    into: var char8[..]
+)
 ```
 
 A key derived from `material` under `context`, at whatever length `into` asks for.

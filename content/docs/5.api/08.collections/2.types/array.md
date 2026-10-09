@@ -40,7 +40,11 @@ Move-only: it owns its elements and storage, prohibits copying, and destroys bot
 <h3 id="filled"><code>Filled</code></h3>
 
 ```rux
-pub func Filled(allocator: Allocator, length: uint, value: T) -> Array<T> ! CollectionError
+pub func Filled(
+    allocator: Allocator,
+    length: uint,
+    value: T
+) -> Array<T> ! CollectionError
 ```
 
 An array of `length` elements, every one a copy of `value`.
@@ -62,7 +66,10 @@ Runs in time proportional to `length`.
 <h3 id="from-slice"><code>FromSlice</code></h3>
 
 ```rux
-pub func FromSlice(allocator: Allocator, items: T[..]) -> Array<T> ! CollectionError
+pub func FromSlice(
+    allocator: Allocator,
+    items: T[..]
+) -> Array<T> ! CollectionError
 ```
 
 An array holding a copy of every element of `items`, in order.
@@ -164,7 +171,11 @@ The pointer is valid until the array is destroyed or moved.
 <h3 id="set"><code>Set</code></h3>
 
 ```rux
-pub func Set(self: &var Array<T>, index: uint, value: T) -> ! CollectionError
+pub func Set(
+    self: &var Array<T>,
+    index: uint,
+    value: T
+) -> ! CollectionError
 ```
 
 Replaces the element at `index` with `value`.
@@ -268,7 +279,11 @@ An array that was moved away is not destroyed where it used to live, so this hap
 <h3 id="write-array-debug"><code>WriteArrayDebug&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteArrayDebug<T: Debug>(writer: &var TextWriter, value: &Array<T>, spec: FormatSpec) -> ! FormatError
+pub func WriteArrayDebug<T: Debug>(
+    writer: &var TextWriter,
+    value: &Array<T>,
+    spec: FormatSpec
+) -> ! FormatError
 ```
 
 Writes a borrowed array as `[first, second, third]`.

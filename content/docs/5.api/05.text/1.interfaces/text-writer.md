@@ -23,7 +23,10 @@ Somewhere formatted text can be written.
 
 ```rux
 pub interface TextWriter {
-    func Write(self: &var Self, bytes: char8[..]) -> ! FormatError;
+    func Write(
+        self: &var Self,
+        bytes: char8[..]
+    ) -> ! FormatError;
 }
 ```
 
@@ -35,7 +38,10 @@ view, which refers to the caller's own writer rather than a copy that would lose
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-func Write(self: &var Self, bytes: char8[..]) -> ! FormatError
+func Write(
+    self: &var Self,
+    bytes: char8[..]
+) -> ! FormatError
 ```
 
 Writes `bytes`, which must be well-formed UTF-8 and must not end part-way through a character.
@@ -67,7 +73,10 @@ already have emitted a prefix.
 <h3 id="write-bytes"><code>WriteBytes</code></h3>
 
 ```rux
-pub func WriteBytes(writer: &var TextWriter, bytes: char8[..]) -> ! FormatError
+pub func WriteBytes(
+    writer: &var TextWriter,
+    bytes: char8[..]
+) -> ! FormatError
 ```
 
 Writes `bytes` to `writer`.
@@ -88,7 +97,10 @@ without inspecting the bytes, which is what keeps the writer's permitted failure
 <h3 id="write-ascii"><code>WriteAscii</code></h3>
 
 ```rux
-pub func WriteAscii(writer: &var TextWriter, byte: char8) -> ! FormatError
+pub func WriteAscii(
+    writer: &var TextWriter,
+    byte: char8
+) -> ! FormatError
 ```
 
 Writes one ASCII byte.
@@ -110,7 +122,10 @@ reports whatever the writer reported.
 <h3 id="write-scalar"><code>WriteScalar</code></h3>
 
 ```rux
-pub func WriteScalar(writer: &var TextWriter, scalar: char32) -> ! FormatError
+pub func WriteScalar(
+    writer: &var TextWriter,
+    scalar: char32
+) -> ! FormatError
 ```
 
 Writes one character, encoded as UTF-8.
