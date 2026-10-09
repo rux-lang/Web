@@ -149,7 +149,7 @@ const apiBreadcrumbs = computed(() => {
 const apiVersion = computed(() => api.value?.version);
 const apiPackageName = computed(() => api.value?.package);
 const apiSource = computed(() => (api.value ? apiSourceUrl(api.value) : apiPackagesTreeUrl));
-// "struct", "interface", "intrinsic type", …; an overview, and a topic page
+// "struct", "interface", "primitive", …; an overview, and a topic page
 // that only gathers fragments, are not one declaration and get no badge.
 const apiKind = computed(() =>
   api.value && !["package", "topic"].includes(api.value.kind) ? api.value.kind.replace(/-/g, " ") : undefined,

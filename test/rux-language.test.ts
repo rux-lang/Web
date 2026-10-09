@@ -61,6 +61,7 @@ describe("Rux stream mode", () => {
     for (const primitive of ["int", "uint", "int64", "uint512", "float64", "float80", "char32", "bool8", "opaque"]) {
       expect(tokenOf(`let x: ${primitive} = 0;`, primitive)).toBe("typeName");
     }
+    expect(tokenOf("let x: byte = 0;", "byte")).toBe("typeName");
     expect(tokenOf("let x: Vector = 0;", "Vector")).toBe("variableName");
   });
 

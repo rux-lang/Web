@@ -460,11 +460,11 @@ describe("renderApiPackage", async () => {
     const snapshot = copy();
     const primitive = (name: string, line: number) => ({
       ...structuredClone(item(fixture, "NaturalAlignment")),
-      kind: "intrinsic-type",
+      kind: "primitive",
       name,
       displayName: name,
       line,
-      signature: `intrinsic type ${name}`,
+      signature: `extend ${name}`,
       doc: {
         ...structuredClone(item(fixture, "NaturalAlignment").doc),
         summary: `A ${name}.`,

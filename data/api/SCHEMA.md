@@ -31,7 +31,7 @@ Every Markdown string is the documentation's own normalized Markdown, unchanged:
   ],
   "items": [
     {
-      "kind": "struct", // struct | enum | variant | union | interface | function | constant | type | intrinsic-type | extern
+      "kind": "struct", // struct | enum | variant | union | interface | function | constant | type | primitive | extern
       "name": "Arena",
       "displayName": "Arena", // with type parameters: "Box<T>"
       "module": "Arena",
@@ -84,6 +84,10 @@ Every Markdown string is the documentation's own normalized Markdown, unchanged:
   ],
 }
 ```
+
+## Primitive items
+
+Every primitive type is built into the compiler, so no package declares one. A package that extends a primitive gets one `primitive` item for it, named by its canonical spelling (`int8`, never `byte`), anchored on the first `extend` block of it that carries documentation: `module`, `source`, `line` and `doc` come from that block, and `signature` is `extend int8`. Its `members` gather every `extend int8` block in the package, `extend byte` included. A primitive the package extends only in undocumented blocks gets no item.
 
 ## Member kinds
 

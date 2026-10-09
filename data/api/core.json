@@ -94,11 +94,6 @@
       "header": "Which channel a native fallible holds, asked without unwrapping it.\nA native fallible `T ! E` is a compiler-owned form with no methods of its own, so the questions every caller asks of\none live here as ordinary generic functions. Each takes the outcome by value, which is what lets a call's result be\nasked directly; a named outcome whose payloads cannot be copied is passed as `<-outcome`, and is then gone.\nAsking is not handling. A caller that needs the success or the failure matches `.Success(value)` and\n`.Failure(error)`, propagates with `?`, or recovers with `catch`; these two are for a branch or an assertion that\nneeds only the answer."
     },
     {
-      "name": "Bool",
-      "source": "Src/Primitives/Bool.rux",
-      "header": "`bool`: the canonical boolean width.\nAn alias for `bool8`, with identical representation, ABI, constants, conversions and overload identity. It exists so\nordinary code can say the short name and mean exactly the canonical one."
-    },
-    {
       "name": "Bool128",
       "source": "Src/Primitives/Bool128.rux",
       "header": "bool128 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
@@ -131,17 +126,7 @@
     {
       "name": "Bool8",
       "source": "Src/Primitives/Bool8.rux",
-      "header": "`bool8`: one of two values, stored in 8 bits.\nEvery boolean width holds exactly zero or one whatever its size, so a cast into one asks whether the whole source\nvalue is non-zero rather than truncating to the width first."
-    },
-    {
-      "name": "Byte",
-      "source": "Src/Primitives/Byte.rux",
-      "header": "`byte`: the raw-storage spelling of an eight-bit unsigned integer.\nAn alias for `uint8`, with identical representation, ABI, constants, conversions and overload identity. It exists so\nordinary code can say the short name and mean exactly the canonical one."
-    },
-    {
-      "name": "Char",
-      "source": "Src/Primitives/Char.rux",
-      "header": "`char`: the canonical character width, which holds a Unicode scalar value.\nAn alias for `char32`, with identical representation, ABI, constants, conversions and overload identity. It exists so\nordinary code can say the short name and mean exactly the canonical one."
+      "header": "`bool8`: one of two values, stored in 8 bits.\nEvery boolean width holds exactly zero or one whatever its size, so a cast into one asks whether the whole source\nvalue is non-zero rather than truncating to the width first. This is the width `bool` names."
     },
     {
       "name": "Char128",
@@ -177,11 +162,6 @@
       "name": "Char8",
       "source": "Src/Primitives/Char8.rux",
       "header": "`char8`: one UTF-8 code unit.\nA code unit, not a character: every value that fits is valid, and a scalar value above U+007F takes more than one of\nthese. It does not widen implicitly to `char16` or `char32`, because a UTF-8 byte above 0x7F is not the unit of the\nsame number in either encoding."
-    },
-    {
-      "name": "Float",
-      "source": "Src/Primitives/Float.rux",
-      "header": "`float`: the canonical floating-point width.\nAn alias for `float64`, with identical representation, ABI, constants, conversions and overload identity. It exists\nso ordinary code can say the short name and mean exactly the canonical one."
     },
     {
       "name": "Float128",
@@ -301,7 +281,7 @@
     {
       "name": "Uint8",
       "source": "Src/Primitives/Uint8.rux",
-      "header": "`uint8`: an unsigned integer in 8 bits.\nWrapping is defined at this width and `Min` is zero, so a subtraction that would go below it wraps rather than\ntrapping. Core's checked arithmetic is what reports instead of wrapping."
+      "header": "`uint8`: an unsigned integer in 8 bits.\nWrapping is defined at this width and `Min` is zero, so a subtraction that would go below it wraps rather than\ntrapping. Core's checked arithmetic is what reports instead of wrapping. This is the width `byte` names."
     },
     {
       "name": "Source",
@@ -4216,52 +4196,17 @@
       ]
     },
     {
-      "kind": "type",
-      "name": "bool",
-      "displayName": "bool",
-      "module": "Bool",
-      "source": "Src/Primitives/Bool.rux",
-      "line": 7,
-      "signature": "pub type bool = bool8",
-      "typeParams": [],
-      "doc": {
-        "summary": "The default alias of bool8.",
-        "markdown": "The default alias of bool8.",
-        "typeParams": [],
-        "params": [],
-        "returns": null,
-        "see": ["https://rux-lang.dev/docs/api/core/booleans#bool"],
-        "deprecated": null
-      },
-      "value": null,
-      "fields": [],
-      "baseType": null,
-      "cases": [],
-      "members": [],
-      "implements": [],
-      "targets": [
-        "windows-x86_64",
-        "windows-aarch64",
-        "linux-x86_64",
-        "linux-aarch64",
-        "macos-x86_64",
-        "macos-aarch64",
-        "freebsd-x86_64",
-        "freebsd-aarch64"
-      ]
-    },
-    {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "bool16",
       "displayName": "bool16",
       "module": "Bool16",
       "source": "Src/Primitives/Bool16.rux",
       "line": 7,
-      "signature": "pub intrinsic type bool16;",
+      "signature": "extend bool16",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of bool16.",
-        "markdown": "The compiler representation of bool16.",
+        "summary": "One of two values, stored in 16 bits.",
+        "markdown": "One of two values, stored in 16 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -4276,7 +4221,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -4308,7 +4253,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -4351,17 +4296,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "bool32",
       "displayName": "bool32",
       "module": "Bool32",
       "source": "Src/Primitives/Bool32.rux",
       "line": 7,
-      "signature": "pub intrinsic type bool32;",
+      "signature": "extend bool32",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of bool32.",
-        "markdown": "The compiler representation of bool32.",
+        "summary": "One of two values, stored in 32 bits.",
+        "markdown": "One of two values, stored in 32 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -4376,7 +4321,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -4408,7 +4353,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -4451,17 +4396,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "bool64",
       "displayName": "bool64",
       "module": "Bool64",
       "source": "Src/Primitives/Bool64.rux",
       "line": 7,
-      "signature": "pub intrinsic type bool64;",
+      "signature": "extend bool64",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of bool64.",
-        "markdown": "The compiler representation of bool64.",
+        "summary": "One of two values, stored in 64 bits.",
+        "markdown": "One of two values, stored in 64 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -4476,7 +4421,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -4508,7 +4453,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -4551,17 +4496,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "bool8",
       "displayName": "bool8",
       "module": "Bool8",
       "source": "Src/Primitives/Bool8.rux",
       "line": 7,
-      "signature": "pub intrinsic type bool8;",
+      "signature": "extend bool8",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of bool8.",
-        "markdown": "The compiler representation of bool8.",
+        "summary": "One of two values, stored in 8 bits.",
+        "markdown": "One of two values, stored in 8 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -4576,7 +4521,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -4608,7 +4553,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -4651,87 +4596,17 @@
       ]
     },
     {
-      "kind": "type",
-      "name": "byte",
-      "displayName": "byte",
-      "module": "Byte",
-      "source": "Src/Primitives/Byte.rux",
-      "line": 7,
-      "signature": "pub type byte = uint8",
-      "typeParams": [],
-      "doc": {
-        "summary": "The default alias of uint8.",
-        "markdown": "The default alias of uint8.",
-        "typeParams": [],
-        "params": [],
-        "returns": null,
-        "see": ["https://rux-lang.dev/docs/api/core/integers#byte"],
-        "deprecated": null
-      },
-      "value": null,
-      "fields": [],
-      "baseType": null,
-      "cases": [],
-      "members": [],
-      "implements": [],
-      "targets": [
-        "windows-x86_64",
-        "windows-aarch64",
-        "linux-x86_64",
-        "linux-aarch64",
-        "macos-x86_64",
-        "macos-aarch64",
-        "freebsd-x86_64",
-        "freebsd-aarch64"
-      ]
-    },
-    {
-      "kind": "type",
-      "name": "char",
-      "displayName": "char",
-      "module": "Char",
-      "source": "Src/Primitives/Char.rux",
-      "line": 7,
-      "signature": "pub type char = char32",
-      "typeParams": [],
-      "doc": {
-        "summary": "The default alias of char32.",
-        "markdown": "The default alias of char32.",
-        "typeParams": [],
-        "params": [],
-        "returns": null,
-        "see": ["https://rux-lang.dev/docs/api/core/characters#char"],
-        "deprecated": null
-      },
-      "value": null,
-      "fields": [],
-      "baseType": null,
-      "cases": [],
-      "members": [],
-      "implements": [],
-      "targets": [
-        "windows-x86_64",
-        "windows-aarch64",
-        "linux-x86_64",
-        "linux-aarch64",
-        "macos-x86_64",
-        "macos-aarch64",
-        "freebsd-x86_64",
-        "freebsd-aarch64"
-      ]
-    },
-    {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "char16",
       "displayName": "char16",
       "module": "Char16",
       "source": "Src/Primitives/Char16.rux",
       "line": 7,
-      "signature": "pub intrinsic type char16;",
+      "signature": "extend char16",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of char16.",
-        "markdown": "The compiler representation of char16.",
+        "summary": "One UTF-16 code unit.",
+        "markdown": "One UTF-16 code unit.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -4746,7 +4621,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -4778,7 +4653,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -4810,7 +4685,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: char16",
           "typeParams": [],
           "params": [],
@@ -4842,7 +4717,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: char16",
           "typeParams": [],
           "params": [],
@@ -4885,17 +4760,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "char32",
       "displayName": "char32",
       "module": "Char32",
       "source": "Src/Primitives/Char32.rux",
       "line": 7,
-      "signature": "pub intrinsic type char32;",
+      "signature": "extend char32",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of char32.",
-        "markdown": "The compiler representation of char32.",
+        "summary": "One Unicode scalar value.",
+        "markdown": "One Unicode scalar value.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -4910,7 +4785,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -4942,7 +4817,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -4974,7 +4849,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: char32",
           "typeParams": [],
           "params": [],
@@ -5006,7 +4881,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: char32",
           "typeParams": [],
           "params": [],
@@ -5049,17 +4924,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "char64",
       "displayName": "char64",
       "module": "Char64",
       "source": "Src/Primitives/Char64.rux",
       "line": 7,
-      "signature": "pub intrinsic type char64;",
+      "signature": "extend char64",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of char64.",
-        "markdown": "The compiler representation of char64.",
+        "summary": "One Unicode scalar value, in eight bytes.",
+        "markdown": "One Unicode scalar value, in eight bytes.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -5074,7 +4949,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -5106,7 +4981,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -5138,7 +5013,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: char64",
           "typeParams": [],
           "params": [],
@@ -5170,7 +5045,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: char64",
           "typeParams": [],
           "params": [],
@@ -5213,17 +5088,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "char8",
       "displayName": "char8",
       "module": "Char8",
       "source": "Src/Primitives/Char8.rux",
       "line": 8,
-      "signature": "pub intrinsic type char8;",
+      "signature": "extend char8",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of char8.",
-        "markdown": "The compiler representation of char8.",
+        "summary": "One UTF-8 code unit.",
+        "markdown": "One UTF-8 code unit.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -5238,7 +5113,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 13,
+          "line": 11,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -5270,7 +5145,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 16,
+          "line": 14,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -5302,7 +5177,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 19,
+          "line": 17,
           "signature": "pub const Min: char8",
           "typeParams": [],
           "params": [],
@@ -5334,7 +5209,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 22,
+          "line": 20,
           "signature": "pub const Max: char8",
           "typeParams": [],
           "params": [],
@@ -5377,52 +5252,17 @@
       ]
     },
     {
-      "kind": "type",
-      "name": "float",
-      "displayName": "float",
-      "module": "Float",
-      "source": "Src/Primitives/Float.rux",
-      "line": 7,
-      "signature": "pub type float = float64",
-      "typeParams": [],
-      "doc": {
-        "summary": "The default alias of float64.",
-        "markdown": "The default alias of float64.",
-        "typeParams": [],
-        "params": [],
-        "returns": null,
-        "see": ["https://rux-lang.dev/docs/api/core/floating-point#float"],
-        "deprecated": null
-      },
-      "value": null,
-      "fields": [],
-      "baseType": null,
-      "cases": [],
-      "members": [],
-      "implements": [],
-      "targets": [
-        "windows-x86_64",
-        "windows-aarch64",
-        "linux-x86_64",
-        "linux-aarch64",
-        "macos-x86_64",
-        "macos-aarch64",
-        "freebsd-x86_64",
-        "freebsd-aarch64"
-      ]
-    },
-    {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "float32",
       "displayName": "float32",
       "module": "Float32",
       "source": "Src/Primitives/Float32.rux",
       "line": 7,
-      "signature": "pub intrinsic type float32;",
+      "signature": "extend float32",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of float32.",
-        "markdown": "The compiler representation of float32.",
+        "summary": "An IEEE 754 binary32 floating-point number.",
+        "markdown": "An IEEE 754 binary32 floating-point number.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -5437,7 +5277,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -5469,7 +5309,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -5501,7 +5341,7 @@
         {
           "kind": "constant",
           "name": "Lowest",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Lowest: float32",
           "typeParams": [],
           "params": [],
@@ -5533,7 +5373,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: float32",
           "typeParams": [],
           "params": [],
@@ -5565,7 +5405,7 @@
         {
           "kind": "constant",
           "name": "MinPositive",
-          "line": 24,
+          "line": 22,
           "signature": "pub const MinPositive: float32",
           "typeParams": [],
           "params": [],
@@ -5597,7 +5437,7 @@
         {
           "kind": "constant",
           "name": "Epsilon",
-          "line": 27,
+          "line": 25,
           "signature": "pub const Epsilon: float32",
           "typeParams": [],
           "params": [],
@@ -5629,7 +5469,7 @@
         {
           "kind": "constant",
           "name": "Infinity",
-          "line": 30,
+          "line": 28,
           "signature": "pub const Infinity: float32",
           "typeParams": [],
           "params": [],
@@ -5661,7 +5501,7 @@
         {
           "kind": "constant",
           "name": "NaN",
-          "line": 33,
+          "line": 31,
           "signature": "pub const NaN: float32",
           "typeParams": [],
           "params": [],
@@ -5704,17 +5544,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "float64",
       "displayName": "float64",
       "module": "Float64",
       "source": "Src/Primitives/Float64.rux",
       "line": 6,
-      "signature": "pub intrinsic type float64;",
+      "signature": "extend float64",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of float64.",
-        "markdown": "The compiler representation of float64.",
+        "summary": "An IEEE 754 binary64 floating-point number.",
+        "markdown": "An IEEE 754 binary64 floating-point number.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -5729,7 +5569,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 11,
+          "line": 9,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -5761,7 +5601,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 14,
+          "line": 12,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -5793,7 +5633,7 @@
         {
           "kind": "constant",
           "name": "Lowest",
-          "line": 17,
+          "line": 15,
           "signature": "pub const Lowest: float64",
           "typeParams": [],
           "params": [],
@@ -5825,7 +5665,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 20,
+          "line": 18,
           "signature": "pub const Max: float64",
           "typeParams": [],
           "params": [],
@@ -5857,7 +5697,7 @@
         {
           "kind": "constant",
           "name": "MinPositive",
-          "line": 23,
+          "line": 21,
           "signature": "pub const MinPositive: float64",
           "typeParams": [],
           "params": [],
@@ -5889,7 +5729,7 @@
         {
           "kind": "constant",
           "name": "Epsilon",
-          "line": 26,
+          "line": 24,
           "signature": "pub const Epsilon: float64",
           "typeParams": [],
           "params": [],
@@ -5921,7 +5761,7 @@
         {
           "kind": "constant",
           "name": "Infinity",
-          "line": 29,
+          "line": 27,
           "signature": "pub const Infinity: float64",
           "typeParams": [],
           "params": [],
@@ -5953,7 +5793,7 @@
         {
           "kind": "constant",
           "name": "NaN",
-          "line": 32,
+          "line": 30,
           "signature": "pub const NaN: float64",
           "typeParams": [],
           "params": [],
@@ -5996,13 +5836,13 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "int",
       "displayName": "int",
       "module": "Int",
       "source": "Src/Primitives/Int.rux",
       "line": 7,
-      "signature": "pub intrinsic type int;",
+      "signature": "extend int",
       "typeParams": [],
       "doc": {
         "summary": "A target pointer-sized signed integer.",
@@ -6021,7 +5861,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -6053,7 +5893,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -6085,7 +5925,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: int",
           "typeParams": [],
           "params": [],
@@ -6117,7 +5957,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: int",
           "typeParams": [],
           "params": [],
@@ -6160,17 +6000,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "int128",
       "displayName": "int128",
       "module": "Int128",
       "source": "Src/Primitives/Int128.rux",
       "line": 7,
-      "signature": "pub intrinsic type int128;",
+      "signature": "extend int128",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of int128.",
-        "markdown": "The compiler representation of int128.",
+        "summary": "A signed integer in 128 bits, two's complement.",
+        "markdown": "A signed integer in 128 bits, two's complement.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -6185,7 +6025,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -6217,7 +6057,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -6249,7 +6089,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: int128",
           "typeParams": [],
           "params": [],
@@ -6281,7 +6121,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: int128",
           "typeParams": [],
           "params": [],
@@ -6324,17 +6164,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "int16",
       "displayName": "int16",
       "module": "Int16",
       "source": "Src/Primitives/Int16.rux",
       "line": 7,
-      "signature": "pub intrinsic type int16;",
+      "signature": "extend int16",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of int16.",
-        "markdown": "The compiler representation of int16.",
+        "summary": "A signed integer in 16 bits, two's complement.",
+        "markdown": "A signed integer in 16 bits, two's complement.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -6349,7 +6189,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -6381,7 +6221,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -6413,7 +6253,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: int16",
           "typeParams": [],
           "params": [],
@@ -6445,7 +6285,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: int16",
           "typeParams": [],
           "params": [],
@@ -6488,17 +6328,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "int256",
       "displayName": "int256",
       "module": "Int256",
       "source": "Src/Primitives/Int256.rux",
       "line": 7,
-      "signature": "pub intrinsic type int256;",
+      "signature": "extend int256",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of int256.",
-        "markdown": "The compiler representation of int256.",
+        "summary": "A signed integer in 256 bits, two's complement.",
+        "markdown": "A signed integer in 256 bits, two's complement.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -6513,7 +6353,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -6545,7 +6385,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -6577,7 +6417,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: int256",
           "typeParams": [],
           "params": [],
@@ -6609,7 +6449,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: int256",
           "typeParams": [],
           "params": [],
@@ -6652,17 +6492,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "int32",
       "displayName": "int32",
       "module": "Int32",
       "source": "Src/Primitives/Int32.rux",
       "line": 7,
-      "signature": "pub intrinsic type int32;",
+      "signature": "extend int32",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of int32.",
-        "markdown": "The compiler representation of int32.",
+        "summary": "A signed integer in 32 bits, two's complement.",
+        "markdown": "A signed integer in 32 bits, two's complement.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -6677,7 +6517,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -6709,7 +6549,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -6741,7 +6581,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: int32",
           "typeParams": [],
           "params": [],
@@ -6773,7 +6613,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: int32",
           "typeParams": [],
           "params": [],
@@ -6816,17 +6656,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "int512",
       "displayName": "int512",
       "module": "Int512",
       "source": "Src/Primitives/Int512.rux",
       "line": 7,
-      "signature": "pub intrinsic type int512;",
+      "signature": "extend int512",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of int512.",
-        "markdown": "The compiler representation of int512.",
+        "summary": "A signed integer in 512 bits, two's complement.",
+        "markdown": "A signed integer in 512 bits, two's complement.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -6841,7 +6681,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -6873,7 +6713,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -6905,7 +6745,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: int512",
           "typeParams": [],
           "params": [],
@@ -6937,7 +6777,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: int512",
           "typeParams": [],
           "params": [],
@@ -6980,17 +6820,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "int64",
       "displayName": "int64",
       "module": "Int64",
       "source": "Src/Primitives/Int64.rux",
       "line": 7,
-      "signature": "pub intrinsic type int64;",
+      "signature": "extend int64",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of int64.",
-        "markdown": "The compiler representation of int64.",
+        "summary": "A signed integer in 64 bits, two's complement.",
+        "markdown": "A signed integer in 64 bits, two's complement.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -7005,7 +6845,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -7037,7 +6877,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -7069,7 +6909,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: int64",
           "typeParams": [],
           "params": [],
@@ -7101,7 +6941,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: int64",
           "typeParams": [],
           "params": [],
@@ -7144,17 +6984,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "int8",
       "displayName": "int8",
       "module": "Int8",
       "source": "Src/Primitives/Int8.rux",
       "line": 7,
-      "signature": "pub intrinsic type int8;",
+      "signature": "extend int8",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of int8.",
-        "markdown": "The compiler representation of int8.",
+        "summary": "A signed integer in 8 bits, two's complement.",
+        "markdown": "A signed integer in 8 bits, two's complement.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -7169,7 +7009,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -7201,7 +7041,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -7233,7 +7073,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: int8",
           "typeParams": [],
           "params": [],
@@ -7265,7 +7105,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: int8",
           "typeParams": [],
           "params": [],
@@ -7308,13 +7148,13 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "uint",
       "displayName": "uint",
       "module": "Uint",
       "source": "Src/Primitives/Uint.rux",
       "line": 6,
-      "signature": "pub intrinsic type uint;",
+      "signature": "extend uint",
       "typeParams": [],
       "doc": {
         "summary": "A target pointer-sized unsigned integer.",
@@ -7333,7 +7173,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 11,
+          "line": 9,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -7365,7 +7205,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 14,
+          "line": 12,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -7397,7 +7237,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 17,
+          "line": 15,
           "signature": "pub const Min: uint",
           "typeParams": [],
           "params": [],
@@ -7429,7 +7269,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 20,
+          "line": 18,
           "signature": "pub const Max: uint",
           "typeParams": [],
           "params": [],
@@ -7472,17 +7312,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "uint128",
       "displayName": "uint128",
       "module": "Uint128",
       "source": "Src/Primitives/Uint128.rux",
       "line": 7,
-      "signature": "pub intrinsic type uint128;",
+      "signature": "extend uint128",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of uint128.",
-        "markdown": "The compiler representation of uint128.",
+        "summary": "An unsigned integer in 128 bits.",
+        "markdown": "An unsigned integer in 128 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -7497,7 +7337,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -7529,7 +7369,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -7561,7 +7401,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: uint128",
           "typeParams": [],
           "params": [],
@@ -7593,7 +7433,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: uint128",
           "typeParams": [],
           "params": [],
@@ -7636,17 +7476,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "uint16",
       "displayName": "uint16",
       "module": "Uint16",
       "source": "Src/Primitives/Uint16.rux",
       "line": 7,
-      "signature": "pub intrinsic type uint16;",
+      "signature": "extend uint16",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of uint16.",
-        "markdown": "The compiler representation of uint16.",
+        "summary": "An unsigned integer in 16 bits.",
+        "markdown": "An unsigned integer in 16 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -7661,7 +7501,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -7693,7 +7533,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -7725,7 +7565,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: uint16",
           "typeParams": [],
           "params": [],
@@ -7757,7 +7597,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: uint16",
           "typeParams": [],
           "params": [],
@@ -7800,17 +7640,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "uint256",
       "displayName": "uint256",
       "module": "Uint256",
       "source": "Src/Primitives/Uint256.rux",
       "line": 7,
-      "signature": "pub intrinsic type uint256;",
+      "signature": "extend uint256",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of uint256.",
-        "markdown": "The compiler representation of uint256.",
+        "summary": "An unsigned integer in 256 bits.",
+        "markdown": "An unsigned integer in 256 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -7825,7 +7665,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -7857,7 +7697,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -7889,7 +7729,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: uint256",
           "typeParams": [],
           "params": [],
@@ -7921,7 +7761,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: uint256",
           "typeParams": [],
           "params": [],
@@ -7964,17 +7804,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "uint32",
       "displayName": "uint32",
       "module": "Uint32",
       "source": "Src/Primitives/Uint32.rux",
       "line": 7,
-      "signature": "pub intrinsic type uint32;",
+      "signature": "extend uint32",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of uint32.",
-        "markdown": "The compiler representation of uint32.",
+        "summary": "An unsigned integer in 32 bits.",
+        "markdown": "An unsigned integer in 32 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -7989,7 +7829,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -8021,7 +7861,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -8053,7 +7893,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: uint32",
           "typeParams": [],
           "params": [],
@@ -8085,7 +7925,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: uint32",
           "typeParams": [],
           "params": [],
@@ -8128,17 +7968,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "uint512",
       "displayName": "uint512",
       "module": "Uint512",
       "source": "Src/Primitives/Uint512.rux",
       "line": 7,
-      "signature": "pub intrinsic type uint512;",
+      "signature": "extend uint512",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of uint512.",
-        "markdown": "The compiler representation of uint512.",
+        "summary": "An unsigned integer in 512 bits.",
+        "markdown": "An unsigned integer in 512 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -8153,7 +7993,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -8185,7 +8025,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -8217,7 +8057,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: uint512",
           "typeParams": [],
           "params": [],
@@ -8249,7 +8089,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: uint512",
           "typeParams": [],
           "params": [],
@@ -8292,17 +8132,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "uint64",
       "displayName": "uint64",
       "module": "Uint64",
       "source": "Src/Primitives/Uint64.rux",
       "line": 7,
-      "signature": "pub intrinsic type uint64;",
+      "signature": "extend uint64",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of uint64.",
-        "markdown": "The compiler representation of uint64.",
+        "summary": "An unsigned integer in 64 bits.",
+        "markdown": "An unsigned integer in 64 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -8317,7 +8157,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -8349,7 +8189,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -8381,7 +8221,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: uint64",
           "typeParams": [],
           "params": [],
@@ -8413,7 +8253,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: uint64",
           "typeParams": [],
           "params": [],
@@ -8456,17 +8296,17 @@
       ]
     },
     {
-      "kind": "intrinsic-type",
+      "kind": "primitive",
       "name": "uint8",
       "displayName": "uint8",
       "module": "Uint8",
       "source": "Src/Primitives/Uint8.rux",
       "line": 7,
-      "signature": "pub intrinsic type uint8;",
+      "signature": "extend uint8",
       "typeParams": [],
       "doc": {
-        "summary": "The compiler representation of uint8.",
-        "markdown": "The compiler representation of uint8.",
+        "summary": "An unsigned integer in 8 bits.",
+        "markdown": "An unsigned integer in 8 bits.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -8481,7 +8321,7 @@
         {
           "kind": "constant",
           "name": "Bits",
-          "line": 12,
+          "line": 10,
           "signature": "pub const Bits: uint",
           "typeParams": [],
           "params": [],
@@ -8513,7 +8353,7 @@
         {
           "kind": "constant",
           "name": "Bytes",
-          "line": 15,
+          "line": 13,
           "signature": "pub const Bytes: uint",
           "typeParams": [],
           "params": [],
@@ -8545,7 +8385,7 @@
         {
           "kind": "constant",
           "name": "Min",
-          "line": 18,
+          "line": 16,
           "signature": "pub const Min: uint8",
           "typeParams": [],
           "params": [],
@@ -8577,7 +8417,7 @@
         {
           "kind": "constant",
           "name": "Max",
-          "line": 21,
+          "line": 19,
           "signature": "pub const Max: uint8",
           "typeParams": [],
           "params": [],

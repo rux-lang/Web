@@ -39,22 +39,22 @@ export const PACKAGES = [
       integers: {
         title: "Integers",
         description:
-          "The signed and unsigned integer types from 8 to 512 bits, the pointer-sized `int` and `uint`, and the `byte` alias, with their width and limit constants.",
+          "The signed and unsigned integer types from 8 to 512 bits and the pointer-sized `int` and `uint`, with their width and limit constants. The built-in `byte` is `uint8` and shares its constants.",
       },
       "floating-point": {
         title: "Floating-point types",
         description:
-          "The IEEE 754 types `float32` and `float64` and the `float` alias, with their width, limit and special-value constants. The widths `float8`, `float16`, `float80`, `float128`, `float256` and `float512` are reserved and not implemented yet.",
+          "The IEEE 754 types `float32` and `float64`, with their width, limit and special-value constants. The built-in `float` is `float64` and shares its constants. The widths `float8`, `float16`, `float80`, `float128`, `float256` and `float512` are reserved and not implemented yet.",
       },
       booleans: {
         title: "Booleans",
         description:
-          "The boolean types `bool8` to `bool64` and the `bool` alias, with their width constants. The widths `bool128`, `bool256` and `bool512` are reserved and not implemented yet.",
+          "The boolean types `bool8` to `bool64`, with their width constants. The built-in `bool` is `bool8` and shares its constants. The widths `bool128`, `bool256` and `bool512` are reserved and not implemented yet.",
       },
       characters: {
         title: "Characters",
         description:
-          "The character types `char8` to `char64` and the `char` alias, with their width and limit constants. The widths `char128`, `char256` and `char512` are reserved and not implemented yet.",
+          "The character types `char8` to `char64`, with their width and limit constants. The built-in `char` is `char32` and shares its constants. The widths `char128`, `char256` and `char512` are reserved and not implemented yet.",
       },
       arithmetic: {
         title: "Integer arithmetic",
@@ -552,7 +552,7 @@ export const PACKAGES = [
  */
 export const KIND_GROUPS = [
   { folder: "1.interfaces", title: "Interfaces", kinds: ["interface"] },
-  { folder: "2.types", title: "Types", kinds: ["struct", "enum", "variant", "union", "type", "intrinsic-type"] },
+  { folder: "2.types", title: "Types", kinds: ["struct", "enum", "variant", "union", "type", "primitive"] },
   { folder: "3.functions", title: "Functions", kinds: ["function", "extern"] },
   { folder: "4.constants", title: "Constants", kinds: ["constant"] },
 ];

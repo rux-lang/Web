@@ -40,6 +40,7 @@ const typeOperators = new Set(["as", "is"]);
 
 const primitiveTypes = new Set([
   "opaque",
+  "byte",
   ...["bool", "char", "float", "int", "uint"].flatMap((base) => [
     base,
     ...["8", "16", "32", "64", "128", "256", "512"].map((width) => `${base}${width}`),

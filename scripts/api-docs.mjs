@@ -1089,7 +1089,7 @@ const naturalOrder = new Intl.Collator("en", { numeric: true, sensitivity: "base
  * `int16`, whatever order the compiler declared them in.
  */
 function topicSections(sections) {
-  const typesOnly = sections.every((set) => set.every((item) => ["intrinsic-type", "type"].includes(item.kind)));
+  const typesOnly = sections.every((set) => set.every((item) => ["primitive", "type"].includes(item.kind)));
   return typesOnly ? [...sections].sort(([a], [b]) => naturalOrder.compare(a.name, b.name)) : sections;
 }
 
