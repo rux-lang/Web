@@ -8,8 +8,8 @@ api:
   package: Format
   kind: topic
   version: 0.1.0
-  source: Src/Float32.rux
-  line: 24
+  source: Src/Float16.rux
+  line: 28
 seo:
   title: "Float classification and bits — Format API"
   description: "Whether a float is NaN, infinite or finite, and the bits it is stored as."
@@ -24,57 +24,63 @@ Whether a float is NaN, infinite or finite, and the bits it is stored as.
 <h2 id="is-nan"><code>IsNan</code></h2>
 
 ```rux
+pub func IsNan(value: float16) -> bool
 pub func IsNan(value: float32) -> bool
 pub func IsNan(value: float64) -> bool
+pub func IsNan(value: float8) -> bool
 ```
 
 Provides the public `IsNan` operation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float32.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float16.rux#L28)
 
 **Parameters**
 
-| Name    | Type                  | Description         |
-| ------- | --------------------- | ------------------- |
-| `value` | `float32` / `float64` | the value to act on |
+| Name    | Type                                         | Description         |
+| ------- | -------------------------------------------- | ------------------- |
+| `value` | `float16` / `float32` / `float64` / `float8` | the value to act on |
 
 **Returns**: whether the value is a NaN
 
 <h2 id="is-infinite"><code>IsInfinite</code></h2>
 
 ```rux
+pub func IsInfinite(value: float16) -> bool
 pub func IsInfinite(value: float32) -> bool
 pub func IsInfinite(value: float64) -> bool
+pub func IsInfinite(value: float8) -> bool
 ```
 
 Provides the public `IsInfinite` operation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float32.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float16.rux#L37)
 
 **Parameters**
 
-| Name    | Type                  | Description         |
-| ------- | --------------------- | ------------------- |
-| `value` | `float32` / `float64` | the value to act on |
+| Name    | Type                                         | Description         |
+| ------- | -------------------------------------------- | ------------------- |
+| `value` | `float16` / `float32` / `float64` / `float8` | the value to act on |
 
 **Returns**: whether the value is either infinity
 
 <h2 id="is-finite"><code>IsFinite</code></h2>
 
 ```rux
+pub func IsFinite(value: float16) -> bool
 pub func IsFinite(value: float32) -> bool
 pub func IsFinite(value: float64) -> bool
+pub func IsFinite(value: float8) -> bool
 ```
 
 Provides the public `IsFinite` operation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float32.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float16.rux#L47)
 
 **Parameters**
 
-| Name    | Type                  | Description         |
-| ------- | --------------------- | ------------------- |
-| `value` | `float32` / `float64` | the value to act on |
+| Name    | Type                                         | Description         |
+| ------- | -------------------------------------------- | ------------------- |
+| `value` | `float16` / `float32` / `float64` / `float8` | the value to act on |
 
 **Returns**: whether the value is neither infinite nor a NaN
 
@@ -88,7 +94,7 @@ The bits of `value`, as they are stored.
 Reads the value's storage as an integer of the same width through a raw pointer. This is the representation
 rather than the value: there is no conversion that preserves the bits, since a cast asks for the number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L34)
 
 **Parameters**
 
@@ -107,7 +113,7 @@ pub func BitsOfFloat32(value: float32) -> uint32
 The bits of `value`, as they are stored.
 As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the narrower width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L44)
 
 **Parameters**
 
@@ -116,6 +122,44 @@ As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the narrow
 | `value` | `float32` | the float to read |
 
 **Returns**: its thirty-two bits
+
+<h2 id="bits-of-float16"><code>BitsOfFloat16</code></h2>
+
+```rux
+pub func BitsOfFloat16(value: float16) -> uint16
+```
+
+The bits of `value`, as they are stored.
+As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the half-precision width.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L54)
+
+**Parameters**
+
+| Name    | Type      | Description       |
+| ------- | --------- | ----------------- |
+| `value` | `float16` | the float to read |
+
+**Returns**: its sixteen bits
+
+<h2 id="bits-of-float8"><code>BitsOfFloat8</code></h2>
+
+```rux
+pub func BitsOfFloat8(value: float8) -> uint8
+```
+
+The bits of `value`, as they are stored.
+As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the eight-bit width: a sign, four exponent bits and three stored significand bits.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L64)
+
+**Parameters**
+
+| Name    | Type     | Description       |
+| ------- | -------- | ----------------- |
+| `value` | `float8` | the float to read |
+
+**Returns**: its eight bits
 
 <h2 id="float64-from-bits"><code>Float64FromBits</code></h2>
 

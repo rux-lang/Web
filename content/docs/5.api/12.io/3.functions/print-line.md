@@ -41,6 +41,14 @@ pub func PrintLine(value: bool16) -> IoError?
 
 pub func PrintLine(value: bool32) -> IoError?
 
+pub func PrintLine(value: bool64) -> IoError?
+
+pub func PrintLine(value: bool128) -> IoError?
+
+pub func PrintLine(value: bool256) -> IoError?
+
+pub func PrintLine(value: bool512) -> IoError?
+
 pub func PrintLine(value: char8) -> IoError?
 
 pub func PrintLine(value: char16) -> IoError?
@@ -67,6 +75,10 @@ pub func PrintLine(value: int) -> IoError?
 
 pub func PrintLine(value: uint) -> IoError?
 
+pub func PrintLine(value: float8) -> IoError?
+
+pub func PrintLine(value: float16) -> IoError?
+
 pub func PrintLine(value: float32) -> IoError?
 
 pub func PrintLine(value: float64) -> IoError?
@@ -88,6 +100,10 @@ and `{:spec}` placeholders take them in order, and `{{` and `}}` write a literal
 | `pub func PrintLine(value: bool8) -> IoError?`                     | Writes a `bool8` to standard output, then a newline.                                 |
 | `pub func PrintLine(value: bool16) -> IoError?`                    | Writes a `bool16` to standard output, then a newline.                                |
 | `pub func PrintLine(value: bool32) -> IoError?`                    | Writes a `bool32` to standard output, then a newline.                                |
+| `pub func PrintLine(value: bool64) -> IoError?`                    | Writes a `bool64` to standard output, then a newline.                                |
+| `pub func PrintLine(value: bool128) -> IoError?`                   | Writes a `bool128` to standard output, then a newline.                               |
+| `pub func PrintLine(value: bool256) -> IoError?`                   | Writes a `bool256` to standard output, then a newline.                               |
+| `pub func PrintLine(value: bool512) -> IoError?`                   | Writes a `bool512` to standard output, then a newline.                               |
 | `pub func PrintLine(value: char8) -> IoError?`                     | Writes a `char8` to standard output, then a newline.                                 |
 | `pub func PrintLine(value: char16) -> IoError?`                    | Writes a `char16` to standard output, then a newline.                                |
 | `pub func PrintLine(value: char32) -> IoError?`                    | Writes a `char32` to standard output, then a newline.                                |
@@ -101,6 +117,8 @@ and `{:spec}` placeholders take them in order, and `{{` and `}}` write a literal
 | `pub func PrintLine(value: uint64) -> IoError?`                    | Writes a `uint64` to standard output, then a newline.                                |
 | `pub func PrintLine(value: int) -> IoError?`                       | Writes a `int` to standard output, then a newline.                                   |
 | `pub func PrintLine(value: uint) -> IoError?`                      | Writes a `uint` to standard output, then a newline.                                  |
+| `pub func PrintLine(value: float8) -> IoError?`                    | Writes a `float8` to standard output, then a newline.                                |
+| `pub func PrintLine(value: float16) -> IoError?`                   | Writes a `float16` to standard output, then a newline.                               |
 | `pub func PrintLine(value: float32) -> IoError?`                   | Writes a `float32` to standard output, then a newline.                               |
 | `pub func PrintLine(value: float64) -> IoError?`                   | Writes a `float64` to standard output, then a newline.                               |
 
@@ -116,6 +134,10 @@ and `{:spec}` placeholders take them in order, and `{{` and `}}` write a literal
 | `value`            | `bool8`      | the value to write |
 | `value`            | `bool16`     | the value to write |
 | `value`            | `bool32`     | the value to write |
+| `value`            | `bool64`     | the value to write |
+| `value`            | `bool128`    | the value to write |
+| `value`            | `bool256`    | the value to write |
+| `value`            | `bool512`    | the value to write |
 | `value`            | `char8`      | the value to write |
 | `value`            | `char16`     | the value to write |
 | `value`            | `char32`     | the value to write |
@@ -129,6 +151,8 @@ and `{:spec}` placeholders take them in order, and `{{` and `}}` write a literal
 | `value`            | `uint64`     | the value to write |
 | `value`            | `int`        | the value to write |
 | `value`            | `uint`       | the value to write |
+| `value`            | `float8`     | the value to write |
+| `value`            | `float16`    | the value to write |
 | `value`            | `float32`    | the value to write |
 | `value`            | `float64`    | the value to write |
 

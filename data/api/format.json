@@ -23,14 +23,29 @@
       "header": "An arbitrary-size natural number, for the two conversions that have to be exact.\nTurning a float into its shortest decimal, or a decimal into the nearest float, is a question about where the\nexact value sits between two neighbours, and answering it with floating-point arithmetic loses the very bits the\nanswer depends on. The classic way out is integer arithmetic on the exact value: a float is an integer times a\npower of two, a decimal is an integer times a power of ten, and comparing the two needs nothing more than big\nintegers that can be multiplied, shifted and compared. That is everything this type does, and nothing more.\nThe sizes involved are why this cannot be a fixed width. A float512 reaches 2^4194303, and the exact decimal\nconversion of a value near that limit works on numbers of that many bits. They come from an allocator because\nnothing else can hold them; the narrow widths never get near that, and a float80 never needs more than a few\nhundred words."
     },
     {
+      "name": "Bool128",
+      "source": "Src/Bool128.rux",
+      "header": "A `bool128` is the word `true` or the word `false`.\nThe fifth boolean width renders exactly as the other four do. A boolean's text has nothing to do with how many\nbytes it is stored in, and a width that rendered differently would be a width a caller had to remember."
+    },
+    {
       "name": "Bool16",
       "source": "Src/Bool16.rux",
       "header": "A `bool16` is the word `true` or the word `false`.\nLower case, unquoted, and the same for `Debug`: there is no second way to read a boolean."
     },
     {
+      "name": "Bool256",
+      "source": "Src/Bool256.rux",
+      "header": "A `bool256` is the word `true` or the word `false`.\nThe sixth boolean width renders exactly as the other five do. A boolean's text has nothing to do with how many\nbytes it is stored in, and a width that rendered differently would be a width a caller had to remember."
+    },
+    {
       "name": "Bool32",
       "source": "Src/Bool32.rux",
       "header": "A `bool32` is the word `true` or the word `false`.\nLower case, unquoted, and the same for `Debug`: there is no second way to read a boolean."
+    },
+    {
+      "name": "Bool512",
+      "source": "Src/Bool512.rux",
+      "header": "A `bool512` is the word `true` or the word `false`.\nThe seventh boolean width renders exactly as the other six do. A boolean's text has nothing to do with how many\nbytes it is stored in, and a width that rendered differently would be a width a caller had to remember."
     },
     {
       "name": "Bool64",
@@ -93,6 +108,11 @@
       "header": "An unsigned integer of fixed capacity, for the float conversion that may not allocate.\n`BigNat` next door grows and takes an allocator, which is right for the wide widths and wrong here: an ordinary\n`Display` is reached from a placeholder in the middle of writing something else, and a rendering that can fail\nfor want of memory makes every `{}` fallible for a reason that has nothing to do with the value. So the narrow\nwidths convert in storage whose size is fixed when this file is compiled.\nSixty-four limbs of sixty-four bits is 4,096 bits, against a worst case of 3,681 — the denominator a decimal\nwith the full retained digit count and a tiny exponent is read over, `10^1108`. The derivation is in\nDocs/NarrowFloat.md, with the five other quantities it was taken as the largest of. That leaves 415 bits of\nheadroom, over six limbs.\nOne size serves both directions. Rendering needs only 1,131 bits and would fit in twenty limbs, but a second\nworkspace would mean a second derivation and a second set of proofs to keep true, and the cost of the larger\none is stack rather than allocation.\nEvery operation that could pass the capacity answers whether it did, and a refused one leaves the value exactly\nas it was. None of them truncates, wraps or saturates: a wrong answer from an exact algorithm is worse than no\nanswer, because the whole point of the method is that there is nothing to approximate and so nothing to be\nslightly wrong about. A caller that sees `false` has hit a value the bound was proved not to reach, which is a\ndefect in the bound rather than an input to handle — and it can look at the value it still has to say so.\nLeaving the value alone costs a copy only where it could matter. An operation whose result needs at most one\nmore limb cannot overflow a workspace that is not already full, so the common path writes in place; only a\nworkspace at its capacity does the work in a local copy and commits it on success. The copy happens on the path\nthat is about to report a defect anyway."
     },
     {
+      "name": "Float16",
+      "source": "Src/Float16.rux",
+      "header": "The text of a `float16`.\nThe shortest decimal that reads back as the same `float16`, found at this width's own neighbours: 0.1 is stored\nas 0.0999755859375, and the shortest decimal no other `float16` is closer to is \"0.1\", where measuring against\nthe `float32` the value widens to would ask for \"0.099975586\". A precision in the placeholder asks for fixed\nnotation instead, and the `e` and `E` styles for scientific notation, through the same writers as the wider\nwidths.\nThere is no hardware arithmetic for this width on the targets Rux supports, so the classification below reads\nthe bits rather than comparing values: it costs a mask instead of a call into the software comparison."
+    },
+    {
       "name": "Float32",
       "source": "Src/Float32.rux",
       "header": "The text of a `float32`.\nThe shortest decimal that reads back as the same value, which is what a reader almost always wants: 0.1 prints as\n\"0.1\" rather than as the seventeen digits its binary value really is. A precision in the placeholder asks for\nfixed notation instead, and is honoured exactly when the value has that many digits to give; the `e` and `E`\nstyles ask for scientific notation."
@@ -103,9 +123,14 @@
       "header": "The text of a `float64`.\nThe shortest decimal that reads back as the same value, so 0.1 prints as \"0.1\" rather than as the seventeen\ndigits its binary value really is — and it is the shortest one exactly, found by the digit generator in\nShortestDigits.rux rather than by rounding to a fixed count and hoping. A precision in the placeholder asks for\nfixed notation instead, and the `e` and `E` styles for scientific notation, both written in Scientific.rux and\nPrecisionDigits.rux."
     },
     {
+      "name": "Float8",
+      "source": "Src/Float8.rux",
+      "header": "The text of a `float8`.\nThe shortest decimal that reads back as the same `float8`, found at this width's own neighbours: 0.1 is stored\nas 0.1015625, and the shortest decimal no other `float8` is closer to is \"0.1\", where measuring against the\n`float32` the value widens to would ask for all seven digits. The layout is E4M3 with IEEE-style specials: four\nbits of significand, an exponent biased by seven, and the all-ones exponent kept for the infinities and NaNs.\nA precision in the placeholder asks for fixed notation instead, and the `e` and `E` styles for scientific\nnotation, through the same writers as the wider widths.\nThere is no hardware arithmetic for this width on the targets Rux supports, so the classification below reads\nthe bits rather than comparing values: it costs a mask instead of a call into the software comparison."
+    },
+    {
       "name": "FloatDigits",
       "source": "Src/FloatDigits.rux",
-      "header": "Taking a narrow float apart, and putting its shortest digits back together as text.\nThe bits are read through a pointer rather than through a conversion, because there is no conversion that\npreserves them: casting a `float64` to a `uint64` asks for the value's integer part, and what is wanted is its\nrepresentation. That is a documented unsafe boundary and the only one in this package.\nWhat comes out is the significand and the power of two it is scaled by, in the form the exact digit generator\ntakes. A subnormal has a zero exponent field and no implicit leading bit; a normal has the bit and an exponent\nbiased by the format. The third thing the generator needs is whether the value sits at the bottom of its\nbinade — where its lower neighbour is half as far away as its upper one, because the exponent steps down\nunderneath it. That is the stored mantissa being zero, with the exception of the smallest normal, whose lower\nneighbour is the largest subnormal and is a full gap away like any other."
+      "header": "Taking a narrow float apart, and putting its shortest digits back together as text.\nThe bits are read through a pointer rather than through a conversion, because there is no conversion that\npreserves them: casting a `float64` to a `uint64` asks for the value's integer part, and what is wanted is its\nrepresentation. That is a documented unsafe boundary, the same one NarrowParse.rux crosses to turn bits back\ninto a float and WideFloatValue.rux crosses to bridge the wide primitives.\nWhat comes out is the significand and the power of two it is scaled by, in the form the exact digit generator\ntakes. A subnormal has a zero exponent field and no implicit leading bit; a normal has the bit and an exponent\nbiased by the format. The third thing the generator needs is whether the value sits at the bottom of its\nbinade — where its lower neighbour is half as far away as its upper one, because the exponent steps down\nunderneath it. That is the stored mantissa being zero, with the exception of the smallest normal, whose lower\nneighbour is the largest subnormal and is a full gap away like any other."
     },
     {
       "name": "Format",
@@ -195,7 +220,7 @@
     {
       "name": "WideFloat",
       "source": "Src/WideFloat.rux",
-      "header": "The four wide IEEE formats, as values that carry their bits.\n`float80`, `float128`, `float256` and `float512` are reserved names the language does not yet implement: their\nliterals and constants reach code generation, but arithmetic on them does not exist, so the compiler keeps them\nout of reach rather than let `a + b` compile into an integer addition of the bits. What formatting needs is none\nof that. A float is an integer significand and a power of two, both of which sit in the bits as plain integer\nfields, and turning them into decimal digits — or decimal digits back into them — is integer arithmetic all\nthe way down. So the values here are the bits, held in the integer width that fits, and every conversion below\nreads and writes those fields directly.\nWhen the primitives arrive, `extend float128 : Display` is one delegation to `Float128::FromBits`."
+      "header": "The four wide IEEE formats, as values that carry their bits.\n`float80`, `float128`, `float256` and `float512` are primitives with arithmetic of their own, but formatting needs\nnone of it. A float is an integer significand and a power of two, both of which sit in the bits as plain integer\nfields, and turning them into decimal digits — or decimal digits back into them — is integer arithmetic all\nthe way down. So the values here are the bits, held in the integer width that fits, and every conversion below\nreads and writes those fields directly.\nA primitive crosses into one of these values through `FromValue` and back out through `Value`, which move the\nbits and nothing else. The primitives get no `Display` of their own: the text allocates, and `FormatWith` on the\nvalue is where a caller says from where."
     },
     {
       "name": "WideFloatParse",
@@ -210,7 +235,7 @@
     {
       "name": "WideFloatValue",
       "source": "Src/WideFloatValue.rux",
-      "header": "The four wide widths as values: the bits, the questions a caller asks of them, and their text.\nEach carries its bits in the narrowest integer that holds them, and answers `IsNan`, `IsInfinite`, `IsFinite`\nand `IsNegative` from the fields directly.\nNone of them implements `Display` or `Debug`, and that absence is the design. Their text is found by exact\nbig-integer arithmetic that allocates — the narrow widths convert in a fixed workspace, but these are too wide\nfor one — and the protocols offer nowhere to pass an allocator. The four used to implement them anyway by\nreaching for the system allocator, which put a hidden allocation behind an ordinary `{}` and gave a caller who\nhad chosen an allocator for everything else no way to make this follow. `FormatWith` takes one, and taking one\nis the whole point: where a rendering allocates, the caller says from where."
+      "header": "The four wide widths as values: the bits, the questions a caller asks of them, and their text.\nEach carries its bits in the narrowest integer that holds them, and answers `IsNan`, `IsInfinite`, `IsFinite`\nand `IsNegative` from the fields directly. `FromValue` and `Value` move the bits to and from the primitive of\nthe same width through a raw pointer, the same boundary `BitsOfFloat64` crosses, since a cast would convert the\nnumber rather than keep its representation.\nNone of them implements `Display` or `Debug`, and that absence is the design. Their text is found by exact\nbig-integer arithmetic that allocates — the narrow widths convert in a fixed workspace, but these are too wide\nfor one — and the protocols offer nowhere to pass an allocator. The four used to implement them anyway by\nreaching for the system allocator, which put a hidden allocation behind an ordinary `{}` and gave a caller who\nhad chosen an allocator for everything else no way to make this follow. `FormatWith` takes one, and taking one\nis the whole point: where a rendering allocates, the caller says from where."
     },
     {
       "name": "WideInt",
@@ -1540,6 +1565,111 @@
       "kind": "function",
       "name": "IsNan",
       "displayName": "IsNan",
+      "module": "Float16",
+      "source": "Src/Float16.rux",
+      "line": 28,
+      "signature": "pub func IsNan(value: float16) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Provides the public `IsNan` operation.",
+        "markdown": "Provides the public `IsNan` operation.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the value to act on" }],
+        "returns": "whether the value is a NaN",
+        "see": ["https://rux-lang.dev/docs/api/format/float-bits#is-nan"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsInfinite",
+      "displayName": "IsInfinite",
+      "module": "Float16",
+      "source": "Src/Float16.rux",
+      "line": 37,
+      "signature": "pub func IsInfinite(value: float16) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Provides the public `IsInfinite` operation.",
+        "markdown": "Provides the public `IsInfinite` operation.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the value to act on" }],
+        "returns": "whether the value is either infinity",
+        "see": ["https://rux-lang.dev/docs/api/format/float-bits#is-infinite"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsFinite",
+      "displayName": "IsFinite",
+      "module": "Float16",
+      "source": "Src/Float16.rux",
+      "line": 47,
+      "signature": "pub func IsFinite(value: float16) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Provides the public `IsFinite` operation.",
+        "markdown": "Provides the public `IsFinite` operation.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the value to act on" }],
+        "returns": "whether the value is neither infinite nor a NaN",
+        "see": ["https://rux-lang.dev/docs/api/format/float-bits#is-finite"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsNan",
+      "displayName": "IsNan",
       "module": "Float32",
       "source": "Src/Float32.rux",
       "line": 24,
@@ -1747,12 +1877,117 @@
       ]
     },
     {
+      "kind": "function",
+      "name": "IsNan",
+      "displayName": "IsNan",
+      "module": "Float8",
+      "source": "Src/Float8.rux",
+      "line": 29,
+      "signature": "pub func IsNan(value: float8) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Provides the public `IsNan` operation.",
+        "markdown": "Provides the public `IsNan` operation.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the value to act on" }],
+        "returns": "whether the value is a NaN",
+        "see": ["https://rux-lang.dev/docs/api/format/float-bits#is-nan"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsInfinite",
+      "displayName": "IsInfinite",
+      "module": "Float8",
+      "source": "Src/Float8.rux",
+      "line": 38,
+      "signature": "pub func IsInfinite(value: float8) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Provides the public `IsInfinite` operation.",
+        "markdown": "Provides the public `IsInfinite` operation.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the value to act on" }],
+        "returns": "whether the value is either infinity",
+        "see": ["https://rux-lang.dev/docs/api/format/float-bits#is-infinite"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "IsFinite",
+      "displayName": "IsFinite",
+      "module": "Float8",
+      "source": "Src/Float8.rux",
+      "line": 48,
+      "signature": "pub func IsFinite(value: float8) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Provides the public `IsFinite` operation.",
+        "markdown": "Provides the public `IsFinite` operation.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the value to act on" }],
+        "returns": "whether the value is neither infinite nor a NaN",
+        "see": ["https://rux-lang.dev/docs/api/format/float-bits#is-finite"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
       "kind": "struct",
       "name": "FloatParts",
       "displayName": "FloatParts",
       "module": "FloatDigits",
       "source": "Src/FloatDigits.rux",
-      "line": 16,
+      "line": 17,
       "signature": "pub struct FloatParts",
       "typeParams": [],
       "doc": {
@@ -1770,7 +2005,7 @@
           "name": "significand",
           "type": "uint64",
           "public": true,
-          "line": 18,
+          "line": 19,
           "doc": "The integer significand, including the implicit bit for a normal value. Zero only for a zero.",
           "targets": [
             "windows-x86_64",
@@ -1787,7 +2022,7 @@
           "name": "exponent",
           "type": "int",
           "public": true,
-          "line": 20,
+          "line": 21,
           "doc": "The power of two the significand is scaled by.",
           "targets": [
             "windows-x86_64",
@@ -1804,7 +2039,7 @@
           "name": "atBinadeBottom",
           "type": "bool",
           "public": true,
-          "line": 22,
+          "line": 23,
           "doc": "Whether the lower neighbour is half as far away as the upper one.",
           "targets": [
             "windows-x86_64",
@@ -1821,7 +2056,7 @@
           "name": "negative",
           "type": "bool",
           "public": true,
-          "line": 24,
+          "line": 25,
           "doc": "Whether the value is negative, including the negative zero.",
           "targets": [
             "windows-x86_64",
@@ -1856,7 +2091,7 @@
       "displayName": "BitsOfFloat64",
       "module": "FloatDigits",
       "source": "Src/FloatDigits.rux",
-      "line": 33,
+      "line": 34,
       "signature": "pub func BitsOfFloat64(value: float64) -> uint64",
       "typeParams": [],
       "doc": {
@@ -1891,7 +2126,7 @@
       "displayName": "BitsOfFloat32",
       "module": "FloatDigits",
       "source": "Src/FloatDigits.rux",
-      "line": 43,
+      "line": 44,
       "signature": "pub func BitsOfFloat32(value: float32) -> uint32",
       "typeParams": [],
       "doc": {
@@ -1922,11 +2157,81 @@
     },
     {
       "kind": "function",
+      "name": "BitsOfFloat16",
+      "displayName": "BitsOfFloat16",
+      "module": "FloatDigits",
+      "source": "Src/FloatDigits.rux",
+      "line": 54,
+      "signature": "pub func BitsOfFloat16(value: float16) -> uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "The bits of `value`, as they are stored.",
+        "markdown": "The bits of `value`, as they are stored.\nAs `BitsOfFloat64`, at the half-precision width.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the float to read" }],
+        "returns": "its sixteen bits",
+        "see": ["https://rux-lang.dev/docs/api/format/float-bits#bits-of-float16"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "BitsOfFloat8",
+      "displayName": "BitsOfFloat8",
+      "module": "FloatDigits",
+      "source": "Src/FloatDigits.rux",
+      "line": 64,
+      "signature": "pub func BitsOfFloat8(value: float8) -> uint8",
+      "typeParams": [],
+      "doc": {
+        "summary": "The bits of `value`, as they are stored.",
+        "markdown": "The bits of `value`, as they are stored.\nAs `BitsOfFloat64`, at the eight-bit width: a sign, four exponent bits and three stored significand bits.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the float to read" }],
+        "returns": "its eight bits",
+        "see": ["https://rux-lang.dev/docs/api/format/float-bits#bits-of-float8"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
       "name": "DecomposeFloat64",
       "displayName": "DecomposeFloat64",
       "module": "FloatDigits",
       "source": "Src/FloatDigits.rux",
-      "line": 56,
+      "line": 77,
       "signature": "pub func DecomposeFloat64(value: float64) -> FloatParts",
       "typeParams": [],
       "doc": {
@@ -1961,7 +2266,7 @@
       "displayName": "DecomposeFloat32",
       "module": "FloatDigits",
       "source": "Src/FloatDigits.rux",
-      "line": 82,
+      "line": 103,
       "signature": "pub func DecomposeFloat32(value: float32) -> FloatParts",
       "typeParams": [],
       "doc": {
@@ -1992,11 +2297,81 @@
     },
     {
       "kind": "function",
+      "name": "DecomposeFloat16",
+      "displayName": "DecomposeFloat16",
+      "module": "FloatDigits",
+      "source": "Src/FloatDigits.rux",
+      "line": 127,
+      "signature": "pub func DecomposeFloat16(value: float16) -> FloatParts",
+      "typeParams": [],
+      "doc": {
+        "summary": "Takes a `float16` apart into the significand and exponent its digits are generated from.",
+        "markdown": "Takes a `float16` apart into the significand and exponent its digits are generated from.\nIEEE 754 binary16: eleven bits of significand and an exponent biased by fifteen. The neighbours the generator\nmeasures against are this width's own, so the digits that come back are the shortest that read back as a\n`float16`, not as the `float32` or `float64` the value would widen to. Cannot fail; runs in constant time and\nallocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the finite float to take apart" }],
+        "returns": "its significand, exponent, binade position and sign",
+        "see": ["https://rux-lang.dev/docs/api/format/float-text#decompose-float16"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "DecomposeFloat8",
+      "displayName": "DecomposeFloat8",
+      "module": "FloatDigits",
+      "source": "Src/FloatDigits.rux",
+      "line": 150,
+      "signature": "pub func DecomposeFloat8(value: float8) -> FloatParts",
+      "typeParams": [],
+      "doc": {
+        "summary": "Takes a `float8` apart into the significand and exponent its digits are generated from.",
+        "markdown": "Takes a `float8` apart into the significand and exponent its digits are generated from.\nThe E4M3 layout with IEEE-style specials: four bits of significand, an exponent biased by seven, and the\nall-ones exponent kept for the infinities and NaNs, so the largest finite value is 240. As with the other\nwidths, the neighbours are this width's own. Cannot fail; runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "value", "markdown": "the finite float to take apart" }],
+        "returns": "its significand, exponent, binade position and sign",
+        "see": ["https://rux-lang.dev/docs/api/format/float-text#decompose-float8"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
       "name": "WriteShortestFloat",
       "displayName": "WriteShortestFloat",
       "module": "FloatDigits",
       "source": "Src/FloatDigits.rux",
-      "line": 108,
+      "line": 176,
       "signature": "pub func WriteShortestFloat(cursor: &var ByteCursor, parts: FloatParts, scientificFrom: int) -> bool",
       "typeParams": [],
       "doc": {
@@ -5286,7 +5661,7 @@
       "displayName": "Float80",
       "module": "WideFloatValue",
       "source": "Src/WideFloatValue.rux",
-      "line": 16,
+      "line": 18,
       "signature": "pub struct Float80",
       "typeParams": [],
       "doc": {
@@ -5304,7 +5679,7 @@
           "name": "bits",
           "type": "uint128",
           "public": false,
-          "line": 18,
+          "line": 20,
           "doc": "The bits, in the low eighty of a `uint128`; the top forty-eight are padding and stay zero.",
           "targets": [
             "windows-x86_64",
@@ -5324,7 +5699,7 @@
         {
           "kind": "associated",
           "name": "FromBits",
-          "line": 26,
+          "line": 33,
           "signature": "pub func FromBits(bits: uint128) -> Float80",
           "typeParams": [],
           "params": [{ "name": "bits", "type": "uint128" }],
@@ -5354,9 +5729,73 @@
           ]
         },
         {
+          "kind": "associated",
+          "name": "FromValue",
+          "line": 43,
+          "signature": "pub func FromValue(value: float80) -> Float80",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "float80" }],
+          "receiver": null,
+          "returnType": "Float80",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value a `float80` holds, carried as its eighty bits.",
+            "markdown": "The value a `float80` holds, carried as its eighty bits.\nReads the primitive's storage through a raw pointer, as `BitsOfFloat64` does, and keeps the low eighty bits:\nthe storage is sixteen bytes, and the six above the value are padding whose contents nothing promises.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the primitive to read" }],
+            "returns": "the value with that primitive's bit pattern",
+            "see": ["https://rux-lang.dev/docs/api/format/float80#from-value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Value",
+          "line": 53,
+          "signature": "pub func Value(self: &Float80) -> float80",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Float80",
+          "returnType": "float80",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The `float80` these bits encode, for arithmetic on a value that was read or built here.",
+            "markdown": "The `float80` these bits encode, for arithmetic on a value that was read or built here.\nWrites the low eighty bits into the primitive's storage through a raw pointer, with the padding above them\nzero.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the primitive with this value's bit pattern",
+            "see": ["https://rux-lang.dev/docs/api/format/float80#value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
           "kind": "method",
           "name": "Bits",
-          "line": 33,
+          "line": 63,
           "signature": "pub func Bits(self: &Float80) -> uint128",
           "typeParams": [],
           "params": [],
@@ -5388,7 +5827,7 @@
         {
           "kind": "associated",
           "name": "Layout",
-          "line": 40,
+          "line": 70,
           "signature": "pub func Layout() -> FloatLayout",
           "typeParams": [],
           "params": [],
@@ -5420,7 +5859,7 @@
         {
           "kind": "method",
           "name": "IsNan",
-          "line": 52,
+          "line": 82,
           "signature": "pub func IsNan(self: &Float80) -> bool",
           "typeParams": [],
           "params": [],
@@ -5452,7 +5891,7 @@
         {
           "kind": "method",
           "name": "IsInfinite",
-          "line": 59,
+          "line": 89,
           "signature": "pub func IsInfinite(self: &Float80) -> bool",
           "typeParams": [],
           "params": [],
@@ -5484,7 +5923,7 @@
         {
           "kind": "method",
           "name": "IsFinite",
-          "line": 66,
+          "line": 96,
           "signature": "pub func IsFinite(self: &Float80) -> bool",
           "typeParams": [],
           "params": [],
@@ -5516,7 +5955,7 @@
         {
           "kind": "method",
           "name": "IsNegative",
-          "line": 74,
+          "line": 104,
           "signature": "pub func IsNegative(self: &Float80) -> bool",
           "typeParams": [],
           "params": [],
@@ -5548,7 +5987,7 @@
         {
           "kind": "method",
           "name": "FormatWith",
-          "line": 90,
+          "line": 120,
           "signature": "pub func FormatWith(self: &Float80, allocator: Allocator, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -5604,7 +6043,7 @@
       "displayName": "Float128",
       "module": "WideFloatValue",
       "source": "Src/WideFloatValue.rux",
-      "line": 100,
+      "line": 130,
       "signature": "pub struct Float128",
       "typeParams": [],
       "doc": {
@@ -5622,7 +6061,7 @@
           "name": "bits",
           "type": "uint128",
           "public": false,
-          "line": 102,
+          "line": 132,
           "doc": "The bits, all hundred and twenty-eight of them.",
           "targets": [
             "windows-x86_64",
@@ -5642,7 +6081,7 @@
         {
           "kind": "associated",
           "name": "FromBits",
-          "line": 110,
+          "line": 140,
           "signature": "pub func FromBits(bits: uint128) -> Float128",
           "typeParams": [],
           "params": [{ "name": "bits", "type": "uint128" }],
@@ -5672,9 +6111,73 @@
           ]
         },
         {
+          "kind": "associated",
+          "name": "FromValue",
+          "line": 150,
+          "signature": "pub func FromValue(value: float128) -> Float128",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "float128" }],
+          "receiver": null,
+          "returnType": "Float128",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value a `float128` holds, carried as its bits.",
+            "markdown": "The value a `float128` holds, carried as its bits.\nReads the primitive's storage through a raw pointer, as `BitsOfFloat64` does: a cast would ask for the\nnumber, and what is wanted is its representation.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the primitive to read" }],
+            "returns": "the value with that primitive's bit pattern",
+            "see": ["https://rux-lang.dev/docs/api/format/float128#from-value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Value",
+          "line": 159,
+          "signature": "pub func Value(self: &Float128) -> float128",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Float128",
+          "returnType": "float128",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The `float128` these bits encode, for arithmetic on a value that was read or built here.",
+            "markdown": "The `float128` these bits encode, for arithmetic on a value that was read or built here.\nWrites the bits into the primitive's storage through a raw pointer.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the primitive with this value's bit pattern",
+            "see": ["https://rux-lang.dev/docs/api/format/float128#value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
           "kind": "method",
           "name": "Bits",
-          "line": 117,
+          "line": 169,
           "signature": "pub func Bits(self: &Float128) -> uint128",
           "typeParams": [],
           "params": [],
@@ -5706,7 +6209,7 @@
         {
           "kind": "associated",
           "name": "Layout",
-          "line": 124,
+          "line": 176,
           "signature": "pub func Layout() -> FloatLayout",
           "typeParams": [],
           "params": [],
@@ -5738,7 +6241,7 @@
         {
           "kind": "method",
           "name": "IsNan",
-          "line": 136,
+          "line": 188,
           "signature": "pub func IsNan(self: &Float128) -> bool",
           "typeParams": [],
           "params": [],
@@ -5770,7 +6273,7 @@
         {
           "kind": "method",
           "name": "IsInfinite",
-          "line": 143,
+          "line": 195,
           "signature": "pub func IsInfinite(self: &Float128) -> bool",
           "typeParams": [],
           "params": [],
@@ -5802,7 +6305,7 @@
         {
           "kind": "method",
           "name": "IsFinite",
-          "line": 150,
+          "line": 202,
           "signature": "pub func IsFinite(self: &Float128) -> bool",
           "typeParams": [],
           "params": [],
@@ -5834,7 +6337,7 @@
         {
           "kind": "method",
           "name": "IsNegative",
-          "line": 158,
+          "line": 210,
           "signature": "pub func IsNegative(self: &Float128) -> bool",
           "typeParams": [],
           "params": [],
@@ -5866,7 +6369,7 @@
         {
           "kind": "method",
           "name": "FormatWith",
-          "line": 174,
+          "line": 226,
           "signature": "pub func FormatWith(self: &Float128, allocator: Allocator, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -5922,7 +6425,7 @@
       "displayName": "Float256",
       "module": "WideFloatValue",
       "source": "Src/WideFloatValue.rux",
-      "line": 184,
+      "line": 236,
       "signature": "pub struct Float256",
       "typeParams": [],
       "doc": {
@@ -5940,7 +6443,7 @@
           "name": "bits",
           "type": "uint256",
           "public": false,
-          "line": 186,
+          "line": 238,
           "doc": "The bits, all two hundred and fifty-six of them.",
           "targets": [
             "windows-x86_64",
@@ -5960,7 +6463,7 @@
         {
           "kind": "associated",
           "name": "FromBits",
-          "line": 194,
+          "line": 246,
           "signature": "pub func FromBits(bits: uint256) -> Float256",
           "typeParams": [],
           "params": [{ "name": "bits", "type": "uint256" }],
@@ -5990,9 +6493,73 @@
           ]
         },
         {
+          "kind": "associated",
+          "name": "FromValue",
+          "line": 256,
+          "signature": "pub func FromValue(value: float256) -> Float256",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "float256" }],
+          "receiver": null,
+          "returnType": "Float256",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value a `float256` holds, carried as its bits.",
+            "markdown": "The value a `float256` holds, carried as its bits.\nReads the primitive's storage through a raw pointer, as `BitsOfFloat64` does: a cast would ask for the\nnumber, and what is wanted is its representation.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the primitive to read" }],
+            "returns": "the value with that primitive's bit pattern",
+            "see": ["https://rux-lang.dev/docs/api/format/float256#from-value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Value",
+          "line": 265,
+          "signature": "pub func Value(self: &Float256) -> float256",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Float256",
+          "returnType": "float256",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The `float256` these bits encode, for arithmetic on a value that was read or built here.",
+            "markdown": "The `float256` these bits encode, for arithmetic on a value that was read or built here.\nWrites the bits into the primitive's storage through a raw pointer.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the primitive with this value's bit pattern",
+            "see": ["https://rux-lang.dev/docs/api/format/float256#value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
           "kind": "method",
           "name": "Bits",
-          "line": 201,
+          "line": 275,
           "signature": "pub func Bits(self: &Float256) -> uint256",
           "typeParams": [],
           "params": [],
@@ -6024,7 +6591,7 @@
         {
           "kind": "associated",
           "name": "Layout",
-          "line": 208,
+          "line": 282,
           "signature": "pub func Layout() -> FloatLayout",
           "typeParams": [],
           "params": [],
@@ -6056,7 +6623,7 @@
         {
           "kind": "method",
           "name": "IsNan",
-          "line": 220,
+          "line": 294,
           "signature": "pub func IsNan(self: &Float256) -> bool",
           "typeParams": [],
           "params": [],
@@ -6088,7 +6655,7 @@
         {
           "kind": "method",
           "name": "IsInfinite",
-          "line": 227,
+          "line": 301,
           "signature": "pub func IsInfinite(self: &Float256) -> bool",
           "typeParams": [],
           "params": [],
@@ -6120,7 +6687,7 @@
         {
           "kind": "method",
           "name": "IsFinite",
-          "line": 234,
+          "line": 308,
           "signature": "pub func IsFinite(self: &Float256) -> bool",
           "typeParams": [],
           "params": [],
@@ -6152,7 +6719,7 @@
         {
           "kind": "method",
           "name": "IsNegative",
-          "line": 242,
+          "line": 316,
           "signature": "pub func IsNegative(self: &Float256) -> bool",
           "typeParams": [],
           "params": [],
@@ -6184,7 +6751,7 @@
         {
           "kind": "method",
           "name": "FormatWith",
-          "line": 258,
+          "line": 332,
           "signature": "pub func FormatWith(self: &Float256, allocator: Allocator, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -6240,7 +6807,7 @@
       "displayName": "Float512",
       "module": "WideFloatValue",
       "source": "Src/WideFloatValue.rux",
-      "line": 268,
+      "line": 342,
       "signature": "pub struct Float512",
       "typeParams": [],
       "doc": {
@@ -6258,7 +6825,7 @@
           "name": "bits",
           "type": "uint512",
           "public": false,
-          "line": 270,
+          "line": 344,
           "doc": "The bits, all five hundred and twelve of them.",
           "targets": [
             "windows-x86_64",
@@ -6278,7 +6845,7 @@
         {
           "kind": "associated",
           "name": "FromBits",
-          "line": 278,
+          "line": 352,
           "signature": "pub func FromBits(bits: uint512) -> Float512",
           "typeParams": [],
           "params": [{ "name": "bits", "type": "uint512" }],
@@ -6308,9 +6875,73 @@
           ]
         },
         {
+          "kind": "associated",
+          "name": "FromValue",
+          "line": 362,
+          "signature": "pub func FromValue(value: float512) -> Float512",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "float512" }],
+          "receiver": null,
+          "returnType": "Float512",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value a `float512` holds, carried as its bits.",
+            "markdown": "The value a `float512` holds, carried as its bits.\nReads the primitive's storage through a raw pointer, as `BitsOfFloat64` does: a cast would ask for the\nnumber, and what is wanted is its representation.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the primitive to read" }],
+            "returns": "the value with that primitive's bit pattern",
+            "see": ["https://rux-lang.dev/docs/api/format/float512#from-value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Value",
+          "line": 371,
+          "signature": "pub func Value(self: &Float512) -> float512",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Float512",
+          "returnType": "float512",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The `float512` these bits encode, for arithmetic on a value that was read or built here.",
+            "markdown": "The `float512` these bits encode, for arithmetic on a value that was read or built here.\nWrites the bits into the primitive's storage through a raw pointer.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the primitive with this value's bit pattern",
+            "see": ["https://rux-lang.dev/docs/api/format/float512#value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
           "kind": "method",
           "name": "Bits",
-          "line": 285,
+          "line": 381,
           "signature": "pub func Bits(self: &Float512) -> uint512",
           "typeParams": [],
           "params": [],
@@ -6342,7 +6973,7 @@
         {
           "kind": "associated",
           "name": "Layout",
-          "line": 292,
+          "line": 388,
           "signature": "pub func Layout() -> FloatLayout",
           "typeParams": [],
           "params": [],
@@ -6374,7 +7005,7 @@
         {
           "kind": "method",
           "name": "IsNan",
-          "line": 304,
+          "line": 400,
           "signature": "pub func IsNan(self: &Float512) -> bool",
           "typeParams": [],
           "params": [],
@@ -6406,7 +7037,7 @@
         {
           "kind": "method",
           "name": "IsInfinite",
-          "line": 311,
+          "line": 407,
           "signature": "pub func IsInfinite(self: &Float512) -> bool",
           "typeParams": [],
           "params": [],
@@ -6438,7 +7069,7 @@
         {
           "kind": "method",
           "name": "IsFinite",
-          "line": 318,
+          "line": 414,
           "signature": "pub func IsFinite(self: &Float512) -> bool",
           "typeParams": [],
           "params": [],
@@ -6470,7 +7101,7 @@
         {
           "kind": "method",
           "name": "IsNegative",
-          "line": 326,
+          "line": 422,
           "signature": "pub func IsNegative(self: &Float512) -> bool",
           "typeParams": [],
           "params": [],
@@ -6502,7 +7133,7 @@
         {
           "kind": "method",
           "name": "FormatWith",
-          "line": 342,
+          "line": 438,
           "signature": "pub func FormatWith(self: &Float512, allocator: Allocator, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [

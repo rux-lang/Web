@@ -57,7 +57,7 @@ pub struct FloatParts {
 A finite float taken apart: the value is `significand * 2^exponent`.
 Copy, carrying no reference to the value it came from.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L17)
 
 **Fields**
 
@@ -80,7 +80,7 @@ finite first. A zero comes back with a zero significand, which the caller writes
 anything.
 Cannot fail; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L77)
 
 **Parameters**
 
@@ -100,13 +100,56 @@ Takes a `float32` apart into the significand and exponent its digits are generat
 The same decomposition at the narrower width, so both widths reach one generator. Cannot fail; runs in constant
 time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L103)
 
 **Parameters**
 
 | Name    | Type      | Description                    |
 | ------- | --------- | ------------------------------ |
 | `value` | `float32` | the finite float to take apart |
+
+**Returns**: its significand, exponent, binade position and sign
+
+<h2 id="decompose-float16"><code>DecomposeFloat16</code></h2>
+
+```rux
+pub func DecomposeFloat16(value: float16) -> FloatParts
+```
+
+Takes a `float16` apart into the significand and exponent its digits are generated from.
+IEEE 754 binary16: eleven bits of significand and an exponent biased by fifteen. The neighbours the generator
+measures against are this width's own, so the digits that come back are the shortest that read back as a
+`float16`, not as the `float32` or `float64` the value would widen to. Cannot fail; runs in constant time and
+allocates nothing.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L127)
+
+**Parameters**
+
+| Name    | Type      | Description                    |
+| ------- | --------- | ------------------------------ |
+| `value` | `float16` | the finite float to take apart |
+
+**Returns**: its significand, exponent, binade position and sign
+
+<h2 id="decompose-float8"><code>DecomposeFloat8</code></h2>
+
+```rux
+pub func DecomposeFloat8(value: float8) -> FloatParts
+```
+
+Takes a `float8` apart into the significand and exponent its digits are generated from.
+The E4M3 layout with IEEE-style specials: four bits of significand, an exponent biased by seven, and the
+all-ones exponent kept for the infinities and NaNs, so the largest finite value is 240. As with the other
+widths, the neighbours are this width's own. Cannot fail; runs in constant time and allocates nothing.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L150)
+
+**Parameters**
+
+| Name    | Type     | Description                    |
+| ------- | -------- | ------------------------------ |
+| `value` | `float8` | the finite float to take apart |
 
 **Returns**: its significand, exponent, binade position and sign
 
@@ -126,7 +169,7 @@ The sign is written from `parts`, so a negative zero keeps its sign even though 
 Answers false when the exact arithmetic could not run in the fixed workspace, which Docs/NarrowFloat.md proves
 the narrow widths do not reach. A caller that sees it has a defect in the bound rather than a value to handle.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L176)
 
 **Parameters**
 

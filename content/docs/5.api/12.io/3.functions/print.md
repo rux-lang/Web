@@ -29,6 +29,10 @@ pub func Print(#Format() format: char8[..], ...) -> IoError?
 pub func Print(value: bool8) -> IoError?
 pub func Print(value: bool16) -> IoError?
 pub func Print(value: bool32) -> IoError?
+pub func Print(value: bool64) -> IoError?
+pub func Print(value: bool128) -> IoError?
+pub func Print(value: bool256) -> IoError?
+pub func Print(value: bool512) -> IoError?
 pub func Print(value: char8) -> IoError?
 pub func Print(value: char16) -> IoError?
 pub func Print(value: char32) -> IoError?
@@ -42,6 +46,8 @@ pub func Print(value: uint32) -> IoError?
 pub func Print(value: uint64) -> IoError?
 pub func Print(value: int) -> IoError?
 pub func Print(value: uint) -> IoError?
+pub func Print(value: float8) -> IoError?
+pub func Print(value: float16) -> IoError?
 pub func Print(value: float32) -> IoError?
 pub func Print(value: float64) -> IoError?
 ```
@@ -63,6 +69,10 @@ nothing by ignoring it; one whose output feeds a pipe that may close has somethi
 | `pub func Print(value: bool8) -> IoError?`                     | Writes a `bool8` to standard output.                                             |
 | `pub func Print(value: bool16) -> IoError?`                    | Writes a `bool16` to standard output.                                            |
 | `pub func Print(value: bool32) -> IoError?`                    | Writes a `bool32` to standard output.                                            |
+| `pub func Print(value: bool64) -> IoError?`                    | Writes a `bool64` to standard output.                                            |
+| `pub func Print(value: bool128) -> IoError?`                   | Writes a `bool128` to standard output.                                           |
+| `pub func Print(value: bool256) -> IoError?`                   | Writes a `bool256` to standard output.                                           |
+| `pub func Print(value: bool512) -> IoError?`                   | Writes a `bool512` to standard output.                                           |
 | `pub func Print(value: char8) -> IoError?`                     | Writes a `char8` to standard output.                                             |
 | `pub func Print(value: char16) -> IoError?`                    | Writes a `char16` to standard output.                                            |
 | `pub func Print(value: char32) -> IoError?`                    | Writes a `char32` to standard output.                                            |
@@ -76,6 +86,8 @@ nothing by ignoring it; one whose output feeds a pipe that may close has somethi
 | `pub func Print(value: uint64) -> IoError?`                    | Writes a `uint64` to standard output.                                            |
 | `pub func Print(value: int) -> IoError?`                       | Writes a `int` to standard output.                                               |
 | `pub func Print(value: uint) -> IoError?`                      | Writes a `uint` to standard output.                                              |
+| `pub func Print(value: float8) -> IoError?`                    | Writes a `float8` to standard output.                                            |
+| `pub func Print(value: float16) -> IoError?`                   | Writes a `float16` to standard output.                                           |
 | `pub func Print(value: float32) -> IoError?`                   | Writes a `float32` to standard output.                                           |
 | `pub func Print(value: float64) -> IoError?`                   | Writes a `float64` to standard output.                                           |
 
@@ -91,6 +103,10 @@ nothing by ignoring it; one whose output feeds a pipe that may close has somethi
 | `value`            | `bool8`      | the value to write |
 | `value`            | `bool16`     | the value to write |
 | `value`            | `bool32`     | the value to write |
+| `value`            | `bool64`     | the value to write |
+| `value`            | `bool128`    | the value to write |
+| `value`            | `bool256`    | the value to write |
+| `value`            | `bool512`    | the value to write |
 | `value`            | `char8`      | the value to write |
 | `value`            | `char16`     | the value to write |
 | `value`            | `char32`     | the value to write |
@@ -104,6 +120,8 @@ nothing by ignoring it; one whose output feeds a pipe that may close has somethi
 | `value`            | `uint64`     | the value to write |
 | `value`            | `int`        | the value to write |
 | `value`            | `uint`       | the value to write |
+| `value`            | `float8`     | the value to write |
+| `value`            | `float16`    | the value to write |
 | `value`            | `float32`    | the value to write |
 | `value`            | `float64`    | the value to write |
 

@@ -96,7 +96,7 @@
     {
       "name": "Bool128",
       "source": "Src/Primitives/Bool128.rux",
-      "header": "bool128 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`bool128`: one of two values, stored in 128 bits.\nEvery boolean width holds exactly zero or one whatever its size, so a cast into one asks whether the whole source\nvalue is non-zero rather than truncating to the width first."
     },
     {
       "name": "Bool16",
@@ -106,7 +106,7 @@
     {
       "name": "Bool256",
       "source": "Src/Primitives/Bool256.rux",
-      "header": "bool256 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`bool256`: one of two values, stored in 256 bits.\nEvery boolean width holds exactly zero or one whatever its size, so a cast into one asks whether the whole source\nvalue is non-zero rather than truncating to the width first."
     },
     {
       "name": "Bool32",
@@ -116,7 +116,7 @@
     {
       "name": "Bool512",
       "source": "Src/Primitives/Bool512.rux",
-      "header": "bool512 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`bool512`: one of two values, stored in 512 bits.\nEvery boolean width holds exactly zero or one whatever its size, so a cast into one asks whether the whole source\nvalue is non-zero rather than truncating to the width first."
     },
     {
       "name": "Bool64",
@@ -166,17 +166,17 @@
     {
       "name": "Float128",
       "source": "Src/Primitives/Float128.rux",
-      "header": "float128 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`float128`: IEEE 754 binary128.\nOne hundred and thirteen bits of significand, so about thirty-four decimal digits. Its arithmetic runs in software\non every target. The compiler supplies the finite limits, which are too long to be worth spelling out in decimal."
     },
     {
       "name": "Float16",
       "source": "Src/Primitives/Float16.rux",
-      "header": "float16 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`float16`: IEEE 754 binary16.\nEleven bits of significand, so about three decimal digits. Its arithmetic runs in software on every target."
     },
     {
       "name": "Float256",
       "source": "Src/Primitives/Float256.rux",
-      "header": "float256 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`float256`: IEEE 754 binary256.\nTwo hundred and thirty-seven bits of significand, so about seventy-one decimal digits. Its arithmetic runs in\nsoftware on every target. The compiler supplies the finite limits, which are too long to be worth spelling out in\ndecimal."
     },
     {
       "name": "Float32",
@@ -186,7 +186,7 @@
     {
       "name": "Float512",
       "source": "Src/Primitives/Float512.rux",
-      "header": "float512 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`float512`: the binary512 interchange format.\nFour hundred and eighty-nine bits of significand, so about one hundred and forty-seven decimal digits, following the\nIEEE 754 progression of interchange widths. Its arithmetic runs in software on every target. The compiler supplies\nthe finite limits, which would run to hundreds of digits in decimal."
     },
     {
       "name": "Float64",
@@ -196,12 +196,12 @@
     {
       "name": "Float8",
       "source": "Src/Primitives/Float8.rux",
-      "header": "float8 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`float8`: an eight-bit E4M3 float.\nOne sign bit, four exponent bits with a bias of seven and three fraction bits: four bits of significand, so about\none decimal digit. Unlike the E4M3 variant that trades them for range, it keeps IEEE 754's infinities and NaNs in\nthe all-ones exponent, which is why the largest finite value is 240 rather than 448. Its arithmetic runs in\nsoftware on every target."
     },
     {
       "name": "Float80",
       "source": "Src/Primitives/Float80.rux",
-      "header": "float80 is a reserved primitive type. Its representation and primitive\nconstants are not implemented yet."
+      "header": "`float80`: x87 extended precision.\nSixty-four bits of significand with an explicit integer bit, so about nineteen decimal digits. The value is ten\nbytes held in sixteen. On x86-64 its arithmetic runs on the x87 unit, and everywhere else in software. The compiler\nsupplies the finite limits, which are too long to be worth spelling out in decimal."
     },
     {
       "name": "Int",
@@ -4197,6 +4197,106 @@
     },
     {
       "kind": "primitive",
+      "name": "bool128",
+      "displayName": "bool128",
+      "module": "Bool128",
+      "source": "Src/Primitives/Bool128.rux",
+      "line": 7,
+      "signature": "extend bool128",
+      "typeParams": [],
+      "doc": {
+        "summary": "One of two values, stored in 128 bits.",
+        "markdown": "One of two values, stored in 128 bits.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/booleans#bool128"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 10,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "128",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/booleans#bool128-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 13,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/booleans#bool128-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
       "name": "bool16",
       "displayName": "bool16",
       "module": "Bool16",
@@ -4297,6 +4397,106 @@
     },
     {
       "kind": "primitive",
+      "name": "bool256",
+      "displayName": "bool256",
+      "module": "Bool256",
+      "source": "Src/Primitives/Bool256.rux",
+      "line": 7,
+      "signature": "extend bool256",
+      "typeParams": [],
+      "doc": {
+        "summary": "One of two values, stored in 256 bits.",
+        "markdown": "One of two values, stored in 256 bits.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/booleans#bool256"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 10,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "256",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/booleans#bool256-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 13,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "32",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/booleans#bool256-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
       "name": "bool32",
       "displayName": "bool32",
       "module": "Bool32",
@@ -4369,6 +4569,106 @@
             "params": [],
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/core/booleans#bool32-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
+      "name": "bool512",
+      "displayName": "bool512",
+      "module": "Bool512",
+      "source": "Src/Primitives/Bool512.rux",
+      "line": 7,
+      "signature": "extend bool512",
+      "typeParams": [],
+      "doc": {
+        "summary": "One of two values, stored in 512 bits.",
+        "markdown": "One of two values, stored in 512 bits.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/booleans#bool512"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 10,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "512",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/booleans#bool512-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 13,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "64",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/booleans#bool512-bytes"],
             "deprecated": null
           },
           "targets": [
@@ -5253,6 +5553,882 @@
     },
     {
       "kind": "primitive",
+      "name": "float128",
+      "displayName": "float128",
+      "module": "Float128",
+      "source": "Src/Primitives/Float128.rux",
+      "line": 7,
+      "signature": "extend float128",
+      "typeParams": [],
+      "doc": {
+        "summary": "An IEEE 754 binary128 floating-point number.",
+        "markdown": "An IEEE 754 binary128 floating-point number.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/floating-point#float128"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 10,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "128",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float128-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 13,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float128-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Lowest",
+          "line": 16,
+          "signature": "pub const Lowest: float128",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The lowest finite value.",
+            "markdown": "The lowest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float128-lowest"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Max",
+          "line": 19,
+          "signature": "pub const Max: float128",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The highest finite value.",
+            "markdown": "The highest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float128-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "MinPositive",
+          "line": 22,
+          "signature": "pub const MinPositive: float128",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The smallest positive normal value.",
+            "markdown": "The smallest positive normal value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float128-min-positive"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Epsilon",
+          "line": 25,
+          "signature": "pub const Epsilon: float128",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The difference between one and the next representable value.",
+            "markdown": "The difference between one and the next representable value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float128-epsilon"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Infinity",
+          "line": 28,
+          "signature": "pub const Infinity: float128",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Positive infinity.",
+            "markdown": "Positive infinity.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float128-infinity"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "NaN",
+          "line": 31,
+          "signature": "pub const NaN: float128",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A quiet not-a-number value.",
+            "markdown": "A quiet not-a-number value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float128-nan"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
+      "name": "float16",
+      "displayName": "float16",
+      "module": "Float16",
+      "source": "Src/Primitives/Float16.rux",
+      "line": 6,
+      "signature": "extend float16",
+      "typeParams": [],
+      "doc": {
+        "summary": "An IEEE 754 binary16 floating-point number.",
+        "markdown": "An IEEE 754 binary16 floating-point number.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/floating-point#float16"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 9,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float16-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 12,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "2",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float16-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Lowest",
+          "line": 15,
+          "signature": "pub const Lowest: float16",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "-65504.0f16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The lowest finite value.",
+            "markdown": "The lowest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float16-lowest"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Max",
+          "line": 18,
+          "signature": "pub const Max: float16",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "65504.0f16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The highest finite value.",
+            "markdown": "The highest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float16-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "MinPositive",
+          "line": 21,
+          "signature": "pub const MinPositive: float16",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "6.103515625e-05f16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The smallest positive normal value.",
+            "markdown": "The smallest positive normal value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float16-min-positive"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Epsilon",
+          "line": 24,
+          "signature": "pub const Epsilon: float16",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "0.0009765625f16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The difference between one and the next representable value.",
+            "markdown": "The difference between one and the next representable value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float16-epsilon"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Infinity",
+          "line": 27,
+          "signature": "pub const Infinity: float16",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Positive infinity.",
+            "markdown": "Positive infinity.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float16-infinity"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "NaN",
+          "line": 30,
+          "signature": "pub const NaN: float16",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A quiet not-a-number value.",
+            "markdown": "A quiet not-a-number value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float16-nan"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
+      "name": "float256",
+      "displayName": "float256",
+      "module": "Float256",
+      "source": "Src/Primitives/Float256.rux",
+      "line": 8,
+      "signature": "extend float256",
+      "typeParams": [],
+      "doc": {
+        "summary": "An IEEE 754 binary256 floating-point number.",
+        "markdown": "An IEEE 754 binary256 floating-point number.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/floating-point#float256"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 11,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "256",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float256-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 14,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "32",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float256-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Lowest",
+          "line": 17,
+          "signature": "pub const Lowest: float256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The lowest finite value.",
+            "markdown": "The lowest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float256-lowest"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Max",
+          "line": 20,
+          "signature": "pub const Max: float256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The highest finite value.",
+            "markdown": "The highest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float256-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "MinPositive",
+          "line": 23,
+          "signature": "pub const MinPositive: float256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The smallest positive normal value.",
+            "markdown": "The smallest positive normal value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float256-min-positive"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Epsilon",
+          "line": 26,
+          "signature": "pub const Epsilon: float256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The difference between one and the next representable value.",
+            "markdown": "The difference between one and the next representable value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float256-epsilon"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Infinity",
+          "line": 29,
+          "signature": "pub const Infinity: float256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Positive infinity.",
+            "markdown": "Positive infinity.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float256-infinity"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "NaN",
+          "line": 32,
+          "signature": "pub const NaN: float256",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A quiet not-a-number value.",
+            "markdown": "A quiet not-a-number value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float256-nan"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
       "name": "float32",
       "displayName": "float32",
       "module": "Float32",
@@ -5545,6 +6721,298 @@
     },
     {
       "kind": "primitive",
+      "name": "float512",
+      "displayName": "float512",
+      "module": "Float512",
+      "source": "Src/Primitives/Float512.rux",
+      "line": 8,
+      "signature": "extend float512",
+      "typeParams": [],
+      "doc": {
+        "summary": "A binary512 floating-point number in the IEEE 754 interchange-format progression.",
+        "markdown": "A binary512 floating-point number in the IEEE 754 interchange-format progression.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/floating-point#float512"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 11,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "512",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float512-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 14,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "64",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float512-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Lowest",
+          "line": 17,
+          "signature": "pub const Lowest: float512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The lowest finite value.",
+            "markdown": "The lowest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float512-lowest"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Max",
+          "line": 20,
+          "signature": "pub const Max: float512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The highest finite value.",
+            "markdown": "The highest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float512-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "MinPositive",
+          "line": 23,
+          "signature": "pub const MinPositive: float512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The smallest positive normal value.",
+            "markdown": "The smallest positive normal value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float512-min-positive"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Epsilon",
+          "line": 26,
+          "signature": "pub const Epsilon: float512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The difference between one and the next representable value.",
+            "markdown": "The difference between one and the next representable value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float512-epsilon"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Infinity",
+          "line": 29,
+          "signature": "pub const Infinity: float512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Positive infinity.",
+            "markdown": "Positive infinity.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float512-infinity"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "NaN",
+          "line": 32,
+          "signature": "pub const NaN: float512",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A quiet not-a-number value.",
+            "markdown": "A quiet not-a-number value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float512-nan"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
       "name": "float64",
       "displayName": "float64",
       "module": "Float64",
@@ -5809,6 +7277,590 @@
             "params": [],
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/core/floating-point#float64-nan"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
+      "name": "float8",
+      "displayName": "float8",
+      "module": "Float8",
+      "source": "Src/Primitives/Float8.rux",
+      "line": 9,
+      "signature": "extend float8",
+      "typeParams": [],
+      "doc": {
+        "summary": "An eight-bit E4M3 floating-point number with IEEE 754 infinities and NaNs.",
+        "markdown": "An eight-bit E4M3 floating-point number with IEEE 754 infinities and NaNs.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/floating-point#float8"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 12,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "8",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float8-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 15,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "1",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float8-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Lowest",
+          "line": 18,
+          "signature": "pub const Lowest: float8",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "-240.0f8",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The lowest finite value.",
+            "markdown": "The lowest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float8-lowest"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Max",
+          "line": 21,
+          "signature": "pub const Max: float8",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "240.0f8",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The highest finite value.",
+            "markdown": "The highest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float8-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "MinPositive",
+          "line": 24,
+          "signature": "pub const MinPositive: float8",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "0.015625f8",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The smallest positive normal value.",
+            "markdown": "The smallest positive normal value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float8-min-positive"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Epsilon",
+          "line": 27,
+          "signature": "pub const Epsilon: float8",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "0.125f8",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The difference between one and the next representable value.",
+            "markdown": "The difference between one and the next representable value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float8-epsilon"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Infinity",
+          "line": 30,
+          "signature": "pub const Infinity: float8",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Positive infinity.",
+            "markdown": "Positive infinity.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float8-infinity"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "NaN",
+          "line": 33,
+          "signature": "pub const NaN: float8",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A quiet not-a-number value.",
+            "markdown": "A quiet not-a-number value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float8-nan"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "primitive",
+      "name": "float80",
+      "displayName": "float80",
+      "module": "Float80",
+      "source": "Src/Primitives/Float80.rux",
+      "line": 8,
+      "signature": "extend float80",
+      "typeParams": [],
+      "doc": {
+        "summary": "An x87 extended-precision floating-point number.",
+        "markdown": "An x87 extended-precision floating-point number.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/floating-point#float80"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Bits",
+          "line": 11,
+          "signature": "pub const Bits: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "80",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bits in the representation.",
+            "markdown": "The number of bits in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float80-bits"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Bytes",
+          "line": 14,
+          "signature": "pub const Bytes: uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "16",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of bytes in the representation.",
+            "markdown": "The number of bytes in the representation.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float80-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Lowest",
+          "line": 17,
+          "signature": "pub const Lowest: float80",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The lowest finite value.",
+            "markdown": "The lowest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float80-lowest"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Max",
+          "line": 20,
+          "signature": "pub const Max: float80",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The highest finite value.",
+            "markdown": "The highest finite value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float80-max"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "MinPositive",
+          "line": 23,
+          "signature": "pub const MinPositive: float80",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The smallest positive normal value.",
+            "markdown": "The smallest positive normal value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float80-min-positive"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Epsilon",
+          "line": 26,
+          "signature": "pub const Epsilon: float80",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The difference between one and the next representable value.",
+            "markdown": "The difference between one and the next representable value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float80-epsilon"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "Infinity",
+          "line": 29,
+          "signature": "pub const Infinity: float80",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Positive infinity.",
+            "markdown": "Positive infinity.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float80-infinity"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constant",
+          "name": "NaN",
+          "line": 32,
+          "signature": "pub const NaN: float80",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A quiet not-a-number value.",
+            "markdown": "A quiet not-a-number value.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/core/floating-point#float80-nan"],
             "deprecated": null
           },
           "targets": [

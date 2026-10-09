@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/WideFloatValue.rux
-  line: 100
+  line: 130
 seo:
   title: "Float128 — Format API"
   description: "An IEEE binary128 value, held as its bits."
@@ -43,7 +43,25 @@ The value these bits encode.
 
 **Returns**: the value that bit pattern stands for
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L140)
+
+<h3 id="from-value"><code>FromValue</code></h3>
+
+```rux
+pub func FromValue(value: float128) -> Float128
+```
+
+The value a `float128` holds, carried as its bits.
+Reads the primitive's storage through a raw pointer, as [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64) does: a cast would ask for the
+number, and what is wanted is its representation.
+
+| Name    | Type       | Description           |
+| ------- | ---------- | --------------------- |
+| `value` | `float128` | the primitive to read |
+
+**Returns**: the value with that primitive's bit pattern
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L150)
 
 <h3 id="layout"><code>Layout</code></h3>
 
@@ -55,9 +73,22 @@ The format these bits are read under.
 
 **Returns**: which format the bits are in
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L176)
 
 ## Methods
+
+<h3 id="value"><code>Value</code></h3>
+
+```rux
+pub func Value(self: &Float128) -> float128
+```
+
+The `float128` these bits encode, for arithmetic on a value that was read or built here.
+Writes the bits into the primitive's storage through a raw pointer.
+
+**Returns**: the primitive with this value's bit pattern
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L159)
 
 <h3 id="bits"><code>Bits</code></h3>
 
@@ -69,7 +100,7 @@ The bits.
 
 **Returns**: the value's bit pattern
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L169)
 
 <h3 id="is-nan"><code>IsNan</code></h3>
 
@@ -81,7 +112,7 @@ Whether this is not a number.
 
 **Returns**: whether the value is a NaN
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L188)
 
 <h3 id="is-infinite"><code>IsInfinite</code></h3>
 
@@ -93,7 +124,7 @@ Whether this is an infinity of either sign.
 
 **Returns**: whether the value is either infinity
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L143)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L195)
 
 <h3 id="is-finite"><code>IsFinite</code></h3>
 
@@ -105,7 +136,7 @@ Whether this is an ordinary value: neither a NaN nor an infinity.
 
 **Returns**: whether the value is neither infinite nor a NaN
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L202)
 
 <h3 id="is-negative"><code>IsNegative</code></h3>
 
@@ -117,7 +148,7 @@ Whether the sign bit is set, which a negative zero answers yes to.
 
 **Returns**: whether the sign bit is set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L210)
 
 <h3 id="format-with"><code>FormatWith</code></h3>
 
@@ -145,4 +176,4 @@ where `allocator` could not supply the working storage.
 
 **Returns**: success when the complete rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L226)

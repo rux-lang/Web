@@ -44,12 +44,12 @@ export const PACKAGES = [
       "floating-point": {
         title: "Floating-point types",
         description:
-          "The IEEE 754 types `float32` and `float64`, with their width, limit and special-value constants. The built-in `float` is `float64` and shares its constants. The widths `float8`, `float16`, `float80`, `float128`, `float256` and `float512` are reserved and not implemented yet.",
+          "The floating-point types `float8` to `float512`, with their width, limit and special-value constants. The built-in `float` is `float64` and shares its constants.",
       },
       booleans: {
         title: "Booleans",
         description:
-          "The boolean types `bool8` to `bool64`, with their width constants. The built-in `bool` is `bool8` and shares its constants. The widths `bool128`, `bool256` and `bool512` are reserved and not implemented yet.",
+          "The boolean types `bool8` to `bool512`, with their width constants. The built-in `bool` is `bool8` and shares its constants.",
       },
       characters: {
         title: "Characters",
