@@ -1,0 +1,2134 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "CommandLine",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Declarative command-line parsing: options, positional arguments, subcommands and generated help",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/commandline",
+    "dependencies": [
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Path", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Process", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Error",
+      "source": "Src/Error.rux",
+      "header": "Why arguments did not match a command, said in the terms the person who typed them will recognize.\nEach case carries what it needs to be described on its own: the argument as it was typed, or the name of the option\nor positional the specification gave it, so that printing an error needs neither the specification nor the\narguments. The descriptions are lower case and unpunctuated, ready to follow a program's own prefix such as\n`error: `."
+    },
+    {
+      "name": "Help",
+      "source": "Src/Help.rux",
+      "header": "Help, usage and version text, written from the same description the arguments are checked against.\nThe layout is the conventional one: the summary, a usage line, then the arguments, options and subcommands, each in\ntwo columns with the descriptions aligned. `--help` and `--version` are listed with the options a command declares,\nunless it declares its own of the same name."
+    },
+    {
+      "name": "Parsed",
+      "source": "Src/Parsed.rux",
+      "header": "Arguments checked against a command, and the questions a program asks of them.\nA parse holds the command, where the arguments come from and which of them belong to it, and nothing else. Each\nquestion walks those arguments again with the scanner that validated them, so asking costs time proportional to the\nnumber of arguments and no storage at all. Every view a question returns borrows the arguments, which outlive the\nparse.\nWhen a command has subcommands, the parse covers the arguments up to the subcommand's name and `Subcommand` gives\nthe parse of the rest, which was validated with the first."
+    },
+    {
+      "name": "Scan",
+      "source": "Src/Scan.rux",
+      "header": "The one walk over arguments that parsing and every query share.\nValidating once and then answering each question by walking the arguments again keeps a parse free of storage: the\nwalk is the record. Because both use this scanner, a question can never be answered from a reading of the\narguments different from the one that was validated.\nThe grammar is the conventional one. `--name` and `--name=value` are long options, and a long option that takes a\nvalue may have it as the next argument. `-abc` is the short options `a`, `b` and `c`, and the first of them that\ntakes a value takes the rest of the cluster, or the next argument when it ends the cluster. `--` ends options, after\nwhich every argument is positional, and `-` alone is positional. In a command with subcommands, the first positional\nargument names the subcommand, and every argument after it belongs to the subcommand."
+    },
+    {
+      "name": "Spec",
+      "source": "Src/Spec.rux",
+      "header": "What a command accepts, described as values rather than discovered from code.\nA command is its name, a one-line summary, an optional version, its options, its positional arguments and its\nsubcommands. Every part is a plain value holding borrowed text and borrowed slices, so a whole command line can be\ndescribed in constants or locals and nothing is allocated. The descriptions are what parsing checks the arguments\nagainst and what the help text is written from, so the two cannot disagree.\n`--help` and `-h` are understood by every command, and `--version` and `-V` by every command that has a version,\nunless the command declares an option with the same name, which then takes precedence."
+    }
+  ],
+  "items": [
+    {
+      "kind": "variant",
+      "name": "CommandLineError",
+      "displayName": "CommandLineError",
+      "module": "Error",
+      "source": "Src/Error.rux",
+      "line": 15,
+      "signature": "pub variant CommandLineError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why the arguments did not match the command.",
+        "markdown": "Why the arguments did not match the command.\nFailure-only: a parse is the success channel of `Parsed ! CommandLineError`. Copy; every view and name it carries\nborrows the arguments or the specification, which must outlive it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/commandline/command-line-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "UnknownOption",
+          "value": null,
+          "payload": "(OsStringView)",
+          "line": 17,
+          "doc": "An argument that looks like an option names none the command has. Carries the argument as typed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "MissingValue",
+          "value": null,
+          "payload": "(char8[..])",
+          "line": 20,
+          "doc": "An option that takes a value was the last argument, or ended a cluster of short options. Carries the option's\nlong name.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnexpectedValue",
+          "value": null,
+          "payload": "(char8[..])",
+          "line": 22,
+          "doc": "A flag was given a value with `=`. Carries the option's long name.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnknownCommand",
+          "value": null,
+          "payload": "(OsStringView)",
+          "line": 24,
+          "doc": "The command has subcommands and the word naming one is not among them. Carries the word as typed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "MissingCommand",
+          "value": null,
+          "payload": null,
+          "line": 26,
+          "doc": "The command has subcommands and none was named.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "MissingPositional",
+          "value": null,
+          "payload": "(char8[..])",
+          "line": 28,
+          "doc": "A required positional argument was not given. Carries its name.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnexpectedArgument",
+          "value": null,
+          "payload": "(OsStringView)",
+          "line": 30,
+          "doc": "A positional argument beyond every one the command accepts. Carries the argument as typed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidValue",
+          "value": null,
+          "payload": "(char8[..], OsStringView)",
+          "line": 33,
+          "doc": "A value that could not be read as what was asked of it, such as a number. Carries the option or positional's\nname, then the value as typed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 108,
+          "signature": "pub func WriteDisplay(self: &CommandLineError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&CommandLineError",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes what went wrong, naming the argument, option or positional involved.",
+            "markdown": "Writes what went wrong, naming the argument, option or positional involved.\nThe text is lower case without a final full stop, such as `unknown option '--frob'` or\n`option '--output' needs a value`. No style is understood. Reports whatever the writer reported, and\n`UnsupportedRequest` for a style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole description was accepted",
+            "see": ["https://rux-lang.dev/docs/api/commandline/command-line-error#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 163,
+          "signature": "pub func WriteDebug(self: &CommandLineError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&CommandLineError",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`: the description already names everything involved.",
+            "markdown": "The same text as `Display`: the description already names everything involved.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole description was accepted",
+            "see": ["https://rux-lang.dev/docs/api/commandline/command-line-error#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteUsage",
+      "displayName": "WriteUsage",
+      "module": "Help",
+      "source": "Src/Help.rux",
+      "line": 98,
+      "signature": "pub func WriteUsage(spec: &CommandSpec, writer: &var TextWriter, parent: char8[..]) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the usage line, such as `Usage: tool [options] <input> [output]`.",
+        "markdown": "Writes the usage line, such as `Usage: tool [options] <input> [output]`.\n`parent` names the command a subcommand belongs to, so that its usage reads `tool build ...`; it is empty for the\nprogram itself. Reports whatever the writer reported.",
+        "typeParams": [],
+        "params": [
+          { "name": "spec", "markdown": "the command" },
+          { "name": "writer", "markdown": "the destination" },
+          { "name": "parent", "markdown": "the name of the command this one is a subcommand of, or empty" }
+        ],
+        "returns": "success when the whole line was accepted",
+        "see": ["https://rux-lang.dev/docs/api/commandline/help#write-usage"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteHelp",
+      "displayName": "WriteHelp",
+      "module": "Help",
+      "source": "Src/Help.rux",
+      "line": 125,
+      "signature": "pub func WriteHelp(spec: &CommandSpec, writer: &var TextWriter, parent: char8[..]) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the full help text: the summary, the usage line, and the arguments, options and subcommands with their\ndescriptions aligned.",
+        "markdown": "Writes the full help text: the summary, the usage line, and the arguments, options and subcommands with their\ndescriptions aligned.\nReports whatever the writer reported. Allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "spec", "markdown": "the command" },
+          { "name": "writer", "markdown": "the destination" },
+          { "name": "parent", "markdown": "the name of the command this one is a subcommand of, or empty" }
+        ],
+        "returns": "success when the whole text was accepted",
+        "see": ["https://rux-lang.dev/docs/api/commandline/help#write-help"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "WriteVersion",
+      "displayName": "WriteVersion",
+      "module": "Help",
+      "source": "Src/Help.rux",
+      "line": 207,
+      "signature": "pub func WriteVersion(spec: &CommandSpec, writer: &var TextWriter) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the version line, such as `tool 1.4.2`.",
+        "markdown": "Writes the version line, such as `tool 1.4.2`.\nReports whatever the writer reported.",
+        "typeParams": [],
+        "params": [
+          { "name": "spec", "markdown": "the command" },
+          { "name": "writer", "markdown": "the destination" }
+        ],
+        "returns": "success when the whole line was accepted",
+        "see": ["https://rux-lang.dev/docs/api/commandline/help#write-version"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Parsed",
+      "displayName": "Parsed",
+      "module": "Parsed",
+      "source": "Src/Parsed.rux",
+      "line": 15,
+      "signature": "pub struct Parsed",
+      "typeParams": [],
+      "doc": {
+        "summary": "Arguments that matched a command.",
+        "markdown": "Arguments that matched a command.\n`Copy`, owning nothing: it borrows the specification and the arguments, both of which must outlive it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/commandline/parsed"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "spec",
+          "type": "*CommandSpec",
+          "public": false,
+          "line": 16,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "parent",
+          "type": "*CommandSpec",
+          "public": false,
+          "line": 17,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "source",
+          "type": "ArgumentSource",
+          "public": false,
+          "line": 18,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "start",
+          "type": "uint",
+          "public": false,
+          "line": 19,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "end",
+          "type": "uint",
+          "public": false,
+          "line": 20,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "command",
+          "type": "uint",
+          "public": false,
+          "line": 22,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "commandAt",
+          "type": "uint",
+          "public": false,
+          "line": 23,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "help",
+          "type": "bool",
+          "public": false,
+          "line": 24,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "version",
+          "type": "bool",
+          "public": false,
+          "line": 25,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "WriteHelp",
+          "line": 224,
+          "signature": "pub func WriteHelp(self: &Parsed, writer: &var TextWriter) -> ! FormatError",
+          "typeParams": [],
+          "params": [{ "name": "writer", "type": "&var TextWriter" }],
+          "receiver": "&Parsed",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes the help text of the command this parse is for, naming its parent in the usage line when it is a\nsubcommand.",
+            "markdown": "Writes the help text of the command this parse is for, naming its parent in the usage line when it is a\nsubcommand.\nReports whatever the writer reported.",
+            "typeParams": [],
+            "params": [{ "name": "writer", "markdown": "the destination" }],
+            "returns": "success when the whole text was accepted",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#write-help"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "HelpRequested",
+          "line": 193,
+          "signature": "pub func HelpRequested(self: &Parsed) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Parsed",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether `--help` or `-h` was given.",
+            "markdown": "Whether `--help` or `-h` was given.\nA program usually writes the help text and exits successfully when this is true. Cannot fail.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether help was asked for",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#help-requested"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "VersionRequested",
+          "line": 201,
+          "signature": "pub func VersionRequested(self: &Parsed) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Parsed",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether `--version` or `-V` was given, which a command only understands when it has a version.",
+            "markdown": "Whether `--version` or `-V` was given, which a command only understands when it has a version.\nCannot fail.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the version was asked for",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#version-requested"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Count",
+          "line": 211,
+          "signature": "pub func Count(self: &Parsed, name: char8[..]) -> uint",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&Parsed",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many times the option with long name `name` was given.",
+            "markdown": "How many times the option with long name `name` was given.\nCounting is how `-vvv` means more than `-v`. An option the command does not declare was given zero times.\nRuns in time linear in the number of arguments and allocates nothing.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the option's long name without its dashes" }],
+            "returns": "the number of times it was given",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#count"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Has",
+          "line": 226,
+          "signature": "pub func Has(self: &Parsed, name: char8[..]) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&Parsed",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the option with long name `name` was given at least once.",
+            "markdown": "Whether the option with long name `name` was given at least once.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the option's long name without its dashes" }],
+            "returns": "whether it was given",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#has"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Value",
+          "line": 236,
+          "signature": "pub func Value(self: &Parsed, name: char8[..]) -> OsStringView?",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&Parsed",
+          "returnType": "OsStringView?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value of the option with long name `name`, the last one given when it was given more than once.",
+            "markdown": "The value of the option with long name `name`, the last one given when it was given more than once.\nThe last value wins so that a later argument can override an earlier one, as a script adding to a fixed command\nline expects. Runs in time linear in the number of arguments and allocates nothing.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the option's long name without its dashes" }],
+            "returns": "the value as typed, or none when the option was not given or takes no value",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Values",
+          "line": 252,
+          "signature": "pub func Values(self: &Parsed, name: char8[..]) -> ValueIterator",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&Parsed",
+          "returnType": "ValueIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Every value the option with long name `name` was given, in order.",
+            "markdown": "Every value the option with long name `name` was given, in order.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the option's long name without its dashes" }],
+            "returns": "a walk over the values, empty when the option was not given",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#values"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Positional",
+          "line": 265,
+          "signature": "pub func Positional(self: &Parsed, name: char8[..]) -> OsStringView?",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&Parsed",
+          "returnType": "OsStringView?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The positional argument named `name`, the first one when it takes the remaining arguments.",
+            "markdown": "The positional argument named `name`, the first one when it takes the remaining arguments.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the positional's name" }],
+            "returns": "the argument as typed, or none when it was not given",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#positional"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Positionals",
+          "line": 275,
+          "signature": "pub func Positionals(self: &Parsed, name: char8[..]) -> ValueIterator",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&Parsed",
+          "returnType": "ValueIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Every argument the positional named `name` was given, which is more than one only for a `Remaining`\npositional.",
+            "markdown": "Every argument the positional named `name` was given, which is more than one only for a `Remaining`\npositional.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the positional's name" }],
+            "returns": "a walk over the arguments, empty when none was given",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#positionals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "CommandName",
+          "line": 287,
+          "signature": "pub func CommandName(self: &Parsed) -> char8[..]?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Parsed",
+          "returnType": "char8[..]?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The name of the subcommand that was given, for a command that has subcommands.",
+            "markdown": "The name of the subcommand that was given, for a command that has subcommands.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the subcommand's name as its specification spells it, or none",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#command-name"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Subcommand",
+          "line": 296,
+          "signature": "pub func Subcommand(self: &Parsed) -> Parsed?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Parsed",
+          "returnType": "Parsed?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The parse of the subcommand's own arguments, everything after its name.",
+            "markdown": "The parse of the subcommand's own arguments, everything after its name.\nThose arguments were validated with this parse, so this cannot fail.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the subcommand's parse, or none when no subcommand was given",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#subcommand"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Integer",
+          "line": 310,
+          "signature": "pub func Integer(self: &Parsed, name: char8[..]) -> int64? ! CommandLineError",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&Parsed",
+          "returnType": "int64? ! CommandLineError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value of the option or positional named `name` read as a decimal integer, or none when it was not given.",
+            "markdown": "The value of the option or positional named `name` read as a decimal integer, or none when it was not given.\nAn optional leading `-` or `+` is accepted, then one or more decimal digits and nothing else. Reports\n`InvalidValue` for any other text and for a number outside the range of `int64`. Allocates nothing.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "an option's long name, or a positional's name" }],
+            "returns": "the number, none when the value was not given, or why it is not a number",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#integer"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Parse",
+      "displayName": "Parse",
+      "module": "Parsed",
+      "source": "Src/Parsed.rux",
+      "line": 91,
+      "signature": "pub func Parse(spec: *CommandSpec, arguments: OsStringView[..]) -> Parsed ! CommandLineError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Checks `arguments` against `spec`.",
+        "markdown": "Checks `arguments` against `spec`.\n`arguments` are the arguments after the program's name. Reports the first mismatch: an unknown option, an option\nmissing its value or given one it does not take, an unknown or missing subcommand, a missing required positional,\nor an argument beyond what the command accepts. Asking for `--help` or `--version` succeeds whatever else is\nmissing, and `HelpRequested` or `VersionRequested` then says so. Allocates nothing; both `spec` and `arguments`\nmust outlive the result.",
+        "typeParams": [],
+        "params": [
+          { "name": "spec", "markdown": "the command the arguments are for" },
+          { "name": "arguments", "markdown": "the arguments, without the program's name" }
+        ],
+        "returns": "the parse, or why the arguments do not match",
+        "see": ["https://rux-lang.dev/docs/api/commandline/parsed#parse"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ParseProcess",
+      "displayName": "ParseProcess",
+      "module": "Parsed",
+      "source": "Src/Parsed.rux",
+      "line": 101,
+      "signature": "pub func ParseProcess(spec: *CommandSpec) -> Parsed ! CommandLineError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Checks the process's own arguments against `spec`.",
+        "markdown": "Checks the process's own arguments against `spec`.\nThe same checks as `Parse`, over every argument after the program's name. The arguments last as long as the\nprocess; `spec` must outlive the result.",
+        "typeParams": [],
+        "params": [{ "name": "spec", "markdown": "the command the arguments are for" }],
+        "returns": "the parse, or why the arguments do not match",
+        "see": ["https://rux-lang.dev/docs/api/commandline/parsed#parse-process"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "ValueIterator",
+      "displayName": "ValueIterator",
+      "module": "Parsed",
+      "source": "Src/Parsed.rux",
+      "line": 142,
+      "signature": "pub struct ValueIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "A walk over the values one option or positional was given, in the order they were given.",
+        "markdown": "A walk over the values one option or positional was given, in the order they were given.\n`Copy`, holding a position in the arguments and nothing else.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/commandline/parsed#value-iterator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "scanner",
+          "type": "Scanner",
+          "public": false,
+          "line": 143,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "target",
+          "type": "uint",
+          "public": false,
+          "line": 145,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "positional",
+          "type": "bool",
+          "public": false,
+          "line": 146,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Iterate",
+          "line": 153,
+          "signature": "pub func Iterate(self: &ValueIterator) -> ValueIterator",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ValueIterator",
+          "returnType": "ValueIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The walk itself, so that a `for` loop reads every value.",
+            "markdown": "The walk itself, so that a `for` loop reads every value.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a copy of this walk from its current position",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#value-iterator-iterate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 162,
+          "signature": "pub func Next(self: &var ValueIterator) -> OsStringView?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var ValueIterator",
+          "returnType": "OsStringView?",
+          "value": null,
+          "conformance": "Iterator",
+          "public": true,
+          "doc": {
+            "summary": "The next value, or none after the last.",
+            "markdown": "The next value, or none after the last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the value as typed, borrowing the arguments",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#value-iterator-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Iterator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "ArgumentSource",
+      "displayName": "ArgumentSource",
+      "module": "Scan",
+      "source": "Src/Scan.rux",
+      "line": 18,
+      "signature": "pub variant ArgumentSource",
+      "typeParams": [],
+      "doc": {
+        "summary": "Where the arguments being parsed come from.",
+        "markdown": "Where the arguments being parsed come from.\n`Copy`. A slice is borrowed and must outlive every parse made from it; the process's own arguments last as long as\nthe process.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/commandline/parsed#argument-source"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Given",
+          "value": null,
+          "payload": "(OsStringView[..])",
+          "line": 20,
+          "doc": "Arguments given as views, without the program's name.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ProcessArguments",
+          "value": null,
+          "payload": null,
+          "line": 22,
+          "doc": "The process's own arguments after the program's name.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Count",
+          "line": 29,
+          "signature": "pub func Count(self: &ArgumentSource) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ArgumentSource",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many arguments there are.",
+            "markdown": "How many arguments there are.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the argument count, not counting the program's name",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#argument-source-count"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "At",
+          "line": 41,
+          "signature": "pub func At(self: &ArgumentSource, index: uint) -> OsStringView",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&ArgumentSource",
+          "returnType": "OsStringView",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The argument at `index`, counting from zero after the program's name.",
+            "markdown": "The argument at `index`, counting from zero after the program's name.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "the argument's position" }],
+            "returns": "the argument, or an empty view past the last one",
+            "see": ["https://rux-lang.dev/docs/api/commandline/parsed#argument-source-at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "OptionSpec",
+      "displayName": "OptionSpec",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 12,
+      "signature": "pub struct OptionSpec",
+      "typeParams": [],
+      "doc": {
+        "summary": "One option a command accepts, such as `--output FILE` or `-v`.",
+        "markdown": "One option a command accepts, such as `--output FILE` or `-v`.\n`Copy`; the text it holds is borrowed and must outlive the specification.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#option-spec"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "name",
+          "type": "char8[..]",
+          "public": true,
+          "line": 14,
+          "doc": "The long name without its dashes, such as `output` for `--output`. Never empty.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "short",
+          "type": "char32",
+          "public": true,
+          "line": 16,
+          "doc": "The short name, such as `o` for `-o`, or `'\\0'` for none. An ASCII letter or digit.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "value",
+          "type": "char8[..]",
+          "public": true,
+          "line": 18,
+          "doc": "What the help text calls the option's value, such as `FILE`, or empty for a flag that takes no value.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "help",
+          "type": "char8[..]",
+          "public": true,
+          "line": 20,
+          "doc": "One line saying what the option does.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "PositionalKind",
+      "displayName": "PositionalKind",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 26,
+      "signature": "pub enum PositionalKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "How a positional argument may be given.",
+        "markdown": "How a positional argument may be given.\n`Copy`, carrying no payload.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#positional-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Required",
+          "value": null,
+          "payload": null,
+          "line": 28,
+          "doc": "Exactly once; parsing fails without it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Optional",
+          "value": null,
+          "payload": null,
+          "line": 30,
+          "doc": "At most once.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Remaining",
+          "value": null,
+          "payload": null,
+          "line": 32,
+          "doc": "Any number of times, taking every remaining positional argument. Only the last positional may be this kind.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "PositionalSpec",
+      "displayName": "PositionalSpec",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 38,
+      "signature": "pub struct PositionalSpec",
+      "typeParams": [],
+      "doc": {
+        "summary": "One positional argument a command accepts, such as `<input>`.",
+        "markdown": "One positional argument a command accepts, such as `<input>`.\n`Copy`; the text it holds is borrowed and must outlive the specification.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#positional-spec"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "name",
+          "type": "char8[..]",
+          "public": true,
+          "line": 40,
+          "doc": "The name queries and the help text use, such as `input`. Never empty.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "kind",
+          "type": "PositionalKind",
+          "public": true,
+          "line": 42,
+          "doc": "How the argument may be given.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "help",
+          "type": "char8[..]",
+          "public": true,
+          "line": 44,
+          "doc": "One line saying what the argument is.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "CommandSpec",
+      "displayName": "CommandSpec",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 52,
+      "signature": "pub struct CommandSpec",
+      "typeParams": [],
+      "doc": {
+        "summary": "A command: what it is called, what it accepts, and the subcommands under it.",
+        "markdown": "A command: what it is called, what it accepts, and the subcommands under it.\n`Copy`; every slice and text it holds is borrowed and must outlive it and every parse made from it. A command with\nsubcommands takes the first positional argument as the subcommand's name, so it should declare no positionals of\nits own.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#command-spec"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "name",
+          "type": "char8[..]",
+          "public": true,
+          "line": 54,
+          "doc": "The command's name: the program's name at the top, and the word that selects it below.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "summary",
+          "type": "char8[..]",
+          "public": true,
+          "line": 56,
+          "doc": "One line saying what the command does.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "version",
+          "type": "char8[..]",
+          "public": true,
+          "line": 58,
+          "doc": "The version `--version` reports, or empty when the command has none.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "options",
+          "type": "OptionSpec[..]",
+          "public": true,
+          "line": 60,
+          "doc": "The options, in the order the help text lists them.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "positionals",
+          "type": "PositionalSpec[..]",
+          "public": true,
+          "line": 62,
+          "doc": "The positional arguments, in the order they are given.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "commands",
+          "type": "CommandSpec[..]",
+          "public": true,
+          "line": 64,
+          "doc": "The subcommands, in the order the help text lists them.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "WithVersion",
+          "line": 132,
+          "signature": "pub func WithVersion(self: &CommandSpec, version: char8[..]) -> CommandSpec",
+          "typeParams": [],
+          "params": [{ "name": "version", "type": "char8[..]" }],
+          "receiver": "&CommandSpec",
+          "returnType": "CommandSpec",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This command with `version`, which `--version` then reports.",
+            "markdown": "This command with `version`, which `--version` then reports.",
+            "typeParams": [],
+            "params": [{ "name": "version", "markdown": "the version text, such as `1.4.2`" }],
+            "returns": "the changed copy",
+            "see": ["https://rux-lang.dev/docs/api/commandline/spec#with-version"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WithOptions",
+          "line": 147,
+          "signature": "pub func WithOptions(self: &CommandSpec, options: OptionSpec[..]) -> CommandSpec",
+          "typeParams": [],
+          "params": [{ "name": "options", "type": "OptionSpec[..]" }],
+          "receiver": "&CommandSpec",
+          "returnType": "CommandSpec",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This command with `options`, which must outlive it.",
+            "markdown": "This command with `options`, which must outlive it.",
+            "typeParams": [],
+            "params": [{ "name": "options", "markdown": "the options, in the order the help text lists them" }],
+            "returns": "the changed copy",
+            "see": ["https://rux-lang.dev/docs/api/commandline/spec#with-options"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WithPositionals",
+          "line": 162,
+          "signature": "pub func WithPositionals(self: &CommandSpec, positionals: PositionalSpec[..]) -> CommandSpec",
+          "typeParams": [],
+          "params": [{ "name": "positionals", "type": "PositionalSpec[..]" }],
+          "receiver": "&CommandSpec",
+          "returnType": "CommandSpec",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This command with `positionals`, which must outlive it.",
+            "markdown": "This command with `positionals`, which must outlive it.",
+            "typeParams": [],
+            "params": [{ "name": "positionals", "markdown": "the positional arguments, in the order they are given" }],
+            "returns": "the changed copy",
+            "see": ["https://rux-lang.dev/docs/api/commandline/spec#with-positionals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WithCommands",
+          "line": 177,
+          "signature": "pub func WithCommands(self: &CommandSpec, commands: CommandSpec[..]) -> CommandSpec",
+          "typeParams": [],
+          "params": [{ "name": "commands", "type": "CommandSpec[..]" }],
+          "receiver": "&CommandSpec",
+          "returnType": "CommandSpec",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This command with `commands`, which must outlive it.",
+            "markdown": "This command with `commands`, which must outlive it.",
+            "typeParams": [],
+            "params": [{ "name": "commands", "markdown": "the subcommands, in the order the help text lists them" }],
+            "returns": "the changed copy",
+            "see": ["https://rux-lang.dev/docs/api/commandline/spec#with-commands"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Flag",
+      "displayName": "Flag",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 73,
+      "signature": "pub func Flag(name: char8[..], short: char32, help: char8[..]) -> OptionSpec",
+      "typeParams": [],
+      "doc": {
+        "summary": "An option that is present or absent and takes no value, such as `--verbose`.",
+        "markdown": "An option that is present or absent and takes no value, such as `--verbose`.",
+        "typeParams": [],
+        "params": [
+          { "name": "name", "markdown": "the long name without its dashes" },
+          { "name": "short", "markdown": "the short name, or `'\\0'` for none" },
+          { "name": "help", "markdown": "one line saying what the option does" }
+        ],
+        "returns": "the option's specification",
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#flag"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ValueOption",
+      "displayName": "ValueOption",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 86,
+      "signature": "pub func ValueOption(name: char8[..], short: char32, value: char8[..], help: char8[..]) -> OptionSpec",
+      "typeParams": [],
+      "doc": {
+        "summary": "An option that takes a value, such as `--output FILE`.",
+        "markdown": "An option that takes a value, such as `--output FILE`.\nThe value may follow the option as the next argument, after `=` in the long form, or directly after the short\nletter, so `--output a.txt`, `--output=a.txt`, `-o a.txt` and `-oa.txt` all give `a.txt`.",
+        "typeParams": [],
+        "params": [
+          { "name": "name", "markdown": "the long name without its dashes" },
+          { "name": "short", "markdown": "the short name, or `'\\0'` for none" },
+          { "name": "value", "markdown": "what the help text calls the value, such as `FILE`; never empty" },
+          { "name": "help", "markdown": "one line saying what the option does" }
+        ],
+        "returns": "the option's specification",
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#value-option"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Required",
+      "displayName": "Required",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 95,
+      "signature": "pub func Required(name: char8[..], help: char8[..]) -> PositionalSpec",
+      "typeParams": [],
+      "doc": {
+        "summary": "A positional argument that must be given.",
+        "markdown": "A positional argument that must be given.",
+        "typeParams": [],
+        "params": [
+          { "name": "name", "markdown": "the name queries and the help text use" },
+          { "name": "help", "markdown": "one line saying what the argument is" }
+        ],
+        "returns": "the positional's specification",
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#required"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Optional",
+      "displayName": "Optional",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 104,
+      "signature": "pub func Optional(name: char8[..], help: char8[..]) -> PositionalSpec",
+      "typeParams": [],
+      "doc": {
+        "summary": "A positional argument that may be left out.",
+        "markdown": "A positional argument that may be left out.",
+        "typeParams": [],
+        "params": [
+          { "name": "name", "markdown": "the name queries and the help text use" },
+          { "name": "help", "markdown": "one line saying what the argument is" }
+        ],
+        "returns": "the positional's specification",
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#optional"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Remaining",
+      "displayName": "Remaining",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 113,
+      "signature": "pub func Remaining(name: char8[..], help: char8[..]) -> PositionalSpec",
+      "typeParams": [],
+      "doc": {
+        "summary": "A positional argument that takes every positional argument left, which may be none.",
+        "markdown": "A positional argument that takes every positional argument left, which may be none.",
+        "typeParams": [],
+        "params": [
+          { "name": "name", "markdown": "the name queries and the help text use" },
+          { "name": "help", "markdown": "one line saying what the arguments are" }
+        ],
+        "returns": "the positional's specification",
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#remaining"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Command",
+      "displayName": "Command",
+      "module": "Spec",
+      "source": "Src/Spec.rux",
+      "line": 123,
+      "signature": "pub func Command(name: char8[..], summary: char8[..]) -> CommandSpec",
+      "typeParams": [],
+      "doc": {
+        "summary": "A command with a name and a summary, and as yet no version, options, positionals or subcommands.",
+        "markdown": "A command with a name and a summary, and as yet no version, options, positionals or subcommands.\nThe `With` methods fill in the rest, each returning the changed copy.",
+        "typeParams": [],
+        "params": [
+          { "name": "name", "markdown": "the program's name, or the word that selects a subcommand" },
+          { "name": "summary", "markdown": "one line saying what the command does" }
+        ],
+        "returns": "the command's specification",
+        "see": ["https://rux-lang.dev/docs/api/commandline/spec#command"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

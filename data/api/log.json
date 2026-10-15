@@ -1,0 +1,2618 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Log",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Structured logging: levels, typed fields, text and JSON-lines records, a process-wide log for every thread, and log files that rotate by size",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/log",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "FileSystem", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Format", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Io", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Path", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Sync", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Time", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Field",
+      "source": "Src/Field.rux",
+      "header": "The structured part of a record: named values beside its message."
+    },
+    {
+      "name": "Global",
+      "source": "Src/Global.rux",
+      "header": "The process-wide log: records written to standard error, from any thread.\nIts settings are module variables read and written atomically, and a lock is held only for the one write of a\nfinished record, so threads build their records at the same time and never interleave them."
+    },
+    {
+      "name": "Level",
+      "source": "Src/Level.rux",
+      "header": "How severe a record is, and the least severe level a build keeps."
+    },
+    { "name": "Logger", "source": "Src/Logger.rux", "header": "A logger that writes records to a stream of its own." },
+    {
+      "name": "Record",
+      "source": "Src/Record.rux",
+      "header": "Writing a record as one line of text or of JSON.\nA record is built whole in memory and handed to its destination in one write, so records from different loggers,\nor from the process-wide functions on different threads, never interleave within a line. A message or value that\nholds a line break or another control character has it escaped, so one record is always one line."
+    },
+    {
+      "name": "Rotation",
+      "source": "Src/Rotation.rux",
+      "header": "A log file that is moved aside for a fresh one before it grows past a size, keeping a few of the older files.\nThe file is a `Writer`, so a `Logger` writes to it like any other destination; `RotatingFile::Stream` is the\nstored form a `Logger` keeps, as `File::Stream` is for a plain file."
+    }
+  ],
+  "items": [
+    {
+      "kind": "variant",
+      "name": "Value",
+      "displayName": "Value",
+      "module": "Field",
+      "source": "Src/Field.rux",
+      "line": 5,
+      "signature": "pub variant Value",
+      "typeParams": [],
+      "doc": {
+        "summary": "The value of a field.",
+        "markdown": "The value of a field. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/field#value"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Text",
+          "value": null,
+          "payload": "(char8[..])",
+          "line": 7,
+          "doc": "Text, borrowed from the caller for as long as the record is being written.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Integer",
+          "value": null,
+          "payload": "(int64)",
+          "line": 9,
+          "doc": "A signed integer.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Unsigned",
+          "value": null,
+          "payload": "(uint64)",
+          "line": 11,
+          "doc": "An unsigned integer.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Float",
+          "value": null,
+          "payload": "(float64)",
+          "line": 13,
+          "doc": "A floating-point number. JSON records write a value that is not finite as `null`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Boolean",
+          "value": null,
+          "payload": "(bool)",
+          "line": 15,
+          "doc": "A truth value.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Field",
+      "displayName": "Field",
+      "module": "Field",
+      "source": "Src/Field.rux",
+      "line": 20,
+      "signature": "pub struct Field",
+      "typeParams": [],
+      "doc": {
+        "summary": "A named value of a record.",
+        "markdown": "A named value of a record. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/field#field"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "key",
+          "type": "char8[..]",
+          "public": true,
+          "line": 22,
+          "doc": "The name, which should be a plain identifier so that every format writes it unquoted.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "value",
+          "type": "Value",
+          "public": true,
+          "line": 24,
+          "doc": "The value.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Text",
+          "line": 33,
+          "signature": "pub func Text(key: char8[..], value: char8[..]) -> Field",
+          "typeParams": [],
+          "params": [
+            { "name": "key", "type": "char8[..]" },
+            { "name": "value", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "Field",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A field of text.",
+            "markdown": "A field of text.",
+            "typeParams": [],
+            "params": [
+              { "name": "key", "markdown": "the name" },
+              { "name": "value", "markdown": "the text, borrowed until the record is written" }
+            ],
+            "returns": "the field",
+            "see": ["https://rux-lang.dev/docs/api/log/field#text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Integer",
+          "line": 42,
+          "signature": "pub func Integer(key: char8[..], value: int64) -> Field",
+          "typeParams": [],
+          "params": [
+            { "name": "key", "type": "char8[..]" },
+            { "name": "value", "type": "int64" }
+          ],
+          "receiver": null,
+          "returnType": "Field",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A field of a signed integer.",
+            "markdown": "A field of a signed integer.",
+            "typeParams": [],
+            "params": [
+              { "name": "key", "markdown": "the name" },
+              { "name": "value", "markdown": "the number" }
+            ],
+            "returns": "the field",
+            "see": ["https://rux-lang.dev/docs/api/log/field#integer"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Unsigned",
+          "line": 51,
+          "signature": "pub func Unsigned(key: char8[..], value: uint64) -> Field",
+          "typeParams": [],
+          "params": [
+            { "name": "key", "type": "char8[..]" },
+            { "name": "value", "type": "uint64" }
+          ],
+          "receiver": null,
+          "returnType": "Field",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A field of an unsigned integer.",
+            "markdown": "A field of an unsigned integer.",
+            "typeParams": [],
+            "params": [
+              { "name": "key", "markdown": "the name" },
+              { "name": "value", "markdown": "the number" }
+            ],
+            "returns": "the field",
+            "see": ["https://rux-lang.dev/docs/api/log/field#unsigned"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Float",
+          "line": 60,
+          "signature": "pub func Float(key: char8[..], value: float64) -> Field",
+          "typeParams": [],
+          "params": [
+            { "name": "key", "type": "char8[..]" },
+            { "name": "value", "type": "float64" }
+          ],
+          "receiver": null,
+          "returnType": "Field",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A field of a floating-point number.",
+            "markdown": "A field of a floating-point number.",
+            "typeParams": [],
+            "params": [
+              { "name": "key", "markdown": "the name" },
+              { "name": "value", "markdown": "the number" }
+            ],
+            "returns": "the field",
+            "see": ["https://rux-lang.dev/docs/api/log/field#float"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Boolean",
+          "line": 69,
+          "signature": "pub func Boolean(key: char8[..], value: bool) -> Field",
+          "typeParams": [],
+          "params": [
+            { "name": "key", "type": "char8[..]" },
+            { "name": "value", "type": "bool" }
+          ],
+          "receiver": null,
+          "returnType": "Field",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A field of a truth value.",
+            "markdown": "A field of a truth value.",
+            "typeParams": [],
+            "params": [
+              { "name": "key", "markdown": "the name" },
+              { "name": "value", "markdown": "the value" }
+            ],
+            "returns": "the field",
+            "see": ["https://rux-lang.dev/docs/api/log/field#boolean"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SetLevel",
+      "displayName": "SetLevel",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 20,
+      "signature": "pub func SetLevel(level: Level)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes process-wide records at `level` and above from now on.",
+        "markdown": "Writes process-wide records at `level` and above from now on. The level starts as `Info`.",
+        "typeParams": [],
+        "params": [{ "name": "level", "markdown": "the least severe level written" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#set-level"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SetFormat",
+      "displayName": "SetFormat",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 27,
+      "signature": "pub func SetFormat(format: LogFormat)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes process-wide records in `format` from now on.",
+        "markdown": "Writes process-wide records in `format` from now on. The format starts as `Text`.",
+        "typeParams": [],
+        "params": [{ "name": "format", "markdown": "how records are written" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#set-format"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SetTimestamps",
+      "displayName": "SetTimestamps",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 34,
+      "signature": "pub func SetTimestamps(enabled: bool)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether process-wide records start with the time.",
+        "markdown": "Whether process-wide records start with the time. They start with it.",
+        "typeParams": [],
+        "params": [{ "name": "enabled", "markdown": "whether to write the time" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#set-timestamps"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Enabled",
+      "displayName": "Enabled",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 42,
+      "signature": "pub func Enabled(level: Level) -> bool",
+      "typeParams": [],
+      "doc": {
+        "summary": "Whether a process-wide record at `level` would be written.",
+        "markdown": "Whether a process-wide record at `level` would be written.",
+        "typeParams": [],
+        "params": [{ "name": "level", "markdown": "the level to ask about" }],
+        "returns": "whether it would be written",
+        "see": ["https://rux-lang.dev/docs/api/log/global#enabled"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Log",
+      "displayName": "Log",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 53,
+      "signature": "pub func Log(level: Level, message: char8[..], fields: Field[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide record at `level` with `message` and `fields` to standard error, if the level is enabled.",
+        "markdown": "Writes a process-wide record at `level` with `message` and `fields` to standard error, if the level is enabled.\nA record that cannot be written is dropped.",
+        "typeParams": [],
+        "params": [
+          { "name": "level", "markdown": "how severe it is" },
+          { "name": "message", "markdown": "what happened" },
+          { "name": "fields", "markdown": "the values that go with it" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#log"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Trace",
+      "displayName": "Trace",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 69,
+      "signature": "pub func Trace(message: char8[..], fields: Field[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Trace` record.",
+        "markdown": "Writes a process-wide `Trace` record.",
+        "typeParams": [],
+        "params": [
+          { "name": "message", "markdown": "what happened" },
+          { "name": "fields", "markdown": "the values that go with it" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#trace"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Trace",
+      "displayName": "Trace",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 76,
+      "signature": "pub func Trace(message: char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Trace` record with no fields.",
+        "markdown": "Writes a process-wide `Trace` record with no fields.",
+        "typeParams": [],
+        "params": [{ "name": "message", "markdown": "what happened" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#trace"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Debug",
+      "displayName": "Debug",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 84,
+      "signature": "pub func Debug(message: char8[..], fields: Field[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Debug` record.",
+        "markdown": "Writes a process-wide `Debug` record.",
+        "typeParams": [],
+        "params": [
+          { "name": "message", "markdown": "what happened" },
+          { "name": "fields", "markdown": "the values that go with it" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#debug"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Debug",
+      "displayName": "Debug",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 91,
+      "signature": "pub func Debug(message: char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Debug` record with no fields.",
+        "markdown": "Writes a process-wide `Debug` record with no fields.",
+        "typeParams": [],
+        "params": [{ "name": "message", "markdown": "what happened" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#debug"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Info",
+      "displayName": "Info",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 99,
+      "signature": "pub func Info(message: char8[..], fields: Field[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Info` record.",
+        "markdown": "Writes a process-wide `Info` record.",
+        "typeParams": [],
+        "params": [
+          { "name": "message", "markdown": "what happened" },
+          { "name": "fields", "markdown": "the values that go with it" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#info"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Info",
+      "displayName": "Info",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 106,
+      "signature": "pub func Info(message: char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Info` record with no fields.",
+        "markdown": "Writes a process-wide `Info` record with no fields.",
+        "typeParams": [],
+        "params": [{ "name": "message", "markdown": "what happened" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#info"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Warn",
+      "displayName": "Warn",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 114,
+      "signature": "pub func Warn(message: char8[..], fields: Field[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Warn` record.",
+        "markdown": "Writes a process-wide `Warn` record.",
+        "typeParams": [],
+        "params": [
+          { "name": "message", "markdown": "what happened" },
+          { "name": "fields", "markdown": "the values that go with it" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#warn"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Warn",
+      "displayName": "Warn",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 121,
+      "signature": "pub func Warn(message: char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Warn` record with no fields.",
+        "markdown": "Writes a process-wide `Warn` record with no fields.",
+        "typeParams": [],
+        "params": [{ "name": "message", "markdown": "what happened" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#warn"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Error",
+      "displayName": "Error",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 129,
+      "signature": "pub func Error(message: char8[..], fields: Field[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Error` record.",
+        "markdown": "Writes a process-wide `Error` record.",
+        "typeParams": [],
+        "params": [
+          { "name": "message", "markdown": "what happened" },
+          { "name": "fields", "markdown": "the values that go with it" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Error",
+      "displayName": "Error",
+      "module": "Global",
+      "source": "Src/Global.rux",
+      "line": 136,
+      "signature": "pub func Error(message: char8[..])",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes a process-wide `Error` record with no fields.",
+        "markdown": "Writes a process-wide `Error` record with no fields.",
+        "typeParams": [],
+        "params": [{ "name": "message", "markdown": "what happened" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/global#error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "Level",
+      "displayName": "Level",
+      "module": "Level",
+      "source": "Src/Level.rux",
+      "line": 7,
+      "signature": "pub enum Level",
+      "typeParams": [],
+      "doc": {
+        "summary": "How severe a record is, from the most detailed to the most serious.",
+        "markdown": "How severe a record is, from the most detailed to the most serious. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/level#level"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "Trace",
+          "value": "0",
+          "payload": null,
+          "line": 9,
+          "doc": "The finest detail, for following a program step by step.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Debug",
+          "value": "1",
+          "payload": null,
+          "line": 11,
+          "doc": "Detail for diagnosing a problem.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Info",
+          "value": "2",
+          "payload": null,
+          "line": 13,
+          "doc": "The ordinary progress of a program.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Warn",
+          "value": "3",
+          "payload": null,
+          "line": 15,
+          "doc": "Something unexpected that the program recovered from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Error",
+          "value": "4",
+          "payload": null,
+          "line": 17,
+          "doc": "Something that failed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Name",
+          "line": 24,
+          "signature": "pub func Name(self: &Level) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Level",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The level's name in lower case, as JSON records give it: `trace`, `debug`, `info`, `warn` or `error`.",
+            "markdown": "The level's name in lower case, as JSON records give it: `trace`, `debug`, `info`, `warn` or `error`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the name",
+            "see": ["https://rux-lang.dev/docs/api/log/level#name"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Label",
+          "line": 37,
+          "signature": "pub func Label(self: &Level) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Level",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The level's label in upper case and five columns wide, as text records give it.",
+            "markdown": "The level's label in upper case and five columns wide, as text records give it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the label",
+            "see": ["https://rux-lang.dev/docs/api/log/level#label"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Parse",
+          "line": 51,
+          "signature": "pub func Parse(text: char8[..]) -> Level?",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "Level?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The level named `text`, in any case; `warning` is read as `warn`.",
+            "markdown": "The level named `text`, in any case; `warning` is read as `warn`.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the name" }],
+            "returns": "the level, or `none` for a name that is not one",
+            "see": ["https://rux-lang.dev/docs/api/log/level#parse"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CompiledLevel",
+      "displayName": "CompiledLevel",
+      "module": "Level",
+      "source": "Src/Level.rux",
+      "line": 79,
+      "signature": "pub func CompiledLevel() -> Level",
+      "typeParams": [],
+      "doc": {
+        "summary": "The least severe level this build keeps, from the `LogLevel` build define: `trace`, `debug`, `info`, `warn` or\n`error`, and `trace` when it is not defined.",
+        "markdown": "The least severe level this build keeps, from the `LogLevel` build define: `trace`, `debug`, `info`, `warn` or\n`error`, and `trace` when it is not defined. A record below it is dropped before anything about it is done,\nwhatever level a logger is set to, so a release build can leave out its tracing entirely.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the level",
+        "see": ["https://rux-lang.dev/docs/api/log/level#compiled-level"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Logger",
+      "displayName": "Logger",
+      "module": "Logger",
+      "source": "Src/Logger.rux",
+      "line": 13,
+      "signature": "pub struct Logger",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes records at or above a level to a stream, each as one write.",
+        "markdown": "Writes records at or above a level to a stream, each as one write. Not copied.\nA logging call never fails: the first failure to write is kept for `Failure` to report, and the records after it\nare still attempted. A logger is used by one thread at a time; the process-wide functions such as `Info` are the\nones to share between threads.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/logger#logger"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "sink",
+          "type": "Writer",
+          "public": false,
+          "line": 14,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "format",
+          "type": "LogFormat",
+          "public": false,
+          "line": 15,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "minimum",
+          "type": "Level",
+          "public": false,
+          "line": 16,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "timestamps",
+          "type": "bool",
+          "public": false,
+          "line": 17,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffer",
+          "type": "StringBuilder",
+          "public": false,
+          "line": 18,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "context",
+          "type": "Field[..]",
+          "public": false,
+          "line": 19,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "failure",
+          "type": "IoError?",
+          "public": false,
+          "line": 20,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 32,
+          "signature": "pub func New(allocator: Allocator, sink: Writer, format: LogFormat) -> Logger",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "sink", "type": "Writer" },
+            { "name": "format", "type": "LogFormat" }
+          ],
+          "receiver": null,
+          "returnType": "Logger",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A logger writing records in `format` to `sink`, at level `Info` and above, with times.",
+            "markdown": "A logger writing records in `format` to `sink`, at level `Info` and above, with times.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what each record is built in before it is written" },
+              { "name": "sink", "markdown": "where the records go" },
+              { "name": "format", "markdown": "how they are written" }
+            ],
+            "returns": "the logger",
+            "see": ["https://rux-lang.dev/docs/api/log/logger#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetLevel",
+          "line": 47,
+          "signature": "pub func SetLevel(self: &var Logger, level: Level)",
+          "typeParams": [],
+          "params": [{ "name": "level", "type": "Level" }],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes records at `level` and above from now on.",
+            "markdown": "Writes records at `level` and above from now on.",
+            "typeParams": [],
+            "params": [{ "name": "level", "markdown": "the least severe level written" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#set-level"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "MinimumLevel",
+          "line": 54,
+          "signature": "pub func MinimumLevel(self: &Logger) -> Level",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Logger",
+          "returnType": "Level",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The least severe level written.",
+            "markdown": "The least severe level written.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the level",
+            "see": ["https://rux-lang.dev/docs/api/log/logger#minimum-level"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Enabled",
+          "line": 63,
+          "signature": "pub func Enabled(self: &Logger, level: Level) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "level", "type": "Level" }],
+          "receiver": "&Logger",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether a record at `level` would be written, by this logger's level and the build's `CompiledLevel`.",
+            "markdown": "Whether a record at `level` would be written, by this logger's level and the build's `CompiledLevel`. Worth\nasking before working out fields that cost something to compute.",
+            "typeParams": [],
+            "params": [{ "name": "level", "markdown": "the level to ask about" }],
+            "returns": "whether it would be written",
+            "see": ["https://rux-lang.dev/docs/api/log/logger#enabled"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetTimestamps",
+          "line": 71,
+          "signature": "pub func SetTimestamps(self: &var Logger, enabled: bool)",
+          "typeParams": [],
+          "params": [{ "name": "enabled", "type": "bool" }],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether records start with the time.",
+            "markdown": "Whether records start with the time. Leaving it out suits a destination that adds its own, such as a service\nmanager's journal.",
+            "typeParams": [],
+            "params": [{ "name": "enabled", "markdown": "whether to write the time" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#set-timestamps"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetContext",
+          "line": 78,
+          "signature": "pub func SetContext(self: &var Logger, fields: Field[..])",
+          "typeParams": [],
+          "params": [{ "name": "fields", "type": "Field[..]" }],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Fields written with every record, before the record's own, such as a request's identifier.",
+            "markdown": "Fields written with every record, before the record's own, such as a request's identifier.",
+            "typeParams": [],
+            "params": [{ "name": "fields", "markdown": "the fields, borrowed until they are replaced" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#set-context"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Failure",
+          "line": 85,
+          "signature": "pub func Failure(self: &Logger) -> IoError?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Logger",
+          "returnType": "IoError?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The first failure to write a record, or `none` when every record was written.",
+            "markdown": "The first failure to write a record, or `none` when every record was written.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the failure",
+            "see": ["https://rux-lang.dev/docs/api/log/logger#failure"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Log",
+          "line": 94,
+          "signature": "pub func Log(self: &var Logger, level: Level, message: char8[..], fields: Field[..])",
+          "typeParams": [],
+          "params": [
+            { "name": "level", "type": "Level" },
+            { "name": "message", "type": "char8[..]" },
+            { "name": "fields", "type": "Field[..]" }
+          ],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes a record at `level` with `message` and `fields`, if the level is enabled.",
+            "markdown": "Writes a record at `level` with `message` and `fields`, if the level is enabled.",
+            "typeParams": [],
+            "params": [
+              { "name": "level", "markdown": "how severe it is" },
+              { "name": "message", "markdown": "what happened" },
+              { "name": "fields", "markdown": "the values that go with it" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#log"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 108,
+          "signature": "pub func Flush(self: &var Logger)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Asks the stream to deliver what it holds.",
+            "markdown": "Asks the stream to deliver what it holds.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Trace",
+          "line": 121,
+          "signature": "pub func Trace(self: &var Logger, message: char8[..], fields: Field[..])",
+          "typeParams": [],
+          "params": [
+            { "name": "message", "type": "char8[..]" },
+            { "name": "fields", "type": "Field[..]" }
+          ],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes a `Trace` record.",
+            "markdown": "Writes a `Trace` record.",
+            "typeParams": [],
+            "params": [
+              { "name": "message", "markdown": "what happened" },
+              { "name": "fields", "markdown": "the values that go with it" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#trace"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Trace",
+          "line": 128,
+          "signature": "pub func Trace(self: &var Logger, message: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "message", "type": "char8[..]" }],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes a `Trace` record with no fields.",
+            "markdown": "Writes a `Trace` record with no fields.",
+            "typeParams": [],
+            "params": [{ "name": "message", "markdown": "what happened" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#trace"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Debug",
+          "line": 136,
+          "signature": "pub func Debug(self: &var Logger, message: char8[..], fields: Field[..])",
+          "typeParams": [],
+          "params": [
+            { "name": "message", "type": "char8[..]" },
+            { "name": "fields", "type": "Field[..]" }
+          ],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes a `Debug` record.",
+            "markdown": "Writes a `Debug` record.",
+            "typeParams": [],
+            "params": [
+              { "name": "message", "markdown": "what happened" },
+              { "name": "fields", "markdown": "the values that go with it" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Debug",
+          "line": 143,
+          "signature": "pub func Debug(self: &var Logger, message: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "message", "type": "char8[..]" }],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes a `Debug` record with no fields.",
+            "markdown": "Writes a `Debug` record with no fields.",
+            "typeParams": [],
+            "params": [{ "name": "message", "markdown": "what happened" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Info",
+          "line": 151,
+          "signature": "pub func Info(self: &var Logger, message: char8[..], fields: Field[..])",
+          "typeParams": [],
+          "params": [
+            { "name": "message", "type": "char8[..]" },
+            { "name": "fields", "type": "Field[..]" }
+          ],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes an `Info` record.",
+            "markdown": "Writes an `Info` record.",
+            "typeParams": [],
+            "params": [
+              { "name": "message", "markdown": "what happened" },
+              { "name": "fields", "markdown": "the values that go with it" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#info"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Info",
+          "line": 158,
+          "signature": "pub func Info(self: &var Logger, message: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "message", "type": "char8[..]" }],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes an `Info` record with no fields.",
+            "markdown": "Writes an `Info` record with no fields.",
+            "typeParams": [],
+            "params": [{ "name": "message", "markdown": "what happened" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#info"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Warn",
+          "line": 166,
+          "signature": "pub func Warn(self: &var Logger, message: char8[..], fields: Field[..])",
+          "typeParams": [],
+          "params": [
+            { "name": "message", "type": "char8[..]" },
+            { "name": "fields", "type": "Field[..]" }
+          ],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes a `Warn` record.",
+            "markdown": "Writes a `Warn` record.",
+            "typeParams": [],
+            "params": [
+              { "name": "message", "markdown": "what happened" },
+              { "name": "fields", "markdown": "the values that go with it" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#warn"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Warn",
+          "line": 173,
+          "signature": "pub func Warn(self: &var Logger, message: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "message", "type": "char8[..]" }],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes a `Warn` record with no fields.",
+            "markdown": "Writes a `Warn` record with no fields.",
+            "typeParams": [],
+            "params": [{ "name": "message", "markdown": "what happened" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#warn"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Error",
+          "line": 181,
+          "signature": "pub func Error(self: &var Logger, message: char8[..], fields: Field[..])",
+          "typeParams": [],
+          "params": [
+            { "name": "message", "type": "char8[..]" },
+            { "name": "fields", "type": "Field[..]" }
+          ],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes an `Error` record.",
+            "markdown": "Writes an `Error` record.",
+            "typeParams": [],
+            "params": [
+              { "name": "message", "markdown": "what happened" },
+              { "name": "fields", "markdown": "the values that go with it" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#error"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Error",
+          "line": 188,
+          "signature": "pub func Error(self: &var Logger, message: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "message", "type": "char8[..]" }],
+          "receiver": "&var Logger",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes an `Error` record with no fields.",
+            "markdown": "Writes an `Error` record with no fields.",
+            "typeParams": [],
+            "params": [{ "name": "message", "markdown": "what happened" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/log/logger#error"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "LogFormat",
+      "displayName": "LogFormat",
+      "module": "Record",
+      "source": "Src/Record.rux",
+      "line": 13,
+      "signature": "pub enum LogFormat",
+      "typeParams": [],
+      "doc": {
+        "summary": "How records are written.",
+        "markdown": "How records are written. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/record#log-format"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "Text",
+          "value": "0",
+          "payload": null,
+          "line": 16,
+          "doc": "One line of text per record: the time, the level, the message, then each field as `key=value`, with values\nthat hold spaces, quotes or `=` in quotes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "JsonLines",
+          "value": "1",
+          "payload": null,
+          "line": 18,
+          "doc": "One JSON object per line, with `time`, `level` and `message` members followed by the fields.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "RotatingFile",
+      "displayName": "RotatingFile",
+      "module": "Rotation",
+      "source": "Src/Rotation.rux",
+      "line": 22,
+      "signature": "pub struct RotatingFile",
+      "typeParams": [],
+      "doc": {
+        "summary": "A log file that starts afresh before a write would take it past a size.",
+        "markdown": "A log file that starts afresh before a write would take it past a size.\nThe current file keeps the path it was opened at. Moving it aside renames it to `path.1`, after renaming an\nolder `path.1` to `path.2` and so on up to `path.<keep>`, whose previous contents are replaced; with `keep` zero\nthe current file is emptied instead. The file is moved aside only before a write, never during one, and a\n`Logger` hands each record over in one write, so a record never spans two files: one larger than the limit goes\nwhole into a file of its own.\nMove-only: the file closes exactly once, through `Close` or the destructor.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/rotating-file"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "file",
+          "type": "File",
+          "public": false,
+          "line": 24,
+          "doc": "The current file, open for appending.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "path",
+          "type": "PathBuffer",
+          "public": false,
+          "line": 26,
+          "doc": "Where the current file lives; the older files share it with a numbered suffix.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "limit",
+          "type": "uint64",
+          "public": false,
+          "line": 28,
+          "doc": "The size a write may not take the current file past.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "keep",
+          "type": "uint",
+          "public": false,
+          "line": 30,
+          "doc": "How many older files are kept.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "size",
+          "type": "uint64",
+          "public": false,
+          "line": 32,
+          "doc": "How many bytes the current file holds.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 34,
+          "doc": "Where the path storage came from, and where reopening the file asks for its own.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Open",
+          "line": 48,
+          "signature": "pub func Open(allocator: Allocator, path: Path, limit: uint64, keep: uint) -> RotatingFile ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "path", "type": "Path" },
+            { "name": "limit", "type": "uint64" },
+            { "name": "keep", "type": "uint" }
+          ],
+          "receiver": null,
+          "returnType": "RotatingFile ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Opens `path` for appending, creating it if missing, to be moved aside before it grows past `limit` bytes.",
+            "markdown": "Opens `path` for appending, creating it if missing, to be moved aside before it grows past `limit` bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "path", "markdown": "the current log file's path" },
+              {
+                "name": "limit",
+                "markdown": "the size in bytes a write may not take the current file past; at least one"
+              },
+              { "name": "keep", "markdown": "how many older files to keep, as `path.1` to `path.<keep>`" }
+            ],
+            "returns": "the open file, or why it could not be opened; `InvalidInput` for a zero limit or an overlong path",
+            "see": ["https://rux-lang.dev/docs/api/log/rotating-file#open"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Size",
+          "line": 61,
+          "signature": "pub func Size(self: &RotatingFile) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&RotatingFile",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bytes the current file holds.",
+            "markdown": "How many bytes the current file holds.",
+            "typeParams": [],
+            "params": [],
+            "returns": "its size, counting what this value wrote",
+            "see": ["https://rux-lang.dev/docs/api/log/rotating-file#size"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Rotate",
+          "line": 70,
+          "signature": "pub func Rotate(self: &var RotatingFile) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var RotatingFile",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Moves the current file aside now and starts an empty one, whatever its size.",
+            "markdown": "Moves the current file aside now and starts an empty one, whatever its size.\nThe file is closed first, because Windows renames no open file. A failure leaves the current file closed,\nand every later write fails with `InvalidHandle` until a rotation succeeds.",
+            "typeParams": [],
+            "params": [],
+            "returns": "success when an empty current file is open",
+            "see": ["https://rux-lang.dev/docs/api/log/rotating-file#rotate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Close",
+          "line": 88,
+          "signature": "pub func Close(self: &var RotatingFile) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var RotatingFile",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Closes the current file, reporting what closing it said.",
+            "markdown": "Closes the current file, reporting what closing it said.",
+            "typeParams": [],
+            "params": [],
+            "returns": "success when the file is closed",
+            "see": ["https://rux-lang.dev/docs/api/log/rotating-file#close"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Stream",
+          "line": 96,
+          "signature": "pub func Stream(self: *var RotatingFile) -> RotatingStream",
+          "typeParams": [],
+          "params": [],
+          "receiver": "*var RotatingFile",
+          "returnType": "RotatingStream",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A stored borrow of this file for a `Logger`, which keeps its destination.",
+            "markdown": "A stored borrow of this file for a `Logger`, which keeps its destination.\nThe file must outlive the stream and must not be moved while one exists; nothing tracks either.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a stream writing through this file",
+            "see": ["https://rux-lang.dev/docs/api/log/rotating-file#stream"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 107,
+          "signature": "pub func Write(self: &var RotatingFile, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var RotatingFile",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Writes `bytes`, moving the current file aside first when they would take it past the limit.",
+            "markdown": "Writes `bytes`, moving the current file aside first when they would take it past the limit.\nAn empty current file is never moved aside, so a write larger than the limit lands whole in a fresh file.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to write" }],
+            "returns": "how many bytes were taken",
+            "see": ["https://rux-lang.dev/docs/api/log/rotating-file#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 119,
+          "signature": "pub func Flush(self: &var RotatingFile) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var RotatingFile",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Flushes the current file, which holds nothing back.",
+            "markdown": "Flushes the current file, which holds nothing back.",
+            "typeParams": [],
+            "params": [],
+            "returns": "success when everything written reached the system",
+            "see": ["https://rux-lang.dev/docs/api/log/rotating-file#flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Writer"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "RotatingStream",
+      "displayName": "RotatingStream",
+      "module": "Rotation",
+      "source": "Src/Rotation.rux",
+      "line": 127,
+      "signature": "pub struct RotatingStream",
+      "typeParams": [],
+      "doc": {
+        "summary": "A stored borrow of a `RotatingFile` that speaks `Writer`, for a `Logger` to keep.",
+        "markdown": "A stored borrow of a `RotatingFile` that speaks `Writer`, for a `Logger` to keep.\nThe address is private, and `RotatingFile::Stream` is the only way to obtain one.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/log/rotating-stream"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "target",
+          "type": "*var RotatingFile",
+          "public": false,
+          "line": 129,
+          "doc": "The file being borrowed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 137,
+          "signature": "pub func Write(self: &var RotatingStream, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var RotatingStream",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Writes through the borrowed file, which may move its current file aside first.",
+            "markdown": "Writes through the borrowed file, which may move its current file aside first.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to write" }],
+            "returns": "how many bytes were taken",
+            "see": ["https://rux-lang.dev/docs/api/log/rotating-stream#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 144,
+          "signature": "pub func Flush(self: &var RotatingStream) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var RotatingStream",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Flushes the borrowed file.",
+            "markdown": "Flushes the borrowed file.",
+            "typeParams": [],
+            "params": [],
+            "returns": "success when everything written reached the system",
+            "see": ["https://rux-lang.dev/docs/api/log/rotating-stream#flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Writer"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}
