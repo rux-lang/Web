@@ -1,12 +1,12 @@
 /**
- * The Learn Rux course outline: the 25 parts of github.com/rux-lang/Examples,
+ * The Learn Rux course outline: the 27 parts of github.com/rux-lang/Examples,
  * in course order, with the slug and folder each one gets on this site.
  *
  * The lessons themselves are not listed here — they are discovered from the
  * Examples README by scripts/sync-learn.mjs and live as Markdown files under
  * content/docs/1.learn/<folder>/. This table only says what the README cannot:
  * where a part is filed, what its URL is, which icon heads its sidebar group,
- * the one-line summary the course road map shows, and which Part 25 projects
+ * the one-line summary the course road map shows, and which Part 27 projects
  * are checkpoints after it. LearnRoadmap.vue reads it too.
  */
 export const LEARN_ROOT = "content/docs/1.learn";
@@ -186,7 +186,22 @@ export const PARTS = [
     summary: "The operating system and the machine",
     checkpoints: [{ slug: "melody", title: "Melody" }],
   },
-  { number: 25, slug: "projects", title: "Projects", icon: "i-lucide-hammer", summary: "Complete small programs" },
+  {
+    number: 25,
+    slug: "concurrency",
+    title: "Concurrency",
+    icon: "i-lucide-git-fork",
+    summary: "Threads, atomics, locks and channels",
+  },
+  {
+    number: 26,
+    slug: "systems",
+    title: "Systems",
+    icon: "i-lucide-terminal",
+    summary: "Processes, command lines, logs and networks",
+    checkpoints: [{ slug: "grep", title: "Grep" }],
+  },
+  { number: 27, slug: "projects", title: "Projects", icon: "i-lucide-hammer", summary: "Complete small programs" },
 ].map((part) => ({ ...part, folder: `${String(part.number).padStart(2, "0")}.${part.slug}` }));
 
 /**
@@ -206,6 +221,20 @@ export const TITLES = {
   BufferedIo: "Buffered I/O",
   DateTime: "Date and time",
   Uuid: "UUID",
+  NanoId: "Nano ID",
+  JoinLines: "Lines and joining",
+  Regex: "Regular expressions",
+  RegexCapture: "Regex captures",
+  LruCache: "LRU cache",
+  IteratorAdaptor: "Iterator adaptors",
+  MemoryStream: "Memory streams",
+  BaseEncoding: "Base64 and friends",
+  Url: "URL",
+  UnitTest: "Unit tests",
+  RwLock: "Read-write lock",
+  IpAddress: "IP addresses",
+  Tcp: "TCP",
+  Udp: "UDP",
   Json: "JSON",
   JsonWrite: "Writing JSON",
   JsonStream: "Streaming JSON",

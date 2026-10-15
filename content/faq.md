@@ -31,7 +31,7 @@ Language features and tooling may still change between releases. See the [releas
 
 ## How do I learn Rux?
 
-Start with [Learn Rux](/docs/learn), a free course of 231 short lessons in 25 parts, from installing the compiler to complete programs. Every lesson is a runnable package in the [Examples repository](https://github.com/rux-lang/Examples). The [Rux Reference](/docs/lang) is the precise description of the language for when you need every rule.
+Start with [Learn Rux](/docs/learn), a free course of 266 short lessons in 27 parts, from installing the compiler to complete programs. Every lesson is a runnable package in the [Examples repository](https://github.com/rux-lang/Examples). The [Rux Reference](/docs/lang) is the precise description of the language for when you need every rule.
 
 You can also try Rux without installing anything in the [Playground](/play), which compiles and runs a program in your browser.
 
@@ -200,7 +200,7 @@ Published versions are immutable — a mistake is fixed by publishing a new vers
 
 ## What other commands does the CLI provide?
 
-The CLI includes commands for creating, initialising, building, checking, running, testing, cleaning, formatting, linting, documenting and packing packages. [`rux doc`](/docs/cli/doc) generates self-contained HTML API documentation from `///` comments. Use:
+The CLI includes commands for creating, initialising, building, checking, running, testing, cleaning, formatting, linting, documenting and packing packages. [`rux doc`](/docs/cli/doc) generates self-contained HTML API documentation from `///` comments, or a JSON snapshot of the API with `--format json`, and [`rux test`](/docs/cli/test) runs the functions marked [`#Test()`](/docs/lang/attributes/test). Use:
 
 ```sh
 rux help

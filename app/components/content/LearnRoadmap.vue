@@ -4,7 +4,7 @@ import { PARTS } from "~~/scripts/learn-course.mjs";
 /**
  * The Learn Rux road map on /docs/learn, used in Markdown as `:learn-roadmap`.
  *
- * It replaced a Mermaid flowchart: 25 parts in one diagram is wider than the
+ * It replaced a Mermaid flowchart: 27 parts in one diagram is wider than the
  * prose column, and Mermaid shrinks the whole SVG to fit, text included. Laid
  * out as HTML the stages stack and the part cards reflow, so the text stays at
  * reading size on every screen, and every part is a link.
@@ -42,17 +42,17 @@ const stages = [
   },
   {
     title: "Standard packages",
-    caption: "Parts 18–24",
+    caption: "Parts 18–26",
     order: "Any order",
     description: "A tour of the standard library. Pick the parts you need.",
-    parts: range(18, 24),
+    parts: range(18, 26),
   },
   {
     title: "Projects",
-    caption: "Part 25",
+    caption: "Part 27",
     order: "Checkpoints",
     description: "Complete programs. Each one is ready as soon as its part is done — look for the flags.",
-    parts: range(25, 25),
+    parts: range(27, 27),
   },
 ];
 
