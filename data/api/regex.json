@@ -1,0 +1,1744 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Regex",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Regular expressions matched in linear time, with Unicode classes, captures, splitting and replacement",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/regex",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Collections", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Unicode", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Compile",
+      "source": "Src/Compile.rux",
+      "header": "Turning the parsed tree into instructions, by Thompson's construction.\nAlternatives become `Split`s whose first branch is the earlier alternative, and repetitions become `Split`s whose\nfirst branch repeats when the repetition is greedy and moves on when it is lazy, so the order of a thread's\nbranches is the order of preference that leftmost-first matching follows. Counted repetitions are written out in\nfull, which is what limits the size of a compiled pattern."
+    },
+    {
+      "name": "Dfa",
+      "source": "Src/Dfa.rux",
+      "header": "A lazy DFA: each set of threads the matcher can be in becomes one state the first time a search meets it, and the\nstate each character leads to is remembered, so once a text's states are built a search reads a character with\none table lookup instead of moving every thread. Nothing records where groups matched, so the DFA finds only where\na match ends: forwards for the end of the leftmost-first match, then backwards over the reversed pattern for its\nstart. The Pike matcher then runs over just that match, and only when its groups are wanted.\nA state is the ordered list of instructions its threads continue from, before any of their moves are followed,\nwith what the moves' assertions need to know about the character before. The next character settles the\nassertions about what follows, which is why a transition is computed from a state and a character together."
+    },
+    {
+      "name": "Error",
+      "source": "Src/Error.rux",
+      "header": "Why a pattern could not be compiled, or a search could not run."
+    },
+    {
+      "name": "Machine",
+      "source": "Src/Machine.rux",
+      "header": "Running a compiled pattern over text with Pike's matcher.\nEvery thread of the match moves forward one character at a time, all together, so the text is read once and the\nwork per character is bounded by the size of the program: a search takes time proportional to the text times the\npattern, whatever either holds. Threads are kept in order of preference; when one matches, the threads after it\nare dropped and those before it run on in case they match too, which gives leftmost-first matching, the answer a\nbacktracking matcher would give. Each list is a sparse set, so a thread already on it is never added twice and an\nempty loop cannot go round forever."
+    },
+    {
+      "name": "Parse",
+      "source": "Src/Parse.rux",
+      "header": "Reading a pattern into a tree of nodes for the compiler.\nThe grammar is RE2's, less what cannot be matched in linear time. Alternation binds loosest, then concatenation,\nthen repetition. A node's children are linked through `next`, so a long concatenation or alternation costs no\nrecursion; only groups and repetitions nest, and their depth is limited."
+    },
+    {
+      "name": "Program",
+      "source": "Src/Program.rux",
+      "header": "A compiled pattern: the instructions the matcher runs, and the character classes they test.\nThe instructions are those of Thompson's construction as Pike's matcher runs them. Each one either tests the\ncharacter at the current position (`Char`, `CharFold`, `Class`, `Any`, `AnyNotNewline`), or moves without\nconsuming anything: to another instruction (`Jump`), to two at once with the first preferred (`Split`), by recording\nthe position in a capture slot (`Save`), or by checking where in the text it is (`Assert`). `Match` ends a match."
+    },
+    {
+      "name": "Regex",
+      "source": "Src/Regex.rux",
+      "header": "Compiled patterns and what can be asked of them: whether text matches, where, with which groups, every match in\nturn, the text between matches, and the text with its matches replaced.\nA search allocates the storage it works in from the regex's allocator, so a compiled pattern never changes and can\nbe searched from many threads at once. An iterator keeps its storage for every match it finds."
+    }
+  ],
+  "items": [
+    {
+      "kind": "enum",
+      "name": "RegexErrorKind",
+      "displayName": "RegexErrorKind",
+      "module": "Error",
+      "source": "Src/Error.rux",
+      "line": 5,
+      "signature": "pub enum RegexErrorKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "What went wrong.",
+        "markdown": "What went wrong. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/regex/error#regex-error-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "UnclosedGroup",
+          "value": "1",
+          "payload": null,
+          "line": 7,
+          "doc": "A `(` has no `)`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnopenedGroup",
+          "value": "2",
+          "payload": null,
+          "line": 9,
+          "doc": "A `)` has no `(`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnclosedClass",
+          "value": "3",
+          "payload": null,
+          "line": 11,
+          "doc": "A `[` has no `]`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidEscape",
+          "value": "4",
+          "payload": null,
+          "line": 13,
+          "doc": "A `\\` is followed by something that is not an escape, or ends the pattern.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "NothingToRepeat",
+          "value": "5",
+          "payload": null,
+          "line": 15,
+          "doc": "A `*`, `+`, `?` or `{n,m}` has nothing before it to repeat.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidRange",
+          "value": "6",
+          "payload": null,
+          "line": 17,
+          "doc": "A class range ends before it starts, as `z-a` does, or one end of it is a class such as `\\d`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidCount",
+          "value": "7",
+          "payload": null,
+          "line": 19,
+          "doc": "A repetition count is over 1000, or its maximum is below its minimum.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnknownProperty",
+          "value": "8",
+          "payload": null,
+          "line": 21,
+          "doc": "A `\\p{...}` names a property or category this package does not know.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnknownFlag",
+          "value": "9",
+          "payload": null,
+          "line": 23,
+          "doc": "A `(?...)` holds a flag other than `i`, `m`, `s` and `x`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidGroupName",
+          "value": "10",
+          "payload": null,
+          "line": 25,
+          "doc": "A group name is empty, or holds something other than letters, digits and `_`, or starts with a digit.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "DuplicateGroupName",
+          "value": "11",
+          "payload": null,
+          "line": 27,
+          "doc": "Two groups have the same name.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Unsupported",
+          "value": "12",
+          "payload": null,
+          "line": 29,
+          "doc": "The pattern uses lookaround, a backreference or something else that cannot be matched in linear time.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidText",
+          "value": "13",
+          "payload": null,
+          "line": 31,
+          "doc": "The pattern is not UTF-8 text.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "TooLarge",
+          "value": "14",
+          "payload": null,
+          "line": 34,
+          "doc": "The compiled pattern would be too large, usually from counted repetitions inside each other, or its groups\nare nested too deeply.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "OutOfMemory",
+          "value": "15",
+          "payload": null,
+          "line": 36,
+          "doc": "The allocator could not supply the storage.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "RegexError",
+      "displayName": "RegexError",
+      "module": "Error",
+      "source": "Src/Error.rux",
+      "line": 41,
+      "signature": "pub struct RegexError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why a pattern could not be compiled, and where.",
+        "markdown": "Why a pattern could not be compiled, and where. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/regex/error#regex-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "kind",
+          "type": "RegexErrorKind",
+          "public": true,
+          "line": 43,
+          "doc": "What went wrong.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "offset",
+          "type": "uint",
+          "public": true,
+          "line": 46,
+          "doc": "The byte offset in the pattern where it went wrong; zero for failures that have no place, such as running out\nof memory.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "At",
+          "line": 55,
+          "signature": "pub func At(kind: RegexErrorKind, offset: uint) -> RegexError",
+          "typeParams": [],
+          "params": [
+            { "name": "kind", "type": "RegexErrorKind" },
+            { "name": "offset", "type": "uint" }
+          ],
+          "receiver": null,
+          "returnType": "RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An error of `kind` at `offset`.",
+            "markdown": "An error of `kind` at `offset`.",
+            "typeParams": [],
+            "params": [
+              { "name": "kind", "markdown": "what went wrong" },
+              { "name": "offset", "markdown": "where in the pattern" }
+            ],
+            "returns": "the error",
+            "see": ["https://rux-lang.dev/docs/api/regex/error#at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "OutOfMemory",
+          "line": 62,
+          "signature": "pub func OutOfMemory() -> RegexError",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The error for storage the allocator could not supply.",
+            "markdown": "The error for storage the allocator could not supply.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the error",
+            "see": ["https://rux-lang.dev/docs/api/regex/error#out-of-memory"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Match",
+      "displayName": "Match",
+      "module": "Regex",
+      "source": "Src/Regex.rux",
+      "line": 37,
+      "signature": "pub struct Match",
+      "typeParams": [],
+      "doc": {
+        "summary": "Where a match is in the text searched: from byte `start` up to byte `end`.",
+        "markdown": "Where a match is in the text searched: from byte `start` up to byte `end`. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/regex/regex#match"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "start",
+          "type": "uint",
+          "public": true,
+          "line": 39,
+          "doc": "The byte offset of the start of the match.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "end",
+          "type": "uint",
+          "public": true,
+          "line": 41,
+          "doc": "The byte offset just past the end of the match.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 48,
+          "signature": "pub func Length(self: &Match) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Match",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bytes the match spans.",
+            "markdown": "How many bytes the match spans.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the length in bytes",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#match-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Slice",
+          "line": 56,
+          "signature": "pub func Slice(self: &Match, text: char8[..]) -> char8[..]",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": "&Match",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The matched part of `text`, which must be the text that was searched.",
+            "markdown": "The matched part of `text`, which must be the text that was searched.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text that was searched" }],
+            "returns": "the bytes of the match",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#match-slice"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Regex",
+      "displayName": "Regex",
+      "module": "Regex",
+      "source": "Src/Regex.rux",
+      "line": 68,
+      "signature": "pub struct Regex",
+      "typeParams": [],
+      "doc": {
+        "summary": "A compiled pattern.",
+        "markdown": "A compiled pattern. Not copied.\nThe syntax is RE2's: literals, `.`, classes such as `[a-z]`, `[^0-9]`, `[[:alpha:]]`, `\\d`, `\\w` and `\\s`,\nUnicode general categories and properties such as `\\p{L}`, `\\p{Lu}` and `\\p{White_Space}`, the anchors `^`, `$`,\n`\\A`, `\\z`, `\\b` and `\\B`, groups `(...)`, `(?:...)` and `(?<name>...)`, alternation `|`, the repetitions `*`,\n`+`, `?` and `{n,m}` with a lazy `?` form of each, and the flags `i`, `m`, `s` and `x` as `(?i)` or `(?i:...)`.\nBackreferences and lookaround are refused: without them every search takes time linear in the text.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/regex/regex#regex"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 69,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "instructions",
+          "type": "Vector<Instruction>",
+          "public": false,
+          "line": 70,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "items",
+          "type": "Vector<ClassItem>",
+          "public": false,
+          "line": 71,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "nameBytes",
+          "type": "Vector<char8>",
+          "public": false,
+          "line": 72,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "names",
+          "type": "Vector<GroupName>",
+          "public": false,
+          "line": 73,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ascii",
+          "type": "Vector<uint64>",
+          "public": false,
+          "line": 74,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "literal",
+          "type": "Vector<char8>",
+          "public": false,
+          "line": 75,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "groupCount",
+          "type": "uint32",
+          "public": false,
+          "line": 76,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "firstBytes",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 77,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "skips",
+          "type": "bool",
+          "public": false,
+          "line": 78,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "anchored",
+          "type": "bool",
+          "public": false,
+          "line": 79,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "forwardLength",
+          "type": "uint",
+          "public": false,
+          "line": 81,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "reverseStart",
+          "type": "uint32",
+          "public": false,
+          "line": 83,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 252,
+          "signature": "pub func New(allocator: Allocator, pattern: char8[..]) -> Regex ! RegexError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "pattern", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "Regex ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Compiles `pattern`.",
+            "markdown": "Compiles `pattern`.",
+            "typeParams": [],
+            "params": [
+              {
+                "name": "allocator",
+                "markdown": "what the compiled pattern, and every search of it, takes storage from"
+              },
+              { "name": "pattern", "markdown": "the pattern, in the syntax `Regex` describes" }
+            ],
+            "returns": "the compiled pattern, or why it could not be compiled and where",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "GroupCount",
+          "line": 324,
+          "signature": "pub func GroupCount(self: &Regex) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Regex",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many capturing groups the pattern has, not counting the whole match.",
+            "markdown": "How many capturing groups the pattern has, not counting the whole match.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the count",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#group-count"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "GroupIndex",
+          "line": 332,
+          "signature": "pub func GroupIndex(self: &Regex, name: char8[..]) -> uint?",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&Regex",
+          "returnType": "uint?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number of the group called `name`.",
+            "markdown": "The number of the group called `name`.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the group's name" }],
+            "returns": "its number, or `none` when no group has that name",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#group-index"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsMatch",
+          "line": 341,
+          "signature": "pub func IsMatch(self: &Regex, text: char8[..]) -> bool ! RegexError",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": "&Regex",
+          "returnType": "bool ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the pattern matches anywhere in `text`.",
+            "markdown": "Whether the pattern matches anywhere in `text`. Stops at the first match it sees.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text to search" }],
+            "returns": "whether there is a match, or fails when the search's storage could not be allocated",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#is-match"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Find",
+          "line": 356,
+          "signature": "pub func Find(self: &Regex, text: char8[..]) -> Match? ! RegexError",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": "&Regex",
+          "returnType": "Match? ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The leftmost match in `text`; among matches starting there, the one a backtracking matcher would choose.",
+            "markdown": "The leftmost match in `text`; among matches starting there, the one a backtracking matcher would choose.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text to search" }],
+            "returns": "the match, or `none`",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#find"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FindAt",
+          "line": 366,
+          "signature": "pub func FindAt(self: &Regex, text: char8[..], start: uint) -> Match? ! RegexError",
+          "typeParams": [],
+          "params": [
+            { "name": "text", "type": "char8[..]" },
+            { "name": "start", "type": "uint" }
+          ],
+          "receiver": "&Regex",
+          "returnType": "Match? ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The leftmost match in `text` at or after byte `start`.",
+            "markdown": "The leftmost match in `text` at or after byte `start`. Anchors and word boundaries still see the text before\n`start`, so `^` does not match there unless `start` is where a line starts.",
+            "typeParams": [],
+            "params": [
+              { "name": "text", "markdown": "the text to search" },
+              { "name": "start", "markdown": "the byte offset to search from, at a character boundary" }
+            ],
+            "returns": "the match, or `none`",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#find-at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Capture",
+          "line": 378,
+          "signature": "pub func Capture(self: &Regex, text: char8[..]) -> Captures? ! RegexError",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": "&Regex",
+          "returnType": "Captures? ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The leftmost match in `text`, with where each group matched.",
+            "markdown": "The leftmost match in `text`, with where each group matched.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text to search" }],
+            "returns": "the groups, or `none` when there is no match",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#capture"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "CaptureAt",
+          "line": 387,
+          "signature": "pub func CaptureAt(self: &Regex, text: char8[..], start: uint) -> Captures? ! RegexError",
+          "typeParams": [],
+          "params": [
+            { "name": "text", "type": "char8[..]" },
+            { "name": "start", "type": "uint" }
+          ],
+          "receiver": "&Regex",
+          "returnType": "Captures? ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The leftmost match in `text` at or after byte `start`, with where each group matched.",
+            "markdown": "The leftmost match in `text` at or after byte `start`, with where each group matched.",
+            "typeParams": [],
+            "params": [
+              { "name": "text", "markdown": "the text to search" },
+              { "name": "start", "markdown": "the byte offset to search from, at a character boundary" }
+            ],
+            "returns": "the groups, or `none` when there is no match",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#capture-at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FindAll",
+          "line": 410,
+          "signature": "pub func FindAll(self: &Regex, text: char8[..]) -> MatchIterator ! RegexError",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": "&Regex",
+          "returnType": "MatchIterator ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Every match in `text`, leftmost first and never overlapping.",
+            "markdown": "Every match in `text`, leftmost first and never overlapping. An empty match right after another match is\nskipped, so `a*` finds three matches in `baab`: before the `b`, `aa`, and at the end.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text to search, which must outlive the iterator" }],
+            "returns": "the matches in turn",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#find-all"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Split",
+          "line": 418,
+          "signature": "pub func Split(self: &Regex, text: char8[..]) -> SplitIterator ! RegexError",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": "&Regex",
+          "returnType": "SplitIterator ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The parts of `text` between the matches.",
+            "markdown": "The parts of `text` between the matches.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text to split, which must outlive the iterator" }],
+            "returns": "the parts in turn",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#split"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Replace",
+          "line": 430,
+          "signature": "pub func Replace(self: &Regex, allocator: Allocator, text: char8[..], replacement: char8[..]) -> String ! RegexError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "text", "type": "char8[..]" },
+            { "name": "replacement", "type": "char8[..]" }
+          ],
+          "receiver": "&Regex",
+          "returnType": "String ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "`text` with every match replaced by `replacement`, in which `$1` or `${1}` stands for what group 1 matched,\n`$name` or `${name}` for what the group called `name` matched, `$0` for the whole match, and `$$` for `$`.",
+            "markdown": "`text` with every match replaced by `replacement`, in which `$1` or `${1}` stands for what group 1 matched,\n`$name` or `${name}` for what the group called `name` matched, `$0` for the whole match, and `$$` for `$`. A\ngroup that did not match, or does not exist, stands for nothing.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the result is kept in" },
+              { "name": "text", "markdown": "the text to search" },
+              { "name": "replacement", "markdown": "what each match becomes" }
+            ],
+            "returns": "the new text",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#replace"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "ReplaceFirst",
+          "line": 441,
+          "signature": "pub func ReplaceFirst(self: &Regex, allocator: Allocator, text: char8[..], replacement: char8[..]) -> String ! RegexError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "text", "type": "char8[..]" },
+            { "name": "replacement", "type": "char8[..]" }
+          ],
+          "receiver": "&Regex",
+          "returnType": "String ! RegexError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "`text` with its first match replaced by `replacement`, which is read as `Replace` reads it.",
+            "markdown": "`text` with its first match replaced by `replacement`, which is read as `Replace` reads it.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the result is kept in" },
+              { "name": "text", "markdown": "the text to search" },
+              { "name": "replacement", "markdown": "what the match becomes" }
+            ],
+            "returns": "the new text",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#replace-first"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "MatchIterator",
+      "displayName": "MatchIterator",
+      "module": "Regex",
+      "source": "Src/Regex.rux",
+      "line": 159,
+      "signature": "pub struct MatchIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "The matches of a pattern in a text, one after another, leftmost first and never overlapping.",
+        "markdown": "The matches of a pattern in a text, one after another, leftmost first and never overlapping. Not copied.\nBorrows the regex and the text, which must outlive it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/regex/regex#match-iterator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "searcher",
+          "type": "Searcher",
+          "public": false,
+          "line": 160,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 167,
+          "signature": "pub func Next(self: &var MatchIterator) -> Match?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var MatchIterator",
+          "returnType": "Match?",
+          "value": null,
+          "conformance": "Iterator",
+          "public": true,
+          "doc": {
+            "summary": "The next match, or `none` after the last.",
+            "markdown": "The next match, or `none` after the last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the match",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#match-iterator-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Iterator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "SplitIterator",
+      "displayName": "SplitIterator",
+      "module": "Regex",
+      "source": "Src/Regex.rux",
+      "line": 177,
+      "signature": "pub struct SplitIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "The parts of a text between the matches of a pattern.",
+        "markdown": "The parts of a text between the matches of a pattern. Not copied.\nBorrows the regex and the text, which must outlive it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/regex/regex#split-iterator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "searcher",
+          "type": "Searcher",
+          "public": false,
+          "line": 178,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "last",
+          "type": "uint",
+          "public": false,
+          "line": 179,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "finished",
+          "type": "bool",
+          "public": false,
+          "line": 180,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 188,
+          "signature": "pub func Next(self: &var SplitIterator) -> char8[..]?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var SplitIterator",
+          "returnType": "char8[..]?",
+          "value": null,
+          "conformance": "Iterator",
+          "public": true,
+          "doc": {
+            "summary": "The next part, or `none` after the last.",
+            "markdown": "The next part, or `none` after the last. There is always one more part than there are matches, so a match at\neither end gives an empty part there.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the part",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#split-iterator-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Iterator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Captures",
+      "displayName": "Captures",
+      "module": "Regex",
+      "source": "Src/Regex.rux",
+      "line": 205,
+      "signature": "pub struct Captures",
+      "typeParams": [],
+      "doc": {
+        "summary": "The groups of one match: where each matched, or that it did not.",
+        "markdown": "The groups of one match: where each matched, or that it did not. Not copied.\nBorrows the regex it came from for the group names, so it must not outlive the regex.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/regex/regex#captures"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "slots",
+          "type": "Vector<uint>",
+          "public": false,
+          "line": 206,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "nameBytes",
+          "type": "char8[..]",
+          "public": false,
+          "line": 207,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "names",
+          "type": "GroupName[..]",
+          "public": false,
+          "line": 208,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Count",
+          "line": 217,
+          "signature": "pub func Count(self: &Captures) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Captures",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many groups there are, counting the whole match as group 0.",
+            "markdown": "How many groups there are, counting the whole match as group 0.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the count",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#captures-count"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Group",
+          "line": 225,
+          "signature": "pub func Group(self: &Captures, index: uint) -> Match?",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&Captures",
+          "returnType": "Match?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Where group `index` matched: 0 is the whole match, and the groups count from 1 in the order their `(` appear.",
+            "markdown": "Where group `index` matched: 0 is the whole match, and the groups count from 1 in the order their `(` appear.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "the group's number" }],
+            "returns": "where it matched, or `none` when it did not take part in the match or there is no such group",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#captures-group"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Named",
+          "line": 238,
+          "signature": "pub func Named(self: &Captures, name: char8[..]) -> Match?",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&Captures",
+          "returnType": "Match?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Where the group called `name` matched.",
+            "markdown": "Where the group called `name` matched.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the group's name" }],
+            "returns": "where it matched, or `none` when it did not take part in the match or there is no such group",
+            "see": ["https://rux-lang.dev/docs/api/regex/regex#captures-named"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Escape",
+      "displayName": "Escape",
+      "module": "Regex",
+      "source": "Src/Regex.rux",
+      "line": 546,
+      "signature": "pub func Escape(allocator: Allocator, text: char8[..]) -> String ! RegexError",
+      "typeParams": [],
+      "doc": {
+        "summary": "`text` with every character a pattern gives a meaning to escaped, so that the result, as a pattern, matches\n`text` and nothing else.",
+        "markdown": "`text` with every character a pattern gives a meaning to escaped, so that the result, as a pattern, matches\n`text` and nothing else.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "what the result is kept in" },
+          { "name": "text", "markdown": "the text to escape" }
+        ],
+        "returns": "the pattern",
+        "see": ["https://rux-lang.dev/docs/api/regex/regex#escape"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

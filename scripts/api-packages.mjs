@@ -1,5 +1,5 @@
 /**
- * The API Reference outline: the 25 first-party packages of rux-lang/Rux, in
+ * The API Reference outline: the 39 first-party packages of rux-lang/Rux, in
  * hub order, grouped by area.
  *
  * Everything else about a package — its version, dependencies and public
@@ -24,6 +24,7 @@ export const AREAS = [
   { slug: "text", title: "Text", icon: "i-lucide-type" },
   { slug: "collections", title: "Collections and algorithms", icon: "i-lucide-layers" },
   { slug: "system", title: "System and I/O", icon: "i-lucide-terminal" },
+  { slug: "concurrency", title: "Concurrency", icon: "i-lucide-workflow" },
   { slug: "data", title: "Data formats", icon: "i-lucide-braces" },
   { slug: "security", title: "Security", icon: "i-lucide-lock" },
   { slug: "platform", title: "Platform bindings", icon: "i-lucide-cpu" },
@@ -36,6 +37,20 @@ export const PACKAGES = [
     icon: "i-lucide-atom",
     description: "Core language intrinsics",
     topics: {
+      startup: {
+        title: "Process start",
+        description: "The frame the operating system hands a program when it starts.",
+      },
+      atomic: {
+        title: "Atomic intrinsics",
+        description:
+          "The atomic loads, stores, exchanges and read-modify-write operations, memory orders and fences that the Atomic package builds on.",
+      },
+      adaptors: {
+        title: "Iterator adaptors",
+        description:
+          "Lazy adaptors over any iterator — map, filter, skip, take, enumerate, zip and chain — and walking a slice.",
+      },
       integers: {
         title: "Integers",
         description:
@@ -125,6 +140,12 @@ export const PACKAGES = [
     area: "foundation",
     icon: "i-lucide-boxes",
     description: "Allocation contracts and the allocators that meet them",
+    topics: {
+      shared: {
+        title: "Shared ownership",
+        description: "Reference-counted handles: `Rc` within one thread and `Arc` across threads.",
+      },
+    },
   },
   {
     name: "Math",
@@ -132,6 +153,10 @@ export const PACKAGES = [
     icon: "i-lucide-sigma",
     description: "Mathematical constants and functions",
     topics: {
+      complex: {
+        title: "Complex numbers",
+        description: "Complex numbers at two precisions: arithmetic, polar form, and the elementary functions.",
+      },
       constants: { title: "Constants", description: "Mathematical constants, rounded to the nearest float64." },
       trigonometry: {
         title: "Trigonometry",
@@ -276,6 +301,10 @@ export const PACKAGES = [
     icon: "i-lucide-arrow-down-wide-narrow",
     description: "Generic algorithms over slices and mutable slices",
     topics: {
+      numeric: {
+        title: "Numeric sequences",
+        description: "Running sums and scans, counting sequences, and an overflow-free midpoint.",
+      },
       searching: {
         title: "Searching",
         description:
@@ -340,6 +369,10 @@ export const PACKAGES = [
     icon: "i-lucide-terminal",
     description: "Streams, console I/O, readers and writers",
     topics: {
+      "memory-stream": {
+        title: "Memory streams",
+        description: "A reader and a writer over bytes in memory, with seeking.",
+      },
       binary: {
         title: "Binary encoding",
         description:
@@ -535,6 +568,170 @@ export const PACKAGES = [
       clock: { title: "Clocks", description: "Performance counters, system time and tick counts." },
       text: { title: "Text conversion", description: "Converting between code pages and UTF-16." },
       errors: { title: "Errors", description: "The last Win32 error and the codes it reports." },
+    },
+  },
+  {
+    name: "Regex",
+    area: "text",
+    icon: "i-lucide-regex",
+    description:
+      "Regular expressions matched in linear time, with Unicode classes, captures, splitting and replacement",
+    topics: {
+      regex: {
+        title: "Regex",
+        description:
+          "A compiled regular expression: matching, finding, capturing, splitting and replacing, and escaping text to match it literally.",
+      },
+      error: { title: "Errors", description: "Why a pattern was refused, and where in it." },
+    },
+  },
+  {
+    name: "Process",
+    area: "system",
+    icon: "i-lucide-square-terminal",
+    description: "The running process: its command-line arguments, environment, identifier and exit",
+  },
+  {
+    name: "CommandLine",
+    area: "system",
+    icon: "i-lucide-square-chevron-right",
+    description: "Declarative command-line parsing: options, positional arguments, subcommands and generated help",
+    topics: {
+      spec: {
+        title: "Specification",
+        description: "Declaring a command: its flags, valued options, positional arguments, subcommands and version.",
+      },
+      help: { title: "Help", description: "Writing the help, usage and version text generated from a specification." },
+    },
+  },
+  {
+    name: "Log",
+    area: "system",
+    icon: "i-lucide-scroll-text",
+    description:
+      "Structured logging: levels, typed fields, text and JSON-lines records, a process-wide log for every thread, and log files that rotate by size",
+    topics: {
+      record: { title: "Records", description: "The formats a log record is written in: text or JSON lines." },
+      logger: { title: "Logger", description: "A logger over any writer: levels, context fields and timestamps." },
+      level: { title: "Levels", description: "The severity levels, their names, and the level compiled into a build." },
+      global: { title: "Process-wide log", description: "The log every thread shares, written to standard error." },
+      field: { title: "Fields", description: "Typed key-value fields that a record carries." },
+    },
+  },
+  {
+    name: "TimeZone",
+    area: "system",
+    icon: "i-lucide-globe",
+    description: "Time zones: the tz database, POSIX rules, the local zone, and local times that happen twice or never",
+  },
+  {
+    name: "Net",
+    area: "system",
+    icon: "i-lucide-network",
+    description: "Networking: IP and socket addresses, TCP listeners and streams, UDP sockets, and name resolution",
+  },
+  {
+    name: "Test",
+    area: "system",
+    icon: "i-lucide-flask-conical",
+    description: "Unit tests: checks with readable failures, and the runner that #Test() functions are gathered into",
+    topics: {
+      runner: {
+        title: "Runner",
+        description: "Running a table of tests with filters, as the generated test runner does.",
+      },
+      failure: { title: "Failures", description: "The failure a test returns, and skipping a test." },
+      expect: {
+        title: "Checks",
+        description: "Checks that return a readable failure: equality, nearness, text, optionals and outcomes.",
+      },
+      benchmark: {
+        title: "Benchmarks",
+        description: "Measuring how long code takes per iteration, and keeping its results alive.",
+      },
+    },
+  },
+  {
+    name: "Thread",
+    area: "concurrency",
+    icon: "i-lucide-git-fork",
+    description: "Threads of execution: starting, joining and detaching them, and asking about the current one",
+  },
+  {
+    name: "Atomic",
+    area: "concurrency",
+    icon: "i-lucide-zap",
+    description: "Values that threads share without a lock: atomic integers, flags and pointers",
+  },
+  {
+    name: "Sync",
+    area: "concurrency",
+    icon: "i-lucide-lock-keyhole",
+    description:
+      "Locks, conditions, once-only initialization, semaphores, barriers, wait groups and channels for threads",
+  },
+  {
+    name: "Encoding",
+    area: "data",
+    icon: "i-lucide-binary",
+    description: "Hexadecimal, Base64, Base32, Base58 and percent-encoding of byte sequences",
+    topics: {
+      stream: {
+        title: "Streams",
+        description: "Encoding and decoding through a writer or a reader, a block at a time.",
+      },
+      percent: {
+        title: "Percent-encoding",
+        description: "Percent-encoding bytes for URLs, with the set of characters left as they are.",
+      },
+      hex: {
+        title: "Hexadecimal",
+        description: "Bytes as hexadecimal digits in either case, and a view that prints them.",
+      },
+      base64: {
+        title: "Base64",
+        description:
+          "Base64 in its standard and URL-safe alphabets, with or without padding, and a view that prints it.",
+      },
+      base58: {
+        title: "Base58",
+        description: "Base58 in the Bitcoin alphabet, which leaves out look-alike characters.",
+      },
+      base32: { title: "Base32", description: "Base32 in the RFC 4648 and Crockford alphabets." },
+    },
+  },
+  {
+    name: "Url",
+    area: "data",
+    icon: "i-lucide-link",
+    description: "URLs: parsing, normalizing and resolving them, and reading and building their queries",
+  },
+  {
+    name: "Compress",
+    area: "data",
+    icon: "i-lucide-file-archive",
+    description: "Deflate compression in the raw, zlib and gzip formats, as streams and for whole buffers",
+    topics: {
+      inflate: { title: "Decompressing", description: "A reader that decompresses a stream as it is read." },
+      format: {
+        title: "Formats and levels",
+        description: "The raw, zlib and gzip formats, and the compression levels.",
+      },
+      deflate: { title: "Compressing", description: "A writer that compresses what is written through it." },
+      buffers: { title: "Whole buffers", description: "Compressing and decompressing a whole buffer in one call." },
+    },
+  },
+  {
+    name: "NanoId",
+    area: "data",
+    icon: "i-lucide-hash",
+    description: "Short, URL-safe, unpredictable identifiers in the Nano ID format",
+    topics: {
+      generate: {
+        title: "Generating",
+        description: "Generating an identifier into a buffer of your own, from any alphabet and entropy source.",
+      },
+      alphabet: { title: "Alphabets", description: "The default alphabet and length, and checking a custom alphabet." },
     },
   },
 ].map((entry, index) => {
