@@ -66,10 +66,11 @@ Pushes whatever is held toward the destination.
 
 ## Implementations
 
-| Type                                           | Summary                                                                                              |
-| ---------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| [`StandardOut`](/docs/api/io/standard-out)     | Standard output: a byte [`Writer`](/docs/api/io/writer) whose encoding matches where the bytes land. |
-| [`StandardError`](/docs/api/io/standard-error) | Standard error: the same contract as standard output, on the stream reports belong to.               |
+| Type                                                   | Summary                                                                                              |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------- |
+| [`ByteWriter`](/docs/api/io/memory-stream#byte-writer) | A writer that keeps what is written in a growing block of memory.                                    |
+| [`StandardOut`](/docs/api/io/standard-out)             | Standard output: a byte [`Writer`](/docs/api/io/writer) whose encoding matches where the bytes land. |
+| [`StandardError`](/docs/api/io/standard-error)         | Standard error: the same contract as standard output, on the stream reports belong to.               |
 
 ## Related
 

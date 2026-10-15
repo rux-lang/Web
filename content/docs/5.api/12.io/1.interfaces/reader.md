@@ -55,9 +55,10 @@ so a caller never mistakes silence for data.
 
 ## Implementations
 
-| Type                                     | Summary                                                                               |
-| ---------------------------------------- | ------------------------------------------------------------------------------------- |
-| [`StandardIn`](/docs/api/io/standard-in) | Standard input, with the console-versus-redirection question answered at acquisition. |
+| Type                                                   | Summary                                                                               |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| [`ByteReader`](/docs/api/io/memory-stream#byte-reader) | A reader of a slice of bytes, from its start.                                         |
+| [`StandardIn`](/docs/api/io/standard-in)               | Standard input, with the console-versus-redirection question answered at acquisition. |
 
 ## Related
 

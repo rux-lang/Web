@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Table.rux
-  line: 87
+  line: 95
 seo:
   title: "Table<K, V> — Collections API"
   description: The open-addressing table HashMap and HashSet are both built on.
@@ -27,8 +27,8 @@ pub struct Table<K, V> {
 }
 ```
 
-Holds keys, values and one distance byte per slot in three parallel runs. A set instantiates the value type with
-something that occupies nothing worth reading, which is what lets one kernel serve both.
+Holds keys, values, one distance byte and one hash tag per slot in four parallel runs. A set instantiates the value
+type with something that occupies nothing worth reading, which is what lets one kernel serve both.
 Move-only: it owns its storage and entries, prohibits copying, and destroys both with [`~Table`](/docs/api/collections/table#destructor).
 
 ## Type parameters
@@ -60,7 +60,7 @@ into never allocates.
 
 **Returns**: an empty table that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L125)
 
 ## Associated functions
 
@@ -80,7 +80,7 @@ covers growing and settling alike.
 
 **Returns**: the table size that holds that many entries, or `CapacityOverflow` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L274)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L315)
 
 ## Methods
 
@@ -95,7 +95,7 @@ How many entries the table holds.
 
 **Returns**: how many entries it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L142)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
@@ -109,7 +109,7 @@ them free, because a table run fuller than that spends its time displacing entri
 
 **Returns**: how many slots it has
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L151)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
@@ -122,7 +122,7 @@ Whether the table holds no entries.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L148)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L159)
 
 <h3 id="is-occupied"><code>IsOccupied</code></h3>
 
@@ -139,7 +139,7 @@ Whether the slot at `index` holds an entry.
 
 **Returns**: whether that slot holds an entry
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L168)
 
 <h3 id="find"><code>Find</code></h3>
 
@@ -167,7 +167,7 @@ Runs in constant expected time and allocates nothing.
 
 **Returns**: the slot the key belongs in, occupied or not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L182)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L193)
 
 <h3 id="rehash"><code>Rehash</code></h3>
 
@@ -191,7 +191,7 @@ Runs in time proportional to the capacity.
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L294)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L335)
 
 <h3 id="ensure-room"><code>EnsureRoom</code></h3>
 
@@ -211,7 +211,7 @@ Makes sure one more entry will fit, growing the table when it will not.
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L350)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L403)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
@@ -233,7 +233,7 @@ Makes room for `additional` more entries on top of those already present.
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L363)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L416)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
@@ -254,7 +254,7 @@ at its current capacity, since failing to hand memory back is never a reason to 
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L377)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L430)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -265,7 +265,7 @@ pub func Clear(self: &var Table<K, V>)
 Destroys every entry, keeping the storage.
 `self` is borrowed mutably. Runs in time proportional to the capacity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L390)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L443)
 
 ## Destructor
 
@@ -277,7 +277,7 @@ Destroys every entry and releases the storage.
 Runs when the table's life ends. The entries go first and the runs second, since one destroyed after its
 storage was released would be read from freed memory.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L422)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L477)
 
 ## Related
 
@@ -290,7 +290,7 @@ pub const SlotEmpty: uint8 = 0;
 The state byte of a slot that has never held an entry, and does not now.
 Distances are stored one higher than they are, so zero can mean empty and nothing else has to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L33)
 
 <h3 id="maximum-probe-distance"><code>MaximumProbeDistance</code></h3>
 
@@ -303,7 +303,7 @@ A byte holds the distance plus one, so 254 is what fits. Reaching it means the h
 these keys, and a table that grew would only spread the same collisions over more slots — so the insertion is
 refused rather than looped on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L40)
 
 <h3 id="minimum-table-capacity"><code>MinimumTableCapacity</code></h3>
 
@@ -314,4 +314,4 @@ pub const MinimumTableCapacity: uint = 8;
 Eight slots is where a table starts.
 Below that the load factor rounds away to nothing useful.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L45)

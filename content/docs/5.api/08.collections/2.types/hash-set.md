@@ -203,7 +203,7 @@ intact. Reports `none` when the set did not have it.
 
 **Returns**: the value that was stored, or `none` when it was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L118)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
@@ -222,7 +222,7 @@ Makes room for `additional` more elements on top of those already present.
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L128)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L129)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
@@ -234,7 +234,7 @@ Releases the capacity the element count does not need.
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L135)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L136)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -244,7 +244,7 @@ pub func Clear(self: &var HashSet<T>)
 
 Destroys every element, keeping the storage.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L142)
 
 <h3 id="try-next"><code>TryNext</code></h3>
 
@@ -267,7 +267,7 @@ is the seed's and not the insertion's, and nothing may be inserted or removed wh
 
 **Returns**: whether an element was read; false at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L153)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
@@ -282,7 +282,7 @@ Nothing may be inserted or removed while the iterator is alive.
 
 **Returns**: a cursor over the elements, in an order the seed decides
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L175)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
@@ -296,7 +296,7 @@ destroyed when the iterator's life ends.
 
 **Returns**: a cursor that consumes the set as it goes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L188)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L189)
 
 <h3 id="is-subset-of"><code>IsSubsetOf</code></h3>
 
@@ -320,7 +320,7 @@ Allocates nothing. Runs in time proportional to this set's size.
 
 **Returns**: whether every element of this set is in `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L219)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L222)
 
 <h3 id="is-superset-of"><code>IsSupersetOf</code></h3>
 
@@ -340,7 +340,7 @@ Both are borrowed. The mirror of [`IsSubsetOf`](/docs/api/collections/hash-set#i
 
 **Returns**: whether every element of `other` is in this set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L241)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L244)
 
 <h3 id="is-disjoint-from"><code>IsDisjointFrom</code></h3>
 
@@ -363,7 +363,7 @@ Allocates nothing.
 
 **Returns**: whether the two share no element
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L253)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L256)
 
 <h3 id="equals"><code>Equals</code></h3>
 
@@ -383,7 +383,7 @@ Both are borrowed. Equal sizes and one containment, which together are containme
 
 **Returns**: whether both hold exactly the same elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L276)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L279)
 
 <h3 id="union-with"><code>UnionWith</code></h3>
 
@@ -408,7 +408,7 @@ Runs in time proportional to `other`.
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L290)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L293)
 
 <h3 id="intersect-with"><code>IntersectWith</code></h3>
 
@@ -428,7 +428,7 @@ Allocates nothing, so it cannot fail: a set only ever gets smaller here.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L315)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L318)
 
 <h3 id="subtract"><code>Subtract</code></h3>
 
@@ -444,7 +444,7 @@ Allocates nothing, so it cannot fail.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L344)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L347)
 
 <h3 id="symmetric-difference-with"><code>SymmetricDifferenceWith</code></h3>
 
@@ -467,7 +467,7 @@ leave a set that is neither operand nor the answer.
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L372)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L375)
 
 <h3 id="clone"><code>Clone</code></h3>
 
@@ -481,7 +481,7 @@ the two lay their elements out alike.
 
 **Returns**: an independent copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L405)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L408)
 
 ## Related
 
@@ -496,7 +496,7 @@ pub struct HashSetIterator<T> {
 An iterator over the elements of a set, by copy.
 Borrows the set, so the set must outlive it and must not be inserted into or removed from while it is alive.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L428)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L431)
 
 **Type parameters**
 
@@ -520,7 +520,7 @@ with [`TryNext`](/docs/api/collections/hash-set#try-next) instead.
 
 **Returns**: the next element, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L443)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L446)
 
 <h3 id="hash-set-into-iterator"><code>HashSetIntoIterator&lt;T&gt;</code></h3>
 
@@ -533,7 +533,7 @@ pub struct HashSetIntoIterator<T> {
 An iterator that takes a set apart, yielding each element by value.
 Move-only: it owns the storage the set owned. Whatever is left when its life ends is destroyed with it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L461)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L464)
 
 **Type parameters**
 
@@ -557,7 +557,7 @@ destructor is exactly what nobody took.
 
 **Returns**: the next element, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L479)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L482)
 
 <h3 id="write-hash-set-debug"><code>WriteHashSetDebug&lt;T&gt;</code></h3>
 

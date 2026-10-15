@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/IoError.rux
-  line: 51
+  line: 67
 seo:
   title: "IoError — Io API"
   description: "A structured I/O failure: the shared meaning, and the platform's own code beside it."
@@ -54,7 +54,7 @@ A failure of `kind` with no platform code.
 
 **Returns**: an error of that kind, carrying no platform value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L79)
 
 ## Methods
 
@@ -68,7 +68,7 @@ Whether the stream ended, which is the one report that is not a failure.
 
 **Returns**: whether the stream ended, which is not a failure
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L86)
 
 <h3 id="is-transient"><code>IsTransient</code></h3>
 
@@ -80,7 +80,7 @@ Whether going again is the right response: an interruption or a would-block.
 
 **Returns**: whether trying again could succeed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L93)
 
 ## Related
 
@@ -103,6 +103,14 @@ pub enum IoErrorKind: int32 {
     WriteZero = 13,
     InvalidText = 15,
     LimitExceeded = 16,
+    ConnectionRefused = 17,
+    ConnectionReset = 18,
+    ConnectionAborted = 19,
+    NotConnected = 20,
+    AddressInUse = 21,
+    AddressUnavailable = 22,
+    Unreachable = 23,
+    BrokenPipe = 24,
     Other = 14
 }
 ```
@@ -113,24 +121,32 @@ What an I/O operation reported.
 
 **Cases**
 
-| Name               | Value | Description                                                                             |
-| ------------------ | ----- | --------------------------------------------------------------------------------------- |
-| `EndOfStream`      | `1`   | The stream ended: not a failure, but it arrives where failures do.                      |
-| `NotFound`         | `2`   | The named thing does not exist.                                                         |
-| `PermissionDenied` | `3`   | The system refused on rights.                                                           |
-| `AlreadyExists`    | `4`   | The named thing exists where something new was to be made.                              |
-| `IsDirectory`      | `5`   | A directory stood where a file was expected.                                            |
-| `NotDirectory`     | `6`   | A file stood where a directory was expected.                                            |
-| `StorageFull`      | `7`   | The device has no room left.                                                            |
-| `Interrupted`      | `8`   | The operation was interrupted and may simply be retried.                                |
-| `WouldBlock`       | `9`   | The operation would block a stream opened not to.                                       |
-| `InvalidHandle`    | `10`  | A handle that is not open, or not open for this.                                        |
-| `InvalidInput`     | `11`  | An argument the system rejected.                                                        |
-| `TimedOut`         | `12`  | The operation ran out of time.                                                          |
-| `WriteZero`        | `13`  | A write reported fewer bytes than asked and cannot continue.                            |
-| `InvalidText`      | `15`  | Bytes that were required to be UTF-8 text and are not.                                  |
-| `LimitExceeded`    | `16`  | A bounded operation met its bound before its end.                                       |
-| `Other`            | `14`  | Something the platform reported that has no shared meaning; the raw code is the detail. |
+| Name                 | Value | Description                                                                             |
+| -------------------- | ----- | --------------------------------------------------------------------------------------- |
+| `EndOfStream`        | `1`   | The stream ended: not a failure, but it arrives where failures do.                      |
+| `NotFound`           | `2`   | The named thing does not exist.                                                         |
+| `PermissionDenied`   | `3`   | The system refused on rights.                                                           |
+| `AlreadyExists`      | `4`   | The named thing exists where something new was to be made.                              |
+| `IsDirectory`        | `5`   | A directory stood where a file was expected.                                            |
+| `NotDirectory`       | `6`   | A file stood where a directory was expected.                                            |
+| `StorageFull`        | `7`   | The device has no room left.                                                            |
+| `Interrupted`        | `8`   | The operation was interrupted and may simply be retried.                                |
+| `WouldBlock`         | `9`   | The operation would block a stream opened not to.                                       |
+| `InvalidHandle`      | `10`  | A handle that is not open, or not open for this.                                        |
+| `InvalidInput`       | `11`  | An argument the system rejected.                                                        |
+| `TimedOut`           | `12`  | The operation ran out of time.                                                          |
+| `WriteZero`          | `13`  | A write reported fewer bytes than asked and cannot continue.                            |
+| `InvalidText`        | `15`  | Bytes that were required to be UTF-8 text and are not.                                  |
+| `LimitExceeded`      | `16`  | A bounded operation met its bound before its end.                                       |
+| `ConnectionRefused`  | `17`  | The other end refused the connection: nothing listens there.                            |
+| `ConnectionReset`    | `18`  | The other end reset the connection.                                                     |
+| `ConnectionAborted`  | `19`  | The connection was aborted on this side.                                                |
+| `NotConnected`       | `20`  | The socket is not connected.                                                            |
+| `AddressInUse`       | `21`  | The local address is already in use.                                                    |
+| `AddressUnavailable` | `22`  | The address is not one this machine has, or cannot be reached from it.                  |
+| `Unreachable`        | `23`  | No route leads to the network or host.                                                  |
+| `BrokenPipe`         | `24`  | The other end closed the connection, so nothing more can be written to it.              |
+| `Other`              | `14`  | Something the platform reported that has no shared meaning; the raw code is the detail. |
 
 <h3 id="from-io-error"><code>FromIoError</code></h3>
 

@@ -280,7 +280,7 @@ Runs in constant expected time.
 
 **Returns**: the value that was stored, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L190)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
@@ -300,7 +300,7 @@ Makes room for `additional` more entries on top of those already present.
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L203)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
@@ -313,7 +313,7 @@ Releases the capacity the entry count does not need.
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L211)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -324,7 +324,7 @@ pub func Clear(self: &var HashMap<K, V>)
 Destroys every entry, keeping the storage.
 `self` is borrowed mutably. Runs in time proportional to the capacity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L218)
 
 <h3 id="try-next-entry"><code>TryNextEntry</code></h3>
 
@@ -351,7 +351,7 @@ while a walk is in progress: either moves entries between slots, and a cursor is
 
 **Returns**: whether an entry was read; false at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L231)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L232)
 
 <h3 id="get-or-insert"><code>GetOrInsert</code></h3>
 
@@ -384,7 +384,7 @@ The pointer is valid until the map grows, shrinks, or has anything inserted or r
 
 **Returns**: nothing when the operation succeeded, or why it did not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L265)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L266)
 
 <h3 id="replace"><code>Replace</code></h3>
 
@@ -409,7 +409,7 @@ A failure leaves the map exactly as it was, and is reported apart from the absen
 
 **Returns**: the value that was there, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L300)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L302)
 
 <h3 id="remove-entry"><code>RemoveEntry</code></h3>
 
@@ -433,7 +433,7 @@ carrying anything the equality ignores makes them different values, and the map'
 
 **Returns**: the whole entry, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L326)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L329)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
@@ -448,7 +448,7 @@ Nothing may be inserted or removed while the iterator is alive.
 
 **Returns**: a cursor over the entries, in an order the seed decides
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L340)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L343)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
@@ -464,7 +464,7 @@ Whatever is not taken is destroyed when the iterator's life ends.
 
 **Returns**: a cursor that consumes the map as it goes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L357)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L360)
 
 ## Related
 
@@ -480,7 +480,7 @@ An iterator over the entries of a map, by copy.
 Borrows the map, so the map must outlive it and must not be inserted into or removed from while it is alive:
 either moves entries between slots, and this walks slots.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L402)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L407)
 
 **Type parameters**
 
@@ -505,7 +505,7 @@ walked with [`TryNextEntry`](/docs/api/collections/hash-map#try-next-entry) and 
 
 **Returns**: the next entry, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L418)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L423)
 
 <h3 id="hash-map-into-iterator"><code>HashMapIntoIterator&lt;K, V&gt;</code></h3>
 
@@ -519,7 +519,7 @@ An iterator that takes a map apart, yielding each entry by value.
 Move-only: it owns the storage the map owned. Whatever is left when its life ends is destroyed with it, which is
 what makes stopping part-way safe.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L439)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L444)
 
 **Type parameters**
 
@@ -544,7 +544,7 @@ destructor is exactly what nobody took.
 
 **Returns**: the next entry, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L457)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L462)
 
 <h3 id="write-hash-map-debug"><code>WriteHashMapDebug&lt;K, V&gt;</code></h3>
 

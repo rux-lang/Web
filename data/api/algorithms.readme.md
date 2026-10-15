@@ -12,16 +12,17 @@ rux add Rux/Algorithms
 
 ## Status
 
-| Module   | Takes       | Requires on `T` | Provides                                                   |
-| -------- | ----------- | --------------- | ---------------------------------------------------------- |
-| `Find`   | `T[..]`     | — or `==`       | Linear queries, sequence comparison, by value or predicate |
-| `MinMax` | `T[..]`     | — or `<`        | Sequence extremes and clamping                             |
-| `Search` | `T[..]`     | `<`             | Sortedness checks, bounds and binary search                |
-| `Modify` | `var T[..]` | — or `==`       | Reordering, bulk movement, removal and partitioning        |
-| `Sort`   | `var T[..]` | `<`             | Introsort, selection, and partial sorting                  |
-| `Stable` | `var T[..]` | `<`             | Merge sort, with scratch the caller supplies               |
-| `Heap`   | `var T[..]` | `<`             | Max-heap arrangement, push, pop and heapsort               |
-| `Fold`   | `T[..]`     | — or `+`/`*`    | Folds in both directions, sum, product and transform       |
+| Module    | Takes       | Requires on `T` | Provides                                                   |
+| --------- | ----------- | --------------- | ---------------------------------------------------------- |
+| `Find`    | `T[..]`     | — or `==`       | Linear queries, sequence comparison, by value or predicate |
+| `MinMax`  | `T[..]`     | — or `<`        | Sequence extremes and clamping                             |
+| `Search`  | `T[..]`     | `<`             | Sortedness checks, bounds and binary search                |
+| `Modify`  | `var T[..]` | — or `==`       | Reordering, bulk movement, removal and partitioning        |
+| `Sort`    | `var T[..]` | `<`             | Introsort, selection, and partial sorting                  |
+| `Stable`  | `var T[..]` | `<`             | Merge sort, with scratch the caller supplies               |
+| `Heap`    | `var T[..]` | `<`             | Max-heap arrangement, push, pop and heapsort               |
+| `Fold`    | `T[..]`     | — or `+`/`*`    | Folds in both directions, sum, product and transform       |
+| `Numeric` | `var T[..]` | — or `+`        | Running sums and scans, counting sequences, midpoints      |
 
 Everything takes a view: a `T[..]` where it only reads, and a `var T[..]` where it writes.
 

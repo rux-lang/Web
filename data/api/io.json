@@ -39,6 +39,11 @@
       "header": "What went wrong at the edge of the machine.\nAn I/O failure is not one thing. Some report a fact about the world — the file is not there, the disk is full,\npermission was refused — and a caller acts on which fact. Some report a moment: the operation was interrupted,\nor would block, and the right response is to go again. And the end of a stream is not a failure at all, but it\narrives through the same channel, so it lives in the same type where nobody can lose it.\nThe set is deliberately the meanings shared by every platform, with the raw code carried beside the meaning:\ntranslation loses detail, and the detail is sometimes the diagnosis. Success is not in the set: an operation that\ncan fail returns a native fallible, and `IoError` is only ever its failure."
     },
     {
+      "name": "MemoryStream",
+      "source": "Src/MemoryStream.rux",
+      "header": "Streams over memory: a reader of bytes the caller already has, and a writer that gathers what is written into a\ngrowing block of its own.\nThey are what `Reader` and `Writer` code is tested against, and what turns a function that writes to a stream into\none that produces bytes in memory. Both seek, within what they hold."
+    },
+    {
       "name": "Print",
       "source": "Src/Print.rux",
       "header": "Printing, with the failure a caller can act on returned rather than swallowed.\nEvery overload returns the `IoError` of the write it made, or `none` when there was nothing to report. Most call\nsites will keep ignoring it, and that is their decision rather than this module's: a program logging to a terminal\nloses nothing by not looking, while one whose output feeds a closed pipe has something to look at. That is why the\nresult is an optional failure rather than a fallible, which a statement could not leave unread. The bytes go\nthrough the standard output handle, so the console-versus-redirection encoding is decided where it always is, not\nre-decided here."
@@ -2494,10 +2499,146 @@
           ]
         },
         {
+          "name": "ConnectionRefused",
+          "value": "17",
+          "payload": null,
+          "line": 44,
+          "doc": "The other end refused the connection: nothing listens there.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ConnectionReset",
+          "value": "18",
+          "payload": null,
+          "line": 46,
+          "doc": "The other end reset the connection.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ConnectionAborted",
+          "value": "19",
+          "payload": null,
+          "line": 48,
+          "doc": "The connection was aborted on this side.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "NotConnected",
+          "value": "20",
+          "payload": null,
+          "line": 50,
+          "doc": "The socket is not connected.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "AddressInUse",
+          "value": "21",
+          "payload": null,
+          "line": 52,
+          "doc": "The local address is already in use.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "AddressUnavailable",
+          "value": "22",
+          "payload": null,
+          "line": 54,
+          "doc": "The address is not one this machine has, or cannot be reached from it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Unreachable",
+          "value": "23",
+          "payload": null,
+          "line": 56,
+          "doc": "No route leads to the network or host.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "BrokenPipe",
+          "value": "24",
+          "payload": null,
+          "line": 58,
+          "doc": "The other end closed the connection, so nothing more can be written to it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
           "name": "Other",
           "value": "14",
           "payload": null,
-          "line": 44,
+          "line": 60,
           "doc": "Something the platform reported that has no shared meaning; the raw code is the detail.",
           "targets": [
             "windows-x86_64",
@@ -2530,7 +2671,7 @@
       "displayName": "IoError",
       "module": "IoError",
       "source": "Src/IoError.rux",
-      "line": 51,
+      "line": 67,
       "signature": "pub struct IoError",
       "typeParams": [],
       "doc": {
@@ -2548,7 +2689,7 @@
           "name": "kind",
           "type": "IoErrorKind",
           "public": true,
-          "line": 53,
+          "line": 69,
           "doc": "The meaning every platform shares.",
           "targets": [
             "windows-x86_64",
@@ -2565,7 +2706,7 @@
           "name": "raw",
           "type": "int32",
           "public": true,
-          "line": 55,
+          "line": 71,
           "doc": "The platform's own code, zero where none applies.",
           "targets": [
             "windows-x86_64",
@@ -2585,7 +2726,7 @@
         {
           "kind": "associated",
           "name": "Of",
-          "line": 63,
+          "line": 79,
           "signature": "pub func Of(kind: IoErrorKind) -> IoError",
           "typeParams": [],
           "params": [{ "name": "kind", "type": "IoErrorKind" }],
@@ -2617,7 +2758,7 @@
         {
           "kind": "method",
           "name": "IsEnd",
-          "line": 70,
+          "line": 86,
           "signature": "pub func IsEnd(self: &IoError) -> bool",
           "typeParams": [],
           "params": [],
@@ -2649,7 +2790,7 @@
         {
           "kind": "method",
           "name": "IsTransient",
-          "line": 77,
+          "line": 93,
           "signature": "pub func IsTransient(self: &IoError) -> bool",
           "typeParams": [],
           "params": [],
@@ -2680,6 +2821,659 @@
         }
       ],
       "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "ByteReader",
+      "displayName": "ByteReader",
+      "module": "MemoryStream",
+      "source": "Src/MemoryStream.rux",
+      "line": 12,
+      "signature": "pub struct ByteReader",
+      "typeParams": [],
+      "doc": {
+        "summary": "A reader of a slice of bytes, from its start.",
+        "markdown": "A reader of a slice of bytes, from its start. `Copy`.\nBorrows the bytes, which must outlive it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-reader"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "bytes",
+          "type": "char8[..]",
+          "public": false,
+          "line": 13,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "position",
+          "type": "uint",
+          "public": false,
+          "line": 14,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 22,
+          "signature": "pub func New(bytes: char8[..]) -> ByteReader",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "ByteReader",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A reader of `bytes`, at their start.",
+            "markdown": "A reader of `bytes`, at their start.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to read, which must outlive the reader" }],
+            "returns": "the reader",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-reader-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Position",
+          "line": 29,
+          "signature": "pub func Position(self: &ByteReader) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ByteReader",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bytes have been read or skipped.",
+            "markdown": "How many bytes have been read or skipped.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the position",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-reader-position"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Remaining",
+          "line": 36,
+          "signature": "pub func Remaining(self: &ByteReader) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ByteReader",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The bytes not yet read.",
+            "markdown": "The bytes not yet read.",
+            "typeParams": [],
+            "params": [],
+            "returns": "them",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-reader-remaining"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Read",
+          "line": 46,
+          "signature": "pub func Read(self: &var ByteReader, into: var char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var ByteReader",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Reader",
+          "public": true,
+          "doc": {
+            "summary": "Copies the next bytes into `into`, as many as fit.",
+            "markdown": "Copies the next bytes into `into`, as many as fit.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where the bytes go" }],
+            "returns": "how many were copied, or fails with `EndOfStream` once every byte has been read",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-reader-read"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Seek",
+          "line": 77,
+          "signature": "pub func Seek(self: &var ByteReader, origin: SeekFrom, offset: int64) -> uint64 ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "origin", "type": "SeekFrom" },
+            { "name": "offset", "type": "int64" }
+          ],
+          "receiver": "&var ByteReader",
+          "returnType": "uint64 ! IoError",
+          "value": null,
+          "conformance": "Seeker",
+          "public": true,
+          "doc": {
+            "summary": "Moves the position, anywhere from the start to the end of the bytes.",
+            "markdown": "Moves the position, anywhere from the start to the end of the bytes.",
+            "typeParams": [],
+            "params": [
+              { "name": "origin", "markdown": "what `offset` counts from" },
+              { "name": "offset", "markdown": "how far, which may be negative" }
+            ],
+            "returns": "the new position, or fails with `InvalidInput` for one before the start or past the end",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-reader-seek"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Reader", "Seeker"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "ByteWriter",
+      "displayName": "ByteWriter",
+      "module": "MemoryStream",
+      "source": "Src/MemoryStream.rux",
+      "line": 88,
+      "signature": "pub struct ByteWriter",
+      "typeParams": [],
+      "doc": {
+        "summary": "A writer that keeps what is written in a growing block of memory.",
+        "markdown": "A writer that keeps what is written in a growing block of memory. Not copied.\nWriting at a position before the end, after a seek, overwrites what is there and extends past it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-writer"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 89,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "data",
+          "type": "*var char8",
+          "public": false,
+          "line": 90,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint",
+          "public": false,
+          "line": 91,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "capacity",
+          "type": "uint",
+          "public": false,
+          "line": 92,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "position",
+          "type": "uint",
+          "public": false,
+          "line": 93,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 103,
+          "signature": "pub func New(allocator: Allocator) -> ByteWriter",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "ByteWriter",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty writer that takes its storage from `allocator` as it grows.",
+            "markdown": "An empty writer that takes its storage from `allocator` as it grows.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "the writer",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-writer-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Bytes",
+          "line": 110,
+          "signature": "pub func Bytes(self: &ByteWriter) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ByteWriter",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Everything written so far.",
+            "markdown": "Everything written so far. The view lasts until the next write, `Clear` or `Release`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the bytes",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-writer-bytes"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 118,
+          "signature": "pub func Length(self: &ByteWriter) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ByteWriter",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bytes have been written.",
+            "markdown": "How many bytes have been written.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the length",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-writer-length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clear",
+          "line": 124,
+          "signature": "pub func Clear(self: &var ByteWriter)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var ByteWriter",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Forgets what was written, keeping the storage for what comes next.",
+            "markdown": "Forgets what was written, keeping the storage for what comes next.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-writer-clear"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Release",
+          "line": 131,
+          "signature": "pub func Release(self: &var ByteWriter)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var ByteWriter",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives the storage back and empties the writer.",
+            "markdown": "Gives the storage back and empties the writer.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-writer-release"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~ByteWriter",
+          "line": 166,
+          "signature": "func ~ByteWriter(self: &var ByteWriter)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var ByteWriter",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 176,
+          "signature": "pub func Write(self: &var ByteWriter, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var ByteWriter",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Writes all of `bytes` at the position, growing the storage as needed.",
+            "markdown": "Writes all of `bytes` at the position, growing the storage as needed.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to write" }],
+            "returns": "how many were written, which is all of them, or fails with `LimitExceeded` when storage runs out",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-writer-write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 189,
+          "signature": "pub func Flush(self: &var ByteWriter) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var ByteWriter",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Does nothing: the bytes are already where they go.",
+            "markdown": "Does nothing: the bytes are already where they go.",
+            "typeParams": [],
+            "params": [],
+            "returns": "nothing",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-writer-flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Seek",
+          "line": 198,
+          "signature": "pub func Seek(self: &var ByteWriter, origin: SeekFrom, offset: int64) -> uint64 ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "origin", "type": "SeekFrom" },
+            { "name": "offset", "type": "int64" }
+          ],
+          "receiver": "&var ByteWriter",
+          "returnType": "uint64 ! IoError",
+          "value": null,
+          "conformance": "Seeker",
+          "public": true,
+          "doc": {
+            "summary": "Moves the position at which the next write lands, anywhere from the start to the end of what was written.",
+            "markdown": "Moves the position at which the next write lands, anywhere from the start to the end of what was written.",
+            "typeParams": [],
+            "params": [
+              { "name": "origin", "markdown": "what `offset` counts from" },
+              { "name": "offset", "markdown": "how far, which may be negative" }
+            ],
+            "returns": "the new position, or fails with `InvalidInput` for one before the start or past the end",
+            "see": ["https://rux-lang.dev/docs/api/io/memory-stream#byte-writer-seek"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Writer", "Seeker"],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",

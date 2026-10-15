@@ -54,6 +54,13 @@ Moves the position `offset` bytes from `origin` and succeeds with where it lande
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L59)
 
+## Implementations
+
+| Type                                                   | Summary                                                           |
+| ------------------------------------------------------ | ----------------------------------------------------------------- |
+| [`ByteReader`](/docs/api/io/memory-stream#byte-reader) | A reader of a slice of bytes, from its start.                     |
+| [`ByteWriter`](/docs/api/io/memory-stream#byte-writer) | A writer that keeps what is written in a growing block of memory. |
+
 ## Related
 
 <h3 id="seek-from"><code>SeekFrom</code></h3>

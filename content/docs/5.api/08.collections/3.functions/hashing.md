@@ -321,8 +321,10 @@ pub func EqualsSlice(
 Whether two runs of characters hold the same characters.
 Both are borrowed and read. Different lengths are never equal, and two empty slices are, whatever their data
 pointers hold.
+Compares eight bytes at a time, finishing with the last eight, which may overlap words already compared; runs of
+four to seven bytes compare their first and last four. Only shorter runs go byte by byte.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L165)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L167)
 
 **Parameters**
 

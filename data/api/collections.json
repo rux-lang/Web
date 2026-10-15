@@ -27,6 +27,11 @@
       "header": "A run of elements whose length is fixed when it is made and whose storage is on the heap.\n`Array<T>` is what to reach for when the length is decided at run time and never changes afterwards. It is not\n`T[N]`, whose length is part of its type and whose storage is wherever the value containing it lives; it is not\n`T[..]`, which borrows storage someone else owns; and it is not `Vector<T>`, which can grow. Owning storage of\na length chosen at run time is the one thing none of the others does.\nAn array owns its storage and its elements, so copying is prohibited and it is move-only. Handing one to a function\nrequires an explicit move; reading the source afterwards is rejected while\ncompiling rather than discovered later. Destruction destroys every element and then releases the block, in that\norder, so an array of things that own something does not leak what they own.\nThe allocator is injected at construction and kept. An array made from one allocator is released to the same one,\nwhich is what lets an arena's arrays disappear with the arena and a pool's come back to the pool.\nEvery constructor copies its elements into the storage. A move-only element type cannot be copied, so an array of\nthose has to be built another way — `Vector<T>` and its `Push` is the shape that works, since each element is\nmoved in exactly once."
     },
     {
+      "name": "BitSet",
+      "source": "Src/BitSet.rux",
+      "header": "A set of small non-negative integers, one bit each.\nThe bits live in 64-bit words, so membership is a shift and a mask, counting is a population count per word, and\nthe set operations work a word at a time. The set grows when a bit past its length is set; reading a bit past the\nlength answers false rather than failing, since an absent bit is an unset one."
+    },
+    {
       "name": "Capacity",
       "source": "Src/Capacity.rux",
       "header": "Overflow-checked sizing arithmetic, shared by every container in this package so the checks exist once rather than\nonce per type.\nInteger overflow wraps silently, so `count * sizeof(T)` is the single most dangerous expression a container\nwrites: a product that wraps asks the allocator for a small block and then writes far past it. Every allocation in\nthis package sizes itself through `ByteSize` rather than multiplying inline.\nThe checks are written out rather than reached for from `Core`, because each of these does something beyond the\narithmetic — choosing a growth, falling back when a doubling does not fit — and a checked multiply is one line\nof that. What matters is that the dangerous product is never evaluated: `ByteSize` divides instead.\nThese fail with a `CollectionError` like the public operations that call them, and return their result only when\nthe arithmetic holds.\nInternal helpers; not part of the package API."
@@ -72,14 +77,29 @@
       "header": "Walking a run of contiguous elements, which every container in this package can hand out a view of.\nThe compiler drives a `for` loop by shape: anything with a `Next` returning an `Option` is an iterator, and the\nitem type is whatever that option carries. That leaves the choice of item to the iterator, and there are three\nworth having.\n`ValueIterator` yields elements by copy, which is what reading a sequence of numbers wants and what a move-only\nelement type must not be walked with — copying one would give two owners to a value that promises one.\n`ReferenceIterator` yields a pointer to each element, which works for any element type at all and is how a\nmove-only one is read without being moved.\n`MutableReferenceIterator` yields a writable pointer to each element, allowing in-place changes without copying.\nAll three borrow. None owns the storage it walks, and none may outlive the container it came from or survive that\ncontainer growing, rehashing or being freed — which is the one thing about iteration in this package worth\nremembering.\nA consuming iterator, which moves elements out of a container and leaves it empty, belongs to the container that\ncan be emptied rather than here."
     },
     {
+      "name": "LruCache",
+      "source": "Src/LruCache.rux",
+      "header": "A map of bounded size that forgets the entry used least recently when it has to make room.\nEntries live in a vector and are linked into a list from the most to the least recently used; a hash map from each\nkey to its entry's index finds an entry in constant expected time. Looking an entry up or putting it moves it to the\nfront, and putting a new key into a full cache reuses the entry at the back, so a cache never allocates once it has\nheld as many entries as it may."
+    },
+    {
       "name": "Presentation",
       "source": "Src/Presentation.rux",
       "header": "Showing what a sequential container holds, without disturbing it.\nA container cannot implement `Debug` itself: what a `Vector<T>` looks like is entirely a question about `T`, and\nan interface implementation has nowhere to say \"when the element can be shown\". So these are handwritten\nfunctions carrying the bound — `WriteVectorDebug<T: Debug>` — which is the shape the language does have. Each\ninstantiation resolves its element's `WriteDebug` at compile time; nothing is dispatched at run time.\nThey borrow, and that is the whole design. A container owns its elements and hands out no copies of a move-only\none, so a diagnostic that took an element out to print it would be taking ownership of it — which is exactly what\na caller with a container they still need cannot afford. Every element here is shown through a borrow of it, so a\nvector of a move-only type can be written as many times as wanted and still holds everything afterwards.\nA vector and an array are one run of elements, so both hand `Rux/Text` their slice and it does the rest. A deque\nis the exception, and the reason is its shape rather than an oversight: its elements live in a ring, so a deque\nthat has wrapped holds them in two runs with a gap between. It writes them as one sequence — which is what they\nare to a reader — by walking both runs inside one pair of brackets, which is the one thing the slice writer\ncannot be asked to do.\nMaps and sets are here too, written `{key: value, key: value}` and `{element, element}` — braces rather than\nbrackets, because what a map holds is not a run of things and reading one as a sequence would be reading it\nwrongly. The two kinds differ in exactly one respect, and it is the only interesting question they raise.\nAn ordered map or set is written in key order, which is the order it keeps and the order every walk of it takes,\nso its rendering is a fact about its contents and nothing else. A hash map or set is written in the order of its\ntable, which is a fact about the container rather than about what it holds: it follows from the seed drawn when\nthe container was made and from every insertion and removal since, because displacement decides which of two\nentries that want the same slot gets it. So two containers holding exactly the same entries render differently,\nand so does the same container in the next run of the same program. That is documented rather than fixed: sorting\nwould need an ordering on the key that a hash container does not have and was built not to need, and inventing\none would make every hash container require something extra just so that its diagnostic looked tidy. A caller who\nneeds a stable order has an ordered map.\n`CollectionError` presents itself here as well, for the same reason the containers do — this package depends on\n`Rux/Text` and Text does not depend on it, so this is the side of the edge the implementation can live on.\n`Display` is the description a reader is shown and `Debug` names the case, exactly as for the errors Text\npresents. The descriptions are stable and are not a parsing contract: a program branches on the case."
     },
     {
+      "name": "PriorityQueue",
+      "source": "Src/PriorityQueue.rux",
+      "header": "A queue that always hands out its largest element first.\nThe elements live in a vector arranged as a binary max-heap, so a push and a pop each cost time logarithmic in the\nlength and the largest element is always at the front. The sifting moves elements rather than copying them, so a\nqueue can hold elements that own something. \"Largest\" is the element type's `<`: a queue that should hand out the\nsmallest first holds elements whose `<` is reversed, which keeps the order part of the type rather than a function\nevery queue has to carry."
+    },
+    {
+      "name": "SmallVector",
+      "source": "Src/SmallVector.rux",
+      "header": "A vector that keeps its first few elements inside itself, and only allocates past them.\nThe inline room is 64 bytes, as many elements as fit there at an alignment of at most eight; an element type that\nis larger or more strictly aligned gets no inline room and behaves as a `Vector`. The room is raw words rather than\nan array of elements, so nothing is ever destroyed that was never constructed. Once the elements outgrow it they\nmove to a block from the allocator and stay there.\nMoving a small vector moves its inline elements with it, so a view or pointer into one lasts only until the vector\nitself moves, as well as until it next changes."
+    },
+    {
       "name": "Table",
       "source": "Src/Table.rux",
-      "header": "The open-addressing kernel `HashMap` and `HashSet` are both built on, so the probe sequence, the displacement rule\nand the deletion exist once rather than twice.\n**Robin Hood.** Every entry records how far it sits from the slot its hash names — its probe distance. An\ninsertion that meets an entry closer to home than itself takes the slot and carries that entry onward, so the\ndistances along a chain never decrease and the worst one stays near the average. That is what keeps a lookup\nbounded even when a table is nearly full, where plain linear probing degrades into a long scan of somebody else's\nchain.\nIt also makes a miss cheap. A search that reaches a slot whose occupant is closer to home than the search has\ntravelled can stop there: the key it is looking for would have taken that slot on the way past. No tombstone, no\nscan to the end of the chain.\n**Backward-shift deletion.** Removing an entry moves the following ones back one slot each, stopping at an empty\nslot or one already at home. That leaves the table exactly as if the removed entry had never been inserted --\nthere are no tombstones here at all, so a table that is churned rather than grown does not slowly fill with them\nand rehash for no reason.\n**Randomized hashing.** The hash a table uses is seeded, and the seed is a secret drawn from `Rux/Entropy`.\nWithout it, an adversary who chooses keys can compute a few thousand that collide and turn every lookup linear,\nwhich is a denial of service against anything keying a table on input it did not write. The seeded hashers in\n`Hashing` use `SipHash`, which is what makes guessing the seed the only way in.\nOccupancy lives in the distance byte rather than in the key, so there is no reserved or sentinel key: every\npossible `K` is storable, including zero and `uint::Max` and any struct bit pattern.\nInternal to this package: the kernel, not something a caller reaches for."
+      "header": "The open-addressing kernel `HashMap` and `HashSet` are both built on, so the probe sequence, the displacement rule\nand the deletion exist once rather than twice.\n**Robin Hood.** Every entry records how far it sits from the slot its hash names — its probe distance. An\ninsertion that meets an entry closer to home than itself takes the slot and carries that entry onward, so the\ndistances along a chain never decrease and the worst one stays near the average. That is what keeps a lookup\nbounded even when a table is nearly full, where plain linear probing degrades into a long scan of somebody else's\nchain.\nIt also makes a miss cheap. A search that reaches a slot whose occupant is closer to home than the search has\ntravelled can stop there: the key it is looking for would have taken that slot on the way past. No tombstone, no\nscan to the end of the chain.\n**Backward-shift deletion.** Removing an entry moves the following ones back one slot each, stopping at an empty\nslot or one already at home. That leaves the table exactly as if the removed entry had never been inserted --\nthere are no tombstones here at all, so a table that is churned rather than grown does not slowly fill with them\nand rehash for no reason.\n**Randomized hashing.** The hash a table uses is seeded, and the seed is a secret drawn from `Rux/Entropy`.\nWithout it, an adversary who chooses keys can compute a few thousand that collide and turn every lookup linear,\nwhich is a denial of service against anything keying a table on input it did not write. The seeded hashers in\n`Hashing` use `SipHash`, which is what makes guessing the seed the only way in.\nOccupancy lives in the distance byte rather than in the key, so there is no reserved or sentinel key: every\npossible `K` is storable, including zero and `uint::Max` and any struct bit pattern.\n**Hash tags.** Each slot also keeps the top byte of its key's hash. A lookup compares that byte before it compares\nkeys, so a probe that passes other keys reads one byte for each instead of calling `equals` on it, which for text\nkeys means touching memory elsewhere. Only one key in 256 that differs gets as far as `equals`.\nInternal to this package: the kernel, not something a caller reaches for."
     },
     {
       "name": "Tree",
@@ -633,6 +653,557 @@
             "params": [],
             "returns": null,
             "see": ["https://rux-lang.dev/docs/api/collections/array#destructor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "BitSet",
+      "displayName": "BitSet",
+      "module": "BitSet",
+      "source": "Src/BitSet.rux",
+      "line": 11,
+      "signature": "pub struct BitSet",
+      "typeParams": [],
+      "doc": {
+        "summary": "A growable set of bits.",
+        "markdown": "A growable set of bits. Move-only: it owns its words.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/collections/bit-set"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "words",
+          "type": "Vector<uint64>",
+          "public": false,
+          "line": 13,
+          "doc": "The bits, 64 to a word, lowest index in the lowest bit.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint",
+          "public": false,
+          "line": 15,
+          "doc": "How many bits the set spans.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "BitSet",
+          "line": 25,
+          "signature": "pub func BitSet(allocator: Allocator) -> BitSet",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "BitSet",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty set that spans no bits and has allocated nothing.",
+            "markdown": "An empty set that spans no bits and has allocated nothing.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "the set",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 32,
+          "signature": "pub func Length(self: &BitSet) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&BitSet",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bits the set spans, set or not.",
+            "markdown": "How many bits the set spans, set or not.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the length in bits",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Resize",
+          "line": 40,
+          "signature": "pub func Resize(self: &var BitSet, length: uint) -> ! CollectionError",
+          "typeParams": [],
+          "params": [{ "name": "length", "type": "uint" }],
+          "receiver": "&var BitSet",
+          "returnType": "! CollectionError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Spans `length` bits: new bits are unset, and bits past a shorter length are dropped.",
+            "markdown": "Spans `length` bits: new bits are unset, and bits past a shorter length are dropped.",
+            "typeParams": [],
+            "params": [{ "name": "length", "markdown": "the length in bits" }],
+            "returns": "nothing, or why there was no room",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#resize"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Get",
+          "line": 56,
+          "signature": "pub func Get(self: &BitSet, index: uint) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&BitSet",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether bit `index` is set; false for one past the length.",
+            "markdown": "Whether bit `index` is set; false for one past the length.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "the bit" }],
+            "returns": "whether it is set",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#get"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Set",
+          "line": 65,
+          "signature": "pub func Set(self: &var BitSet, index: uint) -> ! CollectionError",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&var BitSet",
+          "returnType": "! CollectionError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sets bit `index`, growing the set to span it.",
+            "markdown": "Sets bit `index`, growing the set to span it.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "the bit" }],
+            "returns": "nothing, or why there was no room to grow",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#set"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 74,
+          "signature": "pub func Reset(self: &var BitSet, index: uint)",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&var BitSet",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Unsets bit `index`.",
+            "markdown": "Unsets bit `index`. A bit past the length is already unset.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "the bit" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#reset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Toggle",
+          "line": 84,
+          "signature": "pub func Toggle(self: &var BitSet, index: uint) -> ! CollectionError",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&var BitSet",
+          "returnType": "! CollectionError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Flips bit `index`, growing the set to span it.",
+            "markdown": "Flips bit `index`, growing the set to span it.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "the bit" }],
+            "returns": "nothing, or why there was no room to grow",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#toggle"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Count",
+          "line": 93,
+          "signature": "pub func Count(self: &BitSet) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&BitSet",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many bits are set.",
+            "markdown": "How many bits are set.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the count",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#count"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsEmpty",
+          "line": 102,
+          "signature": "pub func IsEmpty(self: &BitSet) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&BitSet",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether no bit is set.",
+            "markdown": "Whether no bit is set.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the set is empty",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#is-empty"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clear",
+          "line": 111,
+          "signature": "pub func Clear(self: &var BitSet)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var BitSet",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Unsets every bit, keeping the length.",
+            "markdown": "Unsets every bit, keeping the length.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#clear"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "NextSet",
+          "line": 124,
+          "signature": "pub func NextSet(self: &BitSet, from: uint) -> uint?",
+          "typeParams": [],
+          "params": [{ "name": "from", "type": "uint" }],
+          "receiver": "&BitSet",
+          "returnType": "uint?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The lowest set bit at or after `from`, which walks the set in order.",
+            "markdown": "The lowest set bit at or after `from`, which walks the set in order.",
+            "typeParams": [],
+            "params": [{ "name": "from", "markdown": "where to start looking" }],
+            "returns": "the bit, or `none` when no bit there or after is set",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#next-set"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "UnionWith",
+          "line": 146,
+          "signature": "pub func UnionWith(self: &var BitSet, other: &BitSet) -> ! CollectionError",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&BitSet" }],
+          "receiver": "&var BitSet",
+          "returnType": "! CollectionError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sets every bit that is set in `other`, growing to span it.",
+            "markdown": "Sets every bit that is set in `other`, growing to span it.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the other set" }],
+            "returns": "nothing, or why there was no room to grow",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#union-with"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IntersectWith",
+          "line": 160,
+          "signature": "pub func IntersectWith(self: &var BitSet, other: &BitSet)",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&BitSet" }],
+          "receiver": "&var BitSet",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Unsets every bit that is not set in `other`.",
+            "markdown": "Unsets every bit that is not set in `other`.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the other set" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#intersect-with"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "DifferenceWith",
+          "line": 173,
+          "signature": "pub func DifferenceWith(self: &var BitSet, other: &BitSet)",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&BitSet" }],
+          "receiver": "&var BitSet",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Unsets every bit that is set in `other`.",
+            "markdown": "Unsets every bit that is set in `other`.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the other set" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#difference-with"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 187,
+          "signature": "pub func Equals(self: &BitSet, other: &BitSet) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&BitSet" }],
+          "receiver": "&BitSet",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the same bits are set in both, whatever their lengths.",
+            "markdown": "Whether the same bits are set in both, whatever their lengths.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the other set" }],
+            "returns": "whether they hold the same members",
+            "see": ["https://rux-lang.dev/docs/api/collections/bit-set#equals"],
             "deprecated": null
           },
           "targets": [
@@ -2694,7 +3265,7 @@
         {
           "kind": "method",
           "name": "Remove",
-          "line": 189,
+          "line": 190,
           "signature": "pub func Remove(self: &var HashMap<K, V>, key: K) -> V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -2726,7 +3297,7 @@
         {
           "kind": "method",
           "name": "Reserve",
-          "line": 202,
+          "line": 203,
           "signature": "pub func Reserve(self: &var HashMap<K, V>, additional: uint) -> ! CollectionError",
           "typeParams": [],
           "params": [{ "name": "additional", "type": "uint" }],
@@ -2758,7 +3329,7 @@
         {
           "kind": "method",
           "name": "ShrinkToFit",
-          "line": 210,
+          "line": 211,
           "signature": "pub func ShrinkToFit(self: &var HashMap<K, V>) -> ! CollectionError",
           "typeParams": [],
           "params": [],
@@ -2790,7 +3361,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 217,
+          "line": 218,
           "signature": "pub func Clear(self: &var HashMap<K, V>)",
           "typeParams": [],
           "params": [],
@@ -2822,7 +3393,7 @@
         {
           "kind": "method",
           "name": "TryNextEntry",
-          "line": 231,
+          "line": 232,
           "signature": "pub func TryNextEntry(self: &HashMap<K, V>, cursor: *var uint, key: *var K, value: *var V) -> bool",
           "typeParams": [],
           "params": [
@@ -2862,7 +3433,7 @@
         {
           "kind": "method",
           "name": "GetOrInsert",
-          "line": 265,
+          "line": 266,
           "signature": "pub func GetOrInsert(self: &var HashMap<K, V>, key: K, value: V, existing: *var *var V, inserted: *var bool) -> ! CollectionError",
           "typeParams": [],
           "params": [
@@ -2904,7 +3475,7 @@
         {
           "kind": "method",
           "name": "Replace",
-          "line": 300,
+          "line": 302,
           "signature": "pub func Replace(self: &var HashMap<K, V>, key: K, value: V) -> V? ! CollectionError",
           "typeParams": [],
           "params": [
@@ -2942,7 +3513,7 @@
         {
           "kind": "method",
           "name": "RemoveEntry",
-          "line": 326,
+          "line": 329,
           "signature": "pub func RemoveEntry(self: &var HashMap<K, V>, key: K) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -2974,7 +3545,7 @@
         {
           "kind": "method",
           "name": "Iterate",
-          "line": 340,
+          "line": 343,
           "signature": "pub func Iterate(self: &HashMap<K, V>) -> HashMapIterator<K, V>",
           "typeParams": [],
           "params": [],
@@ -3006,7 +3577,7 @@
         {
           "kind": "method",
           "name": "IntoIterator",
-          "line": 357,
+          "line": 360,
           "signature": "pub func IntoIterator(self: HashMap<K, V>) -> HashMapIntoIterator<K, V>",
           "typeParams": [],
           "params": [],
@@ -3054,7 +3625,7 @@
       "displayName": "KeyValue<K, V>",
       "module": "HashMap",
       "source": "Src/HashMap.rux",
-      "line": 389,
+      "line": 394,
       "signature": "pub struct KeyValue<K, V>",
       "typeParams": [
         { "name": "K", "bounds": [] },
@@ -3078,7 +3649,7 @@
           "name": "key",
           "type": "K",
           "public": true,
-          "line": 391,
+          "line": 396,
           "doc": "The key the entry was stored under.",
           "targets": [
             "windows-x86_64",
@@ -3095,7 +3666,7 @@
           "name": "value",
           "type": "V",
           "public": true,
-          "line": 393,
+          "line": 398,
           "doc": "The value stored under it.",
           "targets": [
             "windows-x86_64",
@@ -3130,7 +3701,7 @@
       "displayName": "HashMapIterator<K, V>",
       "module": "HashMap",
       "source": "Src/HashMap.rux",
-      "line": 402,
+      "line": 407,
       "signature": "pub struct HashMapIterator<K, V>",
       "typeParams": [
         { "name": "K", "bounds": [] },
@@ -3154,7 +3725,7 @@
           "name": "keys",
           "type": "*K",
           "public": false,
-          "line": 404,
+          "line": 409,
           "doc": "Raw borrowed table storage. Kept raw because references cannot be fields.",
           "targets": [
             "windows-x86_64",
@@ -3171,7 +3742,7 @@
           "name": "values",
           "type": "*V",
           "public": false,
-          "line": 405,
+          "line": 410,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3188,7 +3759,7 @@
           "name": "states",
           "type": "*uint8",
           "public": false,
-          "line": 406,
+          "line": 411,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3205,7 +3776,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 407,
+          "line": 412,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3222,7 +3793,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 409,
+          "line": 414,
           "doc": "The slot to look at next.",
           "targets": [
             "windows-x86_64",
@@ -3242,7 +3813,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 418,
+          "line": 423,
           "signature": "pub func Next(self: &var HashMapIterator<K, V>) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [],
@@ -3290,7 +3861,7 @@
       "displayName": "HashMapIntoIterator<K, V>",
       "module": "HashMap",
       "source": "Src/HashMap.rux",
-      "line": 439,
+      "line": 444,
       "signature": "pub struct HashMapIntoIterator<K, V>",
       "typeParams": [
         { "name": "K", "bounds": [] },
@@ -3314,7 +3885,7 @@
           "name": "table",
           "type": "Table<K, V>",
           "public": false,
-          "line": 441,
+          "line": 446,
           "doc": "The table taken from the map.",
           "targets": [
             "windows-x86_64",
@@ -3331,7 +3902,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 443,
+          "line": 448,
           "doc": "The slot to look at next.",
           "targets": [
             "windows-x86_64",
@@ -3351,7 +3922,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 457,
+          "line": 462,
           "signature": "pub func Next(self: &var HashMapIntoIterator<K, V>) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [],
@@ -3755,7 +4326,7 @@
         {
           "kind": "method",
           "name": "Remove",
-          "line": 117,
+          "line": 118,
           "signature": "pub func Remove(self: &var HashSet<T>, value: T) -> T?",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -3787,7 +4358,7 @@
         {
           "kind": "method",
           "name": "Reserve",
-          "line": 128,
+          "line": 129,
           "signature": "pub func Reserve(self: &var HashSet<T>, additional: uint) -> ! CollectionError",
           "typeParams": [],
           "params": [{ "name": "additional", "type": "uint" }],
@@ -3819,7 +4390,7 @@
         {
           "kind": "method",
           "name": "ShrinkToFit",
-          "line": 135,
+          "line": 136,
           "signature": "pub func ShrinkToFit(self: &var HashSet<T>) -> ! CollectionError",
           "typeParams": [],
           "params": [],
@@ -3851,7 +4422,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 141,
+          "line": 142,
           "signature": "pub func Clear(self: &var HashSet<T>)",
           "typeParams": [],
           "params": [],
@@ -3883,7 +4454,7 @@
         {
           "kind": "method",
           "name": "TryNext",
-          "line": 152,
+          "line": 153,
           "signature": "pub func TryNext(self: &HashSet<T>, cursor: *var uint, value: *var T) -> bool",
           "typeParams": [],
           "params": [
@@ -3921,7 +4492,7 @@
         {
           "kind": "method",
           "name": "Iterate",
-          "line": 174,
+          "line": 175,
           "signature": "pub func Iterate(self: &HashSet<T>) -> HashSetIterator<T>",
           "typeParams": [],
           "params": [],
@@ -3953,7 +4524,7 @@
         {
           "kind": "method",
           "name": "IntoIterator",
-          "line": 188,
+          "line": 189,
           "signature": "pub func IntoIterator(self: HashSet<T>) -> HashSetIntoIterator<T>",
           "typeParams": [],
           "params": [],
@@ -3985,7 +4556,7 @@
         {
           "kind": "method",
           "name": "IsSubsetOf",
-          "line": 219,
+          "line": 222,
           "signature": "pub func IsSubsetOf(self: &HashSet<T>, other: &HashSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4017,7 +4588,7 @@
         {
           "kind": "method",
           "name": "IsSupersetOf",
-          "line": 241,
+          "line": 244,
           "signature": "pub func IsSupersetOf(self: &HashSet<T>, other: &HashSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4049,7 +4620,7 @@
         {
           "kind": "method",
           "name": "IsDisjointFrom",
-          "line": 253,
+          "line": 256,
           "signature": "pub func IsDisjointFrom(self: &HashSet<T>, other: &HashSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4081,7 +4652,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 276,
+          "line": 279,
           "signature": "pub func Equals(self: &HashSet<T>, other: &HashSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4113,7 +4684,7 @@
         {
           "kind": "method",
           "name": "UnionWith",
-          "line": 290,
+          "line": 293,
           "signature": "pub func UnionWith(self: &var HashSet<T>, other: &HashSet<T>) -> ! CollectionError",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4145,7 +4716,7 @@
         {
           "kind": "method",
           "name": "IntersectWith",
-          "line": 315,
+          "line": 318,
           "signature": "pub func IntersectWith(self: &var HashSet<T>, other: &HashSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4177,7 +4748,7 @@
         {
           "kind": "method",
           "name": "Subtract",
-          "line": 344,
+          "line": 347,
           "signature": "pub func Subtract(self: &var HashSet<T>, other: &HashSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4209,7 +4780,7 @@
         {
           "kind": "method",
           "name": "SymmetricDifferenceWith",
-          "line": 372,
+          "line": 375,
           "signature": "pub func SymmetricDifferenceWith(self: &var HashSet<T>, other: &HashSet<T>) -> ! CollectionError",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4241,7 +4812,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 405,
+          "line": 408,
           "signature": "pub func Clone(self: &HashSet<T>) -> HashSet<T> ! CollectionError",
           "typeParams": [],
           "params": [],
@@ -4289,7 +4860,7 @@
       "displayName": "HashSetIterator<T>",
       "module": "HashSet",
       "source": "Src/HashSet.rux",
-      "line": 428,
+      "line": 431,
       "signature": "pub struct HashSetIterator<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -4307,7 +4878,7 @@
           "name": "keys",
           "type": "*T",
           "public": false,
-          "line": 430,
+          "line": 433,
           "doc": "Raw borrowed table storage. Kept raw because references cannot be fields.",
           "targets": [
             "windows-x86_64",
@@ -4324,7 +4895,7 @@
           "name": "states",
           "type": "*uint8",
           "public": false,
-          "line": 431,
+          "line": 434,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -4341,7 +4912,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 432,
+          "line": 435,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -4358,7 +4929,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 434,
+          "line": 437,
           "doc": "The slot to look at next.",
           "targets": [
             "windows-x86_64",
@@ -4378,7 +4949,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 443,
+          "line": 446,
           "signature": "pub func Next(self: &var HashSetIterator<T>) -> T?",
           "typeParams": [],
           "params": [],
@@ -4426,7 +4997,7 @@
       "displayName": "HashSetIntoIterator<T>",
       "module": "HashSet",
       "source": "Src/HashSet.rux",
-      "line": 461,
+      "line": 464,
       "signature": "pub struct HashSetIntoIterator<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -4444,7 +5015,7 @@
           "name": "table",
           "type": "Table<T, ()>",
           "public": false,
-          "line": 463,
+          "line": 466,
           "doc": "The table taken from the set.",
           "targets": [
             "windows-x86_64",
@@ -4461,7 +5032,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 465,
+          "line": 468,
           "doc": "The slot to look at next.",
           "targets": [
             "windows-x86_64",
@@ -4481,7 +5052,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 479,
+          "line": 482,
           "signature": "pub func Next(self: &var HashSetIntoIterator<T>) -> T?",
           "typeParams": [],
           "params": [],
@@ -5030,12 +5601,12 @@
       "displayName": "EqualsSlice",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 165,
+      "line": 167,
       "signature": "pub func EqualsSlice(left: char8[..], right: char8[..]) -> bool",
       "typeParams": [],
       "doc": {
         "summary": "Whether two runs of characters hold the same characters.",
-        "markdown": "Whether two runs of characters hold the same characters.\nBoth are borrowed and read. Different lengths are never equal, and two empty slices are, whatever their data\npointers hold.",
+        "markdown": "Whether two runs of characters hold the same characters.\nBoth are borrowed and read. Different lengths are never equal, and two empty slices are, whatever their data\npointers hold.\nCompares eight bytes at a time, finishing with the last eight, which may overlap words already compared; runs of\nfour to seven bytes compare their first and last four. Only shorter runs go byte by byte.",
         "typeParams": [],
         "params": [
           { "name": "left", "markdown": "one of the two values" },
@@ -5519,6 +6090,470 @@
       ]
     },
     {
+      "kind": "struct",
+      "name": "LruCache",
+      "displayName": "LruCache<K, V>",
+      "module": "LruCache",
+      "source": "Src/LruCache.rux",
+      "line": 24,
+      "signature": "pub struct LruCache<K, V>",
+      "typeParams": [
+        { "name": "K", "bounds": [] },
+        { "name": "V", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "A map that holds at most `capacity` entries and evicts the least recently used.",
+        "markdown": "A map that holds at most `capacity` entries and evicts the least recently used. Move-only.",
+        "typeParams": [
+          { "name": "K", "markdown": "the key type, which the hash and equality functions take" },
+          { "name": "V", "markdown": "the value type" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/collections/lru-cache"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "entries",
+          "type": "Vector<CacheEntry<K, V>>",
+          "public": false,
+          "line": 25,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "index",
+          "type": "HashMap<K, uint>",
+          "public": false,
+          "line": 26,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "capacity",
+          "type": "uint",
+          "public": false,
+          "line": 27,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "newest",
+          "type": "uint",
+          "public": false,
+          "line": 28,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "oldest",
+          "type": "uint",
+          "public": false,
+          "line": 29,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "LruCache",
+          "line": 42,
+          "signature": "pub func LruCache(allocator: Allocator, capacity: uint, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> LruCache<K, V>",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "capacity", "type": "uint" },
+            { "name": "hash", "type": "func(K, uint64, uint64) -> uint64" },
+            { "name": "equals", "type": "func(K, K) -> bool" }
+          ],
+          "receiver": null,
+          "returnType": "LruCache<K, V>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty cache that holds at most `capacity` entries, at least one.",
+            "markdown": "An empty cache that holds at most `capacity` entries, at least one.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "capacity", "markdown": "how many entries it keeps" },
+              { "name": "hash", "markdown": "how a key is hashed, taking the key and two seed words" },
+              { "name": "equals", "markdown": "whether two keys are the same" }
+            ],
+            "returns": "the cache",
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 56,
+          "signature": "pub func Length(self: &LruCache<K, V>) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&LruCache<K, V>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many entries it holds.",
+            "markdown": "How many entries it holds.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the count",
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Capacity",
+          "line": 63,
+          "signature": "pub func Capacity(self: &LruCache<K, V>) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&LruCache<K, V>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many entries it keeps before evicting.",
+            "markdown": "How many entries it keeps before evicting.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the capacity",
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#capacity"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Contains",
+          "line": 71,
+          "signature": "pub func Contains(self: &LruCache<K, V>, key: K) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "key", "type": "K" }],
+          "receiver": "&LruCache<K, V>",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether `key` has an entry, without counting as a use.",
+            "markdown": "Whether `key` has an entry, without counting as a use.",
+            "typeParams": [],
+            "params": [{ "name": "key", "markdown": "the key" }],
+            "returns": "whether it is cached",
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#contains"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Get",
+          "line": 98,
+          "signature": "pub func Get(self: &var LruCache<K, V>, key: K) -> V?",
+          "typeParams": [],
+          "params": [{ "name": "key", "type": "K" }],
+          "receiver": "&var LruCache<K, V>",
+          "returnType": "V?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A copy of the value for `key`, which becomes the most recently used.",
+            "markdown": "A copy of the value for `key`, which becomes the most recently used.",
+            "typeParams": [],
+            "params": [{ "name": "key", "markdown": "the key" }],
+            "returns": "the value, or `none` when it is not cached",
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#get"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Peek",
+          "line": 111,
+          "signature": "pub func Peek(self: &LruCache<K, V>, key: K) -> V?",
+          "typeParams": [],
+          "params": [{ "name": "key", "type": "K" }],
+          "receiver": "&LruCache<K, V>",
+          "returnType": "V?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A copy of the value for `key`, without counting as a use.",
+            "markdown": "A copy of the value for `key`, without counting as a use.",
+            "typeParams": [],
+            "params": [{ "name": "key", "markdown": "the key" }],
+            "returns": "the value, or `none` when it is not cached",
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#peek"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Put",
+          "line": 122,
+          "signature": "pub func Put(self: &var LruCache<K, V>, key: K, value: V) -> K? ! CollectionError",
+          "typeParams": [],
+          "params": [
+            { "name": "key", "type": "K" },
+            { "name": "value", "type": "V" }
+          ],
+          "receiver": "&var LruCache<K, V>",
+          "returnType": "K? ! CollectionError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Caches `value` for `key` as the most recently used, replacing its value if it has one, and evicting the least\nrecently used entry when the cache is full.",
+            "markdown": "Caches `value` for `key` as the most recently used, replacing its value if it has one, and evicting the least\nrecently used entry when the cache is full.",
+            "typeParams": [],
+            "params": [
+              { "name": "key", "markdown": "the key" },
+              { "name": "value", "markdown": "the value" }
+            ],
+            "returns": "the key that was evicted, if one was, or why there was no room",
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#put"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Remove",
+          "line": 162,
+          "signature": "pub func Remove(self: &var LruCache<K, V>, key: K) -> V?",
+          "typeParams": [],
+          "params": [{ "name": "key", "type": "K" }],
+          "receiver": "&var LruCache<K, V>",
+          "returnType": "V?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes the entry for `key` out of the cache.",
+            "markdown": "Takes the entry for `key` out of the cache.",
+            "typeParams": [],
+            "params": [{ "name": "key", "markdown": "the key" }],
+            "returns": "its value, or `none` when it was not cached",
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#remove"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clear",
+          "line": 183,
+          "signature": "pub func Clear(self: &var LruCache<K, V>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var LruCache<K, V>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Forgets every entry, keeping the storage.",
+            "markdown": "Forgets every entry, keeping the storage.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#clear"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "KeysByRecency",
+          "line": 194,
+          "signature": "pub func KeysByRecency(self: &LruCache<K, V>, into: var K[..]) -> uint",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var K[..]" }],
+          "receiver": "&LruCache<K, V>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The keys from the most to the least recently used.",
+            "markdown": "The keys from the most to the least recently used.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "receives the keys in that order, as many as fit" }],
+            "returns": "how many were written",
+            "see": ["https://rux-lang.dev/docs/api/collections/lru-cache#keys-by-recency"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
       "kind": "function",
       "name": "WriteVectorDebug",
       "displayName": "WriteVectorDebug<T>",
@@ -5804,12 +6839,892 @@
       ]
     },
     {
+      "kind": "struct",
+      "name": "PriorityQueue",
+      "displayName": "PriorityQueue<T>",
+      "module": "PriorityQueue",
+      "source": "Src/PriorityQueue.rux",
+      "line": 13,
+      "signature": "pub struct PriorityQueue<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A max-priority queue over a binary heap.",
+        "markdown": "A max-priority queue over a binary heap. Move-only: it owns its elements.",
+        "typeParams": [{ "name": "T", "markdown": "the element type, which needs `<`" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/collections/priority-queue"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "items",
+          "type": "Vector<T>",
+          "public": false,
+          "line": 15,
+          "doc": "The elements, in heap order.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "PriorityQueue",
+          "line": 25,
+          "signature": "pub func PriorityQueue(allocator: Allocator) -> PriorityQueue<T>",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "PriorityQueue<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty queue that has not allocated anything.",
+            "markdown": "An empty queue that has not allocated anything.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from" }],
+            "returns": "the queue",
+            "see": ["https://rux-lang.dev/docs/api/collections/priority-queue#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 32,
+          "signature": "pub func Length(self: &PriorityQueue<T>) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&PriorityQueue<T>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many elements it holds.",
+            "markdown": "How many elements it holds.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the count",
+            "see": ["https://rux-lang.dev/docs/api/collections/priority-queue#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsEmpty",
+          "line": 39,
+          "signature": "pub func IsEmpty(self: &PriorityQueue<T>) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&PriorityQueue<T>",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether it holds nothing.",
+            "markdown": "Whether it holds nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether it is empty",
+            "see": ["https://rux-lang.dev/docs/api/collections/priority-queue#is-empty"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Push",
+          "line": 47,
+          "signature": "pub func Push(self: &var PriorityQueue<T>, value: T) -> ! CollectionError",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&var PriorityQueue<T>",
+          "returnType": "! CollectionError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds `value`, moving it in.",
+            "markdown": "Adds `value`, moving it in. Logarithmic time, amortized over the vector's growth.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the element" }],
+            "returns": "nothing, or why there was no room; the queue is unchanged on failure",
+            "see": ["https://rux-lang.dev/docs/api/collections/priority-queue#push"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Peek",
+          "line": 62,
+          "signature": "pub func Peek(self: &PriorityQueue<T>) -> (*T)?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&PriorityQueue<T>",
+          "returnType": "(*T)?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The largest element, without taking it out.",
+            "markdown": "The largest element, without taking it out.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a pointer to it, valid until the queue next changes, or `none` when the queue is empty",
+            "see": ["https://rux-lang.dev/docs/api/collections/priority-queue#peek"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Pop",
+          "line": 69,
+          "signature": "pub func Pop(self: &var PriorityQueue<T>) -> T?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PriorityQueue<T>",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes the largest element out.",
+            "markdown": "Takes the largest element out. Logarithmic time.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the element, or `none` when the queue is empty",
+            "see": ["https://rux-lang.dev/docs/api/collections/priority-queue#pop"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clear",
+          "line": 91,
+          "signature": "pub func Clear(self: &var PriorityQueue<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PriorityQueue<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Destroys every element, keeping the storage.",
+            "markdown": "Destroys every element, keeping the storage.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/collections/priority-queue#clear"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsSlice",
+          "line": 98,
+          "signature": "pub func AsSlice(self: &PriorityQueue<T>) -> T[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&PriorityQueue<T>",
+          "returnType": "T[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The elements in heap order: the largest first, the rest in no useful order.",
+            "markdown": "The elements in heap order: the largest first, the rest in no useful order.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a view of them, valid until the queue next changes",
+            "see": ["https://rux-lang.dev/docs/api/collections/priority-queue#as-slice"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "SmallVector",
+      "displayName": "SmallVector<T>",
+      "module": "SmallVector",
+      "source": "Src/SmallVector.rux",
+      "line": 17,
+      "signature": "pub struct SmallVector<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A growable sequence that holds up to 64 bytes of elements without allocating.",
+        "markdown": "A growable sequence that holds up to 64 bytes of elements without allocating. Move-only: it owns its elements.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/collections/small-vector"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "inline",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 19,
+          "doc": "The inline room.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "heap",
+          "type": "*var T",
+          "public": false,
+          "line": 21,
+          "doc": "The allocated block once the elements outgrow the inline room, or null while they fit.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "length",
+          "type": "uint",
+          "public": false,
+          "line": 23,
+          "doc": "How many elements are initialized, counting from the front.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "heapCapacity",
+          "type": "uint",
+          "public": false,
+          "line": 25,
+          "doc": "How many the allocated block holds; unused while the elements are inline.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 27,
+          "doc": "Where the block comes from.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "SmallVector",
+          "line": 37,
+          "signature": "pub func SmallVector(allocator: Allocator) -> SmallVector<T>",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "SmallVector<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty vector, holding its first elements inline.",
+            "markdown": "An empty vector, holding its first elements inline.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "where the storage comes from once they outgrow it" }],
+            "returns": "the vector",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "InlineCapacity",
+          "line": 51,
+          "signature": "pub func InlineCapacity(self: &SmallVector<T>) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&SmallVector<T>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many elements fit inline: 64 bytes' worth, or none for an element larger than that or aligned to more\nthan eight.",
+            "markdown": "How many elements fit inline: 64 bytes' worth, or none for an element larger than that or aligned to more\nthan eight.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the inline capacity",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#inline-capacity"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsInline",
+          "line": 60,
+          "signature": "pub func IsInline(self: &SmallVector<T>) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&SmallVector<T>",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the elements are still inline, with nothing allocated.",
+            "markdown": "Whether the elements are still inline, with nothing allocated.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether it is inline",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#is-inline"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 67,
+          "signature": "pub func Length(self: &SmallVector<T>) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&SmallVector<T>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many elements it holds.",
+            "markdown": "How many elements it holds.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the count",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsEmpty",
+          "line": 74,
+          "signature": "pub func IsEmpty(self: &SmallVector<T>) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&SmallVector<T>",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether it holds nothing.",
+            "markdown": "Whether it holds nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether it is empty",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#is-empty"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Capacity",
+          "line": 81,
+          "signature": "pub func Capacity(self: &SmallVector<T>) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&SmallVector<T>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many elements fit before the next allocation.",
+            "markdown": "How many elements fit before the next allocation.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the capacity",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#capacity"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Push",
+          "line": 115,
+          "signature": "pub func Push(self: &var SmallVector<T>, value: T) -> ! CollectionError",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&var SmallVector<T>",
+          "returnType": "! CollectionError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Appends `value`, moving it in, and allocating only once the inline room is full.",
+            "markdown": "Appends `value`, moving it in, and allocating only once the inline room is full.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the element" }],
+            "returns": "nothing, or why there was no room; the vector is unchanged on failure",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#push"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TryPop",
+          "line": 126,
+          "signature": "pub func TryPop(self: &var SmallVector<T>, value: *var T) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "*var T" }],
+          "receiver": "&var SmallVector<T>",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes the last element out.",
+            "markdown": "Takes the last element out.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "receives the element" }],
+            "returns": "whether there was one",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#try-pop"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Get",
+          "line": 138,
+          "signature": "pub func Get(self: &SmallVector<T>, index: uint) -> T?",
+          "typeParams": [],
+          "params": [{ "name": "index", "type": "uint" }],
+          "receiver": "&SmallVector<T>",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A copy of the element at `index`.",
+            "markdown": "A copy of the element at `index`.",
+            "typeParams": [],
+            "params": [{ "name": "index", "markdown": "which one" }],
+            "returns": "the element, or `none` past the end",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#get"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsSlice",
+          "line": 147,
+          "signature": "pub func AsSlice(self: &SmallVector<T>) -> T[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&SmallVector<T>",
+          "returnType": "T[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The elements, valid until the vector next changes or moves.",
+            "markdown": "The elements, valid until the vector next changes or moves.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a view of them",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#as-slice"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsMutableSlice",
+          "line": 155,
+          "signature": "pub func AsMutableSlice(self: &var SmallVector<T>) -> var T[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var SmallVector<T>",
+          "returnType": "var T[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The elements, writable, valid until the vector next changes or moves.",
+            "markdown": "The elements, writable, valid until the vector next changes or moves.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a view of them",
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#as-mutable-slice"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Truncate",
+          "line": 163,
+          "signature": "pub func Truncate(self: &var SmallVector<T>, length: uint)",
+          "typeParams": [],
+          "params": [{ "name": "length", "type": "uint" }],
+          "receiver": "&var SmallVector<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Destroys the elements past `length`, keeping the storage.",
+            "markdown": "Destroys the elements past `length`, keeping the storage.",
+            "typeParams": [],
+            "params": [{ "name": "length", "markdown": "how many to keep" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#truncate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clear",
+          "line": 176,
+          "signature": "pub func Clear(self: &var SmallVector<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var SmallVector<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Destroys every element, keeping the storage.",
+            "markdown": "Destroys every element, keeping the storage.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/collections/small-vector#clear"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~SmallVector",
+          "line": 180,
+          "signature": "func ~SmallVector(self: &var SmallVector<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var SmallVector<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
       "kind": "constant",
       "name": "SlotEmpty",
       "displayName": "SlotEmpty",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 30,
+      "line": 33,
       "signature": "pub const SlotEmpty: uint8",
       "typeParams": [],
       "doc": {
@@ -5844,7 +7759,7 @@
       "displayName": "MaximumProbeDistance",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 37,
+      "line": 40,
       "signature": "pub const MaximumProbeDistance: uint",
       "typeParams": [],
       "doc": {
@@ -5879,7 +7794,7 @@
       "displayName": "MinimumTableCapacity",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 42,
+      "line": 45,
       "signature": "pub const MinimumTableCapacity: uint",
       "typeParams": [],
       "doc": {
@@ -5914,7 +7829,7 @@
       "displayName": "TableSeed",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 49,
+      "line": 57,
       "signature": "pub struct TableSeed",
       "typeParams": [],
       "doc": {
@@ -5932,7 +7847,7 @@
           "name": "low",
           "type": "uint64",
           "public": false,
-          "line": 50,
+          "line": 58,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -5949,7 +7864,7 @@
           "name": "high",
           "type": "uint64",
           "public": false,
-          "line": 51,
+          "line": 59,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -5969,7 +7884,7 @@
         {
           "kind": "associated",
           "name": "Random",
-          "line": 62,
+          "line": 70,
           "signature": "pub func Random() -> TableSeed",
           "typeParams": [],
           "params": [],
@@ -6001,7 +7916,7 @@
         {
           "kind": "associated",
           "name": "Of",
-          "line": 75,
+          "line": 83,
           "signature": "pub func Of(low: uint64, high: uint64) -> TableSeed",
           "typeParams": [],
           "params": [
@@ -6055,7 +7970,7 @@
       "displayName": "Table<K, V>",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 87,
+      "line": 95,
       "signature": "pub struct Table<K, V>",
       "typeParams": [
         { "name": "K", "bounds": [] },
@@ -6063,7 +7978,7 @@
       ],
       "doc": {
         "summary": "The open-addressing table `HashMap` and `HashSet` are both built on.",
-        "markdown": "The open-addressing table `HashMap` and `HashSet` are both built on.\nHolds keys, values and one distance byte per slot in three parallel runs. A set instantiates the value type with\nsomething that occupies nothing worth reading, which is what lets one kernel serve both.\nMove-only: it owns its storage and entries, prohibits copying, and destroys both with `~Table`.",
+        "markdown": "The open-addressing table `HashMap` and `HashSet` are both built on.\nHolds keys, values, one distance byte and one hash tag per slot in four parallel runs. A set instantiates the value\ntype with something that occupies nothing worth reading, which is what lets one kernel serve both.\nMove-only: it owns its storage and entries, prohibits copying, and destroys both with `~Table`.",
         "typeParams": [
           { "name": "K", "markdown": "the key type" },
           { "name": "V", "markdown": "the value type" }
@@ -6079,7 +7994,7 @@
           "name": "keys",
           "type": "*var K",
           "public": false,
-          "line": 89,
+          "line": 97,
           "doc": "The keys, one per slot. Only the slots whose distance byte is not `SlotEmpty` hold one.",
           "targets": [
             "windows-x86_64",
@@ -6096,7 +8011,7 @@
           "name": "values",
           "type": "*var V",
           "public": false,
-          "line": 91,
+          "line": 99,
           "doc": "The values, one per slot, occupied exactly where the keys are.",
           "targets": [
             "windows-x86_64",
@@ -6113,8 +8028,25 @@
           "name": "states",
           "type": "*var uint8",
           "public": false,
-          "line": 93,
+          "line": 101,
           "doc": "The distance byte of each slot: `SlotEmpty`, or the entry's distance from home plus one.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "tags",
+          "type": "*var uint8",
+          "public": false,
+          "line": 103,
+          "doc": "The top byte of each occupied slot's key hash, compared before the keys themselves.",
           "targets": [
             "windows-x86_64",
             "windows-aarch64",
@@ -6130,7 +8062,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 95,
+          "line": 105,
           "doc": "How many slots hold an entry.",
           "targets": [
             "windows-x86_64",
@@ -6147,7 +8079,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 97,
+          "line": 107,
           "doc": "How many slots there are. A power of two, or zero.",
           "targets": [
             "windows-x86_64",
@@ -6164,7 +8096,7 @@
           "name": "seed",
           "type": "TableSeed",
           "public": false,
-          "line": 99,
+          "line": 109,
           "doc": "The seed the hash is taken with.",
           "targets": [
             "windows-x86_64",
@@ -6181,7 +8113,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 101,
+          "line": 111,
           "doc": "Where the storage came from, and where it goes back to.",
           "targets": [
             "windows-x86_64",
@@ -6201,7 +8133,7 @@
         {
           "kind": "constructor",
           "name": "Table",
-          "line": 115,
+          "line": 125,
           "signature": "pub func Table(allocator: Allocator, seed: TableSeed) -> Table<K, V>",
           "typeParams": [],
           "params": [
@@ -6239,7 +8171,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 131,
+          "line": 142,
           "signature": "pub func Length(self: &Table<K, V>) -> uint",
           "typeParams": [],
           "params": [],
@@ -6271,7 +8203,7 @@
         {
           "kind": "method",
           "name": "Capacity",
-          "line": 140,
+          "line": 151,
           "signature": "pub func Capacity(self: &Table<K, V>) -> uint",
           "typeParams": [],
           "params": [],
@@ -6303,7 +8235,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 148,
+          "line": 159,
           "signature": "pub func IsEmpty(self: &Table<K, V>) -> bool",
           "typeParams": [],
           "params": [],
@@ -6335,7 +8267,7 @@
         {
           "kind": "method",
           "name": "IsOccupied",
-          "line": 157,
+          "line": 168,
           "signature": "pub func IsOccupied(self: &Table<K, V>, index: uint) -> bool",
           "typeParams": [],
           "params": [{ "name": "index", "type": "uint" }],
@@ -6367,7 +8299,7 @@
         {
           "kind": "method",
           "name": "Find",
-          "line": 182,
+          "line": 193,
           "signature": "pub func Find(self: &Table<K, V>, key: K, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> uint?",
           "typeParams": [],
           "params": [
@@ -6407,7 +8339,7 @@
         {
           "kind": "associated",
           "name": "CapacityFor",
-          "line": 274,
+          "line": 315,
           "signature": "pub func CapacityFor(length: uint) -> uint ! CollectionError",
           "typeParams": [],
           "params": [{ "name": "length", "type": "uint" }],
@@ -6439,7 +8371,7 @@
         {
           "kind": "method",
           "name": "Rehash",
-          "line": 294,
+          "line": 335,
           "signature": "pub func Rehash(self: &var Table<K, V>, capacity: uint, hash: func(K, uint64, uint64) -> uint64) -> ! CollectionError",
           "typeParams": [],
           "params": [
@@ -6477,7 +8409,7 @@
         {
           "kind": "method",
           "name": "EnsureRoom",
-          "line": 350,
+          "line": 403,
           "signature": "pub func EnsureRoom(self: &var Table<K, V>, hash: func(K, uint64, uint64) -> uint64) -> ! CollectionError",
           "typeParams": [],
           "params": [{ "name": "hash", "type": "func(K, uint64, uint64) -> uint64" }],
@@ -6509,7 +8441,7 @@
         {
           "kind": "method",
           "name": "Reserve",
-          "line": 363,
+          "line": 416,
           "signature": "pub func Reserve(self: &var Table<K, V>, additional: uint, hash: func(K, uint64, uint64) -> uint64) -> ! CollectionError",
           "typeParams": [],
           "params": [
@@ -6547,7 +8479,7 @@
         {
           "kind": "method",
           "name": "ShrinkToFit",
-          "line": 377,
+          "line": 430,
           "signature": "pub func ShrinkToFit(self: &var Table<K, V>, hash: func(K, uint64, uint64) -> uint64) -> ! CollectionError",
           "typeParams": [],
           "params": [{ "name": "hash", "type": "func(K, uint64, uint64) -> uint64" }],
@@ -6579,7 +8511,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 390,
+          "line": 443,
           "signature": "pub func Clear(self: &var Table<K, V>)",
           "typeParams": [],
           "params": [],
@@ -6611,7 +8543,7 @@
         {
           "kind": "destructor",
           "name": "~Table",
-          "line": 422,
+          "line": 477,
           "signature": "func ~Table(self: &var Table<K, V>)",
           "typeParams": [],
           "params": [],

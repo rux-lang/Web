@@ -10,15 +10,19 @@ rux add Rux/Collections
 
 ## What it provides
 
-| Type            | Role                                      | Also known as |
-| --------------- | ----------------------------------------- | ------------- |
-| `Array<T>`      | Fixed-length owned heap storage           |               |
-| `Vector<T>`     | Growable contiguous sequence              | the stack     |
-| `Deque<T>`      | Double-ended queue over a circular buffer | the queue     |
-| `HashMap<K, V>` | Open-addressed associative table          |               |
-| `HashSet<T>`    | Open-addressed set of distinct values     |               |
-| `TreeMap<K, V>` | Ordered red-black-tree map                |               |
-| `TreeSet<T>`    | Ordered red-black-tree set                |               |
+| Type               | Role                                         | Also known as |
+| ------------------ | -------------------------------------------- | ------------- |
+| `Array<T>`         | Fixed-length owned heap storage              |               |
+| `Vector<T>`        | Growable contiguous sequence                 | the stack     |
+| `Deque<T>`         | Double-ended queue over a circular buffer    | the queue     |
+| `HashMap<K, V>`    | Open-addressed associative table             |               |
+| `HashSet<T>`       | Open-addressed set of distinct values        |               |
+| `TreeMap<K, V>`    | Ordered red-black-tree map                   |               |
+| `TreeSet<T>`       | Ordered red-black-tree set                   |               |
+| `PriorityQueue<T>` | Max-heap that hands out the largest first    | the heap      |
+| `BitSet`           | Growable set of small integers, a bit each   |               |
+| `SmallVector<T>`   | Vector holding 64 bytes of elements inline   |               |
+| `LruCache<K, V>`   | Bounded map evicting the least recently used |               |
 
 There is no `Stack` or `Queue` type. `Vector` already is the stack — `Push` and `TryPop` work at the end that costs nothing to reach — and `Deque` already is the queue, with `PushBack` and `TryPopFront`. Wrapper types would duplicate them to add no safety Rux can enforce. There is no `Dictionary` either: `HashMap` is the one associative name.
 
@@ -116,7 +120,7 @@ Construct `MutableReferenceIterator<T>(items)` directly to walk a `var T[..]`. R
 
 ## Hashing
 
-`HashMap` and `HashSet` are one kernel — Robin Hood open addressing over a power-of-two table — with the set storing nothing alongside its keys. A fix to the probing or the deletion is a fix to both.
+`HashMap` and `HashSet` are one kernel — Robin Hood open addressing over a power-of-two table — with the set storing nothing alongside its keys. A fix to the probing or the deletion is a fix to both. Each slot also keeps the top byte of its key's hash, so a lookup passing other keys compares one byte for each and calls the equality function only on a likely match: for text keys that saves reading each passed key's bytes from wherever they live, at one byte per slot.
 
 Every entry records how far it sits from the slot its hash names. An insertion that meets an entry closer to home than itself takes the slot and carries that entry onward, so the distances along a chain never decrease and the worst one stays near the average. That also makes a miss cheap: a search reaching a slot whose occupant is closer to home than the search has travelled can stop, because the key would have taken that slot on the way past.
 

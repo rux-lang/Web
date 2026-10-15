@@ -224,6 +224,21 @@ This view without the ASCII whitespace at either end.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L137)
 
+<h3 id="lines"><code>Lines</code></h3>
+
+```rux
+pub func Lines(self: &StringView) -> LineIterator
+```
+
+A walk over the lines of this view, each without its line break.
+A line ends at `\n` or `\r\n`; a break at the very end does not start another, empty line, so `"a\nb\n"`
+has two lines and empty text has none. A lone `\r` is part of its line.
+`self` is borrowed and must outlive the walk.
+
+**Returns**: a cursor over the lines
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L148)
+
 <h3 id="split"><code>Split</code></h3>
 
 ```rux
@@ -242,7 +257,7 @@ A walk over the parts of this view between occurrences of `separator`.
 
 **Returns**: a cursor over the pieces between separators
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L157)
 
 <h3 id="length"><code>Length</code></h3>
 
@@ -477,7 +492,7 @@ Whether `byte` is ASCII whitespace: space, tab, newline, carriage return, form f
 ASCII only, deliberately. Unicode calls a good many more characters whitespace, and which ones is a question for
 the tables; every one of them is multi-byte, so trimming by this rule never cuts a character in half.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L172)
 
 **Parameters**
 
@@ -498,7 +513,7 @@ pub struct SplitIterator {
 A walk over the parts of a view between occurrences of a separator.
 Every part is a borrow of the original, so splitting allocates nothing however many parts there are.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L180)
 
 **Implements Iterator**
 
@@ -518,7 +533,36 @@ endless walk.
 
 **Returns**: the next piece, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L188)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L198)
+
+<h3 id="line-iterator"><code>LineIterator</code></h3>
+
+```rux
+pub struct LineIterator {
+    // private fields
+}
+```
+
+A walk over the lines of a view, each without its line break.
+Every line is a borrow of the original, so walking allocates nothing.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L220)
+
+**Implements Iterator**
+
+`LineIterator` conforms to `Iterator`.
+
+<h4 id="line-iterator-next"><code>Next</code></h4>
+
+```rux
+pub func Next(self: &var LineIterator) -> StringView?
+```
+
+The next line, without its `\n` or `\r\n`, or `none` after the last.
+
+**Returns**: the next line, or `none` at the end
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L231)
 
 <h3 id="scalar-iterator"><code>ScalarIterator</code></h3>
 

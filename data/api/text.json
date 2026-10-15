@@ -13,7 +13,8 @@
     "dependencies": [
       { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
       { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
-      { "name": "Memory", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+      { "name": "Memory", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Unicode", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
     ]
   },
   "modules": [
@@ -90,7 +91,7 @@
     {
       "name": "Transform",
       "source": "Src/Transform.rux",
-      "header": "Making new text out of old.\nEverything here allocates, because everything here produces text that did not exist before: joining two runs,\nrepeating one, replacing part of one, changing the case of one. That is what separates these from `Search`, whose\nanswers are all borrows of what was already there.\nThe case operations are ASCII-only and say so in their names. Case in Unicode is not a per-character mapping: it\ndepends on the locale (a Turkish dotless i), on neighbours (a Greek final sigma), and it changes the length (a\nGerman sharp s becomes two letters). Every one of those needs the tables, and a `ToUpper` that quietly did the\nASCII thing to text that was not ASCII would be wrong in a way nobody notices until the text is not English."
+      "header": "Making new text out of old.\nEverything here allocates, because everything here produces text that did not exist before: joining two runs,\nrepeating one, replacing part of one, changing the case of one. That is what separates these from `Search`, whose\nanswers are all borrows of what was already there.\nCase comes in two kinds. The ASCII operations say so in their names and never change a byte above 0x7F. The\nUnicode operations apply the full, unconditional mappings from `Rux/Unicode`, so the German sharp s becomes two\nletters and the length may change. What they leave out is what depends on the locale (the Turkish dotless i) or\non neighbouring characters (the Greek final sigma): those mappings are conditional, and applying them silently is\nhow text stops round-tripping."
     },
     {
       "name": "Utf8",
@@ -1704,7 +1705,7 @@
       "displayName": "IsAsciiSpace",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 162,
+      "line": 172,
       "signature": "pub func IsAsciiSpace(byte: char8) -> bool",
       "typeParams": [],
       "doc": {
@@ -1739,7 +1740,7 @@
       "displayName": "SplitIterator",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 170,
+      "line": 180,
       "signature": "pub struct SplitIterator",
       "typeParams": [],
       "doc": {
@@ -1757,7 +1758,7 @@
           "name": "rest",
           "type": "StringView",
           "public": false,
-          "line": 172,
+          "line": 182,
           "doc": "What is left to walk.",
           "targets": [
             "windows-x86_64",
@@ -1774,7 +1775,7 @@
           "name": "separator",
           "type": "StringView",
           "public": false,
-          "line": 174,
+          "line": 184,
           "doc": "What separates the parts.",
           "targets": [
             "windows-x86_64",
@@ -1791,7 +1792,7 @@
           "name": "finished",
           "type": "bool",
           "public": false,
-          "line": 177,
+          "line": 187,
           "doc": "Whether the walk is over. A walk ends after the part following the last separator, which may be empty, so\nrunning out of bytes is not by itself the end.",
           "targets": [
             "windows-x86_64",
@@ -1811,7 +1812,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 188,
+          "line": 198,
           "signature": "pub func Next(self: &var SplitIterator) -> StringView?",
           "typeParams": [],
           "params": [],
@@ -1827,6 +1828,109 @@
             "params": [],
             "returns": "the next piece, or `none` at the end",
             "see": ["https://rux-lang.dev/docs/api/text/string-view#split-iterator-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Iterator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "LineIterator",
+      "displayName": "LineIterator",
+      "module": "Search",
+      "source": "Src/Search.rux",
+      "line": 220,
+      "signature": "pub struct LineIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "A walk over the lines of a view, each without its line break.",
+        "markdown": "A walk over the lines of a view, each without its line break.\nEvery line is a borrow of the original, so walking allocates nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/text/string-view#line-iterator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "rest",
+          "type": "char8[..]",
+          "public": false,
+          "line": 222,
+          "doc": "What is left to walk.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "finished",
+          "type": "bool",
+          "public": false,
+          "line": 224,
+          "doc": "Whether the walk is over.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 231,
+          "signature": "pub func Next(self: &var LineIterator) -> StringView?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var LineIterator",
+          "returnType": "StringView?",
+          "value": null,
+          "conformance": "Iterator",
+          "public": true,
+          "doc": {
+            "summary": "The next line, without its `\\n` or `\\r\\n`, or `none` after the last.",
+            "markdown": "The next line, without its `\\n` or `\\r\\n`, or `none` after the last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the next line, or `none` at the end",
+            "see": ["https://rux-lang.dev/docs/api/text/string-view#line-iterator-next"],
             "deprecated": null
           },
           "targets": [
@@ -4788,8 +4892,40 @@
         },
         {
           "kind": "method",
+          "name": "Lines",
+          "line": 148,
+          "signature": "pub func Lines(self: &StringView) -> LineIterator",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&StringView",
+          "returnType": "LineIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A walk over the lines of this view, each without its line break.",
+            "markdown": "A walk over the lines of this view, each without its line break.\nA line ends at `\\n` or `\\r\\n`; a break at the very end does not start another, empty line, so `\"a\\nb\\n\"`\nhas two lines and empty text has none. A lone `\\r` is part of its line.\n`self` is borrowed and must outlive the walk.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a cursor over the lines",
+            "see": ["https://rux-lang.dev/docs/api/text/string-view#lines"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
           "name": "Split",
-          "line": 147,
+          "line": 157,
           "signature": "pub func Split(self: &StringView, separator: StringView) -> SplitIterator",
           "typeParams": [],
           "params": [{ "name": "separator", "type": "StringView" }],
@@ -5697,11 +5833,164 @@
     },
     {
       "kind": "function",
+      "name": "Join",
+      "displayName": "Join",
+      "module": "Transform",
+      "source": "Src/Transform.rux",
+      "line": 21,
+      "signature": "pub func Join(allocator: Allocator, parts: StringView[..], separator: StringView) -> String ! TextError",
+      "typeParams": [],
+      "doc": {
+        "summary": "The text of every part of `parts` in order, with `separator` between each two.",
+        "markdown": "The text of every part of `parts` in order, with `separator` between each two.\nNo parts give empty text and one part gives that part, so the separator count is always one less than the parts.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "parts", "markdown": "the pieces to join" },
+          { "name": "separator", "markdown": "what goes between them" }
+        ],
+        "returns": "the joined text, or why it could not be made",
+        "see": ["https://rux-lang.dev/docs/api/text/transform#join"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ToUpper",
+      "displayName": "ToUpper",
+      "module": "Transform",
+      "source": "Src/Transform.rux",
+      "line": 77,
+      "signature": "pub func ToUpper(allocator: Allocator, view: StringView) -> String ! TextError",
+      "typeParams": [],
+      "doc": {
+        "summary": "The text of `view` in upper case by Unicode's full, unconditional mappings, so `ß` becomes `SS` and `ŉ` becomes\n`ʼN`.",
+        "markdown": "The text of `view` in upper case by Unicode's full, unconditional mappings, so `ß` becomes `SS` and `ŉ` becomes\n`ʼN`. The length may change.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "view", "markdown": "the borrowed text to act on" }
+        ],
+        "returns": "the text in upper case, or why it could not be made",
+        "see": ["https://rux-lang.dev/docs/api/text/transform#to-upper"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ToLower",
+      "displayName": "ToLower",
+      "module": "Transform",
+      "source": "Src/Transform.rux",
+      "line": 87,
+      "signature": "pub func ToLower(allocator: Allocator, view: StringView) -> String ! TextError",
+      "typeParams": [],
+      "doc": {
+        "summary": "The text of `view` in lower case by Unicode's full, unconditional mappings.",
+        "markdown": "The text of `view` in lower case by Unicode's full, unconditional mappings. A capital sigma always becomes `σ`,\nnever the final `ς`, since which one is right depends on the letters around it.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "view", "markdown": "the borrowed text to act on" }
+        ],
+        "returns": "the text in lower case, or why it could not be made",
+        "see": ["https://rux-lang.dev/docs/api/text/transform#to-lower"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "FoldCase",
+      "displayName": "FoldCase",
+      "module": "Transform",
+      "source": "Src/Transform.rux",
+      "line": 97,
+      "signature": "pub func FoldCase(allocator: Allocator, view: StringView) -> String ! TextError",
+      "typeParams": [],
+      "doc": {
+        "summary": "The text of `view` case-folded by Unicode's full folding, the form for comparing text without regard to case:\ntwo texts that differ only in case fold to the same bytes, `Straße` and `STRASSE` included.",
+        "markdown": "The text of `view` case-folded by Unicode's full folding, the form for comparing text without regard to case:\ntwo texts that differ only in case fold to the same bytes, `Straße` and `STRASSE` included.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "where the storage comes from" },
+          { "name": "view", "markdown": "the borrowed text to act on" }
+        ],
+        "returns": "the folded text, or why it could not be made",
+        "see": ["https://rux-lang.dev/docs/api/text/transform#fold-case"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
       "name": "Concat",
       "displayName": "Concat",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 19,
+      "line": 108,
       "signature": "pub func Concat(allocator: Allocator, left: StringView, right: StringView) -> String ! TextError",
       "typeParams": [],
       "doc": {
@@ -5740,7 +6029,7 @@
       "displayName": "Repeat",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 35,
+      "line": 124,
       "signature": "pub func Repeat(allocator: Allocator, view: StringView, count: uint) -> String ! TextError",
       "typeParams": [],
       "doc": {
@@ -5779,7 +6068,7 @@
       "displayName": "Replace",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 61,
+      "line": 150,
       "signature": "pub func Replace(allocator: Allocator, view: StringView, needle: StringView, replacement: StringView) -> String ! TextError",
       "typeParams": [],
       "doc": {
@@ -5819,7 +6108,7 @@
       "displayName": "IsAsciiLetter",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 91,
+      "line": 180,
       "signature": "pub func IsAsciiLetter(byte: char8) -> bool",
       "typeParams": [],
       "doc": {
@@ -5854,7 +6143,7 @@
       "displayName": "ToAsciiUpper",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 103,
+      "line": 192,
       "signature": "pub func ToAsciiUpper(allocator: Allocator, view: StringView) -> String ! TextError",
       "typeParams": [],
       "doc": {
@@ -5892,7 +6181,7 @@
       "displayName": "ToAsciiLower",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 112,
+      "line": 201,
       "signature": "pub func ToAsciiLower(allocator: Allocator, view: StringView) -> String ! TextError",
       "typeParams": [],
       "doc": {

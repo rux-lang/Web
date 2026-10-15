@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Table.rux
-  line: 49
+  line: 57
 seo:
   title: "TableSeed — Collections API"
   description: "A hash seed, drawn once and shared by every table that wants one."
@@ -47,7 +47,7 @@ Runs in constant time and allocates nothing.
 
 **Returns**: a seed drawn from the system, so two tables in one process iterate differently
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L70)
 
 <h3 id="of"><code>Of</code></h3>
 
@@ -66,4 +66,4 @@ for many tables.
 
 **Returns**: a seed made of those two words, which makes the iteration order reproducible
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L83)
