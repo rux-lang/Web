@@ -32,6 +32,9 @@ test("every command page has the shared reference structure and verified spellin
       assert.match(markdown, new RegExp(`^## ${heading}$`, "m"), `${path}: ${heading}`);
     }
     for (const usage of command.usages) assert.ok(markdown.includes(usage), `${path}: ${usage}`);
-    for (const option of command.options) assert.ok(markdown.includes(option.flags), `${path}: ${option.flags}`);
+    // Option flags sit in a Markdown table, where a literal `|` is escaped.
+    for (const option of command.options) {
+      assert.ok(markdown.includes(option.flags.replaceAll("|", "\\|")), `${path}: ${option.flags}`);
+    }
   }
 });

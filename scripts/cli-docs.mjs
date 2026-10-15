@@ -9,9 +9,9 @@ const commandDetails = {
   },
   build: {
     behavior:
-      "Builds the normal package artifact and may additionally write inspection output selected by repeatable or comma-separated `--emit`. `--debug` and `--release` are mutually exclusive. Frontend target selection is supported, but linking a foreign target is rejected until that backend is available end to end.",
+      "Builds the normal package artifact and may additionally write inspection output selected by repeatable or comma-separated `--emit`. `--debug` and `--release` are mutually exclusive. Frontend target selection is supported, but linking a foreign target is rejected until that backend is available end to end. A build that is not up to date compiles only the source files that changed, on one thread per logical core unless `--jobs` caps them; the artifact is the same for every `--jobs` value. `--disable-pass` switches off one optional optimization pass for diagnosis, and an unknown or inactive pass name is rejected.",
     output:
-      "The artifact is written below configured `[Build].Output` using the selected profile. Inspection output is written below `Temp/` and does not replace the normal artifact.",
+      "The artifact is written below configured `[Build].Output` using the selected profile. Inspection output is written below `Temp/` and does not replace the normal artifact. A successful build records what it read under `Temp/Cache`, and the next identical build reuses the artifact when nothing changed, reporting `(up to date)`; `--no-cache` always compiles.",
     environment: ["`SOURCE_DATE_EPOCH` fixes compiler timestamps for reproducible builds."],
     related: ["check", "run", "clean"],
     afterBehavior: `Executable, SharedLibrary, and StaticLibrary packages build their conventional native artifact. A Windows SharedLibrary additionally writes its \`.lib\` import library. SourceLibrary packages can be checked but cannot be built directly.
@@ -25,14 +25,16 @@ const commandDetails = {
 | \`sema\` | Semantic-analysis dump in \`Temp/Sema/sema.txt\` |
 | \`hir\` | High-level IR in \`Temp/Hir/hir.txt\` |
 | \`lir\` | Low-level IR in \`Temp/Lir/lir.txt\` |
+| \`passes\` | The HIR and LIR before and after each optimization pass, in a directory per invocation under \`Temp/Optimization/\` |
 | \`asm\` | Target assembly in \`Temp/Asm/\` |
 | \`rcu\` | RCU objects in \`Temp/Obj/\` and text dumps in \`Temp/Rcu/\` |
+| \`symbols\` | Section headers and a \`.symtab\` in an ELF image, so profilers such as \`perf\` name Rux functions; PE and Mach-O images ignore it |
 
 The option is repeatable and accepts comma-separated values, so \`--emit ast --emit sema\` and \`--emit ast,sema\` are equivalent.`,
   },
   check: {
     behavior:
-      "Runs lexing, parsing, dependency loading, conditional-compilation folding, and semantic analysis without linking. Any supported target may be checked, including a foreign target. `--define` values override `[Build.Defines]`.",
+      "Runs lexing, parsing, dependency loading, conditional-compilation folding, and semantic analysis without linking. Any supported target may be checked, including a foreign target. `--define` values override `[Build.Defines]`. A package whose last check reported nothing and whose inputs are unchanged is skipped; `--no-cache` checks it anyway. At a workspace root every member is checked, side by side.",
     output:
       "Text diagnostics go to stderr. With `--json`, stdout receives one complete JSON document with a success flag and an escaped diagnostics array, including on failure.",
     related: ["build", "lint", "doc"],
@@ -46,7 +48,7 @@ The option is repeatable and accepts comma-separated values, so \`--emit ast --e
     behavior:
       "Runs the same folded, semantically checked frontend as `rux check`, then documents public modules, types, functions, constants, fields, variants, interface members, externs, and public extension methods. `--document-private-items` includes private items. Consecutive outer `///` comments attach when no blank line intervenes and support safe Markdown; raw HTML is escaped and unsafe link schemes are omitted. Foreign supported targets and repeated `--define` values select the API that is generated.",
     output:
-      "The default is `[Build].Output/Docs` (normally `Bin/Docs`). A workspace gets a landing page and one member section; dependencies are excluded. Generation is deterministic and self-contained. Rux writes through a temporary directory, marks managed output, and refuses to replace a non-empty unmarked directory. `--open` launches the generated index only after success.",
+      "The default is `[Build].Output/Docs` (normally `Bin/Docs`). `--format json` writes one versioned JSON API snapshot per package, such as `Bin/Docs/App.json`, instead of an HTML site. A workspace gets a landing page and one member section; dependencies are excluded. Generation is deterministic and self-contained. Rux writes through a temporary directory, marks managed output, and refuses to replace a non-empty unmarked directory. `--open` launches the generated index only after success.",
     related: ["check", "build"],
   },
   fmt: {
@@ -136,7 +138,7 @@ The option is repeatable and accepts comma-separated values, so \`--emit ast --e
   },
   run: {
     behavior:
-      "Builds an Executable package, then runs it. SharedLibrary, StaticLibrary, and SourceLibrary packages cannot run. `--define` overrides compile-time configuration and `--release` selects the release profile. Only arguments after `--` are passed to the child program.",
+      "Builds an Executable package, then runs it. SharedLibrary, StaticLibrary, and SourceLibrary packages cannot run. `--define` overrides compile-time configuration and `--release` selects the release profile. As with `rux build`, an up-to-date artifact is reused unless `--no-cache` is given. Only arguments after `--` are passed to the child program.",
     output:
       "Compiler progress and diagnostics use the usual streams. After a successful build, the command returns the child program's exit code.",
     environment: ["`SOURCE_DATE_EPOCH` fixes compiler timestamps for reproducible builds."],
@@ -144,7 +146,7 @@ The option is repeatable and accepts comma-separated values, so \`--emit ast --e
   },
   test: {
     behavior:
-      "Discovers test Program packages, builds them with test mode enabled, and runs every executable. Workspaces include root and member test trees. `--define` and `--release` apply consistently to every test target.",
+      "Discovers the executable packages under `Tests/` and every package whose sources mark functions `#Test()`, builds them with test mode enabled, and runs them; a package of `#Test()` functions with no `Main` gets a generated runner. Arguments after `--` go to every test program, whose runner reads them as name filters: `rux test -- Parser` runs the tests whose names contain `Parser`, and `--exact`, `--skip`, `--list` and `--quiet` refine that. Up to `--jobs` test packages run at once, one per logical core by default. Workspaces include root and member test trees. `--define` and `--release` apply consistently to every test target.",
     output:
       "A summary is written to stdout; compiler diagnostics and failed test details identify unsuccessful targets. The command returns 1 when any build or test fails.",
     related: ["check", "run"],
