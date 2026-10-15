@@ -1,0 +1,780 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "NanoId",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Short, URL-safe, unpredictable identifiers in the Nano ID format",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/nanoid",
+    "dependencies": [
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Entropy", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Memory", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Alphabet",
+      "source": "Src/Alphabet.rux",
+      "header": "What an identifier is drawn from, and the ways a caller-supplied alphabet can be unusable.\nThe default alphabet is Nano ID's own: the sixty-four characters that are safe unescaped in a URL, a file name and\nmost identifiers, in the order the reference implementation lists them. Sixty-four is a power of two, so each\nrandom byte yields one character with no rejection and no bias. The order is kept so that the same random bytes\nproduce the same identifier here as in every other implementation, which is what makes the test vectors shared.\nA custom alphabet must be between two and 256 distinct ASCII characters. One character carries no information,\nmore than 256 cannot be indexed by a byte, a repeated character makes that character more likely than the others,\nand a character outside ASCII is several bytes in UTF-8 where an identifier is promised to be one byte per\ncharacter."
+    },
+    {
+      "name": "Generate",
+      "source": "Src/Generate.rux",
+      "header": "Filling a caller's buffer with an identifier, from the system's generator or from a supplied source.\nEach character is a random byte masked down to the smallest power of two that covers the alphabet. A masked value\npast the end of the alphabet is thrown away rather than folded back in with a remainder, because folding would\nmake the first characters of the alphabet more likely than the rest. With the default alphabet the mask is the\nwhole alphabet and nothing is thrown away; with a custom one at most half the bytes are, and bytes are requested\nin batches sized so that one batch usually suffices.\nThe batch of random bytes is zeroized before returning, since an identifier is often a secret such as a session\ntoken and the bytes it was drawn from say what it is. A failure leaves the destination zeroized too, rather than\nholding the first part of an identifier that a careless caller might use anyway."
+    },
+    {
+      "name": "NanoId",
+      "source": "Src/NanoId.rux",
+      "header": "A standard identifier as a value: twenty-one characters of the default alphabet, held inline.\nMost programs want exactly one kind of identifier, and a value is easier to pass, store and compare than a buffer\nand a length. The text is stored as it is written, so `Text` borrows it without any conversion and two equal\nidentifiers have equal bytes.\nParsing is strict about the form: exactly twenty-one characters, each from the default alphabet. An identifier\nfrom a custom alphabet or of another length is a different kind of value and stays in a buffer."
+    }
+  ],
+  "items": [
+    {
+      "kind": "constant",
+      "name": "NanoIdAlphabet",
+      "displayName": "NanoIdAlphabet",
+      "module": "Alphabet",
+      "source": "Src/Alphabet.rux",
+      "line": 16,
+      "signature": "pub const NanoIdAlphabet",
+      "typeParams": [],
+      "doc": {
+        "summary": "Nano ID's default alphabet: the sixty-four URL-safe characters `A`–`Z`, `a`–`z`, `0`–`9`, `_` and `-`.",
+        "markdown": "Nano ID's default alphabet: the sixty-four URL-safe characters `A`–`Z`, `a`–`z`, `0`–`9`, `_` and `-`.\nListed in the reference implementation's order, so the same random bytes give the same identifier here as there.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/nanoid/alphabet#nano-id-alphabet"],
+        "deprecated": null
+      },
+      "value": "\"useandom-26T198340PX75pxJACKVERYMINDBUSHWOLF_GQZbfghjklqvwyzrict\"",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "constant",
+      "name": "NanoIdLength",
+      "displayName": "NanoIdLength",
+      "module": "Alphabet",
+      "source": "Src/Alphabet.rux",
+      "line": 22,
+      "signature": "pub const NanoIdLength: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The default identifier length, in characters: twenty-one.",
+        "markdown": "The default identifier length, in characters: twenty-one.\nTwenty-one characters of the default alphabet carry 126 random bits, more than the 122 of a version 4 UUID, in\ntwenty-one characters where the UUID takes thirty-six.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/nanoid/alphabet#nano-id-length"],
+        "deprecated": null
+      },
+      "value": "21",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "NanoIdError",
+      "displayName": "NanoIdError",
+      "module": "Alphabet",
+      "source": "Src/Alphabet.rux",
+      "line": 28,
+      "signature": "pub variant NanoIdError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why an identifier could not be generated.",
+        "markdown": "Why an identifier could not be generated.\nFailure-only: a filled destination is the success channel of `! NanoIdError`. Copy, owning nothing. The alphabet\ncases are found before any random bytes are requested, so they never consume entropy.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "AlphabetTooSmall",
+          "value": null,
+          "payload": null,
+          "line": 30,
+          "doc": "The alphabet has fewer than two characters, so an identifier from it carries no information.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "AlphabetTooLarge",
+          "value": null,
+          "payload": null,
+          "line": 32,
+          "doc": "The alphabet has more than 256 characters, more than one random byte can choose between.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "DuplicateCharacter",
+          "value": null,
+          "payload": "(uint)",
+          "line": 35,
+          "doc": "A character appears twice, which would make it twice as likely as the rest. The offset is the second\noccurrence.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "NonAsciiCharacter",
+          "value": null,
+          "payload": "(uint)",
+          "line": 38,
+          "doc": "A byte outside ASCII. The offset is that byte. Each character of an identifier is one byte, which a character\nthat takes several bytes in UTF-8 cannot be.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Entropy",
+          "value": null,
+          "payload": "(EntropyError)",
+          "line": 40,
+          "doc": "The operating system could not supply random bytes, for the reason carried.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ValidateAlphabet",
+      "displayName": "ValidateAlphabet",
+      "module": "Alphabet",
+      "source": "Src/Alphabet.rux",
+      "line": 50,
+      "signature": "pub func ValidateAlphabet(alphabet: char8[..]) -> ! NanoIdError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Checks that `alphabet` can be drawn from without bias.",
+        "markdown": "Checks that `alphabet` can be drawn from without bias.\nIt must hold between two and 256 characters, all ASCII and all distinct. Reports `AlphabetTooSmall`,\n`AlphabetTooLarge`, `NonAsciiCharacter` or `DuplicateCharacter`, the last two with the offset of the offending\nbyte. Runs in time linear in the alphabet's length and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "alphabet", "markdown": "the characters an identifier would be drawn from" }],
+        "returns": "success when the alphabet is usable",
+        "see": ["https://rux-lang.dev/docs/api/nanoid/alphabet#validate-alphabet"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "GenerateNanoId",
+      "displayName": "GenerateNanoId",
+      "module": "Generate",
+      "source": "Src/Generate.rux",
+      "line": 56,
+      "signature": "pub func GenerateNanoId(into: var char8[..]) -> ! EntropyError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Fills the whole of `into` with an identifier from the default alphabet, using the operating system's generator.",
+        "markdown": "Fills the whole of `into` with an identifier from the default alphabet, using the operating system's generator.\nThe identifier is as long as `into`; `NanoIdLength` characters is the standard length. Each character is one\nrandom byte, so a twenty-one-character identifier costs twenty-one bytes of entropy. Reports what the system\nreported when it could not supply random bytes, leaving `into` zeroized. An empty `into` succeeds and requests\nnothing.",
+        "typeParams": [],
+        "params": [{ "name": "into", "markdown": "the destination, filled completely" }],
+        "returns": "success when every character was written",
+        "see": ["https://rux-lang.dev/docs/api/nanoid/generate#generate-nano-id"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "GenerateNanoId",
+      "displayName": "GenerateNanoId",
+      "module": "Generate",
+      "source": "Src/Generate.rux",
+      "line": 69,
+      "signature": "pub func GenerateNanoId(into: var char8[..], alphabet: char8[..]) -> ! NanoIdError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Fills the whole of `into` with an identifier drawn from `alphabet`, using the operating system's generator.",
+        "markdown": "Fills the whole of `into` with an identifier drawn from `alphabet`, using the operating system's generator.\nEvery character of `alphabet` is equally likely at every position. Reports an alphabet failure from\n`ValidateAlphabet` before requesting any random bytes, leaving `into` untouched, and `Entropy` when the system\ncould not supply them, leaving `into` zeroized.",
+        "typeParams": [],
+        "params": [
+          { "name": "into", "markdown": "the destination, filled completely" },
+          { "name": "alphabet", "markdown": "between two and 256 distinct ASCII characters" }
+        ],
+        "returns": "success when every character was written",
+        "see": ["https://rux-lang.dev/docs/api/nanoid/generate#generate-nano-id"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "GenerateNanoIdFrom",
+      "displayName": "GenerateNanoIdFrom",
+      "module": "Generate",
+      "source": "Src/Generate.rux",
+      "line": 84,
+      "signature": "pub func GenerateNanoIdFrom(source: &var EntropySource, into: var char8[..], alphabet: char8[..]) -> ! NanoIdError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Fills the whole of `into` with an identifier drawn from `alphabet`, using random bytes from `source`.",
+        "markdown": "Fills the whole of `into` with an identifier drawn from `alphabet`, using random bytes from `source`.\nThe seam for a test, or for a caller with its own generator: the identifier is exactly as unpredictable as the\nbytes `source` supplies, so a deterministic source gives deterministic identifiers. Reports an alphabet failure\nfrom `ValidateAlphabet` before using `source`, leaving `into` untouched, and `Entropy` with what `source`\nreported, leaving `into` zeroized.",
+        "typeParams": [],
+        "params": [
+          { "name": "source", "markdown": "where the random bytes come from" },
+          { "name": "into", "markdown": "the destination, filled completely" },
+          { "name": "alphabet", "markdown": "between two and 256 distinct ASCII characters" }
+        ],
+        "returns": "success when every character was written",
+        "see": ["https://rux-lang.dev/docs/api/nanoid/generate#generate-nano-id-from"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "NanoId",
+      "displayName": "NanoId",
+      "module": "NanoId",
+      "source": "Src/NanoId.rux",
+      "line": 15,
+      "signature": "pub struct NanoId",
+      "typeParams": [],
+      "doc": {
+        "summary": "A Nano ID of the standard form: twenty-one characters from `NanoIdAlphabet`.",
+        "markdown": "A Nano ID of the standard form: twenty-one characters from `NanoIdAlphabet`.\nCopy, holding its text inline and owning nothing. Equality and ordering compare the text byte by byte.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "text",
+          "type": "char8[N]",
+          "public": false,
+          "line": 16,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Generate",
+          "line": 56,
+          "signature": "pub func Generate() -> NanoId ! EntropyError",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "NanoId ! EntropyError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A new identifier from the operating system's generator.",
+            "markdown": "A new identifier from the operating system's generator.\nCosts twenty-one bytes of entropy and allocates nothing. Reports what the system reported when it could not\nsupply random bytes, and produces no identifier in that case.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the identifier, or why none could be made",
+            "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id#generate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Parse",
+          "line": 69,
+          "signature": "pub func Parse(text: char8[..]) -> NanoId ! NanoIdParseError",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "NanoId ! NanoIdParseError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Reads a standard identifier from its text.",
+            "markdown": "Reads a standard identifier from its text.\nReports `WrongLength` unless the text is exactly twenty-one bytes, and `InvalidCharacter` at the first byte\noutside the default alphabet. A refused parse produces no value. Runs in constant time for a text of the\nright length and allocates nothing.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text to read" }],
+            "returns": "the identifier, or why the text is not one",
+            "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id#parse"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Text",
+          "line": 88,
+          "signature": "pub func Text(self: &NanoId) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&NanoId",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The identifier's twenty-one characters.",
+            "markdown": "The identifier's twenty-one characters.\nBorrows the value: the slice reads the value's own storage and must not outlive it. Cannot fail and\nallocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the text, always `NanoIdLength` bytes of the default alphabet",
+            "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id#text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 98,
+          "signature": "pub func Equals(self: &NanoId, other: &NanoId) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&NanoId" }],
+          "receiver": "&NanoId",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two identifiers are the same.",
+            "markdown": "Whether two identifiers are the same.\nCompares every byte whatever it finds, so the time taken does not reveal how much of a guessed identifier was\nright. Cannot fail and allocates nothing.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the identifier to compare against" }],
+            "returns": "whether the two have the same text",
+            "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Compare",
+          "line": 114,
+          "signature": "pub func Compare(self: &NanoId, other: &NanoId) -> Ordering",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&NanoId" }],
+          "receiver": "&NanoId",
+          "returnType": "Ordering",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The order of two identifiers' texts, byte by byte.",
+            "markdown": "The order of two identifiers' texts, byte by byte.\nIdentifiers are random, so this order means nothing beyond being total and stable, which is what a sorted\ncontainer needs. Cannot fail and allocates nothing.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the identifier to compare against" }],
+            "returns": "how this identifier orders against `other`",
+            "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id#compare"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 132,
+          "signature": "pub func WriteDisplay(self: &NanoId, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&NanoId",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the identifier's twenty-one characters.",
+            "markdown": "Writes the identifier's twenty-one characters.\nNo style is understood. Reports whatever the writer reported, and `UnsupportedRequest` for a style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole identifier was accepted",
+            "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 145,
+          "signature": "pub func WriteDebug(self: &NanoId, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&NanoId",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`: an identifier has one reading.",
+            "markdown": "The same text as `Display`: an identifier has one reading.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole identifier was accepted",
+            "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "NanoIdParseError",
+      "displayName": "NanoIdParseError",
+      "module": "NanoId",
+      "source": "Src/NanoId.rux",
+      "line": 22,
+      "signature": "pub variant NanoIdParseError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why text could not be read as a standard Nano ID.",
+        "markdown": "Why text could not be read as a standard Nano ID.\nFailure-only, carrying the zero-based byte offset where the problem was found. Copy, owning nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id#nano-id-parse-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "WrongLength",
+          "value": null,
+          "payload": "(uint)",
+          "line": 25,
+          "doc": "The text is not twenty-one bytes long. The offset is the text's length when it is too short, and the first\nbyte past the form when it is too long.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidCharacter",
+          "value": null,
+          "payload": "(uint)",
+          "line": 27,
+          "doc": "A character that is not in the default alphabet. The offset is that character.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Offset",
+          "line": 35,
+          "signature": "pub func Offset(self: &NanoIdParseError) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&NanoIdParseError",
+          "returnType": "uint",
+          "value": null,
+          "conformance": "ParseFailure",
+          "public": true,
+          "doc": {
+            "summary": "Where in the input the failure was found.",
+            "markdown": "Where in the input the failure was found.\nBorrows the error and leaves it untouched. Cannot fail; runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the zero-based UTF-8 byte offset, which is the text's length at end of input",
+            "see": ["https://rux-lang.dev/docs/api/nanoid/nano-id#nano-id-parse-error-offset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["ParseFailure"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

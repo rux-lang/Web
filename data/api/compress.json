@@ -1,0 +1,1393 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Compress",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Deflate compression in the raw, zlib and gzip formats, as streams and for whole buffers",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/compress",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Collections", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Hash", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Io", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Memory", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Buffers",
+      "source": "Src/Buffers.rux",
+      "header": "Compressing and decompressing whole buffers, for data already in memory.\nBoth run the streaming reader and writer over a source that reads a slice and a sink that appends to storage this\nfunction owns. An interface value holds its own copy of what it was made from, so the sink writes through the\nstorage's address, and the function collects the bytes from there when the stream is done."
+    },
+    {
+      "name": "Deflate",
+      "source": "Src/Deflate.rux",
+      "header": "Writing data as a compressed stream.\nData is gathered until the buffer is full, then encoded as one block, with the 32 KiB before it kept so that\nmatches can reach back into earlier blocks. Repeats are found through hash chains on three-byte prefixes, as zlib\nfinds them; the higher levels follow longer chains and look one byte ahead before taking a match, in case a longer\none starts there. Each block is then written whichever way is smallest: stored as it is, with the fixed codes, or\nwith codes built for that block's own frequencies.\nNothing is complete until `Finish` writes the final block and the container's trailer, so a writer dropped without\nfinishing leaves a stream a decompressor reports as truncated."
+    },
+    {
+      "name": "Format",
+      "source": "Src/Format.rux",
+      "header": "The three containers a Deflate stream travels in, how hard to compress, and the tables RFC 1951 fixes."
+    },
+    {
+      "name": "Huffman",
+      "source": "Src/Huffman.rux",
+      "header": "The canonical Huffman codes of RFC 1951: reading them from code lengths, and choosing lengths for a set of\nfrequencies.\nA code is described entirely by the length of each symbol's code word, so both directions work from lengths.\nDecoding counts the codes of each length and walks the lengths one bit at a time, as zlib's `puff` does: no table to\nbuild beyond the counts and the symbols in code order. Encoding builds an ordinary Huffman tree, then limits its\ndepth the way zlib does, moving the deepest leaves up and splitting a shallower one until every code fits, and\nhands the lengths out again with the shortest to the most frequent symbols."
+    },
+    {
+      "name": "Inflate",
+      "source": "Src/Inflate.rux",
+      "header": "Reading a compressed stream back as the data it holds.\nThe decompressor pulls compressed bytes from its source as it needs them and stops only when the caller's buffer is\nfull, so it is a state machine: between reads it remembers which part of the stream it is in, how much of a stored\nblock is left, and how much of a match it has still to copy. The last 32 KiB it produced are kept, since a match\nmay reach back that far. The container's checksum is computed over everything produced and checked against the\ntrailer before the end of the data is reported, so a reader that reached the end got the data that was compressed."
+    }
+  ],
+  "items": [
+    {
+      "kind": "function",
+      "name": "Compress",
+      "displayName": "Compress",
+      "module": "Buffers",
+      "source": "Src/Buffers.rux",
+      "line": 102,
+      "signature": "pub func Compress(allocator: Allocator, data: byte[..], format: Format, level: Level) -> Vector<byte> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Compresses `data` in `format` at `level`.",
+        "markdown": "Compresses `data` in `format` at `level`.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "what the result and the compressor's buffers are kept in" },
+          { "name": "data", "markdown": "the data" },
+          { "name": "format", "markdown": "the container to write" },
+          { "name": "level", "markdown": "how hard to compress" }
+        ],
+        "returns": "the compressed bytes, or fails when the allocator refused",
+        "see": ["https://rux-lang.dev/docs/api/compress/buffers#compress"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Decompress",
+      "displayName": "Decompress",
+      "module": "Buffers",
+      "source": "Src/Buffers.rux",
+      "line": 121,
+      "signature": "pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Decompresses `data`, a whole stream in `format`.",
+        "markdown": "Decompresses `data`, a whole stream in `format`.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "what the result and the decompressor's buffers are kept in" },
+          { "name": "data", "markdown": "the compressed stream" },
+          { "name": "format", "markdown": "the container it is in" }
+        ],
+        "returns": "the data, or fails with `InvalidInput` for damaged or truncated input",
+        "see": ["https://rux-lang.dev/docs/api/compress/buffers#decompress"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "CompressWriter",
+      "displayName": "CompressWriter",
+      "module": "Deflate",
+      "source": "Src/Deflate.rux",
+      "line": 31,
+      "signature": "pub struct CompressWriter",
+      "typeParams": [],
+      "doc": {
+        "summary": "A writer that compresses what is written to it into another writer, in any of the three formats.",
+        "markdown": "A writer that compresses what is written to it into another writer, in any of the three formats.\nCall `Finish` when done: it writes the rest of the data and the container's trailer, and nothing written is\ncomplete before it. `Flush` writes everything so far in a form a decompressor can read up to, without ending the\nstream. Not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/compress/deflate#compress-writer"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "sink",
+          "type": "Writer",
+          "public": false,
+          "line": 32,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "format",
+          "type": "Format",
+          "public": false,
+          "line": 33,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "level",
+          "type": "Level",
+          "public": false,
+          "line": 34,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 35,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "data",
+          "type": "*var uint8",
+          "public": false,
+          "line": 36,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "dataLength",
+          "type": "uint",
+          "public": false,
+          "line": 37,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "blockStart",
+          "type": "uint",
+          "public": false,
+          "line": 38,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "head",
+          "type": "*var int32",
+          "public": false,
+          "line": 39,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "previous",
+          "type": "*var int32",
+          "public": false,
+          "line": 40,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "tokens",
+          "type": "*var uint32",
+          "public": false,
+          "line": 41,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "tokenCount",
+          "type": "uint",
+          "public": false,
+          "line": 42,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "output",
+          "type": "*var uint8",
+          "public": false,
+          "line": 43,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "outputLength",
+          "type": "uint",
+          "public": false,
+          "line": 44,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "bits",
+          "type": "uint64",
+          "public": false,
+          "line": 45,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "bitCount",
+          "type": "uint",
+          "public": false,
+          "line": 46,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "started",
+          "type": "bool",
+          "public": false,
+          "line": 47,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "finished",
+          "type": "bool",
+          "public": false,
+          "line": 48,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "crc",
+          "type": "Crc32",
+          "public": false,
+          "line": 49,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "adler",
+          "type": "Adler32",
+          "public": false,
+          "line": 50,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "size",
+          "type": "uint32",
+          "public": false,
+          "line": 51,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 77,
+          "signature": "pub func New(allocator: Allocator, sink: Writer, format: Format, level: Level) -> CompressWriter ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "sink", "type": "Writer" },
+            { "name": "format", "type": "Format" },
+            { "name": "level", "type": "Level" }
+          ],
+          "receiver": null,
+          "returnType": "CompressWriter ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A writer that compresses into `sink` in `format`, at `level`.",
+            "markdown": "A writer that compresses into `sink` in `format`, at `level`.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the writer's buffers are kept in, about 750 KiB" },
+              { "name": "sink", "markdown": "where the compressed stream goes, which the writer takes" },
+              { "name": "format", "markdown": "the container to write" },
+              { "name": "level", "markdown": "how hard to compress" }
+            ],
+            "returns": "the writer, or fails when the allocator refused",
+            "see": ["https://rux-lang.dev/docs/api/compress/deflate#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 101,
+          "signature": "pub func Finish(self: &var CompressWriter) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var CompressWriter",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Compresses everything written so far, writes the end of the stream and the container's trailer, and flushes\nthe sink.",
+            "markdown": "Compresses everything written so far, writes the end of the stream and the container's trailer, and flushes\nthe sink. Writing after finishing fails; finishing twice does nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "nothing, or fails with the sink's error",
+            "see": ["https://rux-lang.dev/docs/api/compress/deflate#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~CompressWriter",
+          "line": 494,
+          "signature": "func ~CompressWriter(self: &var CompressWriter)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var CompressWriter",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 508,
+          "signature": "pub func Write(self: &var CompressWriter, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var CompressWriter",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Takes `bytes` to compress.",
+            "markdown": "Takes `bytes` to compress. They are encoded as enough of them gather, and all of them by `Flush` or `Finish`.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the data" }],
+            "returns": "how many bytes were taken, which is all of them, or fails after `Finish` or with the sink's error",
+            "see": ["https://rux-lang.dev/docs/api/compress/deflate#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 541,
+          "signature": "pub func Flush(self: &var CompressWriter) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var CompressWriter",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Encodes everything written so far and ends it with an empty stored block, so a decompressor can read all of it,\nthen flushes the sink.",
+            "markdown": "Encodes everything written so far and ends it with an empty stored block, so a decompressor can read all of it,\nthen flushes the sink. The stream continues afterwards.",
+            "typeParams": [],
+            "params": [],
+            "returns": "nothing, or fails with the sink's error",
+            "see": ["https://rux-lang.dev/docs/api/compress/deflate#flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Writer"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "Format",
+      "displayName": "Format",
+      "module": "Format",
+      "source": "Src/Format.rux",
+      "line": 7,
+      "signature": "pub enum Format",
+      "typeParams": [],
+      "doc": {
+        "summary": "The container around a Deflate stream.",
+        "markdown": "The container around a Deflate stream. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/compress/format#format"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "Raw",
+          "value": "0",
+          "payload": null,
+          "line": 9,
+          "doc": "A bare Deflate stream, RFC 1951, with no header and no checksum.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Zlib",
+          "value": "1",
+          "payload": null,
+          "line": 11,
+          "doc": "The zlib format, RFC 1950: a two-byte header, the stream, and an Adler-32 of the data.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Gzip",
+          "value": "2",
+          "payload": null,
+          "line": 13,
+          "doc": "The gzip format, RFC 1952: a header that may name the file, the stream, a CRC-32 of the data and its length.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "Level",
+      "displayName": "Level",
+      "module": "Format",
+      "source": "Src/Format.rux",
+      "line": 19,
+      "signature": "pub enum Level",
+      "typeParams": [],
+      "doc": {
+        "summary": "How hard the compressor looks for repeated data.",
+        "markdown": "How hard the compressor looks for repeated data. `Copy`.\nHigher levels find longer and more matches and so write less, and take longer to.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/compress/format#level"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "Store",
+          "value": "0",
+          "payload": null,
+          "line": 21,
+          "doc": "No compression: the data is stored as it is, in blocks a decompressor copies straight out.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Fastest",
+          "value": "1",
+          "payload": null,
+          "line": 23,
+          "doc": "The quickest search: the first match found is taken.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Default",
+          "value": "2",
+          "payload": null,
+          "line": 25,
+          "doc": "A balance of speed and size, close to zlib's default.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Best",
+          "value": "3",
+          "payload": null,
+          "line": 27,
+          "doc": "The most thorough search this package does.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "DecompressReader",
+      "displayName": "DecompressReader",
+      "module": "Inflate",
+      "source": "Src/Inflate.rux",
+      "line": 30,
+      "signature": "pub struct DecompressReader",
+      "typeParams": [],
+      "doc": {
+        "summary": "A reader that decompresses what it reads from another, in any of the three formats.",
+        "markdown": "A reader that decompresses what it reads from another, in any of the three formats.\nReading it to the end fails with `EndOfStream` once the data and its checksum have been read; damaged or truncated\ninput fails with `InvalidInput`, and so does every read after. A gzip stream of several members reads as their\ndata one after another. Not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/compress/inflate#decompress-reader"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "source",
+          "type": "Reader",
+          "public": false,
+          "line": 31,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "format",
+          "type": "Format",
+          "public": false,
+          "line": 32,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 33,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "input",
+          "type": "*var char8",
+          "public": false,
+          "line": 34,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "inputLength",
+          "type": "uint",
+          "public": false,
+          "line": 35,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "inputAt",
+          "type": "uint",
+          "public": false,
+          "line": 36,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "bits",
+          "type": "uint64",
+          "public": false,
+          "line": 37,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "bitCount",
+          "type": "uint",
+          "public": false,
+          "line": 38,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "window",
+          "type": "*var uint8",
+          "public": false,
+          "line": 39,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "windowAt",
+          "type": "uint",
+          "public": false,
+          "line": 40,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "written",
+          "type": "uint64",
+          "public": false,
+          "line": 41,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "state",
+          "type": "uint8",
+          "public": false,
+          "line": 42,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "final",
+          "type": "bool",
+          "public": false,
+          "line": 43,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "failed",
+          "type": "bool",
+          "public": false,
+          "line": 44,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "storedLeft",
+          "type": "uint",
+          "public": false,
+          "line": 45,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "copyLength",
+          "type": "uint",
+          "public": false,
+          "line": 46,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "copyDistance",
+          "type": "uint",
+          "public": false,
+          "line": 47,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "literals",
+          "type": "DecodeTable",
+          "public": false,
+          "line": 48,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "distances",
+          "type": "DecodeTable",
+          "public": false,
+          "line": 49,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "crc",
+          "type": "Crc32",
+          "public": false,
+          "line": 50,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "adler",
+          "type": "Adler32",
+          "public": false,
+          "line": 51,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "memberSize",
+          "type": "uint32",
+          "public": false,
+          "line": 52,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 64,
+          "signature": "pub func New(allocator: Allocator, source: Reader, format: Format) -> DecompressReader ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "source", "type": "Reader" },
+            { "name": "format", "type": "Format" }
+          ],
+          "receiver": null,
+          "returnType": "DecompressReader ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A reader of the data `source` holds compressed in `format`.",
+            "markdown": "A reader of the data `source` holds compressed in `format`.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the reader's input buffer and history are kept in" },
+              { "name": "source", "markdown": "the compressed stream, which the reader takes" },
+              { "name": "format", "markdown": "the container the stream is in" }
+            ],
+            "returns": "the reader, or fails when the allocator refused",
+            "see": ["https://rux-lang.dev/docs/api/compress/inflate#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~DecompressReader",
+          "line": 385,
+          "signature": "func ~DecompressReader(self: &var DecompressReader)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var DecompressReader",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Read",
+          "line": 404,
+          "signature": "pub func Read(self: &var DecompressReader, into: var char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var DecompressReader",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Reader",
+          "public": true,
+          "doc": {
+            "summary": "Decompresses into `into` until it is full or the data ends.",
+            "markdown": "Decompresses into `into` until it is full or the data ends.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where to put the data" }],
+            "returns": "how many bytes were produced, or fails with `EndOfStream` after the last, or with `InvalidInput` for\ndamaged or truncated input",
+            "see": ["https://rux-lang.dev/docs/api/compress/inflate#read"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Reader"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

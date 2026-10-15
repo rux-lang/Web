@@ -1,0 +1,604 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Atomic",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Values that threads share without a lock: atomic integers, flags and pointers",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/atomic",
+    "dependencies": [{ "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }]
+  },
+  "modules": [
+    {
+      "name": "Atomic",
+      "source": "Src/Atomic.rux",
+      "header": "A value that threads share without a lock.\n`Atomic<T>` holds one integer of 8 to 64 bits, `bool` or pointer and reaches it only through `Core`'s atomic\nintrinsics, so no thread ever sees a value half written and every change is one indivisible step. The methods take\nthe value by shared reference, because the whole point is that several threads reach it at once; the hardware, not\nthe borrow, is what keeps their accesses apart.\nThe plain methods are sequentially consistent, which is the ordering that is never wrong: every thread agrees on one\norder of all of them. The `With` forms take a weaker `MemoryOrder` for code that has worked out it is enough. The\nintrinsics need their order written as a case, so a `With` method selects among them with a `match`; the plain\nmethods involve no such choice."
+    }
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "Atomic",
+      "displayName": "Atomic<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 20,
+      "signature": "pub struct Atomic<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "One value that threads read and change without a lock.",
+        "markdown": "One value that threads read and change without a lock.\n`T` must be an integer of 8 to 64 bits, `bool` or a pointer; any other type is refused where the methods are used.\nShared by reference between threads; the value lives inside, so it must outlive every thread that reaches it.\nCopying an `Atomic` copies its current value into a new, unrelated one.",
+        "typeParams": [
+          { "name": "T", "markdown": "the value's type: an integer of 8 to 64 bits, `bool`, or a pointer" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/atomic/atomic"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "value",
+          "type": "T",
+          "public": false,
+          "line": 21,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Atomic",
+          "line": 30,
+          "signature": "pub func Atomic(value: T) -> Atomic<T>",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": null,
+          "returnType": "Atomic<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An atomic value holding `value`.",
+            "markdown": "An atomic value holding `value`.\nMaking one is not itself atomic: it must be finished before another thread can reach it, as any value must be.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the initial value" }],
+            "returns": "an atomic holding `value`",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Load",
+          "line": 43,
+          "signature": "pub func Load(self: &Atomic<T>) -> T",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The current value, read with sequential consistency.",
+            "markdown": "The current value, read with sequential consistency.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the value",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#load"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "LoadWith",
+          "line": 53,
+          "signature": "pub func LoadWith(self: &Atomic<T>, order: MemoryOrder) -> T",
+          "typeParams": [],
+          "params": [{ "name": "order", "type": "MemoryOrder" }],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The current value, read with `order`, which must be `Relaxed`, `Acquire` or `SequentiallyConsistent`.",
+            "markdown": "The current value, read with `order`, which must be `Relaxed`, `Acquire` or `SequentiallyConsistent`.\n`Release` and `AcquireRelease` read as `Acquire` and `SequentiallyConsistent` respectively, the nearest orders a\nload can have.",
+            "typeParams": [],
+            "params": [{ "name": "order", "markdown": "which other operations may move across this one" }],
+            "returns": "the value",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#load-with"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Store",
+          "line": 65,
+          "signature": "pub func Store(self: &Atomic<T>, value: T)",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&Atomic<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Replaces the value, with sequential consistency.",
+            "markdown": "Replaces the value, with sequential consistency.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the new value" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#store"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "StoreWith",
+          "line": 75,
+          "signature": "pub func StoreWith(self: &Atomic<T>, value: T, order: MemoryOrder)",
+          "typeParams": [],
+          "params": [
+            { "name": "value", "type": "T" },
+            { "name": "order", "type": "MemoryOrder" }
+          ],
+          "receiver": "&Atomic<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Replaces the value with `order`, which must be `Relaxed`, `Release` or `SequentiallyConsistent`.",
+            "markdown": "Replaces the value with `order`, which must be `Relaxed`, `Release` or `SequentiallyConsistent`.\n`Acquire` and `AcquireRelease` store as `Release` and `SequentiallyConsistent` respectively, the nearest orders\na store can have.",
+            "typeParams": [],
+            "params": [
+              { "name": "value", "markdown": "the new value" },
+              { "name": "order", "markdown": "which other operations may move across this one" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#store-with"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Exchange",
+          "line": 88,
+          "signature": "pub func Exchange(self: &Atomic<T>, value: T) -> T",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Replaces the value and returns the one replaced, as one step, with sequential consistency.",
+            "markdown": "Replaces the value and returns the one replaced, as one step, with sequential consistency.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the new value" }],
+            "returns": "the value before",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#exchange"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "CompareExchange",
+          "line": 99,
+          "signature": "pub func CompareExchange(self: &Atomic<T>, expected: T, desired: T) -> T ! T",
+          "typeParams": [],
+          "params": [
+            { "name": "expected", "type": "T" },
+            { "name": "desired", "type": "T" }
+          ],
+          "receiver": "&Atomic<T>",
+          "returnType": "T ! T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Replaces the value with `desired` if it is `expected`, as one step, with sequential consistency.",
+            "markdown": "Replaces the value with `desired` if it is `expected`, as one step, with sequential consistency.\nSucceeds with the value before, which is `expected`, when it replaced it, and fails with the value it found\notherwise, so a loop can retry from what is really there. Never fails spuriously.",
+            "typeParams": [],
+            "params": [
+              { "name": "expected", "markdown": "the value that must be there" },
+              { "name": "desired", "markdown": "the value to put there" }
+            ],
+            "returns": "the value before, as success when it was replaced and as failure when it was not",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#compare-exchange"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "CompareExchangeWith",
+          "line": 117,
+          "signature": "pub func CompareExchangeWith(self: &Atomic<T>, expected: T, desired: T, success: MemoryOrder, failure: MemoryOrder) -> T ! T",
+          "typeParams": [],
+          "params": [
+            { "name": "expected", "type": "T" },
+            { "name": "desired", "type": "T" },
+            { "name": "success", "type": "MemoryOrder" },
+            { "name": "failure", "type": "MemoryOrder" }
+          ],
+          "receiver": "&Atomic<T>",
+          "returnType": "T ! T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Replaces the value with `desired` if it is `expected`, with `success` when it does and `failure` when it does\nnot.",
+            "markdown": "Replaces the value with `desired` if it is `expected`, with `success` when it does and `failure` when it does\nnot.\nOrders a failure cannot have are strengthened to the nearest it can: `Release` reads as `Relaxed`,\n`AcquireRelease` as `Acquire`, and a failure order stronger than the success order as the success order's\nacquire part.",
+            "typeParams": [],
+            "params": [
+              { "name": "expected", "markdown": "the value that must be there" },
+              { "name": "desired", "markdown": "the value to put there" },
+              { "name": "success", "markdown": "the order when the value is replaced" },
+              { "name": "failure", "markdown": "the order when it is not" }
+            ],
+            "returns": "the value before, as success when it was replaced and as failure when it was not",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#compare-exchange-with"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FetchAdd",
+          "line": 146,
+          "signature": "pub func FetchAdd(self: &Atomic<T>, value: T) -> T",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds `value`, wrapping on overflow, and returns the value before, as one step, with sequential consistency.",
+            "markdown": "Adds `value`, wrapping on overflow, and returns the value before, as one step, with sequential consistency.\nOnly for integer `T`.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "what to add" }],
+            "returns": "the value before the addition",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#fetch-add"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FetchSub",
+          "line": 156,
+          "signature": "pub func FetchSub(self: &Atomic<T>, value: T) -> T",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Subtracts `value`, wrapping on overflow, and returns the value before, as one step, with sequential\nconsistency.",
+            "markdown": "Subtracts `value`, wrapping on overflow, and returns the value before, as one step, with sequential\nconsistency.\nOnly for integer `T`.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "what to subtract" }],
+            "returns": "the value before the subtraction",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#fetch-sub"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FetchAddWith",
+          "line": 166,
+          "signature": "pub func FetchAddWith(self: &Atomic<T>, value: T, order: MemoryOrder) -> T",
+          "typeParams": [],
+          "params": [
+            { "name": "value", "type": "T" },
+            { "name": "order", "type": "MemoryOrder" }
+          ],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds `value` with `order`, wrapping on overflow, and returns the value before.",
+            "markdown": "Adds `value` with `order`, wrapping on overflow, and returns the value before.\nThe relaxed form is what a counter whose value nothing else depends on needs. Only for integer `T`.",
+            "typeParams": [],
+            "params": [
+              { "name": "value", "markdown": "what to add" },
+              { "name": "order", "markdown": "which other operations may move across this one" }
+            ],
+            "returns": "the value before the addition",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#fetch-add-with"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FetchSubWith",
+          "line": 183,
+          "signature": "pub func FetchSubWith(self: &Atomic<T>, value: T, order: MemoryOrder) -> T",
+          "typeParams": [],
+          "params": [
+            { "name": "value", "type": "T" },
+            { "name": "order", "type": "MemoryOrder" }
+          ],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Subtracts `value` with `order`, wrapping on overflow, and returns the value before.",
+            "markdown": "Subtracts `value` with `order`, wrapping on overflow, and returns the value before.\nThe release form is what dropping one reference to shared data needs, so that the last one sees every write\nthe others made. Only for integer `T`.",
+            "typeParams": [],
+            "params": [
+              { "name": "value", "markdown": "what to subtract" },
+              { "name": "order", "markdown": "which other operations may move across this one" }
+            ],
+            "returns": "the value before the subtraction",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#fetch-sub-with"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FetchAnd",
+          "line": 198,
+          "signature": "pub func FetchAnd(self: &Atomic<T>, value: T) -> T",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Combines the value with `value` by bitwise and, and returns the value before, with sequential consistency.",
+            "markdown": "Combines the value with `value` by bitwise and, and returns the value before, with sequential consistency.\nOnly for integer or `bool` `T`.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the bits to keep" }],
+            "returns": "the value before",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#fetch-and"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FetchOr",
+          "line": 207,
+          "signature": "pub func FetchOr(self: &Atomic<T>, value: T) -> T",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Combines the value with `value` by bitwise or, and returns the value before, with sequential consistency.",
+            "markdown": "Combines the value with `value` by bitwise or, and returns the value before, with sequential consistency.\nOnly for integer or `bool` `T`.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the bits to set" }],
+            "returns": "the value before",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#fetch-or"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "FetchXor",
+          "line": 217,
+          "signature": "pub func FetchXor(self: &Atomic<T>, value: T) -> T",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&Atomic<T>",
+          "returnType": "T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Combines the value with `value` by bitwise exclusive or, and returns the value before, with sequential\nconsistency.",
+            "markdown": "Combines the value with `value` by bitwise exclusive or, and returns the value before, with sequential\nconsistency.\nOnly for integer or `bool` `T`.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the bits to flip" }],
+            "returns": "the value before",
+            "see": ["https://rux-lang.dev/docs/api/atomic/atomic#fetch-xor"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

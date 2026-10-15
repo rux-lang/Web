@@ -1,0 +1,2508 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Encoding",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Hexadecimal, Base64, Base32, Base58 and percent-encoding of byte sequences",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/encoding",
+    "dependencies": [
+      { "name": "Io", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Base32",
+      "source": "Src/Base32.rux",
+      "header": "Base32 in the RFC 4648 alphabet and in Douglas Crockford's.\nEvery five bytes become eight characters of five bits each. The RFC 4648 alphabet, `A` through `Z` then `2`\nthrough `7`, is what one-time-password secrets and many file systems that ignore case use, padded with `=` to a\nmultiple of eight characters. Crockford's alphabet drops `I`, `L`, `O` and `U` so that a human reading an\nidentifier aloud or typing it back cannot confuse two characters, and it never pads.\nBoth read either case. Crockford decoding also does what its specification asks of a reader: `I` and `L` are read\nas `1`, `O` as `0`, and hyphens, which a human may insert to group the characters, are skipped. That leniency is\npart of that alphabet's contract and does not extend to the RFC form, which is read strictly, unused trailing\nbits included.\nThe RFC form runs in time that depends only on the length, through the arithmetic in `Digits.rux`. Crockford's is\nmeant for identifiers rather than secrets and maps characters with an ordinary table. The whole text is checked\nbefore a byte is written, so a refusal leaves the destination exactly as it was."
+    },
+    {
+      "name": "Base58",
+      "source": "Src/Base58.rux",
+      "header": "Base58 in the Bitcoin alphabet, which leaves out `0`, `O`, `I` and `l` so that no two characters look alike.\nUnlike the power-of-two bases, Base58 does not split bytes into fixed groups of bits. The whole input is one big\nnumber written in base 58, so every output digit depends on every input byte and the work grows with the square of\nthe length; the scheme is meant for short values such as keys, hashes and addresses. Each leading zero byte is\nwritten as a leading `1`, because a number has no leading zeros to keep.\nThe conversion works in the destination itself, digit by digit, rather than in a separate buffer, so it needs no\nallocation and no size limit. The cost is the capacity refusal: by the time the destination proves too short it\nhas been used as scratch space, so a refusal leaves it zeroed rather than untouched. Every other refusal is\nfound before anything is written. Base58 is not constant time and should not carry a secret whose timing matters."
+    },
+    {
+      "name": "Base64",
+      "source": "Src/Base64.rux",
+      "header": "Base64 in the two alphabets RFC 4648 defines, each with and without padding.\nEvery three bytes become four characters of six bits each. The standard alphabet ends in `+` and `/`; the URL-safe\none in `-` and `_`, so its output can sit in a URL or a file name unescaped. Padding with `=` rounds the text up\nto a multiple of four, which the standard form requires and the URL-safe form usually leaves out.\nDecoding is strict, as section 3.5 of the RFC permits: no whitespace, no line breaks, no characters from the other\nalphabet, padding exactly where the variant puts it and nowhere else, and the unused low bits of the last\ncharacter zero. Each of those rules is one way two different texts could otherwise decode to the same bytes, and\na decoder that is one-to-one is one whose output can be compared as text.\nBoth directions run in time that depends only on the length, through the arithmetic in `Digits.rux`. The whole\ntext is checked before a byte is written, so a refusal leaves the destination exactly as it was."
+    },
+    {
+      "name": "Digits",
+      "source": "Src/Digits.rux",
+      "header": "The digit arithmetic behind the hexadecimal, Base64 and Base32 alphabets, computed without branches or tables.\nThese encodings carry keys, tokens and secrets as often as anything else. A decoder that branches on each\ncharacter, or indexes a table with it, takes time and touches cache lines that depend on the secret, which is\nenough to recover it from a co-resident process. So every function here maps a value to its digit, or a digit to\nits value, with masks built from arithmetic alone. Each range test is `((low - 1 - c) & (c - (high + 1))) >> 8`,\nwhich is all ones when `low <= c <= high` and zero otherwise, because both differences are negative only inside\nthe range and the shift is arithmetic on a signed value.\nThe inputs are a single byte widened to `int32`, so none of the differences can overflow. Validity is still\nreported to the caller, which then branches on it: whether a text is well formed is not a secret, and the caller\nstops at the first invalid character anyway."
+    },
+    {
+      "name": "Error",
+      "source": "Src/Error.rux",
+      "header": "Why text could not be decoded, shared by every scheme in this package.\nOne error type for five schemes, because the ways decoding fails are the same everywhere: a character outside the\nalphabet, a length the scheme cannot produce, padding in the wrong place, bits the encoder would never have set,\nor a destination too short for what the text holds. A caller that accepts several encodings handles one type.\nEvery input failure carries the zero-based byte offset into the text it was given, so a caller can point at the\ncharacter rather than reject the whole string. The capacity failure carries the length the destination needed\ninstead, which is the number a caller sizing a buffer actually wants."
+    },
+    {
+      "name": "Hex",
+      "source": "Src/Hex.rux",
+      "header": "Base 16: two digits per byte, the high nibble first, as RFC 4648 section 8 defines it.\nEncoding writes one case, lower unless asked otherwise, and decoding reads both, because the two mean the same\nthing and hexadecimal arrives in whichever case its producer liked. Nothing else is accepted: no `0x` prefix, no\nseparators and no whitespace, since a decoder that skips characters is one whose input two systems can read\ndifferently.\nBoth directions run in time that depends only on the length, through the arithmetic in `Digits.rux`, so a key or\na token can pass through them without its value showing in the timing. Every function checks the room it needs\nbefore it writes a byte, so a refusal leaves the destination exactly as it was."
+    },
+    {
+      "name": "Percent",
+      "source": "Src/Percent.rux",
+      "header": "Percent-encoding, as RFC 3986 defines it for URIs and HTML defines it for submitted forms.\nA byte that may not appear literally in some part of a URI is written as `%` and two upper-case hexadecimal\ndigits. Which bytes those are depends on the part, so the encoder takes a set: a single component such as one\nquery value or one path segment keeps only the unreserved characters, a whole path also keeps `/` and the\ncharacters a path may carry, and a form keeps fewer still and writes a space as `+`.\nDecoding turns every valid escape back into its byte and leaves every other character alone. Characters that an\nencoder would have escaped are accepted as they are, because text arrives from many encoders and a decoder that\nrefused them would refuse most of the web; an escape that is malformed is refused, because guessing what it meant\nis how two decoders come to disagree. Escapes may decode to bytes that are not UTF-8, so the result is bytes.\nBoth directions check the room they need before writing, so a refusal leaves the destination exactly as it was."
+    },
+    {
+      "name": "Stream",
+      "source": "Src/Stream.rux",
+      "header": "Encoding and decoding streams: a writer that turns the bytes written to it into hexadecimal, Base64 or Base32 text\non another writer, and a reader that turns such text from another reader back into bytes.\nBoth work a group at a time — one byte for hexadecimal, three for Base64, five for Base32 — through the same\nfunctions that encode and decode whole slices, so a stream's output is exactly what encoding the whole input at\nonce would give. A writer holds back the bytes of an incomplete group until more arrive or `Finish` ends the text\nwith its last group and padding; a reader holds back an incomplete group of characters until the source ends.\nBase58 has no streaming form, since every character depends on the whole input."
+    }
+  ],
+  "items": [
+    {
+      "kind": "enum",
+      "name": "Base32Variant",
+      "displayName": "Base32Variant",
+      "module": "Base32",
+      "source": "Src/Base32.rux",
+      "line": 19,
+      "signature": "pub enum Base32Variant",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which Base32 alphabet a text uses, and whether it is padded.",
+        "markdown": "Which Base32 alphabet a text uses, and whether it is padded.\nCopy, carrying no payload.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/base32#base32-variant"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Standard",
+          "value": null,
+          "payload": null,
+          "line": 21,
+          "doc": "The RFC 4648 alphabet, `A` through `Z` then `2` through `7`, padded with `=` to a multiple of eight characters.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "StandardUnpadded",
+          "value": null,
+          "payload": null,
+          "line": 23,
+          "doc": "The RFC 4648 alphabet without padding, which is how one-time-password secrets are usually written.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Crockford",
+          "value": null,
+          "payload": null,
+          "line": 26,
+          "doc": "Crockford's alphabet, `0` through `9` then the letters except `I`, `L`, `O` and `U`, without padding. Read\nleniently, as its specification asks: either case, `I` and `L` as `1`, `O` as `0`, and hyphens skipped.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base32EncodedLength",
+      "displayName": "Base32EncodedLength",
+      "module": "Base32",
+      "source": "Src/Base32.rux",
+      "line": 48,
+      "signature": "pub func Base32EncodedLength(length: uint, form: Base32Variant) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many characters the Base32 form of `length` bytes occupies in `form`.",
+        "markdown": "How many characters the Base32 form of `length` bytes occupies in `form`.\nEight characters for every five bytes, with a final partial group taking two, four, five or seven characters,\nor eight with padding. Cannot fail for any length a slice in memory can have; runs in constant time and\nallocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "length", "markdown": "the number of bytes to encode" },
+          { "name": "form", "markdown": "the alphabet and padding to encode with" }
+        ],
+        "returns": "the number of characters `Base32Encode` writes",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base32#base32-encoded-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base32Encode",
+      "displayName": "Base32Encode",
+      "module": "Base32",
+      "source": "Src/Base32.rux",
+      "line": 122,
+      "signature": "pub func Base32Encode(bytes: byte[..], into: var char8[..], form: Base32Variant) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes `bytes` as Base32 into `into`.",
+        "markdown": "Writes `bytes` as Base32 into `into`.\nLetters are written in upper case in both alphabets. The RFC 4648 variants run in time that depends only on the\nlength of `bytes`. Reports `InsufficientCapacity` when `into` is shorter than\n`Base32EncodedLength(bytes.length, form)`, leaving it exactly as it was; room past the encoded form is not\ntouched.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to encode" },
+          {
+            "name": "into",
+            "markdown": "the destination, at least `Base32EncodedLength(bytes.length, form)` characters"
+          },
+          { "name": "form", "markdown": "the alphabet and padding to encode with" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base32#base32-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base32Encode",
+      "displayName": "Base32Encode",
+      "module": "Base32",
+      "source": "Src/Base32.rux",
+      "line": 160,
+      "signature": "pub func Base32Encode(text: char8[..], into: var char8[..], form: Base32Variant) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the bytes of `text` as Base32 into `into`.",
+        "markdown": "Writes the bytes of `text` as Base32 into `into`.\nThe byte form, reached without the caller reinterpreting the text first: each UTF-8 code unit is one byte.\nThe failure the byte form reports, with the same guarantee.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the text whose bytes to encode" },
+          {
+            "name": "into",
+            "markdown": "the destination, at least `Base32EncodedLength(text.length, form)` characters"
+          },
+          { "name": "form", "markdown": "the alphabet and padding to encode with" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base32#base32-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base32DecodedLength",
+      "displayName": "Base32DecodedLength",
+      "module": "Base32",
+      "source": "Src/Base32.rux",
+      "line": 219,
+      "signature": "pub func Base32DecodedLength(text: char8[..], form: Base32Variant) -> uint ! DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many bytes the Base32 text decodes to, after checking its length and the placement of its padding.",
+        "markdown": "How many bytes the Base32 text decodes to, after checking its length and the placement of its padding.\nOnly the shape is checked; the characters are checked by `Base32Decode`. The padded variant needs a multiple of\neight characters; every variant needs the data characters to leave a final group of zero, two, four, five or\nseven. Hyphens in Crockford text are not counted. Reports `InvalidLength` at the end of the text, or\n`InvalidPadding` at the first `=` that is out of place. Runs in time linear in the length and allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the Base32 text" },
+          { "name": "form", "markdown": "the alphabet and padding the text is expected to use" }
+        ],
+        "returns": "the number of bytes `Base32Decode` writes for it",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base32#base32-decoded-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base32Decode",
+      "displayName": "Base32Decode",
+      "module": "Base32",
+      "source": "Src/Base32.rux",
+      "line": 235,
+      "signature": "pub func Base32Decode(text: char8[..], into: var byte[..], form: Base32Variant) -> uint ! DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads Base32 text in `form` into `into`.",
+        "markdown": "Reads Base32 text in `form` into `into`.\nThe RFC 4648 variants run in time that depends only on the length of `text` when the text is valid. Reports, in\nthis order of precedence, `InvalidLength` or `InvalidPadding` for a text of the wrong shape, `InvalidCharacter` at\nthe first character outside the alphabet, `NonCanonical` at a last character whose unused bits are not zero, and\n`InsufficientCapacity` with the length needed when `into` is too short. Every refusal leaves `into` untouched,\nbecause the whole text is checked before anything is written.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the Base32 text to decode" },
+          { "name": "into", "markdown": "the destination, at least `Base32DecodedLength(text, form)` bytes" },
+          { "name": "form", "markdown": "the alphabet and padding the text is expected to use" }
+        ],
+        "returns": "the number of bytes written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base32#base32-decode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base58EncodedMaxLength",
+      "displayName": "Base58EncodedMaxLength",
+      "module": "Base58",
+      "source": "Src/Base58.rux",
+      "line": 51,
+      "signature": "pub func Base58EncodedMaxLength(length: uint) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The most characters the Base58 form of `length` bytes can occupy.",
+        "markdown": "The most characters the Base58 form of `length` bytes can occupy.\nEach byte needs at most log 256 / log 58, about 1.366, digits, so this is a bound rather than the exact length,\nwhich depends on the value. A destination of this length is always enough. Cannot fail for any length a slice\nin memory can have; runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "length", "markdown": "the number of bytes to encode" }],
+        "returns": "an upper bound on the number of characters `Base58Encode` writes",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base58#base58-encoded-max-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base58Encode",
+      "displayName": "Base58Encode",
+      "module": "Base58",
+      "source": "Src/Base58.rux",
+      "line": 64,
+      "signature": "pub func Base58Encode(bytes: byte[..], into: var char8[..]) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes `bytes` as Base58 into the front of `into`.",
+        "markdown": "Writes `bytes` as Base58 into the front of `into`.\nRuns in time quadratic in the length of `bytes`, and not in constant time. Reports `InsufficientCapacity` when\nthe encoded form does not fit `into`; `Base58EncodedMaxLength(bytes.length)` characters always fit. A refusal\nleaves `into` filled with zero bytes, because the conversion used it as scratch space. Room past the encoded form\nis not touched on success.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to encode" },
+          { "name": "into", "markdown": "the destination" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base58#base58-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base58Encode",
+      "displayName": "Base58Encode",
+      "module": "Base58",
+      "source": "Src/Base58.rux",
+      "line": 127,
+      "signature": "pub func Base58Encode(text: char8[..], into: var char8[..]) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the bytes of `text` as Base58 into the front of `into`.",
+        "markdown": "Writes the bytes of `text` as Base58 into the front of `into`.\nThe byte form, reached without the caller reinterpreting the text first: each UTF-8 code unit is one byte.\nThe failure the byte form reports, with the same guarantee.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the text whose bytes to encode" },
+          { "name": "into", "markdown": "the destination" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base58#base58-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base58Decode",
+      "displayName": "Base58Decode",
+      "module": "Base58",
+      "source": "Src/Base58.rux",
+      "line": 141,
+      "signature": "pub func Base58Decode(text: char8[..], into: var byte[..]) -> uint ! DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads Base58 text in the Bitcoin alphabet into the front of `into`.",
+        "markdown": "Reads Base58 text in the Bitcoin alphabet into the front of `into`.\nEach leading `1` becomes a zero byte. Runs in time quadratic in the length of `text`, and not in constant time.\nReports `InvalidCharacter` at the first character outside the alphabet, leaving `into` untouched, and\n`InsufficientCapacity` when the decoded value does not fit `into`, leaving it filled with zero bytes because the\nconversion used it as scratch space. The count carried by that refusal is a lower bound on the length needed,\nnot the exact length; `text.length` bytes are always enough.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the Base58 text to decode" },
+          { "name": "into", "markdown": "the destination" }
+        ],
+        "returns": "the number of bytes written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base58#base58-decode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "Base64Variant",
+      "displayName": "Base64Variant",
+      "module": "Base64",
+      "source": "Src/Base64.rux",
+      "line": 17,
+      "signature": "pub enum Base64Variant",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which Base64 alphabet a text uses, and whether it is padded.",
+        "markdown": "Which Base64 alphabet a text uses, and whether it is padded.\nCopy, carrying no payload.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/base64#base64-variant"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Standard",
+          "value": null,
+          "payload": null,
+          "line": 20,
+          "doc": "The standard alphabet ending in `+` and `/`, padded with `=` to a multiple of four characters. RFC 4648\nsection 4, and what MIME, PEM and most protocols mean by Base64.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "StandardUnpadded",
+          "value": null,
+          "payload": null,
+          "line": 22,
+          "doc": "The standard alphabet without padding.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Url",
+          "value": null,
+          "payload": null,
+          "line": 24,
+          "doc": "The URL- and file-name-safe alphabet ending in `-` and `_`, padded. RFC 4648 section 5.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UrlUnpadded",
+          "value": null,
+          "payload": null,
+          "line": 26,
+          "doc": "The URL-safe alphabet without padding, which is what JSON Web Tokens and most URL parameters use.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base64EncodedLength",
+      "displayName": "Base64EncodedLength",
+      "module": "Base64",
+      "source": "Src/Base64.rux",
+      "line": 46,
+      "signature": "pub func Base64EncodedLength(length: uint, form: Base64Variant) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many characters the Base64 form of `length` bytes occupies in `form`.",
+        "markdown": "How many characters the Base64 form of `length` bytes occupies in `form`.\nFour characters for every three bytes, with a final partial group taking two or three characters, or four with\npadding. Cannot fail for any length a slice in memory can have; runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "length", "markdown": "the number of bytes to encode" },
+          { "name": "form", "markdown": "the alphabet and padding to encode with" }
+        ],
+        "returns": "the number of characters `Base64Encode` writes",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base64#base64-encoded-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base64Encode",
+      "displayName": "Base64Encode",
+      "module": "Base64",
+      "source": "Src/Base64.rux",
+      "line": 63,
+      "signature": "pub func Base64Encode(bytes: byte[..], into: var char8[..], form: Base64Variant) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes `bytes` as Base64 into `into`.",
+        "markdown": "Writes `bytes` as Base64 into `into`.\nRuns in time that depends only on the length of `bytes`. Reports `InsufficientCapacity` when `into` is shorter\nthan `Base64EncodedLength(bytes.length, form)`, leaving it exactly as it was; room past the encoded form is\nnot touched.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to encode" },
+          {
+            "name": "into",
+            "markdown": "the destination, at least `Base64EncodedLength(bytes.length, form)` characters"
+          },
+          { "name": "form", "markdown": "the alphabet and padding to encode with" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base64#base64-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base64Encode",
+      "displayName": "Base64Encode",
+      "module": "Base64",
+      "source": "Src/Base64.rux",
+      "line": 110,
+      "signature": "pub func Base64Encode(text: char8[..], into: var char8[..], form: Base64Variant) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the bytes of `text` as Base64 into `into`.",
+        "markdown": "Writes the bytes of `text` as Base64 into `into`.\nThe byte form, reached without the caller reinterpreting the text first: each UTF-8 code unit is one byte.\nThe failure the byte form reports, with the same guarantee.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the text whose bytes to encode" },
+          {
+            "name": "into",
+            "markdown": "the destination, at least `Base64EncodedLength(text.length, form)` characters"
+          },
+          { "name": "form", "markdown": "the alphabet and padding to encode with" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base64#base64-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base64DecodedLength",
+      "displayName": "Base64DecodedLength",
+      "module": "Base64",
+      "source": "Src/Base64.rux",
+      "line": 144,
+      "signature": "pub func Base64DecodedLength(text: char8[..], form: Base64Variant) -> uint ! DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many bytes the Base64 text decodes to, after checking its length and the placement of its padding.",
+        "markdown": "How many bytes the Base64 text decodes to, after checking its length and the placement of its padding.\nOnly the shape is checked; the characters are checked by `Base64Decode`. A padded variant needs a multiple of four\ncharacters with at most two `=` at the end; an unpadded one any length except one more than a multiple of four,\nand no `=` at all. Reports `InvalidLength` at the end of the text, or `InvalidPadding` at the first `=` that is\nout of place. Runs in time linear in the length and allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the Base64 text" },
+          { "name": "form", "markdown": "the alphabet and padding the text is expected to use" }
+        ],
+        "returns": "the number of bytes `Base64Decode` writes for it",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base64#base64-decoded-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Base64Decode",
+      "displayName": "Base64Decode",
+      "module": "Base64",
+      "source": "Src/Base64.rux",
+      "line": 171,
+      "signature": "pub func Base64Decode(text: char8[..], into: var byte[..], form: Base64Variant) -> uint ! DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads Base64 text in `form` into `into`.",
+        "markdown": "Reads Base64 text in `form` into `into`.\nRuns in time that depends only on the length of `text` when the text is valid. Reports, in this order of\nprecedence, `InvalidLength` or `InvalidPadding` for a text of the wrong shape, `InvalidCharacter` at the first\ncharacter outside the variant's alphabet, `NonCanonical` at a last character whose unused bits are not zero, and\n`InsufficientCapacity` with the length needed when `into` is too short. Every refusal leaves `into` untouched,\nbecause the whole text is checked before anything is written.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the Base64 text to decode" },
+          { "name": "into", "markdown": "the destination, at least `Base64DecodedLength(text, form)` bytes" },
+          { "name": "form", "markdown": "the alphabet and padding the text is expected to use" }
+        ],
+        "returns": "the number of bytes written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base64#base64-decode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Base64View",
+      "displayName": "Base64View",
+      "module": "Base64",
+      "source": "Src/Base64.rux",
+      "line": 234,
+      "signature": "pub struct Base64View",
+      "typeParams": [],
+      "doc": {
+        "summary": "A borrowed byte sequence that renders as Base64 under a format placeholder.",
+        "markdown": "A borrowed byte sequence that renders as Base64 under a format placeholder.\nLets a caller write `Render(\"{}\", ViewBase64(key))` instead of sizing a buffer first. The view borrows the bytes\nand must not outlive them. Copy, owning nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/base64#base64-view"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "bytes",
+          "type": "byte[..]",
+          "public": false,
+          "line": 235,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "form",
+          "type": "Base64Variant",
+          "public": false,
+          "line": 236,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 257,
+          "signature": "pub func WriteDisplay(self: &Base64View, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Base64View",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the bytes as Base64, padded to the placeholder's width.",
+            "markdown": "Writes the bytes as Base64, padded to the placeholder's width.\nThe text is produced in blocks, so rendering allocates nothing however long the bytes are. Reports whatever the\nwriter reported, and `UnsupportedRequest` for a precision or a style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole rendering was accepted",
+            "see": ["https://rux-lang.dev/docs/api/encoding/base64#base64-view-write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ViewBase64",
+      "displayName": "ViewBase64",
+      "module": "Base64",
+      "source": "Src/Base64.rux",
+      "line": 245,
+      "signature": "pub func ViewBase64(bytes: byte[..], form: Base64Variant) -> Base64View",
+      "typeParams": [],
+      "doc": {
+        "summary": "Borrows `bytes` for rendering as Base64.",
+        "markdown": "Borrows `bytes` for rendering as Base64.\nCannot fail and allocates nothing; the view reads `bytes` each time it is rendered, so it must not outlive them.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to render" },
+          { "name": "form", "markdown": "the alphabet and padding to render with" }
+        ],
+        "returns": "a view that renders `bytes` as Base64",
+        "see": ["https://rux-lang.dev/docs/api/encoding/base64#view-base64"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "DecodeError",
+      "displayName": "DecodeError",
+      "module": "Error",
+      "source": "Src/Error.rux",
+      "line": 16,
+      "signature": "pub variant DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why text could not be decoded.",
+        "markdown": "Why text could not be decoded.\nFailure-only: success is the other channel of `uint ! DecodeError`, so no case means that nothing went wrong.\nCopy, carrying one count and owning nothing. A decoder that reports any case except `InsufficientCapacity` has\nleft its destination exactly as it was; see each decoder for what a capacity refusal leaves.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/decode-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "InvalidCharacter",
+          "value": null,
+          "payload": "(uint)",
+          "line": 18,
+          "doc": "A character that is not in the scheme's alphabet. The offset is that character.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidLength",
+          "value": null,
+          "payload": "(uint)",
+          "line": 21,
+          "doc": "The text has a length no encoder of this scheme produces, such as an odd number of hexadecimal digits. The\noffset is the text's length, where the missing character would have gone.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidPadding",
+          "value": null,
+          "payload": "(uint)",
+          "line": 24,
+          "doc": "A padding character where padding is not allowed: in the middle of the text, too much of it, or any of it in\na scheme without padding. The offset is the first padding character that is out of place.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "NonCanonical",
+          "value": null,
+          "payload": "(uint)",
+          "line": 28,
+          "doc": "The last character carries bits the encoder would have left zero, so two different texts would decode to the\nsame bytes. The offset is that character. Refusing it keeps decoding one-to-one, which is what makes an\nencoded value safe to compare as text.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidEscape",
+          "value": null,
+          "payload": "(uint)",
+          "line": 30,
+          "doc": "A percent sign that is not followed by two hexadecimal digits. The offset is the percent sign.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InsufficientCapacity",
+          "value": null,
+          "payload": "(uint)",
+          "line": 32,
+          "doc": "The destination is shorter than the decoded value. The count is the length it needed, in bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Offset",
+          "line": 40,
+          "signature": "pub func Offset(self: &DecodeError) -> uint?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&DecodeError",
+          "returnType": "uint?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Where in the text the failure was found, or none for a destination that was too short.",
+            "markdown": "Where in the text the failure was found, or none for a destination that was too short.\nBorrows the error and leaves it untouched. Cannot fail; runs in constant time and allocates nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the zero-based byte offset into the text, or none for `InsufficientCapacity`",
+            "see": ["https://rux-lang.dev/docs/api/encoding/decode-error#offset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 73,
+          "signature": "pub func WriteDisplay(self: &DecodeError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&DecodeError",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes a short lower-case description, followed by the offset or the length needed.",
+            "markdown": "Writes a short lower-case description, followed by the offset or the length needed.\nThe text is `invalid character at 5` for an input failure and `destination too short, need 12 bytes` for a\ncapacity failure. No style is understood. Reports whatever the writer reported, and `UnsupportedRequest` for\na style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole description was accepted",
+            "see": ["https://rux-lang.dev/docs/api/encoding/decode-error#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDebug",
+          "line": 117,
+          "signature": "pub func WriteDebug(self: &DecodeError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&DecodeError",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Debug",
+          "public": true,
+          "doc": {
+            "summary": "The same text as `Display`: the description already names the case and its count.",
+            "markdown": "The same text as `Display`: the description already names the case and its count.\nThe failures `WriteDisplay` reports.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole description was accepted",
+            "see": ["https://rux-lang.dev/docs/api/encoding/decode-error#write-debug"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display", "Debug"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "HexCase",
+      "displayName": "HexCase",
+      "module": "Hex",
+      "source": "Src/Hex.rux",
+      "line": 15,
+      "signature": "pub enum HexCase",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which case hexadecimal digits above nine are written in.",
+        "markdown": "Which case hexadecimal digits above nine are written in.\nCopy, carrying no payload. Decoding accepts both regardless.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/hex#hex-case"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Lower",
+          "value": null,
+          "payload": null,
+          "line": 17,
+          "doc": "`a` through `f`, the form most text formats and every cryptographic test vector use.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Upper",
+          "value": null,
+          "payload": null,
+          "line": 19,
+          "doc": "`A` through `F`, the form RFC 4648 prints its alphabet in.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HexEncodedLength",
+      "displayName": "HexEncodedLength",
+      "module": "Hex",
+      "source": "Src/Hex.rux",
+      "line": 27,
+      "signature": "pub func HexEncodedLength(length: uint) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many characters the hexadecimal form of `length` bytes occupies: exactly twice as many.",
+        "markdown": "How many characters the hexadecimal form of `length` bytes occupies: exactly twice as many.\nCannot fail for any length a slice in memory can have. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "length", "markdown": "the number of bytes to encode" }],
+        "returns": "the number of characters `HexEncode` writes",
+        "see": ["https://rux-lang.dev/docs/api/encoding/hex#hex-encoded-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HexEncode",
+      "displayName": "HexEncode",
+      "module": "Hex",
+      "source": "Src/Hex.rux",
+      "line": 39,
+      "signature": "pub func HexEncode(bytes: byte[..], into: var char8[..], letterCase: HexCase) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes `bytes` as hexadecimal digits into `into`, two per byte, high nibble first.",
+        "markdown": "Writes `bytes` as hexadecimal digits into `into`, two per byte, high nibble first.\nRuns in time that depends only on the length of `bytes`. Reports `InsufficientCapacity` when `into` is shorter\nthan `HexEncodedLength(bytes.length)`, leaving it exactly as it was; room past the encoded form is not touched.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to encode" },
+          { "name": "into", "markdown": "the destination, at least `HexEncodedLength(bytes.length)` characters" },
+          { "name": "letterCase", "markdown": "which case the digits above nine are written in" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/hex#hex-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HexEncode",
+      "displayName": "HexEncode",
+      "module": "Hex",
+      "source": "Src/Hex.rux",
+      "line": 61,
+      "signature": "pub func HexEncode(text: char8[..], into: var char8[..], letterCase: HexCase) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the bytes of `text` as hexadecimal digits into `into`, two per byte.",
+        "markdown": "Writes the bytes of `text` as hexadecimal digits into `into`, two per byte.\nThe byte form, reached without the caller reinterpreting the text first: each UTF-8 code unit is one byte.\nThe failure the byte form reports, with the same guarantee.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the text whose bytes to encode" },
+          { "name": "into", "markdown": "the destination, at least `HexEncodedLength(text.length)` characters" },
+          { "name": "letterCase", "markdown": "which case the digits above nine are written in" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/hex#hex-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HexDecodedLength",
+      "displayName": "HexDecodedLength",
+      "module": "Hex",
+      "source": "Src/Hex.rux",
+      "line": 71,
+      "signature": "pub func HexDecodedLength(text: char8[..]) -> uint ! DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many bytes the hexadecimal text decodes to, after checking that its length is even.",
+        "markdown": "How many bytes the hexadecimal text decodes to, after checking that its length is even.\nOnly the length is checked; the digits themselves are checked by `HexDecode`. Reports `InvalidLength` at the\nend of the text when it has an odd number of characters. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the hexadecimal text" }],
+        "returns": "the number of bytes `HexDecode` writes for it",
+        "see": ["https://rux-lang.dev/docs/api/encoding/hex#hex-decoded-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "HexDecode",
+      "displayName": "HexDecode",
+      "module": "Hex",
+      "source": "Src/Hex.rux",
+      "line": 85,
+      "signature": "pub func HexDecode(text: char8[..], into: var byte[..]) -> uint ! DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads hexadecimal digits of either case from `text` into `into`, one byte per pair.",
+        "markdown": "Reads hexadecimal digits of either case from `text` into `into`, one byte per pair.\nRuns in time that depends only on the length of `text` when the text is valid. Reports `InvalidLength` for an\nodd number of characters and `InvalidCharacter` at the first character that is not a hexadecimal digit, leaving\n`into` untouched in both cases, because the whole text is checked before anything is written. Reports\n`InsufficientCapacity` with the length needed when `into` is too short, also leaving it untouched.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the hexadecimal text to decode" },
+          { "name": "into", "markdown": "the destination, at least `HexDecodedLength(text)` bytes" }
+        ],
+        "returns": "the number of bytes written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/hex#hex-decode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "HexView",
+      "displayName": "HexView",
+      "module": "Hex",
+      "source": "Src/Hex.rux",
+      "line": 124,
+      "signature": "pub struct HexView",
+      "typeParams": [],
+      "doc": {
+        "summary": "A borrowed byte sequence that renders as hexadecimal under a format placeholder.",
+        "markdown": "A borrowed byte sequence that renders as hexadecimal under a format placeholder.\nLets a caller write `Render(\"{}\", ViewHex(digest))` instead of sizing a buffer first. The view borrows the bytes\nand must not outlive them. Copy, owning nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/hex#hex-view"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "bytes",
+          "type": "byte[..]",
+          "public": false,
+          "line": 125,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "letterCase",
+          "type": "HexCase",
+          "public": false,
+          "line": 126,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 148,
+          "signature": "pub func WriteDisplay(self: &HexView, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&HexView",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the bytes as hexadecimal digits, padded to the placeholder's width.",
+            "markdown": "Writes the bytes as hexadecimal digits, padded to the placeholder's width.\nThe style `x` selects lower case and `X` upper case; with neither, the view's own case is used. The digits\nare produced in blocks, so rendering allocates nothing however long the bytes are. Reports whatever the writer\nreported, and `UnsupportedRequest` for a precision or any other style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole rendering was accepted",
+            "see": ["https://rux-lang.dev/docs/api/encoding/hex#hex-view-write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ViewHex",
+      "displayName": "ViewHex",
+      "module": "Hex",
+      "source": "Src/Hex.rux",
+      "line": 135,
+      "signature": "pub func ViewHex(bytes: byte[..], letterCase: HexCase) -> HexView",
+      "typeParams": [],
+      "doc": {
+        "summary": "Borrows `bytes` for rendering as hexadecimal.",
+        "markdown": "Borrows `bytes` for rendering as hexadecimal.\nCannot fail and allocates nothing; the view reads `bytes` each time it is rendered, so it must not outlive them.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to render" },
+          { "name": "letterCase", "markdown": "the case used when the placeholder does not name one" }
+        ],
+        "returns": "a view that renders `bytes` as hexadecimal",
+        "see": ["https://rux-lang.dev/docs/api/encoding/hex#view-hex"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "PercentSet",
+      "displayName": "PercentSet",
+      "module": "Percent",
+      "source": "Src/Percent.rux",
+      "line": 18,
+      "signature": "pub enum PercentSet",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which characters percent-encoding leaves as they are.",
+        "markdown": "Which characters percent-encoding leaves as they are.\nCopy, carrying no payload. Every set leaves the unreserved characters of RFC 3986 alone, apart from `Form`, which\nescapes `~` as HTML requires.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/percent#percent-set"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Component",
+          "value": null,
+          "payload": null,
+          "line": 21,
+          "doc": "Only the unreserved characters: letters, digits, `-`, `.`, `_` and `~`. Right for a single query name or\nvalue, a single path segment, or any value placed between delimiters, since every delimiter is escaped.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Path",
+          "value": null,
+          "payload": null,
+          "line": 24,
+          "doc": "The unreserved characters, the sub-delimiters `!$&'()*+,;=`, and `:`, `@` and `/`. Right for a whole path\nthat is already split into segments the way it should be.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Form",
+          "value": null,
+          "payload": null,
+          "line": 27,
+          "doc": "The `application/x-www-form-urlencoded` serialization: letters, digits, `*`, `-`, `.` and `_` stay, a space\nbecomes `+`, and everything else is escaped. Decoding in this set reads `+` as a space.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PercentEncodedLength",
+      "displayName": "PercentEncodedLength",
+      "module": "Percent",
+      "source": "Src/Percent.rux",
+      "line": 54,
+      "signature": "pub func PercentEncodedLength(bytes: byte[..], set: PercentSet) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many characters the percent-encoded form of `bytes` occupies in `set`.",
+        "markdown": "How many characters the percent-encoded form of `bytes` occupies in `set`.\nExact rather than a bound: one character for each byte the set leaves alone, or for a space in the form set,\nand three for every other byte. Runs in time linear in the length and allocates nothing.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to encode" },
+          { "name": "set", "markdown": "which characters stay as they are" }
+        ],
+        "returns": "the number of characters `PercentEncode` writes",
+        "see": ["https://rux-lang.dev/docs/api/encoding/percent#percent-encoded-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PercentEncodedLength",
+      "displayName": "PercentEncodedLength",
+      "module": "Percent",
+      "source": "Src/Percent.rux",
+      "line": 76,
+      "signature": "pub func PercentEncodedLength(text: char8[..], set: PercentSet) -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many characters the percent-encoded form of the bytes of `text` occupies in `set`.",
+        "markdown": "How many characters the percent-encoded form of the bytes of `text` occupies in `set`.\nThe byte form, reached without the caller reinterpreting the text first: each UTF-8 code unit is one byte.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the text whose bytes to encode" },
+          { "name": "set", "markdown": "which characters stay as they are" }
+        ],
+        "returns": "the number of characters `PercentEncode` writes",
+        "see": ["https://rux-lang.dev/docs/api/encoding/percent#percent-encoded-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PercentEncode",
+      "displayName": "PercentEncode",
+      "module": "Percent",
+      "source": "Src/Percent.rux",
+      "line": 89,
+      "signature": "pub func PercentEncode(bytes: byte[..], into: var char8[..], set: PercentSet) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes `bytes` percent-encoded for `set` into `into`.",
+        "markdown": "Writes `bytes` percent-encoded for `set` into `into`.\nEscapes use upper-case digits, which RFC 3986 says producers should. Reports `InsufficientCapacity` when `into`\nis shorter than `PercentEncodedLength(bytes, set)`, leaving it exactly as it was; room past the encoded form is\nnot touched.",
+        "typeParams": [],
+        "params": [
+          { "name": "bytes", "markdown": "the bytes to encode" },
+          { "name": "into", "markdown": "the destination, at least `PercentEncodedLength(bytes, set)` characters" },
+          { "name": "set", "markdown": "which characters stay as they are" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/percent#percent-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PercentEncode",
+      "displayName": "PercentEncode",
+      "module": "Percent",
+      "source": "Src/Percent.rux",
+      "line": 125,
+      "signature": "pub func PercentEncode(text: char8[..], into: var char8[..], set: PercentSet) -> uint ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes the bytes of `text` percent-encoded for `set` into `into`.",
+        "markdown": "Writes the bytes of `text` percent-encoded for `set` into `into`.\nThe byte form, reached without the caller reinterpreting the text first: each UTF-8 code unit is one byte, so a\ncharacter outside ASCII becomes one escape per byte of its UTF-8 form, as URIs require.\nThe failure the byte form reports, with the same guarantee.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the text whose bytes to encode" },
+          { "name": "into", "markdown": "the destination, at least `PercentEncodedLength(text, set)` characters" },
+          { "name": "set", "markdown": "which characters stay as they are" }
+        ],
+        "returns": "the number of characters written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/percent#percent-encode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PercentDecodedLength",
+      "displayName": "PercentDecodedLength",
+      "module": "Percent",
+      "source": "Src/Percent.rux",
+      "line": 137,
+      "signature": "pub func PercentDecodedLength(text: char8[..]) -> uint ! DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many bytes percent-encoded text decodes to, after checking that every escape is well formed.",
+        "markdown": "How many bytes percent-encoded text decodes to, after checking that every escape is well formed.\nEach `%` followed by two hexadecimal digits of either case counts as one byte, and every other character as one.\nReports `InvalidEscape` at the first `%` that is not followed by two hexadecimal digits. Runs in time linear in\nthe length and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "text", "markdown": "the percent-encoded text" }],
+        "returns": "the number of bytes `PercentDecode` writes for it",
+        "see": ["https://rux-lang.dev/docs/api/encoding/percent#percent-decoded-length"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "PercentDecode",
+      "displayName": "PercentDecode",
+      "module": "Percent",
+      "source": "Src/Percent.rux",
+      "line": 166,
+      "signature": "pub func PercentDecode(text: char8[..], into: var byte[..], set: PercentSet) -> uint ! DecodeError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads percent-encoded text into `into`, turning each escape back into its byte.",
+        "markdown": "Reads percent-encoded text into `into`, turning each escape back into its byte.\nCharacters outside an escape are copied as they are, except that `+` becomes a space when `set` is `Form`; the\nother sets give `+` no special meaning. Reports `InvalidEscape` at the first `%` that is not followed by two\nhexadecimal digits, and `InsufficientCapacity` with the length needed when `into` is too short; both leave `into`\nuntouched, because the whole text is checked before anything is written.",
+        "typeParams": [],
+        "params": [
+          { "name": "text", "markdown": "the percent-encoded text to decode" },
+          { "name": "into", "markdown": "the destination, at least `PercentDecodedLength(text)` bytes" },
+          { "name": "set", "markdown": "the set the text was encoded for, which decides how `+` is read" }
+        ],
+        "returns": "the number of bytes written",
+        "see": ["https://rux-lang.dev/docs/api/encoding/percent#percent-decode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "variant",
+      "name": "StreamCodec",
+      "displayName": "StreamCodec",
+      "module": "Stream",
+      "source": "Src/Stream.rux",
+      "line": 13,
+      "signature": "pub variant StreamCodec",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which encoding a stream uses, with the form of it.",
+        "markdown": "Which encoding a stream uses, with the form of it. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/stream#stream-codec"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [
+        {
+          "name": "Hex",
+          "value": null,
+          "payload": "(HexCase)",
+          "line": 15,
+          "doc": "Hexadecimal, two characters per byte.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Base64",
+          "value": null,
+          "payload": "(Base64Variant)",
+          "line": 17,
+          "doc": "Base64, four characters per three bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Base32",
+          "value": null,
+          "payload": "(Base32Variant)",
+          "line": 19,
+          "doc": "Base32, eight characters per five bytes.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "EncodingWriter",
+      "displayName": "EncodingWriter",
+      "module": "Stream",
+      "source": "Src/Stream.rux",
+      "line": 75,
+      "signature": "pub struct EncodingWriter",
+      "typeParams": [],
+      "doc": {
+        "summary": "A writer that encodes what is written to it onto another writer.",
+        "markdown": "A writer that encodes what is written to it onto another writer. Not copied.\nThe text is complete only once `Finish` has written the last group and its padding.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/stream#encoding-writer"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "sink",
+          "type": "Writer",
+          "public": false,
+          "line": 76,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "codec",
+          "type": "StreamCodec",
+          "public": false,
+          "line": 77,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "pending",
+          "type": "byte[N]",
+          "public": false,
+          "line": 78,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "pendingLength",
+          "type": "uint",
+          "public": false,
+          "line": 79,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "finished",
+          "type": "bool",
+          "public": false,
+          "line": 80,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 91,
+          "signature": "pub func New(sink: Writer, codec: StreamCodec) -> EncodingWriter",
+          "typeParams": [],
+          "params": [
+            { "name": "sink", "type": "Writer" },
+            { "name": "codec", "type": "StreamCodec" }
+          ],
+          "receiver": null,
+          "returnType": "EncodingWriter",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A writer encoding with `codec` onto `sink`.",
+            "markdown": "A writer encoding with `codec` onto `sink`.",
+            "typeParams": [],
+            "params": [
+              { "name": "sink", "markdown": "where the text goes" },
+              { "name": "codec", "markdown": "the encoding and its form" }
+            ],
+            "returns": "the writer",
+            "see": ["https://rux-lang.dev/docs/api/encoding/stream#encoding-writer-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 106,
+          "signature": "pub func Finish(self: &var EncodingWriter) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var EncodingWriter",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Ends the text: encodes the bytes of an incomplete last group, with padding where the form uses it, and\nflushes the writer underneath.",
+            "markdown": "Ends the text: encodes the bytes of an incomplete last group, with padding where the form uses it, and\nflushes the writer underneath. Nothing more may be written afterwards.",
+            "typeParams": [],
+            "params": [],
+            "returns": "nothing, or why the writer underneath failed",
+            "see": ["https://rux-lang.dev/docs/api/encoding/stream#encoding-writer-finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 124,
+          "signature": "pub func Write(self: &var EncodingWriter, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var EncodingWriter",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Encodes `bytes`, writing every complete group and holding back the rest of an incomplete one.",
+            "markdown": "Encodes `bytes`, writing every complete group and holding back the rest of an incomplete one.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to encode" }],
+            "returns": "how many were taken, which is all of them, or fails with `InvalidInput` after `Finish`",
+            "see": ["https://rux-lang.dev/docs/api/encoding/stream#encoding-writer-write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 162,
+          "signature": "pub func Flush(self: &var EncodingWriter) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var EncodingWriter",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Flushes the writer underneath.",
+            "markdown": "Flushes the writer underneath. An incomplete group stays held back, since its characters depend on bytes\nnot yet written; `Finish` is what writes it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "nothing, or why the writer underneath failed",
+            "see": ["https://rux-lang.dev/docs/api/encoding/stream#encoding-writer-flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Writer"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "DecodingReader",
+      "displayName": "DecodingReader",
+      "module": "Stream",
+      "source": "Src/Stream.rux",
+      "line": 171,
+      "signature": "pub struct DecodingReader",
+      "typeParams": [],
+      "doc": {
+        "summary": "A reader that decodes text from another reader into bytes.",
+        "markdown": "A reader that decodes text from another reader into bytes. Not copied.\nThe text is held to the same rules as the slice decoders, so text that would not decode whole fails with\n`InvalidInput` when the reader reaches it. Crockford Base32 skips its hyphens, as its specification asks.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/encoding/stream#decoding-reader"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "source",
+          "type": "Reader",
+          "public": false,
+          "line": 172,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "codec",
+          "type": "StreamCodec",
+          "public": false,
+          "line": 173,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "text",
+          "type": "char8[N]",
+          "public": false,
+          "line": 174,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "textLength",
+          "type": "uint",
+          "public": false,
+          "line": 175,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "decoded",
+          "type": "byte[N]",
+          "public": false,
+          "line": 176,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "decodedStart",
+          "type": "uint",
+          "public": false,
+          "line": 177,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "decodedEnd",
+          "type": "uint",
+          "public": false,
+          "line": 178,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "ended",
+          "type": "bool",
+          "public": false,
+          "line": 179,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 190,
+          "signature": "pub func New(source: Reader, codec: StreamCodec) -> DecodingReader",
+          "typeParams": [],
+          "params": [
+            { "name": "source", "type": "Reader" },
+            { "name": "codec", "type": "StreamCodec" }
+          ],
+          "receiver": null,
+          "returnType": "DecodingReader",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A reader decoding `codec` text from `source`.",
+            "markdown": "A reader decoding `codec` text from `source`.",
+            "typeParams": [],
+            "params": [
+              { "name": "source", "markdown": "where the text comes from" },
+              { "name": "codec", "markdown": "the encoding and its form" }
+            ],
+            "returns": "the reader",
+            "see": ["https://rux-lang.dev/docs/api/encoding/stream#decoding-reader-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Read",
+          "line": 253,
+          "signature": "pub func Read(self: &var DecodingReader, into: var char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var DecodingReader",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Reader",
+          "public": true,
+          "doc": {
+            "summary": "Decodes into `into` as many bytes as are ready, reading more text when none are.",
+            "markdown": "Decodes into `into` as many bytes as are ready, reading more text when none are.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where the bytes go" }],
+            "returns": "how many were decoded, or fails with `EndOfStream` after the last, or with `InvalidInput` for text\nthat is not in the form",
+            "see": ["https://rux-lang.dev/docs/api/encoding/stream#decoding-reader-read"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Reader"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}
