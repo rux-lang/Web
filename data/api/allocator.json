@@ -52,6 +52,11 @@
       "header": "An allocator that serves small blocks from free lists, one per size class, and reuses what is given back.\nThe arena is fast because it never reclaims. This is the allocator for the other shape: many small values whose\nlives end at different times and in no particular order — list nodes, hash table entries, small strings. Both\nallocation and release are a handful of instructions and a pointer swap, with no search and no coalescing.\nA request is rounded up to one of a few power-of-two classes, and each class keeps its own list of blocks that\nhave been handed back. When a class runs dry the pool takes one chunk from a backing allocator and carves it into\nblocks of that class, so the backing allocator sees one request per chunk rather than one per block.\nRounding up is what pays for the speed. A 17-byte request occupies a 32-byte block, and the 15 bytes are not\nrecoverable until the whole chunk is released — which is the trade a pool makes, and the reason it is not the\nallocator to reach for when sizes vary widely.\nA request too large for the largest class, or needing an alignment stricter than a chunk is taken at, is passed\nstraight to the backing allocator. That decision is made from the layout alone, so a release reaches the same\nconclusion as the allocation it matches without the pool recording anything per block.\nThe pool prohibits copying and `~Pool` releases its chunks. `Handle` is a storable interface adapter over the\nsame owner; because it contains a raw pointer, it must not outlive or survive a move of the pool."
     },
     {
+      "name": "Shared",
+      "source": "Src/Shared.rux",
+      "header": "One value on the heap, shared by every copy of a handle and destroyed when the last copy goes.\n`Rc<T>` counts its copies with plain arithmetic, for values that stay on one thread; `Arc<T>` counts them with\natomic operations, so copies can be handed to other threads and dropped there. Copying either handle copies the\npointer and adds to the count, which is why both have a copy operator of their own rather than a prohibition: a\nshared value is meant to be copied. The value itself is only ever read through a shared handle, except through\n`GetMutable` while exactly one handle exists, since a write through one copy would change what every other copy\nsees.\nThere are no weak handles: a cycle of shared handles is never freed, so a structure that needs back-pointers keeps\nthem as raw pointers or indices."
+    },
+    {
       "name": "System",
       "source": "Src/System.rux",
       "header": "The allocator that asks the operating system, and is the one everything else falls back to.\nIt is built on `Rux/Memory`'s page layer rather than on a C heap, which is what lets it honour an alignment\nstricter than a machine word: pages come aligned to a page, and a header placed before the returned address\nrecords what has to be given back.\nThe header is why a release needs its layout. The block handed to the caller is not the block taken from the\nsystem — there is a header before it and padding before that — and the header holds the length to release. Both\nthe layout and the header are checked against each other, so a mismatched release is reported rather than\ncorrupting the next allocation.\nThis is a page-granular allocator, so a small allocation costs a whole page. That is the right shape for the\nbacking store of an arena or a pool, and the wrong one for a program allocating many small values directly --\nwhich is what the arena and pool allocators in this package exist for."
@@ -2945,6 +2950,611 @@
       "baseType": null,
       "cases": [],
       "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Rc",
+      "displayName": "Rc<T>",
+      "module": "Shared",
+      "source": "Src/Shared.rux",
+      "line": 28,
+      "signature": "pub struct Rc<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A shared, counted handle to one value, for use on one thread.",
+        "markdown": "A shared, counted handle to one value, for use on one thread. Copying a handle shares the value.",
+        "typeParams": [{ "name": "T", "markdown": "the value's type" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/allocator/shared#rc"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var SharedBlock<T>",
+          "public": false,
+          "line": 29,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 30,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "operator",
+          "name": "=",
+          "line": 37,
+          "signature": "pub func =(self: &var Rc<T>, other: &Rc<T>)",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&Rc<T>" }],
+          "receiver": "&var Rc<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Another handle to the same value, adding one to the count.",
+            "markdown": "Another handle to the same value, adding one to the count.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the handle to copy" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#rc-copy"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Create",
+          "line": 48,
+          "signature": "pub func Create(allocator: Allocator, value: T) -> Rc<T> ! AllocError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "value", "type": "T" }
+          ],
+          "receiver": null,
+          "returnType": "Rc<T> ! AllocError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The first handle to `value`, moved onto the heap.",
+            "markdown": "The first handle to `value`, moved onto the heap.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where the storage comes from" },
+              { "name": "value", "markdown": "the value to share" }
+            ],
+            "returns": "the handle, or why there was no storage; the value is destroyed then",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#rc-create"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Get",
+          "line": 57,
+          "signature": "pub func Get(self: &Rc<T>) -> *T",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Rc<T>",
+          "returnType": "*T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The shared value, for reading.",
+            "markdown": "The shared value, for reading.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a pointer to it, valid while any handle exists",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#rc-get"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "GetMutable",
+          "line": 64,
+          "signature": "pub func GetMutable(self: &var Rc<T>) -> (*var T)?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Rc<T>",
+          "returnType": "(*var T)?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value for writing, while this is the only handle to it.",
+            "markdown": "The value for writing, while this is the only handle to it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a pointer to it, or `none` while other handles share it",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#rc-get-mutable"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Count",
+          "line": 72,
+          "signature": "pub func Count(self: &Rc<T>) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Rc<T>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many handles share the value.",
+            "markdown": "How many handles share the value.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the count",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#rc-count"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SameAs",
+          "line": 80,
+          "signature": "pub func SameAs(self: &Rc<T>, other: &Rc<T>) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&Rc<T>" }],
+          "receiver": "&Rc<T>",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether `other` shares the same value, rather than an equal one.",
+            "markdown": "Whether `other` shares the same value, rather than an equal one.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the other handle" }],
+            "returns": "whether both point at one value",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#rc-same-as"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~Rc",
+          "line": 84,
+          "signature": "func ~Rc(self: &var Rc<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Rc<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Arc",
+      "displayName": "Arc<T>",
+      "module": "Shared",
+      "source": "Src/Shared.rux",
+      "line": 101,
+      "signature": "pub struct Arc<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A shared, counted handle to one value whose copies may live on different threads.",
+        "markdown": "A shared, counted handle to one value whose copies may live on different threads. Copying a handle shares the\nvalue, and the count is kept with atomic operations.\nThe value is only read through it, so a value that changes while shared needs its own synchronization, such as a\n`Sync::Mutex`.",
+        "typeParams": [{ "name": "T", "markdown": "the value's type" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/allocator/shared#arc"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var SharedBlock<T>",
+          "public": false,
+          "line": 102,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 103,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "operator",
+          "name": "=",
+          "line": 110,
+          "signature": "pub func =(self: &var Arc<T>, other: &Arc<T>)",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&Arc<T>" }],
+          "receiver": "&var Arc<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Another handle to the same value, adding one to the count atomically.",
+            "markdown": "Another handle to the same value, adding one to the count atomically.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the handle to copy" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#arc-copy"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Create",
+          "line": 121,
+          "signature": "pub func Create(allocator: Allocator, value: T) -> Arc<T> ! AllocError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "value", "type": "T" }
+          ],
+          "receiver": null,
+          "returnType": "Arc<T> ! AllocError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The first handle to `value`, moved onto the heap.",
+            "markdown": "The first handle to `value`, moved onto the heap.",
+            "typeParams": [],
+            "params": [
+              {
+                "name": "allocator",
+                "markdown": "where the storage comes from, which must be usable from every thread a copy reaches"
+              },
+              { "name": "value", "markdown": "the value to share" }
+            ],
+            "returns": "the handle, or why there was no storage; the value is destroyed then",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#arc-create"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Get",
+          "line": 130,
+          "signature": "pub func Get(self: &Arc<T>) -> *T",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Arc<T>",
+          "returnType": "*T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The shared value, for reading.",
+            "markdown": "The shared value, for reading.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a pointer to it, valid while any handle exists",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#arc-get"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "GetMutable",
+          "line": 137,
+          "signature": "pub func GetMutable(self: &var Arc<T>) -> (*var T)?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Arc<T>",
+          "returnType": "(*var T)?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The value for writing, while this is the only handle to it.",
+            "markdown": "The value for writing, while this is the only handle to it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a pointer to it, or `none` while other handles share it",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#arc-get-mutable"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Count",
+          "line": 145,
+          "signature": "pub func Count(self: &Arc<T>) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Arc<T>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many handles share the value, at some moment while this one existed; another thread may change it.",
+            "markdown": "How many handles share the value, at some moment while this one existed; another thread may change it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the count",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#arc-count"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SameAs",
+          "line": 153,
+          "signature": "pub func SameAs(self: &Arc<T>, other: &Arc<T>) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&Arc<T>" }],
+          "receiver": "&Arc<T>",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether `other` shares the same value, rather than an equal one.",
+            "markdown": "Whether `other` shares the same value, rather than an equal one.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the other handle" }],
+            "returns": "whether both point at one value",
+            "see": ["https://rux-lang.dev/docs/api/allocator/shared#arc-same-as"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~Arc",
+          "line": 157,
+          "signature": "func ~Arc(self: &var Arc<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Arc<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
       "implements": [],
       "targets": [
         "windows-x86_64",

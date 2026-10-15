@@ -74,6 +74,11 @@
       "header": "What a floating-point value is, before any arithmetic is done to it.\nIEEE 754 sorts every bit pattern into five kinds, and most of the bugs in floating-point code come from\ntreating one as another: a NaN mistaken for a number because a comparison against it was false, a signed\nzero whose sign a comparison threw away, a subnormal treated as zero because it printed as one. So the\nquestions here are answered by bit pattern wherever a comparison would lie, and the sign of a zero is\npreserved rather than normalized away.\nThe neighbourhood operations — `NextAfter`, `NextUp`, `NextDown`, `UlpDistance` — are here for the same\nreason: they are about the representation rather than about the value, and they are how a test says two\nresults are within an ulp of each other."
     },
     {
+      "name": "Complex",
+      "source": "Src/Complex.rux",
+      "header": "Complex numbers, as `Complex` over `float64` and `Complex32` over `float32`.\nThe arithmetic follows the usual formulas, with two refinements where the naive ones lose: the magnitude goes\nthrough `Hypot`, so it neither overflows nor underflows for parts far from one, and division scales by the larger\npart of the divisor (Smith's method), so dividing by a very large or very small number keeps its precision. `Log`,\n`Sqrt` and `Pow` take the principal branch, with the cut along the negative real axis and the argument in\n(-π, π], as C and the common libraries do. The two types are the same code at two widths; there is no generic\nform because the formulas need constants of the element type."
+    },
+    {
       "name": "Const",
       "source": "Src/Const.rux",
       "header": "The mathematical constants, each rounded once to the nearest `float64`.\nWritten as decimal literals rather than computed, so no expression's rounding stands between the true value\nand the stored one. A `float32` caller converts, which rounds a second time and is still the nearest\n`float32` to the true constant for every value here."
@@ -2686,6 +2691,1196 @@
       "baseType": null,
       "cases": [],
       "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Complex",
+      "displayName": "Complex",
+      "module": "Complex",
+      "source": "Src/Complex.rux",
+      "line": 13,
+      "signature": "pub struct Complex",
+      "typeParams": [],
+      "doc": {
+        "summary": "A complex number `real + imaginary·i` over `float64`.",
+        "markdown": "A complex number `real + imaginary·i` over `float64`. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/math/complex#complex"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "real",
+          "type": "float64",
+          "public": true,
+          "line": 15,
+          "doc": "The real part.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "imaginary",
+          "type": "float64",
+          "public": true,
+          "line": 17,
+          "doc": "The imaginary part.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 26,
+          "signature": "pub func New(real: float64, imaginary: float64) -> Complex",
+          "typeParams": [],
+          "params": [
+            { "name": "real", "type": "float64" },
+            { "name": "imaginary", "type": "float64" }
+          ],
+          "receiver": null,
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number `real + imaginary·i`.",
+            "markdown": "The number `real + imaginary·i`.",
+            "typeParams": [],
+            "params": [
+              { "name": "real", "markdown": "the real part" },
+              { "name": "imaginary", "markdown": "the imaginary part" }
+            ],
+            "returns": "the number",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromPolar",
+          "line": 35,
+          "signature": "pub func FromPolar(magnitude: float64, angle: float64) -> Complex",
+          "typeParams": [],
+          "params": [
+            { "name": "magnitude", "type": "float64" },
+            { "name": "angle", "type": "float64" }
+          ],
+          "receiver": null,
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number with magnitude `magnitude` at `angle` radians from the positive real axis.",
+            "markdown": "The number with magnitude `magnitude` at `angle` radians from the positive real axis.",
+            "typeParams": [],
+            "params": [
+              { "name": "magnitude", "markdown": "the distance from zero" },
+              { "name": "angle", "markdown": "the angle in radians" }
+            ],
+            "returns": "the number",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#from-polar"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Abs",
+          "line": 42,
+          "signature": "pub func Abs(self: &Complex) -> float64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex",
+          "returnType": "float64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The distance from zero, computed without overflow or underflow on the way.",
+            "markdown": "The distance from zero, computed without overflow or underflow on the way.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the magnitude",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#abs"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Arg",
+          "line": 49,
+          "signature": "pub func Arg(self: &Complex) -> float64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex",
+          "returnType": "float64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The angle from the positive real axis, in (-π, π].",
+            "markdown": "The angle from the positive real axis, in (-π, π].",
+            "typeParams": [],
+            "params": [],
+            "returns": "the argument in radians",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#arg"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Norm",
+          "line": 56,
+          "signature": "pub func Norm(self: &Complex) -> float64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex",
+          "returnType": "float64",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The square of the magnitude, which needs no square root.",
+            "markdown": "The square of the magnitude, which needs no square root.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the squared magnitude",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#norm"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Conjugate",
+          "line": 63,
+          "signature": "pub func Conjugate(self: &Complex) -> Complex",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number reflected across the real axis.",
+            "markdown": "The number reflected across the real axis.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the conjugate",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#conjugate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Negate",
+          "line": 70,
+          "signature": "pub func Negate(self: &Complex) -> Complex",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number with both parts negated.",
+            "markdown": "The number with both parts negated.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the negation",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#negate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Scale",
+          "line": 78,
+          "signature": "pub func Scale(self: &Complex, factor: float64) -> Complex",
+          "typeParams": [],
+          "params": [{ "name": "factor", "type": "float64" }],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number with both parts multiplied by `factor`.",
+            "markdown": "The number with both parts multiplied by `factor`.",
+            "typeParams": [],
+            "params": [{ "name": "factor", "markdown": "the real factor" }],
+            "returns": "the scaled number",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#scale"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Exp",
+          "line": 85,
+          "signature": "pub func Exp(self: &Complex) -> Complex",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "e raised to this number.",
+            "markdown": "e raised to this number.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the exponential",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#exp"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Log",
+          "line": 93,
+          "signature": "pub func Log(self: &Complex) -> Complex",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The natural logarithm on the principal branch: the logarithm of the magnitude, and the argument.",
+            "markdown": "The natural logarithm on the principal branch: the logarithm of the magnitude, and the argument.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the logarithm",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#log"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Sqrt",
+          "line": 100,
+          "signature": "pub func Sqrt(self: &Complex) -> Complex",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The principal square root, whose real part is never negative.",
+            "markdown": "The principal square root, whose real part is never negative.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the square root",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#sqrt"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Pow",
+          "line": 113,
+          "signature": "pub func Pow(self: &Complex, exponent: Complex) -> Complex",
+          "typeParams": [],
+          "params": [{ "name": "exponent", "type": "Complex" }],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This number raised to `exponent`, as e raised to `exponent` times the logarithm, so on the principal branch.",
+            "markdown": "This number raised to `exponent`, as e raised to `exponent` times the logarithm, so on the principal branch.\nZero raised to anything is zero.",
+            "typeParams": [],
+            "params": [{ "name": "exponent", "markdown": "the power" }],
+            "returns": "the power",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#pow"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "operator",
+          "name": "+",
+          "line": 123,
+          "signature": "pub func +(self: &Complex, other: Complex) -> Complex",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Complex" }],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The sum.",
+            "markdown": "The sum.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the number to add" }],
+            "returns": "the sum",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#add"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "operator",
+          "name": "-",
+          "line": 131,
+          "signature": "pub func -(self: &Complex, other: Complex) -> Complex",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Complex" }],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The difference.",
+            "markdown": "The difference.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the number to subtract" }],
+            "returns": "the difference",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#subtract"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "operator",
+          "name": "*",
+          "line": 139,
+          "signature": "pub func *(self: &Complex, other: Complex) -> Complex",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Complex" }],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The product.",
+            "markdown": "The product.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the number to multiply by" }],
+            "returns": "the product",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#multiply"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "operator",
+          "name": "/",
+          "line": 151,
+          "signature": "pub func /(self: &Complex, other: Complex) -> Complex",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Complex" }],
+          "receiver": "&Complex",
+          "returnType": "Complex",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The quotient, by Smith's method, so that a divisor with very large or very small parts keeps its precision.",
+            "markdown": "The quotient, by Smith's method, so that a divisor with very large or very small parts keeps its precision.\nDividing by zero gives infinities or NaN, as floating-point division does.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the number to divide by" }],
+            "returns": "the quotient",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#divide"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Complex32",
+      "displayName": "Complex32",
+      "module": "Complex",
+      "source": "Src/Complex.rux",
+      "line": 171,
+      "signature": "pub struct Complex32",
+      "typeParams": [],
+      "doc": {
+        "summary": "A complex number `real + imaginary·i` over `float32`.",
+        "markdown": "A complex number `real + imaginary·i` over `float32`. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/math/complex#complex32"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "real",
+          "type": "float32",
+          "public": true,
+          "line": 173,
+          "doc": "The real part.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "imaginary",
+          "type": "float32",
+          "public": true,
+          "line": 175,
+          "doc": "The imaginary part.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 184,
+          "signature": "pub func New(real: float32, imaginary: float32) -> Complex32",
+          "typeParams": [],
+          "params": [
+            { "name": "real", "type": "float32" },
+            { "name": "imaginary", "type": "float32" }
+          ],
+          "receiver": null,
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number `real + imaginary·i`.",
+            "markdown": "The number `real + imaginary·i`.",
+            "typeParams": [],
+            "params": [
+              { "name": "real", "markdown": "the real part" },
+              { "name": "imaginary", "markdown": "the imaginary part" }
+            ],
+            "returns": "the number",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromPolar",
+          "line": 193,
+          "signature": "pub func FromPolar(magnitude: float32, angle: float32) -> Complex32",
+          "typeParams": [],
+          "params": [
+            { "name": "magnitude", "type": "float32" },
+            { "name": "angle", "type": "float32" }
+          ],
+          "receiver": null,
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number with magnitude `magnitude` at `angle` radians from the positive real axis.",
+            "markdown": "The number with magnitude `magnitude` at `angle` radians from the positive real axis.",
+            "typeParams": [],
+            "params": [
+              { "name": "magnitude", "markdown": "the distance from zero" },
+              { "name": "angle", "markdown": "the angle in radians" }
+            ],
+            "returns": "the number",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#from-polar"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Abs",
+          "line": 200,
+          "signature": "pub func Abs(self: &Complex32) -> float32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex32",
+          "returnType": "float32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The distance from zero, computed without overflow or underflow on the way.",
+            "markdown": "The distance from zero, computed without overflow or underflow on the way.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the magnitude",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#abs"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Arg",
+          "line": 207,
+          "signature": "pub func Arg(self: &Complex32) -> float32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex32",
+          "returnType": "float32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The angle from the positive real axis, in (-π, π].",
+            "markdown": "The angle from the positive real axis, in (-π, π].",
+            "typeParams": [],
+            "params": [],
+            "returns": "the argument in radians",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#arg"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Norm",
+          "line": 214,
+          "signature": "pub func Norm(self: &Complex32) -> float32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex32",
+          "returnType": "float32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The square of the magnitude, which needs no square root.",
+            "markdown": "The square of the magnitude, which needs no square root.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the squared magnitude",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#norm"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Conjugate",
+          "line": 221,
+          "signature": "pub func Conjugate(self: &Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number reflected across the real axis.",
+            "markdown": "The number reflected across the real axis.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the conjugate",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#conjugate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Negate",
+          "line": 228,
+          "signature": "pub func Negate(self: &Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number with both parts negated.",
+            "markdown": "The number with both parts negated.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the negation",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#negate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Scale",
+          "line": 236,
+          "signature": "pub func Scale(self: &Complex32, factor: float32) -> Complex32",
+          "typeParams": [],
+          "params": [{ "name": "factor", "type": "float32" }],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The number with both parts multiplied by `factor`.",
+            "markdown": "The number with both parts multiplied by `factor`.",
+            "typeParams": [],
+            "params": [{ "name": "factor", "markdown": "the real factor" }],
+            "returns": "the scaled number",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#scale"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Exp",
+          "line": 243,
+          "signature": "pub func Exp(self: &Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "e raised to this number.",
+            "markdown": "e raised to this number.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the exponential",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#exp"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Log",
+          "line": 251,
+          "signature": "pub func Log(self: &Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The natural logarithm on the principal branch: the logarithm of the magnitude, and the argument.",
+            "markdown": "The natural logarithm on the principal branch: the logarithm of the magnitude, and the argument.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the logarithm",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#log"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Sqrt",
+          "line": 258,
+          "signature": "pub func Sqrt(self: &Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The principal square root, whose real part is never negative.",
+            "markdown": "The principal square root, whose real part is never negative.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the square root",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#sqrt"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Pow",
+          "line": 271,
+          "signature": "pub func Pow(self: &Complex32, exponent: Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [{ "name": "exponent", "type": "Complex32" }],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "This number raised to `exponent`, as e raised to `exponent` times the logarithm, so on the principal branch.",
+            "markdown": "This number raised to `exponent`, as e raised to `exponent` times the logarithm, so on the principal branch.\nZero raised to anything is zero.",
+            "typeParams": [],
+            "params": [{ "name": "exponent", "markdown": "the power" }],
+            "returns": "the power",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#pow"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "operator",
+          "name": "+",
+          "line": 281,
+          "signature": "pub func +(self: &Complex32, other: Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Complex32" }],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The sum.",
+            "markdown": "The sum.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the number to add" }],
+            "returns": "the sum",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#add"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "operator",
+          "name": "-",
+          "line": 289,
+          "signature": "pub func -(self: &Complex32, other: Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Complex32" }],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The difference.",
+            "markdown": "The difference.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the number to subtract" }],
+            "returns": "the difference",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#subtract"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "operator",
+          "name": "*",
+          "line": 297,
+          "signature": "pub func *(self: &Complex32, other: Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Complex32" }],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The product.",
+            "markdown": "The product.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the number to multiply by" }],
+            "returns": "the product",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#multiply"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "operator",
+          "name": "/",
+          "line": 309,
+          "signature": "pub func /(self: &Complex32, other: Complex32) -> Complex32",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Complex32" }],
+          "receiver": "&Complex32",
+          "returnType": "Complex32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The quotient, by Smith's method, so that a divisor with very large or very small parts keeps its precision.",
+            "markdown": "The quotient, by Smith's method, so that a divisor with very large or very small parts keeps its precision.\nDividing by zero gives infinities or NaN, as floating-point division does.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the number to divide by" }],
+            "returns": "the quotient",
+            "see": ["https://rux-lang.dev/docs/api/math/complex#divide"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
       "implements": [],
       "targets": [
         "windows-x86_64",

@@ -116,7 +116,7 @@ pub func PowInteger(
 ```
 
 `base` raised to the integer power `exponent`.
-A zero exponent gives one for every base, including zero and a NaN, which is the same rule [`Pow`](/docs/api/math/powers#pow) follows: the empty
+A zero exponent gives one for every base, including zero and a NaN, which is the same rule `Pow` follows: the empty
 product is one. A negative exponent takes the reciprocal at the end rather than dividing as it goes, which keeps the
 intermediates as large as possible and loses the least.
 

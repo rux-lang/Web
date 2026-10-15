@@ -14,9 +14,19 @@
   },
   "modules": [
     {
+      "name": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "header": "Lazy adaptors: cursors that wrap another cursor and change what it yields, one item at a time.\nEach adaptor holds the cursor it wraps and asks it for an item only when it is asked for one, so nothing is computed\nahead and nothing is stored. They take any value with a `Next` returning `T?` — a container's iterator, a `Walk`\nover a slice, or another adaptor — through the `Cursor<T>` bound, and their item types are deduced from what\nthat `Next` returns, so a chain reads without type arguments:\n`for value in Take(Filter(Map(Walk(numbers), Square), IsEven), 3) { ... }`.\nAn adaptor owns the cursor it was given; give it a copy, or move the cursor in, as with any argument."
+    },
+    {
       "name": "Arithmetic",
       "source": "Src/Arithmetic.rux",
       "header": "Checked, wrapping and saturating integer arithmetic, at every integer width the language spells.\nEach operation is generic over the integer type rather than repeated per width. Nothing here needs to be told which\ntype it has: an integer's zero, its all-ones pattern, its signedness and its two limits all follow from one operand\nand the wrapping arithmetic the machine already does, so `int8` and `uint512` run the same code. Every helper below\nderives what it needs the same way:\n  zero     = value - value           the type's zero\n  allOnes  = zero - 1                every bit set: the maximum when unsigned, -1 when signed\n  signed   = allOnes < zero          only a signed type reads all-ones as negative\n  signBit  = 1 << (sizeof(T) * 8 - 1)  the top bit, which is the most negative value when signed\nOrdinary `+`, `-` and `*` wrap on overflow, which is what makes the checks below possible: they compute the wrapped\nanswer and then ask whether it is the true one.\nThe operation comes first in each name because `CheckedAdd`, `CheckedSub` and `CheckedMul` already name the\ncompiler's own intrinsics, which are emitted inline for `uint64` and are the ones allocation-size arithmetic is\nwritten with. These are the general family: any integer width, signed or unsigned, at the cost of being ordinary\ncode rather than an inline sequence."
+    },
+    {
+      "name": "Atomic",
+      "source": "Src/Atomic.rux",
+      "header": "Memory operations that other threads observe whole, and the orderings that say what they observe around them.\nAn ordinary load or store may be split, reordered or removed by the compiler and the processor, which is harmless\nwhile one thread owns the memory and wrong the moment two share it. These intrinsics are compiled to the instructions\neach architecture provides for shared memory: on x86-64 a plain `mov` for loads and weaker stores and `lock`-prefixed\ninstructions for the rest, and on AArch64 acquire and release forms with exclusive-access loops, so no part of an\natomic operation is ever seen half done.\nThey act on one value of 8, 16, 32 or 64 bits: an integer, a `bool` or a pointer. The ordering is always written at\nthe call, as a `MemoryOrder` case, so the compiler knows it while compiling; it says which other memory operations\nmay move across this one. `Rux/Atomic` wraps these in a type; they are here because only the compiler can emit them."
     },
     {
       "name": "Bits",
@@ -289,6 +299,11 @@
       "header": "Where the reading expression is written, as ordinary values available while compiling.\n`#source` is not one value: each field is filled in from the place it is read, so passing `#source.line` to a\nfunction reports the caller's line rather than the function's. That is what makes it usable for a logging or\nassertion helper, which wants to name the site that called it."
     },
     {
+      "name": "Startup",
+      "source": "Src/Startup.rux",
+      "header": "Where a program's arguments and environment are when the kernel starts it.\nAn ELF kernel starts a program with its stack pointer at the argument count, followed by the argument pointers, a\nnull, the environment pointers, a null and the auxiliary vector. The entry stub keeps that address before it aligns\nthe stack and calls `Main`, and this is how a package reaches it. Windows and macOS hand a program its command line\nthrough system calls instead, so there it is null."
+    },
+    {
       "name": "Target",
       "source": "Src/Target.rux",
       "header": "The machine being compiled for, as ordinary values available while compiling.\n`#target` answers questions about the target rather than about the host running the compiler, which is what makes a\ncross-build produce the right code: a package selecting a syscall or a struct layout branches on these and never on\nwhere it happens to be built.\nEach variant names one system rather than a family, so the BSDs are told apart. A `when` on one of these keeps only\nthe branch that applies, so the untaken side is never resolved and may name declarations this target does not have."
@@ -300,6 +315,1459 @@
     }
   ],
   "items": [
+    {
+      "kind": "interface",
+      "name": "Cursor",
+      "displayName": "Cursor",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 13,
+      "signature": "pub interface Cursor",
+      "typeParams": [],
+      "doc": {
+        "summary": "Anything that yields items of type `T` one at a time through `Next`, which `for` and every adaptor here drive.",
+        "markdown": "Anything that yields items of type `T` one at a time through `Next`, which `for` and every adaptor here drive.\nA type conforms by having the method, whether or not it says `extend X : Cursor<T>`. Only usable as a bound.",
+        "typeParams": [{ "name": "T", "markdown": "the item type" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#cursor"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "requirement",
+          "name": "Next",
+          "line": 17,
+          "signature": "func Next(self: &var Self) -> T?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Self",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next item, or `none` once there are no more.",
+            "markdown": "The next item, or `none` once there are no more.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the item",
+            "see": ["https://rux-lang.dev/docs/api/core/adaptors#cursor-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "SliceCursor",
+      "displayName": "SliceCursor<T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 23,
+      "signature": "pub struct SliceCursor<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A cursor over the elements of a slice, by copy.",
+        "markdown": "A cursor over the elements of a slice, by copy. `Copy`.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#slice-cursor"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "items",
+          "type": "T[..]",
+          "public": false,
+          "line": 24,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "at",
+          "type": "uint",
+          "public": false,
+          "line": 25,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 32,
+          "signature": "pub func Next(self: &var SliceCursor<T>) -> T?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var SliceCursor<T>",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next element, or `none` after the last.",
+            "markdown": "The next element, or `none` after the last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the element",
+            "see": ["https://rux-lang.dev/docs/api/core/adaptors#slice-cursor-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Walk",
+      "displayName": "Walk<T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 44,
+      "signature": "pub func Walk<T>(items: T[..]) -> SliceCursor<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A cursor over the elements of `items`, so a slice can feed the adaptors.",
+        "markdown": "A cursor over the elements of `items`, so a slice can feed the adaptors.",
+        "typeParams": [{ "name": "T", "markdown": "the element type" }],
+        "params": [{ "name": "items", "markdown": "the elements, which must outlive the cursor" }],
+        "returns": "the cursor",
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#walk"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Mapped",
+      "displayName": "Mapped<I, T, U>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 53,
+      "signature": "pub struct Mapped<I: Cursor<T>, T, U>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] },
+        { "name": "U", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of a cursor, each passed through a function.",
+        "markdown": "The items of a cursor, each passed through a function.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" },
+          { "name": "U", "markdown": "what the function makes of each" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#mapped"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "source",
+          "type": "I",
+          "public": false,
+          "line": 54,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "transform",
+          "type": "func(T) -> U",
+          "public": false,
+          "line": 55,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 62,
+          "signature": "pub func Next(self: &var Mapped<I, T, U>) -> U?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Mapped<I, T, U>",
+          "returnType": "U?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next item, transformed.",
+            "markdown": "The next item, transformed.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the item",
+            "see": ["https://rux-lang.dev/docs/api/core/adaptors#mapped-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Map",
+      "displayName": "Map<I, T, U>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 76,
+      "signature": "pub func Map<I: Cursor<T>, T, U>(source: I, transform: func(T) -> U) -> Mapped<I, T, U>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] },
+        { "name": "U", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "Each item of `source` passed through `transform`, as it is asked for.",
+        "markdown": "Each item of `source` passed through `transform`, as it is asked for.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" },
+          { "name": "U", "markdown": "what `transform` makes of each item" }
+        ],
+        "params": [
+          { "name": "source", "markdown": "the cursor to wrap" },
+          { "name": "transform", "markdown": "what to do to each item" }
+        ],
+        "returns": "the adaptor",
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#map"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Filtered",
+      "displayName": "Filtered<I, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 84,
+      "signature": "pub struct Filtered<I: Cursor<T>, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of a cursor that pass a test.",
+        "markdown": "The items of a cursor that pass a test.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#filtered"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "source",
+          "type": "I",
+          "public": false,
+          "line": 85,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "keep",
+          "type": "func(T) -> bool",
+          "public": false,
+          "line": 86,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 93,
+          "signature": "pub func Next(self: &var Filtered<I, T>) -> T?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Filtered<I, T>",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next item that passes the test.",
+            "markdown": "The next item that passes the test.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the item",
+            "see": ["https://rux-lang.dev/docs/api/core/adaptors#filtered-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Filter",
+      "displayName": "Filter<I, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 109,
+      "signature": "pub func Filter<I: Cursor<T>, T>(source: I, keep: func(T) -> bool) -> Filtered<I, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of `source` for which `keep` holds.",
+        "markdown": "The items of `source` for which `keep` holds.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" }
+        ],
+        "params": [
+          { "name": "source", "markdown": "the cursor to wrap" },
+          { "name": "keep", "markdown": "the test each item must pass" }
+        ],
+        "returns": "the adaptor",
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#filter"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Taken",
+      "displayName": "Taken<I, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 117,
+      "signature": "pub struct Taken<I: Cursor<T>, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "At most a number of items from the front of a cursor.",
+        "markdown": "At most a number of items from the front of a cursor.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#taken"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "source",
+          "type": "I",
+          "public": false,
+          "line": 118,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "left",
+          "type": "uint",
+          "public": false,
+          "line": 119,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 126,
+          "signature": "pub func Next(self: &var Taken<I, T>) -> T?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Taken<I, T>",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next item, or `none` once the count is reached; the wrapped cursor is not asked again after that.",
+            "markdown": "The next item, or `none` once the count is reached; the wrapped cursor is not asked again after that.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the item",
+            "see": ["https://rux-lang.dev/docs/api/core/adaptors#taken-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Take",
+      "displayName": "Take<I, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 140,
+      "signature": "pub func Take<I: Cursor<T>, T>(source: I, count: uint) -> Taken<I, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The first `count` items of `source`, or all of them if it has fewer.",
+        "markdown": "The first `count` items of `source`, or all of them if it has fewer.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" }
+        ],
+        "params": [
+          { "name": "source", "markdown": "the cursor to wrap" },
+          { "name": "count", "markdown": "how many items at most" }
+        ],
+        "returns": "the adaptor",
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#take"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Skipped",
+      "displayName": "Skipped<I, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 148,
+      "signature": "pub struct Skipped<I: Cursor<T>, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of a cursor after a number of them.",
+        "markdown": "The items of a cursor after a number of them.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#skipped"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "source",
+          "type": "I",
+          "public": false,
+          "line": 149,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "skip",
+          "type": "uint",
+          "public": false,
+          "line": 150,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 157,
+          "signature": "pub func Next(self: &var Skipped<I, T>) -> T?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Skipped<I, T>",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next item, passing over the skipped ones the first time it is asked.",
+            "markdown": "The next item, passing over the skipped ones the first time it is asked.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the item",
+            "see": ["https://rux-lang.dev/docs/api/core/adaptors#skipped-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Skip",
+      "displayName": "Skip<I, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 173,
+      "signature": "pub func Skip<I: Cursor<T>, T>(source: I, count: uint) -> Skipped<I, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of `source` after its first `count`.",
+        "markdown": "The items of `source` after its first `count`.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" }
+        ],
+        "params": [
+          { "name": "source", "markdown": "the cursor to wrap" },
+          { "name": "count", "markdown": "how many items to pass over" }
+        ],
+        "returns": "the adaptor",
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#skip"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Indexed",
+      "displayName": "Indexed<T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 180,
+      "signature": "pub struct Indexed<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "An item and its position, counting from zero.",
+        "markdown": "An item and its position, counting from zero. `Copy` when the item is.",
+        "typeParams": [{ "name": "T", "markdown": "the item type" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#indexed"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "index",
+          "type": "uint",
+          "public": true,
+          "line": 182,
+          "doc": "Where the item came in the sequence.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "item",
+          "type": "T",
+          "public": true,
+          "line": 184,
+          "doc": "The item.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Enumerated",
+      "displayName": "Enumerated<I, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 191,
+      "signature": "pub struct Enumerated<I: Cursor<T>, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of a cursor with their positions.",
+        "markdown": "The items of a cursor with their positions.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#enumerated"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "source",
+          "type": "I",
+          "public": false,
+          "line": 192,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "index",
+          "type": "uint",
+          "public": false,
+          "line": 193,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 200,
+          "signature": "pub func Next(self: &var Enumerated<I, T>) -> Indexed<T>?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Enumerated<I, T>",
+          "returnType": "Indexed<T>?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next item with its position.",
+            "markdown": "The next item with its position.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the item and its position",
+            "see": ["https://rux-lang.dev/docs/api/core/adaptors#enumerated-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Enumerate",
+      "displayName": "Enumerate<I, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 213,
+      "signature": "pub func Enumerate<I: Cursor<T>, T>(source: I) -> Enumerated<I, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "Each item of `source` with its position, counting from zero.",
+        "markdown": "Each item of `source` with its position, counting from zero.",
+        "typeParams": [
+          { "name": "I", "markdown": "the wrapped cursor" },
+          { "name": "T", "markdown": "what it yields" }
+        ],
+        "params": [{ "name": "source", "markdown": "the cursor to wrap" }],
+        "returns": "the adaptor",
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#enumerate"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Pair",
+      "displayName": "Pair<A, B>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 221,
+      "signature": "pub struct Pair<A, B>",
+      "typeParams": [
+        { "name": "A", "bounds": [] },
+        { "name": "B", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "One item from each of two cursors.",
+        "markdown": "One item from each of two cursors. `Copy` when both are.",
+        "typeParams": [
+          { "name": "A", "markdown": "the first item type" },
+          { "name": "B", "markdown": "the second item type" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#pair"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "first",
+          "type": "A",
+          "public": true,
+          "line": 223,
+          "doc": "The item from the first cursor.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "second",
+          "type": "B",
+          "public": true,
+          "line": 225,
+          "doc": "The item from the second cursor.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Zipped",
+      "displayName": "Zipped<I, J, A, B>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 234,
+      "signature": "pub struct Zipped<I: Cursor<A>, J: Cursor<B>, A, B>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<A>"] },
+        { "name": "J", "bounds": ["Cursor<B>"] },
+        { "name": "A", "bounds": [] },
+        { "name": "B", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of two cursors side by side.",
+        "markdown": "The items of two cursors side by side.",
+        "typeParams": [
+          { "name": "I", "markdown": "the first cursor" },
+          { "name": "J", "markdown": "the second cursor" },
+          { "name": "A", "markdown": "what the first yields" },
+          { "name": "B", "markdown": "what the second yields" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#zipped"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "first",
+          "type": "I",
+          "public": false,
+          "line": 235,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "second",
+          "type": "J",
+          "public": false,
+          "line": 236,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 243,
+          "signature": "pub func Next(self: &var Zipped<I, J, A, B>) -> Pair<A, B>?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Zipped<I, J, A, B>",
+          "returnType": "Pair<A, B>?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next item of each, or `none` once either runs out.",
+            "markdown": "The next item of each, or `none` once either runs out.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the pair",
+            "see": ["https://rux-lang.dev/docs/api/core/adaptors#zipped-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Zip",
+      "displayName": "Zip<I, J, A, B>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 259,
+      "signature": "pub func Zip<I: Cursor<A>, J: Cursor<B>, A, B>(first: I, second: J) -> Zipped<I, J, A, B>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<A>"] },
+        { "name": "J", "bounds": ["Cursor<B>"] },
+        { "name": "A", "bounds": [] },
+        { "name": "B", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of `first` and `second` in pairs, as long as both last.",
+        "markdown": "The items of `first` and `second` in pairs, as long as both last.",
+        "typeParams": [
+          { "name": "I", "markdown": "the first cursor" },
+          { "name": "J", "markdown": "the second cursor" },
+          { "name": "A", "markdown": "what the first yields" },
+          { "name": "B", "markdown": "what the second yields" }
+        ],
+        "params": [
+          { "name": "first", "markdown": "the first cursor" },
+          { "name": "second", "markdown": "the second cursor" }
+        ],
+        "returns": "the adaptor",
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#zip"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Chained",
+      "displayName": "Chained<I, J, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 268,
+      "signature": "pub struct Chained<I: Cursor<T>, J: Cursor<T>, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "J", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of one cursor and then of another.",
+        "markdown": "The items of one cursor and then of another.",
+        "typeParams": [
+          { "name": "I", "markdown": "the first cursor" },
+          { "name": "J", "markdown": "the second cursor" },
+          { "name": "T", "markdown": "what both yield" }
+        ],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#chained"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "first",
+          "type": "I",
+          "public": false,
+          "line": 269,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "second",
+          "type": "J",
+          "public": false,
+          "line": 270,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "firstDone",
+          "type": "bool",
+          "public": false,
+          "line": 271,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 278,
+          "signature": "pub func Next(self: &var Chained<I, J, T>) -> T?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Chained<I, J, T>",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The next item of the first cursor, then of the second once the first has run out.",
+            "markdown": "The next item of the first cursor, then of the second once the first has run out.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the item",
+            "see": ["https://rux-lang.dev/docs/api/core/adaptors#chained-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Chain",
+      "displayName": "Chain<I, J, T>",
+      "module": "Adaptors",
+      "source": "Src/Adaptors.rux",
+      "line": 297,
+      "signature": "pub func Chain<I: Cursor<T>, J: Cursor<T>, T>(first: I, second: J) -> Chained<I, J, T>",
+      "typeParams": [
+        { "name": "I", "bounds": ["Cursor<T>"] },
+        { "name": "J", "bounds": ["Cursor<T>"] },
+        { "name": "T", "bounds": [] }
+      ],
+      "doc": {
+        "summary": "The items of `first` followed by the items of `second`.",
+        "markdown": "The items of `first` followed by the items of `second`.",
+        "typeParams": [
+          { "name": "I", "markdown": "the first cursor" },
+          { "name": "J", "markdown": "the second cursor" },
+          { "name": "T", "markdown": "what both yield" }
+        ],
+        "params": [
+          { "name": "first", "markdown": "the cursor read first" },
+          { "name": "second", "markdown": "the cursor read after it" }
+        ],
+        "returns": "the adaptor",
+        "see": ["https://rux-lang.dev/docs/api/core/adaptors#chain"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
     {
       "kind": "function",
       "name": "MaximumOf",
@@ -696,6 +2164,549 @@
         ],
         "returns": "the product, clamped to the type's range rather than wrapped",
         "see": ["https://rux-lang.dev/docs/api/core/arithmetic#mul-saturating"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "MemoryOrder",
+      "displayName": "MemoryOrder",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 15,
+      "signature": "pub enum MemoryOrder",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which other memory operations may be reordered across an atomic one.",
+        "markdown": "Which other memory operations may be reordered across an atomic one.\nThe weakest ordering that makes a program correct is also the fastest, and a stronger one is never wrong. When in\ndoubt, `SequentiallyConsistent` gives every thread one agreed order of all such operations.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#memory-order"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "Relaxed",
+          "value": "0",
+          "payload": null,
+          "line": 18,
+          "doc": "No ordering: the operation itself is atomic, and nothing around it is held back. Right for counters whose value\nno other memory depends on.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Acquire",
+          "value": "1",
+          "payload": null,
+          "line": 21,
+          "doc": "Later operations of this thread are not moved before this load, so whatever a releasing thread wrote before its\nrelease is visible after this acquire. For loads and the read half of read-modify-write operations.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Release",
+          "value": "2",
+          "payload": null,
+          "line": 24,
+          "doc": "Earlier operations of this thread are not moved after this store, so they are visible to a thread that acquires\nwhat it stores. For stores and the write half of read-modify-write operations.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "AcquireRelease",
+          "value": "3",
+          "payload": null,
+          "line": 26,
+          "doc": "Both `Acquire` and `Release`, for a read-modify-write operation that does both.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "SequentiallyConsistent",
+          "value": "4",
+          "payload": null,
+          "line": 28,
+          "doc": "`AcquireRelease`, and also a single order of every sequentially consistent operation that all threads agree on.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AtomicLoad",
+      "displayName": "AtomicLoad<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 40,
+      "signature": "pub func AtomicLoad<T>(address: *T, order: MemoryOrder) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Reads the value at `address` atomically.",
+        "markdown": "Reads the value at `address` atomically.\n`order` must be `Relaxed`, `Acquire` or `SequentiallyConsistent`, written at the call. `address` must be aligned to\nthe size of `T` and point at memory every thread that touches it reaches only through atomic operations. Runs in\nconstant time and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "an integer of 8 to 64 bits, `bool`, or a pointer" }],
+        "params": [
+          { "name": "address", "markdown": "the value to read" },
+          { "name": "order", "markdown": "which other operations may move across this one" }
+        ],
+        "returns": "the value read",
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#atomic-load"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AtomicStore",
+      "displayName": "AtomicStore<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 50,
+      "signature": "pub func AtomicStore<T>(address: *var T, value: T, order: MemoryOrder)",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Writes `value` to `address` atomically.",
+        "markdown": "Writes `value` to `address` atomically.\n`order` must be `Relaxed`, `Release` or `SequentiallyConsistent`, written at the call. `address` must be aligned to\nthe size of `T`. Runs in constant time and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "an integer of 8 to 64 bits, `bool`, or a pointer" }],
+        "params": [
+          { "name": "address", "markdown": "where to write" },
+          { "name": "value", "markdown": "what to write" },
+          { "name": "order", "markdown": "which other operations may move across this one" }
+        ],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#atomic-store"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AtomicExchange",
+      "displayName": "AtomicExchange<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 60,
+      "signature": "pub func AtomicExchange<T>(address: *var T, value: T, order: MemoryOrder) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Writes `value` to `address` and returns what was there, as one atomic step.",
+        "markdown": "Writes `value` to `address` and returns what was there, as one atomic step.\nAny ordering is allowed. `address` must be aligned to the size of `T`. Runs in constant time and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "an integer of 8 to 64 bits, `bool`, or a pointer" }],
+        "params": [
+          { "name": "address", "markdown": "where to write" },
+          { "name": "value", "markdown": "what to write" },
+          { "name": "order", "markdown": "which other operations may move across this one" }
+        ],
+        "returns": "the value that was replaced",
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#atomic-exchange"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AtomicCompareExchange",
+      "displayName": "AtomicCompareExchange<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 75,
+      "signature": "pub func AtomicCompareExchange<T>(address: *var T, expected: T, desired: T, success: MemoryOrder, failure: MemoryOrder) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Writes `desired` to `address` if it holds `expected`, and returns what it held, as one atomic step.",
+        "markdown": "Writes `desired` to `address` if it holds `expected`, and returns what it held, as one atomic step.\nThe write happened exactly when the returned value equals `expected`. `success` orders the operation when it writes,\nand `failure` when it only reads; `failure` may not be `Release` or `AcquireRelease`, nor acquire more than\n`success` does. `address` must be aligned to the size of `T`. Never fails spuriously. Runs in constant time apart\nfrom contention and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "an integer of 8 to 64 bits, `bool`, or a pointer" }],
+        "params": [
+          { "name": "address", "markdown": "the value to compare and replace" },
+          { "name": "expected", "markdown": "the value `address` must hold for the write to happen" },
+          { "name": "desired", "markdown": "the value to write" },
+          { "name": "success", "markdown": "the ordering when the write happens" },
+          { "name": "failure", "markdown": "the ordering when it does not" }
+        ],
+        "returns": "the value `address` held before the operation",
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#atomic-compare-exchange"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AtomicFetchAdd",
+      "displayName": "AtomicFetchAdd<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 87,
+      "signature": "pub func AtomicFetchAdd<T>(address: *var T, value: T, order: MemoryOrder) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Adds `value` to the integer at `address` and returns what was there, as one atomic step.",
+        "markdown": "Adds `value` to the integer at `address` and returns what was there, as one atomic step.\nThe sum wraps on overflow, as two's complement arithmetic does. Any ordering is allowed. Runs in constant time apart\nfrom contention and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "an integer of 8 to 64 bits" }],
+        "params": [
+          { "name": "address", "markdown": "the integer to add to" },
+          { "name": "value", "markdown": "what to add" },
+          { "name": "order", "markdown": "which other operations may move across this one" }
+        ],
+        "returns": "the value before the addition",
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#atomic-fetch-add"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AtomicFetchSub",
+      "displayName": "AtomicFetchSub<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 98,
+      "signature": "pub func AtomicFetchSub<T>(address: *var T, value: T, order: MemoryOrder) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Subtracts `value` from the integer at `address` and returns what was there, as one atomic step.",
+        "markdown": "Subtracts `value` from the integer at `address` and returns what was there, as one atomic step.\nThe difference wraps on overflow. Any ordering is allowed. Runs in constant time apart from contention and\nallocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "an integer of 8 to 64 bits" }],
+        "params": [
+          { "name": "address", "markdown": "the integer to subtract from" },
+          { "name": "value", "markdown": "what to subtract" },
+          { "name": "order", "markdown": "which other operations may move across this one" }
+        ],
+        "returns": "the value before the subtraction",
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#atomic-fetch-sub"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AtomicFetchAnd",
+      "displayName": "AtomicFetchAnd<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 108,
+      "signature": "pub func AtomicFetchAnd<T>(address: *var T, value: T, order: MemoryOrder) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Combines the value at `address` with `value` by bitwise and, and returns what was there, as one atomic step.",
+        "markdown": "Combines the value at `address` with `value` by bitwise and, and returns what was there, as one atomic step.\nAny ordering is allowed. Runs in constant time apart from contention and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "an integer of 8 to 64 bits, or `bool`" }],
+        "params": [
+          { "name": "address", "markdown": "the value to combine" },
+          { "name": "value", "markdown": "the bits to keep" },
+          { "name": "order", "markdown": "which other operations may move across this one" }
+        ],
+        "returns": "the value before the operation",
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#atomic-fetch-and"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AtomicFetchOr",
+      "displayName": "AtomicFetchOr<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 118,
+      "signature": "pub func AtomicFetchOr<T>(address: *var T, value: T, order: MemoryOrder) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Combines the value at `address` with `value` by bitwise or, and returns what was there, as one atomic step.",
+        "markdown": "Combines the value at `address` with `value` by bitwise or, and returns what was there, as one atomic step.\nAny ordering is allowed. Runs in constant time apart from contention and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "an integer of 8 to 64 bits, or `bool`" }],
+        "params": [
+          { "name": "address", "markdown": "the value to combine" },
+          { "name": "value", "markdown": "the bits to set" },
+          { "name": "order", "markdown": "which other operations may move across this one" }
+        ],
+        "returns": "the value before the operation",
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#atomic-fetch-or"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "AtomicFetchXor",
+      "displayName": "AtomicFetchXor<T>",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 129,
+      "signature": "pub func AtomicFetchXor<T>(address: *var T, value: T, order: MemoryOrder) -> T",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "Combines the value at `address` with `value` by bitwise exclusive or, and returns what was there, as one atomic\nstep.",
+        "markdown": "Combines the value at `address` with `value` by bitwise exclusive or, and returns what was there, as one atomic\nstep.\nAny ordering is allowed. Runs in constant time apart from contention and allocates nothing.",
+        "typeParams": [{ "name": "T", "markdown": "an integer of 8 to 64 bits, or `bool`" }],
+        "params": [
+          { "name": "address", "markdown": "the value to combine" },
+          { "name": "value", "markdown": "the bits to flip" },
+          { "name": "order", "markdown": "which other operations may move across this one" }
+        ],
+        "returns": "the value before the operation",
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#atomic-fetch-xor"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Fence",
+      "displayName": "Fence",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 137,
+      "signature": "pub func Fence(order: MemoryOrder)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Orders this thread's memory operations without touching memory.",
+        "markdown": "Orders this thread's memory operations without touching memory.\n`order` must not be `Relaxed`, which would order nothing. An `Acquire` fence keeps later operations after earlier\nloads, a `Release` fence keeps earlier operations before later stores, and `SequentiallyConsistent` does both and\ntakes part in the single order of sequentially consistent operations. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "order", "markdown": "what the fence holds back" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#fence"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SpinHint",
+      "displayName": "SpinHint",
+      "module": "Atomic",
+      "source": "Src/Atomic.rux",
+      "line": 143,
+      "signature": "pub func SpinHint()",
+      "typeParams": [],
+      "doc": {
+        "summary": "Tells the processor that the thread is waiting in a loop for another thread.",
+        "markdown": "Tells the processor that the thread is waiting in a loop for another thread.\nIt saves power and lets a sibling hardware thread run, and has no effect on memory. A loop that waits long should\nsleep instead. Runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/core/atomic#spin-hint"],
         "deprecated": null
       },
       "value": null,
@@ -3774,7 +5785,7 @@
       "typeParams": [],
       "doc": {
         "summary": "A cursor that yields a sequence of items one at a time.",
-        "markdown": "A cursor that yields a sequence of items one at a time.\nThe compiler drives iteration by shape rather than through this interface: a `for` loop accepts any type with a\n`func Next(self: &var Self) -> Item?`, which advances the cursor and reports either the next item or, with `none`,\nthat the sequence has ended. The item type is whatever that optional carries, and it differs per iterator, so the\nmethod cannot be written here — an interface has no way to name a type its implementor chooses.\nWhat this interface adds is the name. `extend MyCursor : Iterator` records that a type means to be an iterator\nand documents which of its methods carry the protocol, and a bound written `<T: Iterator>` says what a generic\nexpects of its argument. Neither is required to iterate, and a bound on it grants no operations, so a generic that\nneeds to advance a cursor itself should take the concrete iterator type.\nAn iterator is consumed as it is read: `Next` mutates it, and an iterator that has reported `none` keeps\nreporting `none`. Nothing here promises an iterator can be restarted or copied.\nAn iterator borrows whatever it walks over. Modifying that container while an iterator over it is alive — growing\na vector, rehashing a map, freeing the storage — leaves the iterator pointing at storage that has moved or gone,\nand reading it afterwards is undefined. Finish with the iterator before touching the container.",
+        "markdown": "A cursor that yields a sequence of items one at a time.\nThe compiler drives iteration by shape rather than through this interface: a `for` loop accepts any type with a\n`func Next(self: &var Self) -> Item?`, which advances the cursor and reports either the next item or, with `none`,\nthat the sequence has ended. The item type is whatever that optional carries, and it differs per iterator, so the\nmethod is not written here; the generic `Cursor<T>` names it for bounds, which is how the adaptors take an iterator.\nWhat this interface adds is the name. `extend MyCursor : Iterator` records that a type means to be an iterator\nand documents which of its methods carry the protocol, and a bound written `<T: Iterator>` says what a generic\nexpects of its argument. Neither is required to iterate, and a bound on it grants no operations, so a generic that\nneeds to advance a cursor itself should take the concrete iterator type.\nAn iterator is consumed as it is read: `Next` mutates it, and an iterator that has reported `none` keeps\nreporting `none`. Nothing here promises an iterator can be restarted or copied.\nAn iterator borrows whatever it walks over. Modifying that container while an iterator over it is alive — growing\na vector, rehashing a map, freeing the storage — leaves the iterator pointing at storage that has moved or gone,\nand reading it afterwards is undefined. Finish with the iterator before touching the container.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -11174,6 +13185,41 @@
         "params": [],
         "returns": null,
         "see": ["https://rux-lang.dev/docs/api/core/source#source-constant"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "ProcessStartFrame",
+      "displayName": "ProcessStartFrame",
+      "module": "Startup",
+      "source": "Src/Startup.rux",
+      "line": 15,
+      "signature": "pub func ProcessStartFrame() -> *uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The address the kernel started the program at, on targets where that is where the arguments are.",
+        "markdown": "The address the kernel started the program at, on targets where that is where the arguments are.\nOn Linux and FreeBSD it points at the argument count, followed by the argument pointers, a null, the environment\npointers, a null and the auxiliary vector, all one word wide. It is null on Windows and macOS, whose command line\nand environment are read through system calls, and in a shared library, which the kernel never starts. The words\nbelong to the process for its whole life and must not be written.\nCannot fail; runs in constant time and allocates nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the initial stack address, or null where the platform supplies the arguments another way",
+        "see": ["https://rux-lang.dev/docs/api/core/startup#process-start-frame"],
         "deprecated": null
       },
       "value": null,
