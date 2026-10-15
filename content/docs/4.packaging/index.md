@@ -50,7 +50,7 @@ The short version of the whole section:
 
 ```sh
 rux new Widget --source --namespace Acme # Create a publishable package
-rux add Io                              # Depend on something
+rux add Acme/Json                       # Depend on something
 rux check                               # Make sure it compiles
 rux pack                                # Inspect the archive
 rux publish --dry-run                   # Validate without uploading
