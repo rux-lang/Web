@@ -72,7 +72,7 @@ It is written for looking things up. To learn the language from the beginning, f
 
 ::u-page-grid
 :u-page-card{title="Compile time" description="when, the #target, #build, #compiler, #source and #config context, intrinsics and diagnostics." icon="i-lucide-cpu" to="/docs/lang/comptime/overview" variant="subtle"}
-:u-page-card{title="Attributes" description="#Link, #Abi, #NoReturn, #Warn, #Error, #Allow and #Format." icon="i-lucide-at-sign" to="/docs/lang/attributes/overview" variant="subtle"}
+:u-page-card{title="Attributes" description="#Link, #Abi, #NoReturn, #Warn, #Error, #Allow, #Format and #Test." icon="i-lucide-at-sign" to="/docs/lang/attributes/overview" variant="subtle"}
 :u-page-card{title="Foreign Function Interface" description="extern declarations, linking libraries and inline assembly." icon="i-lucide-cable" to="/docs/lang/ffi/overview" variant="subtle"}
 ::
 
