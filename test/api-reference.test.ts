@@ -119,7 +119,7 @@ describe("apiPackageCatalog", () => {
 
   it("drops nothing but empty areas when the tree is missing", () => {
     const empty = apiPackageCatalog(undefined);
-    expect(empty.flatMap((area) => area.packages)).toHaveLength(25);
+    expect(empty.flatMap((area) => area.packages)).toHaveLength(39);
     expect(empty.every((area) => area.slug !== "other")).toBe(true);
   });
 });
