@@ -178,7 +178,7 @@
         }
       ],
       "examples": ["rux check", "rux check --json", "rux check --target windows-x86_64"],
-      "documentationUrl": "https://rux-lang.dev/docs/cli"
+      "documentationUrl": "https://rux-lang.dev/docs/cli/check"
     },
     {
       "name": "clean",
@@ -325,7 +325,7 @@
         }
       ],
       "examples": ["rux info", "rux info Rux/Io", "rux info Rux/Io@0.1.0", "rux info --json"],
-      "documentationUrl": "https://rux-lang.dev/docs/cli"
+      "documentationUrl": "https://rux-lang.dev/docs/cli/info"
     },
     {
       "name": "init",
@@ -418,7 +418,7 @@
       "arguments": [],
       "options": [],
       "examples": ["rux lint", "rux lint --verbose"],
-      "documentationUrl": "https://rux-lang.dev/docs/cli"
+      "documentationUrl": "https://rux-lang.dev/docs/cli/lint"
     },
     {
       "name": "list",
@@ -452,7 +452,7 @@
         }
       ],
       "examples": ["rux login", "rux login --registry http://localhost:8080"],
-      "documentationUrl": "https://rux-lang.dev/docs/cli"
+      "documentationUrl": "https://rux-lang.dev/docs/cli/login"
     },
     {
       "name": "logout",
@@ -469,7 +469,7 @@
         }
       ],
       "examples": ["rux logout", "rux logout --registry http://localhost:8080"],
-      "documentationUrl": "https://rux-lang.dev/docs/cli"
+      "documentationUrl": "https://rux-lang.dev/docs/cli/logout"
     },
     {
       "name": "new",
@@ -541,7 +541,7 @@
         }
       ],
       "examples": ["rux pack", "rux pack --output Dist/Math.ruxpkg"],
-      "documentationUrl": "https://rux-lang.dev/docs/cli"
+      "documentationUrl": "https://rux-lang.dev/docs/cli/pack"
     },
     {
       "name": "publish",
@@ -564,7 +564,7 @@
         }
       ],
       "examples": ["rux publish", "rux publish --dry-run", "rux publish --registry http://localhost:8080"],
-      "documentationUrl": "https://rux-lang.dev/docs/cli"
+      "documentationUrl": "https://rux-lang.dev/docs/cli/publish"
     },
     {
       "name": "remove",

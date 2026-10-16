@@ -3,7 +3,7 @@ import { format } from "prettier";
 const commandDetails = {
   add: {
     behavior:
-      "Registry dependencies require a namespaced identity such as `Rux/Io`; an optional `@requirement` constrains the resolved version. `--path` adds a local dependency instead. The command updates `Rux.toml` only after registry validation succeeds.",
+      "Registry dependencies require a namespaced identity such as `Rux/Io`; an optional `@requirement` constrains the resolved version. `--path` adds a local dependency instead. A requirement an installed package already satisfies, as the standard `Rux/*` packages installed with the compiler do, is added without contacting the registry; any other is checked against the registry first. The command updates `Rux.toml` only once the package is found.",
     environment: ["`RUX_REGISTRY_URL` sets the default registry when `--registry` is absent."],
     related: ["install", "remove", "update"],
   },
@@ -146,9 +146,9 @@ The option is repeatable and accepts comma-separated values, so \`--emit ast --e
   },
   test: {
     behavior:
-      "Discovers the executable packages under `Tests/` and every package whose sources mark functions `#Test()`, builds them with test mode enabled, and runs them; a package of `#Test()` functions with no `Main` gets a generated runner. Arguments after `--` go to every test program, whose runner reads them as name filters: `rux test -- Parser` runs the tests whose names contain `Parser`, and `--exact`, `--skip`, `--list` and `--quiet` refine that. Up to `--jobs` test packages run at once, one per logical core by default. Workspaces include root and member test trees. `--define` and `--release` apply consistently to every test target.",
+      "Discovers the executable packages under `Tests/` and every package whose sources mark functions `#Test()`, builds them with test mode enabled, and runs them; a package of `#Test()` functions with no `Main` gets a generated runner. Arguments after `--` go to every test program, whose runner reads each plain argument as a name filter and runs the tests any of them matches: `rux test -- Parser Words` runs the tests whose names contain `Parser` or `Words`, and `--exact`, `--skip`, `--list` and `--quiet` refine that. A package with no test the filters match is reported as skipped, and the run fails when no package had one, so a misspelt name never passes with nothing run. Given arguments, each package's report is shown even when it passed, which is how `rux test -- --list` lists the tests. Up to `--jobs` test packages run at once, one per logical core by default. Workspaces include root and member test trees. `--define` and `--release` apply consistently to every test target.",
     output:
-      "A summary is written to stdout; compiler diagnostics and failed test details identify unsuccessful targets. The command returns 1 when any build or test fails.",
+      "A summary counting test packages is written to stdout; compiler diagnostics and failed test details identify unsuccessful targets. The command returns 1 when any build or test fails, or when filters matched no test in any package.",
     related: ["check", "run"],
   },
   uninstall: {
