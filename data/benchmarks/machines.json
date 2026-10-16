@@ -1,0 +1,23 @@
+[
+  {
+    "id": "i9-11900kf",
+    "label": "Desktop · Core i9-11900KF",
+    "order": 1,
+    "cpu": "11th Gen Intel(R) Core(TM) i9-11900KF @ 3.50GHz",
+    "os": "windows"
+  },
+  {
+    "id": "ryzen5-5500",
+    "label": "Desktop · Ryzen 5 5500",
+    "order": 2,
+    "cpu": "AMD Ryzen 5 5500",
+    "os": "windows"
+  },
+  {
+    "id": "i5-8250u",
+    "label": "Laptop · Core i5-8250U",
+    "order": 3,
+    "cpu": "Intel(R) Core(TM) i5-8250U CPU @ 1.60GHz",
+    "os": "linux"
+  }
+]

@@ -1,32 +1,62 @@
 /**
  * The /benchmarks page's data and the arithmetic over it.
  *
- * One JSON file per machine under data/benchmarks/, written by
- * scripts/import-benchmarks.mjs from a run of github.com/rux-lang/Benchmarks.
- * They are globbed rather than listed, so adding a machine is the import
- * command and nothing else. The path is relative, not `~~/`, because Vitest
- * only knows the `~` alias.
+ * Written by scripts/import-benchmarks.mjs from runs of
+ * github.com/rux-lang/Benchmarks, which has two benchmarks: the programs (ten
+ * small apps, built and run; data/benchmarks/apps/) and the compile benchmark
+ * (a generated 100,000-line project; data/benchmarks/compile/). One file per
+ * machine and benchmark, joined by data/benchmarks/machines.json. They are
+ * globbed rather than listed, so adding a machine is the import command and
+ * nothing else. The paths are relative, not `~~/`, because Vitest only knows
+ * the `~` alias.
  *
- * Every metric is lower-is-better, and every ratio is "value ÷ Rux value", the
- * same convention as the runner's own report.
+ * Every ratio is "value ÷ Rux value", the same convention as the runner's own
+ * report. Every program metric is lower-is-better; the compile benchmark's
+ * speed and speed-up are higher-is-better.
  */
 import type {
   BenchmarkApp,
+  BenchmarkAppRun,
   BenchmarkCell,
+  BenchmarkCompileRow,
+  BenchmarkCompileRun,
   BenchmarkLanguage,
   BenchmarkMachine,
+  BenchmarkMachineInfo,
   BenchmarkMetric,
   BenchmarkMetricKey,
 } from "~/types/benchmarks";
+import machineList from "../../data/benchmarks/machines.json";
 
-const files = import.meta.glob<BenchmarkMachine>("../../data/benchmarks/*.json", { eager: true, import: "default" });
+const appFiles = import.meta.glob<BenchmarkAppRun>("../../data/benchmarks/apps/*.json", {
+  eager: true,
+  import: "default",
+});
+const compileFiles = import.meta.glob<BenchmarkCompileRun>("../../data/benchmarks/compile/*.json", {
+  eager: true,
+  import: "default",
+});
 
-export const benchmarkMachines: BenchmarkMachine[] = Object.values(files).sort(
-  (a, b) => a.order - b.order || a.label.localeCompare(b.label),
-);
+/** Every machine with at least one run, in machines.json order. */
+export const benchmarkMachines: BenchmarkMachine[] = (machineList as BenchmarkMachineInfo[])
+  .map(({ id, label, order }) => ({
+    id,
+    label,
+    order,
+    apps: Object.values(appFiles).find((run) => run.machine === id),
+    compile: Object.values(compileFiles).find((run) => run.machine === id),
+  }))
+  .filter((machine) => machine.apps || machine.compile)
+  .sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
+
+/** The machine's newest run of either benchmark, for what describes the computer itself. */
+export function latestRun(machine: BenchmarkMachine): BenchmarkAppRun | BenchmarkCompileRun {
+  const runs = [machine.apps, machine.compile].filter((run) => run !== undefined);
+  return runs.sort((a, b) => b.date.localeCompare(a.date))[0]!;
+}
 
 /**
- * A machine label as the import writes it, "Laptop · Core i5-8250U", split into
+ * A machine label as machines.json has it, "Laptop · Core i5-8250U", split into
  * its form factor and processor. The machine tabs show only the processor —
  * three full labels overflow a phone — and the form factor moves into the
  * machine card. A label without " · " is all processor.
@@ -145,18 +175,27 @@ export const benchmarkMetrics: BenchmarkMetric[] = [
     description: "Clean release build with the language's own build tool.",
   },
   {
+    key: "compileMemory",
+    label: "Compile memory",
+    unit: "MiB",
+    digits: 0,
+    description: "Peak memory of the clean build: on Windows all build processes together, on Linux the largest one.",
+  },
+  {
     key: "executable",
     label: "Executable size",
     unit: "KiB",
     digits: 0,
-    description: "Size of the program file.",
+    description:
+      "Size of the program file. C# JIT and Java JIT are in italics and not ranked: they need their runtime to run.",
+    aotOnly: true,
   },
   {
     key: "deployable",
     label: "Deployable size",
     unit: "KiB",
     digits: 0,
-    description: "Every file needed to run the program without an SDK.",
+    description: "Every file needed to run the program without an SDK, runtime included.",
   },
 ];
 
@@ -172,30 +211,40 @@ export function benchmarkLanguage(key: string): BenchmarkLanguage {
   return benchmarkLanguages.find((language) => language.key === key) ?? { key, label: key, mode: "aot" };
 }
 
-/** The languages the machine actually ran, in the page's fixed order. */
-export function machineLanguages(machine: BenchmarkMachine): BenchmarkLanguage[] {
-  const known = benchmarkLanguages.filter((language) => machine.languages.includes(language.key));
-  const unknown = machine.languages.filter((key) => !known.some((language) => language.key === key));
+/** The languages a run actually covered, in the page's fixed order. */
+export function machineLanguages(run: { languages: string[] }): BenchmarkLanguage[] {
+  const known = benchmarkLanguages.filter((language) => run.languages.includes(language.key));
+  const unknown = run.languages.filter((key) => !known.some((language) => language.key === key));
   return [...known, ...unknown.map(benchmarkLanguage)];
 }
 
+/** Whether a metric that ranks self-contained builds only leaves this language out. */
+function unranked(aotOnly: boolean | undefined, language: string): boolean {
+  return Boolean(aotOnly) && benchmarkLanguage(language).mode !== "aot";
+}
+
+/** Whether the metric leaves this language out of its ranking and geometric mean (JIT executable size). */
+export function benchmarkUnranked(metric: BenchmarkMetricKey, language: string): boolean {
+  return unranked(benchmarkMetric(metric).aotOnly, language);
+}
+
 export function benchmarkCell(
-  machine: BenchmarkMachine,
+  run: BenchmarkAppRun,
   metric: BenchmarkMetricKey,
   app: string,
   language: string,
 ): BenchmarkCell | null {
-  return machine.metrics[metric]?.cells[app]?.[language] ?? null;
+  return run.metrics[metric]?.cells[app]?.[language] ?? null;
 }
 
 export function benchmarkRatio(
-  machine: BenchmarkMachine,
+  run: BenchmarkAppRun,
   metric: BenchmarkMetricKey,
   app: string,
   language: string,
 ): number | null {
-  const value = benchmarkCell(machine, metric, app, language);
-  const baseline = benchmarkCell(machine, metric, app, benchmarkBaseline);
+  const value = benchmarkCell(run, metric, app, language);
+  const baseline = benchmarkCell(run, metric, app, benchmarkBaseline);
   if (!value || !baseline || baseline.median <= 0) return null;
   return value.median / baseline.median;
 }
@@ -213,24 +262,25 @@ export function median(values: number[]): number | null {
   return sorted.length % 2 ? sorted[middle]! : (sorted[middle - 1]! + sorted[middle]!) / 2;
 }
 
-/** Geometric mean over all apps of value ÷ Rux — one cell of the report's summary table. */
-export function benchmarkGeomean(
-  machine: BenchmarkMachine,
-  metric: BenchmarkMetricKey,
-  language: string,
-): number | null {
-  const ratios = machine.apps
-    .map((app) => benchmarkRatio(machine, metric, app, language))
+/**
+ * Geometric mean over all apps of value ÷ Rux — one cell of the report's
+ * summary table. Null for a language the metric does not rank.
+ */
+export function benchmarkGeomean(run: BenchmarkAppRun, metric: BenchmarkMetricKey, language: string): number | null {
+  if (benchmarkUnranked(metric, language)) return null;
+  const ratios = run.apps
+    .map((app) => benchmarkRatio(run, metric, app, language))
     .filter((ratio): ratio is number => ratio !== null);
   return geometricMean(ratios);
 }
 
 /** Languages holding the lowest median for one app (several on a tie). */
-export function bestLanguages(machine: BenchmarkMachine, metric: BenchmarkMetricKey, app: string): string[] {
+export function bestLanguages(run: BenchmarkAppRun, metric: BenchmarkMetricKey, app: string): string[] {
   let best = Infinity;
   let keys: string[] = [];
-  for (const language of machine.languages) {
-    const value = benchmarkCell(machine, metric, app, language)?.median;
+  for (const language of run.languages) {
+    if (benchmarkUnranked(metric, language)) continue;
+    const value = benchmarkCell(run, metric, app, language)?.median;
     if (value === undefined) continue;
     if (value < best) {
       best = value;
@@ -243,8 +293,8 @@ export function bestLanguages(machine: BenchmarkMachine, metric: BenchmarkMetric
 }
 
 /** Languages with the lowest geometric mean for a metric. */
-export function bestGeomeanLanguages(machine: BenchmarkMachine, metric: BenchmarkMetricKey): string[] {
-  const means = machine.languages.map((language) => [language, benchmarkGeomean(machine, metric, language)] as const);
+export function bestGeomeanLanguages(run: BenchmarkAppRun, metric: BenchmarkMetricKey): string[] {
+  const means = run.languages.map((language) => [language, benchmarkGeomean(run, metric, language)] as const);
   const best = Math.min(...means.map(([, mean]) => mean ?? Infinity));
   return means.filter(([, mean]) => mean === best).map(([language]) => language);
 }
@@ -256,13 +306,13 @@ export interface BenchmarkStanding {
 
 /** Languages ordered by geometric mean against Rux, best first. */
 export function benchmarkStandings(
-  machine: BenchmarkMachine,
+  run: BenchmarkAppRun,
   metric: BenchmarkMetricKey,
   filter: (language: BenchmarkLanguage) => boolean = () => true,
 ): BenchmarkStanding[] {
-  return machineLanguages(machine)
+  return machineLanguages(run)
     .filter(filter)
-    .map((language) => ({ language: language.key, geomean: benchmarkGeomean(machine, metric, language.key) }))
+    .map((language) => ({ language: language.key, geomean: benchmarkGeomean(run, metric, language.key) }))
     .filter((standing): standing is BenchmarkStanding => standing.geomean !== null)
     .sort((a, b) => a.geomean - b.geomean);
 }
@@ -270,26 +320,22 @@ export function benchmarkStandings(
 /**
  * Rux against the other languages on one metric, for the headline cards: the
  * best of the others (several on a tie), Rux's place, and the spread of the
- * others' geomeans. Every geomean is "their value ÷ Rux's", so above 1 means
- * Rux does better and below 1 means it does worse.
+ * others' ratios. Every ratio is oriented so that above 1 means Rux does better
+ * and below 1 means it does worse: "their value ÷ Rux's" for a lower-is-better
+ * metric, the inverse for a higher-is-better one.
  */
 export interface BenchmarkComparison {
-  /** The best other language(s) and their shared geomean against Rux. */
+  /** The best other language(s) and their shared ratio against Rux. */
   rivals: string[];
   ratio: number;
   /** Rux's 1-based place among `field` languages, best first. */
   rank: number;
   field: number;
-  /** The others' geomeans, lowest and highest. */
+  /** The others' ratios, lowest and highest. */
   spread: [number, number];
 }
 
-export function benchmarkComparison(
-  machine: BenchmarkMachine,
-  metric: BenchmarkMetricKey,
-  filter: (language: BenchmarkLanguage) => boolean = () => true,
-): BenchmarkComparison | null {
-  const standings = benchmarkStandings(machine, metric, filter);
+function compareStandings(standings: BenchmarkStanding[]): BenchmarkComparison | null {
   const others = standings.filter((standing) => standing.language !== benchmarkBaseline);
   const rank = standings.findIndex((standing) => standing.language === benchmarkBaseline) + 1;
   if (!others.length || rank === 0) return null;
@@ -303,6 +349,14 @@ export function benchmarkComparison(
   };
 }
 
+export function benchmarkComparison(
+  run: BenchmarkAppRun,
+  metric: BenchmarkMetricKey,
+  filter: (language: BenchmarkLanguage) => boolean = () => true,
+): BenchmarkComparison | null {
+  return compareStandings(benchmarkStandings(run, metric, filter));
+}
+
 export function ordinal(value: number): string {
   const tens = value % 100;
   if (tens >= 11 && tens <= 13) return `${value}th`;
@@ -312,43 +366,252 @@ export function ordinal(value: number): string {
 export interface BenchmarkHighlights {
   appCount: number;
   memory: BenchmarkComparison | null;
-  /** Among self-contained (AOT) builds only: a JIT build ships its runtime separately. */
+  /** Among self-contained (AOT) builds only: a JIT build needs its runtime to run. */
   executable: BenchmarkComparison | null;
-  compile: BenchmarkComparison | null;
   execution: BenchmarkComparison | null;
   /** Apps where Rux has the lowest peak memory (ties included). */
   memoryWins: number;
+  /** Apps where Rux has the lowest execution time (ties included). */
+  executionWins: number;
   /** Median over apps of Rux's executable size, KiB. */
   executableMedian: number | null;
-  /** Median over apps of Rux's clean build time, s. */
-  compileMedian: number | null;
 }
 
-export function benchmarkHighlights(machine: BenchmarkMachine): BenchmarkHighlights {
-  const baseline = (metric: BenchmarkMetricKey) =>
-    machine.apps
-      .map((app) => benchmarkCell(machine, metric, app, benchmarkBaseline)?.median)
-      .filter((value): value is number => value !== undefined);
-
-  const memoryWins = machine.apps.filter((app) =>
-    bestLanguages(machine, "memory", app).includes(benchmarkBaseline),
-  ).length;
+export function benchmarkHighlights(run: BenchmarkAppRun): BenchmarkHighlights {
+  const wins = (metric: BenchmarkMetricKey) =>
+    run.apps.filter((app) => bestLanguages(run, metric, app).includes(benchmarkBaseline)).length;
+  const executables = run.apps
+    .map((app) => benchmarkCell(run, "executable", app, benchmarkBaseline)?.median)
+    .filter((value): value is number => value !== undefined);
 
   return {
-    appCount: machine.apps.length,
-    memory: benchmarkComparison(machine, "memory"),
-    executable: benchmarkComparison(machine, "executable", (language) => language.mode === "aot"),
-    compile: benchmarkComparison(machine, "compile"),
-    execution: benchmarkComparison(machine, "execution"),
-    memoryWins,
-    executableMedian: median(baseline("executable")),
-    compileMedian: median(baseline("compile")),
+    appCount: run.apps.length,
+    memory: benchmarkComparison(run, "memory"),
+    executable: benchmarkComparison(run, "executable"),
+    execution: benchmarkComparison(run, "execution"),
+    memoryWins: wins("memory"),
+    executionWins: wins("execution"),
+    executableMedian: median(executables),
   };
 }
 
 /**
+ * The compile benchmark's report, row by row in the runner's order. Large is
+ * the generated 100,000-line project and Baseline the same build with one
+ * module, the fixed cost of a build, so Large − Baseline is the time spent on
+ * the code itself.
+ */
+export const benchmarkCompileRows: BenchmarkCompileRow[] = [
+  {
+    key: "clean",
+    label: "Clean build of Large",
+    project: "Large",
+    metric: "clean",
+    unit: "s",
+    digits: 2,
+    better: "lower",
+  },
+  {
+    key: "baseline",
+    label: "Clean build of Baseline",
+    project: "Baseline",
+    metric: "clean",
+    unit: "s",
+    digits: 2,
+    better: "lower",
+  },
+  { key: "code", label: "Large − Baseline", project: "Large", metric: "code", unit: "s", digits: 2, better: "lower" },
+  {
+    key: "speed",
+    label: "Compile speed",
+    project: "Large",
+    metric: "speed",
+    unit: "lines/s",
+    digits: 0,
+    better: "higher",
+  },
+  {
+    key: "clean-one-cpu",
+    label: "Clean build of Large on one CPU",
+    project: "Large",
+    metric: "clean_one_cpu",
+    unit: "s",
+    digits: 2,
+    better: "lower",
+  },
+  {
+    key: "baseline-one-cpu",
+    label: "Clean build of Baseline on one CPU",
+    project: "Baseline",
+    metric: "clean_one_cpu",
+    unit: "s",
+    digits: 2,
+    better: "lower",
+  },
+  {
+    key: "code-one-cpu",
+    label: "Large − Baseline on one CPU",
+    project: "Large",
+    metric: "code_one_cpu",
+    unit: "s",
+    digits: 2,
+    better: "lower",
+  },
+  {
+    key: "speed-one-cpu",
+    label: "Compile speed on one CPU",
+    project: "Large",
+    metric: "speed_one_cpu",
+    unit: "lines/s",
+    digits: 0,
+    better: "higher",
+  },
+  {
+    key: "speedup",
+    label: "Parallel speed-up",
+    project: "Large",
+    metric: "speedup",
+    unit: "×",
+    digits: 2,
+    better: "higher",
+  },
+  {
+    key: "rebuild",
+    label: "Rebuild after a one-line edit",
+    project: "Large",
+    metric: "rebuild",
+    unit: "s",
+    digits: 2,
+    better: "lower",
+  },
+  {
+    key: "memory",
+    label: "Peak memory, clean build of Large",
+    project: "Large",
+    metric: "clean_memory",
+    unit: "MiB",
+    digits: 0,
+    better: "lower",
+  },
+  {
+    key: "baseline-memory",
+    label: "Peak memory, clean build of Baseline",
+    project: "Baseline",
+    metric: "clean_memory",
+    unit: "MiB",
+    digits: 0,
+    better: "lower",
+  },
+  {
+    key: "memory-one-cpu",
+    label: "Peak memory, clean build of Large on one CPU",
+    project: "Large",
+    metric: "clean_one_cpu_memory",
+    unit: "MiB",
+    digits: 0,
+    better: "lower",
+  },
+  {
+    key: "rebuild-memory",
+    label: "Peak memory, rebuild",
+    project: "Large",
+    metric: "rebuild_memory",
+    unit: "MiB",
+    digits: 0,
+    better: "lower",
+  },
+  { key: "files", label: "Source files", project: "Large", metric: "files", unit: "files", digits: 0, better: null },
+  { key: "lines", label: "Source lines", project: "Large", metric: "lines", unit: "lines", digits: 0, better: null },
+  {
+    key: "executable",
+    label: "Executable size",
+    project: "Large",
+    metric: "executable",
+    unit: "KiB",
+    digits: 0,
+    better: "lower",
+    aotOnly: true,
+  },
+  {
+    key: "deployable",
+    label: "Deployable size",
+    project: "Large",
+    metric: "deployable",
+    unit: "KiB",
+    digits: 0,
+    better: "lower",
+  },
+];
+
+export function benchmarkCompileRow(key: string): BenchmarkCompileRow {
+  return benchmarkCompileRows.find((row) => row.key === key)!;
+}
+
+/** Whether a language is left out of a compile row's ranking (JIT executable size). */
+export function compileUnranked(row: BenchmarkCompileRow, language: string): boolean {
+  return unranked(row.aotOnly, language);
+}
+
+/** The statistics behind one cell of the compile report; null for the source-size rows. */
+export function compileCell(
+  run: BenchmarkCompileRun,
+  row: BenchmarkCompileRow,
+  language: string,
+): BenchmarkCell | null {
+  return run.metrics[row.metric]?.cells[row.project]?.[language] ?? null;
+}
+
+/** One value of the compile report: the median, or the source size for the files and lines rows. */
+export function compileValue(run: BenchmarkCompileRun, row: BenchmarkCompileRow, language: string): number | null {
+  if (row.metric === "files" || row.metric === "lines") {
+    return run.sources[row.project]?.[language]?.[row.metric] ?? null;
+  }
+  return compileCell(run, row, language)?.median ?? null;
+}
+
+/** value ÷ Rux, as the report's relative table prints it, whichever way the row is better. */
+export function compileRatio(run: BenchmarkCompileRun, row: BenchmarkCompileRow, language: string): number | null {
+  const value = compileValue(run, row, language);
+  const baseline = compileValue(run, row, benchmarkBaseline);
+  if (value === null || baseline === null || baseline <= 0) return null;
+  return value / baseline;
+}
+
+/** Languages with the best value in a compile row (several on a tie); none for an unranked row. */
+export function compileBest(run: BenchmarkCompileRun, row: BenchmarkCompileRow): string[] {
+  if (!row.better) return [];
+  const sign = row.better === "lower" ? 1 : -1;
+  let best = Infinity;
+  let keys: string[] = [];
+  for (const language of run.languages) {
+    const value = compileValue(run, row, language);
+    if (value === null || compileUnranked(row, language)) continue;
+    if (sign * value < best) {
+      best = sign * value;
+      keys = [language];
+    } else if (sign * value === best) {
+      keys.push(language);
+    }
+  }
+  return keys;
+}
+
+/** Rux against the others on one compile row, oriented like the program metrics: above 1, Rux does better. */
+export function compileComparison(run: BenchmarkCompileRun, row: BenchmarkCompileRow): BenchmarkComparison | null {
+  const standings = machineLanguages(run)
+    .filter((language) => !compileUnranked(row, language.key))
+    .map((language) => {
+      const ratio = compileRatio(run, row, language.key);
+      return { language: language.key, geomean: ratio === null || row.better !== "higher" ? ratio : 1 / ratio };
+    })
+    .filter((standing): standing is BenchmarkStanding => standing.geomean !== null && standing.geomean > 0)
+    .sort((a, b) => a.geomean - b.geomean);
+  return compareStandings(standings);
+}
+
+/**
  * The runner records Environment.OSVersion, which reports Windows 11 as
- * "Windows 10.0.<build>" — every build from 22000 up is Windows 11.
+ * "Windows 10.0.<build>": every build from 22000 up is Windows 11.
  */
 export function describeOs(os: string): string {
   const windows = /Windows 10\.0\.(\d+)/.exec(os);

@@ -11,7 +11,7 @@
  * underneath, so the tooltip is a shortcut rather than the only way in.
  */
 import { computed, ref, useId } from "vue";
-import type { BenchmarkCell, BenchmarkMachine, BenchmarkMetricKey } from "~/types/benchmarks";
+import type { BenchmarkCell, BenchmarkAppRun, BenchmarkMetricKey } from "~/types/benchmarks";
 import {
   benchmarkBaseline,
   benchmarkCell,
@@ -30,7 +30,7 @@ import {
 } from "~/utils/benchmark-chart";
 
 const props = defineProps<{
-  machine: BenchmarkMachine;
+  run: BenchmarkAppRun;
   metric: BenchmarkMetricKey;
   compare: string;
 }>();
@@ -58,12 +58,12 @@ interface Row {
 const id = useId();
 const instructionsId = `benchmark-plot-instructions-${id}`;
 const info = computed(() => benchmarkMetric(props.metric));
-const languages = computed(() => machineLanguages(props.machine));
+const languages = computed(() => machineLanguages(props.run));
 
 const domain = computed(() =>
   logDomain(
-    props.machine.apps.flatMap((app) =>
-      languages.value.map((language) => benchmarkCell(props.machine, props.metric, app, language.key)?.median ?? 0),
+    props.run.apps.flatMap((app) =>
+      languages.value.map((language) => benchmarkCell(props.run, props.metric, app, language.key)?.median ?? 0),
     ),
   ),
 );
@@ -77,9 +77,9 @@ function role(language: string): Role {
 const paintOrder: Record<Role, number> = { other: 0, compare: 1, rux: 2 };
 
 const rows = computed<Row[]>(() =>
-  props.machine.apps.map((app) => {
+  props.run.apps.map((app) => {
     const dots = languages.value.flatMap((language) => {
-      const cell = benchmarkCell(props.machine, props.metric, app, language.key);
+      const cell = benchmarkCell(props.run, props.metric, app, language.key);
       if (!cell) return [];
       return [
         {
@@ -88,7 +88,7 @@ const rows = computed<Row[]>(() =>
           jit: language.mode === "jit",
           role: role(language.key),
           cell,
-          ratio: benchmarkRatio(props.machine, props.metric, app, language.key),
+          ratio: benchmarkRatio(props.run, props.metric, app, language.key),
           position: logPosition(cell.median, domain.value) * 100,
         },
       ];
@@ -136,7 +136,7 @@ function format(value: number) {
   return formatBenchmarkValue(value, info.value.digits);
 }
 
-const countNoun = computed(() => (props.metric === "compile" ? "builds" : "runs"));
+const countNoun = computed(() => (props.metric === "compile" || props.metric === "compileMemory" ? "builds" : "runs"));
 const sizeMetric = computed(() => props.metric === "executable" || props.metric === "deployable");
 
 const activeLabel = computed(() => {
@@ -153,14 +153,12 @@ const tooltipStyle = computed(() => {
 });
 
 const ruxWins = computed(
-  () =>
-    props.machine.apps.filter((app) => bestLanguages(props.machine, props.metric, app).includes(benchmarkBaseline))
-      .length,
+  () => props.run.apps.filter((app) => bestLanguages(props.run, props.metric, app).includes(benchmarkBaseline)).length,
 );
 const summary = computed(
   () =>
-    `${info.value.label} in ${info.value.unit} on a log scale, ${props.machine.apps.length} apps by ${languages.value.length} languages. ` +
-    `Rux is lowest in ${ruxWins.value} of ${props.machine.apps.length} apps. The table below lists every value.`,
+    `${info.value.label} in ${info.value.unit} on a log scale, ${props.run.apps.length} apps by ${languages.value.length} languages. ` +
+    `Rux is lowest in ${ruxWins.value} of ${props.run.apps.length} apps. The table below lists every value.`,
 );
 
 function selectNearest(rowIndex: number, event: PointerEvent) {

@@ -8,14 +8,14 @@
  * on a log scale so 0.5× and 2× weigh the same.
  */
 import { computed } from "vue";
-import type { BenchmarkMachine, BenchmarkMetricKey } from "~/types/benchmarks";
+import type { BenchmarkAppRun, BenchmarkMetricKey } from "~/types/benchmarks";
 import { benchmarkBaseline, benchmarkGeomean, benchmarkMetrics, machineLanguages } from "~/utils/benchmarks";
 import { formatRatio } from "~/utils/benchmark-chart";
 
-const props = defineProps<{ machine: BenchmarkMachine }>();
+const props = defineProps<{ run: BenchmarkAppRun }>();
 const emit = defineEmits<{ select: [metric: BenchmarkMetricKey] }>();
 
-const languages = computed(() => machineLanguages(props.machine));
+const languages = computed(() => machineLanguages(props.run));
 
 // 30× from 1.00× is full strength; past that every cell looks the same.
 const SATURATION = Math.log(30);
@@ -36,7 +36,7 @@ const rows = computed(() =>
   benchmarkMetrics.map((metric) => ({
     metric,
     cells: languages.value.map((language) => {
-      const mean = benchmarkGeomean(props.machine, metric.key, language.key);
+      const mean = benchmarkGeomean(props.run, metric.key, language.key);
       return {
         language: language.key,
         text: mean === null ? "—" : formatRatio(mean),
@@ -105,7 +105,8 @@ const rows = computed(() =>
         <span class="inline-block size-3 rounded-sm bg-(--bench-behind)/40" aria-hidden="true" />
         Below 1.00× — Rux is higher
       </span>
-      <span>Every metric is lower-is-better. Select a metric to see it per app.</span>
+      <span>Every metric is lower-is-better. — not ranked: a JIT program file needs its runtime.</span>
+      <span>Select a metric to see it per app.</span>
     </p>
   </div>
 </template>

@@ -1,10 +1,12 @@
 import { mount } from "@vue/test-utils";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { nextTick } from "vue";
+import BenchmarkBars from "../app/components/BenchmarkBars.vue";
+import BenchmarkCompileTable from "../app/components/BenchmarkCompileTable.vue";
 import BenchmarkDotPlot from "../app/components/BenchmarkDotPlot.vue";
 import BenchmarkSummary from "../app/components/BenchmarkSummary.vue";
 import BenchmarkTable from "../app/components/BenchmarkTable.vue";
-import type { BenchmarkMachine } from "../app/types/benchmarks";
+import type { BenchmarkAppRun, BenchmarkCompileRun } from "../app/types/benchmarks";
 import {
   formatBenchmarkValue,
   formatRatio,
@@ -14,6 +16,7 @@ import {
   logTicks,
 } from "../app/utils/benchmark-chart";
 import {
+  benchmarkCompileRow,
   benchmarkGeomean,
   benchmarkHighlights,
   benchmarkMachine,
@@ -21,36 +24,51 @@ import {
   benchmarkMachines,
   benchmarkMetrics,
   bestLanguages,
+  compileBest,
+  compileComparison,
+  compileRatio,
+  compileValue,
   describeOs,
   formatBenchmarkDate,
   geometricMean,
+  latestRun,
   machineLanguages,
   median,
   ordinal,
 } from "../app/utils/benchmarks";
 
 /**
- * The checks below hold the page to the runner's own report.md for the first
- * machine (Ryzen 5 5500, 2026-10-07), so a bad import or a slip in the
+ * The checks below hold the page to the runner's own report.md for one machine
+ * (Ryzen 5 5500, both runs of 2026-10-15), so a bad import or a slip in the
  * arithmetic shows up as a number that no longer matches what the runner
  * printed.
  */
 const ryzen = benchmarkMachine("ryzen5-5500")!;
+const apps = ryzen.apps!;
+const compile = ryzen.compile!;
 
 describe("benchmark data", () => {
-  it("loads every machine file with the full matrix of apps, languages and metrics", () => {
-    expect(benchmarkMachines.length).toBeGreaterThan(0);
+  it("joins every machine with its two runs, each with the full matrix", () => {
+    expect(benchmarkMachines.map((machine) => machine.id)).toEqual(["i9-11900kf", "ryzen5-5500", "i5-8250u"]);
     for (const machine of benchmarkMachines) {
-      expect(machine.schemaVersion).toBe(1);
-      expect(machine.languages).toContain("Rux");
-      for (const metric of benchmarkMetrics) {
-        const results = machine.metrics[metric.key];
-        expect(results.unit).toBe(metric.unit);
-        expect(Object.keys(results.cells)).toEqual(machine.apps);
+      expect(machine.apps?.machine).toBe(machine.id);
+      expect(machine.compile?.machine).toBe(machine.id);
+      for (const run of [machine.apps!, machine.compile!]) {
+        expect(run.schemaVersion).toBe(2);
+        expect(run.languages).toContain("Rux");
       }
+      for (const metric of benchmarkMetrics) {
+        const results = machine.apps!.metrics[metric.key];
+        expect(results.unit).toBe(metric.unit);
+        expect(Object.keys(results.cells)).toEqual(machine.apps!.apps);
+      }
+      expect(machine.compile!.projects).toEqual(["Baseline", "Large"]);
     }
-    expect(ryzen.machine.cpu).toBe("AMD Ryzen 5 5500");
-    expect(machineLanguages(ryzen).map((language) => language.label)).toEqual([
+    expect(apps.kind).toBe("apps");
+    expect(compile.kind).toBe("compile");
+    expect(apps.hardware.cpu).toBe("AMD Ryzen 5 5500");
+    expect(latestRun(ryzen)).toBe(compile);
+    expect(machineLanguages(apps).map((language) => language.label)).toEqual([
       "Rux",
       "Rust",
       "C++",
@@ -72,38 +90,45 @@ describe("benchmark data", () => {
   });
 
   it("reproduces the report's geometric means", () => {
-    const mean = (metric: Parameters<typeof benchmarkGeomean>[1], language: string) =>
-      formatRatio(benchmarkGeomean(ryzen, metric, language)!);
+    const mean = (metric: Parameters<typeof benchmarkGeomean>[1], language: string) => {
+      const value = benchmarkGeomean(apps, metric, language);
+      return value === null ? "—" : formatRatio(value);
+    };
     expect(mean("execution", "Rux")).toBe("1.00×");
-    expect(mean("execution", "Rust")).toBe("0.07×");
-    expect(mean("execution", "Cpp")).toBe("0.06×");
-    expect(mean("memory", "JavaJit")).toBe("4.36×");
-    expect(mean("memory", "Rust")).toBe("1.12×");
-    expect(mean("compile", "Go")).toBe("0.49×");
-    expect(mean("compile", "JavaAot")).toBe("51×");
-    expect(mean("executable", "CSharpAot")).toBe("5.40×");
-    expect(mean("deployable", "CSharpJit")).toBe("0.84×");
+    expect(mean("execution", "Rust")).toBe("1.11×");
+    expect(mean("execution", "Cpp")).toBe("0.97×");
+    expect(mean("memory", "JavaJit")).toBe("4.29×");
+    expect(mean("memory", "Rust")).toBe("1.11×");
+    expect(mean("compile", "Go")).toBe("2.07×");
+    expect(mean("compile", "JavaAot")).toBe("113×");
+    expect(mean("compileMemory", "JavaAot")).toBe("13×");
+    expect(mean("executable", "CSharpAot")).toBe("14×");
+    expect(mean("deployable", "CSharpJit")).toBe("165×");
+    // JIT program files need their runtime, so the report does not rank them.
+    expect(mean("executable", "CSharpJit")).toBe("—");
+    expect(mean("executable", "JavaJit")).toBe("—");
   });
 
   it("finds the best language per app, ties included", () => {
-    expect(bestLanguages(ryzen, "execution", "BinaryTrees")).toEqual(["JavaJit"]);
-    expect(bestLanguages(ryzen, "memory", "NBody")).toEqual(["Rux"]);
-    expect(bestLanguages(ryzen, "cpu", "WordCount")).toEqual(["Rust", "Cpp"]);
+    expect(bestLanguages(apps, "execution", "BinaryTrees")).toEqual(["JavaJit"]);
+    expect(bestLanguages(apps, "execution", "Sha512")).toEqual(["Rust"]);
+    expect(bestLanguages(apps, "memory", "NBody")).toEqual(["Rux"]);
+    expect(bestLanguages(apps, "cpu", "WordCount")).toEqual(["Cpp"]);
+    // The 3 KiB jar is smaller than any native build, but it is not ranked.
+    expect(bestLanguages(apps, "executable", "Sha512")).toEqual(["Rux"]);
   });
 
   it("derives the headline figures from the data", () => {
-    const highlights = benchmarkHighlights(ryzen);
+    const highlights = benchmarkHighlights(apps);
     expect(highlights.memoryWins).toBe(10);
     // Rux uses the least memory: every other language's geomean is above 1.
-    expect(highlights.memory).toMatchObject({ rivals: ["Cpp"], rank: 1, field: 8 });
-    expect(highlights.memory!.spread.map(formatRatio)).toEqual(["1.10×", "4.36×"]);
-    // Executable size counts native builds only, where Rust is smaller.
-    expect(highlights.executable).toMatchObject({ rivals: ["Rust"], rank: 2, field: 6 });
-    expect(highlights.executable!.ratio).toBeLessThan(1);
-    expect(highlights.compile?.rivals).toEqual(["Go"]);
-    expect(highlights.compile!.spread[1]).toBeGreaterThan(1);
-    expect(highlights.execution).toMatchObject({ rivals: ["Cpp"], rank: 8, field: 8 });
-    expect(Math.round(1 / highlights.execution!.ratio)).toBe(17);
+    expect(highlights.memory).toMatchObject({ rank: 1, field: 8 });
+    expect(highlights.memory!.spread.map(formatRatio)).toEqual(["1.11×", "4.29×"]);
+    // Executable size counts native builds only.
+    expect(highlights.executable).toMatchObject({ rivals: ["Rust"], rank: 1, field: 6 });
+    expect(formatRatio(highlights.executable!.ratio)).toBe("2.80×");
+    expect(highlights.execution).toMatchObject({ rivals: ["Cpp"], rank: 2, field: 8 });
+    expect(formatRatio(highlights.execution!.ratio)).toBe("0.97×");
   });
 
   it("has small helpers that behave at the edges", () => {
@@ -127,6 +152,50 @@ describe("benchmark data", () => {
     expect(describeOs("Microsoft Windows 10.0.19045")).toBe("Windows 10 (build 19045)");
     expect(describeOs("Ubuntu 26.04 LTS")).toBe("Ubuntu 26.04 LTS");
     expect(formatBenchmarkDate("2026-10-07T23:40:47.5+03:00")).toBe("October 7, 2026");
+  });
+});
+
+describe("compile benchmark data", () => {
+  const value = (key: string, language: string) => {
+    const row = benchmarkCompileRow(key);
+    return formatBenchmarkValue(compileValue(compile, row, language)!, row.digits);
+  };
+
+  it("reproduces the report's medians and ratios", () => {
+    expect(value("clean", "Rux")).toBe("1.14");
+    expect(value("clean", "Go")).toBe("2.93");
+    expect(value("baseline", "JavaAot")).toBe("21.25");
+    expect(value("speed", "Rux")).toBe("98,200");
+    expect(value("speedup", "Cpp")).toBe("6.27");
+    expect(value("rebuild", "Rux")).toBe("0.40");
+    expect(value("memory", "Go")).toBe("204");
+    expect(value("lines", "Cpp")).toBe("108,385");
+    expect(value("files", "Rux")).toBe("112");
+    expect(formatRatio(compileRatio(compile, benchmarkCompileRow("clean"), "JavaAot")!)).toBe("36×");
+    expect(formatRatio(compileRatio(compile, benchmarkCompileRow("speed"), "Go")!)).toBe("0.39×");
+  });
+
+  it("ranks each row the way it is better", () => {
+    expect(compileBest(compile, benchmarkCompileRow("clean"))).toEqual(["Rux"]);
+    expect(compileBest(compile, benchmarkCompileRow("speed"))).toEqual(["Rux"]);
+    expect(compileBest(compile, benchmarkCompileRow("speedup"))).toEqual(["Cpp"]);
+    expect(compileBest(compile, benchmarkCompileRow("memory"))).toEqual(["Go"]);
+    // The C# JIT assembly is smaller, but is not ranked.
+    expect(compileBest(compile, benchmarkCompileRow("executable"))).toEqual(["CSharpAot"]);
+    expect(compileBest(compile, benchmarkCompileRow("lines"))).toEqual([]);
+  });
+
+  it("compares Rux with the others with above 1 meaning Rux is ahead, either way round", () => {
+    const clean = compileComparison(compile, benchmarkCompileRow("clean"))!;
+    expect(clean).toMatchObject({ rivals: ["Go"], rank: 1, field: 8 });
+    expect(formatRatio(clean.ratio)).toBe("2.57×");
+    const speed = compileComparison(compile, benchmarkCompileRow("speed"))!;
+    expect(speed).toMatchObject({ rivals: ["Go"], rank: 1 });
+    expect(formatRatio(speed.ratio)).toBe("2.58×");
+    const speedup = compileComparison(compile, benchmarkCompileRow("speedup"))!;
+    expect(speedup.rivals).toEqual(["Cpp"]);
+    expect(speedup.ratio).toBeLessThan(1);
+    expect(speedup.rank).toBe(4);
   });
 });
 
@@ -170,7 +239,7 @@ describe("benchmark chart geometry", () => {
 
 describe("BenchmarkDotPlot", () => {
   function plot(metric: "execution" | "memory" = "execution") {
-    return mount(BenchmarkDotPlot, { props: { machine: ryzen, metric, compare: "Cpp" } });
+    return mount(BenchmarkDotPlot, { props: { run: apps, metric, compare: "Cpp" } });
   }
 
   it("draws one dot per app and language and summarises the chart for screen readers", () => {
@@ -189,14 +258,14 @@ describe("BenchmarkDotPlot", () => {
     const live = () => wrapper.get('[aria-live="polite"]').text();
 
     await chart.trigger("keydown", { key: "ArrowDown" });
-    expect(live()).toBe("Sha512, Rux: 22.398 s");
+    expect(live()).toBe("Sha512, Rux: 0.597 s");
     await chart.trigger("keydown", { key: "Home" });
-    expect(live()).toBe("Sha512, C++: 0.576 s, 0.03× Rux");
+    expect(live()).toBe("Sha512, Rust: 0.578 s, 0.97× Rux");
     await chart.trigger("keydown", { key: "ArrowDown" });
-    expect(live()).toBe("Mandelbrot, C++: 0.866 s, 0.13× Rux");
+    expect(live()).toBe("Mandelbrot, Rust: 0.882 s, 1.00× Rux");
     await chart.trigger("keydown", { key: "End" });
-    expect(live()).toBe("Mandelbrot, Rux: 6.808 s");
-    expect(wrapper.text()).toContain("min 6.");
+    expect(live()).toBe("Mandelbrot, C# JIT: 0.944 s, 1.07× Rux");
+    expect(wrapper.text()).toContain("min 0.");
     await chart.trigger("keydown", { key: "Escape" });
     expect(live()).toBe("");
   });
@@ -205,29 +274,39 @@ describe("BenchmarkDotPlot", () => {
 describe("BenchmarkTable", () => {
   it("prints medians with the best value in each row bold", () => {
     const wrapper = mount(BenchmarkTable, {
-      props: { machine: ryzen, metric: "execution", relative: false, compare: "Rust" },
+      props: { run: apps, metric: "execution", relative: false, compare: "Rust" },
     });
     const first = wrapper.findAll("tbody tr")[0]!;
     expect(first.text()).toContain("Sha512");
-    expect(first.text()).toContain("22.398");
-    expect(first.get(".font-semibold").text()).toBe("0.576");
+    expect(first.text()).toContain("0.597");
+    expect(first.get(".font-semibold").text()).toBe("0.578");
     expect(wrapper.find("tfoot").exists()).toBe(false);
   });
 
   it("adds the geometric mean in the relative view", () => {
     const wrapper = mount(BenchmarkTable, {
-      props: { machine: ryzen, metric: "memory", relative: true, compare: "Rust" },
+      props: { run: apps, metric: "memory", relative: true, compare: "Rust" },
     });
     const footer = wrapper.get("tfoot").text();
     expect(footer).toContain("Geometric mean");
-    expect(footer).toContain("4.36×");
+    expect(footer).toContain("4.29×");
+  });
+
+  it("shows the JIT executables in italics, unranked", () => {
+    const wrapper = mount(BenchmarkTable, {
+      props: { run: apps, metric: "executable", relative: false, compare: "Rust" },
+    });
+    const first = wrapper.findAll("tbody tr")[0]!;
+    expect(first.findAll(".italic").map((cell) => cell.text())).toEqual(["7", "3"]);
+    expect(first.get(".font-semibold").text()).toBe("87");
+    expect(wrapper.text()).toContain("not ranked");
   });
 
   it("marks a failed case instead of dropping the cell", () => {
-    const failed: BenchmarkMachine = structuredClone(ryzen);
+    const failed: BenchmarkAppRun = structuredClone(apps);
     failed.metrics.execution.cells.Sort!.Go = null;
     const wrapper = mount(BenchmarkTable, {
-      props: { machine: failed, metric: "execution", relative: false, compare: "Rust" },
+      props: { run: failed, metric: "execution", relative: false, compare: "Rust" },
     });
     expect(wrapper.get(".text-error").text()).toBe("FAIL");
   });
@@ -235,19 +314,89 @@ describe("BenchmarkTable", () => {
 
 describe("BenchmarkSummary", () => {
   it("tints cells away from 1.00× and opens a metric on request", async () => {
-    const wrapper = mount(BenchmarkSummary, { props: { machine: ryzen } });
+    const wrapper = mount(BenchmarkSummary, { props: { run: apps } });
     const rows = wrapper.findAll("tbody tr");
-    expect(rows).toHaveLength(6);
+    expect(rows).toHaveLength(7);
     const memory = rows[2]!;
     expect(memory.text()).toContain("Peak memory");
     const cells = memory.findAll("td");
     expect(cells[0]!.attributes("data-tone")).toBeUndefined();
-    expect(cells[7]!.text()).toBe("4.36×");
+    expect(cells[7]!.text()).toBe("4.29×");
     expect(cells[7]!.attributes("data-tone")).toBe("ahead");
-    expect(rows[0]!.findAll("td")[1]!.attributes("data-tone")).toBe("behind");
+    // C++ beats Rux on execution time.
+    expect(rows[0]!.findAll("td")[2]!.attributes("data-tone")).toBe("behind");
+    expect(rows[4]!.text()).toContain("Compile memory");
+    expect(rows[5]!.findAll("td")[5]!.text()).toBe("—");
 
     await memory.get("button").trigger("click");
     expect(wrapper.emitted("select")).toEqual([["memory"]]);
+  });
+});
+
+describe("BenchmarkBars", () => {
+  function bars(key: string) {
+    return mount(BenchmarkBars, { props: { run: compile, row: benchmarkCompileRow(key), compare: "Go" } });
+  }
+
+  it("draws a bar per language, best first, whichever way the row is better", () => {
+    const clean = bars("clean");
+    const labels = (wrapper: ReturnType<typeof bars>) =>
+      wrapper.findAll(".h-8 > span:first-child").map((label) => label.text());
+    expect(labels(clean)).toEqual(["Rux", "Go", "Java JIT", "C# AOT", "C# JIT", "Rust", "C++", "Java AOT"]);
+    expect(clean.findAll(".bg-\\(--bench-rux\\)")).toHaveLength(1);
+    expect(clean.findAll(".bg-\\(--bench-compare\\)")).toHaveLength(1);
+    expect(clean.get('[role="group"]').attributes("aria-label")).toContain("lower is better");
+    expect(clean.get('[role="group"]').attributes("aria-label")).toContain("Rux is 1 of 8");
+
+    const speedup = bars("speedup");
+    expect(labels(speedup)[0]).toBe("C++");
+    expect(speedup.get('[role="group"]').attributes("aria-label")).toContain("higher is better");
+  });
+
+  it("announces each bar from the keyboard with the spread of its builds", async () => {
+    const wrapper = bars("clean");
+    const chart = wrapper.get('[role="group"]');
+    const live = () => wrapper.get('[aria-live="polite"]').text();
+    await chart.trigger("keydown", { key: "ArrowDown" });
+    expect(live()).toMatch(/^Rux: 1\.14 s; min 1\.13, ±0\.00, 3 builds$/);
+    await chart.trigger("keydown", { key: "ArrowDown" });
+    expect(live()).toMatch(/^Go: 2\.93 s, 2\.57× Rux; min /);
+    await chart.trigger("keydown", { key: "Escape" });
+    expect(live()).toBe("");
+  });
+});
+
+describe("BenchmarkCompileTable", () => {
+  it("prints every row of the report with the best value bold, either way round", () => {
+    const wrapper = mount(BenchmarkCompileTable, {
+      props: { run: compile, relative: false, compare: "Go", selected: "speed" },
+    });
+    const row = (key: string) => wrapper.get(`[data-row="${key}"]`);
+    expect(wrapper.findAll("tbody tr")).toHaveLength(18);
+    expect(row("clean").get(".font-semibold").text()).toBe("1.14");
+    expect(row("speed").get(".font-semibold").text()).toBe("98,200");
+    expect(row("speed").text()).toContain("higher is better");
+    expect(row("speed").classes()).toContain("bg-elevated/40");
+    expect(row("speedup").get(".font-semibold").text()).toBe("6.27×");
+    expect(
+      row("executable")
+        .findAll(".italic")
+        .map((cell) => cell.text()),
+    ).toEqual(["1,137", "2,122"]);
+    expect(row("lines").find(".font-semibold").exists()).toBe(false);
+  });
+
+  it("switches to ratios and leaves out the source size", () => {
+    const wrapper = mount(BenchmarkCompileTable, { props: { run: compile, relative: true, compare: "Go" } });
+    expect(wrapper.findAll("tbody tr")).toHaveLength(16);
+    expect(wrapper.get('[data-row="rebuild"]').text()).toContain("103×");
+  });
+
+  it("marks a failed build", () => {
+    const failed: BenchmarkCompileRun = structuredClone(compile);
+    failed.metrics.clean!.cells.Large!.Go = null;
+    const wrapper = mount(BenchmarkCompileTable, { props: { run: failed, relative: false, compare: "Go" } });
+    expect(wrapper.get('[data-row="clean"] .text-error').text()).toBe("FAIL");
   });
 });
 
@@ -263,8 +412,13 @@ describe("benchmarks page", () => {
     vi.stubGlobal("useRouter", () => ({ replace }));
   });
 
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    delete benchmarkMachines[0]!.compile;
+    benchmarkMachines[0]!.compile = firstCompile;
+  });
 
+  const firstCompile = benchmarkMachines[0]!.compile;
   const slot = (name: string) => `<slot name="${name}" />`;
   const stubs = {
     UContainer: { template: "<div><slot /></div>" },
@@ -281,32 +435,59 @@ describe("benchmarks page", () => {
     UAlert: { props: ["title"], template: `<div data-alert>{{ title }}${slot("description")}</div>` },
     UTabs: { props: ["items", "modelValue"], template: "<nav data-tabs />" },
     USwitch: { props: ["modelValue", "label"], template: "<input type='checkbox' />" },
-    BenchmarkSummary: { props: ["machine"], template: "<div data-summary />" },
-    BenchmarkDotPlot: { name: "BenchmarkDotPlot", props: ["machine", "metric", "compare"], template: "<div />" },
-    BenchmarkTable: {
-      name: "BenchmarkTable",
-      props: ["machine", "metric", "relative", "compare"],
+    BenchmarkSummary: { props: ["run"], template: "<div data-summary />" },
+    BenchmarkCompare: { props: ["modelValue", "options"], template: "<div data-compare />" },
+    BenchmarkDotPlot: { name: "BenchmarkDotPlot", props: ["run", "metric", "compare"], template: "<div />" },
+    BenchmarkTable: { name: "BenchmarkTable", props: ["run", "metric", "relative", "compare"], template: "<div />" },
+    BenchmarkBars: { name: "BenchmarkBars", props: ["run", "row", "compare"], template: "<div />" },
+    BenchmarkCompileTable: {
+      name: "BenchmarkCompileTable",
+      props: ["run", "relative", "compare", "selected"],
       template: "<div />",
     },
   };
 
-  it("renders the first machine with its headline figures and methodology", async () => {
+  async function render() {
     const Page = (await import("../app/pages/benchmarks.vue")).default;
     const wrapper = mount(Page, { global: { stubs } });
     await nextTick();
+    return wrapper;
+  }
 
+  it("renders the first machine with both benchmarks, their headline figures and methodology", async () => {
+    const wrapper = await render();
     const text = wrapper.text();
     expect(text).toContain("Benchmarks");
-    expect(text).toContain("10 / 10");
+    expect(text).toContain("Benchmark 1 of 2");
+    expect(text).toContain("Benchmark 2 of 2");
+    expect(wrapper.get("#programs").text()).toContain("Program benchmark");
+    expect(wrapper.get("#compile").text()).toContain("Compile benchmark");
+    expect(text).toContain("Running ten programs");
+    expect(text).toContain("Compiling a 100,000-line project");
     expect(text).toContain("Intel(R) Core(TM) i9-11900KF");
     expect(text).toContain("Windows 11 (build 26300)");
     expect(text).toContain("64 GiB");
-    expect(text).toContain("does not optimize yet");
+    expect(text).toContain("Rux is pre-1.0");
+    expect(text).not.toContain("optimiz");
     expect(text).toContain("Fannkuch");
     expect(wrapper.find("#methodology").exists()).toBe(true);
 
     const plot = wrapper.getComponent({ name: "BenchmarkDotPlot" });
     expect(plot.props("metric")).toBe("execution");
     expect(plot.props("compare")).toBe("Rust");
+    const bars = wrapper.getComponent({ name: "BenchmarkBars" });
+    expect(bars.props("row").key).toBe("clean");
+    expect(bars.props("compare")).toBe("Rust");
+  });
+
+  it("says so when a machine has not run one of the benchmarks", async () => {
+    delete benchmarkMachines[0]!.compile;
+    const wrapper = await render();
+    expect(wrapper.get("#compile").element.closest("section")!.textContent).toContain(
+      "The compile benchmark has not been run on this machine yet.",
+    );
+    expect(wrapper.findComponent({ name: "BenchmarkBars" }).exists()).toBe(false);
+    expect(wrapper.text()).not.toContain("Compiling a 100,000-line project");
+    expect(wrapper.text()).toContain("Not run yet");
   });
 });

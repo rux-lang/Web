@@ -120,13 +120,19 @@ Pull requests must target `dev`; CI rejects pull requests opened against `main`.
 
 To add documentation, create a Markdown file under `content/docs/`. Routes and navigation are generated from the content tree, so no route or sidebar registry needs updating.
 
-To publish benchmark results on [`/benchmarks`](https://rux-lang.dev/benchmarks), run [`rux-lang/Benchmarks`](https://github.com/rux-lang/Benchmarks) on the machine and import its results folder:
+[`/benchmarks`](https://rux-lang.dev/benchmarks) shows the two benchmarks of [`rux-lang/Benchmarks`](https://github.com/rux-lang/Benchmarks) for every machine that ran them: the program benchmark (`dotnet run --project Runner -c Release -- all`) and the compile benchmark (`… -- compile`). To publish results, run both on each computer, gather their `Results/<date>-<os>` and `Results/<date>-compile-<os>` folders in one `Results` folder, and import it:
 
 ```bash
-npm run import:benchmarks -- ../Benchmarks/Results/20261007-144047-windows --id ryzen5-5500 --label "Desktop · Ryzen 5 5500" --order 1
+npm run import:benchmarks -- ../Benchmarks/Results
 ```
 
-This writes `data/benchmarks/<id>.json`. The page lists every file in that folder in `--order`, so a new machine needs no code change, and importing a newer run with the same `--id` replaces the old one.
+The importer reads which benchmark a folder holds from its `results.json`, and which computer ran it from the CPU and operating system listed in `data/benchmarks/machines.json`. It writes `data/benchmarks/apps/<machine>.json` and `data/benchmarks/compile/<machine>.json`, keeping the newest run of each, and touches only files that change. A computer that is not in `machines.json` yet is imported once on its own, with its id, label and place in the machine tabs:
+
+```bash
+npm run import:benchmarks -- ../Benchmarks/Results/20261015-204916-linux ../Benchmarks/Results/20261015-214928-compile-linux --machine i5-8250u --label "Laptop · Core i5-8250U" --order 3
+```
+
+A new machine needs no code change, and a machine that has run only one of the two benchmarks shows the other as not run yet.
 
 ## License
 

@@ -1,0 +1,3592 @@
+{
+  "schemaVersion": 2,
+  "kind": "apps",
+  "machine": "i9-11900kf",
+  "date": "2026-10-15T19:18:06.0167076+03:00",
+  "profile": "standard",
+  "hardware": {
+    "cpu": "11th Gen Intel(R) Core(TM) i9-11900KF @ 3.50GHz",
+    "logicalCores": 16,
+    "memoryBytes": 68514381824,
+    "os": "Microsoft Windows 10.0.26300"
+  },
+  "commit": "73e4999",
+  "toolchains": {
+    "Rux": "Rux 0.4.0 (2026-10-15 16:05:55 UTC)",
+    "Rust": "rustc 1.99.0 (b940084d7 2026-09-28)",
+    "Cargo": "cargo 1.99.0 (5f94df478 2026-08-27)",
+    "C++": "clang version 23.1.2 (https://github.com/llvm/llvm-project 85ac560262434c9ccfc0c183ec22d4138ed647fb)",
+    "CMake": "cmake version 4.4.3",
+    "Ninja": "1.13.2",
+    "Go": "go version go1.27.1 windows/amd64",
+    ".NET SDK": "10.0.401",
+    "JDK": "java version \"27\" 2026-09-15",
+    "GraalVM": "native-image 25.0.4 2026-07-21"
+  },
+  "settings": {
+    "baseline": "Rux",
+    "buildRuns": 3,
+    "runs": 5,
+    "warmups": 1
+  },
+  "apps": [
+    "Sha512",
+    "Mandelbrot",
+    "WordCount",
+    "BinaryTrees",
+    "Sort",
+    "NBody",
+    "MatrixMultiply",
+    "PrimeSieve",
+    "Fannkuch",
+    "Base64"
+  ],
+  "languages": [
+    "Rux",
+    "Rust",
+    "Cpp",
+    "Go",
+    "CSharpAot",
+    "CSharpJit",
+    "JavaAot",
+    "JavaJit"
+  ],
+  "failures": [],
+  "metrics": {
+    "execution": {
+      "unit": "s",
+      "cells": {
+        "Sha512": {
+          "Rux": {
+            "median": 0.535047,
+            "min": 0.534909,
+            "stddev": 0.000167791,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.497314,
+            "min": 0.496979,
+            "stddev": 0.000737472,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.468646,
+            "min": 0.468369,
+            "stddev": 0.000235329,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.661932,
+            "min": 0.661129,
+            "stddev": 0.000474589,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.685783,
+            "min": 0.684635,
+            "stddev": 0.00155302,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.824967,
+            "min": 0.822352,
+            "stddev": 0.00560889,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.626606,
+            "min": 0.626205,
+            "stddev": 0.000493966,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.703335,
+            "min": 0.700333,
+            "stddev": 0.00605538,
+            "count": 5
+          }
+        },
+        "Mandelbrot": {
+          "Rux": {
+            "median": 0.931904,
+            "min": 0.931345,
+            "stddev": 0.0342243,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.915885,
+            "min": 0.914748,
+            "stddev": 0.0107978,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.903417,
+            "min": 0.903063,
+            "stddev": 0.0023528,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.887486,
+            "min": 0.886889,
+            "stddev": 0.00165046,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.916353,
+            "min": 0.915387,
+            "stddev": 0.00191186,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.96988,
+            "min": 0.96899,
+            "stddev": 0.00653677,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.92314,
+            "min": 0.92306,
+            "stddev": 0.0173729,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.984536,
+            "min": 0.962179,
+            "stddev": 0.0310014,
+            "count": 5
+          }
+        },
+        "WordCount": {
+          "Rux": {
+            "median": 0.74729,
+            "min": 0.746159,
+            "stddev": 0.00146444,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.636933,
+            "min": 0.635071,
+            "stddev": 0.00323297,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.605566,
+            "min": 0.602594,
+            "stddev": 0.00368383,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.812722,
+            "min": 0.808382,
+            "stddev": 0.00277308,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.846356,
+            "min": 0.845581,
+            "stddev": 0.00111998,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.851215,
+            "min": 0.844747,
+            "stddev": 0.00467505,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 1.09778,
+            "min": 1.08991,
+            "stddev": 0.0088366,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.97829,
+            "min": 0.967649,
+            "stddev": 0.0138161,
+            "count": 5
+          }
+        },
+        "BinaryTrees": {
+          "Rux": {
+            "median": 1.31503,
+            "min": 1.31238,
+            "stddev": 0.0016123,
+            "count": 5
+          },
+          "Rust": {
+            "median": 2.07471,
+            "min": 2.07242,
+            "stddev": 0.017501,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 1.89222,
+            "min": 1.88039,
+            "stddev": 0.00959302,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.891666,
+            "min": 0.89146,
+            "stddev": 0.00433786,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.752327,
+            "min": 0.745665,
+            "stddev": 0.00614645,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.873254,
+            "min": 0.855629,
+            "stddev": 0.0143454,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.242054,
+            "min": 0.240974,
+            "stddev": 0.000877608,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.308776,
+            "min": 0.305389,
+            "stddev": 0.00173931,
+            "count": 5
+          }
+        },
+        "Sort": {
+          "Rux": {
+            "median": 0.612075,
+            "min": 0.611662,
+            "stddev": 0.00334035,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.594602,
+            "min": 0.591246,
+            "stddev": 0.00163732,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.597568,
+            "min": 0.597284,
+            "stddev": 0.000487042,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.616148,
+            "min": 0.614688,
+            "stddev": 0.000954897,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.645875,
+            "min": 0.645136,
+            "stddev": 0.000773351,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.719837,
+            "min": 0.713417,
+            "stddev": 0.00544773,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.64746,
+            "min": 0.64634,
+            "stddev": 0.00132831,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.722883,
+            "min": 0.71238,
+            "stddev": 0.00839284,
+            "count": 5
+          }
+        },
+        "NBody": {
+          "Rux": {
+            "median": 0.218619,
+            "min": 0.218447,
+            "stddev": 0.000174599,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.233496,
+            "min": 0.232828,
+            "stddev": 0.000623902,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.221068,
+            "min": 0.220841,
+            "stddev": 0.000427472,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.279712,
+            "min": 0.278214,
+            "stddev": 0.00222004,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.359429,
+            "min": 0.358843,
+            "stddev": 0.000333782,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.538847,
+            "min": 0.525885,
+            "stddev": 0.00655162,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.206386,
+            "min": 0.206165,
+            "stddev": 0.000231143,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.274647,
+            "min": 0.273549,
+            "stddev": 0.00176201,
+            "count": 5
+          }
+        },
+        "MatrixMultiply": {
+          "Rux": {
+            "median": 0.210054,
+            "min": 0.210011,
+            "stddev": 0.00200087,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.631072,
+            "min": 0.629998,
+            "stddev": 0.0013183,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.193074,
+            "min": 0.192681,
+            "stddev": 0.00150466,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.574948,
+            "min": 0.573988,
+            "stddev": 0.00294024,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.682411,
+            "min": 0.6822,
+            "stddev": 0.00410719,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.793638,
+            "min": 0.792758,
+            "stddev": 0.00701661,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.741426,
+            "min": 0.740336,
+            "stddev": 0.00143199,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.399111,
+            "min": 0.398606,
+            "stddev": 0.000396769,
+            "count": 5
+          }
+        },
+        "PrimeSieve": {
+          "Rux": {
+            "median": 0.568215,
+            "min": 0.565734,
+            "stddev": 0.00310599,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.586764,
+            "min": 0.582719,
+            "stddev": 0.00280065,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.553171,
+            "min": 0.553018,
+            "stddev": 0.00187219,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.569853,
+            "min": 0.565804,
+            "stddev": 0.00248531,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.581796,
+            "min": 0.579882,
+            "stddev": 0.00199671,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.636371,
+            "min": 0.632666,
+            "stddev": 0.00337776,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.631363,
+            "min": 0.628801,
+            "stddev": 0.00234675,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.627433,
+            "min": 0.626835,
+            "stddev": 0.00170083,
+            "count": 5
+          }
+        },
+        "Fannkuch": {
+          "Rux": {
+            "median": 0.139966,
+            "min": 0.139689,
+            "stddev": 0.00383827,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.136086,
+            "min": 0.13587,
+            "stddev": 0.000340601,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.13339,
+            "min": 0.132822,
+            "stddev": 0.000855304,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.141036,
+            "min": 0.139474,
+            "stddev": 0.000930715,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.13392,
+            "min": 0.133457,
+            "stddev": 0.000217233,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.197101,
+            "min": 0.194461,
+            "stddev": 0.00128114,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.160807,
+            "min": 0.160554,
+            "stddev": 0.000729958,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.206561,
+            "min": 0.192584,
+            "stddev": 0.00721508,
+            "count": 5
+          }
+        },
+        "Base64": {
+          "Rux": {
+            "median": 0.2323,
+            "min": 0.231632,
+            "stddev": 0.000641104,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.279708,
+            "min": 0.279143,
+            "stddev": 0.000371003,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.222584,
+            "min": 0.222426,
+            "stddev": 0.00112466,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.276089,
+            "min": 0.27592,
+            "stddev": 0.00186252,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.303258,
+            "min": 0.302954,
+            "stddev": 0.000314063,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.347931,
+            "min": 0.347654,
+            "stddev": 0.000519563,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.564965,
+            "min": 0.56451,
+            "stddev": 0.000587712,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.39349,
+            "min": 0.384497,
+            "stddev": 0.00558785,
+            "count": 5
+          }
+        }
+      }
+    },
+    "cpu": {
+      "unit": "s",
+      "cells": {
+        "Sha512": {
+          "Rux": {
+            "median": 0.546875,
+            "min": 0.53125,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.5,
+            "min": 0.46875,
+            "stddev": 0.0139754,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.46875,
+            "min": 0.453125,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.65625,
+            "min": 0.640625,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.6875,
+            "min": 0.6875,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.828125,
+            "min": 0.828125,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.625,
+            "min": 0.625,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.78125,
+            "min": 0.75,
+            "stddev": 0.0171163,
+            "count": 5
+          }
+        },
+        "Mandelbrot": {
+          "Rux": {
+            "median": 0.9375,
+            "min": 0.921875,
+            "stddev": 0.0392184,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.921875,
+            "min": 0.890625,
+            "stddev": 0.0171163,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.90625,
+            "min": 0.890625,
+            "stddev": 0.0110485,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.890625,
+            "min": 0.890625,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.921875,
+            "min": 0.90625,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.96875,
+            "min": 0.96875,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.921875,
+            "min": 0.921875,
+            "stddev": 0.0139754,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 1.03125,
+            "min": 0.984375,
+            "stddev": 0.0525242,
+            "count": 5
+          }
+        },
+        "WordCount": {
+          "Rux": {
+            "median": 0.75,
+            "min": 0.734375,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.640625,
+            "min": 0.609375,
+            "stddev": 0.0139754,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.59375,
+            "min": 0.59375,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.828125,
+            "min": 0.8125,
+            "stddev": 0.0130728,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.859375,
+            "min": 0.84375,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.859375,
+            "min": 0.84375,
+            "stddev": 0.0130728,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 1.09375,
+            "min": 1.09375,
+            "stddev": 0.0139754,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 1.10938,
+            "min": 1.0625,
+            "stddev": 0.114073,
+            "count": 5
+          }
+        },
+        "BinaryTrees": {
+          "Rux": {
+            "median": 1.3125,
+            "min": 1.29688,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Rust": {
+            "median": 2.07813,
+            "min": 2.07813,
+            "stddev": 0.0139754,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 1.89063,
+            "min": 1.875,
+            "stddev": 0.0110485,
+            "count": 5
+          },
+          "Go": {
+            "median": 2.04688,
+            "min": 1.76563,
+            "stddev": 0.349141,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.734375,
+            "min": 0.71875,
+            "stddev": 0.0171163,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.78125,
+            "min": 0.78125,
+            "stddev": 0.0256745,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.25,
+            "min": 0.234375,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.40625,
+            "min": 0.390625,
+            "stddev": 0.0130728,
+            "count": 5
+          }
+        },
+        "Sort": {
+          "Rux": {
+            "median": 0.609375,
+            "min": 0.609375,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.59375,
+            "min": 0.59375,
+            "stddev": 0,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.59375,
+            "min": 0.578125,
+            "stddev": 0.0171163,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.609375,
+            "min": 0.609375,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.640625,
+            "min": 0.625,
+            "stddev": 0.0130728,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.71875,
+            "min": 0.6875,
+            "stddev": 0.0203725,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.640625,
+            "min": 0.625,
+            "stddev": 0.0130728,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.828125,
+            "min": 0.796875,
+            "stddev": 0.0404443,
+            "count": 5
+          }
+        },
+        "NBody": {
+          "Rux": {
+            "median": 0.21875,
+            "min": 0.21875,
+            "stddev": 0,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.234375,
+            "min": 0.21875,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.21875,
+            "min": 0.21875,
+            "stddev": 0,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.28125,
+            "min": 0.265625,
+            "stddev": 0.0110485,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.359375,
+            "min": 0.359375,
+            "stddev": 0,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.53125,
+            "min": 0.53125,
+            "stddev": 0.0139754,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.203125,
+            "min": 0.203125,
+            "stddev": 0,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.296875,
+            "min": 0.28125,
+            "stddev": 0.0171163,
+            "count": 5
+          }
+        },
+        "MatrixMultiply": {
+          "Rux": {
+            "median": 0.203125,
+            "min": 0.203125,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.625,
+            "min": 0.625,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.1875,
+            "min": 0.1875,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.578125,
+            "min": 0.5625,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.6875,
+            "min": 0.65625,
+            "stddev": 0.0139754,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.8125,
+            "min": 0.78125,
+            "stddev": 0.0231756,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.734375,
+            "min": 0.734375,
+            "stddev": 0.0203725,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.4375,
+            "min": 0.40625,
+            "stddev": 0.0236965,
+            "count": 5
+          }
+        },
+        "PrimeSieve": {
+          "Rux": {
+            "median": 0.5625,
+            "min": 0.5625,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.59375,
+            "min": 0.5625,
+            "stddev": 0.0139754,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.546875,
+            "min": 0.53125,
+            "stddev": 0.0110485,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.578125,
+            "min": 0.578125,
+            "stddev": 0,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.578125,
+            "min": 0.578125,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.640625,
+            "min": 0.625,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.625,
+            "min": 0.609375,
+            "stddev": 0.0236965,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.65625,
+            "min": 0.640625,
+            "stddev": 0.0130728,
+            "count": 5
+          }
+        },
+        "Fannkuch": {
+          "Rux": {
+            "median": 0.140625,
+            "min": 0.140625,
+            "stddev": 0,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.140625,
+            "min": 0.125,
+            "stddev": 0.0110485,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.125,
+            "min": 0.125,
+            "stddev": 0,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.140625,
+            "min": 0.140625,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.140625,
+            "min": 0.125,
+            "stddev": 0.0191366,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.203125,
+            "min": 0.203125,
+            "stddev": 0,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.15625,
+            "min": 0.15625,
+            "stddev": 0,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.234375,
+            "min": 0.203125,
+            "stddev": 0.0203725,
+            "count": 5
+          }
+        },
+        "Base64": {
+          "Rux": {
+            "median": 0.234375,
+            "min": 0.234375,
+            "stddev": 0,
+            "count": 5
+          },
+          "Rust": {
+            "median": 0.28125,
+            "min": 0.28125,
+            "stddev": 0,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 0.21875,
+            "min": 0.21875,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "Go": {
+            "median": 0.28125,
+            "min": 0.265625,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 0.296875,
+            "min": 0.296875,
+            "stddev": 0.00855816,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 0.359375,
+            "min": 0.359375,
+            "stddev": 0,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 0.5625,
+            "min": 0.5625,
+            "stddev": 0,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 0.46875,
+            "min": 0.4375,
+            "stddev": 0.0231756,
+            "count": 5
+          }
+        }
+      }
+    },
+    "memory": {
+      "unit": "MiB",
+      "cells": {
+        "Sha512": {
+          "Rux": {
+            "median": 19.1797,
+            "min": 19.1758,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Rust": {
+            "median": 19.4375,
+            "min": 19.4336,
+            "stddev": 0.00174693,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 19.4648,
+            "min": 19.4609,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Go": {
+            "median": 22.6953,
+            "min": 22.6719,
+            "stddev": 0.0550767,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 24.0273,
+            "min": 23.7695,
+            "stddev": 0.137209,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 33.4766,
+            "min": 33.3477,
+            "stddev": 0.168137,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 23.9922,
+            "min": 23.9766,
+            "stddev": 0.0078125,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 58.7266,
+            "min": 58.7109,
+            "stddev": 0.0461698,
+            "count": 5
+          }
+        },
+        "Mandelbrot": {
+          "Rux": {
+            "median": 14.6953,
+            "min": 14.6953,
+            "stddev": 0,
+            "count": 5
+          },
+          "Rust": {
+            "median": 14.9258,
+            "min": 14.9258,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 14.9805,
+            "min": 14.9805,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Go": {
+            "median": 18.2188,
+            "min": 18.2109,
+            "stddev": 0.0568759,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 19.6914,
+            "min": 19.4414,
+            "stddev": 0.139983,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 32.4141,
+            "min": 32.0664,
+            "stddev": 0.161706,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 30.5703,
+            "min": 30.5664,
+            "stddev": 0.0078125,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 64.1367,
+            "min": 63.1211,
+            "stddev": 0.671021,
+            "count": 5
+          }
+        },
+        "WordCount": {
+          "Rux": {
+            "median": 85.5469,
+            "min": 85.543,
+            "stddev": 0.0032682,
+            "count": 5
+          },
+          "Rust": {
+            "median": 87.6055,
+            "min": 86.8555,
+            "stddev": 0.410757,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 87.418,
+            "min": 87.4141,
+            "stddev": 0.0266943,
+            "count": 5
+          },
+          "Go": {
+            "median": 162.352,
+            "min": 162.207,
+            "stddev": 0.618895,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 173.137,
+            "min": 173.133,
+            "stddev": 0.115779,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 186.473,
+            "min": 186.418,
+            "stddev": 0.12707,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 233.051,
+            "min": 233.047,
+            "stddev": 0.00592412,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 473.035,
+            "min": 348.656,
+            "stddev": 55.5949,
+            "count": 5
+          }
+        },
+        "BinaryTrees": {
+          "Rux": {
+            "median": 20.1719,
+            "min": 20.168,
+            "stddev": 0.00174693,
+            "count": 5
+          },
+          "Rust": {
+            "median": 35.9688,
+            "min": 35.9609,
+            "stddev": 0.00349386,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 35.9609,
+            "min": 35.9609,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Go": {
+            "median": 40.9453,
+            "min": 40.5586,
+            "stddev": 1.2598,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 71.8125,
+            "min": 71.7656,
+            "stddev": 0.140016,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 82.1055,
+            "min": 80.7266,
+            "stddev": 0.689699,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 100.395,
+            "min": 100.387,
+            "stddev": 0.279585,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 424.984,
+            "min": 424.699,
+            "stddev": 0.430755,
+            "count": 5
+          }
+        },
+        "Sort": {
+          "Rux": {
+            "median": 41.3203,
+            "min": 41.3164,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Rust": {
+            "median": 41.5703,
+            "min": 41.5664,
+            "stddev": 0.00174693,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 41.5977,
+            "min": 41.5938,
+            "stddev": 0.0032682,
+            "count": 5
+          },
+          "Go": {
+            "median": 44.8477,
+            "min": 44.8125,
+            "stddev": 0.0495186,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 46.2266,
+            "min": 45.9648,
+            "stddev": 0.118753,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 56.2148,
+            "min": 55.918,
+            "stddev": 0.151566,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 46.1445,
+            "min": 46.1406,
+            "stddev": 0.00276214,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 82.6367,
+            "min": 81.5625,
+            "stddev": 0.571071,
+            "count": 5
+          }
+        },
+        "NBody": {
+          "Rux": {
+            "median": 3.1875,
+            "min": 3.1875,
+            "stddev": 0.00174693,
+            "count": 5
+          },
+          "Rust": {
+            "median": 3.82422,
+            "min": 3.81641,
+            "stddev": 0.00349386,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 3.83984,
+            "min": 3.83203,
+            "stddev": 0.00349386,
+            "count": 5
+          },
+          "Go": {
+            "median": 5.70313,
+            "min": 5.65625,
+            "stddev": 0.048914,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 8.05469,
+            "min": 7.79297,
+            "stddev": 0.122926,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 19.1484,
+            "min": 18.9023,
+            "stddev": 0.138372,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 8.01953,
+            "min": 8.01563,
+            "stddev": 0.00445381,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 39.9102,
+            "min": 39.7461,
+            "stddev": 0.200623,
+            "count": 5
+          }
+        },
+        "MatrixMultiply": {
+          "Rux": {
+            "median": 27.1836,
+            "min": 27.1836,
+            "stddev": 0,
+            "count": 5
+          },
+          "Rust": {
+            "median": 27.4297,
+            "min": 27.4297,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 27.4688,
+            "min": 27.4648,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Go": {
+            "median": 30.9883,
+            "min": 30.9297,
+            "stddev": 0.0968876,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 32.0039,
+            "min": 31.9883,
+            "stddev": 0.147907,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 43.4102,
+            "min": 43.3984,
+            "stddev": 0.138145,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 32.0547,
+            "min": 32.0469,
+            "stddev": 0.00698771,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 66.3125,
+            "min": 66.25,
+            "stddev": 0.0480485,
+            "count": 5
+          }
+        },
+        "PrimeSieve": {
+          "Rux": {
+            "median": 98.5352,
+            "min": 98.5313,
+            "stddev": 0.00174693,
+            "count": 5
+          },
+          "Rust": {
+            "median": 98.7891,
+            "min": 98.7852,
+            "stddev": 0.00174693,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 98.8203,
+            "min": 98.8203,
+            "stddev": 0.00174693,
+            "count": 5
+          },
+          "Go": {
+            "median": 102.117,
+            "min": 102.098,
+            "stddev": 0.0244882,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 103.441,
+            "min": 103.434,
+            "stddev": 0.0122285,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 114.938,
+            "min": 114.68,
+            "stddev": 0.135288,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 103.34,
+            "min": 103.328,
+            "stddev": 0.00873464,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 138.512,
+            "min": 138.41,
+            "stddev": 0.113866,
+            "count": 5
+          }
+        },
+        "Fannkuch": {
+          "Rux": {
+            "median": 3.1875,
+            "min": 3.18359,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Rust": {
+            "median": 3.8125,
+            "min": 3.80859,
+            "stddev": 0.0032682,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 3.85938,
+            "min": 3.85156,
+            "stddev": 0.00349386,
+            "count": 5
+          },
+          "Go": {
+            "median": 5.69531,
+            "min": 5.66406,
+            "stddev": 0.0689096,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 8.05469,
+            "min": 8.04688,
+            "stddev": 0.00427908,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 19.625,
+            "min": 19.5273,
+            "stddev": 0.132973,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 8.00391,
+            "min": 7.99609,
+            "stddev": 0.00579391,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 41.3242,
+            "min": 40.6211,
+            "stddev": 0.590693,
+            "count": 5
+          }
+        },
+        "Base64": {
+          "Rux": {
+            "median": 109.855,
+            "min": 109.855,
+            "stddev": 0,
+            "count": 5
+          },
+          "Rust": {
+            "median": 110.102,
+            "min": 110.102,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Cpp": {
+            "median": 110.145,
+            "min": 110.141,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "Go": {
+            "median": 113.836,
+            "min": 113.762,
+            "stddev": 0.0678272,
+            "count": 5
+          },
+          "CSharpAot": {
+            "median": 114.684,
+            "min": 114.68,
+            "stddev": 0.0094075,
+            "count": 5
+          },
+          "CSharpJit": {
+            "median": 124.656,
+            "min": 124.375,
+            "stddev": 0.177586,
+            "count": 5
+          },
+          "JavaAot": {
+            "median": 115.09,
+            "min": 115.09,
+            "stddev": 0.00213954,
+            "count": 5
+          },
+          "JavaJit": {
+            "median": 151.27,
+            "min": 151.191,
+            "stddev": 0.178088,
+            "count": 5
+          }
+        }
+      }
+    },
+    "compile": {
+      "unit": "s",
+      "cells": {
+        "Sha512": {
+          "Rux": {
+            "median": 0.152858,
+            "min": 0.152666,
+            "stddev": 0.000755731,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.593705,
+            "min": 0.593677,
+            "stddev": 0.000363046,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.525294,
+            "min": 0.524819,
+            "stddev": 0.000313017,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.249726,
+            "min": 0.248752,
+            "stddev": 0.00262854,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 4.67546,
+            "min": 4.66784,
+            "stddev": 0.0607035,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 4.98624,
+            "min": 4.78584,
+            "stddev": 0.116414,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 26.2366,
+            "min": 24.4039,
+            "stddev": 5.86318,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.50963,
+            "min": 2.5037,
+            "stddev": 0.0708081,
+            "count": 3
+          }
+        },
+        "Mandelbrot": {
+          "Rux": {
+            "median": 0.151464,
+            "min": 0.150356,
+            "stddev": 0.000906331,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.549111,
+            "min": 0.548684,
+            "stddev": 0.00399562,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.580112,
+            "min": 0.578176,
+            "stddev": 0.00128013,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.248443,
+            "min": 0.247836,
+            "stddev": 0.000525993,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 4.82321,
+            "min": 4.81164,
+            "stddev": 0.0115238,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 5.03041,
+            "min": 4.96386,
+            "stddev": 0.0473873,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 28.1183,
+            "min": 26.0318,
+            "stddev": 5.17856,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.52202,
+            "min": 2.5172,
+            "stddev": 0.0137622,
+            "count": 3
+          }
+        },
+        "WordCount": {
+          "Rux": {
+            "median": 0.163151,
+            "min": 0.161874,
+            "stddev": 0.000831549,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.624814,
+            "min": 0.624098,
+            "stddev": 0.00817587,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.674039,
+            "min": 0.673569,
+            "stddev": 0.00177873,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.250352,
+            "min": 0.250258,
+            "stddev": 0.000425386,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 4.85738,
+            "min": 4.81619,
+            "stddev": 0.0403723,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 5.16763,
+            "min": 5.07937,
+            "stddev": 0.145762,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 43.7837,
+            "min": 35.6451,
+            "stddev": 4.83409,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.69954,
+            "min": 2.64778,
+            "stddev": 0.0452055,
+            "count": 3
+          }
+        },
+        "BinaryTrees": {
+          "Rux": {
+            "median": 0.124654,
+            "min": 0.120152,
+            "stddev": 0.00752701,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.542066,
+            "min": 0.539745,
+            "stddev": 0.00421615,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.541403,
+            "min": 0.536801,
+            "stddev": 0.0044447,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.322323,
+            "min": 0.309492,
+            "stddev": 0.00803222,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 4.87422,
+            "min": 4.85349,
+            "stddev": 0.0629144,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 5.11512,
+            "min": 5.07689,
+            "stddev": 0.064809,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 34.0575,
+            "min": 26.5951,
+            "stddev": 8.80296,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.66379,
+            "min": 2.6612,
+            "stddev": 0.00431884,
+            "count": 3
+          }
+        },
+        "Sort": {
+          "Rux": {
+            "median": 0.155066,
+            "min": 0.154352,
+            "stddev": 0.00178278,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.566425,
+            "min": 0.558122,
+            "stddev": 0.0224916,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.520437,
+            "min": 0.51704,
+            "stddev": 0.0148527,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.319731,
+            "min": 0.31196,
+            "stddev": 0.00671014,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 4.99875,
+            "min": 4.93248,
+            "stddev": 0.042927,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 5.07386,
+            "min": 5.05275,
+            "stddev": 0.0861724,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 45.1904,
+            "min": 31.7683,
+            "stddev": 9.75652,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.64588,
+            "min": 2.64162,
+            "stddev": 0.0316722,
+            "count": 3
+          }
+        },
+        "NBody": {
+          "Rux": {
+            "median": 0.125883,
+            "min": 0.124078,
+            "stddev": 0.00107843,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.557823,
+            "min": 0.547615,
+            "stddev": 0.00816567,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.229474,
+            "min": 0.227789,
+            "stddev": 0.00181777,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.25464,
+            "min": 0.251501,
+            "stddev": 0.00279461,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 4.91556,
+            "min": 4.89203,
+            "stddev": 0.0712544,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 5.13729,
+            "min": 5.0082,
+            "stddev": 0.1165,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 34.6331,
+            "min": 34.6193,
+            "stddev": 7.88656,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.65864,
+            "min": 2.63871,
+            "stddev": 0.030948,
+            "count": 3
+          }
+        },
+        "MatrixMultiply": {
+          "Rux": {
+            "median": 0.163379,
+            "min": 0.15958,
+            "stddev": 0.00333275,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.546121,
+            "min": 0.543591,
+            "stddev": 0.0114734,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.534179,
+            "min": 0.524602,
+            "stddev": 0.00640048,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.315978,
+            "min": 0.314643,
+            "stddev": 0.00114908,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 4.96053,
+            "min": 4.89702,
+            "stddev": 0.0467245,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 5.20411,
+            "min": 5.02134,
+            "stddev": 0.132554,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 42.7931,
+            "min": 33.8291,
+            "stddev": 11.6742,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.70119,
+            "min": 2.64415,
+            "stddev": 0.0341373,
+            "count": 3
+          }
+        },
+        "PrimeSieve": {
+          "Rux": {
+            "median": 0.158442,
+            "min": 0.156495,
+            "stddev": 0.00147976,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.532067,
+            "min": 0.529626,
+            "stddev": 0.00455766,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.509436,
+            "min": 0.509023,
+            "stddev": 0.00281938,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.313204,
+            "min": 0.308094,
+            "stddev": 0.00386857,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 5.03378,
+            "min": 5.00243,
+            "stddev": 0.090538,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 5.37116,
+            "min": 5.07362,
+            "stddev": 0.201993,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 36.2443,
+            "min": 26.9962,
+            "stddev": 6.91312,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.68371,
+            "min": 2.65358,
+            "stddev": 0.0280971,
+            "count": 3
+          }
+        },
+        "Fannkuch": {
+          "Rux": {
+            "median": 0.121344,
+            "min": 0.117398,
+            "stddev": 0.00253329,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.584993,
+            "min": 0.573385,
+            "stddev": 0.0114812,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.540057,
+            "min": 0.527081,
+            "stddev": 0.015097,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.2583,
+            "min": 0.251031,
+            "stddev": 0.00740144,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 5.02074,
+            "min": 4.98083,
+            "stddev": 0.0715462,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 5.53463,
+            "min": 5.45384,
+            "stddev": 0.0674651,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 38.1627,
+            "min": 34.564,
+            "stddev": 14.6704,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.77253,
+            "min": 2.77003,
+            "stddev": 0.0243051,
+            "count": 3
+          }
+        },
+        "Base64": {
+          "Rux": {
+            "median": 0.176138,
+            "min": 0.167476,
+            "stddev": 0.00727959,
+            "count": 3
+          },
+          "Rust": {
+            "median": 0.618453,
+            "min": 0.617594,
+            "stddev": 0.00851132,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 0.555922,
+            "min": 0.555318,
+            "stddev": 0.00794296,
+            "count": 3
+          },
+          "Go": {
+            "median": 0.265276,
+            "min": 0.263995,
+            "stddev": 0.00355388,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 5.17662,
+            "min": 5.13884,
+            "stddev": 0.0291534,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 5.32749,
+            "min": 5.23742,
+            "stddev": 0.178374,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 29.981,
+            "min": 26.7027,
+            "stddev": 5.17713,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 2.69208,
+            "min": 2.66731,
+            "stddev": 0.0254295,
+            "count": 3
+          }
+        }
+      }
+    },
+    "compileMemory": {
+      "unit": "MiB",
+      "cells": {
+        "Sha512": {
+          "Rux": {
+            "median": 107.645,
+            "min": 107.191,
+            "stddev": 1.18114,
+            "count": 3
+          },
+          "Rust": {
+            "median": 232.738,
+            "min": 230.996,
+            "stddev": 6.21375,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 136.527,
+            "min": 132.629,
+            "stddev": 2.28652,
+            "count": 3
+          },
+          "Go": {
+            "median": 162.398,
+            "min": 162.129,
+            "stddev": 1.27124,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 193.973,
+            "min": 173.684,
+            "stddev": 13.3501,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 365.922,
+            "min": 360.387,
+            "stddev": 3.86379,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2424.44,
+            "min": 2403.16,
+            "stddev": 17.2018,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 550.422,
+            "min": 549.598,
+            "stddev": 17.658,
+            "count": 3
+          }
+        },
+        "Mandelbrot": {
+          "Rux": {
+            "median": 109.379,
+            "min": 108.918,
+            "stddev": 1.36598,
+            "count": 3
+          },
+          "Rust": {
+            "median": 229.84,
+            "min": 228.73,
+            "stddev": 0.709276,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 136.574,
+            "min": 136.535,
+            "stddev": 2.35459,
+            "count": 3
+          },
+          "Go": {
+            "median": 162.363,
+            "min": 162.258,
+            "stddev": 0.0797041,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 222.875,
+            "min": 200.598,
+            "stddev": 14.8856,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 376.188,
+            "min": 362.363,
+            "stddev": 15.8216,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2428.18,
+            "min": 2417.01,
+            "stddev": 11.9078,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 553.531,
+            "min": 551.406,
+            "stddev": 1.84904,
+            "count": 3
+          }
+        },
+        "WordCount": {
+          "Rux": {
+            "median": 109.711,
+            "min": 105.82,
+            "stddev": 2.48132,
+            "count": 3
+          },
+          "Rust": {
+            "median": 229.32,
+            "min": 224.059,
+            "stddev": 5.04263,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 132.516,
+            "min": 132.398,
+            "stddev": 0.0861444,
+            "count": 3
+          },
+          "Go": {
+            "median": 162.543,
+            "min": 160.758,
+            "stddev": 1.05036,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 178.59,
+            "min": 178.289,
+            "stddev": 6.27259,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 356.406,
+            "min": 356.133,
+            "stddev": 11.5365,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2419.74,
+            "min": 2398.4,
+            "stddev": 16.6846,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 555.195,
+            "min": 551.48,
+            "stddev": 8.07503,
+            "count": 3
+          }
+        },
+        "BinaryTrees": {
+          "Rux": {
+            "median": 101.789,
+            "min": 101.094,
+            "stddev": 0.615107,
+            "count": 3
+          },
+          "Rust": {
+            "median": 229.703,
+            "min": 229.156,
+            "stddev": 0.465423,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 120.652,
+            "min": 120.594,
+            "stddev": 2.2363,
+            "count": 3
+          },
+          "Go": {
+            "median": 162.113,
+            "min": 161.531,
+            "stddev": 0.617521,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 192.797,
+            "min": 189.051,
+            "stddev": 3.27739,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 369.75,
+            "min": 361.359,
+            "stddev": 20.4196,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2421.69,
+            "min": 2404.55,
+            "stddev": 19.6411,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 557.625,
+            "min": 548.938,
+            "stddev": 5.39534,
+            "count": 3
+          }
+        },
+        "Sort": {
+          "Rux": {
+            "median": 111.191,
+            "min": 109.48,
+            "stddev": 1.28137,
+            "count": 3
+          },
+          "Rust": {
+            "median": 231.602,
+            "min": 227.688,
+            "stddev": 6.28231,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 132.543,
+            "min": 128.516,
+            "stddev": 4.04689,
+            "count": 3
+          },
+          "Go": {
+            "median": 162.805,
+            "min": 161.801,
+            "stddev": 0.63231,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 199.594,
+            "min": 199.305,
+            "stddev": 5.04261,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 375.719,
+            "min": 351.172,
+            "stddev": 20.3402,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2416.12,
+            "min": 2412.02,
+            "stddev": 5.43967,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 551.063,
+            "min": 550.102,
+            "stddev": 7.90582,
+            "count": 3
+          }
+        },
+        "NBody": {
+          "Rux": {
+            "median": 109.016,
+            "min": 107.035,
+            "stddev": 1.22068,
+            "count": 3
+          },
+          "Rust": {
+            "median": 230.016,
+            "min": 220.117,
+            "stddev": 6.52437,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 116.566,
+            "min": 116.449,
+            "stddev": 2.28309,
+            "count": 3
+          },
+          "Go": {
+            "median": 163.953,
+            "min": 162.766,
+            "stddev": 0.865135,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 175.742,
+            "min": 174.605,
+            "stddev": 9.55785,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 364.305,
+            "min": 355.184,
+            "stddev": 9.73284,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2426.35,
+            "min": 2422.2,
+            "stddev": 2.55962,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 560.66,
+            "min": 551.586,
+            "stddev": 5.35174,
+            "count": 3
+          }
+        },
+        "MatrixMultiply": {
+          "Rux": {
+            "median": 111.836,
+            "min": 108.379,
+            "stddev": 2.11381,
+            "count": 3
+          },
+          "Rust": {
+            "median": 230.336,
+            "min": 230,
+            "stddev": 0.335938,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 132.52,
+            "min": 128.473,
+            "stddev": 4.03516,
+            "count": 3
+          },
+          "Go": {
+            "median": 162.18,
+            "min": 161.871,
+            "stddev": 0.653341,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 187.539,
+            "min": 178.531,
+            "stddev": 10.1233,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 397.316,
+            "min": 347.43,
+            "stddev": 28.9785,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2427.53,
+            "min": 2406,
+            "stddev": 17.3586,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 553.148,
+            "min": 551.891,
+            "stddev": 0.751,
+            "count": 3
+          }
+        },
+        "PrimeSieve": {
+          "Rux": {
+            "median": 110.801,
+            "min": 108.203,
+            "stddev": 1.81242,
+            "count": 3
+          },
+          "Rust": {
+            "median": 229.289,
+            "min": 227.988,
+            "stddev": 0.970678,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 128.563,
+            "min": 128.539,
+            "stddev": 6.95077,
+            "count": 3
+          },
+          "Go": {
+            "median": 162.137,
+            "min": 161.91,
+            "stddev": 0.39762,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 200.145,
+            "min": 189.234,
+            "stddev": 9.20481,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 359.461,
+            "min": 349.719,
+            "stddev": 7.81547,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2427.94,
+            "min": 2408.27,
+            "stddev": 19.401,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 557.492,
+            "min": 548.918,
+            "stddev": 13.0313,
+            "count": 3
+          }
+        },
+        "Fannkuch": {
+          "Rux": {
+            "median": 102.078,
+            "min": 101.387,
+            "stddev": 2.48132,
+            "count": 3
+          },
+          "Rust": {
+            "median": 228.266,
+            "min": 227.863,
+            "stddev": 0.244351,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 132.559,
+            "min": 128.566,
+            "stddev": 4.04111,
+            "count": 3
+          },
+          "Go": {
+            "median": 162.988,
+            "min": 161.492,
+            "stddev": 1.33166,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 198.043,
+            "min": 181.414,
+            "stddev": 10.55,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 369.5,
+            "min": 362.145,
+            "stddev": 16.1998,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2419.39,
+            "min": 2405.18,
+            "stddev": 15.6202,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 563.832,
+            "min": 558.602,
+            "stddev": 12.358,
+            "count": 3
+          }
+        },
+        "Base64": {
+          "Rux": {
+            "median": 112.16,
+            "min": 108.781,
+            "stddev": 2.32229,
+            "count": 3
+          },
+          "Rust": {
+            "median": 231.91,
+            "min": 231.691,
+            "stddev": 5.78581,
+            "count": 3
+          },
+          "Cpp": {
+            "median": 132.738,
+            "min": 128.496,
+            "stddev": 4.10237,
+            "count": 3
+          },
+          "Go": {
+            "median": 162.211,
+            "min": 162.063,
+            "stddev": 0.848978,
+            "count": 3
+          },
+          "CSharpAot": {
+            "median": 183.34,
+            "min": 178.07,
+            "stddev": 3.06979,
+            "count": 3
+          },
+          "CSharpJit": {
+            "median": 355.672,
+            "min": 355.652,
+            "stddev": 11.5932,
+            "count": 3
+          },
+          "JavaAot": {
+            "median": 2407.2,
+            "min": 2399.77,
+            "stddev": 11.3678,
+            "count": 3
+          },
+          "JavaJit": {
+            "median": 553.219,
+            "min": 548.199,
+            "stddev": 3.11418,
+            "count": 3
+          }
+        }
+      }
+    },
+    "executable": {
+      "unit": "KiB",
+      "cells": {
+        "Sha512": {
+          "Rux": {
+            "median": 86.5,
+            "min": 86.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 236.5,
+            "min": 236.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 560,
+            "min": 560,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1632,
+            "min": 1632,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1158,
+            "min": 1158,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 6.5,
+            "min": 6.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6420,
+            "min": 6420,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 3.18945,
+            "min": 3.18945,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "Mandelbrot": {
+          "Rux": {
+            "median": 98.5,
+            "min": 98.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 244,
+            "min": 244,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 576.5,
+            "min": 576.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1644.5,
+            "min": 1644.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1328,
+            "min": 1328,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 4.5,
+            "min": 4.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6440,
+            "min": 6440,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 1.80664,
+            "min": 1.80664,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "WordCount": {
+          "Rux": {
+            "median": 116.5,
+            "min": 116.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 243.5,
+            "min": 243.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 573.5,
+            "min": 573.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1633.5,
+            "min": 1633.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1167.5,
+            "min": 1167.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 6,
+            "min": 6,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6420,
+            "min": 6420,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 2.43652,
+            "min": 2.43652,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "BinaryTrees": {
+          "Rux": {
+            "median": 84.5,
+            "min": 84.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 234.5,
+            "min": 234.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 550,
+            "min": 550,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1630.5,
+            "min": 1630.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1154,
+            "min": 1154,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 5,
+            "min": 5,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 1.65332,
+            "min": 1.65332,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "Sort": {
+          "Rux": {
+            "median": 82.5,
+            "min": 82.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 235,
+            "min": 235,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 560,
+            "min": 560,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1632.5,
+            "min": 1632.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1152,
+            "min": 1152,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 5,
+            "min": 5,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 1.64551,
+            "min": 1.64551,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "NBody": {
+          "Rux": {
+            "median": 69,
+            "min": 69,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 235.5,
+            "min": 235.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 550,
+            "min": 550,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1631.5,
+            "min": 1631.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1167.5,
+            "min": 1167.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 6.5,
+            "min": 6.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6416,
+            "min": 6416,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 2.19629,
+            "min": 2.19629,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "MatrixMultiply": {
+          "Rux": {
+            "median": 81,
+            "min": 81,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 233.5,
+            "min": 233.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 560,
+            "min": 560,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1629.5,
+            "min": 1629.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1165.5,
+            "min": 1165.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 4.5,
+            "min": 4.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 1.38184,
+            "min": 1.38184,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "PrimeSieve": {
+          "Rux": {
+            "median": 77.5,
+            "min": 77.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 232.5,
+            "min": 232.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 558.5,
+            "min": 558.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1628.5,
+            "min": 1628.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1151,
+            "min": 1151,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 4,
+            "min": 4,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 1.09668,
+            "min": 1.09668,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "Fannkuch": {
+          "Rux": {
+            "median": 69,
+            "min": 69,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 234,
+            "min": 234,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 559.5,
+            "min": 559.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1629.5,
+            "min": 1629.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1151.5,
+            "min": 1151.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 4.5,
+            "min": 4.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 1.25,
+            "min": 1.25,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "Base64": {
+          "Rux": {
+            "median": 89.5,
+            "min": 89.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 236.5,
+            "min": 236.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 560,
+            "min": 560,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1634,
+            "min": 1634,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1152.5,
+            "min": 1152.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 5.5,
+            "min": 5.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6416,
+            "min": 6416,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 2.13086,
+            "min": 2.13086,
+            "stddev": 0,
+            "count": 1
+          }
+        }
+      }
+    },
+    "deployable": {
+      "unit": "KiB",
+      "cells": {
+        "Sha512": {
+          "Rux": {
+            "median": 86.5,
+            "min": 86.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 236.5,
+            "min": 236.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 560,
+            "min": 560,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1632,
+            "min": 1632,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1158,
+            "min": 1158,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13935.7,
+            "min": 13935.7,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6420,
+            "min": 6420,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58757.4,
+            "min": 58757.4,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "Mandelbrot": {
+          "Rux": {
+            "median": 98.5,
+            "min": 98.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 244,
+            "min": 244,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 576.5,
+            "min": 576.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1644.5,
+            "min": 1644.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1328,
+            "min": 1328,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13933.2,
+            "min": 13933.2,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6440,
+            "min": 6440,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58756,
+            "min": 58756,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "WordCount": {
+          "Rux": {
+            "median": 116.5,
+            "min": 116.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 243.5,
+            "min": 243.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 573.5,
+            "min": 573.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1633.5,
+            "min": 1633.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1167.5,
+            "min": 1167.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13937.7,
+            "min": 13937.7,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6420,
+            "min": 6420,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58756.6,
+            "min": 58756.6,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "BinaryTrees": {
+          "Rux": {
+            "median": 84.5,
+            "min": 84.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 234.5,
+            "min": 234.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 550,
+            "min": 550,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1630.5,
+            "min": 1630.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1154,
+            "min": 1154,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13932.7,
+            "min": 13932.7,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58755.9,
+            "min": 58755.9,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "Sort": {
+          "Rux": {
+            "median": 82.5,
+            "min": 82.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 235,
+            "min": 235,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 560,
+            "min": 560,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1632.5,
+            "min": 1632.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1152,
+            "min": 1152,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13933.2,
+            "min": 13933.2,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58755.8,
+            "min": 58755.8,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "NBody": {
+          "Rux": {
+            "median": 69,
+            "min": 69,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 235.5,
+            "min": 235.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 550,
+            "min": 550,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1631.5,
+            "min": 1631.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1167.5,
+            "min": 1167.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13934.7,
+            "min": 13934.7,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6416,
+            "min": 6416,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58756.4,
+            "min": 58756.4,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "MatrixMultiply": {
+          "Rux": {
+            "median": 81,
+            "min": 81,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 233.5,
+            "min": 233.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 560,
+            "min": 560,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1629.5,
+            "min": 1629.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1165.5,
+            "min": 1165.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13932.8,
+            "min": 13932.8,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58755.6,
+            "min": 58755.6,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "PrimeSieve": {
+          "Rux": {
+            "median": 77.5,
+            "min": 77.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 232.5,
+            "min": 232.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 558.5,
+            "min": 558.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1628.5,
+            "min": 1628.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1151,
+            "min": 1151,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13932.2,
+            "min": 13932.2,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58755.3,
+            "min": 58755.3,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "Fannkuch": {
+          "Rux": {
+            "median": 69,
+            "min": 69,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 234,
+            "min": 234,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 559.5,
+            "min": 559.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1629.5,
+            "min": 1629.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1151.5,
+            "min": 1151.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13932.2,
+            "min": 13932.2,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6412,
+            "min": 6412,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58755.4,
+            "min": 58755.4,
+            "stddev": 0,
+            "count": 1
+          }
+        },
+        "Base64": {
+          "Rux": {
+            "median": 89.5,
+            "min": 89.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Rust": {
+            "median": 236.5,
+            "min": 236.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "Cpp": {
+            "median": 560,
+            "min": 560,
+            "stddev": 0,
+            "count": 1
+          },
+          "Go": {
+            "median": 1634,
+            "min": 1634,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpAot": {
+            "median": 1152.5,
+            "min": 1152.5,
+            "stddev": 0,
+            "count": 1
+          },
+          "CSharpJit": {
+            "median": 13933.7,
+            "min": 13933.7,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaAot": {
+            "median": 6416,
+            "min": 6416,
+            "stddev": 0,
+            "count": 1
+          },
+          "JavaJit": {
+            "median": 58756.3,
+            "min": 58756.3,
+            "stddev": 0,
+            "count": 1
+          }
+        }
+      }
+    }
+  }
+}

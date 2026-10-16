@@ -6,7 +6,7 @@
  * phone.
  */
 import { computed } from "vue";
-import type { BenchmarkMachine, BenchmarkMetricKey } from "~/types/benchmarks";
+import type { BenchmarkAppRun, BenchmarkMetricKey } from "~/types/benchmarks";
 import {
   benchmarkBaseline,
   benchmarkCell,
@@ -15,44 +15,51 @@ import {
   benchmarkRatio,
   bestGeomeanLanguages,
   bestLanguages,
+  benchmarkUnranked,
   machineLanguages,
 } from "~/utils/benchmarks";
 import { formatBenchmarkValue, formatRatio } from "~/utils/benchmark-chart";
 
 const props = defineProps<{
-  machine: BenchmarkMachine;
+  run: BenchmarkAppRun;
   metric: BenchmarkMetricKey;
   relative: boolean;
   compare: string;
 }>();
 
 const info = computed(() => benchmarkMetric(props.metric));
-const languages = computed(() => machineLanguages(props.machine));
+const languages = computed(() => machineLanguages(props.run));
 
 const rows = computed(() =>
-  props.machine.apps.map((app) => {
-    const best = bestLanguages(props.machine, props.metric, app);
+  props.run.apps.map((app) => {
+    const best = bestLanguages(props.run, props.metric, app);
     return {
       app,
       cells: languages.value.map((language) => {
-        const cell = benchmarkCell(props.machine, props.metric, app, language.key);
-        const ratio = benchmarkRatio(props.machine, props.metric, app, language.key);
+        const cell = benchmarkCell(props.run, props.metric, app, language.key);
+        const ratio = benchmarkRatio(props.run, props.metric, app, language.key);
         let text = "FAIL";
         if (cell)
           text =
             props.relative && ratio !== null
               ? formatRatio(ratio)
               : formatBenchmarkValue(cell.median, info.value.digits);
-        return { language: language.key, text, best: best.includes(language.key), failed: !cell };
+        return {
+          language: language.key,
+          text,
+          best: best.includes(language.key),
+          failed: !cell,
+          unranked: benchmarkUnranked(props.metric, language.key),
+        };
       }),
     };
   }),
 );
 
 const geomeans = computed(() => {
-  const best = bestGeomeanLanguages(props.machine, props.metric);
+  const best = bestGeomeanLanguages(props.run, props.metric);
   return languages.value.map((language) => {
-    const mean = benchmarkGeomean(props.machine, props.metric, language.key);
+    const mean = benchmarkGeomean(props.run, props.metric, language.key);
     return { language: language.key, text: mean === null ? "—" : formatRatio(mean), best: best.includes(language.key) };
   });
 });
@@ -61,6 +68,12 @@ const caption = computed(() =>
   props.relative
     ? `${info.value.label} relative to Rux for each app; below 1.00× is lower than Rux. The best value in each row is bold.`
     : `${info.value.label} (${info.value.unit}), median of runs for each app. The best value in each row is bold.`,
+);
+
+const unrankedNote = computed(() =>
+  info.value.aotOnly
+    ? "C# JIT and Java JIT in italics are not ranked: the program file needs its runtime to run; see Deployable size."
+    : "",
 );
 
 function headerMarker(language: string) {
@@ -105,7 +118,15 @@ function headerMarker(language: string) {
             v-for="cell in row.cells"
             :key="cell.language"
             class="px-3 py-1.5 text-right whitespace-nowrap"
-            :class="cell.failed ? 'text-error' : cell.best ? 'font-semibold text-highlighted' : 'text-muted'"
+            :class="
+              cell.failed
+                ? 'text-error'
+                : cell.unranked
+                  ? 'text-muted italic'
+                  : cell.best
+                    ? 'font-semibold text-highlighted'
+                    : 'text-muted'
+            "
           >
             {{ cell.text }}
           </td>
@@ -127,5 +148,6 @@ function headerMarker(language: string) {
         </tr>
       </tfoot>
     </table>
+    <p v-if="unrankedNote" class="border-t border-default px-3 py-2 text-xs text-muted">{{ unrankedNote }}</p>
   </div>
 </template>
