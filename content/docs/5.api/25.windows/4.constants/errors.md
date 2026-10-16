@@ -201,6 +201,6 @@ Retrieves the calling thread's last-error code value.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L201)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L237)
 
 **Returns**: the calling thread's last error code, which only a documented failure sets

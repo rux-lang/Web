@@ -75,6 +75,27 @@ The simple titlecase of `scalar`: the uppercase, except for the few dozen charac
 
 **Returns**: its single-scalar titlecase, or `scalar` itself when there is none
 
+<h2 id="next-in-case-orbit"><code>NextInCaseOrbit</code></h2>
+
+```rux
+pub func NextInCaseOrbit(scalar: char32) -> char32
+```
+
+The next scalar value that case-insensitive comparison treats as `scalar`, going round the set of values with the
+same simple case folding: `k`, `K` and the Kelvin sign, or `σ`, `ς` and `Σ`. Calling it again on each answer
+visits every member of the set and comes back to `scalar`, so a caller asking whether a set of characters holds any
+form of a letter tests each answer until it returns.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L47)
+
+**Parameters**
+
+| Name     | Type     | Description                    |
+| -------- | -------- | ------------------------------ |
+| `scalar` | `char32` | the scalar value to start from |
+
+**Returns**: the next member of its set, or `scalar` itself when no other value folds with it
+
 <h2 id="to-upper-full"><code>ToUpperFull</code></h2>
 
 ```rux
@@ -90,7 +111,7 @@ Up to three values, so a buffer of three always suffices; reports `false` withou
 short. Falls back to the simple mapping for the points that need no expansion, which is nearly all of them.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L97)
 
 **Parameters**
 
@@ -115,7 +136,7 @@ pub func ToLowerFull(
 Writes the full lowercase of `scalar` into `into`.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L108)
 
 **Parameters**
 
@@ -143,7 +164,7 @@ whatever its case. It is built from the C and F entries alone, which is what mak
 locale. A point with no entry folds to itself.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L122)
 
 **Parameters**
 

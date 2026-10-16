@@ -1,0 +1,4047 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Net",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Networking: IP and socket addresses, TCP listeners and streams, UDP sockets, and name resolution",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/net",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Collections", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "FreeBSD", "namespace": "Rux", "version": "0.1.0", "targetOS": ["FreeBSD"] },
+      { "name": "Io", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Linux", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Linux"] },
+      { "name": "macOS", "namespace": "Rux", "version": "0.1.0", "targetOS": ["macOS"] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Time", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Address",
+      "source": "Src/Address.rux",
+      "header": "Internet addresses and the socket addresses made of one and a port: reading them from text and writing them back.\nIPv4 addresses are read in dotted-decimal form only, without the octal and hexadecimal forms some C libraries\naccept, which are a frequent source of confusion. IPv6 addresses are read with `::` compression and an embedded\nIPv4 tail, and written in the canonical form of RFC 5952, which writes an IPv4-mapped address with its IPv4 tail in\ndotted-decimal form."
+    },
+    {
+      "name": "Dns",
+      "source": "Src/Dns.rux",
+      "header": "A DNS client of this package's own: `Resolver` asks name servers for a host's IPv4 and IPv6 addresses over UDP,\nwith TCP for an answer too long for a datagram. It is how `Resolve` works on Linux, where the system's resolver\nbelongs to the C library and a static binary has none: the hosts file answers first, as `getaddrinfo` would have\nit, then the servers in `/etc/resolv.conf`. What the C library adds on top — search domains, the name service\nswitch, caching daemons — is left out: a name is looked up as it is written."
+    },
+    {
+      "name": "Native",
+      "source": "Src/Native.rux",
+      "header": "Sockets as each system makes them, behind one set of operations on a word-sized handle.\nA socket is a descriptor on the Unix systems and a `SOCKET` on Windows; both fit in a word, so nothing above this\nmodule asks which. Addresses are encoded here into the `sockaddr` bytes the system reads: the BSD systems start them\nwith a length byte and a one-byte family, Linux and Windows with a two-byte family, and every system puts the port\nin network order. Errors become `IoError`s with the system's own code kept beside the meaning."
+    },
+    {
+      "name": "Poll",
+      "source": "Src/Poll.rux",
+      "header": "Waiting on many sockets at once: a `Poller` holds the sockets registered with it, each with the readiness wanted and\na token the caller chooses, and `Wait` reports the ones that are ready with their tokens.\nIt is level-triggered on every system: a socket is reported for as long as it is ready, not only when it becomes so,\nso a caller that reads part of what is waiting is told again. Linux uses epoll, FreeBSD and macOS kqueue, and Windows\n`WSAPoll`, which has no registrations of its own, so the poller keeps them and hands the whole list over each time.\nThe sockets are meant to be non-blocking: readiness says a call would not wait, and a non-blocking socket fails\nwith `WouldBlock` in the rare case that it would after all."
+    },
+    {
+      "name": "Resolve",
+      "source": "Src/Resolve.rux",
+      "header": "Finding the addresses of a host by name.\nOn FreeBSD, macOS and Windows the system's resolver does the work: `getaddrinfo` reads the hosts file and asks the\nname servers the system is configured with, so names resolve the way every other program on the machine resolves\nthem. On Linux that resolver belongs to the C library, which a static binary does not have, so this package reads\nthe hosts file and asks the configured name servers itself. A host that is already a numeric address is read\ndirectly, without asking anyone."
+    },
+    {
+      "name": "Tcp",
+      "source": "Src/Tcp.rux",
+      "header": "TCP: a listener that accepts connections, and the connected streams it and `Connect` give.\nA stream is an ordinary `Io` reader and writer. Reading past what the peer sent, once it has closed its side, fails\nwith `EndOfStream`; writing after the peer has gone fails with `BrokenPipe` or `ConnectionReset` rather than ending\nthe process with a signal. Every socket is closed when its value is dropped."
+    },
+    {
+      "name": "Udp",
+      "source": "Src/Udp.rux",
+      "header": "UDP: datagrams sent to and received from any address, or to and from one connected peer.\nEach send is one datagram and each receive takes one whole datagram; a datagram longer than the receive buffer is\ncut to fit and the rest is lost, as the systems do. Nothing is resent or ordered."
+    }
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "Ipv4Address",
+      "displayName": "Ipv4Address",
+      "module": "Address",
+      "source": "Src/Address.rux",
+      "line": 12,
+      "signature": "pub struct Ipv4Address",
+      "typeParams": [],
+      "doc": {
+        "summary": "An IPv4 address.",
+        "markdown": "An IPv4 address. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-address"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "octets",
+          "type": "uint8[N]",
+          "public": true,
+          "line": 14,
+          "doc": "The four octets, most significant first.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 87,
+          "signature": "pub func New(a: uint8, b: uint8, c: uint8, d: uint8) -> Ipv4Address",
+          "typeParams": [],
+          "params": [
+            { "name": "a", "type": "uint8" },
+            { "name": "b", "type": "uint8" },
+            { "name": "c", "type": "uint8" },
+            { "name": "d", "type": "uint8" }
+          ],
+          "receiver": null,
+          "returnType": "Ipv4Address",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The address `a.b.c.d`.",
+            "markdown": "The address `a.b.c.d`.",
+            "typeParams": [],
+            "params": [
+              { "name": "a", "markdown": "the first octet" },
+              { "name": "b", "markdown": "the second octet" },
+              { "name": "c", "markdown": "the third octet" },
+              { "name": "d", "markdown": "the fourth octet" }
+            ],
+            "returns": "the address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Localhost",
+          "line": 94,
+          "signature": "pub func Localhost() -> Ipv4Address",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Ipv4Address",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "`127.0.0.1`, this machine.",
+            "markdown": "`127.0.0.1`, this machine.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the loopback address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-localhost"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Unspecified",
+          "line": 101,
+          "signature": "pub func Unspecified() -> Ipv4Address",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Ipv4Address",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "`0.0.0.0`, every address of this machine when binding.",
+            "markdown": "`0.0.0.0`, every address of this machine when binding.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the unspecified address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-unspecified"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Parse",
+          "line": 109,
+          "signature": "pub func Parse(text: char8[..]) -> Ipv4Address?",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "Ipv4Address?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Reads dotted-decimal text such as `192.168.0.1`, each octet without leading zeros.",
+            "markdown": "Reads dotted-decimal text such as `192.168.0.1`, each octet without leading zeros.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text" }],
+            "returns": "the address, or none when the text is not one",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-parse"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsLoopback",
+          "line": 137,
+          "signature": "pub func IsLoopback(self: &Ipv4Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv4Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a loopback address, in `127.0.0.0/8`.",
+            "markdown": "Whether this is a loopback address, in `127.0.0.0/8`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for loopback",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-is-loopback"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsUnspecified",
+          "line": 144,
+          "signature": "pub func IsUnspecified(self: &Ipv4Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv4Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is the unspecified address, `0.0.0.0`, which binds every local address.",
+            "markdown": "Whether this is the unspecified address, `0.0.0.0`, which binds every local address.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for `0.0.0.0`",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-is-unspecified"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsPrivate",
+          "line": 151,
+          "signature": "pub func IsPrivate(self: &Ipv4Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv4Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a private address of RFC 1918: in `10.0.0.0/8`, `172.16.0.0/12` or `192.168.0.0/16`.",
+            "markdown": "Whether this is a private address of RFC 1918: in `10.0.0.0/8`, `172.16.0.0/12` or `192.168.0.0/16`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a private address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-is-private"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsLinkLocal",
+          "line": 159,
+          "signature": "pub func IsLinkLocal(self: &Ipv4Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv4Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a link-local address, in `169.254.0.0/16`.",
+            "markdown": "Whether this is a link-local address, in `169.254.0.0/16`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a link-local address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-is-link-local"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsMulticast",
+          "line": 166,
+          "signature": "pub func IsMulticast(self: &Ipv4Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv4Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a multicast address, in `224.0.0.0/4`.",
+            "markdown": "Whether this is a multicast address, in `224.0.0.0/4`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a multicast address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-is-multicast"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteText",
+          "line": 174,
+          "signature": "pub func WriteText(self: &Ipv4Address, into: var char8[..]) -> uint",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&Ipv4Address",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes the address in dotted-decimal form into `into`, at most 15 characters.",
+            "markdown": "Writes the address in dotted-decimal form into `into`, at most 15 characters.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where to write" }],
+            "returns": "how many characters the text takes, which is more than were written when `into` is too short",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-write-text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 189,
+          "signature": "pub func Equals(self: &Ipv4Address, other: Ipv4Address) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Ipv4Address" }],
+          "receiver": "&Ipv4Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two addresses are the same.",
+            "markdown": "Whether two addresses are the same.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the address to compare with" }],
+            "returns": "true when they are equal",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 639,
+          "signature": "pub func WriteDisplay(self: &Ipv4Address, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Ipv4Address",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the address in dotted-decimal form, under the placeholder's width, fill and alignment.",
+            "markdown": "Writes the address in dotted-decimal form, under the placeholder's width, fill and alignment. No style is\nunderstood. Reports whatever the writer reported, and `UnsupportedRequest` for a style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole address was accepted",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv4-write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Ipv6Address",
+      "displayName": "Ipv6Address",
+      "module": "Address",
+      "source": "Src/Address.rux",
+      "line": 19,
+      "signature": "pub struct Ipv6Address",
+      "typeParams": [],
+      "doc": {
+        "summary": "An IPv6 address.",
+        "markdown": "An IPv6 address. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-address"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "octets",
+          "type": "uint8[N]",
+          "public": true,
+          "line": 21,
+          "doc": "The sixteen octets, most significant first.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Localhost",
+          "line": 199,
+          "signature": "pub func Localhost() -> Ipv6Address",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Ipv6Address",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "`::1`, this machine.",
+            "markdown": "`::1`, this machine.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the loopback address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-localhost"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Unspecified",
+          "line": 208,
+          "signature": "pub func Unspecified() -> Ipv6Address",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Ipv6Address",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "`::`, every address of this machine when binding.",
+            "markdown": "`::`, every address of this machine when binding.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the unspecified address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-unspecified"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Parse",
+          "line": 216,
+          "signature": "pub func Parse(text: char8[..]) -> Ipv6Address?",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "Ipv6Address?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Reads text such as `2001:db8::1` or `::ffff:192.0.2.1`.",
+            "markdown": "Reads text such as `2001:db8::1` or `::ffff:192.0.2.1`. A zone such as `%eth0` is not accepted.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text" }],
+            "returns": "the address, or none when the text is not one",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-parse"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsLoopback",
+          "line": 299,
+          "signature": "pub func IsLoopback(self: &Ipv6Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv6Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is the loopback address, `::1`.",
+            "markdown": "Whether this is the loopback address, `::1`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for loopback",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-is-loopback"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsUnspecified",
+          "line": 311,
+          "signature": "pub func IsUnspecified(self: &Ipv6Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv6Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is the unspecified address, `::`, which binds every local address.",
+            "markdown": "Whether this is the unspecified address, `::`, which binds every local address.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for `::`",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-is-unspecified"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsPrivate",
+          "line": 324,
+          "signature": "pub func IsPrivate(self: &Ipv6Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv6Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a unique local address of RFC 4193, in `fc00::/7`: the IPv6 counterpart of a private IPv4\naddress.",
+            "markdown": "Whether this is a unique local address of RFC 4193, in `fc00::/7`: the IPv6 counterpart of a private IPv4\naddress.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a unique local address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-is-private"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsLinkLocal",
+          "line": 331,
+          "signature": "pub func IsLinkLocal(self: &Ipv6Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv6Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a link-local address, in `fe80::/10`.",
+            "markdown": "Whether this is a link-local address, in `fe80::/10`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a link-local address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-is-link-local"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsMulticast",
+          "line": 338,
+          "signature": "pub func IsMulticast(self: &Ipv6Address) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv6Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a multicast address, in `ff00::/8`.",
+            "markdown": "Whether this is a multicast address, in `ff00::/8`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a multicast address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-is-multicast"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsMappedIpv4",
+          "line": 345,
+          "signature": "pub func AsMappedIpv4(self: &Ipv6Address) -> Ipv4Address?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Ipv6Address",
+          "returnType": "Ipv4Address?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The IPv4 address this one maps, for an address in `::ffff:0:0/96`, or none for any other.",
+            "markdown": "The IPv4 address this one maps, for an address in `::ffff:0:0/96`, or none for any other.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the mapped IPv4 address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-as-mapped-ipv4"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteText",
+          "line": 360,
+          "signature": "pub func WriteText(self: &Ipv6Address, into: var char8[..]) -> uint",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&Ipv6Address",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes the address in the canonical form of RFC 5952 into `into`, at most 45 characters.",
+            "markdown": "Writes the address in the canonical form of RFC 5952 into `into`, at most 45 characters. An IPv4-mapped\naddress keeps its IPv4 tail in dotted-decimal form, as `::ffff:192.0.2.1`.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where to write" }],
+            "returns": "how many characters the text takes, which is more than were written when `into` is too short",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-write-text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 422,
+          "signature": "pub func Equals(self: &Ipv6Address, other: Ipv6Address) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "Ipv6Address" }],
+          "receiver": "&Ipv6Address",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two addresses are the same.",
+            "markdown": "Whether two addresses are the same.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the address to compare with" }],
+            "returns": "true when they are equal",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 654,
+          "signature": "pub func WriteDisplay(self: &Ipv6Address, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&Ipv6Address",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the address in the canonical form of RFC 5952, under the placeholder's width, fill and alignment.",
+            "markdown": "Writes the address in the canonical form of RFC 5952, under the placeholder's width, fill and alignment. No\nstyle is understood. Reports whatever the writer reported, and `UnsupportedRequest` for a style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole address was accepted",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ipv6-write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "IpAddress",
+      "displayName": "IpAddress",
+      "module": "Address",
+      "source": "Src/Address.rux",
+      "line": 26,
+      "signature": "pub struct IpAddress",
+      "typeParams": [],
+      "doc": {
+        "summary": "An IPv4 or IPv6 address.",
+        "markdown": "An IPv4 or IPv6 address. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/address#ip-address"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "version6",
+          "type": "bool",
+          "public": false,
+          "line": 27,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "v4",
+          "type": "Ipv4Address",
+          "public": false,
+          "line": 28,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "v6",
+          "type": "Ipv6Address",
+          "public": false,
+          "line": 29,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "FromIpv4",
+          "line": 437,
+          "signature": "pub func FromIpv4(address: Ipv4Address) -> IpAddress",
+          "typeParams": [],
+          "params": [{ "name": "address", "type": "Ipv4Address" }],
+          "receiver": null,
+          "returnType": "IpAddress",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An IPv4 address as an IP address.",
+            "markdown": "An IPv4 address as an IP address.",
+            "typeParams": [],
+            "params": [{ "name": "address", "markdown": "the IPv4 address" }],
+            "returns": "the IP address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#from-ipv4"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromIpv6",
+          "line": 445,
+          "signature": "pub func FromIpv6(address: Ipv6Address) -> IpAddress",
+          "typeParams": [],
+          "params": [{ "name": "address", "type": "Ipv6Address" }],
+          "receiver": null,
+          "returnType": "IpAddress",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An IPv6 address as an IP address.",
+            "markdown": "An IPv6 address as an IP address.",
+            "typeParams": [],
+            "params": [{ "name": "address", "markdown": "the IPv6 address" }],
+            "returns": "the IP address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#from-ipv6"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Parse",
+          "line": 453,
+          "signature": "pub func Parse(text: char8[..]) -> IpAddress?",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "IpAddress?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Reads an IPv4 or IPv6 address.",
+            "markdown": "Reads an IPv4 or IPv6 address.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text" }],
+            "returns": "the address, or none when the text is neither",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ip-parse"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsIpv6",
+          "line": 467,
+          "signature": "pub func IsIpv6(self: &IpAddress) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&IpAddress",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is an IPv6 address.",
+            "markdown": "Whether this is an IPv6 address.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for IPv6",
+            "see": ["https://rux-lang.dev/docs/api/net/address#is-ipv6"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsIpv4",
+          "line": 474,
+          "signature": "pub func AsIpv4(self: &IpAddress) -> Ipv4Address?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&IpAddress",
+          "returnType": "Ipv4Address?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The IPv4 address, or none for an IPv6 one.",
+            "markdown": "The IPv4 address, or none for an IPv6 one.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the IPv4 address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#as-ipv4"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "AsIpv6",
+          "line": 482,
+          "signature": "pub func AsIpv6(self: &IpAddress) -> Ipv6Address?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&IpAddress",
+          "returnType": "Ipv6Address?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The IPv6 address, or none for an IPv4 one.",
+            "markdown": "The IPv6 address, or none for an IPv4 one.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the IPv6 address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#as-ipv6"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsLoopback",
+          "line": 490,
+          "signature": "pub func IsLoopback(self: &IpAddress) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&IpAddress",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a loopback address.",
+            "markdown": "Whether this is a loopback address.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for loopback",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ip-is-loopback"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsUnspecified",
+          "line": 497,
+          "signature": "pub func IsUnspecified(self: &IpAddress) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&IpAddress",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is the unspecified address, `0.0.0.0` or `::`.",
+            "markdown": "Whether this is the unspecified address, `0.0.0.0` or `::`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for the unspecified address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ip-is-unspecified"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsPrivate",
+          "line": 504,
+          "signature": "pub func IsPrivate(self: &IpAddress) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&IpAddress",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a private IPv4 address or a unique local IPv6 address.",
+            "markdown": "Whether this is a private IPv4 address or a unique local IPv6 address.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a private address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ip-is-private"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsLinkLocal",
+          "line": 511,
+          "signature": "pub func IsLinkLocal(self: &IpAddress) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&IpAddress",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a link-local address.",
+            "markdown": "Whether this is a link-local address.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a link-local address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ip-is-link-local"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsMulticast",
+          "line": 518,
+          "signature": "pub func IsMulticast(self: &IpAddress) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&IpAddress",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this is a multicast address.",
+            "markdown": "Whether this is a multicast address.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a multicast address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ip-is-multicast"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteText",
+          "line": 526,
+          "signature": "pub func WriteText(self: &IpAddress, into: var char8[..]) -> uint",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&IpAddress",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes the address into `into`, at most 45 characters.",
+            "markdown": "Writes the address into `into`, at most 45 characters.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where to write" }],
+            "returns": "how many characters the text takes",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ip-write-text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 534,
+          "signature": "pub func Equals(self: &IpAddress, other: IpAddress) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "IpAddress" }],
+          "receiver": "&IpAddress",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two addresses are the same, which an IPv4 and an IPv6 address never are.",
+            "markdown": "Whether two addresses are the same, which an IPv4 and an IPv6 address never are.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the address to compare with" }],
+            "returns": "true when they are equal",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ip-equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 669,
+          "signature": "pub func WriteDisplay(self: &IpAddress, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&IpAddress",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the address as its IPv4 or IPv6 form does, under the placeholder's width, fill and alignment.",
+            "markdown": "Writes the address as its IPv4 or IPv6 form does, under the placeholder's width, fill and alignment. No\nstyle is understood. Reports whatever the writer reported, and `UnsupportedRequest` for a style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole address was accepted",
+            "see": ["https://rux-lang.dev/docs/api/net/address#ip-write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "SocketAddress",
+      "displayName": "SocketAddress",
+      "module": "Address",
+      "source": "Src/Address.rux",
+      "line": 34,
+      "signature": "pub struct SocketAddress",
+      "typeParams": [],
+      "doc": {
+        "summary": "An IP address and a port: where a socket is bound or connected.",
+        "markdown": "An IP address and a port: where a socket is bound or connected. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/address#socket-address"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "ip",
+          "type": "IpAddress",
+          "public": true,
+          "line": 36,
+          "doc": "The address.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "port",
+          "type": "uint16",
+          "public": true,
+          "line": 38,
+          "doc": "The port.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 546,
+          "signature": "pub func New(ip: IpAddress, port: uint16) -> SocketAddress",
+          "typeParams": [],
+          "params": [
+            { "name": "ip", "type": "IpAddress" },
+            { "name": "port", "type": "uint16" }
+          ],
+          "receiver": null,
+          "returnType": "SocketAddress",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An address and a port.",
+            "markdown": "An address and a port.",
+            "typeParams": [],
+            "params": [
+              { "name": "ip", "markdown": "the address" },
+              { "name": "port", "markdown": "the port" }
+            ],
+            "returns": "the socket address",
+            "see": ["https://rux-lang.dev/docs/api/net/address#socket-address-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Parse",
+          "line": 554,
+          "signature": "pub func Parse(text: char8[..]) -> SocketAddress?",
+          "typeParams": [],
+          "params": [{ "name": "text", "type": "char8[..]" }],
+          "receiver": null,
+          "returnType": "SocketAddress?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Reads `address:port`, with an IPv6 address in brackets, as in `[::1]:8080`.",
+            "markdown": "Reads `address:port`, with an IPv6 address in brackets, as in `[::1]:8080`.",
+            "typeParams": [],
+            "params": [{ "name": "text", "markdown": "the text" }],
+            "returns": "the socket address, or none when the text is not one",
+            "see": ["https://rux-lang.dev/docs/api/net/address#socket-address-parse"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteText",
+          "line": 597,
+          "signature": "pub func WriteText(self: &SocketAddress, into: var char8[..]) -> uint",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&SocketAddress",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Writes `address:port` into `into`, an IPv6 address in brackets, at most 47 characters.",
+            "markdown": "Writes `address:port` into `into`, an IPv6 address in brackets, at most 47 characters.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where to write" }],
+            "returns": "how many characters the text takes",
+            "see": ["https://rux-lang.dev/docs/api/net/address#socket-address-write-text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "ToString",
+          "line": 615,
+          "signature": "pub func ToString(self: &SocketAddress, allocator: Allocator) -> String ! TextError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": "&SocketAddress",
+          "returnType": "String ! TextError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The text of the address, as `WriteText` writes it.",
+            "markdown": "The text of the address, as `WriteText` writes it.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "what the text is kept in" }],
+            "returns": "the text",
+            "see": ["https://rux-lang.dev/docs/api/net/address#socket-address-to-string"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 625,
+          "signature": "pub func Equals(self: &SocketAddress, other: SocketAddress) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "SocketAddress" }],
+          "receiver": "&SocketAddress",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two socket addresses are the same.",
+            "markdown": "Whether two socket addresses are the same.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the address to compare with" }],
+            "returns": "true when they are equal",
+            "see": ["https://rux-lang.dev/docs/api/net/address#socket-address-equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 684,
+          "signature": "pub func WriteDisplay(self: &SocketAddress, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&SocketAddress",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the address and port, an IPv6 address in brackets, under the placeholder's width, fill and alignment.",
+            "markdown": "Writes the address and port, an IPv6 address in brackets, under the placeholder's width, fill and alignment.\nNo style is understood. Reports whatever the writer reported, and `UnsupportedRequest` for a style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole address was accepted",
+            "see": ["https://rux-lang.dev/docs/api/net/address#socket-address-write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Resolver",
+      "displayName": "Resolver",
+      "module": "Dns",
+      "source": "Src/Dns.rux",
+      "line": 33,
+      "signature": "pub struct Resolver",
+      "typeParams": [],
+      "doc": {
+        "summary": "Asks name servers for a host's addresses.",
+        "markdown": "Asks name servers for a host's addresses. Not copied.\nA query goes to each server in turn, for the IPv4 addresses and then the IPv6 ones, until a server answers;\nthe whole round is tried again as many times as the attempts allow. Each query waits for its answer up to the\ntimeout, and a name the server says does not exist ends the lookup at once.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/resolver"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "servers",
+          "type": "Vector<SocketAddress>",
+          "public": false,
+          "line": 34,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "timeout",
+          "type": "Duration",
+          "public": false,
+          "line": 35,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "attempts",
+          "type": "uint",
+          "public": false,
+          "line": 36,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "WithServers",
+          "line": 152,
+          "signature": "pub func WithServers(allocator: Allocator, servers: SocketAddress[..]) -> Resolver",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "servers", "type": "SocketAddress[..]" }
+          ],
+          "receiver": null,
+          "returnType": "Resolver",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A resolver that asks `servers`, waiting five seconds for each answer and going round them twice.",
+            "markdown": "A resolver that asks `servers`, waiting five seconds for each answer and going round them twice.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the server list and every lookup's results are kept in" },
+              { "name": "servers", "markdown": "the name servers, in the order they are asked; port 53 is DNS's own" }
+            ],
+            "returns": "the resolver",
+            "see": ["https://rux-lang.dev/docs/api/net/resolver#with-servers"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromSystem",
+          "line": 164,
+          "signature": "pub func FromSystem(allocator: Allocator) -> Resolver",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "Resolver",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A resolver configured as the C library's would be: the name servers, and the `timeout` and `attempts`\noptions, of `/etc/resolv.conf` on Linux.",
+            "markdown": "A resolver configured as the C library's would be: the name servers, and the `timeout` and `attempts`\noptions, of `/etc/resolv.conf` on Linux. With no servers to read, the one on this machine is asked.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the server list and every lookup's results are kept in" }
+            ],
+            "returns": "the resolver",
+            "see": ["https://rux-lang.dev/docs/api/net/resolver#from-system"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetTimeout",
+          "line": 171,
+          "signature": "pub func SetTimeout(self: &var Resolver, timeout: Duration)",
+          "typeParams": [],
+          "params": [{ "name": "timeout", "type": "Duration" }],
+          "receiver": "&var Resolver",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How long a query waits for its answer.",
+            "markdown": "How long a query waits for its answer.",
+            "typeParams": [],
+            "params": [{ "name": "timeout", "markdown": "the wait for each answer" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/net/resolver#set-timeout"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetAttempts",
+          "line": 178,
+          "signature": "pub func SetAttempts(self: &var Resolver, attempts: uint)",
+          "typeParams": [],
+          "params": [{ "name": "attempts", "type": "uint" }],
+          "receiver": "&var Resolver",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many times the servers are gone round before a lookup gives up.",
+            "markdown": "How many times the servers are gone round before a lookup gives up.",
+            "typeParams": [],
+            "params": [{ "name": "attempts", "markdown": "the number of rounds, at least one" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/net/resolver#set-attempts"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Lookup",
+          "line": 189,
+          "signature": "pub func Lookup(self: &Resolver, allocator: Allocator, host: char8[..], port: uint16) -> Vector<SocketAddress> ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "host", "type": "char8[..]" },
+            { "name": "port", "type": "uint16" }
+          ],
+          "receiver": "&Resolver",
+          "returnType": "Vector<SocketAddress> ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Asks the servers for `host`'s addresses: its IPv4 addresses first, then its IPv6 ones, each with `port`.",
+            "markdown": "Asks the servers for `host`'s addresses: its IPv4 addresses first, then its IPv6 ones, each with `port`.\nThe hosts file is not read; `Resolve` reads it first.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the list is kept in" },
+              { "name": "host", "markdown": "the name, such as `example.com`" },
+              { "name": "port", "markdown": "the port every address gets" }
+            ],
+            "returns": "the addresses; `NotFound` when the name has none or does not exist, `TimedOut` when no server answered",
+            "see": ["https://rux-lang.dev/docs/api/net/resolver#lookup"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Interest",
+      "displayName": "Interest",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 35,
+      "signature": "pub struct Interest",
+      "typeParams": [],
+      "doc": {
+        "summary": "The readiness a registration waits for.",
+        "markdown": "The readiness a registration waits for. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/poller#interest"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "readable",
+          "type": "bool",
+          "public": true,
+          "line": 37,
+          "doc": "Something to read, or a connection to accept.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "writable",
+          "type": "bool",
+          "public": true,
+          "line": 39,
+          "doc": "Room to write.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Readable",
+          "line": 46,
+          "signature": "pub func Readable() -> Interest",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Interest",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waiting for something to read, or a connection to accept.",
+            "markdown": "Waiting for something to read, or a connection to accept.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the interest",
+            "see": ["https://rux-lang.dev/docs/api/net/poller#interest-readable"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Writable",
+          "line": 53,
+          "signature": "pub func Writable() -> Interest",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Interest",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waiting for room to write.",
+            "markdown": "Waiting for room to write.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the interest",
+            "see": ["https://rux-lang.dev/docs/api/net/poller#interest-writable"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Both",
+          "line": 60,
+          "signature": "pub func Both() -> Interest",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Interest",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waiting for either.",
+            "markdown": "Waiting for either.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the interest",
+            "see": ["https://rux-lang.dev/docs/api/net/poller#interest-both"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "PollSource",
+      "displayName": "PollSource",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 68,
+      "signature": "pub struct PollSource",
+      "typeParams": [],
+      "doc": {
+        "summary": "A socket as a `Poller` watches it, from the socket's `PollSource`.",
+        "markdown": "A socket as a `Poller` watches it, from the socket's `PollSource`. It does not keep the socket open, so it is\nderegistered before the socket is dropped. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/poller#poll-source"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "handle",
+          "type": "uint64",
+          "public": false,
+          "line": 69,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "PollEvent",
+      "displayName": "PollEvent",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 75,
+      "signature": "pub struct PollEvent",
+      "typeParams": [],
+      "doc": {
+        "summary": "One socket a wait found ready.",
+        "markdown": "One socket a wait found ready. `Copy`.\nA socket ready both to read and to write may be reported once with both, or once for each.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/poller#poll-event"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "token",
+          "type": "uint64",
+          "public": true,
+          "line": 77,
+          "doc": "The token the socket was registered with.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "readable",
+          "type": "bool",
+          "public": true,
+          "line": 79,
+          "doc": "A read would not wait, or a listener has a connection to accept.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "writable",
+          "type": "bool",
+          "public": true,
+          "line": 81,
+          "doc": "A write would not wait.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "closed",
+          "type": "bool",
+          "public": true,
+          "line": 83,
+          "doc": "The peer has closed the connection or an error is pending; the next read or write says which.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "PollEvent",
+          "line": 90,
+          "signature": "pub func PollEvent() -> PollEvent",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "PollEvent",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An event for nothing, to fill the room a wait reports into.",
+            "markdown": "An event for nothing, to fill the room a wait reports into.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the event",
+            "see": ["https://rux-lang.dev/docs/api/net/poller#poll-event-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Poller",
+      "displayName": "Poller",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 105,
+      "signature": "pub struct Poller",
+      "typeParams": [],
+      "doc": {
+        "summary": "Waits on many sockets at once.",
+        "markdown": "Waits on many sockets at once. Not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/poller"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "handle",
+          "type": "uint64",
+          "public": false,
+          "line": 107,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "registrations",
+          "type": "Vector<Registration>",
+          "public": false,
+          "line": 109,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "buffer",
+          "type": "Vector<uint64>",
+          "public": false,
+          "line": 111,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "New",
+          "line": 134,
+          "signature": "pub func New(allocator: Allocator) -> Poller ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "Poller ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A poller with no sockets registered.",
+            "markdown": "A poller with no sockets registered.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "where Windows' registrations and the room for events come from" }
+            ],
+            "returns": "the poller, or why the system would not make one",
+            "see": ["https://rux-lang.dev/docs/api/net/poller#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Register",
+          "line": 159,
+          "signature": "pub func Register(self: &var Poller, source: PollSource, token: uint64, interest: Interest) -> ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "source", "type": "PollSource" },
+            { "name": "token", "type": "uint64" },
+            { "name": "interest", "type": "Interest" }
+          ],
+          "receiver": "&var Poller",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Watches `source` for `interest`, reporting it with `token`.",
+            "markdown": "Watches `source` for `interest`, reporting it with `token`.",
+            "typeParams": [],
+            "params": [
+              { "name": "source", "markdown": "the socket" },
+              { "name": "token", "markdown": "the word reported with the socket's events" },
+              { "name": "interest", "markdown": "the readiness wanted" }
+            ],
+            "returns": "success, or `AlreadyExists` when the socket is registered already",
+            "see": ["https://rux-lang.dev/docs/api/net/poller#register"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Modify",
+          "line": 169,
+          "signature": "pub func Modify(self: &var Poller, source: PollSource, token: uint64, interest: Interest) -> ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "source", "type": "PollSource" },
+            { "name": "token", "type": "uint64" },
+            { "name": "interest", "type": "Interest" }
+          ],
+          "receiver": "&var Poller",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Changes what a registered socket is watched for, and the token it is reported with.",
+            "markdown": "Changes what a registered socket is watched for, and the token it is reported with.",
+            "typeParams": [],
+            "params": [
+              { "name": "source", "markdown": "the socket" },
+              { "name": "token", "markdown": "the word reported with the socket's events" },
+              { "name": "interest", "markdown": "the readiness wanted" }
+            ],
+            "returns": "success, or `NotFound` when the socket is not registered",
+            "see": ["https://rux-lang.dev/docs/api/net/poller#modify"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Deregister",
+          "line": 177,
+          "signature": "pub func Deregister(self: &var Poller, source: PollSource) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "source", "type": "PollSource" }],
+          "receiver": "&var Poller",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Stops watching a socket.",
+            "markdown": "Stops watching a socket.",
+            "typeParams": [],
+            "params": [{ "name": "source", "markdown": "the socket" }],
+            "returns": "success, or `NotFound` when the socket is not registered",
+            "see": ["https://rux-lang.dev/docs/api/net/poller#deregister"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Wait",
+          "line": 200,
+          "signature": "pub func Wait(self: &var Poller, events: var PollEvent[..], timeout: Duration?) -> uint ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "events", "type": "var PollEvent[..]" },
+            { "name": "timeout", "type": "Duration?" }
+          ],
+          "receiver": "&var Poller",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waits until a registered socket is ready or `timeout` passes, and reports the ready sockets into `events`.",
+            "markdown": "Waits until a registered socket is ready or `timeout` passes, and reports the ready sockets into `events`.",
+            "typeParams": [],
+            "params": [
+              {
+                "name": "events",
+                "markdown": "room for the events; a wait reports at most this many, and the rest are reported by the next"
+              },
+              { "name": "timeout", "markdown": "how long to wait, zero to only look, or `none` to wait without end" }
+            ],
+            "returns": "how many events were filled; zero after the timeout or when a signal ended the wait early",
+            "see": ["https://rux-lang.dev/docs/api/net/poller#wait"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~Poller",
+          "line": 373,
+          "signature": "func ~Poller(self: &var Poller)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Poller",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Resolve",
+      "displayName": "Resolve",
+      "module": "Resolve",
+      "source": "Src/Resolve.rux",
+      "line": 29,
+      "signature": "pub func Resolve(allocator: Allocator, host: char8[..], port: uint16) -> Vector<SocketAddress> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "The addresses of `host`, each with `port`, in the order the resolver prefers them, without repeats.",
+        "markdown": "The addresses of `host`, each with `port`, in the order the resolver prefers them, without repeats.\nA host that is a numeric IPv4 or IPv6 address gives just that address.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "what the list is kept in" },
+          { "name": "host", "markdown": "a host name, such as `example.com`, or a numeric address" },
+          { "name": "port", "markdown": "the port every address gets" }
+        ],
+        "returns": "the addresses, or fails with `NotFound` when the name has none, or with the resolver's reason",
+        "see": ["https://rux-lang.dev/docs/api/net/resolve#resolve"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TcpListener",
+      "displayName": "TcpListener",
+      "module": "Tcp",
+      "source": "Src/Tcp.rux",
+      "line": 16,
+      "signature": "pub struct TcpListener",
+      "typeParams": [],
+      "doc": {
+        "summary": "A socket listening for TCP connections.",
+        "markdown": "A socket listening for TCP connections. Not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/tcp#tcp-listener"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "handle",
+          "type": "uint64",
+          "public": false,
+          "line": 17,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Bind",
+          "line": 44,
+          "signature": "pub func Bind(address: SocketAddress) -> TcpListener ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "address", "type": "SocketAddress" }],
+          "receiver": null,
+          "returnType": "TcpListener ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Listens at `address`.",
+            "markdown": "Listens at `address`. Port zero lets the system choose a free port, which `LocalAddress` then gives.",
+            "typeParams": [],
+            "params": [
+              {
+                "name": "address",
+                "markdown": "the address to listen at, such as `127.0.0.1:8080`, or `0.0.0.0:8080` for every address"
+              }
+            ],
+            "returns": "the listener, or fails with `AddressInUse`, `AddressUnavailable` or `PermissionDenied`",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#bind"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Accept",
+          "line": 55,
+          "signature": "pub func Accept(self: &TcpListener) -> TcpStream ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TcpListener",
+          "returnType": "TcpStream ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waits for a connection and accepts it.",
+            "markdown": "Waits for a connection and accepts it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the connected stream, whose `PeerAddress` says who connected",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#accept"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "LocalAddress",
+          "line": 64,
+          "signature": "pub func LocalAddress(self: &TcpListener) -> SocketAddress ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TcpListener",
+          "returnType": "SocketAddress ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The address the listener is bound to, with the port the system chose for port zero.",
+            "markdown": "The address the listener is bound to, with the port the system chose for port zero.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the address",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#listener-local-address"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetNonBlocking",
+          "line": 74,
+          "signature": "pub func SetNonBlocking(self: &TcpListener, enabled: bool) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "enabled", "type": "bool" }],
+          "receiver": "&TcpListener",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Makes calls on the listener fail with `WouldBlock` when they would wait, or wait again.",
+            "markdown": "Makes calls on the listener fail with `WouldBlock` when they would wait, or wait again.\nA non-blocking socket is meant for a `Poller`, which says when a call would not wait. `Accept` then fails with\n`WouldBlock` when no connection is waiting; the streams it gives start blocking all the same.",
+            "typeParams": [],
+            "params": [{ "name": "enabled", "markdown": "whether calls fail rather than wait" }],
+            "returns": "success when the mode is set",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#listener-set-non-blocking"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "PollSource",
+          "line": 81,
+          "signature": "pub func PollSource(self: &TcpListener) -> PollSource",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TcpListener",
+          "returnType": "PollSource",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The listener as a `Poller` watches it, valid while the listener is open.",
+            "markdown": "The listener as a `Poller` watches it, valid while the listener is open.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the source to register",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#listener-poll-source"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~TcpListener",
+          "line": 85,
+          "signature": "func ~TcpListener(self: &var TcpListener)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TcpListener",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TcpStream",
+      "displayName": "TcpStream",
+      "module": "Tcp",
+      "source": "Src/Tcp.rux",
+      "line": 22,
+      "signature": "pub struct TcpStream",
+      "typeParams": [],
+      "doc": {
+        "summary": "A connected TCP stream: an `Io::Reader` of what the peer sends and an `Io::Writer` to it.",
+        "markdown": "A connected TCP stream: an `Io::Reader` of what the peer sends and an `Io::Writer` to it. Not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/tcp#tcp-stream"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "handle",
+          "type": "uint64",
+          "public": false,
+          "line": 23,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Connect",
+          "line": 98,
+          "signature": "pub func Connect(address: SocketAddress) -> TcpStream ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "address", "type": "SocketAddress" }],
+          "receiver": null,
+          "returnType": "TcpStream ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Connects to `address`, waiting until the connection is made or refused.",
+            "markdown": "Connects to `address`, waiting until the connection is made or refused.",
+            "typeParams": [],
+            "params": [{ "name": "address", "markdown": "where to connect" }],
+            "returns": "the stream, or fails with `ConnectionRefused`, `Unreachable` or `TimedOut`",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#connect"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "LocalAddress",
+          "line": 108,
+          "signature": "pub func LocalAddress(self: &TcpStream) -> SocketAddress ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TcpStream",
+          "returnType": "SocketAddress ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The address of this end of the connection.",
+            "markdown": "The address of this end of the connection.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the address",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#local-address"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "PeerAddress",
+          "line": 115,
+          "signature": "pub func PeerAddress(self: &TcpStream) -> SocketAddress ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TcpStream",
+          "returnType": "SocketAddress ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The address of the other end.",
+            "markdown": "The address of the other end.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the address",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#peer-address"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Shutdown",
+          "line": 123,
+          "signature": "pub func Shutdown(self: &TcpStream, direction: ShutdownDirection) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "direction", "type": "ShutdownDirection" }],
+          "receiver": "&TcpStream",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Ends one or both directions of the connection while the socket stays open.",
+            "markdown": "Ends one or both directions of the connection while the socket stays open.",
+            "typeParams": [],
+            "params": [{ "name": "direction", "markdown": "what to end" }],
+            "returns": "nothing, or fails when the connection is already gone",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#shutdown"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetNoDelay",
+          "line": 131,
+          "signature": "pub func SetNoDelay(self: &TcpStream, enabled: bool) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "enabled", "type": "bool" }],
+          "receiver": "&TcpStream",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sends small writes at once rather than gathering them, which suits request and response exchanges.",
+            "markdown": "Sends small writes at once rather than gathering them, which suits request and response exchanges.",
+            "typeParams": [],
+            "params": [{ "name": "enabled", "markdown": "whether to" }],
+            "returns": "nothing, or fails when the system refused",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#set-no-delay"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetReadTimeout",
+          "line": 139,
+          "signature": "pub func SetReadTimeout(self: &TcpStream, timeout: Duration?) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "timeout", "type": "Duration?" }],
+          "receiver": "&TcpStream",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How long a read may wait before failing with `TimedOut`, or none to wait without a limit.",
+            "markdown": "How long a read may wait before failing with `TimedOut`, or none to wait without a limit.",
+            "typeParams": [],
+            "params": [{ "name": "timeout", "markdown": "the limit" }],
+            "returns": "nothing, or fails when the system refused",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#set-read-timeout"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetWriteTimeout",
+          "line": 147,
+          "signature": "pub func SetWriteTimeout(self: &TcpStream, timeout: Duration?) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "timeout", "type": "Duration?" }],
+          "receiver": "&TcpStream",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How long a write may wait before failing with `TimedOut`, or none to wait without a limit.",
+            "markdown": "How long a write may wait before failing with `TimedOut`, or none to wait without a limit.",
+            "typeParams": [],
+            "params": [{ "name": "timeout", "markdown": "the limit" }],
+            "returns": "nothing, or fails when the system refused",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#set-write-timeout"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetNonBlocking",
+          "line": 156,
+          "signature": "pub func SetNonBlocking(self: &TcpStream, enabled: bool) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "enabled", "type": "bool" }],
+          "receiver": "&TcpStream",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Makes calls on the stream fail with `WouldBlock` when they would wait, or wait again.",
+            "markdown": "Makes calls on the stream fail with `WouldBlock` when they would wait, or wait again.\nA non-blocking socket is meant for a `Poller`, which says when a call would not wait.",
+            "typeParams": [],
+            "params": [{ "name": "enabled", "markdown": "whether calls fail rather than wait" }],
+            "returns": "success when the mode is set",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#set-non-blocking"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "PollSource",
+          "line": 163,
+          "signature": "pub func PollSource(self: &TcpStream) -> PollSource",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TcpStream",
+          "returnType": "PollSource",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The stream as a `Poller` watches it, valid while the stream is open.",
+            "markdown": "The stream as a `Poller` watches it, valid while the stream is open.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the source to register",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#poll-source"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~TcpStream",
+          "line": 167,
+          "signature": "func ~TcpStream(self: &var TcpStream)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TcpStream",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Read",
+          "line": 189,
+          "signature": "pub func Read(self: &var TcpStream, into: var char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var TcpStream",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Reader",
+          "public": true,
+          "doc": {
+            "summary": "Reads what the peer has sent, waiting while it has sent nothing.",
+            "markdown": "Reads what the peer has sent, waiting while it has sent nothing.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where to put the bytes" }],
+            "returns": "how many were read, or fails with `EndOfStream` once the peer closed its side",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#read"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 202,
+          "signature": "pub func Write(self: &var TcpStream, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var TcpStream",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Sends some of `bytes`, waiting while the connection's buffer is full.",
+            "markdown": "Sends some of `bytes`, waiting while the connection's buffer is full.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes" }],
+            "returns": "how many were sent",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 210,
+          "signature": "pub func Flush(self: &var TcpStream) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var TcpStream",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Does nothing: a stream sends what is written to it without holding any back.",
+            "markdown": "Does nothing: a stream sends what is written to it without holding any back.",
+            "typeParams": [],
+            "params": [],
+            "returns": "nothing",
+            "see": ["https://rux-lang.dev/docs/api/net/tcp#flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Reader", "Writer"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "ShutdownDirection",
+      "displayName": "ShutdownDirection",
+      "module": "Tcp",
+      "source": "Src/Tcp.rux",
+      "line": 28,
+      "signature": "pub enum ShutdownDirection",
+      "typeParams": [],
+      "doc": {
+        "summary": "Which directions of a connection `Shutdown` ends.",
+        "markdown": "Which directions of a connection `Shutdown` ends. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/tcp#shutdown-direction"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "int32",
+      "cases": [
+        {
+          "name": "Read",
+          "value": "0",
+          "payload": null,
+          "line": 30,
+          "doc": "Nothing more will be read.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Write",
+          "value": "1",
+          "payload": null,
+          "line": 32,
+          "doc": "Nothing more will be written; the peer reads the end of the stream.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Both",
+          "value": "2",
+          "payload": null,
+          "line": 34,
+          "doc": "Both.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Datagram",
+      "displayName": "Datagram",
+      "module": "Udp",
+      "source": "Src/Udp.rux",
+      "line": 14,
+      "signature": "pub struct Datagram",
+      "typeParams": [],
+      "doc": {
+        "summary": "A datagram received, and where it came from.",
+        "markdown": "A datagram received, and where it came from. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/udp#datagram"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "length",
+          "type": "uint",
+          "public": true,
+          "line": 16,
+          "doc": "How many bytes of it the buffer holds.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "source",
+          "type": "SocketAddress",
+          "public": true,
+          "line": 18,
+          "doc": "Who sent it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "UdpSocket",
+      "displayName": "UdpSocket",
+      "module": "Udp",
+      "source": "Src/Udp.rux",
+      "line": 23,
+      "signature": "pub struct UdpSocket",
+      "typeParams": [],
+      "doc": {
+        "summary": "A UDP socket.",
+        "markdown": "A UDP socket. Not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/net/udp#udp-socket"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "handle",
+          "type": "uint64",
+          "public": false,
+          "line": 24,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Bind",
+          "line": 34,
+          "signature": "pub func Bind(address: SocketAddress) -> UdpSocket ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "address", "type": "SocketAddress" }],
+          "receiver": null,
+          "returnType": "UdpSocket ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A socket bound to `address`.",
+            "markdown": "A socket bound to `address`. Port zero lets the system choose a free port, which `LocalAddress` then gives.",
+            "typeParams": [],
+            "params": [{ "name": "address", "markdown": "the address to receive at" }],
+            "returns": "the socket, or fails with `AddressInUse` or `AddressUnavailable`",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#bind"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SendTo",
+          "line": 46,
+          "signature": "pub func SendTo(self: &UdpSocket, bytes: char8[..], target: SocketAddress) -> uint ! IoError",
+          "typeParams": [],
+          "params": [
+            { "name": "bytes", "type": "char8[..]" },
+            { "name": "target", "type": "SocketAddress" }
+          ],
+          "receiver": "&UdpSocket",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sends `bytes` as one datagram to `target`.",
+            "markdown": "Sends `bytes` as one datagram to `target`.",
+            "typeParams": [],
+            "params": [
+              { "name": "bytes", "markdown": "the datagram" },
+              { "name": "target", "markdown": "where to send it" }
+            ],
+            "returns": "how many bytes were sent",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#send-to"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "ReceiveFrom",
+          "line": 54,
+          "signature": "pub func ReceiveFrom(self: &UdpSocket, into: var char8[..]) -> Datagram ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&UdpSocket",
+          "returnType": "Datagram ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waits for a datagram and puts it in `into`.",
+            "markdown": "Waits for a datagram and puts it in `into`.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where to put it" }],
+            "returns": "its length and its sender",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#receive-from"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Connect",
+          "line": 64,
+          "signature": "pub func Connect(self: &UdpSocket, peer: SocketAddress) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "peer", "type": "SocketAddress" }],
+          "receiver": "&UdpSocket",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sends to and receives from `peer` only, so `Send` and `Receive` need no address.",
+            "markdown": "Sends to and receives from `peer` only, so `Send` and `Receive` need no address.",
+            "typeParams": [],
+            "params": [{ "name": "peer", "markdown": "the one address to talk to" }],
+            "returns": "nothing, or fails when the system refused",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#connect"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Send",
+          "line": 72,
+          "signature": "pub func Send(self: &UdpSocket, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&UdpSocket",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sends `bytes` as one datagram to the connected peer.",
+            "markdown": "Sends `bytes` as one datagram to the connected peer.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the datagram" }],
+            "returns": "how many bytes were sent",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#send"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Receive",
+          "line": 80,
+          "signature": "pub func Receive(self: &UdpSocket, into: var char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&UdpSocket",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waits for a datagram from the connected peer and puts it in `into`.",
+            "markdown": "Waits for a datagram from the connected peer and puts it in `into`.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where to put it" }],
+            "returns": "its length",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#receive"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "LocalAddress",
+          "line": 87,
+          "signature": "pub func LocalAddress(self: &UdpSocket) -> SocketAddress ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&UdpSocket",
+          "returnType": "SocketAddress ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The address the socket is bound to.",
+            "markdown": "The address the socket is bound to.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the address",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#local-address"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetReadTimeout",
+          "line": 95,
+          "signature": "pub func SetReadTimeout(self: &UdpSocket, timeout: Duration?) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "timeout", "type": "Duration?" }],
+          "receiver": "&UdpSocket",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How long a receive may wait before failing with `TimedOut`, or none to wait without a limit.",
+            "markdown": "How long a receive may wait before failing with `TimedOut`, or none to wait without a limit.",
+            "typeParams": [],
+            "params": [{ "name": "timeout", "markdown": "the limit" }],
+            "returns": "nothing, or fails when the system refused",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#set-read-timeout"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetNonBlocking",
+          "line": 104,
+          "signature": "pub func SetNonBlocking(self: &UdpSocket, enabled: bool) -> ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "enabled", "type": "bool" }],
+          "receiver": "&UdpSocket",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Makes calls on the socket fail with `WouldBlock` when they would wait, or wait again.",
+            "markdown": "Makes calls on the socket fail with `WouldBlock` when they would wait, or wait again.\nA non-blocking socket is meant for a `Poller`, which says when a call would not wait.",
+            "typeParams": [],
+            "params": [{ "name": "enabled", "markdown": "whether calls fail rather than wait" }],
+            "returns": "success when the mode is set",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#set-non-blocking"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "PollSource",
+          "line": 111,
+          "signature": "pub func PollSource(self: &UdpSocket) -> PollSource",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&UdpSocket",
+          "returnType": "PollSource",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The socket as a `Poller` watches it, valid while the socket is open.",
+            "markdown": "The socket as a `Poller` watches it, valid while the socket is open.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the source to register",
+            "see": ["https://rux-lang.dev/docs/api/net/udp#poll-source"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~UdpSocket",
+          "line": 115,
+          "signature": "func ~UdpSocket(self: &var UdpSocket)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var UdpSocket",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

@@ -130,7 +130,7 @@ and `UnsupportedRequest` for a precision past nine.
 
 **Returns**: success when the whole date and time were accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L259)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L263)
 
 ## Implements Debug
 
@@ -156,7 +156,7 @@ The failures [`WriteDisplay`](/docs/api/time/date-time#write-display) reports.
 
 **Returns**: success when the whole date and time were accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L274)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L279)
 
 ## Related
 

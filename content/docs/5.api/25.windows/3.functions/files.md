@@ -383,7 +383,7 @@ Retrieves the size of the specified file.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfilesizeex](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfilesizeex)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L188)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L224)
 
 **Parameters**
 
@@ -410,7 +410,7 @@ Reads data from the specified file or input/output (I/O) device.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-readfile](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-readfile)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L349)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L385)
 
 **Parameters**
 
@@ -439,7 +439,7 @@ Moves the file pointer of the specified file.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfilepointerex](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfilepointerex)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L419)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L455)
 
 **Parameters**
 
@@ -468,7 +468,7 @@ Writes data to the specified file or input/output (I/O) device.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-writefile](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-writefile)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L537)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L573)
 
 **Parameters**
 

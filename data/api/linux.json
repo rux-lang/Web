@@ -39,9 +39,19 @@
       "header": "Reading and writing through a file descriptor, and the three descriptors a process starts with.\nThe wrappers here name their arguments and nothing more: each returns the kernel's raw result, which is a byte\ncount or a small negative error number. A short count is not an error and not an end of file — a read that returns\nfewer bytes than asked for has to be called again, which is the caller's loop to write."
     },
     {
+      "name": "Futex",
+      "source": "Src/Futex.rux",
+      "header": "Waiting on a word in memory until another thread changes it, which is what every lock is built on.\n`futex(2)` puts the calling thread to sleep only if the word still holds the value the caller last saw, and checks\nthat in the kernel, so a wake that lands between the caller's check and its sleep is never lost. Only the private\nforms are bound: the word is never shared with another process."
+    },
+    {
       "name": "Memory",
       "source": "Src/Memory.rux",
       "header": "Mapping and unmapping address space, and moving the program break.\nThese are the calls an allocator is built on. Nothing here tracks what it hands out: an address returned by `Mmap`\nis valid until `Munmap` releases exactly the range that was mapped, and this package has no way to notice a caller\nreleasing a range it never mapped."
+    },
+    {
+      "name": "Poll",
+      "source": "Src/Poll.rux",
+      "header": "Waiting on many descriptors at once, and descriptors that never wait: `epoll(7)` and the `O_NONBLOCK` flag.\nAn epoll instance is itself a descriptor. Descriptors are registered with it once, each with the events wanted and\na word the caller chooses, and a wait reports the descriptors that are ready with those words. The registrations\nhere are level-triggered: a descriptor is reported for as long as it is ready, not only when it becomes so.\n`epoll_event` is packed to twelve bytes on x86-64 and laid out naturally in sixteen on AArch64, so it is handled as\nbytes with the size and the offset of its word given per architecture."
     },
     {
       "name": "Process",
@@ -49,9 +59,29 @@
       "header": "What a process can ask or say about itself.\nNothing here creates a process. `fork` and `execve` need signal handling, descriptor inheritance and a wait\nprotocol to be usable rather than merely callable, and a raw binding to them would be an invitation to get all\nthree wrong; that belongs above this package."
     },
     {
+      "name": "Resolve",
+      "source": "Src/Resolve.rux",
+      "header": "Finding the addresses of a host by name, which is the C library's work rather than the kernel's: it reads the\nhosts file, asks the name servers the system is configured with, and follows whatever else the system's name\nservice switch says. That is why this module links a library, and why a program that resolves names is linked\ndynamically."
+    },
+    {
+      "name": "Socket",
+      "source": "Src/Socket.rux",
+      "header": "Sockets: endpoints of network connections and datagrams, reached through the system calls that make and use them.\nAddresses are passed as the `sockaddr` bytes the kernel reads, built by the caller, so these wrappers stay as thin\nas the rest of the package. Name resolution is not a system call and lives in `Rux/Net`."
+    },
+    {
+      "name": "Spawn",
+      "source": "Src/Spawn.rux",
+      "header": "Starting another program, waiting for it, and stopping it.\nA new process is started with the C library's `posix_spawnp`, which runs the setup a child needs between its creation\nand the start of the new program — duplicating descriptors, opening files, changing directory — from a list of\nactions the parent builds, and reports a failure to start as an error number rather than a child that exits. That\nis why this module links a library, and why a program that starts processes is linked dynamically."
+    },
+    {
       "name": "Syscall",
       "source": "Src/Syscall.rux",
       "header": "The raw system-call entry points, and the numbers that select a call.\nThis is the whole of what this package rests on: every wrapper elsewhere is one of these seven functions with the\narguments named. A caller may use them directly for a call this package does not wrap, which is what they are\npublic for — the numbering is the architecture's, so a number from one architecture means something else on the\nother, and `SysRead` and its relatives are what keeps that straight.\nA raw result is not yet an answer. It is either a value or a small negative error number, which `Errors::IsError`\nand `Errors::Errno` are for."
+    },
+    {
+      "name": "Thread",
+      "source": "Src/Thread.rux",
+      "header": "Threads of execution, which the C library manages: their stacks, their thread-local blocks and joining them.\nThe kernel only starts and stops a thread; everything a program needs around that belongs to the C library, and a\nthread started behind its back would have no thread-local block. That is why this module links a library, and why\na program that starts threads is linked dynamically.\nThe names are the platform's own, lowercase, because they are the symbols the library exports and what a reader\nporting code will look for."
     },
     {
       "name": "Types",
@@ -460,6 +490,128 @@
         "deprecated": null
       },
       "value": "4096",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "dlopen",
+      "displayName": "dlopen",
+      "module": "Dynamic",
+      "source": "Src/Dynamic.rux",
+      "line": 48,
+      "signature": "pub extern func dlopen(filename: *char8, flags: int32) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Loads a shared object and returns a handle to it, or null on failure.",
+        "markdown": "Loads a shared object and returns a handle to it, or null on failure.\nA name without a slash is resolved by the loader's own search rules, and one with a slash as a path. A second\ncall for an object already loaded returns the same handle and raises its reference count rather than loading\nit twice. Failure is reported through `dlerror`, not errno.",
+        "typeParams": [],
+        "params": [
+          { "name": "filename", "markdown": "a NUL-terminated name or path, or null for the main program" },
+          { "name": "flags", "markdown": "`RTLD_LAZY` or `RTLD_NOW`, combined with the other `RTLD_*` flags" }
+        ],
+        "returns": "a handle for `dlsym` and `dlclose`, or null with the reason in `dlerror`",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/dynamic#dlopen",
+          "https://man7.org/linux/man-pages/man3/dlopen.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "dlsym",
+      "displayName": "dlsym",
+      "module": "Dynamic",
+      "source": "Src/Dynamic.rux",
+      "line": 58,
+      "signature": "pub extern func dlsym(handle: *var opaque, symbol: *char8) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Finds a symbol in a loaded object and returns its address, or null.",
+        "markdown": "Finds a symbol in a loaded object and returns its address, or null.\nA null return is ambiguous, since a symbol whose address is legitimately zero exists. Clear `dlerror` by calling\nit, then call this, then read `dlerror` again to tell the two apart.",
+        "typeParams": [],
+        "params": [
+          { "name": "handle", "markdown": "a handle from `dlopen`" },
+          { "name": "symbol", "markdown": "the NUL-terminated symbol name" }
+        ],
+        "returns": "the symbol's address, or null",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/dynamic#dlsym",
+          "https://man7.org/linux/man-pages/man3/dlsym.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "dlclose",
+      "displayName": "dlclose",
+      "module": "Dynamic",
+      "source": "Src/Dynamic.rux",
+      "line": 67,
+      "signature": "pub extern func dlclose(handle: *var opaque) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Drops one reference to a loaded object, unloading it when the last one goes.",
+        "markdown": "Drops one reference to a loaded object, unloading it when the last one goes.\nEvery address obtained from the object through `dlsym` becomes invalid once it is actually unloaded, which this\ngives no way to observe.",
+        "typeParams": [],
+        "params": [{ "name": "handle", "markdown": "a handle from `dlopen`" }],
+        "returns": "zero on success, and non-zero with the reason in `dlerror`",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/dynamic#dlclose",
+          "https://man7.org/linux/man-pages/man3/dlclose.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "dlerror",
+      "displayName": "dlerror",
+      "module": "Dynamic",
+      "source": "Src/Dynamic.rux",
+      "line": 75,
+      "signature": "pub extern func dlerror() -> *char8",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reports the most recent loader error and clears it, or returns null when there is none.",
+        "markdown": "Reports the most recent loader error and clears it, or returns null when there is none.\nThe message points at storage the loader owns and a later call may reuse. Reading it clears the error, so two\ncalls in a row report the second as no error at all.",
+        "typeParams": [],
+        "params": [],
+        "returns": "a NUL-terminated message, or null",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/dynamic#dlerror",
+          "https://man7.org/linux/man-pages/man3/dlerror.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
       "fields": [],
       "baseType": null,
       "cases": [],
@@ -2553,6 +2705,126 @@
     },
     {
       "kind": "constant",
+      "name": "FutexWaitPrivate",
+      "displayName": "FutexWaitPrivate",
+      "module": "Futex",
+      "source": "Src/Futex.rux",
+      "line": 21,
+      "signature": "pub const FutexWaitPrivate: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`FUTEX_WAIT_PRIVATE`: sleep while the word holds the expected value.",
+        "markdown": "`FUTEX_WAIT_PRIVATE`: sleep while the word holds the expected value.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/futex#futex-wait-private"],
+        "deprecated": null
+      },
+      "value": "128",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "FutexWakePrivate",
+      "displayName": "FutexWakePrivate",
+      "module": "Futex",
+      "source": "Src/Futex.rux",
+      "line": 25,
+      "signature": "pub const FutexWakePrivate: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`FUTEX_WAKE_PRIVATE`: wake threads sleeping on the word.",
+        "markdown": "`FUTEX_WAKE_PRIVATE`: wake threads sleeping on the word.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/futex#futex-wake-private"],
+        "deprecated": null
+      },
+      "value": "129",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "FutexWait",
+      "displayName": "FutexWait",
+      "module": "Futex",
+      "source": "Src/Futex.rux",
+      "line": 35,
+      "signature": "pub func FutexWait(address: *uint32, expected: uint32, timeout: *Timespec) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sleeps while `*address` equals `expected`, until a wake, a signal or the timeout.",
+        "markdown": "Sleeps while `*address` equals `expected`, until a wake, a signal or the timeout.\nReturns at once with `-EAGAIN` when the word already differs, which is how a caller learns it changed.",
+        "typeParams": [],
+        "params": [
+          { "name": "address", "markdown": "the word to wait on, four-byte aligned" },
+          { "name": "expected", "markdown": "the value the caller last saw there" },
+          {
+            "name": "timeout",
+            "markdown": "how long to wait at most, relative to now, or null to wait without a limit"
+          }
+        ],
+        "returns": "zero after a wake, or a negative error number: `EAGAIN`, `EINTR` or `ETIMEDOUT`",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/futex#futex-wait",
+          "https://man7.org/linux/man-pages/man2/futex.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "FutexWake",
+      "displayName": "FutexWake",
+      "module": "Futex",
+      "source": "Src/Futex.rux",
+      "line": 46,
+      "signature": "pub func FutexWake(address: *uint32, count: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Wakes up to `count` threads sleeping on `address`.",
+        "markdown": "Wakes up to `count` threads sleeping on `address`.",
+        "typeParams": [],
+        "params": [
+          { "name": "address", "markdown": "the word they wait on" },
+          { "name": "count", "markdown": "how many to wake at most" }
+        ],
+        "returns": "how many were woken, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/futex#futex-wake",
+          "https://man7.org/linux/man-pages/man2/futex.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
       "name": "ProtectionNone",
       "displayName": "ProtectionNone",
       "module": "Memory",
@@ -3090,17 +3362,566 @@
       "targets": ["linux-x86_64", "linux-aarch64"]
     },
     {
+      "kind": "constant",
+      "name": "EpollEventBytes",
+      "displayName": "EpollEventBytes",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 20,
+      "signature": "pub const EpollEventBytes: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The size of one `epoll_event` in bytes: its four-byte event mask and eight-byte word, packed.",
+        "markdown": "The size of one `epoll_event` in bytes: its four-byte event mask and eight-byte word, packed.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epoll-event-bytes"],
+        "deprecated": null
+      },
+      "value": "12",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EpollEventWordOffset",
+      "displayName": "EpollEventWordOffset",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 24,
+      "signature": "pub const EpollEventWordOffset: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "Where the caller's word starts in an `epoll_event`.",
+        "markdown": "Where the caller's word starts in an `epoll_event`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epoll-event-word-offset"],
+        "deprecated": null
+      },
+      "value": "4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EpollEventBytes",
+      "displayName": "EpollEventBytes",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 34,
+      "signature": "pub const EpollEventBytes: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "The size of one `epoll_event` in bytes: its four-byte event mask, padding, and eight-byte word.",
+        "markdown": "The size of one `epoll_event` in bytes: its four-byte event mask, padding, and eight-byte word.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epoll-event-bytes"],
+        "deprecated": null
+      },
+      "value": "16",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EpollEventWordOffset",
+      "displayName": "EpollEventWordOffset",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 38,
+      "signature": "pub const EpollEventWordOffset: uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "Where the caller's word starts in an `epoll_event`.",
+        "markdown": "Where the caller's word starts in an `epoll_event`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epoll-event-word-offset"],
+        "deprecated": null
+      },
+      "value": "8",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "F_GETFL",
+      "displayName": "F_GETFL",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 46,
+      "signature": "pub const F_GETFL: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`F_GETFL`: the `fcntl` command that reads a descriptor's status flags.",
+        "markdown": "`F_GETFL`: the `fcntl` command that reads a descriptor's status flags.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#f-getfl"],
+        "deprecated": null
+      },
+      "value": "3",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "F_SETFL",
+      "displayName": "F_SETFL",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 51,
+      "signature": "pub const F_SETFL: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`F_SETFL`: the `fcntl` command that sets a descriptor's status flags.",
+        "markdown": "`F_SETFL`: the `fcntl` command that sets a descriptor's status flags.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#f-setfl"],
+        "deprecated": null
+      },
+      "value": "4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "O_NONBLOCK",
+      "displayName": "O_NONBLOCK",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 56,
+      "signature": "pub const O_NONBLOCK: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`O_NONBLOCK`: the status flag that makes a call fail with `EAGAIN` rather than wait.",
+        "markdown": "`O_NONBLOCK`: the status flag that makes a call fail with `EAGAIN` rather than wait.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#o-nonblock"],
+        "deprecated": null
+      },
+      "value": "0x800",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EPOLL_CLOEXEC",
+      "displayName": "EPOLL_CLOEXEC",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 61,
+      "signature": "pub const EPOLL_CLOEXEC: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EPOLL_CLOEXEC`: close the epoll descriptor when the process starts another program.",
+        "markdown": "`EPOLL_CLOEXEC`: close the epoll descriptor when the process starts another program.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epoll-cloexec"],
+        "deprecated": null
+      },
+      "value": "0x80000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EPOLL_CTL_ADD",
+      "displayName": "EPOLL_CTL_ADD",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 66,
+      "signature": "pub const EPOLL_CTL_ADD: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EPOLL_CTL_ADD`: register a descriptor.",
+        "markdown": "`EPOLL_CTL_ADD`: register a descriptor.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epoll-ctl-add"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EPOLL_CTL_DEL",
+      "displayName": "EPOLL_CTL_DEL",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 71,
+      "signature": "pub const EPOLL_CTL_DEL: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EPOLL_CTL_DEL`: remove a descriptor's registration.",
+        "markdown": "`EPOLL_CTL_DEL`: remove a descriptor's registration.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epoll-ctl-del"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EPOLL_CTL_MOD",
+      "displayName": "EPOLL_CTL_MOD",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 76,
+      "signature": "pub const EPOLL_CTL_MOD: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EPOLL_CTL_MOD`: change a registered descriptor's events and word.",
+        "markdown": "`EPOLL_CTL_MOD`: change a registered descriptor's events and word.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epoll-ctl-mod"],
+        "deprecated": null
+      },
+      "value": "3",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EPOLLIN",
+      "displayName": "EPOLLIN",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 81,
+      "signature": "pub const EPOLLIN: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EPOLLIN`: there is something to read, or a connection to accept.",
+        "markdown": "`EPOLLIN`: there is something to read, or a connection to accept.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epollin"],
+        "deprecated": null
+      },
+      "value": "0x1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EPOLLOUT",
+      "displayName": "EPOLLOUT",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 86,
+      "signature": "pub const EPOLLOUT: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EPOLLOUT`: a write would not wait.",
+        "markdown": "`EPOLLOUT`: a write would not wait.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epollout"],
+        "deprecated": null
+      },
+      "value": "0x4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EPOLLERR",
+      "displayName": "EPOLLERR",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 91,
+      "signature": "pub const EPOLLERR: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EPOLLERR`: the descriptor has an error pending; always reported.",
+        "markdown": "`EPOLLERR`: the descriptor has an error pending; always reported.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epollerr"],
+        "deprecated": null
+      },
+      "value": "0x8",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EPOLLHUP",
+      "displayName": "EPOLLHUP",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 96,
+      "signature": "pub const EPOLLHUP: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EPOLLHUP`: the peer has closed the connection; always reported.",
+        "markdown": "`EPOLLHUP`: the peer has closed the connection; always reported.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epollhup"],
+        "deprecated": null
+      },
+      "value": "0x10",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EPOLLRDHUP",
+      "displayName": "EPOLLRDHUP",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 101,
+      "signature": "pub const EPOLLRDHUP: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EPOLLRDHUP`: the peer has shut down its writing side.",
+        "markdown": "`EPOLLRDHUP`: the peer has shut down its writing side.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/poll#epollrdhup"],
+        "deprecated": null
+      },
+      "value": "0x2000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "FcntlInt",
+      "displayName": "FcntlInt",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 110,
+      "signature": "pub func FcntlInt(fd: FileDescriptor, command: int32, argument: int64) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Performs `command` on a descriptor with an integer argument.",
+        "markdown": "Performs `command` on a descriptor with an integer argument.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the descriptor" },
+          { "name": "command", "markdown": "such as `F_GETFL` or `F_SETFL`" },
+          { "name": "argument", "markdown": "the command's argument, or zero" }
+        ],
+        "returns": "the command's result, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/poll#fcntl-int",
+          "https://man7.org/linux/man-pages/man2/fcntl.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "EpollCreate1",
+      "displayName": "EpollCreate1",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 119,
+      "signature": "pub func EpollCreate1(flags: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Opens an epoll instance.",
+        "markdown": "Opens an epoll instance.",
+        "typeParams": [],
+        "params": [{ "name": "flags", "markdown": "zero or `EPOLL_CLOEXEC`" }],
+        "returns": "the instance's descriptor, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/poll#epoll-create1",
+          "https://man7.org/linux/man-pages/man2/epoll_create1.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "EpollControl",
+      "displayName": "EpollControl",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 132,
+      "signature": "pub func EpollControl(epoll: FileDescriptor, operation: int32, fd: FileDescriptor, event: *opaque) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Adds, changes or removes the registration of `fd` with an epoll instance.",
+        "markdown": "Adds, changes or removes the registration of `fd` with an epoll instance.",
+        "typeParams": [],
+        "params": [
+          { "name": "epoll", "markdown": "the instance" },
+          { "name": "operation", "markdown": "`EPOLL_CTL_ADD`, `EPOLL_CTL_MOD` or `EPOLL_CTL_DEL`" },
+          { "name": "fd", "markdown": "the descriptor registered" },
+          {
+            "name": "event",
+            "markdown": "`EpollEventBytes` bytes: the event mask and, at `EpollEventWordOffset`, the word to report; ignored\nwhen removing"
+          }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/poll#epoll-control",
+          "https://man7.org/linux/man-pages/man2/epoll_ctl.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "EpollWait",
+      "displayName": "EpollWait",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 145,
+      "signature": "pub func EpollWait(epoll: FileDescriptor, events: *var opaque, capacity: int32, timeout: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Waits until a registered descriptor is ready or `timeout` milliseconds pass, filling `events` with what is ready.",
+        "markdown": "Waits until a registered descriptor is ready or `timeout` milliseconds pass, filling `events` with what is ready.",
+        "typeParams": [],
+        "params": [
+          { "name": "epoll", "markdown": "the instance" },
+          { "name": "events", "markdown": "room for `capacity` events of `EpollEventBytes` bytes each" },
+          { "name": "capacity", "markdown": "how many events fit" },
+          { "name": "timeout", "markdown": "milliseconds to wait, zero to only look, or -1 to wait without end" }
+        ],
+        "returns": "how many events were filled, zero after the timeout, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/poll#epoll-wait",
+          "https://man7.org/linux/man-pages/man2/epoll_wait.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
       "kind": "function",
       "name": "Exit",
       "displayName": "Exit",
       "module": "Process",
       "source": "Src/Process.rux",
-      "line": 16,
+      "line": 17,
       "signature": "pub func Exit(code: int32)",
       "typeParams": [],
       "doc": {
         "summary": "Ends the calling thread's process with `code`.",
-        "markdown": "Ends the calling thread's process with `code`.\n`code` is read by value; only its low eight bits reach a waiting parent, which is the kernel's rule rather than\nthis binding's. Does not return.\nNothing is flushed, unwound, or destroyed on the way out: the kernel reclaims the address space and the\ndescriptors, and anything the program was holding elsewhere is simply gone.\nThis ends the whole process rather than one thread, which is `exit_group` in kernel terms.",
+        "markdown": "Ends the calling thread's process with `code`.\n`code` is read by value; only its low eight bits reach a waiting parent, which is the kernel's rule rather than\nthis binding's. Does not return.\nNothing is flushed, unwound, or destroyed on the way out: the kernel reclaims the address space and the\ndescriptors, and anything the program was holding elsewhere is simply gone.\nThis ends the whole process rather than one thread: it is `exit_group`, not `exit`, which on Linux stops only the\ncalling thread and would leave the others running.",
         "typeParams": [],
         "params": [{ "name": "code", "markdown": "the status to report to the parent" }],
         "returns": null,
@@ -3121,7 +3942,7 @@
       "displayName": "GetPid",
       "module": "Process",
       "source": "Src/Process.rux",
-      "line": 26,
+      "line": 27,
       "signature": "pub func GetPid() -> ProcessId",
       "typeParams": [],
       "doc": {
@@ -3131,6 +3952,1377 @@
         "params": [],
         "returns": "the calling process's identifier",
         "see": ["https://rux-lang.dev/docs/api/linux/process#get-pid"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "AddressInfo",
+      "displayName": "AddressInfo",
+      "module": "Resolve",
+      "source": "Src/Resolve.rux",
+      "line": 10,
+      "signature": "pub struct AddressInfo",
+      "typeParams": [],
+      "doc": {
+        "summary": "The C library's `addrinfo`: one result of `getaddrinfo`, linked to the next.",
+        "markdown": "The C library's `addrinfo`: one result of `getaddrinfo`, linked to the next.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/resolve#address-info"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "flags",
+          "type": "int32",
+          "public": true,
+          "line": 12,
+          "doc": "Flags such as `AI_PASSIVE`.",
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        },
+        {
+          "name": "family",
+          "type": "int32",
+          "public": true,
+          "line": 14,
+          "doc": "The address family, or zero for any.",
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        },
+        {
+          "name": "socketType",
+          "type": "int32",
+          "public": true,
+          "line": 16,
+          "doc": "The socket type, or zero for any.",
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        },
+        {
+          "name": "protocol",
+          "type": "int32",
+          "public": true,
+          "line": 18,
+          "doc": "The protocol, or zero for any.",
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        },
+        {
+          "name": "addressLength",
+          "type": "uint32",
+          "public": true,
+          "line": 20,
+          "doc": "The size of `address` in bytes.",
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        },
+        {
+          "name": "address",
+          "type": "*opaque",
+          "public": true,
+          "line": 22,
+          "doc": "The address, a `sockaddr`.",
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        },
+        {
+          "name": "canonicalName",
+          "type": "*char8",
+          "public": true,
+          "line": 24,
+          "doc": "The host's canonical name, or null.",
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        },
+        {
+          "name": "next",
+          "type": "*var AddressInfo",
+          "public": true,
+          "line": 26,
+          "doc": "The next result, or null after the last.",
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "getaddrinfo",
+      "displayName": "getaddrinfo",
+      "module": "Resolve",
+      "source": "Src/Resolve.rux",
+      "line": 39,
+      "signature": "pub extern func getaddrinfo(node: *char8, service: *char8, hints: *AddressInfo, result: *var *var AddressInfo) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Looks up the addresses of a host and service.",
+        "markdown": "Looks up the addresses of a host and service.",
+        "typeParams": [],
+        "params": [
+          { "name": "node", "markdown": "the host name or numeric address, NUL-terminated, or null" },
+          { "name": "service", "markdown": "the service name or port number, NUL-terminated, or null" },
+          { "name": "hints", "markdown": "what kind of results are wanted, or null for every kind" },
+          { "name": "result", "markdown": "receives the first result, freed with `freeaddrinfo`" }
+        ],
+        "returns": "zero, or an `EAI_*` code",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/resolve#getaddrinfo",
+          "https://man7.org/linux/man-pages/man3/getaddrinfo.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "freeaddrinfo",
+      "displayName": "freeaddrinfo",
+      "module": "Resolve",
+      "source": "Src/Resolve.rux",
+      "line": 45,
+      "signature": "pub extern func freeaddrinfo(info: *var AddressInfo)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Frees the results of `getaddrinfo`.",
+        "markdown": "Frees the results of `getaddrinfo`.",
+        "typeParams": [],
+        "params": [{ "name": "info", "markdown": "the first result" }],
+        "returns": null,
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/resolve#freeaddrinfo",
+          "https://man7.org/linux/man-pages/man3/freeaddrinfo.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "AF_INET",
+      "displayName": "AF_INET",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 41,
+      "signature": "pub const AF_INET: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`AF_INET`: the IPv4 address family.",
+        "markdown": "`AF_INET`: the IPv4 address family.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#af-inet"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "AF_INET6",
+      "displayName": "AF_INET6",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 46,
+      "signature": "pub const AF_INET6: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`AF_INET6`: the IPv6 address family.",
+        "markdown": "`AF_INET6`: the IPv6 address family.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#af-inet6"],
+        "deprecated": null
+      },
+      "value": "10",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOCK_STREAM",
+      "displayName": "SOCK_STREAM",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 51,
+      "signature": "pub const SOCK_STREAM: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOCK_STREAM`: a connected byte stream.",
+        "markdown": "`SOCK_STREAM`: a connected byte stream.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#sock-stream"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOCK_DGRAM",
+      "displayName": "SOCK_DGRAM",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 56,
+      "signature": "pub const SOCK_DGRAM: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOCK_DGRAM`: individual datagrams.",
+        "markdown": "`SOCK_DGRAM`: individual datagrams.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#sock-dgram"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOCK_CLOEXEC",
+      "displayName": "SOCK_CLOEXEC",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 61,
+      "signature": "pub const SOCK_CLOEXEC: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOCK_CLOEXEC`: close the socket when the process starts another program.",
+        "markdown": "`SOCK_CLOEXEC`: close the socket when the process starts another program.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#sock-cloexec"],
+        "deprecated": null
+      },
+      "value": "0x80000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOL_SOCKET",
+      "displayName": "SOL_SOCKET",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 66,
+      "signature": "pub const SOL_SOCKET: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOL_SOCKET`: the level of the options every socket has.",
+        "markdown": "`SOL_SOCKET`: the level of the options every socket has.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#sol-socket"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SO_REUSEADDR",
+      "displayName": "SO_REUSEADDR",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 71,
+      "signature": "pub const SO_REUSEADDR: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SO_REUSEADDR`: let a listening address be bound again while old connections to it wind down.",
+        "markdown": "`SO_REUSEADDR`: let a listening address be bound again while old connections to it wind down.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#so-reuseaddr"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SO_RCVTIMEO",
+      "displayName": "SO_RCVTIMEO",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 76,
+      "signature": "pub const SO_RCVTIMEO: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SO_RCVTIMEO`: how long a receive waits.",
+        "markdown": "`SO_RCVTIMEO`: how long a receive waits.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#so-rcvtimeo"],
+        "deprecated": null
+      },
+      "value": "20",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SO_SNDTIMEO",
+      "displayName": "SO_SNDTIMEO",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 81,
+      "signature": "pub const SO_SNDTIMEO: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SO_SNDTIMEO`: how long a send waits.",
+        "markdown": "`SO_SNDTIMEO`: how long a send waits.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#so-sndtimeo"],
+        "deprecated": null
+      },
+      "value": "21",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IPPROTO_TCP",
+      "displayName": "IPPROTO_TCP",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 86,
+      "signature": "pub const IPPROTO_TCP: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IPPROTO_TCP`: the level of TCP's options.",
+        "markdown": "`IPPROTO_TCP`: the level of TCP's options.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#ipproto-tcp"],
+        "deprecated": null
+      },
+      "value": "6",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "TCP_NODELAY",
+      "displayName": "TCP_NODELAY",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 91,
+      "signature": "pub const TCP_NODELAY: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`TCP_NODELAY`: send small writes at once rather than gathering them.",
+        "markdown": "`TCP_NODELAY`: send small writes at once rather than gathering them.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#tcp-nodelay"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IPPROTO_IPV6",
+      "displayName": "IPPROTO_IPV6",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 96,
+      "signature": "pub const IPPROTO_IPV6: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IPPROTO_IPV6`: the level of IPv6's options.",
+        "markdown": "`IPPROTO_IPV6`: the level of IPv6's options.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#ipproto-ipv6"],
+        "deprecated": null
+      },
+      "value": "41",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IPV6_V6ONLY",
+      "displayName": "IPV6_V6ONLY",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 101,
+      "signature": "pub const IPV6_V6ONLY: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.",
+        "markdown": "`IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#ipv6-v6only"],
+        "deprecated": null
+      },
+      "value": "26",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "MSG_NOSIGNAL",
+      "displayName": "MSG_NOSIGNAL",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 106,
+      "signature": "pub const MSG_NOSIGNAL: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`MSG_NOSIGNAL`: report a closed peer as an error rather than with `SIGPIPE`.",
+        "markdown": "`MSG_NOSIGNAL`: report a closed peer as an error rather than with `SIGPIPE`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#msg-nosignal"],
+        "deprecated": null
+      },
+      "value": "0x4000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Socket",
+      "displayName": "Socket",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 115,
+      "signature": "pub func Socket(domain: int32, kind: int32, protocol: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Opens a socket.",
+        "markdown": "Opens a socket.",
+        "typeParams": [],
+        "params": [
+          { "name": "domain", "markdown": "the address family, such as `AF_INET`" },
+          { "name": "kind", "markdown": "the socket type, such as `SOCK_STREAM`, combined with `SOCK_CLOEXEC`" },
+          { "name": "protocol", "markdown": "the protocol, or zero for the family's default" }
+        ],
+        "returns": "the new descriptor, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#socket",
+          "https://man7.org/linux/man-pages/man2/socket.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Connect",
+      "displayName": "Connect",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 126,
+      "signature": "pub func Connect(fd: FileDescriptor, address: *opaque, length: uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Connects a socket to `address`, waiting for a stream connection to be made.",
+        "markdown": "Connects a socket to `address`, waiting for a stream connection to be made.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "address", "markdown": "the address, a `sockaddr`" },
+          { "name": "length", "markdown": "the address's size in bytes" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#connect",
+          "https://man7.org/linux/man-pages/man2/connect.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Bind",
+      "displayName": "Bind",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 137,
+      "signature": "pub func Bind(fd: FileDescriptor, address: *opaque, length: uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Gives a socket its local address.",
+        "markdown": "Gives a socket its local address.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "address", "markdown": "the address, a `sockaddr`" },
+          { "name": "length", "markdown": "the address's size in bytes" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": ["https://rux-lang.dev/docs/api/linux/socket#bind", "https://man7.org/linux/man-pages/man2/bind.2.html"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Listen",
+      "displayName": "Listen",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 147,
+      "signature": "pub func Listen(fd: FileDescriptor, backlog: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Makes a bound stream socket accept connections.",
+        "markdown": "Makes a bound stream socket accept connections.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "backlog", "markdown": "how many connections may wait to be accepted" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#listen",
+          "https://man7.org/linux/man-pages/man2/listen.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Accept4",
+      "displayName": "Accept4",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 159,
+      "signature": "pub func Accept4(fd: FileDescriptor, address: *var opaque, length: *var uint32, flags: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Accepts a waiting connection as a new socket.",
+        "markdown": "Accepts a waiting connection as a new socket.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the listening socket" },
+          { "name": "address", "markdown": "receives the peer's address, or null" },
+          { "name": "length", "markdown": "the address buffer's size, then the address's, or null" },
+          { "name": "flags", "markdown": "flags for the new socket, such as `SOCK_CLOEXEC`" }
+        ],
+        "returns": "the new descriptor, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#accept4",
+          "https://man7.org/linux/man-pages/man2/accept4.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "SendTo",
+      "displayName": "SendTo",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 173,
+      "signature": "pub func SendTo(fd: FileDescriptor, buffer: *opaque, count: uint, flags: int32, address: *opaque, length: uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sends bytes on a socket, to `address` when it is not connected.",
+        "markdown": "Sends bytes on a socket, to `address` when it is not connected.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "buffer", "markdown": "the bytes" },
+          { "name": "count", "markdown": "how many" },
+          { "name": "flags", "markdown": "flags such as `MSG_NOSIGNAL`" },
+          { "name": "address", "markdown": "the destination, or null for a connected socket" },
+          { "name": "length", "markdown": "the destination's size" }
+        ],
+        "returns": "the bytes sent, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#sendto",
+          "https://man7.org/linux/man-pages/man2/sendto.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "ReceiveFrom",
+      "displayName": "ReceiveFrom",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 187,
+      "signature": "pub func ReceiveFrom(fd: FileDescriptor, buffer: *var opaque, count: uint, flags: int32, address: *var opaque, length: *var uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Receives bytes from a socket, and where they came from.",
+        "markdown": "Receives bytes from a socket, and where they came from.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "buffer", "markdown": "receives the bytes" },
+          { "name": "count", "markdown": "how many fit" },
+          { "name": "flags", "markdown": "flags, or zero" },
+          { "name": "address", "markdown": "receives the sender's address, or null" },
+          { "name": "length", "markdown": "the address buffer's size, then the address's, or null" }
+        ],
+        "returns": "the bytes received, zero once a stream's peer closed it, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#receivefrom",
+          "https://man7.org/linux/man-pages/man2/recvfrom.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Shutdown",
+      "displayName": "Shutdown",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 197,
+      "signature": "pub func Shutdown(fd: FileDescriptor, how: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Ends one or both directions of a connection.",
+        "markdown": "Ends one or both directions of a connection.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "how", "markdown": "`SHUT_RD`, `SHUT_WR` or `SHUT_RDWR`" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#shutdown",
+          "https://man7.org/linux/man-pages/man2/shutdown.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "SetSocketOption",
+      "displayName": "SetSocketOption",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 210,
+      "signature": "pub func SetSocketOption(fd: FileDescriptor, level: int32, name: int32, value: *opaque, length: uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets a socket option.",
+        "markdown": "Sets a socket option.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "level", "markdown": "the option's level, such as `SOL_SOCKET`" },
+          { "name": "name", "markdown": "the option" },
+          { "name": "value", "markdown": "the option's value" },
+          { "name": "length", "markdown": "the value's size in bytes" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#setsocketoption",
+          "https://man7.org/linux/man-pages/man2/setsockopt.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "GetSocketName",
+      "displayName": "GetSocketName",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 221,
+      "signature": "pub func GetSocketName(fd: FileDescriptor, address: *var opaque, length: *var uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a socket's local address.",
+        "markdown": "Reads a socket's local address.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "address", "markdown": "receives the address" },
+          { "name": "length", "markdown": "the buffer's size, then the address's" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#getsocketname",
+          "https://man7.org/linux/man-pages/man2/getsockname.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "GetPeerName",
+      "displayName": "GetPeerName",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 232,
+      "signature": "pub func GetPeerName(fd: FileDescriptor, address: *var opaque, length: *var uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads the address of a connected socket's peer.",
+        "markdown": "Reads the address of a connected socket's peer.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "address", "markdown": "receives the address" },
+          { "name": "length", "markdown": "the buffer's size, then the address's" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/socket#getpeername",
+          "https://man7.org/linux/man-pages/man2/getpeername.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "SpawnFileActions",
+      "displayName": "SpawnFileActions",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 14,
+      "signature": "pub struct SpawnFileActions",
+      "typeParams": [],
+      "doc": {
+        "summary": "Room for a `posix_spawn_file_actions_t`, which each C library sizes its own way and none larger than this.",
+        "markdown": "Room for a `posix_spawn_file_actions_t`, which each C library sizes its own way and none larger than this.\nOnly ever passed by address to the `posix_spawn_file_actions_*` calls, which initialize and read it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/spawn#spawn-file-actions"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "storage",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 15,
+          "doc": null,
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "SpawnFileActions",
+          "line": 22,
+          "signature": "pub func SpawnFileActions() -> SpawnFileActions",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "SpawnFileActions",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Zeroed storage for `posix_spawn_file_actions_init` to initialize.",
+            "markdown": "Zeroed storage for `posix_spawn_file_actions_init` to initialize.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the storage",
+            "see": ["https://rux-lang.dev/docs/api/linux/spawn#spawn-file-actions-new"],
+            "deprecated": null
+          },
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        }
+      ],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "F_SETFD",
+      "displayName": "F_SETFD",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 30,
+      "signature": "pub const F_SETFD: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`F_SETFD`: the `fcntl` command that sets a descriptor's flags.",
+        "markdown": "`F_SETFD`: the `fcntl` command that sets a descriptor's flags.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/spawn#f-setfd"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "FD_CLOEXEC",
+      "displayName": "FD_CLOEXEC",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 35,
+      "signature": "pub const FD_CLOEXEC: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`FD_CLOEXEC`: close the descriptor when the process starts another program.",
+        "markdown": "`FD_CLOEXEC`: close the descriptor when the process starts another program.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/spawn#fd-cloexec"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WNOHANG",
+      "displayName": "WNOHANG",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 40,
+      "signature": "pub const WNOHANG: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WNOHANG`: have `waitpid` return at once when the child has not finished.",
+        "markdown": "`WNOHANG`: have `waitpid` return at once when the child has not finished.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/spawn#wnohang"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SIGKILL",
+      "displayName": "SIGKILL",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 45,
+      "signature": "pub const SIGKILL: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SIGKILL`: the signal that ends a process at once and cannot be caught.",
+        "markdown": "`SIGKILL`: the signal that ends a process at once and cannot be caught.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/spawn#sigkill"],
+        "deprecated": null
+      },
+      "value": "9",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawnp",
+      "displayName": "posix_spawnp",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 59,
+      "signature": "pub extern func posix_spawnp(pid: *var int32, file: *char8, fileActions: *SpawnFileActions, attributes: *opaque, arguments: **char8, environment: **char8) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Starts `file`, found through `PATH` when it has no slash, as a child process.",
+        "markdown": "Starts `file`, found through `PATH` when it has no slash, as a child process.",
+        "typeParams": [],
+        "params": [
+          { "name": "pid", "markdown": "receives the child's process identifier" },
+          { "name": "file", "markdown": "the program, NUL-terminated" },
+          {
+            "name": "fileActions",
+            "markdown": "the descriptor and directory setup to run in the child first, or null"
+          },
+          { "name": "attributes", "markdown": "spawn attributes, or null for the defaults" },
+          { "name": "arguments", "markdown": "the argument vector, its first entry the program's name, ended by null" },
+          { "name": "environment", "markdown": "the environment, `NAME=VALUE` entries ended by null" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/spawn#posix-spawnp",
+          "https://man7.org/linux/man-pages/man3/posix_spawn.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_init",
+      "displayName": "posix_spawn_file_actions_init",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 67,
+      "signature": "pub extern func posix_spawn_file_actions_init(actions: *var SpawnFileActions) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Initializes an empty list of file actions.",
+        "markdown": "Initializes an empty list of file actions.",
+        "typeParams": [],
+        "params": [{ "name": "actions", "markdown": "the storage to initialize" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/spawn#posix-spawn-file-actions-init",
+          "https://man7.org/linux/man-pages/man3/posix_spawn_file_actions_init.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_destroy",
+      "displayName": "posix_spawn_file_actions_destroy",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 74,
+      "signature": "pub extern func posix_spawn_file_actions_destroy(actions: *var SpawnFileActions) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Releases what `posix_spawn_file_actions_init` and the actions added since set up.",
+        "markdown": "Releases what `posix_spawn_file_actions_init` and the actions added since set up.",
+        "typeParams": [],
+        "params": [{ "name": "actions", "markdown": "initialized file actions" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/spawn#posix-spawn-file-actions-destroy",
+          "https://man7.org/linux/man-pages/man3/posix_spawn_file_actions_destroy.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_adddup2",
+      "displayName": "posix_spawn_file_actions_adddup2",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 83,
+      "signature": "pub extern func posix_spawn_file_actions_adddup2(actions: *var SpawnFileActions, fd: int32, newFd: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Adds an action duplicating `fd` onto `newFd` in the child.",
+        "markdown": "Adds an action duplicating `fd` onto `newFd` in the child.",
+        "typeParams": [],
+        "params": [
+          { "name": "actions", "markdown": "initialized file actions" },
+          { "name": "fd", "markdown": "the descriptor to duplicate" },
+          { "name": "newFd", "markdown": "the descriptor it becomes" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/spawn#posix-spawn-file-actions-adddup2",
+          "https://man7.org/linux/man-pages/man3/posix_spawn_file_actions_adddup2.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_addopen",
+      "displayName": "posix_spawn_file_actions_addopen",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 94,
+      "signature": "pub extern func posix_spawn_file_actions_addopen(actions: *var SpawnFileActions, fd: int32, path: *char8, flags: int32, mode: FileMode) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Adds an action opening `path` as `fd` in the child.",
+        "markdown": "Adds an action opening `path` as `fd` in the child.",
+        "typeParams": [],
+        "params": [
+          { "name": "actions", "markdown": "initialized file actions" },
+          { "name": "fd", "markdown": "the descriptor the file becomes" },
+          { "name": "path", "markdown": "the file, NUL-terminated" },
+          { "name": "flags", "markdown": "the open flags" },
+          { "name": "mode", "markdown": "the permissions of a file the open creates" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/spawn#posix-spawn-file-actions-addopen",
+          "https://man7.org/linux/man-pages/man3/posix_spawn_file_actions_addopen.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_addchdir_np",
+      "displayName": "posix_spawn_file_actions_addchdir_np",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 103,
+      "signature": "pub extern func posix_spawn_file_actions_addchdir_np(actions: *var SpawnFileActions, path: *char8) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Adds an action changing the child's working directory to `path`.",
+        "markdown": "Adds an action changing the child's working directory to `path`.",
+        "typeParams": [],
+        "params": [
+          { "name": "actions", "markdown": "initialized file actions" },
+          { "name": "path", "markdown": "the directory, NUL-terminated" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/spawn#posix-spawn-file-actions-addchdir-np",
+          "https://man7.org/linux/man-pages/man3/posix_spawn_file_actions_addchdir_np.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "waitpid",
+      "displayName": "waitpid",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 112,
+      "signature": "pub extern func waitpid(pid: int32, status: *var int32, options: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Waits for a child to change state, and reports how it finished.",
+        "markdown": "Waits for a child to change state, and reports how it finished.",
+        "typeParams": [],
+        "params": [
+          { "name": "pid", "markdown": "the child's process identifier" },
+          { "name": "status", "markdown": "receives the encoded status" },
+          {
+            "name": "options",
+            "markdown": "zero to wait, or `WNOHANG` to return at once when the child is still running"
+          }
+        ],
+        "returns": "the child's identifier, zero with `WNOHANG` when it is still running, or -1 with the reason in errno",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/spawn#waitpid",
+          "https://man7.org/linux/man-pages/man2/waitpid.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "kill",
+      "displayName": "kill",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 120,
+      "signature": "pub extern func kill(pid: int32, signal: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sends a signal to a process.",
+        "markdown": "Sends a signal to a process.",
+        "typeParams": [],
+        "params": [
+          { "name": "pid", "markdown": "the process" },
+          { "name": "signal", "markdown": "the signal number, such as `SIGKILL`" }
+        ],
+        "returns": "zero, or -1 with the reason in errno",
+        "see": ["https://rux-lang.dev/docs/api/linux/spawn#kill", "https://man7.org/linux/man-pages/man2/kill.2.html"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "fcntl",
+      "displayName": "fcntl",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 128,
+      "signature": "pub extern func fcntl(fd: int32, command: int32, ...) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Performs a control operation on a descriptor, such as setting its flags with `F_SETFD`.",
+        "markdown": "Performs a control operation on a descriptor, such as setting its flags with `F_SETFD`.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the descriptor" },
+          { "name": "command", "markdown": "the operation" }
+        ],
+        "returns": "the operation's result, or -1 with the reason in errno",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/spawn#fcntl",
+          "https://man7.org/linux/man-pages/man2/fcntl.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "__errno_location",
+      "displayName": "__errno_location",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 134,
+      "signature": "pub extern func __errno_location() -> *var int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Returns the address of the calling thread's errno, where the C library calls above leave their reason.",
+        "markdown": "Returns the address of the calling thread's errno, where the C library calls above leave their reason.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the errno's address",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/spawn#errno",
+          "https://man7.org/linux/man-pages/man3/errno.3.html"
+        ],
         "deprecated": null
       },
       "value": null,
@@ -3321,6 +5513,389 @@
         "params": [{ "name": "fd", "markdown": "the descriptor to widen" }],
         "returns": "it sign-extended, so a negative one stays negative",
         "see": ["https://rux-lang.dev/docs/api/linux/syscalls#sign-extend-fd"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "type",
+      "name": "PThread",
+      "displayName": "PThread",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 14,
+      "signature": "pub type PThread = uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "A thread as the C library names it, `pthread_t`.",
+        "markdown": "A thread as the C library names it, `pthread_t`. Every system this package family binds keeps it in one word.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/thread#p-thread"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "PThreadAttributes",
+      "displayName": "PThreadAttributes",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 19,
+      "signature": "pub struct PThreadAttributes",
+      "typeParams": [],
+      "doc": {
+        "summary": "Room for a `pthread_attr_t`, which each C library sizes its own way and none larger than this.",
+        "markdown": "Room for a `pthread_attr_t`, which each C library sizes its own way and none larger than this.\nOnly ever passed by address to the `pthread_attr_*` calls, which initialize and read it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/thread#p-thread-attributes"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "storage",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 20,
+          "doc": null,
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "PThreadAttributes",
+          "line": 27,
+          "signature": "pub func PThreadAttributes() -> PThreadAttributes",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "PThreadAttributes",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Zeroed storage for `pthread_attr_init` to initialize.",
+            "markdown": "Zeroed storage for `pthread_attr_init` to initialize.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the storage",
+            "see": ["https://rux-lang.dev/docs/api/linux/thread#p-thread-attributes-new"],
+            "deprecated": null
+          },
+          "targets": ["linux-x86_64", "linux-aarch64"]
+        }
+      ],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SC_NPROCESSORS_ONLN",
+      "displayName": "SC_NPROCESSORS_ONLN",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 35,
+      "signature": "pub const SC_NPROCESSORS_ONLN: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`_SC_NPROCESSORS_ONLN`: the `sysconf` name for the number of processors currently online.",
+        "markdown": "`_SC_NPROCESSORS_ONLN`: the `sysconf` name for the number of processors currently online.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/linux/thread#sc-nprocessors-onln"],
+        "deprecated": null
+      },
+      "value": "84",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_create",
+      "displayName": "pthread_create",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 47,
+      "signature": "pub extern func pthread_create(thread: *var PThread, attributes: *PThreadAttributes, start: *opaque, argument: *var opaque) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Starts a thread running `start(argument)`.",
+        "markdown": "Starts a thread running `start(argument)`.",
+        "typeParams": [],
+        "params": [
+          { "name": "thread", "markdown": "receives the new thread" },
+          { "name": "attributes", "markdown": "initialized attributes, or null for the defaults" },
+          { "name": "start", "markdown": "the thread's entry point, a function taking and returning one pointer" },
+          { "name": "argument", "markdown": "the value handed to the entry point" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/thread#pthread-create",
+          "https://man7.org/linux/man-pages/man3/pthread_create.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_join",
+      "displayName": "pthread_join",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 56,
+      "signature": "pub extern func pthread_join(thread: PThread, result: *var *var opaque) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Waits for a thread to finish and releases it.",
+        "markdown": "Waits for a thread to finish and releases it.",
+        "typeParams": [],
+        "params": [
+          { "name": "thread", "markdown": "a thread nothing has joined or detached" },
+          { "name": "result", "markdown": "receives the value its entry point returned, or null to ignore it" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/thread#pthread-join",
+          "https://man7.org/linux/man-pages/man3/pthread_join.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_detach",
+      "displayName": "pthread_detach",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 63,
+      "signature": "pub extern func pthread_detach(thread: PThread) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Lets a thread release itself when it finishes, so nothing has to join it.",
+        "markdown": "Lets a thread release itself when it finishes, so nothing has to join it.",
+        "typeParams": [],
+        "params": [{ "name": "thread", "markdown": "a thread nothing has joined or detached" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/thread#pthread-detach",
+          "https://man7.org/linux/man-pages/man3/pthread_detach.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_attr_init",
+      "displayName": "pthread_attr_init",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 70,
+      "signature": "pub extern func pthread_attr_init(attributes: *var PThreadAttributes) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Initializes thread attributes to the defaults.",
+        "markdown": "Initializes thread attributes to the defaults.",
+        "typeParams": [],
+        "params": [{ "name": "attributes", "markdown": "the storage to initialize" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/thread#pthread-attr-init",
+          "https://man7.org/linux/man-pages/man3/pthread_attr_init.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_attr_setstacksize",
+      "displayName": "pthread_attr_setstacksize",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 78,
+      "signature": "pub extern func pthread_attr_setstacksize(attributes: *var PThreadAttributes, size: uint) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets the stack size a thread started with these attributes gets.",
+        "markdown": "Sets the stack size a thread started with these attributes gets.",
+        "typeParams": [],
+        "params": [
+          { "name": "attributes", "markdown": "initialized attributes" },
+          { "name": "size", "markdown": "the stack size in bytes, at least the system's minimum" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/thread#pthread-attr-setstacksize",
+          "https://man7.org/linux/man-pages/man3/pthread_attr_setstacksize.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_attr_destroy",
+      "displayName": "pthread_attr_destroy",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 85,
+      "signature": "pub extern func pthread_attr_destroy(attributes: *var PThreadAttributes) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Releases what `pthread_attr_init` set up.",
+        "markdown": "Releases what `pthread_attr_init` set up.",
+        "typeParams": [],
+        "params": [{ "name": "attributes", "markdown": "initialized attributes" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/thread#pthread-attr-destroy",
+          "https://man7.org/linux/man-pages/man3/pthread_attr_destroy.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "gettid",
+      "displayName": "gettid",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 91,
+      "signature": "pub extern func gettid() -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Returns the kernel's identifier for the calling thread, which is the process identifier on its first thread.",
+        "markdown": "Returns the kernel's identifier for the calling thread, which is the process identifier on its first thread.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the calling thread's identifier",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/thread#gettid",
+          "https://man7.org/linux/man-pages/man2/gettid.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "sched_yield",
+      "displayName": "sched_yield",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 97,
+      "signature": "pub extern func sched_yield() -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Gives up the processor so another ready thread can run.",
+        "markdown": "Gives up the processor so another ready thread can run.",
+        "typeParams": [],
+        "params": [],
+        "returns": "zero, or -1 with the reason in errno",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/thread#sched-yield",
+          "https://man7.org/linux/man-pages/man2/sched_yield.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["linux-x86_64", "linux-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "sysconf",
+      "displayName": "sysconf",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 104,
+      "signature": "pub extern func sysconf(name: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a system configuration value.",
+        "markdown": "Reads a system configuration value.",
+        "typeParams": [],
+        "params": [{ "name": "name", "markdown": "the value to read, such as `SC_NPROCESSORS_ONLN`" }],
+        "returns": "the value, or -1 when the system has no limit or does not know the name",
+        "see": [
+          "https://rux-lang.dev/docs/api/linux/thread#sysconf",
+          "https://man7.org/linux/man-pages/man3/sysconf.3.html"
+        ],
         "deprecated": null
       },
       "value": null,

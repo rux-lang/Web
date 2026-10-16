@@ -605,7 +605,7 @@ Retrieves the current directory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getcurrentdirectory](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getcurrentdirectory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L181)
 
 **Parameters**
 
@@ -626,7 +626,7 @@ Retrieves file attributes.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesa](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesa)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L180)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L216)
 
 **Parameters**
 
@@ -649,7 +649,7 @@ Moves an existing file or directory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefilea](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefilea)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L283)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L319)
 
 **Parameters**
 
@@ -670,7 +670,7 @@ Deletes an existing empty directory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-removedirectorya](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-removedirectorya)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L362)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L398)
 
 **Parameters**
 
@@ -690,7 +690,7 @@ Changes the current directory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setcurrentdirectory](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setcurrentdirectory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L401)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L437)
 
 **Parameters**
 
@@ -713,7 +713,7 @@ Sets file attributes.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileattributesa](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileattributesa)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L409)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L445)
 
 **Parameters**
 

@@ -139,7 +139,7 @@ pub const OpenAppend: int32 = 0x0008;
 pub const OpenNonBlocking: int32 = 0x0004;
 ```
 
-`O_NONBLOCK`: reads and writes report [`EAGAIN`](/docs/api/macos/errors#eagain) rather than waiting.
+[`O_NONBLOCK`](/docs/api/macos/poll#o-nonblock): reads and writes report [`EAGAIN`](/docs/api/macos/errors#eagain) rather than waiting.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L60)
 
@@ -438,7 +438,7 @@ pub func Fsync(fd: FileDescriptor) -> int64
 Flushes everything written to `fd` toward the storage device.
 Returns zero, or a negative error number.
 This is weaker on Darwin than everywhere else: it hands the data to the device without waiting for the device to
-commit it, so a power failure can still lose a write this reported as flushed. `F_FULLFSYNC` through `fcntl` is
+commit it, so a power failure can still lose a write this reported as flushed. `F_FULLFSYNC` through [`fcntl`](/docs/api/macos/spawn#fcntl) is
 what actually waits, and this package does not wrap it.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L289)
@@ -505,7 +505,7 @@ pub func Pipe(descriptors: *var int32) -> int64
 
 Creates a pipe and writes its two descriptors into `descriptors`.
 The reading end lands at index zero and the writing end at index one. Darwin has no `pipe2`, so close-on-exec has
-to be set afterwards through `fcntl` — which leaves a window another thread can execute through.
+to be set afterwards through [`fcntl`](/docs/api/macos/spawn#fcntl) — which leaves a window another thread can execute through.
 `descriptors` must be writable for two `int32` values.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L358)

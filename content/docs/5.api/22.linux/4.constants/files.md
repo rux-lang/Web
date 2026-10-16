@@ -220,7 +220,7 @@ pub const OpenAppend: int32 = 1024;
 pub const OpenNonBlocking: int32 = 2048;
 ```
 
-`O_NONBLOCK`: reads and writes report [`EAGAIN`](/docs/api/linux/errors#eagain) rather than waiting.
+[`O_NONBLOCK`](/docs/api/linux/poll#o-nonblock): reads and writes report [`EAGAIN`](/docs/api/linux/errors#eagain) rather than waiting.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L103)
 

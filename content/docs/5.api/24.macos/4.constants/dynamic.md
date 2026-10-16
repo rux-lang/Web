@@ -19,7 +19,7 @@ seo:
 
 # Dynamic loading
 
-libSystem, and the mode flags `dlopen` takes.
+libSystem, and the mode flags [`dlopen`](/docs/api/macos/dynamic#dlopen) takes.
 
 <h2 id="rtld-lazy"><code>RTLD_LAZY</code></h2>
 
@@ -37,7 +37,7 @@ pub const RTLD_LAZY: int32 = 1;
 pub const RTLD_NOW: int32 = 2;
 ```
 
-`RTLD_NOW`: resolve every symbol before `dlopen` returns.
+`RTLD_NOW`: resolve every symbol before [`dlopen`](/docs/api/macos/dynamic#dlopen) returns.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Dynamic.rux#L13)
 
@@ -74,3 +74,94 @@ A single dynamic library re-exporting libc, libm, libpthread and the rest; there
 link on Apple platforms.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L15)
+
+<h2 id="dlopen"><code>dlopen</code></h2>
+
+```rux
+pub extern func dlopen(
+    filename: *char8,
+    flags: int32
+) -> *var opaque
+```
+
+Loads a shared object and returns a handle to it, or null on failure.
+A name without a slash is resolved by the loader's own search rules, and one with a slash as a path. A second
+call for an object already loaded returns the same handle and raises its reference count rather than loading
+it twice. Failure is reported through [`dlerror`](/docs/api/macos/dynamic#dlerror), not errno.
+
+**See also**: [https://keith.github.io/xcode-man-pages/dlopen.3.html](https://keith.github.io/xcode-man-pages/dlopen.3.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L215)
+
+**Parameters**
+
+| Name       | Type     | Description                                                                                                                                |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `filename` | `*char8` | a NUL-terminated name or path, or null for the main program                                                                                |
+| `flags`    | `int32`  | [`RTLD_LAZY`](/docs/api/macos/dynamic#rtld-lazy) or [`RTLD_NOW`](/docs/api/macos/dynamic#rtld-now), combined with the other `RTLD_*` flags |
+
+**Returns**: a handle for [`dlsym`](/docs/api/macos/dynamic#dlsym) and [`dlclose`](/docs/api/macos/dynamic#dlclose), or null with the reason in [`dlerror`](/docs/api/macos/dynamic#dlerror)
+
+<h2 id="dlsym"><code>dlsym</code></h2>
+
+```rux
+pub extern func dlsym(
+    handle: *var opaque,
+    symbol: *char8
+) -> *var opaque
+```
+
+Finds a symbol in a loaded object and returns its address, or null.
+A null return is ambiguous, since a symbol whose address is legitimately zero exists. Clear [`dlerror`](/docs/api/macos/dynamic#dlerror) by calling
+it, then call this, then read [`dlerror`](/docs/api/macos/dynamic#dlerror) again to tell the two apart.
+
+**See also**: [https://keith.github.io/xcode-man-pages/dlsym.3.html](https://keith.github.io/xcode-man-pages/dlsym.3.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L225)
+
+**Parameters**
+
+| Name     | Type          | Description                                              |
+| -------- | ------------- | -------------------------------------------------------- |
+| `handle` | `*var opaque` | a handle from [`dlopen`](/docs/api/macos/dynamic#dlopen) |
+| `symbol` | `*char8`      | the NUL-terminated symbol name                           |
+
+**Returns**: the symbol's address, or null
+
+<h2 id="dlclose"><code>dlclose</code></h2>
+
+```rux
+pub extern func dlclose(handle: *var opaque) -> int32
+```
+
+Drops one reference to a loaded object, unloading it when the last one goes.
+Every address obtained from the object through [`dlsym`](/docs/api/macos/dynamic#dlsym) becomes invalid once it is actually unloaded, which this
+gives no way to observe.
+
+**See also**: [https://keith.github.io/xcode-man-pages/dlclose.3.html](https://keith.github.io/xcode-man-pages/dlclose.3.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L234)
+
+**Parameters**
+
+| Name     | Type          | Description                                              |
+| -------- | ------------- | -------------------------------------------------------- |
+| `handle` | `*var opaque` | a handle from [`dlopen`](/docs/api/macos/dynamic#dlopen) |
+
+**Returns**: zero on success, and non-zero with the reason in [`dlerror`](/docs/api/macos/dynamic#dlerror)
+
+<h2 id="dlerror"><code>dlerror</code></h2>
+
+```rux
+pub extern func dlerror() -> *char8
+```
+
+Reports the most recent loader error and clears it, or returns null when there is none.
+The message points at storage the loader owns and a later call may reuse. Reading it clears the error, so two
+calls in a row report the second as no error at all.
+
+**See also**: [https://keith.github.io/xcode-man-pages/dlerror.3.html](https://keith.github.io/xcode-man-pages/dlerror.3.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L242)
+
+**Returns**: a NUL-terminated message, or null

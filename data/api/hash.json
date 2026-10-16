@@ -14,6 +14,11 @@
   },
   "modules": [
     {
+      "name": "Adler",
+      "source": "Src/Adler.rux",
+      "header": "Adler-32, the checksum the zlib format ends with.\nTwo running sums modulo 65521, the largest prime below 2^16: one of the bytes and one of those sums. It is weaker\nthan a CRC on short messages, and kept for the formats that require it rather than recommended for new ones."
+    },
+    {
       "name": "Crc",
       "source": "Src/Crc.rux",
       "header": "CRC-32, the checksum that answers \"did these bytes arrive intact?\" — and its Castagnoli variant, which answers it\nbetter and is what modern formats and hardware use.\nA cyclic redundancy check is division: treat the message as a polynomial over GF(2), divide by a fixed generator,\nand keep the remainder. What that buys over a sum is a guarantee rather than a hope — a 32-bit CRC detects every\nburst error up to 32 bits long, every single-bit and double-bit error, and every error of odd weight, which no\ngeneral-purpose hash promises about anything.\nBoth forms here are the reflected, table-driven ones every implementation uses: bits enter least significant end\nfirst, the state starts at all ones, and the answer is the state complemented. Those three conventions are not\narbitrary — the initial ones make leading zero bytes change the answer, and the final complement makes trailing\nones do the same, so a message padded at either end is not mistaken for the message itself.\nThe two differ only in the generator. CRC-32 uses the IEEE 802.3 polynomial that gzip, PNG and zip all use.\nCRC-32C uses Castagnoli's, which detects more of the double-bit errors that matter at the lengths storage systems\ncare about, and which x86-64 and AArch64 both implement in hardware — iSCSI, ext4, Btrfs and SCTP all chose it.\nThis implementation is the table, not the instruction: correct everywhere, and about a byte per cycle.\nA CRC is a checksum, not a hash and emphatically not a digest. It detects accident, never intent: given any\nmessage and any target value, producing a message with that CRC is arithmetic a beginner can do. It implements\n`Hasher` because feeding it bytes has the same shape, not because it is a substitute for one.\nhttps://datatracker.ietf.org/doc/html/rfc3385"
@@ -40,6 +45,243 @@
     }
   ],
   "items": [
+    {
+      "kind": "struct",
+      "name": "Adler32",
+      "displayName": "Adler32",
+      "module": "Adler",
+      "source": "Src/Adler.rux",
+      "line": 14,
+      "signature": "pub struct Adler32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The Adler-32 of a message, computed a batch of bytes at a time.",
+        "markdown": "The Adler-32 of a message, computed a batch of bytes at a time.\n`Copy`, holding only the two sums, so passing one by value takes a snapshot of the checksum so far.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/hash/adler32"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "low",
+          "type": "uint32",
+          "public": false,
+          "line": 15,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "high",
+          "type": "uint32",
+          "public": false,
+          "line": 16,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Adler32",
+          "line": 23,
+          "signature": "pub func Adler32() -> Adler32",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Adler32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Constructs a checksum with nothing written into it yet.",
+            "markdown": "Constructs a checksum with nothing written into it yet.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a hasher with nothing written to it yet",
+            "see": ["https://rux-lang.dev/docs/api/hash/adler32#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 29,
+          "signature": "pub func Reset(self: &var Adler32)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Adler32",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Puts the checksum back to where `Adler32()` leaves one.",
+            "markdown": "Puts the checksum back to where `Adler32()` leaves one. Everything written so far is forgotten.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/adler32#reset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Value",
+          "line": 38,
+          "signature": "pub func Value(self: &Adler32) -> uint32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Adler32",
+          "returnType": "uint32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The checksum of everything written so far: the second sum in the high half and the first in the low half.",
+            "markdown": "The checksum of everything written so far: the second sum in the high half and the first in the low half.\nWriting more continues from here rather than starting over.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the checksum",
+            "see": ["https://rux-lang.dev/docs/api/hash/adler32#value"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 50,
+          "signature": "pub func Write(self: &var Adler32, bytes: *byte, length: uint)",
+          "typeParams": [],
+          "params": [
+            { "name": "bytes", "type": "*byte" },
+            { "name": "length", "type": "uint" }
+          ],
+          "receiver": "&var Adler32",
+          "returnType": null,
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "Adds `length` bytes at `bytes` to the checksum.",
+            "markdown": "Adds `length` bytes at `bytes` to the checksum. A zero length changes nothing and is the one case in which\n`bytes` may be null. Splitting a message across several writes gives the same answer as one write.\nRuns in time proportional to `length` and allocates nothing.",
+            "typeParams": [],
+            "params": [
+              { "name": "bytes", "markdown": "the bytes to absorb" },
+              { "name": "length", "markdown": "how many bytes; zero absorbs nothing" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/hash/adler32#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Finish",
+          "line": 73,
+          "signature": "pub func Finish(self: &var Adler32) -> uint64",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Adler32",
+          "returnType": "uint64",
+          "value": null,
+          "conformance": "Hasher",
+          "public": true,
+          "doc": {
+            "summary": "The checksum of everything written so far, widened to 64 bits; the upper half is always zero.",
+            "markdown": "The checksum of everything written so far, widened to 64 bits; the upper half is always zero.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the checksum",
+            "see": ["https://rux-lang.dev/docs/api/hash/adler32#finish"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Hasher"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
     {
       "kind": "constant",
       "name": "Crc32Polynomial",
@@ -2005,7 +2247,7 @@
       "displayName": "SipHash24",
       "module": "SipHash",
       "source": "Src/SipHash.rux",
-      "line": 117,
+      "line": 128,
       "signature": "pub struct SipHash24",
       "typeParams": [],
       "doc": {
@@ -2023,7 +2265,7 @@
           "name": "keyLow",
           "type": "uint64",
           "public": false,
-          "line": 119,
+          "line": 130,
           "doc": "The low half of the key, kept so `Reset` can start over from it.",
           "targets": [
             "windows-x86_64",
@@ -2040,7 +2282,7 @@
           "name": "keyHigh",
           "type": "uint64",
           "public": false,
-          "line": 121,
+          "line": 132,
           "doc": "The high half of the key.",
           "targets": [
             "windows-x86_64",
@@ -2057,7 +2299,7 @@
           "name": "state",
           "type": "SipState",
           "public": false,
-          "line": 123,
+          "line": 134,
           "doc": "The four words being mixed.",
           "targets": [
             "windows-x86_64",
@@ -2074,7 +2316,7 @@
           "name": "total",
           "type": "uint64",
           "public": false,
-          "line": 125,
+          "line": 136,
           "doc": "How many bytes have been written in total; its low byte is mixed into the final word.",
           "targets": [
             "windows-x86_64",
@@ -2091,7 +2333,7 @@
           "name": "pending",
           "type": "byte[N]",
           "public": false,
-          "line": 127,
+          "line": 138,
           "doc": "Input that has arrived but does not yet fill an eight-byte word.",
           "targets": [
             "windows-x86_64",
@@ -2108,7 +2350,7 @@
           "name": "buffered",
           "type": "uint",
           "public": false,
-          "line": 129,
+          "line": 140,
           "doc": "How much of `pending` is in use, always under eight.",
           "targets": [
             "windows-x86_64",
@@ -2128,7 +2370,7 @@
         {
           "kind": "associated",
           "name": "WithKey",
-          "line": 142,
+          "line": 153,
           "signature": "pub func WithKey(low: uint64, high: uint64) -> SipHash24",
           "typeParams": [],
           "params": [
@@ -2166,7 +2408,7 @@
         {
           "kind": "associated",
           "name": "WithKeyBytes",
-          "line": 162,
+          "line": 173,
           "signature": "pub func WithKeyBytes(key: *byte) -> SipHash24",
           "typeParams": [],
           "params": [{ "name": "key", "type": "*byte" }],
@@ -2198,7 +2440,7 @@
         {
           "kind": "method",
           "name": "Reset",
-          "line": 178,
+          "line": 189,
           "signature": "pub func Reset(self: &var SipHash24)",
           "typeParams": [],
           "params": [],
@@ -2230,7 +2472,7 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 195,
+          "line": 206,
           "signature": "pub func Write(self: &var SipHash24, bytes: *byte, length: uint)",
           "typeParams": [],
           "params": [
@@ -2268,7 +2510,7 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 240,
+          "line": 251,
           "signature": "pub func Finish(self: &var SipHash24) -> uint64",
           "typeParams": [],
           "params": [],
@@ -2316,7 +2558,7 @@
       "displayName": "SipWord",
       "module": "SipHash",
       "source": "Src/SipHash.rux",
-      "line": 266,
+      "line": 277,
       "signature": "pub func SipWord(bytes: *byte) -> uint64",
       "typeParams": [],
       "doc": {
@@ -2351,7 +2593,7 @@
       "displayName": "SipHash24Of",
       "module": "SipHash",
       "source": "Src/SipHash.rux",
-      "line": 287,
+      "line": 298,
       "signature": "pub func SipHash24Of(bytes: *byte, length: uint, low: uint64, high: uint64) -> uint64",
       "typeParams": [],
       "doc": {

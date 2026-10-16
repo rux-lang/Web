@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/CalendarText.rux
-  line: 21
+  line: 22
 seo:
   title: "OffsetDateTime — Time API"
   description: A date and time together with the offset from UTC they are stated in.
@@ -62,7 +62,7 @@ invalid. Runs in constant time and allocates nothing.
 
 **Returns**: the pairing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L37)
 
 ## Methods
 
@@ -77,7 +77,7 @@ Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the instant, as a timestamp
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L45)
 
 ## Implements Display
 
@@ -107,7 +107,7 @@ and `UnsupportedRequest` for a precision past nine.
 
 **Returns**: success when the whole moment was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L300)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L305)
 
 ## Implements Debug
 
@@ -133,7 +133,7 @@ The failures [`WriteDisplay`](/docs/api/time/offset-date-time#write-display) rep
 
 **Returns**: success when the whole moment was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L315)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L321)
 
 ## Related
 

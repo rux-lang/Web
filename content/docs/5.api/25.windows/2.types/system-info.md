@@ -51,7 +51,7 @@ Cannot fail and reports nothing: the structure is always filled.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsysteminfo](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsysteminfo)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L195)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L231)
 
 **Parameters**
 

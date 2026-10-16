@@ -322,3 +322,126 @@ Only for integer or `bool` `T`.
 **Returns**: the value before
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L217)
+
+## Constants
+
+<h3 id="zero-int8"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<int8> = Atomic<int8> { value: 0i8 };
+```
+
+An atomic `int8` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<int8>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L230)
+
+<h3 id="zero-int16"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<int16> = Atomic<int16> { value: 0i16 };
+```
+
+An atomic `int16` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<int16>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L237)
+
+<h3 id="zero-int32"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<int32> = Atomic<int32> { value: 0i32 };
+```
+
+An atomic `int32` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<int32>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L244)
+
+<h3 id="zero-int64"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<int64> = Atomic<int64> { value: 0i64 };
+```
+
+An atomic `int64` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<int64>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L251)
+
+<h3 id="zero-int"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<int> = Atomic<int> { value: 0 };
+```
+
+An atomic `int` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<int>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L258)
+
+<h3 id="zero-uint8"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<uint8> = Atomic<uint8> { value: 0u8 };
+```
+
+An atomic `uint8` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<uint8>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L265)
+
+<h3 id="zero-uint16"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<uint16> = Atomic<uint16> { value: 0u16 };
+```
+
+An atomic `uint16` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<uint16>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L272)
+
+<h3 id="zero-uint32"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<uint32> = Atomic<uint32> { value: 0u32 };
+```
+
+An atomic `uint32` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<uint32>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L279)
+
+<h3 id="zero-uint64"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<uint64> = Atomic<uint64> { value: 0u64 };
+```
+
+An atomic `uint64` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<uint64>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L286)
+
+<h3 id="zero-uint"><code>Zero</code></h3>
+
+```rux
+pub const Zero: Atomic<uint> = Atomic<uint> { value: 0u };
+```
+
+An atomic `uint` holding zero, as a constant, so a module variable can start as one through an alias of
+[`Atomic<uint>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L293)
+
+<h3 id="false"><code>False</code></h3>
+
+```rux
+pub const False: Atomic<bool> = Atomic<bool> { value: false };
+```
+
+An atomic `bool` holding false, as a constant, so a module variable can start as one through an alias of
+[`Atomic<bool>`](/docs/api/atomic/atomic).
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L300)

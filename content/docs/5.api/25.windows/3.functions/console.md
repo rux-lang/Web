@@ -166,7 +166,7 @@ Retrieves a handle to the specified standard device (standard input, standard ou
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/getstdhandle](https://learn.microsoft.com/en-us/windows/console/getstdhandle)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L228)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L264)
 
 **Parameters**
 
@@ -192,7 +192,7 @@ Reads characters from a console input buffer.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/readconsole](https://learn.microsoft.com/en-us/windows/console/readconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L332)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L368)
 
 **Parameters**
 
@@ -222,7 +222,7 @@ Writes a character string to a console screen buffer beginning at the current cu
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/writeconsole](https://learn.microsoft.com/en-us/windows/console/writeconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L503)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L539)
 
 **Parameters**
 

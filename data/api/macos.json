@@ -48,11 +48,36 @@
       "source": "Src/Memory.rux",
       "header": "Mapping and unmapping address space.\nThere is no `Brk` here. Darwin's `brk` and `sbrk` have been unavailable to 64-bit code since the beginning, and\nthe previous version of this package declared one anyway, through a trap number that was never valid on Apple\nSilicon. Mapping is the only way to get address space on this system."
     },
+    {
+      "name": "Poll",
+      "source": "Src/Poll.rux",
+      "header": "Waiting on many descriptors at once, and descriptors that never wait: `kqueue(2)` and the `O_NONBLOCK` flag.\nA kqueue is itself a descriptor. A `Kevent` both registers interest, as a change, and reports readiness, as an\nevent; reading and writing are separate filters, so a descriptor wanted for both is registered twice. The\nregistrations here are level-triggered: a descriptor is reported for as long as it is ready."
+    },
     { "name": "Process", "source": "Src/Process.rux", "header": "What a process can ask or say about itself." },
+    {
+      "name": "Socket",
+      "source": "Src/Socket.rux",
+      "header": "Sockets: endpoints of network connections and datagrams, reached through the system calls that make and use them.\nAddresses are passed as the `sockaddr` bytes the kernel reads, built by the caller, so these wrappers stay as thin\nas the rest of the package. Name resolution is not a system call and lives in `Rux/Net`."
+    },
+    {
+      "name": "Spawn",
+      "source": "Src/Spawn.rux",
+      "header": "Starting another program, waiting for it, and stopping it.\nA new process is started with the C library's `posix_spawnp`, which runs the setup a child needs between its creation\nand the start of the new program — duplicating descriptors, opening files, changing directory — from a list of\nactions the parent builds, and reports a failure to start as an error number rather than a child that exits. That\nis why this module links a library, and why a program that starts processes is linked dynamically."
+    },
+    {
+      "name": "Thread",
+      "source": "Src/Thread.rux",
+      "header": "Threads of execution, which the C library manages: their stacks, their thread-local blocks and joining them.\nThe kernel only starts and stops a thread; everything a program needs around that belongs to the C library, and a\nthread started behind its back would have no thread-local block. That is why this module links a library, and why\na program that starts threads is linked dynamically.\nThe names are the platform's own, lowercase, because they are the symbols the library exports and what a reader\nporting code will look for."
+    },
     {
       "name": "Types",
       "source": "Src/Types.rux",
       "header": "The Darwin ABI's own types: what a libSystem call takes and gives back.\nThese follow the LP64 data model every supported Apple target uses, so a `long` is 64 bits and the widths below do\nnot vary by architecture."
+    },
+    {
+      "name": "Ulock",
+      "source": "Src/Ulock.rux",
+      "header": "Waiting on a word in memory until another thread changes it, which is what every lock is built on.\n`__ulock_wait` puts the calling thread to sleep only if the word still holds the value the caller last saw, and\nchecks that in the kernel, so a wake that lands between the caller's check and its sleep is never lost. The C++\nstandard library and every other runtime on the platform wait this way; the interface is libSystem's."
     }
   ],
   "items": [
@@ -2460,6 +2485,247 @@
       "targets": ["macos-x86_64", "macos-aarch64"]
     },
     {
+      "kind": "extern",
+      "name": "_NSGetArgc",
+      "displayName": "_NSGetArgc",
+      "module": "LibSystem",
+      "source": "Src/LibSystem.rux",
+      "line": 178,
+      "signature": "pub extern func _NSGetArgc() -> *int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The address of the process's argument count.",
+        "markdown": "The address of the process's argument count.\ndyld fills it before the program starts, from the stack the kernel built. The count belongs to the process for\nits whole life and must not be written.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the address of the argument count, which is never null",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/process#ns-get-argc",
+          "https://keith.github.io/xcode-man-pages/environ.7.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "_NSGetArgv",
+      "displayName": "_NSGetArgv",
+      "module": "LibSystem",
+      "source": "Src/LibSystem.rux",
+      "line": 186,
+      "signature": "pub extern func _NSGetArgv() -> ***char8",
+      "typeParams": [],
+      "doc": {
+        "summary": "The address of the process's argument vector.",
+        "markdown": "The address of the process's argument vector.\nThe vector holds the argument count's worth of NUL-terminated byte strings followed by a null, all owned by the\nprocess for its whole life.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the address of the argument vector, which is never null",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/process#ns-get-argv",
+          "https://keith.github.io/xcode-man-pages/environ.7.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "_NSGetExecutablePath",
+      "displayName": "_NSGetExecutablePath",
+      "module": "LibSystem",
+      "source": "Src/LibSystem.rux",
+      "line": 196,
+      "signature": "pub extern func _NSGetExecutablePath(buffer: *var char8, size: *var uint32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Copies the path of the process's executable into `buffer`, NUL-terminated.",
+        "markdown": "Copies the path of the process's executable into `buffer`, NUL-terminated.\nThe path is the one the executable was loaded by, which may be relative or pass through symbolic links. When\n`buffer` is too short nothing is copied and `size` is set to the size needed.",
+        "typeParams": [],
+        "params": [
+          { "name": "buffer", "markdown": "receives the path" },
+          { "name": "size", "markdown": "the buffer's size in bytes, or the size needed when it is too short" }
+        ],
+        "returns": "zero on success, or -1 when the buffer is too short",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/process#ns-get-executable-path",
+          "https://keith.github.io/xcode-man-pages/dyld.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "_NSGetEnviron",
+      "displayName": "_NSGetEnviron",
+      "module": "LibSystem",
+      "source": "Src/LibSystem.rux",
+      "line": 204,
+      "signature": "pub extern func _NSGetEnviron() -> ***char8",
+      "typeParams": [],
+      "doc": {
+        "summary": "The address of the process's environment vector.",
+        "markdown": "The address of the process's environment vector.\nThe vector holds NUL-terminated `name=value` byte strings ended by a null. It is the C library's own `environ`,\nso a call that changes the environment may replace the vector it points to.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the address of the environment vector, which is never null",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/process#ns-get-environ",
+          "https://keith.github.io/xcode-man-pages/environ.7.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "dlopen",
+      "displayName": "dlopen",
+      "module": "LibSystem",
+      "source": "Src/LibSystem.rux",
+      "line": 215,
+      "signature": "pub extern func dlopen(filename: *char8, flags: int32) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Loads a shared object and returns a handle to it, or null on failure.",
+        "markdown": "Loads a shared object and returns a handle to it, or null on failure.\nA name without a slash is resolved by the loader's own search rules, and one with a slash as a path. A second\ncall for an object already loaded returns the same handle and raises its reference count rather than loading\nit twice. Failure is reported through `dlerror`, not errno.",
+        "typeParams": [],
+        "params": [
+          { "name": "filename", "markdown": "a NUL-terminated name or path, or null for the main program" },
+          { "name": "flags", "markdown": "`RTLD_LAZY` or `RTLD_NOW`, combined with the other `RTLD_*` flags" }
+        ],
+        "returns": "a handle for `dlsym` and `dlclose`, or null with the reason in `dlerror`",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/dynamic#dlopen",
+          "https://keith.github.io/xcode-man-pages/dlopen.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "dlsym",
+      "displayName": "dlsym",
+      "module": "LibSystem",
+      "source": "Src/LibSystem.rux",
+      "line": 225,
+      "signature": "pub extern func dlsym(handle: *var opaque, symbol: *char8) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Finds a symbol in a loaded object and returns its address, or null.",
+        "markdown": "Finds a symbol in a loaded object and returns its address, or null.\nA null return is ambiguous, since a symbol whose address is legitimately zero exists. Clear `dlerror` by calling\nit, then call this, then read `dlerror` again to tell the two apart.",
+        "typeParams": [],
+        "params": [
+          { "name": "handle", "markdown": "a handle from `dlopen`" },
+          { "name": "symbol", "markdown": "the NUL-terminated symbol name" }
+        ],
+        "returns": "the symbol's address, or null",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/dynamic#dlsym",
+          "https://keith.github.io/xcode-man-pages/dlsym.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "dlclose",
+      "displayName": "dlclose",
+      "module": "LibSystem",
+      "source": "Src/LibSystem.rux",
+      "line": 234,
+      "signature": "pub extern func dlclose(handle: *var opaque) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Drops one reference to a loaded object, unloading it when the last one goes.",
+        "markdown": "Drops one reference to a loaded object, unloading it when the last one goes.\nEvery address obtained from the object through `dlsym` becomes invalid once it is actually unloaded, which this\ngives no way to observe.",
+        "typeParams": [],
+        "params": [{ "name": "handle", "markdown": "a handle from `dlopen`" }],
+        "returns": "zero on success, and non-zero with the reason in `dlerror`",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/dynamic#dlclose",
+          "https://keith.github.io/xcode-man-pages/dlclose.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "dlerror",
+      "displayName": "dlerror",
+      "module": "LibSystem",
+      "source": "Src/LibSystem.rux",
+      "line": 242,
+      "signature": "pub extern func dlerror() -> *char8",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reports the most recent loader error and clears it, or returns null when there is none.",
+        "markdown": "Reports the most recent loader error and clears it, or returns null when there is none.\nThe message points at storage the loader owns and a later call may reuse. Reading it clears the error, so two\ncalls in a row report the second as no error at all.",
+        "typeParams": [],
+        "params": [],
+        "returns": "a NUL-terminated message, or null",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/dynamic#dlerror",
+          "https://keith.github.io/xcode-man-pages/dlerror.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
       "kind": "constant",
       "name": "ProtectionNone",
       "displayName": "ProtectionNone",
@@ -2894,6 +3160,473 @@
       "targets": ["macos-x86_64", "macos-aarch64"]
     },
     {
+      "kind": "constant",
+      "name": "F_GETFL",
+      "displayName": "F_GETFL",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 11,
+      "signature": "pub const F_GETFL: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`F_GETFL`: the `fcntl` command that reads a descriptor's status flags.",
+        "markdown": "`F_GETFL`: the `fcntl` command that reads a descriptor's status flags.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#f-getfl"],
+        "deprecated": null
+      },
+      "value": "3",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "F_SETFL",
+      "displayName": "F_SETFL",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 16,
+      "signature": "pub const F_SETFL: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`F_SETFL`: the `fcntl` command that sets a descriptor's status flags.",
+        "markdown": "`F_SETFL`: the `fcntl` command that sets a descriptor's status flags.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#f-setfl"],
+        "deprecated": null
+      },
+      "value": "4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "O_NONBLOCK",
+      "displayName": "O_NONBLOCK",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 21,
+      "signature": "pub const O_NONBLOCK: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`O_NONBLOCK`: the status flag that makes a call fail with `EAGAIN` rather than wait.",
+        "markdown": "`O_NONBLOCK`: the status flag that makes a call fail with `EAGAIN` rather than wait.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#o-nonblock"],
+        "deprecated": null
+      },
+      "value": "0x4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EVFILT_READ",
+      "displayName": "EVFILT_READ",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 26,
+      "signature": "pub const EVFILT_READ: int16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EVFILT_READ`: the filter that reports a descriptor with something to read, or a connection to accept.",
+        "markdown": "`EVFILT_READ`: the filter that reports a descriptor with something to read, or a connection to accept.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#evfilt-read"],
+        "deprecated": null
+      },
+      "value": "-1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EVFILT_WRITE",
+      "displayName": "EVFILT_WRITE",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 31,
+      "signature": "pub const EVFILT_WRITE: int16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EVFILT_WRITE`: the filter that reports a descriptor a write would not wait on.",
+        "markdown": "`EVFILT_WRITE`: the filter that reports a descriptor a write would not wait on.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#evfilt-write"],
+        "deprecated": null
+      },
+      "value": "-2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EV_ADD",
+      "displayName": "EV_ADD",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 36,
+      "signature": "pub const EV_ADD: uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EV_ADD`: add the change's filter, or update it.",
+        "markdown": "`EV_ADD`: add the change's filter, or update it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#ev-add"],
+        "deprecated": null
+      },
+      "value": "0x1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EV_DELETE",
+      "displayName": "EV_DELETE",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 41,
+      "signature": "pub const EV_DELETE: uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EV_DELETE`: remove the change's filter.",
+        "markdown": "`EV_DELETE`: remove the change's filter.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#ev-delete"],
+        "deprecated": null
+      },
+      "value": "0x2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EV_RECEIPT",
+      "displayName": "EV_RECEIPT",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 46,
+      "signature": "pub const EV_RECEIPT: uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EV_RECEIPT`: report each change as an event, with its outcome in `data`, rather than waiting.",
+        "markdown": "`EV_RECEIPT`: report each change as an event, with its outcome in `data`, rather than waiting.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#ev-receipt"],
+        "deprecated": null
+      },
+      "value": "0x40",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EV_ERROR",
+      "displayName": "EV_ERROR",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 51,
+      "signature": "pub const EV_ERROR: uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EV_ERROR`: set on an event that reports a failed change, with the error number in `data`.",
+        "markdown": "`EV_ERROR`: set on an event that reports a failed change, with the error number in `data`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#ev-error"],
+        "deprecated": null
+      },
+      "value": "0x4000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "EV_EOF",
+      "displayName": "EV_EOF",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 56,
+      "signature": "pub const EV_EOF: uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`EV_EOF`: the peer has closed its side.",
+        "markdown": "`EV_EOF`: the peer has closed its side.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#ev-eof"],
+        "deprecated": null
+      },
+      "value": "0x8000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "Kevent",
+      "displayName": "Kevent",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 60,
+      "signature": "pub struct Kevent",
+      "typeParams": [],
+      "doc": {
+        "summary": "One `struct kevent` as 64-bit macOS lays it out: a change to register or an event to report.",
+        "markdown": "One `struct kevent` as 64-bit macOS lays it out: a change to register or an event to report.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/poll#kevent"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "ident",
+          "type": "uint64",
+          "public": true,
+          "line": 62,
+          "doc": "The descriptor.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "filter",
+          "type": "int16",
+          "public": true,
+          "line": 64,
+          "doc": "`EVFILT_READ` or `EVFILT_WRITE`.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "flags",
+          "type": "uint16",
+          "public": true,
+          "line": 66,
+          "doc": "`EV_ADD`, `EV_DELETE` and the flags reported back, such as `EV_EOF` and `EV_ERROR`.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "filterFlags",
+          "type": "uint32",
+          "public": true,
+          "line": 68,
+          "doc": "Filter-specific flags.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "data",
+          "type": "int64",
+          "public": true,
+          "line": 70,
+          "doc": "Filter-specific data: bytes ready, or an error number.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "userData",
+          "type": "uint64",
+          "public": true,
+          "line": 72,
+          "doc": "The word the caller chose, reported back with every event.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Of",
+          "line": 83,
+          "signature": "pub func Of(ident: uint64, filter: int16, flags: uint16, userData: uint64) -> Kevent",
+          "typeParams": [],
+          "params": [
+            { "name": "ident", "type": "uint64" },
+            { "name": "filter", "type": "int16" },
+            { "name": "flags", "type": "uint16" },
+            { "name": "userData", "type": "uint64" }
+          ],
+          "receiver": null,
+          "returnType": "Kevent",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A change or an empty event: `filter` on `ident` with `flags`, reporting `userData`.",
+            "markdown": "A change or an empty event: `filter` on `ident` with `flags`, reporting `userData`.",
+            "typeParams": [],
+            "params": [
+              { "name": "ident", "markdown": "the descriptor" },
+              { "name": "filter", "markdown": "the filter" },
+              { "name": "flags", "markdown": "such as `EV_ADD`" },
+              { "name": "userData", "markdown": "the word to report" }
+            ],
+            "returns": "the kevent",
+            "see": ["https://rux-lang.dev/docs/api/macos/poll#kevent-new"],
+            "deprecated": null
+          },
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        }
+      ],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "FcntlInt",
+      "displayName": "FcntlInt",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 102,
+      "signature": "pub func FcntlInt(fd: FileDescriptor, command: int32, argument: int64) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Performs `command` on a descriptor with an integer argument.",
+        "markdown": "Performs `command` on a descriptor with an integer argument.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the descriptor" },
+          { "name": "command", "markdown": "such as `F_GETFL` or `F_SETFL`" },
+          { "name": "argument", "markdown": "the command's argument, or zero" }
+        ],
+        "returns": "the command's result, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/poll#fcntl-int",
+          "https://keith.github.io/xcode-man-pages/fcntl.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Kqueue",
+      "displayName": "Kqueue",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 110,
+      "signature": "pub func Kqueue() -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Opens a kqueue.",
+        "markdown": "Opens a kqueue.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the kqueue's descriptor, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/poll#kqueue",
+          "https://keith.github.io/xcode-man-pages/kqueue.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "KeventCall",
+      "displayName": "KeventCall",
+      "module": "Poll",
+      "source": "Src/Poll.rux",
+      "line": 124,
+      "signature": "pub func KeventCall(queue: FileDescriptor, changes: *Kevent, changeCount: int32, events: *var Kevent, eventCount: int32, timeout: *Timespec) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Applies `changeCount` changes, then waits until an event is ready or `timeout` passes, filling `events`.",
+        "markdown": "Applies `changeCount` changes, then waits until an event is ready or `timeout` passes, filling `events`.",
+        "typeParams": [],
+        "params": [
+          { "name": "queue", "markdown": "the kqueue" },
+          { "name": "changes", "markdown": "the changes to apply, or null" },
+          { "name": "changeCount", "markdown": "how many changes there are" },
+          { "name": "events", "markdown": "room for `eventCount` events, or null" },
+          { "name": "eventCount", "markdown": "how many events fit" },
+          { "name": "timeout", "markdown": "how long to wait, or null to wait without end" }
+        ],
+        "returns": "how many events were filled, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/poll#kevent-call",
+          "https://keith.github.io/xcode-man-pages/kevent.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
       "kind": "function",
       "name": "Exit",
       "displayName": "Exit",
@@ -2935,6 +3668,1717 @@
         "params": [],
         "returns": "the calling process's identifier",
         "see": ["https://rux-lang.dev/docs/api/macos/process#get-pid"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "AF_INET",
+      "displayName": "AF_INET",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 10,
+      "signature": "pub const AF_INET: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`AF_INET`: the IPv4 address family.",
+        "markdown": "`AF_INET`: the IPv4 address family.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#af-inet"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "AF_INET6",
+      "displayName": "AF_INET6",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 15,
+      "signature": "pub const AF_INET6: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`AF_INET6`: the IPv6 address family.",
+        "markdown": "`AF_INET6`: the IPv6 address family.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#af-inet6"],
+        "deprecated": null
+      },
+      "value": "30",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOCK_STREAM",
+      "displayName": "SOCK_STREAM",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 20,
+      "signature": "pub const SOCK_STREAM: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOCK_STREAM`: a connected byte stream.",
+        "markdown": "`SOCK_STREAM`: a connected byte stream.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#sock-stream"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOCK_DGRAM",
+      "displayName": "SOCK_DGRAM",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 25,
+      "signature": "pub const SOCK_DGRAM: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOCK_DGRAM`: individual datagrams.",
+        "markdown": "`SOCK_DGRAM`: individual datagrams.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#sock-dgram"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOL_SOCKET",
+      "displayName": "SOL_SOCKET",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 30,
+      "signature": "pub const SOL_SOCKET: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOL_SOCKET`: the level of the options every socket has.",
+        "markdown": "`SOL_SOCKET`: the level of the options every socket has.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#sol-socket"],
+        "deprecated": null
+      },
+      "value": "0xffff",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SO_REUSEADDR",
+      "displayName": "SO_REUSEADDR",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 35,
+      "signature": "pub const SO_REUSEADDR: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SO_REUSEADDR`: let a listening address be bound again while old connections to it wind down.",
+        "markdown": "`SO_REUSEADDR`: let a listening address be bound again while old connections to it wind down.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#so-reuseaddr"],
+        "deprecated": null
+      },
+      "value": "4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SO_RCVTIMEO",
+      "displayName": "SO_RCVTIMEO",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 40,
+      "signature": "pub const SO_RCVTIMEO: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SO_RCVTIMEO`: how long a receive waits.",
+        "markdown": "`SO_RCVTIMEO`: how long a receive waits.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#so-rcvtimeo"],
+        "deprecated": null
+      },
+      "value": "0x1006",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SO_SNDTIMEO",
+      "displayName": "SO_SNDTIMEO",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 45,
+      "signature": "pub const SO_SNDTIMEO: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SO_SNDTIMEO`: how long a send waits.",
+        "markdown": "`SO_SNDTIMEO`: how long a send waits.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#so-sndtimeo"],
+        "deprecated": null
+      },
+      "value": "0x1005",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IPPROTO_TCP",
+      "displayName": "IPPROTO_TCP",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 50,
+      "signature": "pub const IPPROTO_TCP: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IPPROTO_TCP`: the level of TCP's options.",
+        "markdown": "`IPPROTO_TCP`: the level of TCP's options.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#ipproto-tcp"],
+        "deprecated": null
+      },
+      "value": "6",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "TCP_NODELAY",
+      "displayName": "TCP_NODELAY",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 55,
+      "signature": "pub const TCP_NODELAY: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`TCP_NODELAY`: send small writes at once rather than gathering them.",
+        "markdown": "`TCP_NODELAY`: send small writes at once rather than gathering them.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#tcp-nodelay"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IPPROTO_IPV6",
+      "displayName": "IPPROTO_IPV6",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 60,
+      "signature": "pub const IPPROTO_IPV6: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IPPROTO_IPV6`: the level of IPv6's options.",
+        "markdown": "`IPPROTO_IPV6`: the level of IPv6's options.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#ipproto-ipv6"],
+        "deprecated": null
+      },
+      "value": "41",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IPV6_V6ONLY",
+      "displayName": "IPV6_V6ONLY",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 65,
+      "signature": "pub const IPV6_V6ONLY: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.",
+        "markdown": "`IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#ipv6-v6only"],
+        "deprecated": null
+      },
+      "value": "27",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SO_NOSIGPIPE",
+      "displayName": "SO_NOSIGPIPE",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 70,
+      "signature": "pub const SO_NOSIGPIPE: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SO_NOSIGPIPE`: report a closed peer as an error rather than with `SIGPIPE`.",
+        "markdown": "`SO_NOSIGPIPE`: report a closed peer as an error rather than with `SIGPIPE`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/socket#so-nosigpipe"],
+        "deprecated": null
+      },
+      "value": "0x1022",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Socket",
+      "displayName": "Socket",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 94,
+      "signature": "pub func Socket(domain: int32, kind: int32, protocol: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Opens a socket.",
+        "markdown": "Opens a socket.",
+        "typeParams": [],
+        "params": [
+          { "name": "domain", "markdown": "the address family, such as `AF_INET`" },
+          { "name": "kind", "markdown": "the socket type, such as `SOCK_STREAM`, combined with `SOCK_CLOEXEC`" },
+          { "name": "protocol", "markdown": "the protocol, or zero for the family's default" }
+        ],
+        "returns": "the new descriptor, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#socket",
+          "https://keith.github.io/xcode-man-pages/socket.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Connect",
+      "displayName": "Connect",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 105,
+      "signature": "pub func Connect(fd: FileDescriptor, address: *opaque, length: uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Connects a socket to `address`, waiting for a stream connection to be made.",
+        "markdown": "Connects a socket to `address`, waiting for a stream connection to be made.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "address", "markdown": "the address, a `sockaddr`" },
+          { "name": "length", "markdown": "the address's size in bytes" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#connect",
+          "https://keith.github.io/xcode-man-pages/connect.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Bind",
+      "displayName": "Bind",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 116,
+      "signature": "pub func Bind(fd: FileDescriptor, address: *opaque, length: uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Gives a socket its local address.",
+        "markdown": "Gives a socket its local address.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "address", "markdown": "the address, a `sockaddr`" },
+          { "name": "length", "markdown": "the address's size in bytes" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#bind",
+          "https://keith.github.io/xcode-man-pages/bind.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Listen",
+      "displayName": "Listen",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 126,
+      "signature": "pub func Listen(fd: FileDescriptor, backlog: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Makes a bound stream socket accept connections.",
+        "markdown": "Makes a bound stream socket accept connections.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "backlog", "markdown": "how many connections may wait to be accepted" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#listen",
+          "https://keith.github.io/xcode-man-pages/listen.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Accept4",
+      "displayName": "Accept4",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 138,
+      "signature": "pub func Accept4(fd: FileDescriptor, address: *var opaque, length: *var uint32, flags: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Accepts a waiting connection as a new socket.",
+        "markdown": "Accepts a waiting connection as a new socket.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the listening socket" },
+          { "name": "address", "markdown": "receives the peer's address, or null" },
+          { "name": "length", "markdown": "the address buffer's size, then the address's, or null" },
+          {
+            "name": "flags",
+            "markdown": "ignored: macOS has no `accept4`, and the new socket is closed on exec by the caller if wanted"
+          }
+        ],
+        "returns": "the new descriptor, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#accept4",
+          "https://keith.github.io/xcode-man-pages/accept.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "SendTo",
+      "displayName": "SendTo",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 152,
+      "signature": "pub func SendTo(fd: FileDescriptor, buffer: *opaque, count: uint, flags: int32, address: *opaque, length: uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sends bytes on a socket, to `address` when it is not connected.",
+        "markdown": "Sends bytes on a socket, to `address` when it is not connected.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "buffer", "markdown": "the bytes" },
+          { "name": "count", "markdown": "how many" },
+          { "name": "flags", "markdown": "flags such as `MSG_NOSIGNAL`" },
+          { "name": "address", "markdown": "the destination, or null for a connected socket" },
+          { "name": "length", "markdown": "the destination's size" }
+        ],
+        "returns": "the bytes sent, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#sendto",
+          "https://keith.github.io/xcode-man-pages/sendto.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "ReceiveFrom",
+      "displayName": "ReceiveFrom",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 166,
+      "signature": "pub func ReceiveFrom(fd: FileDescriptor, buffer: *var opaque, count: uint, flags: int32, address: *var opaque, length: *var uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Receives bytes from a socket, and where they came from.",
+        "markdown": "Receives bytes from a socket, and where they came from.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "buffer", "markdown": "receives the bytes" },
+          { "name": "count", "markdown": "how many fit" },
+          { "name": "flags", "markdown": "flags, or zero" },
+          { "name": "address", "markdown": "receives the sender's address, or null" },
+          { "name": "length", "markdown": "the address buffer's size, then the address's, or null" }
+        ],
+        "returns": "the bytes received, zero once a stream's peer closed it, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#receivefrom",
+          "https://keith.github.io/xcode-man-pages/recvfrom.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "Shutdown",
+      "displayName": "Shutdown",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 176,
+      "signature": "pub func Shutdown(fd: FileDescriptor, how: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Ends one or both directions of a connection.",
+        "markdown": "Ends one or both directions of a connection.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "how", "markdown": "`SHUT_RD`, `SHUT_WR` or `SHUT_RDWR`" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#shutdown",
+          "https://keith.github.io/xcode-man-pages/shutdown.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "SetSocketOption",
+      "displayName": "SetSocketOption",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 189,
+      "signature": "pub func SetSocketOption(fd: FileDescriptor, level: int32, name: int32, value: *opaque, length: uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets a socket option.",
+        "markdown": "Sets a socket option.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "level", "markdown": "the option's level, such as `SOL_SOCKET`" },
+          { "name": "name", "markdown": "the option" },
+          { "name": "value", "markdown": "the option's value" },
+          { "name": "length", "markdown": "the value's size in bytes" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#setsocketoption",
+          "https://keith.github.io/xcode-man-pages/setsockopt.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "GetSocketName",
+      "displayName": "GetSocketName",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 200,
+      "signature": "pub func GetSocketName(fd: FileDescriptor, address: *var opaque, length: *var uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a socket's local address.",
+        "markdown": "Reads a socket's local address.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "address", "markdown": "receives the address" },
+          { "name": "length", "markdown": "the buffer's size, then the address's" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#getsocketname",
+          "https://keith.github.io/xcode-man-pages/getsockname.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "function",
+      "name": "GetPeerName",
+      "displayName": "GetPeerName",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 211,
+      "signature": "pub func GetPeerName(fd: FileDescriptor, address: *var opaque, length: *var uint32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads the address of a connected socket's peer.",
+        "markdown": "Reads the address of a connected socket's peer.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the socket" },
+          { "name": "address", "markdown": "receives the address" },
+          { "name": "length", "markdown": "the buffer's size, then the address's" }
+        ],
+        "returns": "zero, or a negative error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/socket#getpeername",
+          "https://keith.github.io/xcode-man-pages/getpeername.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "AddressInfo",
+      "displayName": "AddressInfo",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 217,
+      "signature": "pub struct AddressInfo",
+      "typeParams": [],
+      "doc": {
+        "summary": "The C library's `addrinfo`: one result of `getaddrinfo`, linked to the next.",
+        "markdown": "The C library's `addrinfo`: one result of `getaddrinfo`, linked to the next.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/resolve#address-info"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "flags",
+          "type": "int32",
+          "public": true,
+          "line": 219,
+          "doc": "Flags such as `AI_PASSIVE`.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "family",
+          "type": "int32",
+          "public": true,
+          "line": 221,
+          "doc": "The address family, or zero for any.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "socketType",
+          "type": "int32",
+          "public": true,
+          "line": 223,
+          "doc": "The socket type, or zero for any.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "protocol",
+          "type": "int32",
+          "public": true,
+          "line": 225,
+          "doc": "The protocol, or zero for any.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "addressLength",
+          "type": "uint32",
+          "public": true,
+          "line": 227,
+          "doc": "The size of `address` in bytes.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "canonicalName",
+          "type": "*char8",
+          "public": true,
+          "line": 229,
+          "doc": "The host's canonical name, or null.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "address",
+          "type": "*opaque",
+          "public": true,
+          "line": 231,
+          "doc": "The address, a `sockaddr`.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        },
+        {
+          "name": "next",
+          "type": "*var AddressInfo",
+          "public": true,
+          "line": 233,
+          "doc": "The next result, or null after the last.",
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "getaddrinfo",
+      "displayName": "getaddrinfo",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 246,
+      "signature": "pub extern func getaddrinfo(node: *char8, service: *char8, hints: *AddressInfo, result: *var *var AddressInfo) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Looks up the addresses of a host and service.",
+        "markdown": "Looks up the addresses of a host and service.",
+        "typeParams": [],
+        "params": [
+          { "name": "node", "markdown": "the host name or numeric address, NUL-terminated, or null" },
+          { "name": "service", "markdown": "the service name or port number, NUL-terminated, or null" },
+          { "name": "hints", "markdown": "what kind of results are wanted, or null for every kind" },
+          { "name": "result", "markdown": "receives the first result, freed with `freeaddrinfo`" }
+        ],
+        "returns": "zero, or an `EAI_*` code",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/resolve#getaddrinfo",
+          "https://keith.github.io/xcode-man-pages/getaddrinfo.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "freeaddrinfo",
+      "displayName": "freeaddrinfo",
+      "module": "Socket",
+      "source": "Src/Socket.rux",
+      "line": 252,
+      "signature": "pub extern func freeaddrinfo(info: *var AddressInfo)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Frees the results of `getaddrinfo`.",
+        "markdown": "Frees the results of `getaddrinfo`.",
+        "typeParams": [],
+        "params": [{ "name": "info", "markdown": "the first result" }],
+        "returns": null,
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/resolve#freeaddrinfo",
+          "https://keith.github.io/xcode-man-pages/freeaddrinfo.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "SpawnFileActions",
+      "displayName": "SpawnFileActions",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 13,
+      "signature": "pub struct SpawnFileActions",
+      "typeParams": [],
+      "doc": {
+        "summary": "Room for a `posix_spawn_file_actions_t`, which each C library sizes its own way and none larger than this.",
+        "markdown": "Room for a `posix_spawn_file_actions_t`, which each C library sizes its own way and none larger than this.\nOnly ever passed by address to the `posix_spawn_file_actions_*` calls, which initialize and read it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/spawn#spawn-file-actions"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "storage",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 14,
+          "doc": null,
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "SpawnFileActions",
+          "line": 21,
+          "signature": "pub func SpawnFileActions() -> SpawnFileActions",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "SpawnFileActions",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Zeroed storage for `posix_spawn_file_actions_init` to initialize.",
+            "markdown": "Zeroed storage for `posix_spawn_file_actions_init` to initialize.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the storage",
+            "see": ["https://rux-lang.dev/docs/api/macos/spawn#spawn-file-actions-new"],
+            "deprecated": null
+          },
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        }
+      ],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "F_SETFD",
+      "displayName": "F_SETFD",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 29,
+      "signature": "pub const F_SETFD: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`F_SETFD`: the `fcntl` command that sets a descriptor's flags.",
+        "markdown": "`F_SETFD`: the `fcntl` command that sets a descriptor's flags.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/spawn#f-setfd"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "FD_CLOEXEC",
+      "displayName": "FD_CLOEXEC",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 34,
+      "signature": "pub const FD_CLOEXEC: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`FD_CLOEXEC`: close the descriptor when the process starts another program.",
+        "markdown": "`FD_CLOEXEC`: close the descriptor when the process starts another program.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/spawn#fd-cloexec"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WNOHANG",
+      "displayName": "WNOHANG",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 39,
+      "signature": "pub const WNOHANG: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WNOHANG`: have `waitpid` return at once when the child has not finished.",
+        "markdown": "`WNOHANG`: have `waitpid` return at once when the child has not finished.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/spawn#wnohang"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SIGKILL",
+      "displayName": "SIGKILL",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 44,
+      "signature": "pub const SIGKILL: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SIGKILL`: the signal that ends a process at once and cannot be caught.",
+        "markdown": "`SIGKILL`: the signal that ends a process at once and cannot be caught.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/spawn#sigkill"],
+        "deprecated": null
+      },
+      "value": "9",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawnp",
+      "displayName": "posix_spawnp",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 58,
+      "signature": "pub extern func posix_spawnp(pid: *var int32, file: *char8, fileActions: *SpawnFileActions, attributes: *opaque, arguments: **char8, environment: **char8) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Starts `file`, found through `PATH` when it has no slash, as a child process.",
+        "markdown": "Starts `file`, found through `PATH` when it has no slash, as a child process.",
+        "typeParams": [],
+        "params": [
+          { "name": "pid", "markdown": "receives the child's process identifier" },
+          { "name": "file", "markdown": "the program, NUL-terminated" },
+          {
+            "name": "fileActions",
+            "markdown": "the descriptor and directory setup to run in the child first, or null"
+          },
+          { "name": "attributes", "markdown": "spawn attributes, or null for the defaults" },
+          { "name": "arguments", "markdown": "the argument vector, its first entry the program's name, ended by null" },
+          { "name": "environment", "markdown": "the environment, `NAME=VALUE` entries ended by null" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/spawn#posix-spawnp",
+          "https://keith.github.io/xcode-man-pages/posix_spawn.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_init",
+      "displayName": "posix_spawn_file_actions_init",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 66,
+      "signature": "pub extern func posix_spawn_file_actions_init(actions: *var SpawnFileActions) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Initializes an empty list of file actions.",
+        "markdown": "Initializes an empty list of file actions.",
+        "typeParams": [],
+        "params": [{ "name": "actions", "markdown": "the storage to initialize" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/spawn#posix-spawn-file-actions-init",
+          "https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_init.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_destroy",
+      "displayName": "posix_spawn_file_actions_destroy",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 73,
+      "signature": "pub extern func posix_spawn_file_actions_destroy(actions: *var SpawnFileActions) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Releases what `posix_spawn_file_actions_init` and the actions added since set up.",
+        "markdown": "Releases what `posix_spawn_file_actions_init` and the actions added since set up.",
+        "typeParams": [],
+        "params": [{ "name": "actions", "markdown": "initialized file actions" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/spawn#posix-spawn-file-actions-destroy",
+          "https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_destroy.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_adddup2",
+      "displayName": "posix_spawn_file_actions_adddup2",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 82,
+      "signature": "pub extern func posix_spawn_file_actions_adddup2(actions: *var SpawnFileActions, fd: int32, newFd: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Adds an action duplicating `fd` onto `newFd` in the child.",
+        "markdown": "Adds an action duplicating `fd` onto `newFd` in the child.",
+        "typeParams": [],
+        "params": [
+          { "name": "actions", "markdown": "initialized file actions" },
+          { "name": "fd", "markdown": "the descriptor to duplicate" },
+          { "name": "newFd", "markdown": "the descriptor it becomes" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/spawn#posix-spawn-file-actions-adddup2",
+          "https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_adddup2.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_addopen",
+      "displayName": "posix_spawn_file_actions_addopen",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 93,
+      "signature": "pub extern func posix_spawn_file_actions_addopen(actions: *var SpawnFileActions, fd: int32, path: *char8, flags: int32, mode: FileMode) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Adds an action opening `path` as `fd` in the child.",
+        "markdown": "Adds an action opening `path` as `fd` in the child.",
+        "typeParams": [],
+        "params": [
+          { "name": "actions", "markdown": "initialized file actions" },
+          { "name": "fd", "markdown": "the descriptor the file becomes" },
+          { "name": "path", "markdown": "the file, NUL-terminated" },
+          { "name": "flags", "markdown": "the open flags" },
+          { "name": "mode", "markdown": "the permissions of a file the open creates" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/spawn#posix-spawn-file-actions-addopen",
+          "https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_addopen.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "posix_spawn_file_actions_addchdir_np",
+      "displayName": "posix_spawn_file_actions_addchdir_np",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 102,
+      "signature": "pub extern func posix_spawn_file_actions_addchdir_np(actions: *var SpawnFileActions, path: *char8) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Adds an action changing the child's working directory to `path`.",
+        "markdown": "Adds an action changing the child's working directory to `path`.",
+        "typeParams": [],
+        "params": [
+          { "name": "actions", "markdown": "initialized file actions" },
+          { "name": "path", "markdown": "the directory, NUL-terminated" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/spawn#posix-spawn-file-actions-addchdir-np",
+          "https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_addchdir_np.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "waitpid",
+      "displayName": "waitpid",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 111,
+      "signature": "pub extern func waitpid(pid: int32, status: *var int32, options: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Waits for a child to change state, and reports how it finished.",
+        "markdown": "Waits for a child to change state, and reports how it finished.",
+        "typeParams": [],
+        "params": [
+          { "name": "pid", "markdown": "the child's process identifier" },
+          { "name": "status", "markdown": "receives the encoded status" },
+          {
+            "name": "options",
+            "markdown": "zero to wait, or `WNOHANG` to return at once when the child is still running"
+          }
+        ],
+        "returns": "the child's identifier, zero with `WNOHANG` when it is still running, or -1 with the reason in errno",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/spawn#waitpid",
+          "https://keith.github.io/xcode-man-pages/waitpid.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "kill",
+      "displayName": "kill",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 119,
+      "signature": "pub extern func kill(pid: int32, signal: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sends a signal to a process.",
+        "markdown": "Sends a signal to a process.",
+        "typeParams": [],
+        "params": [
+          { "name": "pid", "markdown": "the process" },
+          { "name": "signal", "markdown": "the signal number, such as `SIGKILL`" }
+        ],
+        "returns": "zero, or -1 with the reason in errno",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/spawn#kill",
+          "https://keith.github.io/xcode-man-pages/kill.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "fcntl",
+      "displayName": "fcntl",
+      "module": "Spawn",
+      "source": "Src/Spawn.rux",
+      "line": 127,
+      "signature": "pub extern func fcntl(fd: int32, command: int32, ...) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Performs a control operation on a descriptor, such as setting its flags with `F_SETFD`.",
+        "markdown": "Performs a control operation on a descriptor, such as setting its flags with `F_SETFD`.",
+        "typeParams": [],
+        "params": [
+          { "name": "fd", "markdown": "the descriptor" },
+          { "name": "command", "markdown": "the operation" }
+        ],
+        "returns": "the operation's result, or -1 with the reason in errno",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/spawn#fcntl",
+          "https://keith.github.io/xcode-man-pages/fcntl.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "type",
+      "name": "PThread",
+      "displayName": "PThread",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 13,
+      "signature": "pub type PThread = uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "A thread as the C library names it, `pthread_t`.",
+        "markdown": "A thread as the C library names it, `pthread_t`. Every system this package family binds keeps it in one word.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/thread#p-thread"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "PThreadAttributes",
+      "displayName": "PThreadAttributes",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 18,
+      "signature": "pub struct PThreadAttributes",
+      "typeParams": [],
+      "doc": {
+        "summary": "Room for a `pthread_attr_t`, which each C library sizes its own way and none larger than this.",
+        "markdown": "Room for a `pthread_attr_t`, which each C library sizes its own way and none larger than this.\nOnly ever passed by address to the `pthread_attr_*` calls, which initialize and read it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/thread#p-thread-attributes"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "storage",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 19,
+          "doc": null,
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "PThreadAttributes",
+          "line": 26,
+          "signature": "pub func PThreadAttributes() -> PThreadAttributes",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "PThreadAttributes",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Zeroed storage for `pthread_attr_init` to initialize.",
+            "markdown": "Zeroed storage for `pthread_attr_init` to initialize.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the storage",
+            "see": ["https://rux-lang.dev/docs/api/macos/thread#p-thread-attributes-new"],
+            "deprecated": null
+          },
+          "targets": ["macos-x86_64", "macos-aarch64"]
+        }
+      ],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SC_NPROCESSORS_ONLN",
+      "displayName": "SC_NPROCESSORS_ONLN",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 34,
+      "signature": "pub const SC_NPROCESSORS_ONLN: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`_SC_NPROCESSORS_ONLN`: the `sysconf` name for the number of processors currently online.",
+        "markdown": "`_SC_NPROCESSORS_ONLN`: the `sysconf` name for the number of processors currently online.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/thread#sc-nprocessors-onln"],
+        "deprecated": null
+      },
+      "value": "58",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_create",
+      "displayName": "pthread_create",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 46,
+      "signature": "pub extern func pthread_create(thread: *var PThread, attributes: *PThreadAttributes, start: *opaque, argument: *var opaque) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Starts a thread running `start(argument)`.",
+        "markdown": "Starts a thread running `start(argument)`.",
+        "typeParams": [],
+        "params": [
+          { "name": "thread", "markdown": "receives the new thread" },
+          { "name": "attributes", "markdown": "initialized attributes, or null for the defaults" },
+          { "name": "start", "markdown": "the thread's entry point, a function taking and returning one pointer" },
+          { "name": "argument", "markdown": "the value handed to the entry point" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/thread#pthread-create",
+          "https://keith.github.io/xcode-man-pages/pthread_create.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_join",
+      "displayName": "pthread_join",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 55,
+      "signature": "pub extern func pthread_join(thread: PThread, result: *var *var opaque) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Waits for a thread to finish and releases it.",
+        "markdown": "Waits for a thread to finish and releases it.",
+        "typeParams": [],
+        "params": [
+          { "name": "thread", "markdown": "a thread nothing has joined or detached" },
+          { "name": "result", "markdown": "receives the value its entry point returned, or null to ignore it" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/thread#pthread-join",
+          "https://keith.github.io/xcode-man-pages/pthread_join.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_detach",
+      "displayName": "pthread_detach",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 62,
+      "signature": "pub extern func pthread_detach(thread: PThread) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Lets a thread release itself when it finishes, so nothing has to join it.",
+        "markdown": "Lets a thread release itself when it finishes, so nothing has to join it.",
+        "typeParams": [],
+        "params": [{ "name": "thread", "markdown": "a thread nothing has joined or detached" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/thread#pthread-detach",
+          "https://keith.github.io/xcode-man-pages/pthread_detach.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_attr_init",
+      "displayName": "pthread_attr_init",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 69,
+      "signature": "pub extern func pthread_attr_init(attributes: *var PThreadAttributes) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Initializes thread attributes to the defaults.",
+        "markdown": "Initializes thread attributes to the defaults.",
+        "typeParams": [],
+        "params": [{ "name": "attributes", "markdown": "the storage to initialize" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/thread#pthread-attr-init",
+          "https://keith.github.io/xcode-man-pages/pthread_attr_init.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_attr_setstacksize",
+      "displayName": "pthread_attr_setstacksize",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 77,
+      "signature": "pub extern func pthread_attr_setstacksize(attributes: *var PThreadAttributes, size: uint) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets the stack size a thread started with these attributes gets.",
+        "markdown": "Sets the stack size a thread started with these attributes gets.",
+        "typeParams": [],
+        "params": [
+          { "name": "attributes", "markdown": "initialized attributes" },
+          { "name": "size", "markdown": "the stack size in bytes, at least the system's minimum" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/thread#pthread-attr-setstacksize",
+          "https://keith.github.io/xcode-man-pages/pthread_attr_setstacksize.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_attr_destroy",
+      "displayName": "pthread_attr_destroy",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 84,
+      "signature": "pub extern func pthread_attr_destroy(attributes: *var PThreadAttributes) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Releases what `pthread_attr_init` set up.",
+        "markdown": "Releases what `pthread_attr_init` set up.",
+        "typeParams": [],
+        "params": [{ "name": "attributes", "markdown": "initialized attributes" }],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/thread#pthread-attr-destroy",
+          "https://keith.github.io/xcode-man-pages/pthread_attr_destroy.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "pthread_threadid_np",
+      "displayName": "pthread_threadid_np",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 92,
+      "signature": "pub extern func pthread_threadid_np(thread: PThread, id: *var uint64) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads the system-wide identifier of a thread, or of the calling thread when `thread` is zero.",
+        "markdown": "Reads the system-wide identifier of a thread, or of the calling thread when `thread` is zero.",
+        "typeParams": [],
+        "params": [
+          { "name": "thread", "markdown": "the thread to ask about, or zero for the calling thread" },
+          { "name": "id", "markdown": "receives the identifier" }
+        ],
+        "returns": "zero, or an error number",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/thread#pthread-threadid-np",
+          "https://keith.github.io/xcode-man-pages/pthread_threadid_np.3.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "sched_yield",
+      "displayName": "sched_yield",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 98,
+      "signature": "pub extern func sched_yield() -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Gives up the processor so another ready thread can run.",
+        "markdown": "Gives up the processor so another ready thread can run.",
+        "typeParams": [],
+        "params": [],
+        "returns": "zero, or -1 with the reason in errno",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/thread#sched-yield",
+          "https://keith.github.io/xcode-man-pages/sched_yield.2.html"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "sysconf",
+      "displayName": "sysconf",
+      "module": "Thread",
+      "source": "Src/Thread.rux",
+      "line": 105,
+      "signature": "pub extern func sysconf(name: int32) -> int64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a system configuration value.",
+        "markdown": "Reads a system configuration value.",
+        "typeParams": [],
+        "params": [{ "name": "name", "markdown": "the value to read, such as `SC_NPROCESSORS_ONLN`" }],
+        "returns": "the value, or -1 when the system has no limit or does not know the name",
+        "see": [
+          "https://rux-lang.dev/docs/api/macos/thread#sysconf",
+          "https://keith.github.io/xcode-man-pages/sysconf.3.html"
+        ],
         "deprecated": null
       },
       "value": null,
@@ -3181,6 +5625,145 @@
           "targets": ["macos-x86_64", "macos-aarch64"]
         }
       ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "UL_COMPARE_AND_WAIT",
+      "displayName": "UL_COMPARE_AND_WAIT",
+      "module": "Ulock",
+      "source": "Src/Ulock.rux",
+      "line": 11,
+      "signature": "pub const UL_COMPARE_AND_WAIT: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`UL_COMPARE_AND_WAIT`: wait on a 32-bit word that holds the expected value.",
+        "markdown": "`UL_COMPARE_AND_WAIT`: wait on a 32-bit word that holds the expected value.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/ulock#ul-compare-and-wait"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "ULF_WAKE_ALL",
+      "displayName": "ULF_WAKE_ALL",
+      "module": "Ulock",
+      "source": "Src/Ulock.rux",
+      "line": 16,
+      "signature": "pub const ULF_WAKE_ALL: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`ULF_WAKE_ALL`: wake every thread waiting on the word rather than one.",
+        "markdown": "`ULF_WAKE_ALL`: wake every thread waiting on the word rather than one.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/ulock#ulf-wake-all"],
+        "deprecated": null
+      },
+      "value": "0x100",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "ULF_NO_ERRNO",
+      "displayName": "ULF_NO_ERRNO",
+      "module": "Ulock",
+      "source": "Src/Ulock.rux",
+      "line": 21,
+      "signature": "pub const ULF_NO_ERRNO: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`ULF_NO_ERRNO`: report failure as a negative error number rather than through errno.",
+        "markdown": "`ULF_NO_ERRNO`: report failure as a negative error number rather than through errno.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/macos/ulock#ulf-no-errno"],
+        "deprecated": null
+      },
+      "value": "0x01000000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "__ulock_wait",
+      "displayName": "__ulock_wait",
+      "module": "Ulock",
+      "source": "Src/Ulock.rux",
+      "line": 32,
+      "signature": "pub extern func __ulock_wait(operation: uint32, address: *opaque, value: uint64, timeout: uint32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sleeps while `*address` equals `value`, until a wake, a signal or the timeout.",
+        "markdown": "Sleeps while `*address` equals `value`, until a wake, a signal or the timeout.",
+        "typeParams": [],
+        "params": [
+          { "name": "operation", "markdown": "`UL_COMPARE_AND_WAIT`, combined with `ULF_NO_ERRNO`" },
+          { "name": "address", "markdown": "the word to wait on, four-byte aligned" },
+          { "name": "value", "markdown": "the value the caller last saw there" },
+          { "name": "timeout", "markdown": "microseconds to wait at most, or zero to wait without a limit" }
+        ],
+        "returns": "the number of waiters left, or a failure: `EINTR`, `ETIMEDOUT`, or `EFAULT` when the word moved",
+        "see": ["https://rux-lang.dev/docs/api/macos/ulock#ulock-wait"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["macos-x86_64", "macos-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "__ulock_wake",
+      "displayName": "__ulock_wake",
+      "module": "Ulock",
+      "source": "Src/Ulock.rux",
+      "line": 40,
+      "signature": "pub extern func __ulock_wake(operation: uint32, address: *opaque, wakeValue: uint64) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Wakes a thread, or all of them with `ULF_WAKE_ALL`, sleeping on `address`.",
+        "markdown": "Wakes a thread, or all of them with `ULF_WAKE_ALL`, sleeping on `address`.",
+        "typeParams": [],
+        "params": [
+          { "name": "operation", "markdown": "`UL_COMPARE_AND_WAIT`, combined with `ULF_WAKE_ALL` and `ULF_NO_ERRNO`" },
+          { "name": "address", "markdown": "the word they wait on" },
+          { "name": "wakeValue", "markdown": "zero" }
+        ],
+        "returns": "zero, or a failure: `ENOENT` when nothing was waiting",
+        "see": ["https://rux-lang.dev/docs/api/macos/ulock#ulock-wake"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
       "baseType": null,
       "cases": [],
       "members": [],

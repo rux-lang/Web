@@ -2968,12 +2968,12 @@
       "displayName": "Rc<T>",
       "module": "Shared",
       "source": "Src/Shared.rux",
-      "line": 28,
+      "line": 30,
       "signature": "pub struct Rc<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "A shared, counted handle to one value, for use on one thread.",
-        "markdown": "A shared, counted handle to one value, for use on one thread. Copying a handle shares the value.",
+        "markdown": "A shared, counted handle to one value, for use on one thread. Copying a handle shares the value.\nIts count is not atomic, so a handle is not `Sendable`: a thread's context cannot hold one.",
         "typeParams": [{ "name": "T", "markdown": "the value's type" }],
         "params": [],
         "returns": null,
@@ -2986,7 +2986,7 @@
           "name": "block",
           "type": "*var SharedBlock<T>",
           "public": false,
-          "line": 29,
+          "line": 31,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3003,7 +3003,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 30,
+          "line": 32,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3023,7 +3023,7 @@
         {
           "kind": "operator",
           "name": "=",
-          "line": 37,
+          "line": 39,
           "signature": "pub func =(self: &var Rc<T>, other: &Rc<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&Rc<T>" }],
@@ -3055,7 +3055,7 @@
         {
           "kind": "associated",
           "name": "Create",
-          "line": 48,
+          "line": 50,
           "signature": "pub func Create(allocator: Allocator, value: T) -> Rc<T> ! AllocError",
           "typeParams": [],
           "params": [
@@ -3093,7 +3093,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 57,
+          "line": 59,
           "signature": "pub func Get(self: &Rc<T>) -> *T",
           "typeParams": [],
           "params": [],
@@ -3125,7 +3125,7 @@
         {
           "kind": "method",
           "name": "GetMutable",
-          "line": 64,
+          "line": 66,
           "signature": "pub func GetMutable(self: &var Rc<T>) -> (*var T)?",
           "typeParams": [],
           "params": [],
@@ -3157,7 +3157,7 @@
         {
           "kind": "method",
           "name": "Count",
-          "line": 72,
+          "line": 74,
           "signature": "pub func Count(self: &Rc<T>) -> uint",
           "typeParams": [],
           "params": [],
@@ -3189,7 +3189,7 @@
         {
           "kind": "method",
           "name": "SameAs",
-          "line": 80,
+          "line": 82,
           "signature": "pub func SameAs(self: &Rc<T>, other: &Rc<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&Rc<T>" }],
@@ -3221,7 +3221,7 @@
         {
           "kind": "destructor",
           "name": "~Rc",
-          "line": 84,
+          "line": 86,
           "signature": "func ~Rc(self: &var Rc<T>)",
           "typeParams": [],
           "params": [],
@@ -3269,7 +3269,7 @@
       "displayName": "Arc<T>",
       "module": "Shared",
       "source": "Src/Shared.rux",
-      "line": 101,
+      "line": 103,
       "signature": "pub struct Arc<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -3287,7 +3287,7 @@
           "name": "block",
           "type": "*var SharedBlock<T>",
           "public": false,
-          "line": 102,
+          "line": 104,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3304,7 +3304,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 103,
+          "line": 105,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3324,7 +3324,7 @@
         {
           "kind": "operator",
           "name": "=",
-          "line": 110,
+          "line": 112,
           "signature": "pub func =(self: &var Arc<T>, other: &Arc<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&Arc<T>" }],
@@ -3356,7 +3356,7 @@
         {
           "kind": "associated",
           "name": "Create",
-          "line": 121,
+          "line": 123,
           "signature": "pub func Create(allocator: Allocator, value: T) -> Arc<T> ! AllocError",
           "typeParams": [],
           "params": [
@@ -3397,7 +3397,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 130,
+          "line": 132,
           "signature": "pub func Get(self: &Arc<T>) -> *T",
           "typeParams": [],
           "params": [],
@@ -3429,7 +3429,7 @@
         {
           "kind": "method",
           "name": "GetMutable",
-          "line": 137,
+          "line": 139,
           "signature": "pub func GetMutable(self: &var Arc<T>) -> (*var T)?",
           "typeParams": [],
           "params": [],
@@ -3461,7 +3461,7 @@
         {
           "kind": "method",
           "name": "Count",
-          "line": 145,
+          "line": 147,
           "signature": "pub func Count(self: &Arc<T>) -> uint",
           "typeParams": [],
           "params": [],
@@ -3493,7 +3493,7 @@
         {
           "kind": "method",
           "name": "SameAs",
-          "line": 153,
+          "line": 155,
           "signature": "pub func SameAs(self: &Arc<T>, other: &Arc<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&Arc<T>" }],
@@ -3525,7 +3525,7 @@
         {
           "kind": "destructor",
           "name": "~Arc",
-          "line": 157,
+          "line": 159,
           "signature": "func ~Arc(self: &var Arc<T>)",
           "typeParams": [],
           "params": [],

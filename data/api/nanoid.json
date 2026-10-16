@@ -379,7 +379,7 @@
       "displayName": "NanoId",
       "module": "NanoId",
       "source": "Src/NanoId.rux",
-      "line": 15,
+      "line": 16,
       "signature": "pub struct NanoId",
       "typeParams": [],
       "doc": {
@@ -397,7 +397,7 @@
           "name": "text",
           "type": "char8[N]",
           "public": false,
-          "line": 16,
+          "line": 17,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -417,7 +417,7 @@
         {
           "kind": "associated",
           "name": "Generate",
-          "line": 56,
+          "line": 57,
           "signature": "pub func Generate() -> NanoId ! EntropyError",
           "typeParams": [],
           "params": [],
@@ -449,7 +449,7 @@
         {
           "kind": "associated",
           "name": "Parse",
-          "line": 69,
+          "line": 70,
           "signature": "pub func Parse(text: char8[..]) -> NanoId ! NanoIdParseError",
           "typeParams": [],
           "params": [{ "name": "text", "type": "char8[..]" }],
@@ -481,7 +481,7 @@
         {
           "kind": "method",
           "name": "Text",
-          "line": 88,
+          "line": 89,
           "signature": "pub func Text(self: &NanoId) -> char8[..]",
           "typeParams": [],
           "params": [],
@@ -513,7 +513,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 98,
+          "line": 99,
           "signature": "pub func Equals(self: &NanoId, other: &NanoId) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&NanoId" }],
@@ -545,7 +545,7 @@
         {
           "kind": "method",
           "name": "Compare",
-          "line": 114,
+          "line": 115,
           "signature": "pub func Compare(self: &NanoId, other: &NanoId) -> Ordering",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&NanoId" }],
@@ -577,7 +577,7 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 132,
+          "line": 133,
           "signature": "pub func WriteDisplay(self: &NanoId, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -615,7 +615,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 145,
+          "line": 147,
           "signature": "pub func WriteDebug(self: &NanoId, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -669,7 +669,7 @@
       "displayName": "NanoIdParseError",
       "module": "NanoId",
       "source": "Src/NanoId.rux",
-      "line": 22,
+      "line": 23,
       "signature": "pub variant NanoIdParseError",
       "typeParams": [],
       "doc": {
@@ -689,7 +689,7 @@
           "name": "WrongLength",
           "value": null,
           "payload": "(uint)",
-          "line": 25,
+          "line": 26,
           "doc": "The text is not twenty-one bytes long. The offset is the text's length when it is too short, and the first\nbyte past the form when it is too long.",
           "targets": [
             "windows-x86_64",
@@ -706,7 +706,7 @@
           "name": "InvalidCharacter",
           "value": null,
           "payload": "(uint)",
-          "line": 27,
+          "line": 28,
           "doc": "A character that is not in the default alphabet. The offset is that character.",
           "targets": [
             "windows-x86_64",
@@ -724,7 +724,7 @@
         {
           "kind": "method",
           "name": "Offset",
-          "line": 35,
+          "line": 36,
           "signature": "pub func Offset(self: &NanoIdParseError) -> uint",
           "typeParams": [],
           "params": [],

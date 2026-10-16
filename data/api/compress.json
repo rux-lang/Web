@@ -89,16 +89,95 @@
     },
     {
       "kind": "function",
+      "name": "Compress",
+      "displayName": "Compress",
+      "module": "Buffers",
+      "source": "Src/Buffers.rux",
+      "line": 123,
+      "signature": "pub func Compress(allocator: Allocator, data: char8[..], format: Format, level: Level) -> Vector<byte> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Compresses text in `format` at `level`: its UTF-8 bytes, as the Io streams carry them, so text needs no cast to\nbytes first.",
+        "markdown": "Compresses text in `format` at `level`: its UTF-8 bytes, as the Io streams carry them, so text needs no cast to\nbytes first.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "what the result and the compressor's buffers are kept in" },
+          { "name": "data", "markdown": "the text" },
+          { "name": "format", "markdown": "the container to write" },
+          { "name": "level", "markdown": "how hard to compress" }
+        ],
+        "returns": "the compressed bytes, or fails when the allocator refused",
+        "see": ["https://rux-lang.dev/docs/api/compress/buffers#compress"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
       "name": "Decompress",
       "displayName": "Decompress",
       "module": "Buffers",
       "source": "Src/Buffers.rux",
-      "line": 121,
+      "line": 134,
       "signature": "pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "Decompresses `data`, a whole stream in `format`.",
         "markdown": "Decompresses `data`, a whole stream in `format`.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "what the result and the decompressor's buffers are kept in" },
+          { "name": "data", "markdown": "the compressed stream" },
+          { "name": "format", "markdown": "the container it is in" }
+        ],
+        "returns": "the data, or fails with `InvalidInput` for damaged or truncated input",
+        "see": ["https://rux-lang.dev/docs/api/compress/buffers#decompress"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Decompress",
+      "displayName": "Decompress",
+      "module": "Buffers",
+      "source": "Src/Buffers.rux",
+      "line": 164,
+      "signature": "pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream.",
+        "markdown": "Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream.",
         "typeParams": [],
         "params": [
           { "name": "allocator", "markdown": "what the result and the decompressor's buffers are kept in" },

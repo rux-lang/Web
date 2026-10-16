@@ -214,7 +214,7 @@ pub const OpenAppend: int32 = 0x0008;
 pub const OpenNonBlocking: int32 = 0x0004;
 ```
 
-`O_NONBLOCK`: reads and writes report [`EAGAIN`](/docs/api/freebsd/errors#eagain) rather than waiting.
+[`O_NONBLOCK`](/docs/api/freebsd/poll#o-nonblock): reads and writes report [`EAGAIN`](/docs/api/freebsd/errors#eagain) rather than waiting.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L97)
 
@@ -487,7 +487,7 @@ pub func Dup2(
 Makes `newFd` a copy of `oldFd`, closing whatever `newFd` was.
 Returns `newFd`, or a negative error number. Duplicating a descriptor onto itself returns it unchanged.
 FreeBSD has `dup2` on both architectures, so this is the plain form rather than Linux's `dup3`; setting
-close-on-exec is a separate `fcntl` this package does not wrap.
+close-on-exec is a separate [`fcntl`](/docs/api/freebsd/spawn#fcntl) this package does not wrap.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L359)
 

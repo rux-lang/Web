@@ -121,7 +121,7 @@ and `UnsupportedRequest` for a precision past nine, which no fraction has.
 
 **Returns**: success when the whole time was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L189)
 
 ## Implements Debug
 
@@ -147,7 +147,7 @@ The failures [`WriteDisplay`](/docs/api/time/time-of-day#write-display) reports.
 
 **Returns**: success when the whole time was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L205)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L208)
 
 ## Related
 

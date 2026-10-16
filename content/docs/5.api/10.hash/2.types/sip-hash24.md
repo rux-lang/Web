@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/SipHash.rux
-  line: 117
+  line: 128
 seo:
   title: "SipHash24 — Hash API"
   description: "SipHash-2-4 over a stream of bytes, keyed with 128 bits."
@@ -50,7 +50,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: a hasher keyed with those two words
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L153)
 
 <h3 id="with-key-bytes"><code>WithKeyBytes</code></h3>
 
@@ -71,7 +71,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: a hasher keyed with them
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L173)
 
 ## Methods
 
@@ -85,7 +85,7 @@ Puts the hasher back to where it started, keeping its key.
 `self` is borrowed mutably. Everything written so far is forgotten; the key is not.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L189)
 
 ## Implements Hasher
 
@@ -113,7 +113,7 @@ Runs in time proportional to `length` and allocates nothing.
 | `bytes`  | `*byte` | the bytes to absorb                  |
 | `length` | `uint`  | how many bytes; zero absorbs nothing |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L195)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L206)
 
 <h3 id="finish"><code>Finish</code></h3>
 
@@ -128,7 +128,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the hash of everything written since the last reset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L240)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L251)
 
 ## Related
 
@@ -260,7 +260,7 @@ machine: SipHash is defined on a little-endian byte stream rather than on the ma
 Cannot fail. Runs in constant time and allocates nothing.
 `bytes` must be readable for eight bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L266)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L277)
 
 **Parameters**
 
@@ -287,7 +287,7 @@ that key, and is the one case in which `bytes` may be null.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
 `bytes` must be readable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L287)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L298)
 
 **Parameters**
 

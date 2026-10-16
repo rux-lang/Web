@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/IoError.rux
-  line: 67
+  line: 69
 seo:
   title: "IoError — Io API"
   description: "A structured I/O failure: the shared meaning, and the platform's own code beside it."
@@ -54,7 +54,7 @@ A failure of `kind` with no platform code.
 
 **Returns**: an error of that kind, carrying no platform value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L81)
 
 ## Methods
 
@@ -68,7 +68,7 @@ Whether the stream ended, which is the one report that is not a failure.
 
 **Returns**: whether the stream ended, which is not a failure
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L86)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L88)
 
 <h3 id="is-transient"><code>IsTransient</code></h3>
 
@@ -80,7 +80,34 @@ Whether going again is the right response: an interruption or a would-block.
 
 **Returns**: whether trying again could succeed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L95)
+
+## Implements Display
+
+`IoError` conforms to `Display`.
+
+<h3 id="write-display"><code>WriteDisplay</code></h3>
+
+```rux
+pub func WriteDisplay(
+    self: &IoError,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
+```
+
+Writes the kind as lower-case words, and the platform's code after them when there is one, as
+`not found (os error 2)`, under the placeholder's width, fill and alignment. No style is understood. Reports
+whatever the writer reported, and `UnsupportedRequest` for a style.
+
+| Name     | Type              | Description                    |
+| -------- | ----------------- | ------------------------------ |
+| `writer` | `&var TextWriter` | the destination                |
+| `spec`   | `FormatSpec`      | what the placeholder asked for |
+
+**Returns**: success when the whole text was accepted
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L151)
 
 ## Related
 
@@ -117,7 +144,7 @@ pub enum IoErrorKind: int32 {
 
 What an I/O operation reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L14)
 
 **Cases**
 
@@ -147,6 +174,32 @@ What an I/O operation reported.
 | `Unreachable`        | `23`  | No route leads to the network or host.                                                  |
 | `BrokenPipe`         | `24`  | The other end closed the connection, so nothing more can be written to it.              |
 | `Other`              | `14`  | Something the platform reported that has no shared meaning; the raw code is the detail. |
+
+**Implements Display**
+
+`IoErrorKind` conforms to `Display`.
+
+<h4 id="io-error-kind-write-display"><code>WriteDisplay</code></h4>
+
+```rux
+pub func WriteDisplay(
+    self: &IoErrorKind,
+    writer: &var TextWriter,
+    spec: FormatSpec
+) -> ! FormatError
+```
+
+Writes the kind as lower-case words, such as `not found`, under the placeholder's width, fill and alignment.
+No style is understood. Reports whatever the writer reported, and `UnsupportedRequest` for a style.
+
+| Name     | Type              | Description                    |
+| -------- | ----------------- | ------------------------------ |
+| `writer` | `&var TextWriter` | the destination                |
+| `spec`   | `FormatSpec`      | what the placeholder asked for |
+
+**Returns**: success when the whole text was accepted
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L137)
 
 <h3 id="from-io-error"><code>FromIoError</code></h3>
 

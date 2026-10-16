@@ -81,6 +81,7 @@ The average time one iteration took, in nanoseconds.
 ```rux
 pub struct BenchmarkOptions {
     pub filter: char8[..];
+    pub filters: char8[..][..];
     pub minimumTime: Duration;
     pub maximumIterations: uint64;
 }
@@ -92,11 +93,12 @@ Which benchmarks a run chooses and how long each is measured. `Copy`.
 
 **Fields**
 
-| Name                | Type        | Description                                                                                        |
-| ------------------- | ----------- | -------------------------------------------------------------------------------------------------- |
-| `filter`            | `char8[..]` | Run only benchmarks whose names hold this text, or every benchmark when it is empty.               |
-| `minimumTime`       | `Duration`  | How long the measured run must last, at the least.                                                 |
-| `maximumIterations` | `uint64`    | The most iterations one run makes, which ends the growth for work too fast to reach `minimumTime`. |
+| Name                | Type            | Description                                                                                               |
+| ------------------- | --------------- | --------------------------------------------------------------------------------------------------------- |
+| `filter`            | `char8[..]`     | Run only benchmarks whose names hold this text, or every benchmark when it is empty and `filters` is too. |
+| `filters`           | `char8[..][..]` | More texts like `filter`: a benchmark runs when its name holds any of them, or `filter`.                  |
+| `minimumTime`       | `Duration`      | How long the measured run must last, at the least.                                                        |
+| `maximumIterations` | `uint64`        | The most iterations one run makes, which ends the growth for work too fast to reach `minimumTime`.        |
 
 **Constructors**
 
@@ -110,7 +112,7 @@ Options that measure every benchmark for at least 200 milliseconds and at most a
 
 **Returns**: the options
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L61)
 
 <h2 id="consume"><code>Consume&lt;T&gt;</code></h2>
 
@@ -121,7 +123,7 @@ pub func Consume<T>(value: *T)
 Marks `value` as used, so the work that computed it is not removed as having no effect.
 It stores the value's address where the compiler cannot see it read, which costs one store.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L75)
 
 **Type parameters**
 
@@ -149,7 +151,7 @@ Runs `run` with a growing iteration count until one run lasts at least `options.
 Each next count aims a little past the minimum from the rate measured so far, growing at least twofold and at
 most a hundredfold, so a measurement makes few runs whatever the work costs.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L87)
 
 **Parameters**
 
@@ -172,7 +174,7 @@ pub func RunBenchmarksWith(
 Measures the benchmarks that `options` choose, in order, and reports each as its time per iteration and the
 iterations it was measured over, then how many were measured.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L130)
 
 **Parameters**
 
@@ -189,10 +191,11 @@ iterations it was measured over, then how many were measured.
 pub func RunBenchmarks(benchmarks: BenchmarkCase[..]) -> int
 ```
 
-Measures the benchmarks the process's arguments choose. A plain argument is a filter that a benchmark's name must
-hold, and `--quick` measures each for 10 milliseconds rather than 200, for checking that benchmarks still run.
+Measures the benchmarks the process's arguments choose. A plain argument is a filter, and a benchmark runs when
+its name holds any of them; `--quick` measures each for 10 milliseconds rather than 200, for checking that
+benchmarks still run.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L150)
 
 **Parameters**
 

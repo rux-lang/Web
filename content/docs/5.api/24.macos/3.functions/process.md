@@ -8,8 +8,8 @@ api:
   package: macOS
   kind: topic
   version: 0.1.0
-  source: Src/Process.rux
-  line: 12
+  source: Src/LibSystem.rux
+  line: 178
 seo:
   title: "Process — macOS API"
   description: Ending the process and asking its identifier.
@@ -20,6 +20,80 @@ seo:
 # Process
 
 Ending the process and asking its identifier.
+
+<h2 id="ns-get-argc"><code>_NSGetArgc</code></h2>
+
+```rux
+pub extern func _NSGetArgc() -> *int32
+```
+
+The address of the process's argument count.
+dyld fills it before the program starts, from the stack the kernel built. The count belongs to the process for
+its whole life and must not be written.
+
+**See also**: [https://keith.github.io/xcode-man-pages/environ.7.html](https://keith.github.io/xcode-man-pages/environ.7.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L178)
+
+**Returns**: the address of the argument count, which is never null
+
+<h2 id="ns-get-argv"><code>_NSGetArgv</code></h2>
+
+```rux
+pub extern func _NSGetArgv() -> ***char8
+```
+
+The address of the process's argument vector.
+The vector holds the argument count's worth of NUL-terminated byte strings followed by a null, all owned by the
+process for its whole life.
+
+**See also**: [https://keith.github.io/xcode-man-pages/environ.7.html](https://keith.github.io/xcode-man-pages/environ.7.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L186)
+
+**Returns**: the address of the argument vector, which is never null
+
+<h2 id="ns-get-executable-path"><code>_NSGetExecutablePath</code></h2>
+
+```rux
+pub extern func _NSGetExecutablePath(
+    buffer: *var char8,
+    size: *var uint32
+) -> int32
+```
+
+Copies the path of the process's executable into `buffer`, NUL-terminated.
+The path is the one the executable was loaded by, which may be relative or pass through symbolic links. When
+`buffer` is too short nothing is copied and `size` is set to the size needed.
+
+**See also**: [https://keith.github.io/xcode-man-pages/dyld.3.html](https://keith.github.io/xcode-man-pages/dyld.3.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L196)
+
+**Parameters**
+
+| Name     | Type          | Description                                                         |
+| -------- | ------------- | ------------------------------------------------------------------- |
+| `buffer` | `*var char8`  | receives the path                                                   |
+| `size`   | `*var uint32` | the buffer's size in bytes, or the size needed when it is too short |
+
+**Returns**: zero on success, or -1 when the buffer is too short
+
+<h2 id="ns-get-environ"><code>_NSGetEnviron</code></h2>
+
+```rux
+pub extern func _NSGetEnviron() -> ***char8
+```
+
+The address of the process's environment vector.
+The vector holds NUL-terminated `name=value` byte strings ended by a null. It is the C library's own `environ`,
+so a call that changes the environment may replace the vector it points to.
+
+**See also**: [https://keith.github.io/xcode-man-pages/environ.7.html](https://keith.github.io/xcode-man-pages/environ.7.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L204)
+
+**Returns**: the address of the environment vector, which is never null
 
 <h2 id="exit"><code>Exit</code></h2>
 

@@ -255,4 +255,4 @@ The failures [`WriteDisplay`](/docs/api/time/timestamp#write-display) reports, i
 
 **Returns**: success when the whole moment was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L100)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L101)

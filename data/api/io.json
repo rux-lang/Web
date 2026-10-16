@@ -2227,7 +2227,7 @@
       "displayName": "IoErrorKind",
       "module": "IoError",
       "source": "Src/IoError.rux",
-      "line": 12,
+      "line": 14,
       "signature": "pub enum IoErrorKind",
       "typeParams": [],
       "doc": {
@@ -2247,7 +2247,7 @@
           "name": "EndOfStream",
           "value": "1",
           "payload": null,
-          "line": 14,
+          "line": 16,
           "doc": "The stream ended: not a failure, but it arrives where failures do.",
           "targets": [
             "windows-x86_64",
@@ -2264,7 +2264,7 @@
           "name": "NotFound",
           "value": "2",
           "payload": null,
-          "line": 16,
+          "line": 18,
           "doc": "The named thing does not exist.",
           "targets": [
             "windows-x86_64",
@@ -2281,7 +2281,7 @@
           "name": "PermissionDenied",
           "value": "3",
           "payload": null,
-          "line": 18,
+          "line": 20,
           "doc": "The system refused on rights.",
           "targets": [
             "windows-x86_64",
@@ -2298,7 +2298,7 @@
           "name": "AlreadyExists",
           "value": "4",
           "payload": null,
-          "line": 20,
+          "line": 22,
           "doc": "The named thing exists where something new was to be made.",
           "targets": [
             "windows-x86_64",
@@ -2315,7 +2315,7 @@
           "name": "IsDirectory",
           "value": "5",
           "payload": null,
-          "line": 22,
+          "line": 24,
           "doc": "A directory stood where a file was expected.",
           "targets": [
             "windows-x86_64",
@@ -2332,7 +2332,7 @@
           "name": "NotDirectory",
           "value": "6",
           "payload": null,
-          "line": 24,
+          "line": 26,
           "doc": "A file stood where a directory was expected.",
           "targets": [
             "windows-x86_64",
@@ -2349,7 +2349,7 @@
           "name": "StorageFull",
           "value": "7",
           "payload": null,
-          "line": 26,
+          "line": 28,
           "doc": "The device has no room left.",
           "targets": [
             "windows-x86_64",
@@ -2366,7 +2366,7 @@
           "name": "Interrupted",
           "value": "8",
           "payload": null,
-          "line": 28,
+          "line": 30,
           "doc": "The operation was interrupted and may simply be retried.",
           "targets": [
             "windows-x86_64",
@@ -2383,7 +2383,7 @@
           "name": "WouldBlock",
           "value": "9",
           "payload": null,
-          "line": 30,
+          "line": 32,
           "doc": "The operation would block a stream opened not to.",
           "targets": [
             "windows-x86_64",
@@ -2400,7 +2400,7 @@
           "name": "InvalidHandle",
           "value": "10",
           "payload": null,
-          "line": 32,
+          "line": 34,
           "doc": "A handle that is not open, or not open for this.",
           "targets": [
             "windows-x86_64",
@@ -2417,7 +2417,7 @@
           "name": "InvalidInput",
           "value": "11",
           "payload": null,
-          "line": 34,
+          "line": 36,
           "doc": "An argument the system rejected.",
           "targets": [
             "windows-x86_64",
@@ -2434,7 +2434,7 @@
           "name": "TimedOut",
           "value": "12",
           "payload": null,
-          "line": 36,
+          "line": 38,
           "doc": "The operation ran out of time.",
           "targets": [
             "windows-x86_64",
@@ -2451,7 +2451,7 @@
           "name": "WriteZero",
           "value": "13",
           "payload": null,
-          "line": 38,
+          "line": 40,
           "doc": "A write reported fewer bytes than asked and cannot continue.",
           "targets": [
             "windows-x86_64",
@@ -2468,7 +2468,7 @@
           "name": "InvalidText",
           "value": "15",
           "payload": null,
-          "line": 40,
+          "line": 42,
           "doc": "Bytes that were required to be UTF-8 text and are not.",
           "targets": [
             "windows-x86_64",
@@ -2485,7 +2485,7 @@
           "name": "LimitExceeded",
           "value": "16",
           "payload": null,
-          "line": 42,
+          "line": 44,
           "doc": "A bounded operation met its bound before its end.",
           "targets": [
             "windows-x86_64",
@@ -2502,7 +2502,7 @@
           "name": "ConnectionRefused",
           "value": "17",
           "payload": null,
-          "line": 44,
+          "line": 46,
           "doc": "The other end refused the connection: nothing listens there.",
           "targets": [
             "windows-x86_64",
@@ -2519,7 +2519,7 @@
           "name": "ConnectionReset",
           "value": "18",
           "payload": null,
-          "line": 46,
+          "line": 48,
           "doc": "The other end reset the connection.",
           "targets": [
             "windows-x86_64",
@@ -2536,7 +2536,7 @@
           "name": "ConnectionAborted",
           "value": "19",
           "payload": null,
-          "line": 48,
+          "line": 50,
           "doc": "The connection was aborted on this side.",
           "targets": [
             "windows-x86_64",
@@ -2553,7 +2553,7 @@
           "name": "NotConnected",
           "value": "20",
           "payload": null,
-          "line": 50,
+          "line": 52,
           "doc": "The socket is not connected.",
           "targets": [
             "windows-x86_64",
@@ -2570,7 +2570,7 @@
           "name": "AddressInUse",
           "value": "21",
           "payload": null,
-          "line": 52,
+          "line": 54,
           "doc": "The local address is already in use.",
           "targets": [
             "windows-x86_64",
@@ -2587,7 +2587,7 @@
           "name": "AddressUnavailable",
           "value": "22",
           "payload": null,
-          "line": 54,
+          "line": 56,
           "doc": "The address is not one this machine has, or cannot be reached from it.",
           "targets": [
             "windows-x86_64",
@@ -2604,7 +2604,7 @@
           "name": "Unreachable",
           "value": "23",
           "payload": null,
-          "line": 56,
+          "line": 58,
           "doc": "No route leads to the network or host.",
           "targets": [
             "windows-x86_64",
@@ -2621,7 +2621,7 @@
           "name": "BrokenPipe",
           "value": "24",
           "payload": null,
-          "line": 58,
+          "line": 60,
           "doc": "The other end closed the connection, so nothing more can be written to it.",
           "targets": [
             "windows-x86_64",
@@ -2638,7 +2638,7 @@
           "name": "Other",
           "value": "14",
           "payload": null,
-          "line": 60,
+          "line": 62,
           "doc": "Something the platform reported that has no shared meaning; the raw code is the detail.",
           "targets": [
             "windows-x86_64",
@@ -2652,8 +2652,47 @@
           ]
         }
       ],
-      "members": [],
-      "implements": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 137,
+          "signature": "pub func WriteDisplay(self: &IoErrorKind, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&IoErrorKind",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the kind as lower-case words, such as `not found`, under the placeholder's width, fill and alignment.",
+            "markdown": "Writes the kind as lower-case words, such as `not found`, under the placeholder's width, fill and alignment.\nNo style is understood. Reports whatever the writer reported, and `UnsupportedRequest` for a style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole text was accepted",
+            "see": ["https://rux-lang.dev/docs/api/io/io-error#io-error-kind-write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Display"],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",
@@ -2671,7 +2710,7 @@
       "displayName": "IoError",
       "module": "IoError",
       "source": "Src/IoError.rux",
-      "line": 67,
+      "line": 69,
       "signature": "pub struct IoError",
       "typeParams": [],
       "doc": {
@@ -2689,7 +2728,7 @@
           "name": "kind",
           "type": "IoErrorKind",
           "public": true,
-          "line": 69,
+          "line": 71,
           "doc": "The meaning every platform shares.",
           "targets": [
             "windows-x86_64",
@@ -2706,7 +2745,7 @@
           "name": "raw",
           "type": "int32",
           "public": true,
-          "line": 71,
+          "line": 73,
           "doc": "The platform's own code, zero where none applies.",
           "targets": [
             "windows-x86_64",
@@ -2726,7 +2765,7 @@
         {
           "kind": "associated",
           "name": "Of",
-          "line": 79,
+          "line": 81,
           "signature": "pub func Of(kind: IoErrorKind) -> IoError",
           "typeParams": [],
           "params": [{ "name": "kind", "type": "IoErrorKind" }],
@@ -2758,7 +2797,7 @@
         {
           "kind": "method",
           "name": "IsEnd",
-          "line": 86,
+          "line": 88,
           "signature": "pub func IsEnd(self: &IoError) -> bool",
           "typeParams": [],
           "params": [],
@@ -2790,7 +2829,7 @@
         {
           "kind": "method",
           "name": "IsTransient",
-          "line": 93,
+          "line": 95,
           "signature": "pub func IsTransient(self: &IoError) -> bool",
           "typeParams": [],
           "params": [],
@@ -2818,9 +2857,47 @@
             "freebsd-x86_64",
             "freebsd-aarch64"
           ]
+        },
+        {
+          "kind": "method",
+          "name": "WriteDisplay",
+          "line": 151,
+          "signature": "pub func WriteDisplay(self: &IoError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "typeParams": [],
+          "params": [
+            { "name": "writer", "type": "&var TextWriter" },
+            { "name": "spec", "type": "FormatSpec" }
+          ],
+          "receiver": "&IoError",
+          "returnType": "! FormatError",
+          "value": null,
+          "conformance": "Display",
+          "public": true,
+          "doc": {
+            "summary": "Writes the kind as lower-case words, and the platform's code after them when there is one, as\n`not found (os error 2)`, under the placeholder's width, fill and alignment.",
+            "markdown": "Writes the kind as lower-case words, and the platform's code after them when there is one, as\n`not found (os error 2)`, under the placeholder's width, fill and alignment. No style is understood. Reports\nwhatever the writer reported, and `UnsupportedRequest` for a style.",
+            "typeParams": [],
+            "params": [
+              { "name": "writer", "markdown": "the destination" },
+              { "name": "spec", "markdown": "what the placeholder asked for" }
+            ],
+            "returns": "success when the whole text was accepted",
+            "see": ["https://rux-lang.dev/docs/api/io/io-error#write-display"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
         }
       ],
-      "implements": [],
+      "implements": ["Display"],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",

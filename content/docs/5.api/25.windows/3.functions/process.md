@@ -8,8 +8,8 @@ api:
   package: Windows
   kind: topic
   version: 0.1.0
-  source: Src/Kernel.rux
-  line: 103
+  source: Src/Constants.rux
+  line: 314
 seo:
   title: "Processes and threads — Windows API"
   description: "Exiting, threads, waiting and loading libraries."
@@ -20,6 +20,37 @@ seo:
 # Processes and threads
 
 Exiting, threads, waiting and loading libraries.
+
+<h2 id="all-processor-groups"><code>ALL_PROCESSOR_GROUPS</code></h2>
+
+```rux
+pub const ALL_PROCESSOR_GROUPS: uint16 = 0xFFFF;
+```
+
+`ALL_PROCESSOR_GROUPS`: asks [`GetActiveProcessorCount`](/docs/api/windows/process#get-active-processor-count) about every processor group at once.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Constants.rux#L314)
+
+<h2 id="stack-size-param-is-a-reservation"><code>STACK_SIZE_PARAM_IS_A_RESERVATION</code></h2>
+
+```rux
+pub const STACK_SIZE_PARAM_IS_A_RESERVATION: uint32 = 0x00010000;
+```
+
+`STACK_SIZE_PARAM_IS_A_RESERVATION`: [`CreateThread`](/docs/api/windows/process#create-thread) takes its stack size as the space to reserve rather than to
+commit, which is what a stack size usually means.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Constants.rux#L320)
+
+<h2 id="infinite"><code>INFINITE</code></h2>
+
+```rux
+pub const INFINITE: uint32 = 0xFFFFFFFF;
+```
+
+`INFINITE`: a wait with no time-out.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Constants.rux#L325)
 
 <h2 id="exit-process"><code>ExitProcess</code></h2>
 
@@ -61,6 +92,68 @@ and the handle is no longer valid
 
 **Returns**: non-zero on success, and zero on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
 
+<h2 id="get-command-line-w"><code>GetCommandLineW</code></h2>
+
+```rux
+pub extern func GetCommandLineW() -> *uint16
+```
+
+Retrieves the command line the process was started with, as one string.
+The string belongs to the process for its whole life and must not be written or freed. It is the command line
+exactly as the parent passed it, quotes and all; [`CommandLineToArgvW`](/docs/api/windows/process#command-line-to-argv-w) splits it into arguments.
+
+**See also**: [https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getcommandlinew](https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getcommandlinew)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L161)
+
+**Returns**: the NUL-terminated UTF-16 command line, which is never null
+
+<h2 id="get-module-file-name-w"><code>GetModuleFileNameW</code></h2>
+
+```rux
+pub extern func GetModuleFileNameW(
+    moduleHandle: *opaque,
+    buffer: *var uint16,
+    size: uint32
+) -> uint32
+```
+
+Retrieves the full path of the file a module was loaded from; a null module is the process's executable.
+The path is NUL-terminated when it fits. When it does not, it is cut to `size` units, the last of them the
+terminator, and the call returns `size`.
+
+**See also**: [https://learn.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamew](https://learn.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamew)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L173)
+
+**Parameters**
+
+| Name           | Type          | Description                            |
+| -------------- | ------------- | -------------------------------------- |
+| `moduleHandle` | `*opaque`     | the module, or null for the executable |
+| `buffer`       | `*var uint16` | receives the path                      |
+| `size`         | `uint32`      | how many units `buffer` holds          |
+
+**Returns**: the path's length without its terminator, `size` when it was cut, or zero on failure with the
+reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
+
+<h2 id="get-environment-strings-w"><code>GetEnvironmentStringsW</code></h2>
+
+```rux
+pub extern func GetEnvironmentStringsW() -> *uint16
+```
+
+Copies the calling process's environment block.
+The block is a sequence of NUL-terminated `name=value` UTF-16 strings ended by an empty one. It is a copy owned
+by the caller, released with `FreeEnvironmentStringsW`; changes made to the environment after the call do not
+appear in it.
+
+**See also**: [https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getenvironmentstringsw](https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getenvironmentstringsw)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L190)
+
+**Returns**: the environment block, or null on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
+
 <h2 id="get-current-process-id"><code>GetCurrentProcessId</code></h2>
 
 ```rux
@@ -71,9 +164,29 @@ Retrieves the process identifier of the calling process.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocessid](https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocessid)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L167)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L196)
 
 **Returns**: the calling process's identifier
+
+<h2 id="get-active-processor-count"><code>GetActiveProcessorCount</code></h2>
+
+```rux
+pub extern func GetActiveProcessorCount(groupNumber: uint16) -> uint32
+```
+
+Retrieves the number of active processors in a processor group, or in all of them.
+
+**See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getactiveprocessorcount](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getactiveprocessorcount)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L203)
+
+**Parameters**
+
+| Name          | Type     | Description                                                                                                           |
+| ------------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| `groupNumber` | `uint16` | the processor group, or [`ALL_PROCESSOR_GROUPS`](/docs/api/windows/process#all-processor-groups) for the whole system |
+
+**Returns**: the number of active processors, or zero on failure
 
 <h2 id="get-current-thread-id"><code>GetCurrentThreadId</code></h2>
 
@@ -86,7 +199,7 @@ Retrieves the thread identifier of the calling thread.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthreadid](https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthreadid)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L209)
 
 **Returns**: the calling thread's identifier
 
@@ -103,7 +216,7 @@ Retrieves the address of an exported symbol.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getprocaddress](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getprocaddress)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L215)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L251)
 
 **Parameters**
 
@@ -124,7 +237,7 @@ Loads a DLL into the calling process.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L275)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L311)
 
 **Parameters**
 
@@ -151,7 +264,7 @@ Creates a thread to execute within the virtual address space of the calling proc
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createthread](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createthread)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L436)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L472)
 
 **Parameters**
 
@@ -176,7 +289,7 @@ Suspends the execution of the current thread until the time-out interval elapses
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-sleep](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-sleep)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L455)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L491)
 
 **Parameters**
 
@@ -194,7 +307,7 @@ Causes the calling thread to yield execution to another thread that is ready to 
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-switchtothread](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-switchtothread)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L461)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L497)
 
 **Returns**: non-zero on success, and zero on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
 
@@ -211,7 +324,7 @@ Waits until the specified object is in the signaled state or the time-out interv
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L469)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L505)
 
 **Parameters**
 
@@ -221,3 +334,30 @@ Waits until the specified object is in the signaled state or the time-out interv
 | `milliseconds` | `uint32`  | a duration in milliseconds |
 
 **Returns**: why the wait ended
+
+<h2 id="command-line-to-argv-w"><code>CommandLineToArgvW</code></h2>
+
+```rux
+pub extern func CommandLineToArgvW(
+    commandLine: *uint16,
+    count: *var int32
+) -> **uint16
+```
+
+Splits a command line into arguments the way the C runtime does.
+Backslashes, quotes and spaces follow the C runtime's rules, and the first argument, the program, is read up to
+the first space outside quotes. The result is one allocation holding the pointer array and every argument; it
+stays valid until passed to `LocalFree`.
+
+**See also**: [https://learn.microsoft.com/windows/win32/api/shellapi/nf-shellapi-commandlinetoargvw](https://learn.microsoft.com/windows/win32/api/shellapi/nf-shellapi-commandlinetoargvw)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Shell.rux#L17)
+
+**Parameters**
+
+| Name          | Type         | Description                                                                                                            |
+| ------------- | ------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `commandLine` | `*uint16`    | the NUL-terminated UTF-16 command line, usually from [`GetCommandLineW`](/docs/api/windows/process#get-command-line-w) |
+| `count`       | `*var int32` | receives how many arguments the array holds                                                                            |
+
+**Returns**: the array of NUL-terminated UTF-16 arguments, or null on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)

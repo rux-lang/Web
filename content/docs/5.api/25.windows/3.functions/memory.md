@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Kernel.rux
-  line: 221
+  line: 257
 seo:
   title: "Memory — Windows API"
   description: "Heap allocation, virtual memory and raw memory operations."
@@ -31,7 +31,7 @@ Retrieves a handle to the default heap of the calling process.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-getprocessheap](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-getprocessheap)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L221)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L257)
 
 **Returns**: the process heap's handle, which is never released
 
@@ -49,7 +49,7 @@ Allocates a block of memory from a heap. The allocated memory is not movable.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapalloc](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapalloc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L249)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L285)
 
 **Parameters**
 
@@ -75,7 +75,7 @@ Frees a memory block allocated from a heap by the HeapAlloc or HeapReAlloc funct
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapfree](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapfree)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L258)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L294)
 
 **Parameters**
 
@@ -102,7 +102,7 @@ Reallocates a block of memory from a heap.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heaprealloc](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heaprealloc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L268)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L304)
 
 **Parameters**
 
@@ -129,7 +129,7 @@ Compares two blocks of memory and returns the number of bytes that match until t
 
 **See also**: [https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcomparememory](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcomparememory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L371)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L407)
 
 **Parameters**
 
@@ -155,7 +155,7 @@ Copies a block of memory from one location to another.
 
 **See also**: [https://learn.microsoft.com/en-us/previous-versions/windows/desktop/legacy/aa366535(v=vs.85)](<https://learn.microsoft.com/en-us/previous-versions/windows/desktop/legacy/aa366535(v=vs.85)>)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L379)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L415)
 
 **Parameters**
 
@@ -179,7 +179,7 @@ Fills a block of memory with the specified fill value.
 
 **See also**: [https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfillmemory](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfillmemory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L387)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L423)
 
 **Parameters**
 
@@ -202,7 +202,7 @@ Fills a block of memory with zeros, given a pointer to the block and the length 
 
 **See also**: [https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlzeromemory](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlzeromemory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L394)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L430)
 
 **Parameters**
 

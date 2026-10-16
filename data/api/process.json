@@ -1,0 +1,2653 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Process",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "The running process: its command-line arguments, environment, identifier and exit",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/process",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "FreeBSD", "namespace": "Rux", "version": "0.1.0", "targetOS": ["FreeBSD"] },
+      { "name": "Io", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Linux", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Linux"] },
+      { "name": "macOS", "namespace": "Rux", "version": "0.1.0", "targetOS": ["macOS"] },
+      { "name": "Memory", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Path", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Thread", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Arguments",
+      "source": "Src/Arguments.rux",
+      "header": "The command-line arguments the process was started with.\nEach argument is native text: bytes on the Unix systems and UTF-16 code units on Windows, exactly as the system\nhanded them over. Nothing obliges an argument to be valid UTF-8 or valid UTF-16, so it is a view of native units\nrather than `String`, and `ToText` is the fallible step to text. The first argument is the program as it was\ninvoked, which is a name or a path the caller chose rather than a reliable way to find the executable.\nEvery view borrows storage the process owns for its whole life, so arguments may be kept and passed anywhere without\ncopying."
+    },
+    {
+      "name": "Buffer",
+      "source": "Src/Buffer.rux",
+      "header": "A growable run of plain values, owned through an allocator: the units of a command line, the bytes a child wrote.\nOnly plain values — units, bytes, addresses — go in one, so growing it copies bytes and destroying it only gives\nthe storage back."
+    },
+    {
+      "name": "Capture",
+      "source": "Src/Capture.rux",
+      "header": "Running a program to completion and keeping everything it wrote.\nA child blocks once a pipe it writes to is full, so reading its output to the end and only then its error would\nleave a child that fills its error pipe first waiting forever. The error is therefore read on a second thread while\nthis one reads the output, and both finish when the child closes its ends."
+    },
+    {
+      "name": "Child",
+      "source": "Src/Child.rux",
+      "header": "A started child process, how it finished, and the pipes to its standard streams.\nThe pipes are ordinary streams: a `PipeWriter` is an `Io::Writer` into the child's standard input, and a `PipeReader`\nan `Io::Reader` from its standard output or error. Each owns its end of the pipe and closes it when dropped, which\nis how a child reading its input learns that no more will come."
+    },
+    {
+      "name": "Command",
+      "source": "Src/Command.rux",
+      "header": "Describing a program to start — its arguments, directory, environment and standard streams — and starting it.\nA command collects its parts as native text as they are given. A part the system could not take, such as text with\na NUL in it, is remembered as the command's first failure and reported when it is started, so the parts can be\ngiven one after another without checking each.\nOn Linux, FreeBSD and macOS the child is started with the C library's `posix_spawnp`, which finds the program\nthrough `PATH`, sets up its streams and directory, and reports a program that could not be started as an error\nrather than as a child that exits. On Windows it is started with `CreateProcessW`, from a command line quoted the way\nthe C runtime splits one, so each argument arrives as it was given."
+    },
+    {
+      "name": "Environment",
+      "source": "Src/Environment.rux",
+      "header": "The process's environment: `name=value` pairs, as the system started the process with them and as changed since.\nNames and values are native text, so they are views of native units rather than `String`. A name is matched exactly\non the Unix systems and without regard to ASCII case on Windows, which is each system's own rule.\nChanges made through `SetVariable` and `RemoveVariable` are kept in a table beside the environment the process\nstarted with, and every reader here consults the table first, so `Variable`, `Environment` and every process this\npackage starts see them. Their text is never freed, which is what keeps every view this package has handed out\nvalid for the life of the process; an environment is changed rarely enough that this costs little. Windows is also\ntold of each change, so code that asks the system sees it too; the C library's own environment on the Unix systems\nis not changed."
+    },
+    {
+      "name": "Executable",
+      "source": "Src/Executable.rux",
+      "header": "The file the process is running.\n`Argument(0)` is whatever the parent passed as the program's name, which may be a bare name found on the search\npath, a relative path, or anything at all; it is no way to find the executable again. Each system knows the file it\nloaded and says so: Windows through `GetModuleFileNameW`, Linux through the `/proc/self/exe` link, FreeBSD through\nthe `kern.proc.pathname` sysctl and macOS through `_NSGetExecutablePath`. The answer is asked for each time, into a\nbuffer grown until the whole path fits."
+    },
+    {
+      "name": "Exit",
+      "source": "Src/Exit.rux",
+      "header": "What a process can say about itself: who it is, and that it is done.\n`Exit` ends the process at once with a status for its parent. Nothing is flushed, unwound or destroyed on the way:\na buffered writer that has not been flushed loses what it holds, which is why returning from `Main` is the ordinary\nway to finish and `Exit` is for leaving from somewhere `Main` cannot be returned to."
+    },
+    {
+      "name": "Failure",
+      "source": "Src/Failure.rux",
+      "header": "What a failed system call means, as an `IoError`, and text turned into native units for a command line.\nThe raw code rides along in every error, so a caller who needs the system's own reason still has it."
+    },
+    {
+      "name": "Native",
+      "source": "Src/Native.rux",
+      "header": "Where each system keeps the arguments and environment a process was started with, read once and kept.\nLinux and FreeBSD leave them on the stack the kernel built: the argument count, the argument pointers and a null,\nthen the environment pointers and a null. The entry stub keeps that address, and `Core::ProcessStartFrame` hands it\nover. macOS has dyld record the same vectors and publishes them through libSystem. Windows hands over one command\nline and one environment block instead; the command line is split once, the way the C runtime splits it, and both\nresults are kept for the life of the process, so every view this package gives out stays valid as long as the\nprocess does.\nNothing here is written after the first read, and the first read happens before any caller could share the results,\nso a program with one thread needs nothing more. A program that starts threads should read its arguments before it\ndoes."
+    }
+  ],
+  "items": [
+    {
+      "kind": "function",
+      "name": "ArgumentCount",
+      "displayName": "ArgumentCount",
+      "module": "Arguments",
+      "source": "Src/Arguments.rux",
+      "line": 17,
+      "signature": "pub func ArgumentCount() -> uint",
+      "typeParams": [],
+      "doc": {
+        "summary": "How many arguments the process was started with, the program itself included.",
+        "markdown": "How many arguments the process was started with, the program itself included.\nUsually at least one, since the program is passed as the first argument; a parent may pass none at all, and then\nthis is zero. Cannot fail and allocates nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the argument count",
+        "see": ["https://rux-lang.dev/docs/api/process/arguments#argument-count"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Argument",
+      "displayName": "Argument",
+      "module": "Arguments",
+      "source": "Src/Arguments.rux",
+      "line": 26,
+      "signature": "pub func Argument(index: uint) -> OsStringView?",
+      "typeParams": [],
+      "doc": {
+        "summary": "The argument at `index`, counting the program as argument zero, or none past the last one.",
+        "markdown": "The argument at `index`, counting the program as argument zero, or none past the last one.\nThe view borrows storage the process owns for its whole life. Cannot fail and allocates nothing.",
+        "typeParams": [],
+        "params": [{ "name": "index", "markdown": "the zero-based position of the argument" }],
+        "returns": "the argument's native units, or none when `index` is not below `ArgumentCount`",
+        "see": ["https://rux-lang.dev/docs/api/process/arguments#argument"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "ArgumentIterator",
+      "displayName": "ArgumentIterator",
+      "module": "Arguments",
+      "source": "Src/Arguments.rux",
+      "line": 34,
+      "signature": "pub struct ArgumentIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "A walk over the process's arguments in order, the program first.",
+        "markdown": "A walk over the process's arguments in order, the program first.\n`Copy`; each copy walks on its own from where it was copied. Holds only a position, so it allocates nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/arguments#argument-iterator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "next",
+          "type": "uint",
+          "public": false,
+          "line": 35,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Iterate",
+          "line": 51,
+          "signature": "pub func Iterate(self: &ArgumentIterator) -> ArgumentIterator",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ArgumentIterator",
+          "returnType": "ArgumentIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The walk itself, so that `for argument in Arguments()` reads every argument.",
+            "markdown": "The walk itself, so that `for argument in Arguments()` reads every argument.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a copy of this walk from its current position",
+            "see": ["https://rux-lang.dev/docs/api/process/arguments#argument-iterator-iterate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Skip",
+          "line": 60,
+          "signature": "pub func Skip(self: &var ArgumentIterator, count: uint) -> ArgumentIterator",
+          "typeParams": [],
+          "params": [{ "name": "count", "type": "uint" }],
+          "receiver": "&var ArgumentIterator",
+          "returnType": "ArgumentIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Leaves out the next `count` arguments, as `Skip(1)` leaves out the program.",
+            "markdown": "Leaves out the next `count` arguments, as `Skip(1)` leaves out the program.\nAdvances the walk and returns it, so the call can be chained in a `for` header. Cannot fail.",
+            "typeParams": [],
+            "params": [{ "name": "count", "markdown": "how many arguments to pass over" }],
+            "returns": "this walk, advanced",
+            "see": ["https://rux-lang.dev/docs/api/process/arguments#argument-iterator-skip"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 70,
+          "signature": "pub func Next(self: &var ArgumentIterator) -> OsStringView?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var ArgumentIterator",
+          "returnType": "OsStringView?",
+          "value": null,
+          "conformance": "Iterator",
+          "public": true,
+          "doc": {
+            "summary": "The next argument, or none after the last.",
+            "markdown": "The next argument, or none after the last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the argument's native units, borrowing storage the process owns for its whole life",
+            "see": ["https://rux-lang.dev/docs/api/process/arguments#argument-iterator-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Iterator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Arguments",
+      "displayName": "Arguments",
+      "module": "Arguments",
+      "source": "Src/Arguments.rux",
+      "line": 43,
+      "signature": "pub func Arguments() -> ArgumentIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "Every argument the process was started with, the program first.",
+        "markdown": "Every argument the process was started with, the program first.\nCannot fail and allocates nothing. Use `Skip(1)` on the result, or start a loop at index one, to leave out the\nprogram's own name.",
+        "typeParams": [],
+        "params": [],
+        "returns": "a walk over the arguments",
+        "see": ["https://rux-lang.dev/docs/api/process/arguments#arguments"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "CapturedOutput",
+      "displayName": "CapturedOutput",
+      "module": "Capture",
+      "source": "Src/Capture.rux",
+      "line": 14,
+      "signature": "pub struct CapturedOutput",
+      "typeParams": [],
+      "doc": {
+        "summary": "What a program wrote to its standard output and error, and how it finished.",
+        "markdown": "What a program wrote to its standard output and error, and how it finished.\nThe bytes are kept as the program wrote them, which is usually but not always UTF-8. Not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/capture#captured-output"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "status",
+          "type": "ExitStatus",
+          "public": false,
+          "line": 15,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "output",
+          "type": "Buffer<char8>",
+          "public": false,
+          "line": 16,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "error",
+          "type": "Buffer<char8>",
+          "public": false,
+          "line": 17,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Status",
+          "line": 26,
+          "signature": "pub func Status(self: &CapturedOutput) -> ExitStatus",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&CapturedOutput",
+          "returnType": "ExitStatus",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How the program finished.",
+            "markdown": "How the program finished.",
+            "typeParams": [],
+            "params": [],
+            "returns": "its exit status",
+            "see": ["https://rux-lang.dev/docs/api/process/capture#status"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Output",
+          "line": 33,
+          "signature": "pub func Output(self: &CapturedOutput) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&CapturedOutput",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Everything the program wrote to its standard output.",
+            "markdown": "Everything the program wrote to its standard output.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the bytes, valid while the captured output lives",
+            "see": ["https://rux-lang.dev/docs/api/process/capture#output"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Error",
+          "line": 40,
+          "signature": "pub func Error(self: &CapturedOutput) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&CapturedOutput",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Everything the program wrote to its standard error.",
+            "markdown": "Everything the program wrote to its standard error.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the bytes, valid while the captured output lives",
+            "see": ["https://rux-lang.dev/docs/api/process/capture#error"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "ExitStatus",
+      "displayName": "ExitStatus",
+      "module": "Child",
+      "source": "Src/Child.rux",
+      "line": 54,
+      "signature": "pub struct ExitStatus",
+      "typeParams": [],
+      "doc": {
+        "summary": "How a child process finished.",
+        "markdown": "How a child process finished. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/child#exit-status"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "code",
+          "type": "int32",
+          "public": false,
+          "line": 55,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "signal",
+          "type": "int32",
+          "public": false,
+          "line": 56,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Success",
+          "line": 63,
+          "signature": "pub func Success(self: &ExitStatus) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ExitStatus",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the child exited with code zero.",
+            "markdown": "Whether the child exited with code zero.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true for a clean exit",
+            "see": ["https://rux-lang.dev/docs/api/process/child#success"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Code",
+          "line": 70,
+          "signature": "pub func Code(self: &ExitStatus) -> int32?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ExitStatus",
+          "returnType": "int32?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The code the child exited with, or none when a signal ended it.",
+            "markdown": "The code the child exited with, or none when a signal ended it.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the exit code",
+            "see": ["https://rux-lang.dev/docs/api/process/child#code"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Signal",
+          "line": 78,
+          "signature": "pub func Signal(self: &ExitStatus) -> int32?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ExitStatus",
+          "returnType": "int32?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The signal that ended the child on a Unix system, or none when it exited.",
+            "markdown": "The signal that ended the child on a Unix system, or none when it exited. Never present on Windows.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the signal number",
+            "see": ["https://rux-lang.dev/docs/api/process/child#signal"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "PipeWriter",
+      "displayName": "PipeWriter",
+      "module": "Child",
+      "source": "Src/Child.rux",
+      "line": 94,
+      "signature": "pub struct PipeWriter",
+      "typeParams": [],
+      "doc": {
+        "summary": "The writing end of a pipe into a child's standard input.",
+        "markdown": "The writing end of a pipe into a child's standard input. Closing it, by dropping it, ends the child's input.\nA pipe end is not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/child#pipe-writer"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "pipe",
+          "type": "uint64",
+          "public": false,
+          "line": 95,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Close",
+          "line": 110,
+          "signature": "pub func Close(self: &var PipeWriter)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PipeWriter",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Closes the pipe now rather than when the writer is dropped.",
+            "markdown": "Closes the pipe now rather than when the writer is dropped. Closing it twice does nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/child#pipe-writer-close"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~PipeWriter",
+          "line": 115,
+          "signature": "func ~PipeWriter(self: &var PipeWriter)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PipeWriter",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 125,
+          "signature": "pub func Write(self: &var PipeWriter, bytes: char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "bytes", "type": "char8[..]" }],
+          "receiver": "&var PipeWriter",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Writes some of `bytes` into the pipe, waiting while it is full.",
+            "markdown": "Writes some of `bytes` into the pipe, waiting while it is full.",
+            "typeParams": [],
+            "params": [{ "name": "bytes", "markdown": "the bytes to write" }],
+            "returns": "how many were written, or fails, with a broken pipe once the child closed its end",
+            "see": ["https://rux-lang.dev/docs/api/process/child#pipe-writer-write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Flush",
+          "line": 146,
+          "signature": "pub func Flush(self: &var PipeWriter) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PipeWriter",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": "Writer",
+          "public": true,
+          "doc": {
+            "summary": "Does nothing: a pipe keeps no buffer of its own.",
+            "markdown": "Does nothing: a pipe keeps no buffer of its own.",
+            "typeParams": [],
+            "params": [],
+            "returns": "nothing",
+            "see": ["https://rux-lang.dev/docs/api/process/child#pipe-writer-flush"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Writer"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "PipeReader",
+      "displayName": "PipeReader",
+      "module": "Child",
+      "source": "Src/Child.rux",
+      "line": 101,
+      "signature": "pub struct PipeReader",
+      "typeParams": [],
+      "doc": {
+        "summary": "The reading end of a pipe from a child's standard output or error.",
+        "markdown": "The reading end of a pipe from a child's standard output or error. A read past what the child wrote, once it has\nclosed its end, fails with `EndOfStream`. A pipe end is not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/child#pipe-reader"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "pipe",
+          "type": "uint64",
+          "public": false,
+          "line": 102,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Close",
+          "line": 156,
+          "signature": "pub func Close(self: &var PipeReader)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PipeReader",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Closes the pipe now rather than when the reader is dropped.",
+            "markdown": "Closes the pipe now rather than when the reader is dropped. Closing it twice does nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/child#pipe-reader-close"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~PipeReader",
+          "line": 161,
+          "signature": "func ~PipeReader(self: &var PipeReader)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PipeReader",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Read",
+          "line": 171,
+          "signature": "pub func Read(self: &var PipeReader, into: var char8[..]) -> uint ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "into", "type": "var char8[..]" }],
+          "receiver": "&var PipeReader",
+          "returnType": "uint ! IoError",
+          "value": null,
+          "conformance": "Reader",
+          "public": true,
+          "doc": {
+            "summary": "Reads what the child has written so far into `into`, waiting while it has written nothing.",
+            "markdown": "Reads what the child has written so far into `into`, waiting while it has written nothing.",
+            "typeParams": [],
+            "params": [{ "name": "into", "markdown": "where to put the bytes" }],
+            "returns": "how many were read, or fails with `EndOfStream` once the child closed its end and all was read",
+            "see": ["https://rux-lang.dev/docs/api/process/child#pipe-reader-read"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Reader"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Child",
+      "displayName": "Child",
+      "module": "Child",
+      "source": "Src/Child.rux",
+      "line": 198,
+      "signature": "pub struct Child",
+      "typeParams": [],
+      "doc": {
+        "summary": "A child process this one started.",
+        "markdown": "A child process this one started.\nWait for it to learn how it finished. Dropping a child that was not waited for neither waits for nor stops it; on\nthe Unix systems its exit status then stays with the system until this process ends. A child is not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/child#child"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "id",
+          "type": "uint32",
+          "public": false,
+          "line": 199,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "process",
+          "type": "uint64",
+          "public": false,
+          "line": 201,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "input",
+          "type": "uint64",
+          "public": false,
+          "line": 202,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "output",
+          "type": "uint64",
+          "public": false,
+          "line": 203,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "error",
+          "type": "uint64",
+          "public": false,
+          "line": 204,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "finished",
+          "type": "bool",
+          "public": false,
+          "line": 205,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "status",
+          "type": "ExitStatus",
+          "public": false,
+          "line": 206,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Id",
+          "line": 215,
+          "signature": "pub func Id(self: &Child) -> uint32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Child",
+          "returnType": "uint32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The child's process identifier.",
+            "markdown": "The child's process identifier.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the identifier",
+            "see": ["https://rux-lang.dev/docs/api/process/child#id"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TakeInput",
+          "line": 223,
+          "signature": "pub func TakeInput(self: &var Child) -> PipeWriter?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Child",
+          "returnType": "PipeWriter?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The pipe into the child's standard input, when it was started with `Stdio::Pipe` there and the pipe was not\ntaken before.",
+            "markdown": "The pipe into the child's standard input, when it was started with `Stdio::Pipe` there and the pipe was not\ntaken before.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the writer, which the caller now owns",
+            "see": ["https://rux-lang.dev/docs/api/process/child#take-input"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TakeOutput",
+          "line": 234,
+          "signature": "pub func TakeOutput(self: &var Child) -> PipeReader?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Child",
+          "returnType": "PipeReader?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The pipe from the child's standard output, when it was started with `Stdio::Pipe` there and the pipe was not\ntaken before.",
+            "markdown": "The pipe from the child's standard output, when it was started with `Stdio::Pipe` there and the pipe was not\ntaken before.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the reader, which the caller now owns",
+            "see": ["https://rux-lang.dev/docs/api/process/child#take-output"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TakeError",
+          "line": 245,
+          "signature": "pub func TakeError(self: &var Child) -> PipeReader?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Child",
+          "returnType": "PipeReader?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The pipe from the child's standard error, when it was started with `Stdio::Pipe` there and the pipe was not\ntaken before.",
+            "markdown": "The pipe from the child's standard error, when it was started with `Stdio::Pipe` there and the pipe was not\ntaken before.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the reader, which the caller now owns",
+            "see": ["https://rux-lang.dev/docs/api/process/child#take-error"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Wait",
+          "line": 256,
+          "signature": "pub func Wait(self: &var Child) -> ExitStatus ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Child",
+          "returnType": "ExitStatus ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waits for the child to finish and returns how it did.",
+            "markdown": "Waits for the child to finish and returns how it did. The pipe into its input, if still held, is closed first,\nso a child reading its input to the end is not left waiting for more. Waiting again returns the same status.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how the child finished",
+            "see": ["https://rux-lang.dev/docs/api/process/child#wait"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TryWait",
+          "line": 279,
+          "signature": "pub func TryWait(self: &var Child) -> ExitStatus? ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Child",
+          "returnType": "ExitStatus? ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How the child finished, or none while it still runs, without waiting.",
+            "markdown": "How the child finished, or none while it still runs, without waiting.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the status once the child has finished",
+            "see": ["https://rux-lang.dev/docs/api/process/child#try-wait"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Kill",
+          "line": 300,
+          "signature": "pub func Kill(self: &var Child) -> ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Child",
+          "returnType": "! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Ends the child at once: with `SIGKILL` on the Unix systems, and with exit code 1 on Windows.",
+            "markdown": "Ends the child at once: with `SIGKILL` on the Unix systems, and with exit code 1 on Windows. Killing a child\nthat has already finished does nothing. Wait for it afterwards to learn its status.",
+            "typeParams": [],
+            "params": [],
+            "returns": "nothing, or fails when the system refused",
+            "see": ["https://rux-lang.dev/docs/api/process/child#kill"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~Child",
+          "line": 327,
+          "signature": "func ~Child(self: &var Child)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Child",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "Stdio",
+      "displayName": "Stdio",
+      "module": "Command",
+      "source": "Src/Command.rux",
+      "line": 46,
+      "signature": "pub enum Stdio",
+      "typeParams": [],
+      "doc": {
+        "summary": "What a child's standard stream is connected to.",
+        "markdown": "What a child's standard stream is connected to. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/command#stdio"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "Inherit",
+          "value": "0",
+          "payload": null,
+          "line": 48,
+          "doc": "The stream this process has, which the child shares.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Null",
+          "value": "1",
+          "payload": null,
+          "line": 50,
+          "doc": "Nothing: reads find the end at once and writes are discarded.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Pipe",
+          "value": "2",
+          "payload": null,
+          "line": 52,
+          "doc": "A new pipe, whose other end the parent takes from the `Child`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Command",
+      "displayName": "Command",
+      "module": "Command",
+      "source": "Src/Command.rux",
+      "line": 59,
+      "signature": "pub struct Command",
+      "typeParams": [],
+      "doc": {
+        "summary": "A program to start, with its arguments, working directory, environment changes and standard streams.",
+        "markdown": "A program to start, with its arguments, working directory, environment changes and standard streams.\nBuild it up and then `Spawn` it, or `Run` it to completion, or `Capture` what it writes. A command can be started\nmore than once. A command is not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/command#command"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 60,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "words",
+          "type": "Buffer<OsUnit>",
+          "public": false,
+          "line": 62,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "wordCount",
+          "type": "uint",
+          "public": false,
+          "line": 63,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "directory",
+          "type": "Buffer<OsUnit>",
+          "public": false,
+          "line": 65,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "changes",
+          "type": "Buffer<OsUnit>",
+          "public": false,
+          "line": 67,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "clearEnvironment",
+          "type": "bool",
+          "public": false,
+          "line": 68,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "input",
+          "type": "Stdio",
+          "public": false,
+          "line": 69,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "output",
+          "type": "Stdio",
+          "public": false,
+          "line": 70,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "error",
+          "type": "Stdio",
+          "public": false,
+          "line": 71,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "failure",
+          "type": "IoError?",
+          "public": false,
+          "line": 72,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Capture",
+          "line": 83,
+          "signature": "pub func Capture(self: &Command, allocator: Allocator) -> CapturedOutput ! IoError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": "&Command",
+          "returnType": "CapturedOutput ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Starts the program with its output and error piped, keeps everything it writes, and waits for it to finish.",
+            "markdown": "Starts the program with its output and error piped, keeps everything it writes, and waits for it to finish.\nIts input is what the command says, which is this process's own unless changed.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "what the captured bytes are kept in" }],
+            "returns": "the output, the error and how the program finished",
+            "see": ["https://rux-lang.dev/docs/api/process/command#capture"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constructor",
+          "name": "Command",
+          "line": 84,
+          "signature": "pub func Command(allocator: Allocator, program: char8[..]) -> Command",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "program", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "Command",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A command to start `program`, found through `PATH` when it names no directory.",
+            "markdown": "A command to start `program`, found through `PATH` when it names no directory. The program is also the child's\nfirst argument, as every system expects. Its streams start as `Stdio::Inherit`.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the command's parts are kept in" },
+              { "name": "program", "markdown": "the program's name or path, as UTF-8 text" }
+            ],
+            "returns": "the command",
+            "see": ["https://rux-lang.dev/docs/api/process/command#command-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromNative",
+          "line": 100,
+          "signature": "pub func FromNative(allocator: Allocator, program: OsStringView) -> Command",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "program", "type": "OsStringView" }
+          ],
+          "receiver": null,
+          "returnType": "Command",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A command to start `program` given in native form, such as this process's own first argument.",
+            "markdown": "A command to start `program` given in native form, such as this process's own first argument.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the command's parts are kept in" },
+              { "name": "program", "markdown": "the program's name or path" }
+            ],
+            "returns": "the command",
+            "see": ["https://rux-lang.dev/docs/api/process/command#from-native"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Argument",
+          "line": 112,
+          "signature": "pub func Argument(self: &var Command, value: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "char8[..]" }],
+          "receiver": "&var Command",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds an argument, as UTF-8 text.",
+            "markdown": "Adds an argument, as UTF-8 text.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the argument" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/command#argument"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "NativeArgument",
+          "line": 121,
+          "signature": "pub func NativeArgument(self: &var Command, value: OsStringView)",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "OsStringView" }],
+          "receiver": "&var Command",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds an argument already in native form, such as one of this process's own arguments.",
+            "markdown": "Adds an argument already in native form, such as one of this process's own arguments.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the argument" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/command#native-argument"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Directory",
+          "line": 130,
+          "signature": "pub func Directory(self: &var Command, path: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "path", "type": "char8[..]" }],
+          "receiver": "&var Command",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Starts the child in `path` rather than in this process's working directory.",
+            "markdown": "Starts the child in `path` rather than in this process's working directory.",
+            "typeParams": [],
+            "params": [{ "name": "path", "markdown": "the directory, as UTF-8 text" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/command#directory"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetVariable",
+          "line": 140,
+          "signature": "pub func SetVariable(self: &var Command, name: char8[..], value: char8[..])",
+          "typeParams": [],
+          "params": [
+            { "name": "name", "type": "char8[..]" },
+            { "name": "value", "type": "char8[..]" }
+          ],
+          "receiver": "&var Command",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives the child the variable `name` set to `value`, whatever this process's environment holds.",
+            "markdown": "Gives the child the variable `name` set to `value`, whatever this process's environment holds.",
+            "typeParams": [],
+            "params": [
+              { "name": "name", "markdown": "the variable's name, which may not be empty or contain `=`" },
+              { "name": "value", "markdown": "its value" }
+            ],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/command#set-variable"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "RemoveVariable",
+          "line": 152,
+          "signature": "pub func RemoveVariable(self: &var Command, name: char8[..])",
+          "typeParams": [],
+          "params": [{ "name": "name", "type": "char8[..]" }],
+          "receiver": "&var Command",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Leaves the variable `name` out of the child's environment.",
+            "markdown": "Leaves the variable `name` out of the child's environment.",
+            "typeParams": [],
+            "params": [{ "name": "name", "markdown": "the variable's name" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/command#remove-variable"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "ClearEnvironment",
+          "line": 161,
+          "signature": "pub func ClearEnvironment(self: &var Command)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Command",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Starts the child with no variables but those set on the command.",
+            "markdown": "Starts the child with no variables but those set on the command.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/command#clear-environment"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "StandardInput",
+          "line": 169,
+          "signature": "pub func StandardInput(self: &var Command, stdio: Stdio)",
+          "typeParams": [],
+          "params": [{ "name": "stdio", "type": "Stdio" }],
+          "receiver": "&var Command",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Connects the child's standard input.",
+            "markdown": "Connects the child's standard input.",
+            "typeParams": [],
+            "params": [{ "name": "stdio", "markdown": "what it reads from" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/command#standard-input"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "StandardOutput",
+          "line": 176,
+          "signature": "pub func StandardOutput(self: &var Command, stdio: Stdio)",
+          "typeParams": [],
+          "params": [{ "name": "stdio", "type": "Stdio" }],
+          "receiver": "&var Command",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Connects the child's standard output.",
+            "markdown": "Connects the child's standard output.",
+            "typeParams": [],
+            "params": [{ "name": "stdio", "markdown": "what it writes to" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/command#standard-output"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "StandardError",
+          "line": 183,
+          "signature": "pub func StandardError(self: &var Command, stdio: Stdio)",
+          "typeParams": [],
+          "params": [{ "name": "stdio", "type": "Stdio" }],
+          "receiver": "&var Command",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Connects the child's standard error.",
+            "markdown": "Connects the child's standard error.",
+            "typeParams": [],
+            "params": [{ "name": "stdio", "markdown": "what it writes to" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/process/command#standard-error"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Spawn",
+          "line": 191,
+          "signature": "pub func Spawn(self: &Command) -> Child ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Command",
+          "returnType": "Child ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Starts the program as a child process.",
+            "markdown": "Starts the program as a child process.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the child, or fails: with a part of the command the system could not take, with `NotFound` for a\nprogram that is not there, or with the system's reason",
+            "see": ["https://rux-lang.dev/docs/api/process/command#spawn"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Run",
+          "line": 199,
+          "signature": "pub func Run(self: &Command) -> ExitStatus ! IoError",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Command",
+          "returnType": "ExitStatus ! IoError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Starts the program and waits for it to finish.",
+            "markdown": "Starts the program and waits for it to finish.",
+            "typeParams": [],
+            "params": [],
+            "returns": "how it finished",
+            "see": ["https://rux-lang.dev/docs/api/process/command#run"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "EnvironmentVariable",
+      "displayName": "EnvironmentVariable",
+      "module": "Environment",
+      "source": "Src/Environment.rux",
+      "line": 23,
+      "signature": "pub struct EnvironmentVariable",
+      "typeParams": [],
+      "doc": {
+        "summary": "One environment variable: its name and its value.",
+        "markdown": "One environment variable: its name and its value.\n`Copy`. Both views borrow storage the process owns for its whole life.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/environment#environment-variable"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "name",
+          "type": "OsStringView",
+          "public": true,
+          "line": 25,
+          "doc": "The name, the units before the first `=`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "value",
+          "type": "OsStringView",
+          "public": true,
+          "line": 27,
+          "doc": "The value, every unit after the first `=`, which may itself contain `=` and may be empty.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "EnvironmentIterator",
+      "displayName": "EnvironmentIterator",
+      "module": "Environment",
+      "source": "Src/Environment.rux",
+      "line": 97,
+      "signature": "pub struct EnvironmentIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "A walk over the environment variables: those the process started with, in the order the system holds them, then\nthose set since.",
+        "markdown": "A walk over the environment variables: those the process started with, in the order the system holds them, then\nthose set since.\n`Copy`, holding only a position, so it allocates nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/environment#environment-iterator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "next",
+          "type": "uint",
+          "public": false,
+          "line": 98,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "changes",
+          "type": "bool",
+          "public": false,
+          "line": 100,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Iterate",
+          "line": 115,
+          "signature": "pub func Iterate(self: &EnvironmentIterator) -> EnvironmentIterator",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&EnvironmentIterator",
+          "returnType": "EnvironmentIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The walk itself, so that `for variable in Environment()` reads every variable.",
+            "markdown": "The walk itself, so that `for variable in Environment()` reads every variable.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a copy of this walk from its current position",
+            "see": ["https://rux-lang.dev/docs/api/process/environment#environment-iterator-iterate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 124,
+          "signature": "pub func Next(self: &var EnvironmentIterator) -> EnvironmentVariable?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var EnvironmentIterator",
+          "returnType": "EnvironmentVariable?",
+          "value": null,
+          "conformance": "Iterator",
+          "public": true,
+          "doc": {
+            "summary": "The next variable, or none after the last.",
+            "markdown": "The next variable, or none after the last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the variable's name and value",
+            "see": ["https://rux-lang.dev/docs/api/process/environment#environment-iterator-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Iterator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Environment",
+      "displayName": "Environment",
+      "module": "Environment",
+      "source": "Src/Environment.rux",
+      "line": 107,
+      "signature": "pub func Environment() -> EnvironmentIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "Every environment variable of the process.",
+        "markdown": "Every environment variable of the process.\nCannot fail and allocates nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": "a walk over the environment",
+        "see": ["https://rux-lang.dev/docs/api/process/environment#environment"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Variable",
+      "displayName": "Variable",
+      "module": "Environment",
+      "source": "Src/Environment.rux",
+      "line": 238,
+      "signature": "pub func Variable(name: char8[..]) -> OsStringView?",
+      "typeParams": [],
+      "doc": {
+        "summary": "The value of the environment variable `name`, or none when it is not set.",
+        "markdown": "The value of the environment variable `name`, or none when it is not set.\n`name` is UTF-8 text. It is matched exactly on the Unix systems and without regard to ASCII case on Windows, which\nis how each system matches names. A variable set or removed with `SetVariable` or `RemoveVariable` reads as it was\nlast changed. When the starting environment names a variable twice, the first is the one returned, as the C\nlibrary's `getenv` returns it. A variable set to the empty string is present, with an empty value. The view borrows\nstorage the process owns for its whole life. Runs in time linear in the size of the environment and allocates\nnothing.",
+        "typeParams": [],
+        "params": [{ "name": "name", "markdown": "the variable's name" }],
+        "returns": "the variable's value, or none when no variable has that name",
+        "see": ["https://rux-lang.dev/docs/api/process/environment#variable"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "SetVariable",
+      "displayName": "SetVariable",
+      "module": "Environment",
+      "source": "Src/Environment.rux",
+      "line": 349,
+      "signature": "pub func SetVariable(name: char8[..], value: char8[..]) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets the environment variable `name` to `value`, for this process and every process it starts from now on.",
+        "markdown": "Sets the environment variable `name` to `value`, for this process and every process it starts from now on.\nBoth are UTF-8 text. The change is seen by `Variable` and `Environment`, by `Command`, and on Windows by the system;\nthe C library's own environment on the Unix systems is not changed. Views handed out before stay valid.",
+        "typeParams": [],
+        "params": [
+          { "name": "name", "markdown": "the variable's name, which may not be empty or contain `=` or NUL" },
+          { "name": "value", "markdown": "its new value, which may not contain NUL" }
+        ],
+        "returns": "nothing, or fails with `InvalidInput` for a name or value the environment cannot hold",
+        "see": ["https://rux-lang.dev/docs/api/process/environment#set-variable"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "RemoveVariable",
+      "displayName": "RemoveVariable",
+      "module": "Environment",
+      "source": "Src/Environment.rux",
+      "line": 364,
+      "signature": "pub func RemoveVariable(name: char8[..]) -> ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Removes the environment variable `name`, for this process and every process it starts from now on.",
+        "markdown": "Removes the environment variable `name`, for this process and every process it starts from now on.\nRemoving a variable that is not set does nothing. Views of its value handed out before stay valid.",
+        "typeParams": [],
+        "params": [{ "name": "name", "markdown": "the variable's name, which may not be empty or contain `=` or NUL" }],
+        "returns": "nothing, or fails with `InvalidInput` for a name the environment cannot hold",
+        "see": ["https://rux-lang.dev/docs/api/process/environment#remove-variable"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CurrentExecutable",
+      "displayName": "CurrentExecutable",
+      "module": "Executable",
+      "source": "Src/Executable.rux",
+      "line": 34,
+      "signature": "pub func CurrentExecutable(allocator: Allocator) -> PathBuffer ! IoError",
+      "typeParams": [],
+      "doc": {
+        "summary": "The path of the executable file the process is running, as the system loaded it.",
+        "markdown": "The path of the executable file the process is running, as the system loaded it.\nUnlike `Argument(0)`, which is whatever the parent chose to pass, this is the file itself, so a program that runs\nitself again or finds files installed beside it can rely on it. Windows, Linux and FreeBSD give an absolute path\nwith symbolic links resolved; macOS gives the path the executable was loaded by, which may be relative to the\ndirectory the process started in or pass through links. Fails with `NotFound` when the system cannot say, as when\nLinux has no `/proc` mounted, and with `LimitExceeded` when the path cannot be stored.",
+        "typeParams": [],
+        "params": [{ "name": "allocator", "markdown": "what the path is kept in" }],
+        "returns": "the executable's path",
+        "see": ["https://rux-lang.dev/docs/api/process/executable#current-executable"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Exit",
+      "displayName": "Exit",
+      "module": "Exit",
+      "source": "Src/Exit.rux",
+      "line": 44,
+      "signature": "pub func Exit(code: int32)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Ends the whole process at once, reporting `code` to its parent.",
+        "markdown": "Ends the whole process at once, reporting `code` to its parent.\nEvery thread stops. Nothing is flushed, unwound or destroyed: the system reclaims memory and descriptors, and data\nstill buffered in the process is lost, so flush what must be written first. On the Unix systems the parent sees\nonly the low eight bits of `code`; on Windows it sees all thirty-two. Does not return.",
+        "typeParams": [],
+        "params": [{ "name": "code", "markdown": "the status to report, zero for success by convention" }],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/process/exit#exit"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "CurrentId",
+      "displayName": "CurrentId",
+      "module": "Exit",
+      "source": "Src/Exit.rux",
+      "line": 58,
+      "signature": "pub func CurrentId() -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The identifier the system gave this process.",
+        "markdown": "The identifier the system gave this process.\nStable for the life of the process and unique among running processes, but reused once the process has exited.\nCannot fail and allocates nothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the process identifier",
+        "see": ["https://rux-lang.dev/docs/api/process/exit#current-id"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

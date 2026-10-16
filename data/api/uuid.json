@@ -151,7 +151,7 @@
       "displayName": "UuidTextLength",
       "module": "Text",
       "source": "Src/Text.rux",
-      "line": 28,
+      "line": 29,
       "signature": "pub const UuidTextLength: uint",
       "typeParams": [],
       "doc": {
@@ -186,7 +186,7 @@
       "displayName": "UuidUrnLength",
       "module": "Text",
       "source": "Src/Text.rux",
-      "line": 32,
+      "line": 33,
       "signature": "pub const UuidUrnLength: uint",
       "typeParams": [],
       "doc": {
@@ -221,7 +221,7 @@
       "displayName": "UuidParseError",
       "module": "Text",
       "source": "Src/Text.rux",
-      "line": 40,
+      "line": 41,
       "signature": "pub variant UuidParseError",
       "typeParams": [],
       "doc": {
@@ -241,7 +241,7 @@
           "name": "WrongLength",
           "value": null,
           "payload": "(uint)",
-          "line": 44,
+          "line": 45,
           "doc": "The text is neither thirty-six characters nor forty-five with the URN prefix. The offset is the text's\nlength when it is too short, which is where the missing character would have gone, and the first character\nthe canonical form has no room for when it is too long.",
           "targets": [
             "windows-x86_64",
@@ -258,7 +258,7 @@
           "name": "Misplaced",
           "value": null,
           "payload": "(uint)",
-          "line": 47,
+          "line": 48,
           "doc": "A hyphen is missing where the form puts one, or one appears where a digit belongs. The offset is that\ncharacter.",
           "targets": [
             "windows-x86_64",
@@ -275,7 +275,7 @@
           "name": "NotHexadecimal",
           "value": null,
           "payload": "(uint)",
-          "line": 49,
+          "line": 50,
           "doc": "A character that is not a hexadecimal digit. The offset is that character.",
           "targets": [
             "windows-x86_64",
@@ -292,7 +292,7 @@
           "name": "BadPrefix",
           "value": null,
           "payload": "(uint)",
-          "line": 52,
+          "line": 53,
           "doc": "The text has the length of the URN form but its `urn:uuid:` prefix is misspelled. The offset is the first\ncharacter that does not match.",
           "targets": [
             "windows-x86_64",
@@ -310,7 +310,7 @@
         {
           "kind": "method",
           "name": "Offset",
-          "line": 60,
+          "line": 61,
           "signature": "pub func Offset(self: &UuidParseError) -> uint",
           "typeParams": [],
           "params": [],
@@ -358,7 +358,7 @@
       "displayName": "Parse",
       "module": "Text",
       "source": "Src/Text.rux",
-      "line": 94,
+      "line": 95,
       "signature": "pub func Parse(text: char8[..]) -> Uuid ! UuidParseError",
       "typeParams": [],
       "doc": {
@@ -393,7 +393,7 @@
       "displayName": "Parse",
       "module": "Text",
       "source": "Src/Text.rux",
-      "line": 163,
+      "line": 164,
       "signature": "pub func Parse(text: StringView) -> Uuid ! UuidParseError",
       "typeParams": [],
       "doc": {
@@ -428,7 +428,7 @@
       "displayName": "Format",
       "module": "Text",
       "source": "Src/Text.rux",
-      "line": 198,
+      "line": 199,
       "signature": "pub func Format(value: &Uuid, into: var char8[..]) -> ! FormatError",
       "typeParams": [],
       "doc": {
@@ -466,7 +466,7 @@
       "displayName": "FormatUpper",
       "module": "Text",
       "source": "Src/Text.rux",
-      "line": 211,
+      "line": 212,
       "signature": "pub func FormatUpper(value: &Uuid, into: var char8[..]) -> ! FormatError",
       "typeParams": [],
       "doc": {
@@ -504,7 +504,7 @@
       "displayName": "FormatUrn",
       "module": "Text",
       "source": "Src/Text.rux",
-      "line": 232,
+      "line": 233,
       "signature": "pub func FormatUrn(value: &Uuid, into: var char8[..]) -> ! FormatError",
       "typeParams": [],
       "doc": {
@@ -822,7 +822,7 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 265,
+          "line": 266,
           "signature": "pub func WriteDisplay(self: &Uuid, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -860,7 +860,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 281,
+          "line": 283,
           "signature": "pub func WriteDebug(self: &Uuid, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [

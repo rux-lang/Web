@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/NanoId.rux
-  line: 15
+  line: 16
 seo:
   title: "NanoId — NanoId API"
   description: "A Nano ID of the standard form: twenty-one characters from NanoIdAlphabet."
@@ -43,7 +43,7 @@ supply random bytes, and produces no identifier in that case.
 
 **Returns**: the identifier, or why none could be made
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L57)
 
 <h3 id="parse"><code>Parse</code></h3>
 
@@ -62,7 +62,7 @@ right length and allocates nothing.
 
 **Returns**: the identifier, or why the text is not one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L70)
 
 ## Methods
 
@@ -78,7 +78,7 @@ allocates nothing.
 
 **Returns**: the text, always [`NanoIdLength`](/docs/api/nanoid/alphabet#nano-id-length) bytes of the default alphabet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L89)
 
 <h3 id="equals"><code>Equals</code></h3>
 
@@ -96,7 +96,7 @@ right. Cannot fail and allocates nothing.
 
 **Returns**: whether the two have the same text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L99)
 
 <h3 id="compare"><code>Compare</code></h3>
 
@@ -114,7 +114,7 @@ container needs. Cannot fail and allocates nothing.
 
 **Returns**: how this identifier orders against `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L115)
 
 ## Implements Display
 
@@ -140,7 +140,7 @@ No style is understood. Reports whatever the writer reported, and `UnsupportedRe
 
 **Returns**: success when the whole identifier was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L133)
 
 ## Implements Debug
 
@@ -166,7 +166,7 @@ The failures [`WriteDisplay`](/docs/api/nanoid/nano-id#write-display) reports.
 
 **Returns**: success when the whole identifier was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L147)
 
 ## Related
 
@@ -182,7 +182,7 @@ pub variant NanoIdParseError {
 Why text could not be read as a standard Nano ID.
 Failure-only, carrying the zero-based byte offset where the problem was found. Copy, owning nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L23)
 
 **Cases**
 
@@ -206,4 +206,4 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 
 **Returns**: the zero-based UTF-8 byte offset, which is the text's length at end of input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/NanoId.rux#L36)

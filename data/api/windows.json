@@ -49,9 +49,34 @@
       "header": "Virtual memory: reserving and committing address space, and changing what may be done with it.\nWindows separates two things every other supported system runs together. Reserving takes address space without\nbacking it; committing gives the reserved range storage. A single call may do both, and an allocator that wants a\nlarge arena without paying for it up front does them separately.\nA failing call here reports null rather than `InvalidHandleValue`, which is the opposite of the file interface.\nThe reason is in `GetLastError`."
     },
     {
+      "name": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "header": "Starting another program, waiting for it, and stopping it, and the pipes and handles a child is given.\nA child inherits the handles the parent marks inheritable and names in its startup information, so the parent makes\neach pipe end it hands over inheritable and keeps its own ends private."
+    },
+    {
+      "name": "Shell",
+      "source": "Src/Shell.rux",
+      "header": "The Shell32 entry point this package binds: splitting a command line into arguments.\nWindows hands a program its command line as one string and leaves splitting it to the program. Shell32's splitter\napplies the rules the C runtime uses for `argv`, so a program that splits with it sees the arguments every other\nWindows program would."
+    },
+    {
+      "name": "Synch",
+      "source": "Src/Synch.rux",
+      "header": "Waiting on a value in memory until another thread changes it, which is what every lock is built on.\n`WaitOnAddress` puts the calling thread to sleep only if the value still matches the caller's copy, so a wake that\nlands between the caller's check and its sleep is never lost. The entry points live in the synchronization API set\nrather than in Kernel32 by name; the loader resolves the set to the system DLL that implements it."
+    },
+    {
+      "name": "TimeZone",
+      "source": "Src/TimeZone.rux",
+      "header": "The system's time zone: its offset from UTC and the rules for its daylight time."
+    },
+    {
       "name": "Types",
       "source": "Src/Types.rux",
       "header": "The Win32 ABI's fundamental types, handles and structures.\nEvery name here is Win32's own, because that is what a reader porting code or reading Microsoft's documentation\nwill look for. A `HANDLE` is an opaque pointer-sized value the kernel owns; nothing here interprets one, and the\nonly thing a caller may do with it is pass it back or close it.\nThe two invalid values are not the same. A handle-returning call reports failure as `InvalidHandleValue`, which is\n`-1` cast to a pointer, while an allocation-returning one reports it as null. Testing the wrong one is the classic\nWin32 mistake, so each declaration says which it uses."
+    },
+    {
+      "name": "Winsock",
+      "source": "Src/Winsock.rux",
+      "header": "Sockets through Winsock: endpoints of network connections and datagrams, and the lookup of a host's addresses.\nA process starts Winsock once with `WSAStartup` before any other call. A socket is a handle-sized `SOCKET`, not a\ndescriptor, and a failure is reported through `WSAGetLastError` rather than `GetLastError`."
     }
   ],
   "items": [
@@ -1451,6 +1476,84 @@
           "targets": ["windows-x86_64", "windows-aarch64"]
         }
       ],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "ALL_PROCESSOR_GROUPS",
+      "displayName": "ALL_PROCESSOR_GROUPS",
+      "module": "Constants",
+      "source": "Src/Constants.rux",
+      "line": 314,
+      "signature": "pub const ALL_PROCESSOR_GROUPS: uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`ALL_PROCESSOR_GROUPS`: asks `GetActiveProcessorCount` about every processor group at once.",
+        "markdown": "`ALL_PROCESSOR_GROUPS`: asks `GetActiveProcessorCount` about every processor group at once.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process#all-processor-groups"],
+        "deprecated": null
+      },
+      "value": "0xFFFF",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "STACK_SIZE_PARAM_IS_A_RESERVATION",
+      "displayName": "STACK_SIZE_PARAM_IS_A_RESERVATION",
+      "module": "Constants",
+      "source": "Src/Constants.rux",
+      "line": 320,
+      "signature": "pub const STACK_SIZE_PARAM_IS_A_RESERVATION: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`STACK_SIZE_PARAM_IS_A_RESERVATION`: `CreateThread` takes its stack size as the space to reserve rather than to\ncommit, which is what a stack size usually means.",
+        "markdown": "`STACK_SIZE_PARAM_IS_A_RESERVATION`: `CreateThread` takes its stack size as the space to reserve rather than to\ncommit, which is what a stack size usually means.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process#stack-size-param-is-a-reservation"],
+        "deprecated": null
+      },
+      "value": "0x00010000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "INFINITE",
+      "displayName": "INFINITE",
+      "module": "Constants",
+      "source": "Src/Constants.rux",
+      "line": 325,
+      "signature": "pub const INFINITE: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`INFINITE`: a wait with no time-out.",
+        "markdown": "`INFINITE`: a wait with no time-out.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process#infinite"],
+        "deprecated": null
+      },
+      "value": "0xFFFFFFFF",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
       "members": [],
       "implements": [],
       "targets": ["windows-x86_64", "windows-aarch64"]
@@ -3594,11 +3697,73 @@
     },
     {
       "kind": "extern",
+      "name": "GetCommandLineW",
+      "displayName": "GetCommandLineW",
+      "module": "Kernel",
+      "source": "Src/Kernel.rux",
+      "line": 161,
+      "signature": "pub extern func GetCommandLineW() -> *uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "Retrieves the command line the process was started with, as one string.",
+        "markdown": "Retrieves the command line the process was started with, as one string.\nThe string belongs to the process for its whole life and must not be written or freed. It is the command line\nexactly as the parent passed it, quotes and all; `CommandLineToArgvW` splits it into arguments.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the NUL-terminated UTF-16 command line, which is never null",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process#get-command-line-w",
+          "https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getcommandlinew"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetModuleFileNameW",
+      "displayName": "GetModuleFileNameW",
+      "module": "Kernel",
+      "source": "Src/Kernel.rux",
+      "line": 173,
+      "signature": "pub extern func GetModuleFileNameW(moduleHandle: *opaque, buffer: *var uint16, size: uint32) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Retrieves the full path of the file a module was loaded from; a null module is the process's executable.",
+        "markdown": "Retrieves the full path of the file a module was loaded from; a null module is the process's executable.\nThe path is NUL-terminated when it fits. When it does not, it is cut to `size` units, the last of them the\nterminator, and the call returns `size`.",
+        "typeParams": [],
+        "params": [
+          { "name": "moduleHandle", "markdown": "the module, or null for the executable" },
+          { "name": "buffer", "markdown": "receives the path" },
+          { "name": "size", "markdown": "how many units `buffer` holds" }
+        ],
+        "returns": "the path's length without its terminator, `size` when it was cut, or zero on failure with the\nreason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process#get-module-file-name-w",
+          "https://learn.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamew"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
       "name": "GetCurrentDirectoryA",
       "displayName": "GetCurrentDirectoryA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 161,
+      "line": 181,
       "signature": "pub extern func GetCurrentDirectoryA(bufferLength: uint32, buffer: *char8) -> uint32",
       "typeParams": [],
       "doc": {
@@ -3626,11 +3791,40 @@
     },
     {
       "kind": "extern",
+      "name": "GetEnvironmentStringsW",
+      "displayName": "GetEnvironmentStringsW",
+      "module": "Kernel",
+      "source": "Src/Kernel.rux",
+      "line": 190,
+      "signature": "pub extern func GetEnvironmentStringsW() -> *uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "Copies the calling process's environment block.",
+        "markdown": "Copies the calling process's environment block.\nThe block is a sequence of NUL-terminated `name=value` UTF-16 strings ended by an empty one. It is a copy owned\nby the caller, released with `FreeEnvironmentStringsW`; changes made to the environment after the call do not\nappear in it.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the environment block, or null on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process#get-environment-strings-w",
+          "https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getenvironmentstringsw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
       "name": "GetCurrentProcessId",
       "displayName": "GetCurrentProcessId",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 167,
+      "line": 196,
       "signature": "pub extern func GetCurrentProcessId() -> uint32",
       "typeParams": [],
       "doc": {
@@ -3655,11 +3849,42 @@
     },
     {
       "kind": "extern",
+      "name": "GetActiveProcessorCount",
+      "displayName": "GetActiveProcessorCount",
+      "module": "Kernel",
+      "source": "Src/Kernel.rux",
+      "line": 203,
+      "signature": "pub extern func GetActiveProcessorCount(groupNumber: uint16) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Retrieves the number of active processors in a processor group, or in all of them.",
+        "markdown": "Retrieves the number of active processors in a processor group, or in all of them.",
+        "typeParams": [],
+        "params": [
+          { "name": "groupNumber", "markdown": "the processor group, or `ALL_PROCESSOR_GROUPS` for the whole system" }
+        ],
+        "returns": "the number of active processors, or zero on failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process#get-active-processor-count",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getactiveprocessorcount"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
       "name": "GetCurrentThreadId",
       "displayName": "GetCurrentThreadId",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 173,
+      "line": 209,
       "signature": "pub extern func GetCurrentThreadId() -> uint32",
       "typeParams": [],
       "doc": {
@@ -3688,7 +3913,7 @@
       "displayName": "GetFileAttributesA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 180,
+      "line": 216,
       "signature": "pub extern func GetFileAttributesA(fileName: *char8) -> uint32",
       "typeParams": [],
       "doc": {
@@ -3717,7 +3942,7 @@
       "displayName": "GetFileSizeEx",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 188,
+      "line": 224,
       "signature": "pub extern func GetFileSizeEx(file: *opaque, size: *int64) -> bool32",
       "typeParams": [],
       "doc": {
@@ -3749,7 +3974,7 @@
       "displayName": "GetSystemInfo",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 195,
+      "line": 231,
       "signature": "pub extern func GetSystemInfo(info: *var SystemInfo)",
       "typeParams": [],
       "doc": {
@@ -3778,7 +4003,7 @@
       "displayName": "GetLastError",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 201,
+      "line": 237,
       "signature": "pub extern func GetLastError() -> uint32",
       "typeParams": [],
       "doc": {
@@ -3807,7 +4032,7 @@
       "displayName": "GetLocalTime",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 207,
+      "line": 243,
       "signature": "pub extern func GetLocalTime(time: *SystemTime)",
       "typeParams": [],
       "doc": {
@@ -3836,7 +4061,7 @@
       "displayName": "GetProcAddress",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 215,
+      "line": 251,
       "signature": "pub extern func GetProcAddress(libModule: *opaque, procName: *char8) -> *opaque",
       "typeParams": [],
       "doc": {
@@ -3868,7 +4093,7 @@
       "displayName": "GetProcessHeap",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 221,
+      "line": 257,
       "signature": "pub extern func GetProcessHeap() -> *opaque",
       "typeParams": [],
       "doc": {
@@ -3897,7 +4122,7 @@
       "displayName": "GetStdHandle",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 228,
+      "line": 264,
       "signature": "pub extern func GetStdHandle(stdHandle: uint32) -> *opaque",
       "typeParams": [],
       "doc": {
@@ -3928,7 +4153,7 @@
       "displayName": "GetSystemTime",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 234,
+      "line": 270,
       "signature": "pub extern func GetSystemTime(time: *SystemTime)",
       "typeParams": [],
       "doc": {
@@ -3957,7 +4182,7 @@
       "displayName": "GetTickCount64",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 240,
+      "line": 276,
       "signature": "pub extern func GetTickCount64() -> uint64",
       "typeParams": [],
       "doc": {
@@ -3986,7 +4211,7 @@
       "displayName": "HeapAlloc",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 249,
+      "line": 285,
       "signature": "pub extern func HeapAlloc(heap: *opaque, flags: uint32, bytes: uint) -> *var opaque",
       "typeParams": [],
       "doc": {
@@ -4019,7 +4244,7 @@
       "displayName": "HeapFree",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 258,
+      "line": 294,
       "signature": "pub extern func HeapFree(heap: *opaque, flags: uint32, mem: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4052,7 +4277,7 @@
       "displayName": "HeapReAlloc",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 268,
+      "line": 304,
       "signature": "pub extern func HeapReAlloc(heap: *opaque, flags: uint32, mem: *opaque, bytes: uint) -> *var opaque",
       "typeParams": [],
       "doc": {
@@ -4086,7 +4311,7 @@
       "displayName": "LoadLibraryA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 275,
+      "line": 311,
       "signature": "pub extern func LoadLibraryA(libFileName: *char8) -> *opaque",
       "typeParams": [],
       "doc": {
@@ -4115,7 +4340,7 @@
       "displayName": "MoveFileA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 283,
+      "line": 319,
       "signature": "pub extern func MoveFileA(existingFileName: *char8, newFileName: *char8) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4147,7 +4372,7 @@
       "displayName": "MultiByteToWideChar",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 295,
+      "line": 331,
       "signature": "pub extern func MultiByteToWideChar(codePage: CodePage, flags: uint32, multiByteStr: *char8, multiByte: int32, wideCharStr: *char16, wideChar: int32) -> int32",
       "typeParams": [],
       "doc": {
@@ -4183,7 +4408,7 @@
       "displayName": "MultiByteToWideChar",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 314,
+      "line": 350,
       "signature": "pub extern func MultiByteToWideChar(codePage: uint32, flags: uint32, multiByteStr: *char8, multiByte: int32, wideCharStr: *char16, wideChar: int32) -> int32",
       "typeParams": [],
       "doc": {
@@ -4219,7 +4444,7 @@
       "displayName": "ReadConsoleA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 332,
+      "line": 368,
       "signature": "pub extern func ReadConsoleA(consoleInput: *opaque, buffer: *opaque, numberOfCharsToRead: uint32, numberOfCharsRead: *uint32, inputControl: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4254,7 +4479,7 @@
       "displayName": "ReadFile",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 349,
+      "line": 385,
       "signature": "pub extern func ReadFile(file: *opaque, buffer: *opaque, numberOfBytesToRead: uint32, numberOfBytesRead: *uint32, overlapped: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4289,7 +4514,7 @@
       "displayName": "RemoveDirectoryA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 362,
+      "line": 398,
       "signature": "pub extern func RemoveDirectoryA(pathName: *char8) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4318,7 +4543,7 @@
       "displayName": "RtlCompareMemory",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 371,
+      "line": 407,
       "signature": "pub extern func RtlCompareMemory(source1: *opaque, source2: *opaque, length: uint) -> uint",
       "typeParams": [],
       "doc": {
@@ -4351,7 +4576,7 @@
       "displayName": "RtlCopyMemory",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 379,
+      "line": 415,
       "signature": "pub extern func RtlCopyMemory(destination: *var opaque, source: *opaque, length: uint)",
       "typeParams": [],
       "doc": {
@@ -4384,7 +4609,7 @@
       "displayName": "RtlFillMemory",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 387,
+      "line": 423,
       "signature": "pub extern func RtlFillMemory(destination: *opaque, length: uint, fill: int32)",
       "typeParams": [],
       "doc": {
@@ -4417,7 +4642,7 @@
       "displayName": "RtlZeroMemory",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 394,
+      "line": 430,
       "signature": "pub extern func RtlZeroMemory(destination: *opaque, length: uint)",
       "typeParams": [],
       "doc": {
@@ -4449,7 +4674,7 @@
       "displayName": "SetCurrentDirectoryA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 401,
+      "line": 437,
       "signature": "pub extern func SetCurrentDirectoryA(pathName: *char8) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4478,7 +4703,7 @@
       "displayName": "SetFileAttributesA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 409,
+      "line": 445,
       "signature": "pub extern func SetFileAttributesA(fileName: *char8, fileAttributes: uint32) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4510,7 +4735,7 @@
       "displayName": "SetFilePointerEx",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 419,
+      "line": 455,
       "signature": "pub extern func SetFilePointerEx(file: *opaque, distanceToMov: int64, newFilePointer: *int64, moveMethod: uint32) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4544,7 +4769,7 @@
       "displayName": "CreateThread",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 436,
+      "line": 472,
       "signature": "pub extern func CreateThread(securityAttributes: *opaque, stackSize: uint64, startAddress: *opaque, parameter: *opaque, creationFlags: uint32, threadId: *uint32) -> *opaque",
       "typeParams": [],
       "doc": {
@@ -4580,7 +4805,7 @@
       "displayName": "GetCurrentThreadId",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 449,
+      "line": 485,
       "signature": "pub extern func GetCurrentThreadId() -> uint32",
       "typeParams": [],
       "doc": {
@@ -4609,7 +4834,7 @@
       "displayName": "Sleep",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 455,
+      "line": 491,
       "signature": "pub extern func Sleep(milliseconds: uint32)",
       "typeParams": [],
       "doc": {
@@ -4638,7 +4863,7 @@
       "displayName": "SwitchToThread",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 461,
+      "line": 497,
       "signature": "pub extern func SwitchToThread() -> bool32",
       "typeParams": [],
       "doc": {
@@ -4667,7 +4892,7 @@
       "displayName": "WaitForSingleObject",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 469,
+      "line": 505,
       "signature": "pub extern func WaitForSingleObject(handle: *opaque, milliseconds: uint32) -> uint32",
       "typeParams": [],
       "doc": {
@@ -4699,7 +4924,7 @@
       "displayName": "WideCharToMultiByte",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 483,
+      "line": 519,
       "signature": "pub extern func WideCharToMultiByte(codePage: uint32, flags: uint32, wideCharStr: *char16, wideChar: int32, multiByteStr: *char8, multiByte: int32, defaultChar: *char8, usedDefaultChar: *bool32) -> int32",
       "typeParams": [],
       "doc": {
@@ -4737,7 +4962,7 @@
       "displayName": "WriteConsoleA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 503,
+      "line": 539,
       "signature": "pub extern func WriteConsoleA(consoleOutput: *opaque, buffer: *char8, numberOfCharsToWrite: uint32, numberOfCharsWritten: *uint32, reserved: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4772,7 +4997,7 @@
       "displayName": "WriteConsoleW",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 520,
+      "line": 556,
       "signature": "pub extern func WriteConsoleW(consoleOutput: *opaque, buffer: *char16, numberOfCharsToWrite: uint32, numberOfCharsWritten: *uint32, reserved: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4807,7 +5032,7 @@
       "displayName": "WriteFile",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 537,
+      "line": 573,
       "signature": "pub extern func WriteFile(file: *opaque, buffer: *opaque, bytesToWrite: uint32, bytesWritten: *uint32, overlapped: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -5302,6 +5527,1054 @@
         "see": [
           "https://rux-lang.dev/docs/api/windows/memory#virtual-unlock",
           "https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualunlock"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "SecurityAttributes",
+      "displayName": "SecurityAttributes",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 7,
+      "signature": "pub struct SecurityAttributes",
+      "typeParams": [],
+      "doc": {
+        "summary": "The `SECURITY_ATTRIBUTES` a pipe or file is created with: here only whether its handle is inheritable.",
+        "markdown": "The `SECURITY_ATTRIBUTES` a pipe or file is created with: here only whether its handle is inheritable.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process-control#security-attributes"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "length",
+          "type": "uint32",
+          "public": true,
+          "line": 9,
+          "doc": "The structure's size in bytes.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "securityDescriptor",
+          "type": "*opaque",
+          "public": true,
+          "line": 11,
+          "doc": "A security descriptor, or null for the default.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "inheritHandle",
+          "type": "bool32",
+          "public": true,
+          "line": 13,
+          "doc": "Non-zero when a child process may inherit the handle.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "StartupInfo",
+      "displayName": "StartupInfo",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 18,
+      "signature": "pub struct StartupInfo",
+      "typeParams": [],
+      "doc": {
+        "summary": "The `STARTUPINFOW` a new process is started with; this package fills in its standard handles.",
+        "markdown": "The `STARTUPINFOW` a new process is started with; this package fills in its standard handles.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process-control#startup-info"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "size",
+          "type": "uint32",
+          "public": true,
+          "line": 20,
+          "doc": "The structure's size in bytes.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "reserved",
+          "type": "*opaque",
+          "public": true,
+          "line": 22,
+          "doc": "Reserved; null.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "desktop",
+          "type": "*uint16",
+          "public": true,
+          "line": 24,
+          "doc": "The desktop, or null.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "title",
+          "type": "*uint16",
+          "public": true,
+          "line": 26,
+          "doc": "The console title, or null.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "x",
+          "type": "uint32",
+          "public": true,
+          "line": 28,
+          "doc": "The window's left edge, when `flags` says so.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "y",
+          "type": "uint32",
+          "public": true,
+          "line": 30,
+          "doc": "The window's top edge, when `flags` says so.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "xSize",
+          "type": "uint32",
+          "public": true,
+          "line": 32,
+          "doc": "The window's width, when `flags` says so.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "ySize",
+          "type": "uint32",
+          "public": true,
+          "line": 34,
+          "doc": "The window's height, when `flags` says so.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "xCountChars",
+          "type": "uint32",
+          "public": true,
+          "line": 36,
+          "doc": "The console buffer's width in characters, when `flags` says so.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "yCountChars",
+          "type": "uint32",
+          "public": true,
+          "line": 38,
+          "doc": "The console buffer's height in characters, when `flags` says so.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "fillAttribute",
+          "type": "uint32",
+          "public": true,
+          "line": 40,
+          "doc": "The console's text and background colors, when `flags` says so.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "flags",
+          "type": "uint32",
+          "public": true,
+          "line": 42,
+          "doc": "Which fields the system reads, such as `STARTF_USESTDHANDLES`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "showWindow",
+          "type": "uint16",
+          "public": true,
+          "line": 44,
+          "doc": "How the window is shown, when `flags` says so.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "reserved2Size",
+          "type": "uint16",
+          "public": true,
+          "line": 46,
+          "doc": "Reserved; zero.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "reserved2",
+          "type": "*opaque",
+          "public": true,
+          "line": 48,
+          "doc": "Reserved; null.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "standardInput",
+          "type": "*opaque",
+          "public": true,
+          "line": 50,
+          "doc": "The child's standard input.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "standardOutput",
+          "type": "*opaque",
+          "public": true,
+          "line": 52,
+          "doc": "The child's standard output.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "standardError",
+          "type": "*opaque",
+          "public": true,
+          "line": 54,
+          "doc": "The child's standard error.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "ProcessInformation",
+      "displayName": "ProcessInformation",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 59,
+      "signature": "pub struct ProcessInformation",
+      "typeParams": [],
+      "doc": {
+        "summary": "The `PROCESS_INFORMATION` `CreateProcessW` fills in: the new process and its first thread.",
+        "markdown": "The `PROCESS_INFORMATION` `CreateProcessW` fills in: the new process and its first thread.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process-control#process-information"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "process",
+          "type": "*opaque",
+          "public": true,
+          "line": 61,
+          "doc": "The new process's handle, to wait on and close.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "thread",
+          "type": "*opaque",
+          "public": true,
+          "line": 63,
+          "doc": "Its first thread's handle, to close.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "processId",
+          "type": "uint32",
+          "public": true,
+          "line": 65,
+          "doc": "The process identifier.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "threadId",
+          "type": "uint32",
+          "public": true,
+          "line": 67,
+          "doc": "The first thread's identifier.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "STARTF_USESTDHANDLES",
+      "displayName": "STARTF_USESTDHANDLES",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 73,
+      "signature": "pub const STARTF_USESTDHANDLES: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`STARTF_USESTDHANDLES`: the standard handles in `StartupInfo` are the child's.",
+        "markdown": "`STARTF_USESTDHANDLES`: the standard handles in `StartupInfo` are the child's.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process-control#startf-usestdhandles"],
+        "deprecated": null
+      },
+      "value": "0x00000100",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "CREATE_UNICODE_ENVIRONMENT",
+      "displayName": "CREATE_UNICODE_ENVIRONMENT",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 78,
+      "signature": "pub const CREATE_UNICODE_ENVIRONMENT: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`CREATE_UNICODE_ENVIRONMENT`: the environment block is UTF-16.",
+        "markdown": "`CREATE_UNICODE_ENVIRONMENT`: the environment block is UTF-16.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process-control#create-unicode-environment"],
+        "deprecated": null
+      },
+      "value": "0x00000400",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "HANDLE_FLAG_INHERIT",
+      "displayName": "HANDLE_FLAG_INHERIT",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 83,
+      "signature": "pub const HANDLE_FLAG_INHERIT: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`HANDLE_FLAG_INHERIT`: the handle is inherited by child processes.",
+        "markdown": "`HANDLE_FLAG_INHERIT`: the handle is inherited by child processes.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process-control#handle-flag-inherit"],
+        "deprecated": null
+      },
+      "value": "0x00000001",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "DUPLICATE_SAME_ACCESS",
+      "displayName": "DUPLICATE_SAME_ACCESS",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 88,
+      "signature": "pub const DUPLICATE_SAME_ACCESS: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`DUPLICATE_SAME_ACCESS`: a duplicated handle has the access of the original.",
+        "markdown": "`DUPLICATE_SAME_ACCESS`: a duplicated handle has the access of the original.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process-control#duplicate-same-access"],
+        "deprecated": null
+      },
+      "value": "0x00000002",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WAIT_TIMEOUT",
+      "displayName": "WAIT_TIMEOUT",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 93,
+      "signature": "pub const WAIT_TIMEOUT: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WAIT_TIMEOUT`: a wait ended because its time ran out.",
+        "markdown": "`WAIT_TIMEOUT`: a wait ended because its time ran out.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process-control#wait-timeout"],
+        "deprecated": null
+      },
+      "value": "0x00000102",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "ERROR_BROKEN_PIPE",
+      "displayName": "ERROR_BROKEN_PIPE",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 98,
+      "signature": "pub const ERROR_BROKEN_PIPE: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`ERROR_BROKEN_PIPE`: the other end of the pipe was closed.",
+        "markdown": "`ERROR_BROKEN_PIPE`: the other end of the pipe was closed.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/process-control#error-broken-pipe"],
+        "deprecated": null
+      },
+      "value": "109",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "CreateProcessW",
+      "displayName": "CreateProcessW",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 116,
+      "signature": "pub extern func CreateProcessW(applicationName: *uint16, commandLine: *var uint16, processAttributes: *SecurityAttributes, threadAttributes: *SecurityAttributes, inheritHandles: bool32, creationFlags: uint32, environment: *opaque, currentDirectory: *uint16, startupInfo: *StartupInfo, processInformation: *var ProcessInformation) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Starts a program as a new process.",
+        "markdown": "Starts a program as a new process.",
+        "typeParams": [],
+        "params": [
+          { "name": "applicationName", "markdown": "the program's path, or null to take it from the command line" },
+          { "name": "commandLine", "markdown": "the command line, which the call may modify" },
+          { "name": "processAttributes", "markdown": "the process handle's security, or null" },
+          { "name": "threadAttributes", "markdown": "the thread handle's security, or null" },
+          {
+            "name": "inheritHandles",
+            "markdown": "non-zero to let the child inherit the parent's inheritable handles"
+          },
+          { "name": "creationFlags", "markdown": "flags such as `CREATE_UNICODE_ENVIRONMENT`" },
+          { "name": "environment", "markdown": "the environment block, or null to inherit the parent's" },
+          { "name": "currentDirectory", "markdown": "the child's working directory, or null for the parent's" },
+          { "name": "startupInfo", "markdown": "how the child starts, including its standard handles" },
+          { "name": "processInformation", "markdown": "receives the new process and thread" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process-control#create-process-w",
+          "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetExitCodeProcess",
+      "displayName": "GetExitCodeProcess",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 127,
+      "signature": "pub extern func GetExitCodeProcess(process: *opaque, exitCode: *var uint32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a process's exit code, or `STILL_ACTIVE` while it runs.",
+        "markdown": "Reads a process's exit code, or `STILL_ACTIVE` while it runs.",
+        "typeParams": [],
+        "params": [
+          { "name": "process", "markdown": "the process handle" },
+          { "name": "exitCode", "markdown": "receives the code" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process-control#get-exit-code-process",
+          "https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getexitcodeprocess"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "TerminateProcess",
+      "displayName": "TerminateProcess",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 135,
+      "signature": "pub extern func TerminateProcess(process: *opaque, exitCode: uint32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Ends a process and all its threads.",
+        "markdown": "Ends a process and all its threads.",
+        "typeParams": [],
+        "params": [
+          { "name": "process", "markdown": "the process handle" },
+          { "name": "exitCode", "markdown": "the code the process ends with" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process-control#terminate-process",
+          "https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "CreatePipe",
+      "displayName": "CreatePipe",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 145,
+      "signature": "pub extern func CreatePipe(readPipe: *var *opaque, writePipe: *var *opaque, attributes: *SecurityAttributes, size: uint32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Creates an anonymous pipe.",
+        "markdown": "Creates an anonymous pipe.",
+        "typeParams": [],
+        "params": [
+          { "name": "readPipe", "markdown": "receives the read end" },
+          { "name": "writePipe", "markdown": "receives the write end" },
+          { "name": "attributes", "markdown": "whether the ends are inheritable, or null" },
+          { "name": "size", "markdown": "the buffer size suggestion, or zero for the default" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process-control#create-pipe",
+          "https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-createpipe"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "SetHandleInformation",
+      "displayName": "SetHandleInformation",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 155,
+      "signature": "pub extern func SetHandleInformation(handle: *opaque, mask: uint32, flags: uint32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Changes a handle's flags, such as whether it is inherited.",
+        "markdown": "Changes a handle's flags, such as whether it is inherited.",
+        "typeParams": [],
+        "params": [
+          { "name": "handle", "markdown": "the handle" },
+          { "name": "mask", "markdown": "the flags to change" },
+          { "name": "flags", "markdown": "their new values" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process-control#set-handle-information",
+          "https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-sethandleinformation"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "DuplicateHandle",
+      "displayName": "DuplicateHandle",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 168,
+      "signature": "pub extern func DuplicateHandle(sourceProcess: *opaque, sourceHandle: *opaque, targetProcess: *opaque, targetHandle: *var *opaque, desiredAccess: uint32, inheritHandle: bool32, options: uint32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Duplicates a handle, here into the same process with different inheritance.",
+        "markdown": "Duplicates a handle, here into the same process with different inheritance.",
+        "typeParams": [],
+        "params": [
+          { "name": "sourceProcess", "markdown": "the process that owns the handle" },
+          { "name": "sourceHandle", "markdown": "the handle" },
+          { "name": "targetProcess", "markdown": "the process to duplicate it into" },
+          { "name": "targetHandle", "markdown": "receives the duplicate" },
+          { "name": "desiredAccess", "markdown": "the access to grant, ignored with `DUPLICATE_SAME_ACCESS`" },
+          { "name": "inheritHandle", "markdown": "non-zero to make the duplicate inheritable" },
+          { "name": "options", "markdown": "flags such as `DUPLICATE_SAME_ACCESS`" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process-control#duplicate-handle",
+          "https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-duplicatehandle"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetCurrentProcess",
+      "displayName": "GetCurrentProcess",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 176,
+      "signature": "pub extern func GetCurrentProcess() -> *opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Returns a pseudo-handle for the calling process, which needs no closing.",
+        "markdown": "Returns a pseudo-handle for the calling process, which needs no closing.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the pseudo-handle",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process-control#get-current-process",
+          "https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocess"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "SetEnvironmentVariableW",
+      "displayName": "SetEnvironmentVariableW",
+      "module": "ProcessControl",
+      "source": "Src/ProcessControl.rux",
+      "line": 184,
+      "signature": "pub extern func SetEnvironmentVariableW(name: *uint16, value: *uint16) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets or removes an environment variable of the calling process.",
+        "markdown": "Sets or removes an environment variable of the calling process.",
+        "typeParams": [],
+        "params": [
+          { "name": "name", "markdown": "the variable's name, NUL-terminated" },
+          { "name": "value", "markdown": "its new value, NUL-terminated, or null to remove it" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process-control#set-environment-variable-w",
+          "https://learn.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-setenvironmentvariablew"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "CommandLineToArgvW",
+      "displayName": "CommandLineToArgvW",
+      "module": "Shell",
+      "source": "Src/Shell.rux",
+      "line": 17,
+      "signature": "pub extern func CommandLineToArgvW(commandLine: *uint16, count: *var int32) -> **uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "Splits a command line into arguments the way the C runtime does.",
+        "markdown": "Splits a command line into arguments the way the C runtime does.\nBackslashes, quotes and spaces follow the C runtime's rules, and the first argument, the program, is read up to\nthe first space outside quotes. The result is one allocation holding the pointer array and every argument; it\nstays valid until passed to `LocalFree`.",
+        "typeParams": [],
+        "params": [
+          {
+            "name": "commandLine",
+            "markdown": "the NUL-terminated UTF-16 command line, usually from `GetCommandLineW`"
+          },
+          { "name": "count", "markdown": "receives how many arguments the array holds" }
+        ],
+        "returns": "the array of NUL-terminated UTF-16 arguments, or null on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process#command-line-to-argv-w",
+          "https://learn.microsoft.com/windows/win32/api/shellapi/nf-shellapi-commandlinetoargvw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "WaitOnAddress",
+      "displayName": "WaitOnAddress",
+      "module": "Synch",
+      "source": "Src/Synch.rux",
+      "line": 16,
+      "signature": "pub extern func WaitOnAddress(address: *opaque, compareAddress: *opaque, addressSize: uint64, milliseconds: uint32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Waits for the value at an address to change.",
+        "markdown": "Waits for the value at an address to change.",
+        "typeParams": [],
+        "params": [
+          { "name": "address", "markdown": "the value to wait on" },
+          {
+            "name": "compareAddress",
+            "markdown": "a copy of the value the caller last saw; the wait ends at once when they differ"
+          },
+          { "name": "addressSize", "markdown": "the value's size in bytes: 1, 2, 4 or 8" },
+          { "name": "milliseconds", "markdown": "how long to wait at most, or `INFINITE`" }
+        ],
+        "returns": "non-zero after a wake, and zero on time-out or failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/synch#wait-on-address",
+          "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitonaddress"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "WakeByAddressSingle",
+      "displayName": "WakeByAddressSingle",
+      "module": "Synch",
+      "source": "Src/Synch.rux",
+      "line": 22,
+      "signature": "pub extern func WakeByAddressSingle(address: *opaque)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Wakes one thread waiting on an address.",
+        "markdown": "Wakes one thread waiting on an address.",
+        "typeParams": [],
+        "params": [{ "name": "address", "markdown": "the value it waits on" }],
+        "returns": null,
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/synch#wake-by-address-single",
+          "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-wakebyaddresssingle"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "WakeByAddressAll",
+      "displayName": "WakeByAddressAll",
+      "module": "Synch",
+      "source": "Src/Synch.rux",
+      "line": 28,
+      "signature": "pub extern func WakeByAddressAll(address: *opaque)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Wakes every thread waiting on an address.",
+        "markdown": "Wakes every thread waiting on an address.",
+        "typeParams": [],
+        "params": [{ "name": "address", "markdown": "the value they wait on" }],
+        "returns": null,
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/synch#wake-by-address-all",
+          "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-wakebyaddressall"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "TimeZoneRuleDate",
+      "displayName": "TimeZoneRuleDate",
+      "module": "TimeZone",
+      "source": "Src/TimeZone.rux",
+      "line": 9,
+      "signature": "pub struct TimeZoneRuleDate",
+      "typeParams": [],
+      "doc": {
+        "summary": "When a time-zone rule takes effect, in the layout of `SYSTEMTIME` but read as a rule, not a date.",
+        "markdown": "When a time-zone rule takes effect, in the layout of `SYSTEMTIME` but read as a rule, not a date.\nA rule with `year` zero recurs every year: in `month`, on the `day`th occurrence of `dayOfWeek` (Sunday is zero),\nwhere the fifth occurrence means the last, at `hour`:`minute` local time. A zero `month` means the zone has no\ndaylight time.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/time-zone#time-zone-rule-date",
+          "https://learn.microsoft.com/en-us/windows/win32/api/timezoneapi/ns-timezoneapi-time_zone_information"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "year",
+          "type": "uint16",
+          "public": true,
+          "line": 11,
+          "doc": "The year for a one-time change, or zero for a rule that recurs.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "month",
+          "type": "uint16",
+          "public": true,
+          "line": 13,
+          "doc": "The month, 1 through 12, or zero when there is no change.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "dayOfWeek",
+          "type": "uint16",
+          "public": true,
+          "line": 15,
+          "doc": "The day of the week, Sunday being zero.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "day",
+          "type": "uint16",
+          "public": true,
+          "line": 17,
+          "doc": "Which occurrence of that day in the month, 1 through 5, where 5 is the last.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "hour",
+          "type": "uint16",
+          "public": true,
+          "line": 19,
+          "doc": "The hour of the change, in the local time before it.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "minute",
+          "type": "uint16",
+          "public": true,
+          "line": 21,
+          "doc": "The minute of the change.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "second",
+          "type": "uint16",
+          "public": true,
+          "line": 23,
+          "doc": "The second of the change.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "milliseconds",
+          "type": "uint16",
+          "public": true,
+          "line": 25,
+          "doc": "The millisecond of the change.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "TimeZoneInformation",
+      "displayName": "TimeZoneInformation",
+      "module": "TimeZone",
+      "source": "Src/TimeZone.rux",
+      "line": 32,
+      "signature": "pub struct TimeZoneInformation",
+      "typeParams": [],
+      "doc": {
+        "summary": "Win32's `TIME_ZONE_INFORMATION`: a zone's offsets and when its daylight time starts and ends.",
+        "markdown": "Win32's `TIME_ZONE_INFORMATION`: a zone's offsets and when its daylight time starts and ends.\nEach bias is minutes to add to local time to get UTC, so a zone east of Greenwich has a negative one.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/time-zone#time-zone-information",
+          "https://learn.microsoft.com/en-us/windows/win32/api/timezoneapi/ns-timezoneapi-time_zone_information"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "bias",
+          "type": "int32",
+          "public": true,
+          "line": 34,
+          "doc": "The bias of standard time, in minutes.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "standardName",
+          "type": "uint16[N]",
+          "public": true,
+          "line": 36,
+          "doc": "The name of standard time, NUL-terminated UTF-16.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "standardDate",
+          "type": "TimeZoneRuleDate",
+          "public": true,
+          "line": 38,
+          "doc": "When standard time starts.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "standardBias",
+          "type": "int32",
+          "public": true,
+          "line": 40,
+          "doc": "What is added to `bias` during standard time, usually zero.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "daylightName",
+          "type": "uint16[N]",
+          "public": true,
+          "line": 42,
+          "doc": "The name of daylight time, NUL-terminated UTF-16.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "daylightDate",
+          "type": "TimeZoneRuleDate",
+          "public": true,
+          "line": 44,
+          "doc": "When daylight time starts.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "daylightBias",
+          "type": "int32",
+          "public": true,
+          "line": 46,
+          "doc": "What is added to `bias` during daylight time, usually -60.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetTimeZoneInformation",
+      "displayName": "GetTimeZoneInformation",
+      "module": "TimeZone",
+      "source": "Src/TimeZone.rux",
+      "line": 56,
+      "signature": "pub extern func GetTimeZoneInformation(information: *var TimeZoneInformation) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads the system's current time zone.",
+        "markdown": "Reads the system's current time zone.",
+        "typeParams": [],
+        "params": [{ "name": "information", "markdown": "receives the zone" }],
+        "returns": "which part of the year it is now, or `0xFFFFFFFF` on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/time-zone#get-time-zone-information",
+          "https://learn.microsoft.com/en-us/windows/win32/api/timezoneapi/nf-timezoneapi-gettimezoneinformation"
         ],
         "deprecated": null
       },
@@ -5924,6 +7197,1263 @@
           "targets": ["windows-x86_64", "windows-aarch64"]
         }
       ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "WsaData",
+      "displayName": "WsaData",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 7,
+      "signature": "pub struct WsaData",
+      "typeParams": [],
+      "doc": {
+        "summary": "Room for a `WSADATA`, which `WSAStartup` fills and nothing here reads.",
+        "markdown": "Room for a `WSADATA`, which `WSAStartup` fills and nothing here reads.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#wsa-data"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "storage",
+          "type": "uint64[N]",
+          "public": false,
+          "line": 8,
+          "doc": null,
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "WsaData",
+          "line": 15,
+          "signature": "pub func WsaData() -> WsaData",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "WsaData",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Zeroed storage for `WSAStartup` to fill.",
+            "markdown": "Zeroed storage for `WSAStartup` to fill.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the storage",
+            "see": ["https://rux-lang.dev/docs/api/windows/winsock#wsa-data-new"],
+            "deprecated": null
+          },
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "AddressInfo",
+      "displayName": "AddressInfo",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 22,
+      "signature": "pub struct AddressInfo",
+      "typeParams": [],
+      "doc": {
+        "summary": "Winsock's `addrinfo`: one result of `getaddrinfo`, linked to the next.",
+        "markdown": "Winsock's `addrinfo`: one result of `getaddrinfo`, linked to the next.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#address-info"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "flags",
+          "type": "int32",
+          "public": true,
+          "line": 24,
+          "doc": "Flags such as `AI_PASSIVE`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "family",
+          "type": "int32",
+          "public": true,
+          "line": 26,
+          "doc": "The address family, or zero for any.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "socketType",
+          "type": "int32",
+          "public": true,
+          "line": 28,
+          "doc": "The socket type, or zero for any.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "protocol",
+          "type": "int32",
+          "public": true,
+          "line": 30,
+          "doc": "The protocol, or zero for any.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "addressLength",
+          "type": "uint64",
+          "public": true,
+          "line": 32,
+          "doc": "The size of `address` in bytes.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "canonicalName",
+          "type": "*char8",
+          "public": true,
+          "line": 34,
+          "doc": "The host's canonical name, or null.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "address",
+          "type": "*opaque",
+          "public": true,
+          "line": 36,
+          "doc": "The address, a `sockaddr`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "next",
+          "type": "*var AddressInfo",
+          "public": true,
+          "line": 38,
+          "doc": "The next result, or null after the last.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "AF_INET",
+      "displayName": "AF_INET",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 44,
+      "signature": "pub const AF_INET: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`AF_INET`: the IPv4 address family.",
+        "markdown": "`AF_INET`: the IPv4 address family.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#af-inet"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "AF_INET6",
+      "displayName": "AF_INET6",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 49,
+      "signature": "pub const AF_INET6: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`AF_INET6`: the IPv6 address family.",
+        "markdown": "`AF_INET6`: the IPv6 address family.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#af-inet6"],
+        "deprecated": null
+      },
+      "value": "23",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOCK_STREAM",
+      "displayName": "SOCK_STREAM",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 54,
+      "signature": "pub const SOCK_STREAM: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOCK_STREAM`: a connected byte stream.",
+        "markdown": "`SOCK_STREAM`: a connected byte stream.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#sock-stream"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOCK_DGRAM",
+      "displayName": "SOCK_DGRAM",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 59,
+      "signature": "pub const SOCK_DGRAM: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOCK_DGRAM`: individual datagrams.",
+        "markdown": "`SOCK_DGRAM`: individual datagrams.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#sock-dgram"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SOL_SOCKET",
+      "displayName": "SOL_SOCKET",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 64,
+      "signature": "pub const SOL_SOCKET: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SOL_SOCKET`: the level of the options every socket has.",
+        "markdown": "`SOL_SOCKET`: the level of the options every socket has.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#sol-socket"],
+        "deprecated": null
+      },
+      "value": "0xFFFF",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SO_RCVTIMEO",
+      "displayName": "SO_RCVTIMEO",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 69,
+      "signature": "pub const SO_RCVTIMEO: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SO_RCVTIMEO`: how long a receive waits, in milliseconds.",
+        "markdown": "`SO_RCVTIMEO`: how long a receive waits, in milliseconds.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#so-rcvtimeo"],
+        "deprecated": null
+      },
+      "value": "0x1006",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SO_SNDTIMEO",
+      "displayName": "SO_SNDTIMEO",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 74,
+      "signature": "pub const SO_SNDTIMEO: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SO_SNDTIMEO`: how long a send waits, in milliseconds.",
+        "markdown": "`SO_SNDTIMEO`: how long a send waits, in milliseconds.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#so-sndtimeo"],
+        "deprecated": null
+      },
+      "value": "0x1005",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IPPROTO_TCP",
+      "displayName": "IPPROTO_TCP",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 79,
+      "signature": "pub const IPPROTO_TCP: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IPPROTO_TCP`: the level of TCP's options.",
+        "markdown": "`IPPROTO_TCP`: the level of TCP's options.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#ipproto-tcp"],
+        "deprecated": null
+      },
+      "value": "6",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "TCP_NODELAY",
+      "displayName": "TCP_NODELAY",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 84,
+      "signature": "pub const TCP_NODELAY: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`TCP_NODELAY`: send small writes at once rather than gathering them.",
+        "markdown": "`TCP_NODELAY`: send small writes at once rather than gathering them.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#tcp-nodelay"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IPPROTO_IPV6",
+      "displayName": "IPPROTO_IPV6",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 89,
+      "signature": "pub const IPPROTO_IPV6: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IPPROTO_IPV6`: the level of IPv6's options.",
+        "markdown": "`IPPROTO_IPV6`: the level of IPv6's options.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#ipproto-ipv6"],
+        "deprecated": null
+      },
+      "value": "41",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IPV6_V6ONLY",
+      "displayName": "IPV6_V6ONLY",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 94,
+      "signature": "pub const IPV6_V6ONLY: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.",
+        "markdown": "`IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#ipv6-v6only"],
+        "deprecated": null
+      },
+      "value": "27",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "INVALID_SOCKET",
+      "displayName": "INVALID_SOCKET",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 99,
+      "signature": "pub const INVALID_SOCKET: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "`INVALID_SOCKET`: what a call that makes a socket returns on failure.",
+        "markdown": "`INVALID_SOCKET`: what a call that makes a socket returns on failure.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#invalid-socket"],
+        "deprecated": null
+      },
+      "value": "0xFFFFFFFFFFFFFFFF",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "FIONBIO",
+      "displayName": "FIONBIO",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 104,
+      "signature": "pub const FIONBIO: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`FIONBIO`: the `ioctlsocket` command that turns a socket's non-blocking mode on or off.",
+        "markdown": "`FIONBIO`: the `ioctlsocket` command that turns a socket's non-blocking mode on or off.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#fionbio"],
+        "deprecated": null
+      },
+      "value": "-2147195266",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "POLLRDNORM",
+      "displayName": "POLLRDNORM",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 109,
+      "signature": "pub const POLLRDNORM: int16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`POLLRDNORM`: `WSAPoll` reports a socket with data to read, or a connection to accept.",
+        "markdown": "`POLLRDNORM`: `WSAPoll` reports a socket with data to read, or a connection to accept.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#pollrdnorm"],
+        "deprecated": null
+      },
+      "value": "0x100",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "POLLWRNORM",
+      "displayName": "POLLWRNORM",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 114,
+      "signature": "pub const POLLWRNORM: int16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`POLLWRNORM`: `WSAPoll` reports a socket a write would not wait on.",
+        "markdown": "`POLLWRNORM`: `WSAPoll` reports a socket a write would not wait on.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#pollwrnorm"],
+        "deprecated": null
+      },
+      "value": "0x10",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "POLLERR",
+      "displayName": "POLLERR",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 119,
+      "signature": "pub const POLLERR: int16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`POLLERR`: the socket has an error pending; always reported.",
+        "markdown": "`POLLERR`: the socket has an error pending; always reported.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#pollerr"],
+        "deprecated": null
+      },
+      "value": "0x1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "POLLHUP",
+      "displayName": "POLLHUP",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 124,
+      "signature": "pub const POLLHUP: int16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`POLLHUP`: the connection was closed; always reported.",
+        "markdown": "`POLLHUP`: the connection was closed; always reported.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#pollhup"],
+        "deprecated": null
+      },
+      "value": "0x2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "POLLNVAL",
+      "displayName": "POLLNVAL",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 129,
+      "signature": "pub const POLLNVAL: int16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`POLLNVAL`: the socket is not valid; always reported.",
+        "markdown": "`POLLNVAL`: the socket is not valid; always reported.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#pollnval"],
+        "deprecated": null
+      },
+      "value": "0x4",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "WsaPollFd",
+      "displayName": "WsaPollFd",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 133,
+      "signature": "pub struct WsaPollFd",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WSAPOLLFD`: one socket `WSAPoll` watches, the events wanted, and the events it reports.",
+        "markdown": "`WSAPOLLFD`: one socket `WSAPoll` watches, the events wanted, and the events it reports.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/winsock#wsa-poll-fd"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "socket",
+          "type": "uint64",
+          "public": true,
+          "line": 135,
+          "doc": "The socket.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "events",
+          "type": "int16",
+          "public": true,
+          "line": 137,
+          "doc": "The events wanted, such as `POLLRDNORM`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "returned",
+          "type": "int16",
+          "public": true,
+          "line": 139,
+          "doc": "The events that happened, filled by `WSAPoll`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "WSAStartup",
+      "displayName": "WSAStartup",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 150,
+      "signature": "pub extern func WSAStartup(version: uint16, data: *var WsaData) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Starts Winsock for this process.",
+        "markdown": "Starts Winsock for this process.",
+        "typeParams": [],
+        "params": [
+          { "name": "version", "markdown": "the version wanted, `0x0202` for 2.2" },
+          { "name": "data", "markdown": "receives details of the implementation" }
+        ],
+        "returns": "zero, or an error code",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#wsa-startup",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsastartup"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "WSAGetLastError",
+      "displayName": "WSAGetLastError",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 156,
+      "signature": "pub extern func WSAGetLastError() -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "The calling thread's last Winsock error.",
+        "markdown": "The calling thread's last Winsock error.",
+        "typeParams": [],
+        "params": [],
+        "returns": "the error code",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#wsa-get-last-error",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsagetlasterror"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "socket",
+      "displayName": "socket",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 165,
+      "signature": "pub extern func socket(family: int32, kind: int32, protocol: int32) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Opens a socket.",
+        "markdown": "Opens a socket.",
+        "typeParams": [],
+        "params": [
+          { "name": "family", "markdown": "the address family" },
+          { "name": "kind", "markdown": "the socket type" },
+          { "name": "protocol", "markdown": "the protocol, or zero" }
+        ],
+        "returns": "the socket, or `INVALID_SOCKET`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#socket",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-socket"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "connect",
+      "displayName": "connect",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 174,
+      "signature": "pub extern func connect(socket: uint64, address: *opaque, length: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Connects a socket to `address`.",
+        "markdown": "Connects a socket to `address`.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "address", "markdown": "the address, a `sockaddr`" },
+          { "name": "length", "markdown": "the address's size" }
+        ],
+        "returns": "zero, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#connect",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-connect"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "bind",
+      "displayName": "bind",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 183,
+      "signature": "pub extern func bind(socket: uint64, address: *opaque, length: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Gives a socket its local address.",
+        "markdown": "Gives a socket its local address.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "address", "markdown": "the address, a `sockaddr`" },
+          { "name": "length", "markdown": "the address's size" }
+        ],
+        "returns": "zero, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#bind",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-bind"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "listen",
+      "displayName": "listen",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 191,
+      "signature": "pub extern func listen(socket: uint64, backlog: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Makes a bound stream socket accept connections.",
+        "markdown": "Makes a bound stream socket accept connections.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "backlog", "markdown": "how many connections may wait" }
+        ],
+        "returns": "zero, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#listen",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-listen"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "accept",
+      "displayName": "accept",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 200,
+      "signature": "pub extern func accept(socket: uint64, address: *var opaque, length: *var int32) -> uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "Accepts a waiting connection.",
+        "markdown": "Accepts a waiting connection.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the listening socket" },
+          { "name": "address", "markdown": "receives the peer's address, or null" },
+          { "name": "length", "markdown": "the buffer's size, then the address's, or null" }
+        ],
+        "returns": "the new socket, or `INVALID_SOCKET`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#accept",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-accept"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "sendto",
+      "displayName": "sendto",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 212,
+      "signature": "pub extern func sendto(socket: uint64, buffer: *opaque, count: int32, flags: int32, address: *opaque, length: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sends bytes on a socket, to `address` when it is not connected.",
+        "markdown": "Sends bytes on a socket, to `address` when it is not connected.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "buffer", "markdown": "the bytes" },
+          { "name": "count", "markdown": "how many" },
+          { "name": "flags", "markdown": "flags, or zero" },
+          { "name": "address", "markdown": "the destination, or null" },
+          { "name": "length", "markdown": "the destination's size" }
+        ],
+        "returns": "the bytes sent, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#sendto",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-sendto"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "recvfrom",
+      "displayName": "recvfrom",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 224,
+      "signature": "pub extern func recvfrom(socket: uint64, buffer: *var opaque, count: int32, flags: int32, address: *var opaque, length: *var int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Receives bytes from a socket, and where they came from.",
+        "markdown": "Receives bytes from a socket, and where they came from.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "buffer", "markdown": "receives the bytes" },
+          { "name": "count", "markdown": "how many fit" },
+          { "name": "flags", "markdown": "flags, or zero" },
+          { "name": "address", "markdown": "receives the sender's address, or null" },
+          { "name": "length", "markdown": "the buffer's size, then the address's, or null" }
+        ],
+        "returns": "the bytes received, zero once a stream's peer closed it, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#recvfrom",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "closesocket",
+      "displayName": "closesocket",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 232,
+      "signature": "pub extern func closesocket(socket: uint64) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Closes a socket.",
+        "markdown": "Closes a socket.",
+        "typeParams": [],
+        "params": [{ "name": "socket", "markdown": "the socket" }],
+        "returns": "zero, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#closesocket",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-closesocket"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "shutdown",
+      "displayName": "shutdown",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 240,
+      "signature": "pub extern func shutdown(socket: uint64, how: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Ends one or both directions of a connection.",
+        "markdown": "Ends one or both directions of a connection.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "how", "markdown": "0 to stop receiving, 1 to stop sending, 2 for both" }
+        ],
+        "returns": "zero, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#shutdown",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-shutdown"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "setsockopt",
+      "displayName": "setsockopt",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 251,
+      "signature": "pub extern func setsockopt(socket: uint64, level: int32, name: int32, value: *opaque, length: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets a socket option.",
+        "markdown": "Sets a socket option.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "level", "markdown": "the option's level" },
+          { "name": "name", "markdown": "the option" },
+          { "name": "value", "markdown": "the option's value" },
+          { "name": "length", "markdown": "the value's size" }
+        ],
+        "returns": "zero, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#setsockopt",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "getsockname",
+      "displayName": "getsockname",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 260,
+      "signature": "pub extern func getsockname(socket: uint64, address: *var opaque, length: *var int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads a socket's local address.",
+        "markdown": "Reads a socket's local address.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "address", "markdown": "receives the address" },
+          { "name": "length", "markdown": "the buffer's size, then the address's" }
+        ],
+        "returns": "zero, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#getsockname",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockname"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "getpeername",
+      "displayName": "getpeername",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 269,
+      "signature": "pub extern func getpeername(socket: uint64, address: *var opaque, length: *var int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads the address of a connected socket's peer.",
+        "markdown": "Reads the address of a connected socket's peer.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "address", "markdown": "receives the address" },
+          { "name": "length", "markdown": "the buffer's size, then the address's" }
+        ],
+        "returns": "zero, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#getpeername",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getpeername"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "getaddrinfo",
+      "displayName": "getaddrinfo",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 279,
+      "signature": "pub extern func getaddrinfo(node: *char8, service: *char8, hints: *AddressInfo, result: *var *var AddressInfo) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Looks up the addresses of a host and service.",
+        "markdown": "Looks up the addresses of a host and service.",
+        "typeParams": [],
+        "params": [
+          { "name": "node", "markdown": "the host name or numeric address, NUL-terminated, or null" },
+          { "name": "service", "markdown": "the service name or port number, NUL-terminated, or null" },
+          { "name": "hints", "markdown": "what kind of results are wanted, or null" },
+          { "name": "result", "markdown": "receives the first result, freed with `freeaddrinfo`" }
+        ],
+        "returns": "zero, or a Winsock error code",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#getaddrinfo",
+          "https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "freeaddrinfo",
+      "displayName": "freeaddrinfo",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 285,
+      "signature": "pub extern func freeaddrinfo(info: *var AddressInfo)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Frees the results of `getaddrinfo`.",
+        "markdown": "Frees the results of `getaddrinfo`.",
+        "typeParams": [],
+        "params": [{ "name": "info", "markdown": "the first result" }],
+        "returns": null,
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#freeaddrinfo",
+          "https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-freeaddrinfo"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "ioctlsocket",
+      "displayName": "ioctlsocket",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 294,
+      "signature": "pub extern func ioctlsocket(socket: uint64, command: int32, argument: *var uint32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets a socket's mode, such as non-blocking with `FIONBIO`.",
+        "markdown": "Sets a socket's mode, such as non-blocking with `FIONBIO`.",
+        "typeParams": [],
+        "params": [
+          { "name": "socket", "markdown": "the socket" },
+          { "name": "command", "markdown": "the mode to set, such as `FIONBIO`" },
+          { "name": "argument", "markdown": "the mode's value: for `FIONBIO`, nonzero for non-blocking" }
+        ],
+        "returns": "zero, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#ioctlsocket",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocket"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "WSAPoll",
+      "displayName": "WSAPoll",
+      "module": "Winsock",
+      "source": "Src/Winsock.rux",
+      "line": 303,
+      "signature": "pub extern func WSAPoll(sockets: *var WsaPollFd, count: uint32, timeout: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Waits until one of `count` sockets is ready or `timeout` milliseconds pass, filling each one's `returned`.",
+        "markdown": "Waits until one of `count` sockets is ready or `timeout` milliseconds pass, filling each one's `returned`.",
+        "typeParams": [],
+        "params": [
+          { "name": "sockets", "markdown": "the sockets and the events wanted of each" },
+          { "name": "count", "markdown": "how many there are" },
+          { "name": "timeout", "markdown": "milliseconds to wait, zero to only look, or -1 to wait without end" }
+        ],
+        "returns": "how many sockets have events, zero after the timeout, or -1 with the reason in `WSAGetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/winsock#wsa-poll",
+          "https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsapoll"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
       "baseType": null,
       "cases": [],
       "members": [],

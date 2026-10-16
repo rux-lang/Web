@@ -19,7 +19,7 @@ seo:
 
 # Dynamic loading
 
-The mode flags `dlopen` takes.
+The mode flags [`dlopen`](/docs/api/linux/dynamic#dlopen) takes.
 
 <h2 id="rtld-lazy"><code>RTLD_LAZY</code></h2>
 
@@ -37,7 +37,7 @@ pub const RTLD_LAZY: int32 = 1;
 pub const RTLD_NOW: int32 = 2;
 ```
 
-`RTLD_NOW`: resolve every symbol before `dlopen` returns, so a missing one is reported there.
+`RTLD_NOW`: resolve every symbol before [`dlopen`](/docs/api/linux/dynamic#dlopen) returns, so a missing one is reported there.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Dynamic.rux#L20)
 
@@ -70,3 +70,94 @@ pub const RTLD_NODELETE: int32 = 4096;
 `RTLD_NODELETE`: do not unload the object when its last reference goes, so its storage stays valid.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Dynamic.rux#L35)
+
+<h2 id="dlopen"><code>dlopen</code></h2>
+
+```rux
+pub extern func dlopen(
+    filename: *char8,
+    flags: int32
+) -> *var opaque
+```
+
+Loads a shared object and returns a handle to it, or null on failure.
+A name without a slash is resolved by the loader's own search rules, and one with a slash as a path. A second
+call for an object already loaded returns the same handle and raises its reference count rather than loading
+it twice. Failure is reported through [`dlerror`](/docs/api/linux/dynamic#dlerror), not errno.
+
+**See also**: [https://man7.org/linux/man-pages/man3/dlopen.3.html](https://man7.org/linux/man-pages/man3/dlopen.3.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Dynamic.rux#L48)
+
+**Parameters**
+
+| Name       | Type     | Description                                                                                                                                |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `filename` | `*char8` | a NUL-terminated name or path, or null for the main program                                                                                |
+| `flags`    | `int32`  | [`RTLD_LAZY`](/docs/api/linux/dynamic#rtld-lazy) or [`RTLD_NOW`](/docs/api/linux/dynamic#rtld-now), combined with the other `RTLD_*` flags |
+
+**Returns**: a handle for [`dlsym`](/docs/api/linux/dynamic#dlsym) and [`dlclose`](/docs/api/linux/dynamic#dlclose), or null with the reason in [`dlerror`](/docs/api/linux/dynamic#dlerror)
+
+<h2 id="dlsym"><code>dlsym</code></h2>
+
+```rux
+pub extern func dlsym(
+    handle: *var opaque,
+    symbol: *char8
+) -> *var opaque
+```
+
+Finds a symbol in a loaded object and returns its address, or null.
+A null return is ambiguous, since a symbol whose address is legitimately zero exists. Clear [`dlerror`](/docs/api/linux/dynamic#dlerror) by calling
+it, then call this, then read [`dlerror`](/docs/api/linux/dynamic#dlerror) again to tell the two apart.
+
+**See also**: [https://man7.org/linux/man-pages/man3/dlsym.3.html](https://man7.org/linux/man-pages/man3/dlsym.3.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Dynamic.rux#L58)
+
+**Parameters**
+
+| Name     | Type          | Description                                              |
+| -------- | ------------- | -------------------------------------------------------- |
+| `handle` | `*var opaque` | a handle from [`dlopen`](/docs/api/linux/dynamic#dlopen) |
+| `symbol` | `*char8`      | the NUL-terminated symbol name                           |
+
+**Returns**: the symbol's address, or null
+
+<h2 id="dlclose"><code>dlclose</code></h2>
+
+```rux
+pub extern func dlclose(handle: *var opaque) -> int32
+```
+
+Drops one reference to a loaded object, unloading it when the last one goes.
+Every address obtained from the object through [`dlsym`](/docs/api/linux/dynamic#dlsym) becomes invalid once it is actually unloaded, which this
+gives no way to observe.
+
+**See also**: [https://man7.org/linux/man-pages/man3/dlclose.3.html](https://man7.org/linux/man-pages/man3/dlclose.3.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Dynamic.rux#L67)
+
+**Parameters**
+
+| Name     | Type          | Description                                              |
+| -------- | ------------- | -------------------------------------------------------- |
+| `handle` | `*var opaque` | a handle from [`dlopen`](/docs/api/linux/dynamic#dlopen) |
+
+**Returns**: zero on success, and non-zero with the reason in [`dlerror`](/docs/api/linux/dynamic#dlerror)
+
+<h2 id="dlerror"><code>dlerror</code></h2>
+
+```rux
+pub extern func dlerror() -> *char8
+```
+
+Reports the most recent loader error and clears it, or returns null when there is none.
+The message points at storage the loader owns and a later call may reuse. Reading it clears the error, so two
+calls in a row report the second as no error at all.
+
+**See also**: [https://man7.org/linux/man-pages/man3/dlerror.3.html](https://man7.org/linux/man-pages/man3/dlerror.3.html)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Dynamic.rux#L75)
+
+**Returns**: a NUL-terminated message, or null

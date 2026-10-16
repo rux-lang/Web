@@ -226,6 +226,45 @@
       ]
     },
     {
+      "kind": "function",
+      "name": "WriteDisplayAligned",
+      "displayName": "WriteDisplayAligned",
+      "module": "Align",
+      "source": "Src/Align.rux",
+      "line": 94,
+      "signature": "pub func WriteDisplayAligned(writer: &var TextWriter, value: &Display, spec: FormatSpec) -> ! FormatError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value writes\nitself.",
+        "markdown": "Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value writes\nitself.\nFor a value whose `WriteDisplay` writes its text in pieces, which `WriteAligned` cannot pad: such a value calls\nthis first when `spec` has a width. The value writes into 256 bytes of local room under the spec with no width,\nwhich is what keeps its own call from coming back here, and the room is then padded into `writer`. A rendering too\nlong for the room is written through unpadded, since a width that short would add no padding anyway.\nReports whatever the value or the writer reported.",
+        "typeParams": [],
+        "params": [
+          { "name": "writer", "markdown": "the destination" },
+          { "name": "value", "markdown": "the value to render" },
+          { "name": "spec", "markdown": "what the placeholder asked for" }
+        ],
+        "returns": "success when the padded rendering was accepted in full",
+        "see": ["https://rux-lang.dev/docs/api/text/format-spec#write-display-aligned"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
       "kind": "struct",
       "name": "BufferWriter",
       "displayName": "BufferWriter",
@@ -5346,8 +5385,72 @@
         },
         {
           "kind": "method",
+          "name": "Equals",
+          "line": 160,
+          "signature": "pub func Equals(self: &StringView, other: StringView) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "StringView" }],
+          "receiver": "&StringView",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether this view and `other` hold the same bytes, as `Equals` with a borrowed view answers.",
+            "markdown": "Whether this view and `other` hold the same bytes, as `Equals` with a borrowed view answers. A view is a small\nvalue, so this form takes one as it stands, such as the result of `View()`, which a borrowed parameter cannot.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "whether both hold the same bytes",
+            "see": ["https://rux-lang.dev/docs/api/text/string-view#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Compare",
+          "line": 169,
+          "signature": "pub func Compare(self: &StringView, other: StringView) -> Ordering",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "StringView" }],
+          "receiver": "&StringView",
+          "returnType": "Ordering",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How this view orders against `other`, as `Compare` with a borrowed view answers, taking the view as it stands.",
+            "markdown": "How this view orders against `other`, as `Compare` with a borrowed view answers, taking the view as it stands.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the value to compare against" }],
+            "returns": "how the two order byte by byte, which is code-point order for UTF-8",
+            "see": ["https://rux-lang.dev/docs/api/text/string-view#compare"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
           "name": "Scalars",
-          "line": 159,
+          "line": 178,
           "signature": "pub func Scalars(self: &StringView) -> ScalarIterator",
           "typeParams": [],
           "params": [],
@@ -5395,7 +5498,7 @@
       "displayName": "ScalarIterator",
       "module": "StringView",
       "source": "Src/StringView.rux",
-      "line": 166,
+      "line": 185,
       "signature": "pub struct ScalarIterator",
       "typeParams": [],
       "doc": {
@@ -5413,7 +5516,7 @@
           "name": "bytes",
           "type": "char8[..]",
           "public": false,
-          "line": 168,
+          "line": 187,
           "doc": "The bytes being walked.",
           "targets": [
             "windows-x86_64",
@@ -5430,7 +5533,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 170,
+          "line": 189,
           "doc": "The byte index the next scalar value starts at.",
           "targets": [
             "windows-x86_64",
@@ -5450,7 +5553,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 179,
+          "line": 198,
           "signature": "pub func Next(self: &var ScalarIterator) -> char32?",
           "typeParams": [],
           "params": [],

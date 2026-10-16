@@ -75,7 +75,7 @@
     {
       "name": "Char32",
       "source": "Src/Char32.rux",
-      "header": "A `char32` holds one Unicode scalar value, which is one to four bytes of UTF-8.\nA `char32` is checked when it is made, so a value that is not a scalar value cannot ordinarily be in one. It is\nstill checked here, because a cast can produce one and the writer's promise is worth more than the check costs."
+      "header": "A `char32` holds one Unicode scalar value, which is one to four bytes of UTF-8.\nA `char32` is checked when it is made, so a value that is not a scalar value cannot ordinarily be in one. It is\nstill checked here, because raw storage can contain one and the writer must preserve valid UTF-8."
     },
     {
       "name": "Char512",
@@ -85,7 +85,7 @@
     {
       "name": "Char64",
       "source": "Src/Char64.rux",
-      "header": "A `char64` holds one Unicode scalar value in eight bytes, which is one to four bytes of UTF-8.\nThe width is the whole difficulty. A scalar value stops at U+10FFFF and a `char64` has room for four billion\ntimes that, so a cast can put a number in one that no character has. Checking after narrowing to `uint32` would\nbe worse than not checking: `0x100000041` narrows to `0x41`, which is a perfectly good `A`, and the wrong\ncharacter is harder to notice than a refused one. So validity is decided at the full sixty-four bits, before\nanything is narrowed."
+      "header": "A `char64` holds one Unicode scalar value in eight bytes, which is one to four bytes of UTF-8.\nThe width is the whole difficulty. A scalar value stops at U+10FFFF and a `char64` has room for four billion\ntimes that, so raw storage can hold a number that no character has. Checking after narrowing to `uint32` would\nbe worse than not checking: `0x100000041` narrows to `0x41`, which is a perfectly good `A`, and the wrong\ncharacter is harder to notice than a refused one. So validity is decided at the full sixty-four bits, before\nanything is narrowed."
     },
     {
       "name": "Char8",
@@ -100,7 +100,7 @@
     {
       "name": "CharacterText",
       "source": "Src/CharacterText.rux",
-      "header": "What the character widths and character slices share: the replacement rule, and the escape that undoes it.\nEvery character width has values that are not characters. A `char8` above 0x7F is one piece of a character\nspread over several; a `char16` in the surrogate range is half of one; a `char32` or any wider width can be cast\nfrom a number that is no scalar value at all. There is one rule for all of them and it has two halves.\n`Display` replaces. A value that is not a whole character is written as U+FFFD, which is what \"there was\nsomething here and it could not be represented\" looks like in text, and it keeps the promise every reader of the\noutput relies on: what comes out is well-formed UTF-8. That is lossy, and it is meant to be — two different\ninvalid values render alike, and neither can be read back.\n`Debug` preserves. It is the rendering for somebody looking at a program rather than reading its output, and\ntelling them U+FFFD tells them nothing they did not already know. So an invalid value is written as an escape\ncarrying its own number — `'\\x{80}'` for a stray byte, `'\\u{d800}'` for a lone surrogate — and every value can\nbe told from every other. That is the same split, and the same escape spellings, that `Rux/Path` uses for a\nnative name, and for the same reason.\nNeither half is a validation. `Text`'s strict conversions still refuse what is not text, and a value that\nreaches a `Display` implementation has already passed whatever check its own type applies; the replacement here\nis presentation, and never a substitute for the check."
+      "header": "What the character widths and character slices share: the replacement rule, and the escape that undoes it.\nEvery character width has values that are not characters. A `char8` above 0x7F is one piece of a character\nspread over several; a `char16` in the surrogate range is half of one; raw storage read as `char32` or a wider\nwidth can contain a number that is no scalar value at all. There is one rule for all of them and it has two halves.\n`Display` replaces. A value that is not a whole character is written as U+FFFD, which is what \"there was\nsomething here and it could not be represented\" looks like in text, and it keeps the promise every reader of the\noutput relies on: what comes out is well-formed UTF-8. That is lossy, and it is meant to be — two different\ninvalid values render alike, and neither can be read back.\n`Debug` preserves. It is the rendering for somebody looking at a program rather than reading its output, and\ntelling them U+FFFD tells them nothing they did not already know. So an invalid value is written as an escape\ncarrying its own number — `'\\x{80}'` for a stray byte, `'\\u{d800}'` for a lone surrogate — and every value can\nbe told from every other. That is the same split, and the same escape spellings, that `Rux/Path` uses for a\nnative name, and for the same reason.\nNeither half is a validation. `Text`'s strict conversions still refuse what is not text, and a value that\nreaches a `Display` implementation has already passed whatever check its own type applies; the replacement here\nis presentation, and never a substitute for the check."
     },
     {
       "name": "Cursor",

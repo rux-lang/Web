@@ -273,6 +273,7 @@ export const PACKAGES = [
         title: "Generated tables",
         description: "The Unicode 17.0.0 Character Database tables the lookups search.",
       },
+      scripts: { title: "Scripts", description: "The script each code point belongs to." },
     },
   },
   {
@@ -503,6 +504,21 @@ export const PACKAGES = [
         title: "System calls",
         description: "The raw system-call entry points and the call numbers they take.",
       },
+      futex: { title: "Futexes", description: "Waiting on a word and waking its waiters through `futex`." },
+      poll: { title: "Polling", description: "Descriptor flags and the epoll calls a poller waits with." },
+      resolve: { title: "Name resolution", description: "`getaddrinfo` and the list of addresses it returns." },
+      socket: {
+        title: "Sockets",
+        description: "Address families, socket types and options, and the calls that open, bind and connect sockets.",
+      },
+      spawn: {
+        title: "Starting processes",
+        description: "`posix_spawn` and its file actions, and waiting for and signalling a child.",
+      },
+      thread: {
+        title: "Threads",
+        description: "POSIX threads: starting, joining and detaching them, their stack size, and the processor count.",
+      },
     },
   },
   {
@@ -527,6 +543,21 @@ export const PACKAGES = [
         title: "System calls",
         description: "The raw system-call entry points and the call numbers they take.",
       },
+      poll: { title: "Polling", description: "Descriptor flags and the kqueue filters a poller waits with." },
+      resolve: { title: "Name resolution", description: "`getaddrinfo` and the list of addresses it returns." },
+      socket: {
+        title: "Sockets",
+        description: "Address families, socket types and options, and the calls that open, bind and connect sockets.",
+      },
+      spawn: {
+        title: "Starting processes",
+        description: "`posix_spawn` and its file actions, and waiting for and signalling a child.",
+      },
+      thread: {
+        title: "Threads",
+        description: "POSIX threads: starting, joining and detaching them, their stack size, and the processor count.",
+      },
+      umtx: { title: "Address waits", description: "Waiting on a word and waking its waiters through `_umtx_op`." },
     },
   },
   {
@@ -547,6 +578,24 @@ export const PACKAGES = [
       },
       memory: { title: "Memory", description: "Mapping, protecting and advising on pages of memory." },
       process: { title: "Process", description: "Ending the process and asking its identifier." },
+      poll: { title: "Polling", description: "Descriptor flags and the kqueue filters a poller waits with." },
+      socket: {
+        title: "Sockets",
+        description: "Address families, socket types and options, and the calls that open, bind and connect sockets.",
+      },
+      resolve: { title: "Name resolution", description: "`getaddrinfo` and the list of addresses it returns." },
+      spawn: {
+        title: "Starting processes",
+        description: "`posix_spawn` and its file actions, and waiting for and signalling a child.",
+      },
+      thread: {
+        title: "Threads",
+        description: "POSIX threads: starting, joining and detaching them, their stack size, and the processor count.",
+      },
+      ulock: {
+        title: "Address waits",
+        description: "Waiting on a word and waking its waiters through `__ulock_wait` and `__ulock_wake`.",
+      },
     },
   },
   {
@@ -568,6 +617,20 @@ export const PACKAGES = [
       clock: { title: "Clocks", description: "Performance counters, system time and tick counts." },
       text: { title: "Text conversion", description: "Converting between code pages and UTF-16." },
       errors: { title: "Errors", description: "The last Win32 error and the codes it reports." },
+      "process-control": {
+        title: "Process control",
+        description:
+          "Starting processes with `CreateProcessW`, their startup information, inherited handles and waits.",
+      },
+      synch: { title: "Address waits", description: "`WaitOnAddress` and the calls that wake its waiters." },
+      "time-zone": {
+        title: "Time zone",
+        description: "The system's time zone rules, read through `GetTimeZoneInformation`.",
+      },
+      winsock: {
+        title: "Winsock",
+        description: "Starting Winsock, address families, sockets and their options, and name resolution.",
+      },
     },
   },
   {
@@ -590,6 +653,25 @@ export const PACKAGES = [
     area: "system",
     icon: "i-lucide-square-terminal",
     description: "The running process: its command-line arguments, environment, identifier and exit",
+    topics: {
+      arguments: { title: "Arguments", description: "The command-line arguments the process was started with." },
+      capture: {
+        title: "Captured output",
+        description: "What a program wrote and how it ended, kept by `Command::Capture`.",
+      },
+      child: {
+        title: "Child processes",
+        description: "A started program: waiting for it, killing it, and its standard streams.",
+      },
+      command: {
+        title: "Commands",
+        description:
+          "Describing a program to start: its arguments, environment, working directory and standard streams.",
+      },
+      environment: { title: "Environment", description: "Reading, setting and removing environment variables." },
+      executable: { title: "Executable", description: "The path of the file the process is running." },
+      exit: { title: "Exit", description: "Ending the process, and its identifier." },
+    },
   },
   {
     name: "CommandLine",
@@ -623,12 +705,28 @@ export const PACKAGES = [
     area: "system",
     icon: "i-lucide-globe",
     description: "Time zones: the tz database, POSIX rules, the local zone, and local times that happen twice or never",
+    topics: {
+      error: { title: "Errors", description: "Why a time zone could not be loaded." },
+      zone: {
+        title: "Time zones",
+        description: "A place's rules: loading them, and converting between UTC and local time.",
+      },
+    },
   },
   {
     name: "Net",
     area: "system",
     icon: "i-lucide-network",
     description: "Networking: IP and socket addresses, TCP listeners and streams, UDP sockets, and name resolution",
+    topics: {
+      address: {
+        title: "Addresses",
+        description: "IPv4, IPv6 and socket addresses: reading them, writing them and classifying them.",
+      },
+      resolve: { title: "Name resolution", description: "The addresses a host name resolves to." },
+      tcp: { title: "TCP", description: "Listeners that accept connections, and the streams they produce." },
+      udp: { title: "UDP", description: "Datagram sockets and the datagrams they receive." },
+    },
   },
   {
     name: "Test",
@@ -656,6 +754,17 @@ export const PACKAGES = [
     area: "concurrency",
     icon: "i-lucide-git-fork",
     description: "Threads of execution: starting, joining and detaching them, and asking about the current one",
+    topics: {
+      current: {
+        title: "The current thread",
+        description: "Its identifier, giving way to other threads, and how many can run at once.",
+      },
+      error: { title: "Errors", description: "Why a thread could not be started." },
+      spawn: {
+        title: "Starting threads",
+        description: "Starting a thread on a context, its options, and joining it for its result.",
+      },
+    },
   },
   {
     name: "Atomic",
@@ -669,6 +778,19 @@ export const PACKAGES = [
     icon: "i-lucide-lock-keyhole",
     description:
       "Locks, conditions, once-only initialization, semaphores, barriers, wait groups and channels for threads",
+    topics: {
+      channel: { title: "Channels", description: "Bounded queues that carry values from thread to thread." },
+      counters: { title: "Counters", description: "Semaphores, barriers and wait groups." },
+      lock: { title: "Locks", description: "A plain lock, and running an initialization exactly once." },
+      mutex: {
+        title: "Mutexes",
+        description: "A value one thread at a time may reach, and the conditions threads wait on while holding it.",
+      },
+      "rw-lock": {
+        title: "Reader-writer locks",
+        description: "A value many threads may read at once, or one may write.",
+      },
+    },
   },
   {
     name: "Encoding",
@@ -705,6 +827,11 @@ export const PACKAGES = [
     area: "data",
     icon: "i-lucide-link",
     description: "URLs: parsing, normalizing and resolving them, and reading and building their queries",
+    topics: {
+      error: { title: "Errors", description: "Why a URL could not be parsed." },
+      query: { title: "Query strings", description: "Reading and building the name-value pairs of a query." },
+      url: { title: "URLs", description: "Parsing a URL into its parts and reading them back." },
+    },
   },
   {
     name: "Compress",

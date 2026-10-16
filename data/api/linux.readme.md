@@ -10,17 +10,23 @@ rux add Rux/Linux
 
 ## What it provides
 
-| Module    | Covers                                                                                                                                                                                        |
-| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Types`   | the kernel ABI's own types: `ProcessId`, `FileDescriptor`, `FileOffset`, `FileMode`, `UserId`, `Timespec`                                                                                     |
-| `Errors`  | the errno numbers, and `IsError` / `Errno` for reading a raw result                                                                                                                           |
-| `Syscall` | `Syscall0` through `Syscall6` as inline assembly, the call numbers, and `SignExtendFd`                                                                                                        |
-| `File`    | `Read`, `Write`, `Close`, `OpenAt`, `Lseek`, `Fsync`, `Ftruncate`, `UnlinkAt`, `MkdirAt`, `RenameAt`, `Fstat`, `FstatAt`, `Dup3`, `Pipe2`, the open flags, and the three standard descriptors |
-| `Memory`  | `Mmap`, `Munmap`, `Brk`, `Mprotect`, `Madvise`, `QueryPageSize`, and the protection, mapping and advice flags                                                                                 |
-| `Clock`   | `ClockGetTime`, `ClockGetResolution`, `Nanosleep`, `ClockNanosleep`, and the clock identifiers                                                                                                |
-| `Process` | `Exit` and `GetPid`                                                                                                                                                                           |
-| `Entropy` | `GetRandom`, the only source here fit for a key or a token                                                                                                                                    |
-| `Dynamic` | `dlopen`, `dlsym`, `dlclose`, `dlerror`, and the `RTLD_*` flags                                                                                                                               |
+| Module    | Covers                                                                                                                                                                                                                    |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Types`   | the kernel ABI's own types: `ProcessId`, `FileDescriptor`, `FileOffset`, `FileMode`, `UserId`, `Timespec`                                                                                                                 |
+| `Errors`  | the errno numbers, and `IsError` / `Errno` for reading a raw result                                                                                                                                                       |
+| `Syscall` | `Syscall0` through `Syscall6` as inline assembly, the call numbers, and `SignExtendFd`                                                                                                                                    |
+| `File`    | `Read`, `Write`, `Close`, `OpenAt`, `Lseek`, `Fsync`, `Ftruncate`, `UnlinkAt`, `MkdirAt`, `RenameAt`, `Fstat`, `FstatAt`, `Dup3`, `Pipe2`, the open flags, and the three standard descriptors                             |
+| `Memory`  | `Mmap`, `Munmap`, `Brk`, `Mprotect`, `Madvise`, `QueryPageSize`, and the protection, mapping and advice flags                                                                                                             |
+| `Clock`   | `ClockGetTime`, `ClockGetResolution`, `Nanosleep`, `ClockNanosleep`, and the clock identifiers                                                                                                                            |
+| `Process` | `Exit` and `GetPid`                                                                                                                                                                                                       |
+| `Entropy` | `GetRandom`, the only source here fit for a key or a token                                                                                                                                                                |
+| `Dynamic` | `dlopen`, `dlsym`, `dlclose`, `dlerror`, and the `RTLD_*` flags                                                                                                                                                           |
+| `Thread`  | `pthread_create`, `pthread_join`, `pthread_detach`, the `pthread_attr_*` stack-size calls, `sched_yield`, `sysconf` and `SC_NPROCESSORS_ONLN`, and `gettid`, linked from libc                                             |
+| `Socket`  | `Socket`, `Connect`, `Bind`, `Listen`, `Accept4`, `SendTo`, `ReceiveFrom`, `Shutdown`, `SetSocketOption`, `GetSocketName` and `GetPeerName` as system calls, with the address families, socket options and `MSG_NOSIGNAL` |
+| `Resolve` | `getaddrinfo`, `freeaddrinfo` and `AddressInfo`, linked from libc                                                                                                                                                         |
+| `Futex`   | `FutexWait` and `FutexWake`, the private `futex(2)` operations every lock in `Rux/Sync` sleeps on                                                                                                                         |
+| `Spawn`   | `posix_spawnp`, the `posix_spawn_file_actions_*` calls, `waitpid`, `kill`, `fcntl` and `__errno_location`, linked from libc                                                                                               |
+| `Poll`    | `EpollCreate1`, `EpollControl` and `EpollWait` as system calls, the `EPOLL*` flags, the per-architecture `epoll_event` layout, and `FcntlInt` with `F_GETFL`, `F_SETFL` and `O_NONBLOCK`                                  |
 
 The module names describe where each declaration comes from; they are not part of an import path.
 

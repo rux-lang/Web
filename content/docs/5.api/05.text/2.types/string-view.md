@@ -374,15 +374,25 @@ pub func Equals(
     self: &StringView,
     other: &StringView
 ) -> bool
+
+pub func Equals(
+    self: &StringView,
+    other: StringView
+) -> bool
 ```
 
 Whether two views hold the same bytes.
 Byte equality, which for well-formed UTF-8 is scalar-by-scalar equality, since each scalar value has exactly
 one encoding. It is not equality after normalization, which is a different question and a different package.
 
-| Name    | Type          | Description                  |
-| ------- | ------------- | ---------------------------- |
-| `other` | `&StringView` | the value to compare against |
+| Overload                                                         | Summary                                                                                      |
+| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `pub func Equals(self: &StringView, other: &StringView) -> bool` | Whether two views hold the same bytes.                                                       |
+| `pub func Equals(self: &StringView, other: StringView) -> bool`  | Whether this view and `other` hold the same bytes, as `Equals` with a borrowed view answers. |
+
+| Name    | Type                         | Description                  |
+| ------- | ---------------------------- | ---------------------------- |
+| `other` | `&StringView` / `StringView` | the value to compare against |
 
 **Returns**: whether both hold the same bytes
 
@@ -395,15 +405,25 @@ pub func Compare(
     self: &StringView,
     other: &StringView
 ) -> Ordering
+
+pub func Compare(
+    self: &StringView,
+    other: StringView
+) -> Ordering
 ```
 
 How this view orders against `other`, shortest first where one is a prefix of the other.
 Byte order, which for UTF-8 is also code point order: the encoding is built so that comparing bytes and
 comparing scalar values give the same answer. It is not alphabetical in any language.
 
-| Name    | Type          | Description                  |
-| ------- | ------------- | ---------------------------- |
-| `other` | `&StringView` | the value to compare against |
+| Overload                                                              | Summary                                                                                                        |
+| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `pub func Compare(self: &StringView, other: &StringView) -> Ordering` | How this view orders against `other`, shortest first where one is a prefix of the other.                       |
+| `pub func Compare(self: &StringView, other: StringView) -> Ordering`  | How this view orders against `other`, as `Compare` with a borrowed view answers, taking the view as it stands. |
+
+| Name    | Type                         | Description                  |
+| ------- | ---------------------------- | ---------------------------- |
+| `other` | `&StringView` / `StringView` | the value to compare against |
 
 **Returns**: how the two order byte by byte, which is code-point order for UTF-8
 
@@ -420,7 +440,7 @@ A walk over this view's scalar values.
 
 **Returns**: a cursor over the text's scalar values
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L178)
 
 ## Implements Display
 
@@ -574,7 +594,7 @@ pub struct ScalarIterator {
 
 A walk over the scalar values of a view, first to last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L185)
 
 **Implements Iterator**
 
@@ -592,4 +612,4 @@ so reaching one means the bytes were vouched for and were not.
 
 **Returns**: the next scalar value, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L179)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L198)

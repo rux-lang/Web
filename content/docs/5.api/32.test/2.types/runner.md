@@ -46,6 +46,7 @@ A test: its name, which the runner reports and filters on, and the function that
 ```rux
 pub struct TestOptions {
     pub filter: char8[..];
+    pub filters: char8[..][..];
     pub exact: bool;
     pub skip: char8[..];
     pub list: bool;
@@ -59,13 +60,14 @@ Which tests a run chooses and how it reports them. `Copy`.
 
 **Fields**
 
-| Name     | Type        | Description                                                                |
-| -------- | ----------- | -------------------------------------------------------------------------- |
-| `filter` | `char8[..]` | Run only tests whose names hold this text, or every test when it is empty. |
-| `exact`  | `bool`      | Whether `filter` must be the whole name rather than part of it.            |
-| `skip`   | `char8[..]` | Leave out tests whose names hold this text, unless it is empty.            |
-| `list`   | `bool`      | List the chosen tests rather than running them.                            |
-| `quiet`  | `bool`      | Report only failures and the summary.                                      |
+| Name      | Type            | Description                                                                                     |
+| --------- | --------------- | ----------------------------------------------------------------------------------------------- |
+| `filter`  | `char8[..]`     | Run only tests whose names hold this text, or every test when it is empty and `filters` is too. |
+| `filters` | `char8[..][..]` | More texts like `filter`: a test runs when its name holds any of them, or `filter`.             |
+| `exact`   | `bool`          | Whether a filter must be the whole name rather than part of it.                                 |
+| `skip`    | `char8[..]`     | Leave out tests whose names hold this text, unless it is empty.                                 |
+| `list`    | `bool`          | List the chosen tests rather than running them.                                                 |
+| `quiet`   | `bool`          | Report only failures and the summary.                                                           |
 
 **Constructors**
 
@@ -79,7 +81,7 @@ Options that run every test and report each one.
 
 **Returns**: the options
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Runner.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Runner.rux#L43)
 
 <h2 id="run-tests-with"><code>RunTestsWith</code></h2>
 
@@ -91,9 +93,11 @@ pub func RunTestsWith(
 ```
 
 Runs the tests that `options` choose, in order, and reports each as `ok`, `FAILED` with its message, or
-`skipped` with its reason, then a summary of the counts and the time taken.
+`skipped` with its reason, then a summary of the counts and the time taken. A filter that chooses no test at all is
+reported as `no test matches` and given a code of its own, so that `rux test`, which hands one filter to every
+package, can fail the run when no package had a test it matched instead of passing with nothing run.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Runner.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Runner.rux#L100)
 
 **Parameters**
 
@@ -102,7 +106,7 @@ Runs the tests that `options` choose, in order, and reports each as `ok`, `FAILE
 | `tests`   | `TestCase[..]` | the tests                           |
 | `options` | `TestOptions`  | which to run and how to report them |
 
-**Returns**: 0 when none failed, 1 when some did
+**Returns**: 0 when none failed, 1 when some did, 3 when filters chose no test
 
 <h2 id="run-tests"><code>RunTests</code></h2>
 
@@ -110,11 +114,12 @@ Runs the tests that `options` choose, in order, and reports each as `ok`, `FAILE
 pub func RunTests(tests: TestCase[..]) -> int
 ```
 
-Runs the tests the process's arguments choose. A plain argument is a filter that a test's name must hold;
-`--exact` makes it the whole name, `--skip <text>` leaves out names holding the text, `--list` lists the chosen
-tests without running them, and `--quiet` reports only failures and the summary.
+Runs the tests the process's arguments choose. A plain argument is a filter that a test's name must hold, and a
+test runs when its name holds any of them; `--exact` makes each the whole name, `--skip <text>` leaves out names
+holding the text, `--list` lists the chosen tests without running them, and `--quiet` reports only failures and
+the summary.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Runner.rux#L143)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Runner.rux#L167)
 
 **Parameters**
 
@@ -122,4 +127,5 @@ tests without running them, and `--quiet` reports only failures and the summary.
 | ------- | -------------- | ----------- |
 | `tests` | `TestCase[..]` | the tests   |
 
-**Returns**: 0 when none failed, 1 when some did, 2 for arguments it does not understand
+**Returns**: 0 when none failed, 1 when some did, 2 for arguments it does not understand, 3 when filters chose no
+test

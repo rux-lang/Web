@@ -1,0 +1,2678 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Sync",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Locks, conditions, once-only initialization, semaphores, barriers, wait groups and channels for threads",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/sync",
+    "dependencies": [
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "FreeBSD", "namespace": "Rux", "version": "0.1.0", "targetOS": ["FreeBSD"] },
+      { "name": "Linux", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Linux"] },
+      { "name": "macOS", "namespace": "Rux", "version": "0.1.0", "targetOS": ["macOS"] },
+      { "name": "Memory", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Time", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+    ]
+  },
+  "modules": [
+    {
+      "name": "Channel",
+      "source": "Src/Channel.rux",
+      "header": "A queue that threads send values into and receive values out of, with room for a fixed number of them.\nThe values sit in a ring under one lock. A sender waits while the ring is full and a receiver while it is empty,\neach on its own sequence word that the other side advances and wakes. Closing the channel wakes everyone: senders\nthen fail and get their value back, and receivers take what is left and then learn that nothing more will come."
+    },
+    {
+      "name": "Counters",
+      "source": "Src/Counters.rux",
+      "header": "Coordination by counting: permits a semaphore hands out, threads a barrier waits for, and work a wait group waits\nto see finished.\nEach keeps its count in a word threads sleep on, and registers sleepers where waking them costs a system call, so\na release with nobody asleep is one atomic instruction."
+    },
+    {
+      "name": "Lock",
+      "source": "Src/Lock.rux",
+      "header": "The two primitives that live where they are declared rather than in shared storage: a bare lock and a once-only\ninitialization. Neither needs destroying, so either can be a module variable, which every thread names directly,\nor a field of a value that is itself shared."
+    },
+    {
+      "name": "Mutex",
+      "source": "Src/Mutex.rux",
+      "header": "A value that one thread at a time may reach, and the condition threads wait on while they hold it.\nA `Mutex<T>` is a handle: the value and its lock live in storage every clone of the handle shares, so a thread is\ngiven its own handle with `Clone` and the storage lasts until the last handle is gone. Locking returns a guard,\nwhich is the only way to reach the value and which releases the lock when it is dropped."
+    },
+    {
+      "name": "Native",
+      "source": "Src/Native.rux",
+      "header": "Sleeping until a word in memory changes, and waking the threads that sleep on one: the one primitive every type in\nthis package is built from.\nEach system checks the word in the kernel as it puts the thread to sleep, so a change that lands between a caller's\nlast look and its sleep ends the sleep at once rather than being missed. A sleep may also end for no reason the\ncaller can see, so every caller looks at the word again and decides whether to sleep once more."
+    },
+    {
+      "name": "RwLock",
+      "source": "Src/RwLock.rux",
+      "header": "A value many threads may read at once, or one thread may write.\nThe state word counts the readers holding the lock, or is `Writing` while a writer holds it. Waiters register in a\nsecond word before they sleep, so a release only makes a system call when someone may be asleep; both words use\nsequentially consistent operations, which is what keeps a release from missing a waiter that registered just\nbefore it looked. Readers and writers are not queued in order, so a steady stream of readers can keep a writer\nwaiting."
+    },
+    {
+      "name": "Word",
+      "source": "Src/Word.rux",
+      "header": "The lock every type here takes, kept in one 32-bit word, and the counted storage the shareable types live in.\nThe word is 0 when the lock is free, 1 when it is held and nobody waits, and 2 when it is held and someone may be\nsleeping on it. Taking a free lock and releasing one nobody waits for are each one atomic instruction; only a lock\nthat is actually contended costs a system call. A thread that has slept marks the word 2 when it takes the lock,\nbecause it cannot know whether others still sleep, so the release after it wakes one.\nThe shareable types keep their state in a block allocated once and counted: every handle holds one count, and\nwhichever lets go of the last one destroys the block's contents and frees it."
+    }
+  ],
+  "items": [
+    {
+      "kind": "struct",
+      "name": "Channel",
+      "displayName": "Channel<T>",
+      "module": "Channel",
+      "source": "Src/Channel.rux",
+      "line": 32,
+      "signature": "pub struct Channel<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A bounded queue of values passed between threads, any number of which may send and receive.",
+        "markdown": "A bounded queue of values passed between threads, any number of which may send and receive.\nValues arrive in the order they were sent. `Clone` gives another handle to the same channel; the values still in\nit are destroyed when the last handle is gone. A handle is not copied.",
+        "typeParams": [{ "name": "T", "markdown": "the type of the values" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/channel#channel"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var ChannelBlock<T>",
+          "public": false,
+          "line": 33,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Channel",
+          "line": 43,
+          "signature": "pub func Channel(capacity: uint) -> Channel<T>",
+          "typeParams": [],
+          "params": [{ "name": "capacity", "type": "uint" }],
+          "receiver": null,
+          "returnType": "Channel<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A channel with room for `capacity` values.",
+            "markdown": "A channel with room for `capacity` values. Zero capacity is a program error, as is running out of memory.",
+            "typeParams": [],
+            "params": [{ "name": "capacity", "markdown": "how many values may wait in the channel at once" }],
+            "returns": "the first handle to it",
+            "see": ["https://rux-lang.dev/docs/api/sync/channel#channel-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clone",
+          "line": 58,
+          "signature": "pub func Clone(self: &Channel<T>) -> Channel<T>",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Channel<T>",
+          "returnType": "Channel<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Another handle to the same channel.",
+            "markdown": "Another handle to the same channel.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the handle",
+            "see": ["https://rux-lang.dev/docs/api/sync/channel#clone"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Send",
+          "line": 67,
+          "signature": "pub func Send(self: &Channel<T>, value: T) -> ! T",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&Channel<T>",
+          "returnType": "! T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sends `value`, waiting while the channel is full.",
+            "markdown": "Sends `value`, waiting while the channel is full.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the value to send" }],
+            "returns": "nothing, or fails with the value when the channel is closed",
+            "see": ["https://rux-lang.dev/docs/api/sync/channel#send"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TrySend",
+          "line": 87,
+          "signature": "pub func TrySend(self: &Channel<T>, value: T) -> ! T",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": "&Channel<T>",
+          "returnType": "! T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sends `value` if there is room, without waiting.",
+            "markdown": "Sends `value` if there is room, without waiting.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the value to send" }],
+            "returns": "nothing, or fails with the value when the channel is full or closed",
+            "see": ["https://rux-lang.dev/docs/api/sync/channel#try-send"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Receive",
+          "line": 100,
+          "signature": "pub func Receive(self: &Channel<T>) -> T?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Channel<T>",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Receives the oldest value, waiting while the channel is empty.",
+            "markdown": "Receives the oldest value, waiting while the channel is empty.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the value, or none once the channel is closed and empty",
+            "see": ["https://rux-lang.dev/docs/api/sync/channel#receive"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TryReceive",
+          "line": 119,
+          "signature": "pub func TryReceive(self: &Channel<T>) -> T?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Channel<T>",
+          "returnType": "T?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Receives the oldest value if there is one, without waiting.",
+            "markdown": "Receives the oldest value if there is one, without waiting.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the value, or none when the channel is empty",
+            "see": ["https://rux-lang.dev/docs/api/sync/channel#try-receive"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Close",
+          "line": 132,
+          "signature": "pub func Close(self: &Channel<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Channel<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Closes the channel: sends fail from now on, and receivers take what is left and then get none.",
+            "markdown": "Closes the channel: sends fail from now on, and receivers take what is left and then get none. Closing a\nclosed channel does nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/channel#close"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsClosed",
+          "line": 146,
+          "signature": "pub func IsClosed(self: &Channel<T>) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Channel<T>",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the channel was closed.",
+            "markdown": "Whether the channel was closed.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true once `Close` was called on any handle",
+            "see": ["https://rux-lang.dev/docs/api/sync/channel#is-closed"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Length",
+          "line": 157,
+          "signature": "pub func Length(self: &Channel<T>) -> uint",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Channel<T>",
+          "returnType": "uint",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "How many values wait in the channel right now, which other threads may change at any moment.",
+            "markdown": "How many values wait in the channel right now, which other threads may change at any moment.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the number of values",
+            "see": ["https://rux-lang.dev/docs/api/sync/channel#length"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~Channel",
+          "line": 187,
+          "signature": "func ~Channel(self: &var Channel<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Channel<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Semaphore",
+      "displayName": "Semaphore",
+      "module": "Counters",
+      "source": "Src/Counters.rux",
+      "line": 18,
+      "signature": "pub struct Semaphore",
+      "typeParams": [],
+      "doc": {
+        "summary": "A count of permits that threads take and give back, waiting while none is left.",
+        "markdown": "A count of permits that threads take and give back, waiting while none is left.\n`Clone` gives another handle to the same permits. A handle is not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/counters#semaphore"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var SemaphoreBlock",
+          "public": false,
+          "line": 19,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Semaphore",
+          "line": 29,
+          "signature": "pub func Semaphore(permits: uint32) -> Semaphore",
+          "typeParams": [],
+          "params": [{ "name": "permits", "type": "uint32" }],
+          "receiver": null,
+          "returnType": "Semaphore",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A semaphore holding `permits` permits.",
+            "markdown": "A semaphore holding `permits` permits. Running out of memory for it is a program error.",
+            "typeParams": [],
+            "params": [{ "name": "permits", "markdown": "how many permits there are to start with" }],
+            "returns": "the first handle to it",
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#semaphore-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clone",
+          "line": 36,
+          "signature": "pub func Clone(self: &Semaphore) -> Semaphore",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Semaphore",
+          "returnType": "Semaphore",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Another handle to the same permits.",
+            "markdown": "Another handle to the same permits.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the handle",
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#clone-semaphore"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Acquire",
+          "line": 43,
+          "signature": "pub func Acquire(self: &Semaphore)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Semaphore",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes a permit, waiting while none is left.",
+            "markdown": "Takes a permit, waiting while none is left.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#acquire"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TryAcquire",
+          "line": 55,
+          "signature": "pub func TryAcquire(self: &Semaphore) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Semaphore",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes a permit if one is left, without waiting.",
+            "markdown": "Takes a permit if one is left, without waiting.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether a permit was taken",
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#try-acquire"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Release",
+          "line": 70,
+          "signature": "pub func Release(self: &Semaphore, count: uint32)",
+          "typeParams": [],
+          "params": [{ "name": "count", "type": "uint32" }],
+          "receiver": "&Semaphore",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Gives back `count` permits, waking threads waiting for them.",
+            "markdown": "Gives back `count` permits, waking threads waiting for them.",
+            "typeParams": [],
+            "params": [{ "name": "count", "markdown": "how many permits to give back" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#release"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Available",
+          "line": 80,
+          "signature": "pub func Available(self: &Semaphore) -> uint32",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Semaphore",
+          "returnType": "uint32",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The permits left right now, which other threads may change at any moment.",
+            "markdown": "The permits left right now, which other threads may change at any moment.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the number of permits",
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#available"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~Semaphore",
+          "line": 84,
+          "signature": "func ~Semaphore(self: &var Semaphore)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Semaphore",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Barrier",
+      "displayName": "Barrier",
+      "module": "Counters",
+      "source": "Src/Counters.rux",
+      "line": 102,
+      "signature": "pub struct Barrier",
+      "typeParams": [],
+      "doc": {
+        "summary": "A meeting point a fixed number of threads wait at until all of them have arrived, then pass together.",
+        "markdown": "A meeting point a fixed number of threads wait at until all of them have arrived, then pass together.\nThe barrier is reusable: once all have passed, the next `Wait`s start a new round. `Clone` gives another handle to\nthe same barrier. A handle is not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/counters#barrier"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var BarrierBlock",
+          "public": false,
+          "line": 103,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Barrier",
+          "line": 113,
+          "signature": "pub func Barrier(parties: uint32) -> Barrier",
+          "typeParams": [],
+          "params": [{ "name": "parties", "type": "uint32" }],
+          "receiver": null,
+          "returnType": "Barrier",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A barrier for `parties` threads.",
+            "markdown": "A barrier for `parties` threads. Zero parties is a program error. Running out of memory is one too.",
+            "typeParams": [],
+            "params": [{ "name": "parties", "markdown": "how many threads each round waits for" }],
+            "returns": "the first handle to it",
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#barrier-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clone",
+          "line": 123,
+          "signature": "pub func Clone(self: &Barrier) -> Barrier",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Barrier",
+          "returnType": "Barrier",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Another handle to the same barrier.",
+            "markdown": "Another handle to the same barrier.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the handle",
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#clone-barrier"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Wait",
+          "line": 131,
+          "signature": "pub func Wait(self: &Barrier) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Barrier",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waits until every party of this round has arrived.",
+            "markdown": "Waits until every party of this round has arrived.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true on exactly one of the round's threads, the last to arrive, for work done once per round",
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#wait-barrier"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~Barrier",
+          "line": 147,
+          "signature": "func ~Barrier(self: &var Barrier)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Barrier",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "WaitGroup",
+      "displayName": "WaitGroup",
+      "module": "Counters",
+      "source": "Src/Counters.rux",
+      "line": 162,
+      "signature": "pub struct WaitGroup",
+      "typeParams": [],
+      "doc": {
+        "summary": "A count of unfinished work that threads add to and mark done, and that others wait to see reach zero.",
+        "markdown": "A count of unfinished work that threads add to and mark done, and that others wait to see reach zero.\n`Clone` gives another handle to the same count. A handle is not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/counters#wait-group"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var WaitGroupBlock",
+          "public": false,
+          "line": 163,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "WaitGroup",
+          "line": 172,
+          "signature": "pub func WaitGroup() -> WaitGroup",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "WaitGroup",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A wait group with nothing pending.",
+            "markdown": "A wait group with nothing pending. Running out of memory for it is a program error.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the first handle to it",
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#wait-group-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clone",
+          "line": 179,
+          "signature": "pub func Clone(self: &WaitGroup) -> WaitGroup",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&WaitGroup",
+          "returnType": "WaitGroup",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Another handle to the same count.",
+            "markdown": "Another handle to the same count.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the handle",
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#clone-wait-group"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Add",
+          "line": 187,
+          "signature": "pub func Add(self: &WaitGroup, count: uint32)",
+          "typeParams": [],
+          "params": [{ "name": "count", "type": "uint32" }],
+          "receiver": "&WaitGroup",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Adds `count` pieces of pending work, before the work is started.",
+            "markdown": "Adds `count` pieces of pending work, before the work is started.",
+            "typeParams": [],
+            "params": [{ "name": "count", "markdown": "how many to add" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#add"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Done",
+          "line": 194,
+          "signature": "pub func Done(self: &WaitGroup)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&WaitGroup",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Marks one piece of work done, waking the waiters when it was the last.",
+            "markdown": "Marks one piece of work done, waking the waiters when it was the last. Marking more done than were added is a\nprogram error.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#done"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Wait",
+          "line": 202,
+          "signature": "pub func Wait(self: &WaitGroup)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&WaitGroup",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Waits until no work is pending.",
+            "markdown": "Waits until no work is pending.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/counters#wait-wait-group"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~WaitGroup",
+          "line": 210,
+          "signature": "func ~WaitGroup(self: &var WaitGroup)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var WaitGroup",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Lock",
+      "displayName": "Lock",
+      "module": "Lock",
+      "source": "Src/Lock.rux",
+      "line": 13,
+      "signature": "pub struct Lock",
+      "typeParams": [],
+      "doc": {
+        "summary": "A lock that guards nothing in particular: whatever the code between `Acquire` and `Release` touches.",
+        "markdown": "A lock that guards nothing in particular: whatever the code between `Acquire` and `Release` touches.\nNot reentrant: acquiring it again on the thread that holds it waits forever. Releasing it is the holder's job;\nreleasing a lock another thread holds, or one nobody holds, is a program error the lock cannot detect.\nFor data that a lock protects, `Mutex<T>` keeps the two together and releases the lock for you.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/lock#lock"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "word",
+          "type": "uint32",
+          "public": false,
+          "line": 14,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Unlocked",
+          "line": 20,
+          "signature": "pub const Unlocked: Lock",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "Lock { word: 0 }",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A lock nobody holds, as a constant, so a module variable can start as one: `var Guard: Lock = Lock::Unlocked;`.",
+            "markdown": "A lock nobody holds, as a constant, so a module variable can start as one: `var Guard: Lock = Lock::Unlocked;`.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/lock#unlocked"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constructor",
+          "name": "Lock",
+          "line": 25,
+          "signature": "pub func Lock() -> Lock",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Lock",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A lock nobody holds.",
+            "markdown": "A lock nobody holds.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the lock",
+            "see": ["https://rux-lang.dev/docs/api/sync/lock#lock-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Acquire",
+          "line": 31,
+          "signature": "pub func Acquire(self: &Lock)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Lock",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes the lock, waiting while another thread holds it.",
+            "markdown": "Takes the lock, waiting while another thread holds it.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/lock#acquire"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TryAcquire",
+          "line": 38,
+          "signature": "pub func TryAcquire(self: &Lock) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Lock",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes the lock if nobody holds it, without waiting.",
+            "markdown": "Takes the lock if nobody holds it, without waiting.",
+            "typeParams": [],
+            "params": [],
+            "returns": "whether the lock was taken",
+            "see": ["https://rux-lang.dev/docs/api/sync/lock#try-acquire"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Release",
+          "line": 44,
+          "signature": "pub func Release(self: &Lock)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Lock",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases the lock this thread holds, letting one waiting thread take it.",
+            "markdown": "Releases the lock this thread holds, letting one waiting thread take it.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/lock#release"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Once",
+      "displayName": "Once",
+      "module": "Lock",
+      "source": "Src/Lock.rux",
+      "line": 58,
+      "signature": "pub struct Once",
+      "typeParams": [],
+      "doc": {
+        "summary": "Runs one initialization once, however many threads ask for it at once.",
+        "markdown": "Runs one initialization once, however many threads ask for it at once.\nThe first `Call` runs its function; every other waits until that has returned and then returns without running\nits own. Everything the function wrote is visible to every thread `Call` returns on.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/lock#once"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "state",
+          "type": "uint32",
+          "public": false,
+          "line": 59,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constant",
+          "name": "Incomplete",
+          "line": 66,
+          "signature": "pub const Incomplete: Once",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": null,
+          "value": "Once { state: 0 }",
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An initialization that has not run, as a constant, so a module variable can start as one:\n`var Setup: Once = Once::Incomplete;`.",
+            "markdown": "An initialization that has not run, as a constant, so a module variable can start as one:\n`var Setup: Once = Once::Incomplete;`.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/lock#incomplete"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "constructor",
+          "name": "Once",
+          "line": 71,
+          "signature": "pub func Once() -> Once",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Once",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An initialization that has not run.",
+            "markdown": "An initialization that has not run.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the once",
+            "see": ["https://rux-lang.dev/docs/api/sync/lock#once-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Call",
+          "line": 79,
+          "signature": "pub func Call(self: &Once, initialize: func())",
+          "typeParams": [],
+          "params": [{ "name": "initialize", "type": "func()" }],
+          "receiver": "&Once",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Runs `initialize` if no call has run one yet, and returns once an initialization has finished.",
+            "markdown": "Runs `initialize` if no call has run one yet, and returns once an initialization has finished.\nAn initializer that panics ends the process, so a half-finished one is never observed.",
+            "typeParams": [],
+            "params": [{ "name": "initialize", "markdown": "the function to run once" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/lock#call"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsCompleted",
+          "line": 97,
+          "signature": "pub func IsCompleted(self: &Once) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Once",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether an initialization has finished.",
+            "markdown": "Whether an initialization has finished.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true once a `Call` has run its function to the end",
+            "see": ["https://rux-lang.dev/docs/api/sync/lock#is-completed"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Mutex",
+      "displayName": "Mutex<T>",
+      "module": "Mutex",
+      "source": "Src/Mutex.rux",
+      "line": 24,
+      "signature": "pub struct Mutex<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A value guarded by a lock, shared between the threads that hold a handle to it.",
+        "markdown": "A value guarded by a lock, shared between the threads that hold a handle to it.\n`Clone` gives another handle to the same value, to move to another thread. The value is destroyed when the last\nhandle and the last guard are gone. A handle is not copied.",
+        "typeParams": [{ "name": "T", "markdown": "the type of the guarded value" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/mutex#mutex"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var MutexBlock<T>",
+          "public": false,
+          "line": 25,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Mutex",
+          "line": 43,
+          "signature": "pub func Mutex(value: T) -> Mutex<T>",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": null,
+          "returnType": "Mutex<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A new lock guarding `value`.",
+            "markdown": "A new lock guarding `value`. Running out of memory for it is a program error.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the value to guard" }],
+            "returns": "the first handle to it",
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#mutex-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clone",
+          "line": 50,
+          "signature": "pub func Clone(self: &Mutex<T>) -> Mutex<T>",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Mutex<T>",
+          "returnType": "Mutex<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Another handle to the same value.",
+            "markdown": "Another handle to the same value.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the handle",
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#clone"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Lock",
+          "line": 59,
+          "signature": "pub func Lock(self: &Mutex<T>) -> MutexGuard<T>",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Mutex<T>",
+          "returnType": "MutexGuard<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes the lock, waiting while another thread holds it, and returns the guard that holds it.",
+            "markdown": "Takes the lock, waiting while another thread holds it, and returns the guard that holds it.\nNot reentrant: locking again on the thread that holds the lock waits forever.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the guard",
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#lock"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "TryLock",
+          "line": 68,
+          "signature": "pub func TryLock(self: &Mutex<T>) -> MutexGuard<T>?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Mutex<T>",
+          "returnType": "MutexGuard<T>?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes the lock if nobody holds it, without waiting.",
+            "markdown": "Takes the lock if nobody holds it, without waiting.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the guard, or none when another thread holds the lock",
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#try-lock"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~Mutex",
+          "line": 74,
+          "signature": "func ~Mutex(self: &var Mutex<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Mutex<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "MutexGuard",
+      "displayName": "MutexGuard<T>",
+      "module": "Mutex",
+      "source": "Src/Mutex.rux",
+      "line": 32,
+      "signature": "pub struct MutexGuard<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The lock on a `Mutex<T>`, held for as long as the guard lives, and the way to reach the value.",
+        "markdown": "The lock on a `Mutex<T>`, held for as long as the guard lives, and the way to reach the value.\nDropping the guard, or calling `Unlock`, releases the lock. A guard is not copied.",
+        "typeParams": [{ "name": "T", "markdown": "the type of the guarded value" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/mutex#mutex-guard"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var MutexBlock<T>",
+          "public": false,
+          "line": 33,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Get",
+          "line": 88,
+          "signature": "pub func Get(self: &MutexGuard<T>) -> *var T",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&MutexGuard<T>",
+          "returnType": "*var T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The guarded value, which this thread alone may read and write while the guard holds the lock.",
+            "markdown": "The guarded value, which this thread alone may read and write while the guard holds the lock.\nThe address is valid for as long as the guard holds the lock; keeping it longer is a program error.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the value's address",
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#get"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsLocked",
+          "line": 95,
+          "signature": "pub func IsLocked(self: &MutexGuard<T>) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&MutexGuard<T>",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the guard still holds the lock.",
+            "markdown": "Whether the guard still holds the lock.",
+            "typeParams": [],
+            "params": [],
+            "returns": "false once `Unlock` was called",
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#is-locked"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Unlock",
+          "line": 101,
+          "signature": "pub func Unlock(self: &var MutexGuard<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var MutexGuard<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases the lock before the guard is dropped.",
+            "markdown": "Releases the lock before the guard is dropped. Unlocking a guard twice does nothing.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#unlock"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~MutexGuard",
+          "line": 111,
+          "signature": "func ~MutexGuard(self: &var MutexGuard<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var MutexGuard<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Condition",
+      "displayName": "Condition",
+      "module": "Mutex",
+      "source": "Src/Mutex.rux",
+      "line": 126,
+      "signature": "pub struct Condition",
+      "typeParams": [],
+      "doc": {
+        "summary": "A condition threads wait on while holding a `Mutex<T>`, until another thread says it may hold.",
+        "markdown": "A condition threads wait on while holding a `Mutex<T>`, until another thread says it may hold.\nA wait releases the lock while it sleeps and takes it again before it returns, so the waiter re-checks the\ncondition under the lock. A wait may also return when nothing notified it, which is why it is always called in a\nloop that checks the condition. `Clone` gives another handle to the same condition. A handle is not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/mutex#condition"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var ConditionBlock",
+          "public": false,
+          "line": 127,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Condition",
+          "line": 136,
+          "signature": "pub func Condition() -> Condition",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Condition",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A new condition.",
+            "markdown": "A new condition. Running out of memory for it is a program error.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the first handle to it",
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#condition-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clone",
+          "line": 143,
+          "signature": "pub func Clone(self: &Condition) -> Condition",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Condition",
+          "returnType": "Condition",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Another handle to the same condition.",
+            "markdown": "Another handle to the same condition.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the handle",
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#clone-condition"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Wait",
+          "line": 152,
+          "signature": "pub func Wait<T>(self: &Condition, guard: &var MutexGuard<T>)",
+          "typeParams": [{ "name": "T", "bounds": [] }],
+          "params": [{ "name": "guard", "type": "&var MutexGuard<T>" }],
+          "receiver": "&Condition",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases the guard's lock, sleeps until notified, and takes the lock again.",
+            "markdown": "Releases the guard's lock, sleeps until notified, and takes the lock again.",
+            "typeParams": [{ "name": "T", "markdown": "the type of the guarded value" }],
+            "params": [{ "name": "guard", "markdown": "a guard that holds its lock" }],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#wait"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "WaitFor",
+          "line": 162,
+          "signature": "pub func WaitFor<T>(self: &Condition, guard: &var MutexGuard<T>, timeout: Duration) -> bool",
+          "typeParams": [{ "name": "T", "bounds": [] }],
+          "params": [
+            { "name": "guard", "type": "&var MutexGuard<T>" },
+            { "name": "timeout", "type": "Duration" }
+          ],
+          "receiver": "&Condition",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Releases the guard's lock, sleeps until notified or until `timeout` has passed, and takes the lock again.",
+            "markdown": "Releases the guard's lock, sleeps until notified or until `timeout` has passed, and takes the lock again.",
+            "typeParams": [{ "name": "T", "markdown": "the type of the guarded value" }],
+            "params": [
+              { "name": "guard", "markdown": "a guard that holds its lock" },
+              { "name": "timeout", "markdown": "how long to wait at most; a negative one does not wait" }
+            ],
+            "returns": "false when the time ran out without a notification",
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#wait-for"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "NotifyOne",
+          "line": 170,
+          "signature": "pub func NotifyOne(self: &Condition)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Condition",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Wakes one thread waiting on the condition, if any.",
+            "markdown": "Wakes one thread waiting on the condition, if any.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#notify-one"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "NotifyAll",
+          "line": 177,
+          "signature": "pub func NotifyAll(self: &Condition)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Condition",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Wakes every thread waiting on the condition.",
+            "markdown": "Wakes every thread waiting on the condition.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/sync/mutex#notify-all"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~Condition",
+          "line": 194,
+          "signature": "func ~Condition(self: &var Condition)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Condition",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "RwLock",
+      "displayName": "RwLock<T>",
+      "module": "RwLock",
+      "source": "Src/RwLock.rux",
+      "line": 25,
+      "signature": "pub struct RwLock<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A value guarded by a lock that many readers or one writer may hold, shared between the threads that hold a handle.",
+        "markdown": "A value guarded by a lock that many readers or one writer may hold, shared between the threads that hold a handle.\n`Clone` gives another handle to the same value. The value is destroyed when the last handle and the last guard are\ngone. A handle is not copied.",
+        "typeParams": [{ "name": "T", "markdown": "the type of the guarded value" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/rw-lock#rw-lock"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var RwLockBlock<T>",
+          "public": false,
+          "line": 26,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "RwLock",
+          "line": 50,
+          "signature": "pub func RwLock(value: T) -> RwLock<T>",
+          "typeParams": [],
+          "params": [{ "name": "value", "type": "T" }],
+          "receiver": null,
+          "returnType": "RwLock<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A new lock guarding `value`.",
+            "markdown": "A new lock guarding `value`. Running out of memory for it is a program error.",
+            "typeParams": [],
+            "params": [{ "name": "value", "markdown": "the value to guard" }],
+            "returns": "the first handle to it",
+            "see": ["https://rux-lang.dev/docs/api/sync/rw-lock#rw-lock-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clone",
+          "line": 59,
+          "signature": "pub func Clone(self: &RwLock<T>) -> RwLock<T>",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&RwLock<T>",
+          "returnType": "RwLock<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Another handle to the same value.",
+            "markdown": "Another handle to the same value.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the handle",
+            "see": ["https://rux-lang.dev/docs/api/sync/rw-lock#clone"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Read",
+          "line": 67,
+          "signature": "pub func Read(self: &RwLock<T>) -> ReadGuard<T>",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&RwLock<T>",
+          "returnType": "ReadGuard<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes a shared hold, waiting while a writer holds the lock.",
+            "markdown": "Takes a shared hold, waiting while a writer holds the lock.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the read guard",
+            "see": ["https://rux-lang.dev/docs/api/sync/rw-lock#read"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Write",
+          "line": 87,
+          "signature": "pub func Write(self: &RwLock<T>) -> WriteGuard<T>",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&RwLock<T>",
+          "returnType": "WriteGuard<T>",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Takes the exclusive hold, waiting while any reader or writer holds the lock.",
+            "markdown": "Takes the exclusive hold, waiting while any reader or writer holds the lock.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the write guard",
+            "see": ["https://rux-lang.dev/docs/api/sync/rw-lock#write"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~RwLock",
+          "line": 99,
+          "signature": "func ~RwLock(self: &var RwLock<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var RwLock<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "ReadGuard",
+      "displayName": "ReadGuard<T>",
+      "module": "RwLock",
+      "source": "Src/RwLock.rux",
+      "line": 32,
+      "signature": "pub struct ReadGuard<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "A shared hold on an `RwLock<T>`: the value may be read, and other readers may hold it too.",
+        "markdown": "A shared hold on an `RwLock<T>`: the value may be read, and other readers may hold it too.",
+        "typeParams": [{ "name": "T", "markdown": "the type of the guarded value" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/rw-lock#read-guard"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var RwLockBlock<T>",
+          "public": false,
+          "line": 33,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Get",
+          "line": 112,
+          "signature": "pub func Get(self: &ReadGuard<T>) -> *T",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&ReadGuard<T>",
+          "returnType": "*T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The guarded value, to read while the guard holds the lock.",
+            "markdown": "The guarded value, to read while the guard holds the lock.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the value's address",
+            "see": ["https://rux-lang.dev/docs/api/sync/rw-lock#read-guard-get"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~ReadGuard",
+          "line": 116,
+          "signature": "func ~ReadGuard(self: &var ReadGuard<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var ReadGuard<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "WriteGuard",
+      "displayName": "WriteGuard<T>",
+      "module": "RwLock",
+      "source": "Src/RwLock.rux",
+      "line": 39,
+      "signature": "pub struct WriteGuard<T>",
+      "typeParams": [{ "name": "T", "bounds": [] }],
+      "doc": {
+        "summary": "The exclusive hold on an `RwLock<T>`: the value may be read and written, and nobody else holds the lock.",
+        "markdown": "The exclusive hold on an `RwLock<T>`: the value may be read and written, and nobody else holds the lock.",
+        "typeParams": [{ "name": "T", "markdown": "the type of the guarded value" }],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/sync/rw-lock#write-guard"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "block",
+          "type": "*var RwLockBlock<T>",
+          "public": false,
+          "line": 40,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Get",
+          "line": 133,
+          "signature": "pub func Get(self: &WriteGuard<T>) -> *var T",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&WriteGuard<T>",
+          "returnType": "*var T",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The guarded value, which this thread alone may read and write while the guard holds the lock.",
+            "markdown": "The guarded value, which this thread alone may read and write while the guard holds the lock.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the value's address",
+            "see": ["https://rux-lang.dev/docs/api/sync/rw-lock#write-guard-get"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "destructor",
+          "name": "~WriteGuard",
+          "line": 137,
+          "signature": "func ~WriteGuard(self: &var WriteGuard<T>)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var WriteGuard<T>",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": null,
+            "markdown": null,
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": [],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

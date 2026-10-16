@@ -223,7 +223,7 @@ a value of exactly one length has nothing to apply.
 
 **Returns**: success when the whole form was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Uuid.rux#L265)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Uuid.rux#L266)
 
 ## Implements Debug
 
@@ -249,7 +249,7 @@ The failures [`WriteDisplay`](/docs/api/uuid/uuid#write-display) reports.
 
 **Returns**: success when the whole form was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Uuid.rux#L281)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Uuid.rux#L283)
 
 ## Related
 

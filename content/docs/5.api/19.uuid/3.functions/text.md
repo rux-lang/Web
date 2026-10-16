@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Text.rux
-  line: 28
+  line: 29
 seo:
   title: "Text form — Uuid API"
   description: Reading and writing a UUID in its canonical and URN text forms.
@@ -29,7 +29,7 @@ pub const UuidTextLength: uint = 36;
 
 How long the canonical text form is: thirty-two digits and four hyphens.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L29)
 
 <h2 id="uuid-urn-length"><code>UuidUrnLength</code></h2>
 
@@ -39,7 +39,7 @@ pub const UuidUrnLength: uint = 45;
 
 How long the URN form is: the canonical form after `urn:uuid:`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L33)
 
 <h2 id="uuid-parse-error"><code>UuidParseError</code></h2>
 
@@ -58,7 +58,7 @@ was found. Success is the other channel of `Uuid ! UuidParseError`, so there is 
 wrong.
 Copy, carrying one offset and owning nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L41)
 
 **Cases**
 
@@ -84,7 +84,7 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 
 **Returns**: the zero-based UTF-8 byte offset, which is the text's length at end of input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L61)
 
 <h2 id="parse"><code>Parse</code></h2>
 
@@ -107,7 +107,7 @@ parse produces no value at all rather than a half-filled one.
 | `pub func Parse(text: char8[..]) -> Uuid ! UuidParseError`  | Reads a UUID from its canonical or URN text form.  |
 | `pub func Parse(text: StringView) -> Uuid ! UuidParseError` | Reads a UUID from the text a `StringView` borrows. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L95)
 
 **Parameters**
 
@@ -133,7 +133,7 @@ Reports `InsufficientCapacity` when `into` is shorter than [`UuidTextLength`](/d
 short destination is refused rather than filled with what fits, because a truncated UUID is a different string
 rather than a shorter one. Room past the thirty-six characters is not touched.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L198)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L199)
 
 **Parameters**
 
@@ -157,7 +157,7 @@ Writes the canonical text form into `into`, in upper case.
 Offered because some formats demand it; [`Format`](/docs/api/uuid/text#format) is what a program should write when it has the choice.
 The failure [`Format`](/docs/api/uuid/text#format) reports, for the same reason and with the same guarantee.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L211)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L212)
 
 **Parameters**
 
@@ -181,7 +181,7 @@ Writes the URN form into `into`: the canonical form after `urn:uuid:`.
 Reports `InsufficientCapacity` when `into` is shorter than [`UuidUrnLength`](/docs/api/uuid/text#uuid-urn-length), leaving it exactly as it was. The
 form is refused whole, so a destination never receives a prefix with nothing after it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L233)
 
 **Parameters**
 

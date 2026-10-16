@@ -51,6 +51,17 @@ Simple titlecase pairs, for the points whose titlecase differs from their upperc
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L523)
 
+<h2 id="case-orbit-pairs"><code>CaseOrbitPairs</code></h2>
+
+```rux
+pub const CaseOrbitPairs: uint32[N] = …;
+```
+
+Case orbits the simple mappings do not pair: code point, the next point that folds to the same point, the
+largest followed by the smallest. Sorted.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L773)
+
 <h2 id="full-fold-index"><code>FullFoldIndex</code></h2>
 
 ```rux
@@ -60,7 +71,7 @@ pub const FullFoldIndex: uint32[N] = …;
 Full case folding index: code point, offset, length. C and F entries only, so the folding is the same in every
 locale.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L773)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L795)
 
 <h2 id="full-fold-elements"><code>FullFoldElements</code></h2>
 
@@ -70,7 +81,7 @@ pub const FullFoldElements: uint32[N] = …;
 
 Full case folding elements, indexed by FullFoldIndex.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1175)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1197)
 
 <h2 id="full-upper-index"><code>FullUpperIndex</code></h2>
 
@@ -81,7 +92,7 @@ pub const FullUpperIndex: uint32[N] = …;
 Unconditional full uppercase index: code point, offset, length. The conditional mappings are deliberately absent
 — they depend on locale or context.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1324)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1346)
 
 <h2 id="full-upper-elements"><code>FullUpperElements</code></h2>
 
@@ -91,7 +102,7 @@ pub const FullUpperElements: uint32[N] = …;
 
 Unconditional full uppercase elements.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1355)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1377)
 
 <h2 id="full-lower-index"><code>FullLowerIndex</code></h2>
 
@@ -101,7 +112,7 @@ pub const FullLowerIndex: uint32[N] = …;
 
 Unconditional full lowercase index: code point, offset, length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1379)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1401)
 
 <h2 id="full-lower-elements"><code>FullLowerElements</code></h2>
 
@@ -111,7 +122,7 @@ pub const FullLowerElements: uint32[N] = …;
 
 Unconditional full lowercase elements.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1410)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1432)
 
 <h2 id="normalization-vector-index"><code>NormalizationVectorIndex</code></h2>
 
@@ -129,10 +140,10 @@ Normalization vector index: five (offset, length) pairs per row, for the columns
 pub const NormalizationVectorElements: uint32[N] = …;
 ```
 
-The scalar values of every conformance vector, run together end to end.
-[`NormalizationVectorIndex`](/docs/api/unicode/tables#normalization-vector-index) says where each vector's five forms start. These come from the Unicode
-Consortium's own NormalizationTest file, so a passing run means agreement with the standard's own
-expected output rather than with this implementation's idea of it.
+The scalar values of every conformance vector, run together end to end. [`NormalizationVectorIndex`](/docs/api/unicode/tables#normalization-vector-index) says where
+each vector's five forms start. These come from the Unicode Consortium's own NormalizationTest file, so a
+passing run means agreement with the standard's own expected output rather than with this implementation's idea
+of it.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L1295)
 
@@ -236,8 +247,8 @@ pub const CanonicalDecompositionElements: uint32[N] = …;
 ```
 
 The scalar values every canonical decomposition expands to, run together end to end.
-[`CanonicalDecompositionIndex`](/docs/api/unicode/tables#canonical-decomposition-index) says where each point's run starts and how long it is; this holds the
-runs themselves, so a decomposition is a slice of it rather than a table lookup per value.
+[`CanonicalDecompositionIndex`](/docs/api/unicode/tables#canonical-decomposition-index) says where each point's run starts and how long it is; this holds the runs
+themselves, so a decomposition is a slice of it rather than a table lookup per value.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L541)
 
@@ -324,3 +335,44 @@ pub const NumericRanges: uint32[N] = …;
 Numeric ranges — the Nd, Nl and No categories: first, last.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L1118)
+
+<h2 id="script-ranges"><code>ScriptRanges</code></h2>
+
+```rux
+pub const ScriptRanges: uint32[N] = …;
+```
+
+Script ranges: first, last, script number. Sorted by first; a point in no range is in the Unknown script.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L10)
+
+<h2 id="script-name-index"><code>ScriptNameIndex</code></h2>
+
+```rux
+pub const ScriptNameIndex: uint32[N] = …;
+```
+
+Script names: offset into ScriptNameBytes and length, by script number. The scripts are numbered in the order of
+their names.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L262)
+
+<h2 id="script-name-bytes"><code>ScriptNameBytes</code></h2>
+
+```rux
+pub const ScriptNameBytes: uint32[N] = …;
+```
+
+The bytes of the scripts' long names, such as Latin or Old_Italic, all ASCII.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L297)
+
+<h2 id="unknown-script"><code>UnknownScript</code></h2>
+
+```rux
+pub const UnknownScript: uint32[N] = …;
+```
+
+The script number of Unknown, the script of a point in no range.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L426)

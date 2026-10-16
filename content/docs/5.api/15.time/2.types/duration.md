@@ -364,7 +364,7 @@ precision past nine.
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L109)
 
 ## Implements Debug
 
@@ -390,7 +390,7 @@ The failures [`WriteDisplay`](/docs/api/time/duration#write-display) reports.
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L129)
 
 ## Related
 
@@ -417,7 +417,7 @@ Reports `InvalidSyntax` with the byte offset where the shape stopped matching, a
 first digit that a nanosecond cannot hold. A magnitude too large for the representation is `InvalidSyntax` at
 the digit that overflowed, since the text is well formed and the value simply is not one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/DurationText.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/DurationText.rux#L143)
 
 **Parameters**
 

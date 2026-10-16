@@ -30,20 +30,33 @@ pub func Compress(
     format: Format,
     level: Level
 ) -> Vector<byte> ! IoError
+
+pub func Compress(
+    allocator: Allocator,
+    data: char8[..],
+    format: Format,
+    level: Level
+) -> Vector<byte> ! IoError
 ```
 
-Compresses `data` in `format` at `level`.
+Compresses text in `format` at `level`: its UTF-8 bytes, as the Io streams carry them, so text needs no cast to
+bytes first.
+
+| Overload                                                                                                           | Summary                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `pub func Compress(allocator: Allocator, data: byte[..], format: Format, level: Level) -> Vector<byte> ! IoError`  | Compresses `data` in `format` at `level`.                                                                                    |
+| `pub func Compress(allocator: Allocator, data: char8[..], format: Format, level: Level) -> Vector<byte> ! IoError` | Compresses text in `format` at `level`: its UTF-8 bytes, as the Io streams carry them, so text needs no cast to bytes first. |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Buffers.rux#L102)
 
 **Parameters**
 
-| Name        | Type        | Description                                              |
-| ----------- | ----------- | -------------------------------------------------------- |
-| `allocator` | `Allocator` | what the result and the compressor's buffers are kept in |
-| `data`      | `byte[..]`  | the data                                                 |
-| `format`    | `Format`    | the container to write                                   |
-| `level`     | `Level`     | how hard to compress                                     |
+| Name        | Type                     | Description                                              |
+| ----------- | ------------------------ | -------------------------------------------------------- |
+| `allocator` | `Allocator`              | what the result and the compressor's buffers are kept in |
+| `data`      | `byte[..]` / `char8[..]` | the data                                                 |
+| `format`    | `Format`                 | the container to write                                   |
+| `level`     | `Level`                  | how hard to compress                                     |
 
 **Returns**: the compressed bytes, or fails when the allocator refused
 
@@ -55,18 +68,29 @@ pub func Decompress(
     data: byte[..],
     format: Format
 ) -> Vector<byte> ! IoError
+
+pub func Decompress(
+    allocator: Allocator,
+    data: char8[..],
+    format: Format
+) -> Vector<byte> ! IoError
 ```
 
-Decompresses `data`, a whole stream in `format`.
+Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Buffers.rux#L121)
+| Overload                                                                                               | Summary                                                                                                      |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> ! IoError`  | Decompresses `data`, a whole stream in `format`.                                                             |
+| `pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> ! IoError` | Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream. |
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Buffers.rux#L134)
 
 **Parameters**
 
-| Name        | Type        | Description                                                |
-| ----------- | ----------- | ---------------------------------------------------------- |
-| `allocator` | `Allocator` | what the result and the decompressor's buffers are kept in |
-| `data`      | `byte[..]`  | the compressed stream                                      |
-| `format`    | `Format`    | the container it is in                                     |
+| Name        | Type                     | Description                                                |
+| ----------- | ------------------------ | ---------------------------------------------------------- |
+| `allocator` | `Allocator`              | what the result and the decompressor's buffers are kept in |
+| `data`      | `byte[..]` / `char8[..]` | the compressed stream                                      |
+| `format`    | `Format`                 | the container it is in                                     |
 
 **Returns**: the data, or fails with `InvalidInput` for damaged or truncated input

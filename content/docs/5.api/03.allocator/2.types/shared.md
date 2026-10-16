@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Shared.rux
-  line: 28
+  line: 30
 seo:
   title: "Shared ownership — Allocator API"
   description: "Reference-counted handles: Rc within one thread and Arc across threads."
@@ -30,8 +30,9 @@ pub struct Rc<T> {
 ```
 
 A shared, counted handle to one value, for use on one thread. Copying a handle shares the value.
+Its count is not atomic, so a handle is not `Sendable`: a thread's context cannot hold one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L30)
 
 **Type parameters**
 
@@ -59,7 +60,7 @@ The first handle to `value`, moved onto the heap.
 
 **Returns**: the handle, or why there was no storage; the value is destroyed then
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L50)
 
 **Methods**
 
@@ -73,7 +74,7 @@ The shared value, for reading.
 
 **Returns**: a pointer to it, valid while any handle exists
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L59)
 
 <h3 id="rc-get-mutable"><code>GetMutable</code></h3>
 
@@ -85,7 +86,7 @@ The value for writing, while this is the only handle to it.
 
 **Returns**: a pointer to it, or `none` while other handles share it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L66)
 
 <h3 id="rc-count"><code>Count</code></h3>
 
@@ -97,7 +98,7 @@ How many handles share the value.
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L74)
 
 <h3 id="rc-same-as"><code>SameAs</code></h3>
 
@@ -113,7 +114,7 @@ Whether `other` shares the same value, rather than an equal one.
 
 **Returns**: whether both point at one value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L82)
 
 **Operators**
 
@@ -129,7 +130,7 @@ Another handle to the same value, adding one to the count.
 | ------- | -------- | ------------------ |
 | `other` | `&Rc<T>` | the handle to copy |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L39)
 
 **Destructor**
 
@@ -139,7 +140,7 @@ Another handle to the same value, adding one to the count.
 func ~Rc(self: &var Rc<T>)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L86)
 
 <h2 id="arc"><code>Arc&lt;T&gt;</code></h2>
 
@@ -154,7 +155,7 @@ value, and the count is kept with atomic operations.
 The value is only read through it, so a value that changes while shared needs its own synchronization, such as a
 `Sync::Mutex`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L103)
 
 **Type parameters**
 
@@ -182,7 +183,7 @@ The first handle to `value`, moved onto the heap.
 
 **Returns**: the handle, or why there was no storage; the value is destroyed then
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L123)
 
 **Methods**
 
@@ -196,7 +197,7 @@ The shared value, for reading.
 
 **Returns**: a pointer to it, valid while any handle exists
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L130)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L132)
 
 <h3 id="arc-get-mutable"><code>GetMutable</code></h3>
 
@@ -208,7 +209,7 @@ The value for writing, while this is the only handle to it.
 
 **Returns**: a pointer to it, or `none` while other handles share it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L139)
 
 <h3 id="arc-count"><code>Count</code></h3>
 
@@ -220,7 +221,7 @@ How many handles share the value, at some moment while this one existed; another
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L147)
 
 <h3 id="arc-same-as"><code>SameAs</code></h3>
 
@@ -236,7 +237,7 @@ Whether `other` shares the same value, rather than an equal one.
 
 **Returns**: whether both point at one value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L153)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L155)
 
 **Operators**
 
@@ -252,7 +253,7 @@ Another handle to the same value, adding one to the count atomically.
 | ------- | --------- | ------------------ |
 | `other` | `&Arc<T>` | the handle to copy |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L112)
 
 **Destructor**
 
@@ -262,4 +263,4 @@ Another handle to the same value, adding one to the count atomically.
 func ~Arc(self: &var Arc<T>)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L159)

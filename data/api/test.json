@@ -242,7 +242,24 @@
           "type": "char8[..]",
           "public": true,
           "line": 48,
-          "doc": "Run only benchmarks whose names hold this text, or every benchmark when it is empty.",
+          "doc": "Run only benchmarks whose names hold this text, or every benchmark when it is empty and `filters` is too.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "filters",
+          "type": "char8[..][..]",
+          "public": true,
+          "line": 50,
+          "doc": "More texts like `filter`: a benchmark runs when its name holds any of them, or `filter`.",
           "targets": [
             "windows-x86_64",
             "windows-aarch64",
@@ -258,7 +275,7 @@
           "name": "minimumTime",
           "type": "Duration",
           "public": true,
-          "line": 50,
+          "line": 52,
           "doc": "How long the measured run must last, at the least.",
           "targets": [
             "windows-x86_64",
@@ -275,7 +292,7 @@
           "name": "maximumIterations",
           "type": "uint64",
           "public": true,
-          "line": 52,
+          "line": 54,
           "doc": "The most iterations one run makes, which ends the growth for work too fast to reach `minimumTime`.",
           "targets": [
             "windows-x86_64",
@@ -295,7 +312,7 @@
         {
           "kind": "constructor",
           "name": "BenchmarkOptions",
-          "line": 59,
+          "line": 61,
           "signature": "pub func BenchmarkOptions() -> BenchmarkOptions",
           "typeParams": [],
           "params": [],
@@ -343,7 +360,7 @@
       "displayName": "Consume<T>",
       "module": "Benchmark",
       "source": "Src/Benchmark.rux",
-      "line": 73,
+      "line": 75,
       "signature": "pub func Consume<T>(value: *T)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -378,7 +395,7 @@
       "displayName": "Measure",
       "module": "Benchmark",
       "source": "Src/Benchmark.rux",
-      "line": 85,
+      "line": 87,
       "signature": "pub func Measure(run: func(uint64), options: BenchmarkOptions) -> BenchmarkResult",
       "typeParams": [],
       "doc": {
@@ -416,7 +433,7 @@
       "displayName": "RunBenchmarksWith",
       "module": "Benchmark",
       "source": "Src/Benchmark.rux",
-      "line": 118,
+      "line": 130,
       "signature": "pub func RunBenchmarksWith(benchmarks: BenchmarkCase[..], options: BenchmarkOptions) -> int",
       "typeParams": [],
       "doc": {
@@ -454,12 +471,12 @@
       "displayName": "RunBenchmarks",
       "module": "Benchmark",
       "source": "Src/Benchmark.rux",
-      "line": 137,
+      "line": 150,
       "signature": "pub func RunBenchmarks(benchmarks: BenchmarkCase[..]) -> int",
       "typeParams": [],
       "doc": {
         "summary": "Measures the benchmarks the process's arguments choose.",
-        "markdown": "Measures the benchmarks the process's arguments choose. A plain argument is a filter that a benchmark's name must\nhold, and `--quick` measures each for 10 milliseconds rather than 200, for checking that benchmarks still run.",
+        "markdown": "Measures the benchmarks the process's arguments choose. A plain argument is a filter, and a benchmark runs when\nits name holds any of them; `--quick` measures each for 10 milliseconds rather than 200, for checking that\nbenchmarks still run.",
         "typeParams": [],
         "params": [{ "name": "benchmarks", "markdown": "the benchmarks" }],
         "returns": "0, or 2 for arguments it does not understand",
@@ -1149,7 +1166,24 @@
           "type": "char8[..]",
           "public": true,
           "line": 26,
-          "doc": "Run only tests whose names hold this text, or every test when it is empty.",
+          "doc": "Run only tests whose names hold this text, or every test when it is empty and `filters` is too.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "filters",
+          "type": "char8[..][..]",
+          "public": true,
+          "line": 28,
+          "doc": "More texts like `filter`: a test runs when its name holds any of them, or `filter`.",
           "targets": [
             "windows-x86_64",
             "windows-aarch64",
@@ -1165,8 +1199,8 @@
           "name": "exact",
           "type": "bool",
           "public": true,
-          "line": 28,
-          "doc": "Whether `filter` must be the whole name rather than part of it.",
+          "line": 30,
+          "doc": "Whether a filter must be the whole name rather than part of it.",
           "targets": [
             "windows-x86_64",
             "windows-aarch64",
@@ -1182,7 +1216,7 @@
           "name": "skip",
           "type": "char8[..]",
           "public": true,
-          "line": 30,
+          "line": 32,
           "doc": "Leave out tests whose names hold this text, unless it is empty.",
           "targets": [
             "windows-x86_64",
@@ -1199,7 +1233,7 @@
           "name": "list",
           "type": "bool",
           "public": true,
-          "line": 32,
+          "line": 34,
           "doc": "List the chosen tests rather than running them.",
           "targets": [
             "windows-x86_64",
@@ -1216,7 +1250,7 @@
           "name": "quiet",
           "type": "bool",
           "public": true,
-          "line": 34,
+          "line": 36,
           "doc": "Report only failures and the summary.",
           "targets": [
             "windows-x86_64",
@@ -1236,7 +1270,7 @@
         {
           "kind": "constructor",
           "name": "TestOptions",
-          "line": 41,
+          "line": 43,
           "signature": "pub func TestOptions() -> TestOptions",
           "typeParams": [],
           "params": [],
@@ -1284,18 +1318,18 @@
       "displayName": "RunTestsWith",
       "module": "Runner",
       "source": "Src/Runner.rux",
-      "line": 83,
+      "line": 100,
       "signature": "pub func RunTestsWith(tests: TestCase[..], options: TestOptions) -> int",
       "typeParams": [],
       "doc": {
         "summary": "Runs the tests that `options` choose, in order, and reports each as `ok`, `FAILED` with its message, or\n`skipped` with its reason, then a summary of the counts and the time taken.",
-        "markdown": "Runs the tests that `options` choose, in order, and reports each as `ok`, `FAILED` with its message, or\n`skipped` with its reason, then a summary of the counts and the time taken.",
+        "markdown": "Runs the tests that `options` choose, in order, and reports each as `ok`, `FAILED` with its message, or\n`skipped` with its reason, then a summary of the counts and the time taken. A filter that chooses no test at all is\nreported as `no test matches` and given a code of its own, so that `rux test`, which hands one filter to every\npackage, can fail the run when no package had a test it matched instead of passing with nothing run.",
         "typeParams": [],
         "params": [
           { "name": "tests", "markdown": "the tests" },
           { "name": "options", "markdown": "which to run and how to report them" }
         ],
-        "returns": "0 when none failed, 1 when some did",
+        "returns": "0 when none failed, 1 when some did, 3 when filters chose no test",
         "see": ["https://rux-lang.dev/docs/api/test/runner#run-tests-with"],
         "deprecated": null
       },
@@ -1322,15 +1356,15 @@
       "displayName": "RunTests",
       "module": "Runner",
       "source": "Src/Runner.rux",
-      "line": 143,
+      "line": 167,
       "signature": "pub func RunTests(tests: TestCase[..]) -> int",
       "typeParams": [],
       "doc": {
         "summary": "Runs the tests the process's arguments choose.",
-        "markdown": "Runs the tests the process's arguments choose. A plain argument is a filter that a test's name must hold;\n`--exact` makes it the whole name, `--skip <text>` leaves out names holding the text, `--list` lists the chosen\ntests without running them, and `--quiet` reports only failures and the summary.",
+        "markdown": "Runs the tests the process's arguments choose. A plain argument is a filter that a test's name must hold, and a\ntest runs when its name holds any of them; `--exact` makes each the whole name, `--skip <text>` leaves out names\nholding the text, `--list` lists the chosen tests without running them, and `--quiet` reports only failures and\nthe summary.",
         "typeParams": [],
         "params": [{ "name": "tests", "markdown": "the tests" }],
-        "returns": "0 when none failed, 1 when some did, 2 for arguments it does not understand",
+        "returns": "0 when none failed, 1 when some did, 2 for arguments it does not understand, 3 when filters chose no\ntest",
         "see": ["https://rux-lang.dev/docs/api/test/runner#run-tests"],
         "deprecated": null
       },

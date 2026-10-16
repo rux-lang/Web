@@ -51,3 +51,57 @@ Cannot fail. Runs in constant time and allocates nothing.
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L20)
 
 **Returns**: the calling process's identifier
+
+<h2 id="ctl-kern"><code>CtlKernel</code></h2>
+
+```rux
+pub const CtlKernel: int32 = 1;
+```
+
+`CTL_KERN`: the sysctl branch describing the kernel and its processes.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L26)
+
+<h2 id="kern-proc"><code>KernelProcess</code></h2>
+
+```rux
+pub const KernelProcess: int32 = 14;
+```
+
+`KERN_PROC`: the leaf under [`CtlKernel`](/docs/api/freebsd/process#ctl-kern) describing processes.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L30)
+
+<h2 id="kern-proc-pathname"><code>KernelProcessPathname</code></h2>
+
+```rux
+pub const KernelProcessPathname: int32 = 12;
+```
+
+`KERN_PROC_PATHNAME`: the leaf under [`KernelProcess`](/docs/api/freebsd/process#kern-proc) holding a process's executable path.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L34)
+
+<h2 id="query-executable-path"><code>QueryExecutablePath</code></h2>
+
+```rux
+pub func QueryExecutablePath(
+    buffer: *var char8,
+    length: *var uint
+) -> int64
+```
+
+Writes the absolute path of the calling process's executable into `buffer`, NUL-terminated.
+This is the `kern.proc.pathname` sysctl for process `-1`, the caller. `length` holds the buffer's size on entry
+and, on success, the path's length including its terminator.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L43)
+
+**Parameters**
+
+| Name     | Type         | Description                                        |
+| -------- | ------------ | -------------------------------------------------- |
+| `buffer` | `*var char8` | receives the path                                  |
+| `length` | `*var uint`  | the buffer's size in bytes, then the bytes written |
+
+**Returns**: zero, or a negative error number, [`ENOMEM`](/docs/api/freebsd/errors#enomem) when the buffer is too short

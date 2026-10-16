@@ -306,6 +306,36 @@ what that means is the destination's own documented guarantee.
 
 **Returns**: success when the padded rendering was accepted in full
 
+<h3 id="write-display-aligned"><code>WriteDisplayAligned</code></h3>
+
+```rux
+pub func WriteDisplayAligned(
+    writer: &var TextWriter,
+    value: &Display,
+    spec: FormatSpec
+) -> ! FormatError
+```
+
+Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value writes
+itself.
+For a value whose `WriteDisplay` writes its text in pieces, which [`WriteAligned`](/docs/api/text/format-spec#write-aligned) cannot pad: such a value calls
+this first when `spec` has a width. The value writes into 256 bytes of local room under the spec with no width,
+which is what keeps its own call from coming back here, and the room is then padded into `writer`. A rendering too
+long for the room is written through unpadded, since a width that short would add no padding anyway.
+Reports whatever the value or the writer reported.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L94)
+
+**Parameters**
+
+| Name     | Type              | Description                    |
+| -------- | ----------------- | ------------------------------ |
+| `writer` | `&var TextWriter` | the destination                |
+| `value`  | `&Display`        | the value to render            |
+| `spec`   | `FormatSpec`      | what the placeholder asked for |
+
+**Returns**: success when the padded rendering was accepted in full
+
 <h3 id="format-align"><code>FormatAlign</code></h3>
 
 ```rux

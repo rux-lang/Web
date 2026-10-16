@@ -74,6 +74,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 | Type                                     | Summary                                                               |
 | ---------------------------------------- | --------------------------------------------------------------------- |
+| [`Adler32`](/docs/api/hash/adler32)      | The Adler-32 of a message, computed a batch of bytes at a time.       |
 | [`Crc32`](/docs/api/hash/crc32)          | The CRC-32 of a message, computed a byte at a time.                   |
 | [`Crc32c`](/docs/api/hash/crc32c)        | The CRC-32C of a message, computed a byte at a time.                  |
 | [`Fnv1a32`](/docs/api/hash/fnv1a32)      | FNV-1a over 32 bits, computed one byte at a time.                     |

@@ -112,7 +112,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style other
 
 **Returns**: success when the whole offset was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L221)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L224)
 
 ## Implements Debug
 
@@ -138,4 +138,4 @@ The failures [`WriteDisplay`](/docs/api/time/utc-offset#write-display) reports.
 
 **Returns**: success when the whole offset was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L242)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L246)

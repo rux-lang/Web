@@ -1,0 +1,935 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "TimeZone",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "Time zones: the tz database, POSIX rules, the local zone, and local times that happen twice or never",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/timezone",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Collections", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "FileSystem", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Io", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Path", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Process", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Time", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Windows", "namespace": "Rux", "version": "0.1.0", "targetOS": ["Windows"] }
+    ]
+  },
+  "modules": [
+    { "name": "Error", "source": "Src/Error.rux", "header": "Why a time zone could not be had." },
+    {
+      "name": "Rule",
+      "source": "Src/Rule.rux",
+      "header": "The POSIX `TZ` rule: a standard time, perhaps a daylight time, and the dates each starts on.\nA rule such as `CET-1CEST,M3.5.0,M10.5.0/3` says how a zone keeps time in every year, which is how a TZif file\ndescribes the years after its last listed change, and how the `TZ` variable may describe a zone without any file.\nOffsets in a rule are written west of Greenwich positive, the opposite of every other offset, so they are negated\nas they are read. A change takes effect at its time in the local time it ends: the start of daylight time in\nstandard time and its end in daylight time."
+    },
+    {
+      "name": "System",
+      "source": "Src/System.rux",
+      "header": "The zones the system knows: those in its time-zone directory, and the one it is set to.\nA zone is loaded by its tz database name, such as `America/New_York`, from the directory `TZDIR` names, or else from\nthe directories the Unix systems keep the database in. Windows keeps no such directory, so there a zone loads only\nfrom a `TZDIR` a program provides. The local zone is the one `TZ` names, or `/etc/localtime`, on the Unix systems,\nand on Windows the zone the system is set to, as rules for its standard and daylight time."
+    },
+    {
+      "name": "Zone",
+      "source": "Src/Zone.rux",
+      "header": "A time zone: the offsets it has kept, the moments they changed, and the rule it keeps after the last change.\nThe history comes from a TZif file, RFC 8536, as the tz database distributes it; the rule from the file's footer or\nfrom a POSIX `TZ` string. Asking what local time a moment is takes a binary search of the changes, or the rule after\nthem. Asking the reverse, which moment a local time is, can have two answers in the hour clocks fall back and none\nin the hour they spring forward, so `Resolve` says which happened and gives both candidate moments."
+    }
+  ],
+  "items": [
+    {
+      "kind": "enum",
+      "name": "TimeZoneError",
+      "displayName": "TimeZoneError",
+      "module": "Error",
+      "source": "Src/Error.rux",
+      "line": 5,
+      "signature": "pub enum TimeZoneError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why a time zone could not be loaded or built.",
+        "markdown": "Why a time zone could not be loaded or built. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/timezone/error#time-zone-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "NotFound",
+          "value": "1",
+          "payload": null,
+          "line": 7,
+          "doc": "No zone of that name was found in any time-zone directory.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidName",
+          "value": "2",
+          "payload": null,
+          "line": 9,
+          "doc": "The name is not one a zone can have: empty, absolute, or reaching outside the directory with `..`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidData",
+          "value": "3",
+          "payload": null,
+          "line": 11,
+          "doc": "The zone's data is not a well-formed TZif file.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidRule",
+          "value": "4",
+          "payload": null,
+          "line": 13,
+          "doc": "A POSIX `TZ` rule is malformed.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Unreadable",
+          "value": "5",
+          "payload": null,
+          "line": 15,
+          "doc": "The zone's file could not be read for a reason other than its absence.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "OutOfMemory",
+          "value": "6",
+          "payload": null,
+          "line": 17,
+          "doc": "The allocator could not supply the storage.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "ZoneState",
+      "displayName": "ZoneState",
+      "module": "Zone",
+      "source": "Src/Zone.rux",
+      "line": 15,
+      "signature": "pub struct ZoneState",
+      "typeParams": [],
+      "doc": {
+        "summary": "The local time a zone keeps at a moment: its offset, whether it is daylight time, and its abbreviation.",
+        "markdown": "The local time a zone keeps at a moment: its offset, whether it is daylight time, and its abbreviation.\n`Copy`. The abbreviation is a view of the zone's own text, valid while the zone lives.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/timezone/zone#zone-state"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "offset",
+          "type": "UtcOffset",
+          "public": true,
+          "line": 17,
+          "doc": "The offset from UTC.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "daylight",
+          "type": "bool",
+          "public": true,
+          "line": 19,
+          "doc": "Whether this is daylight-saving time.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "abbreviation",
+          "type": "char8[..]",
+          "public": true,
+          "line": 21,
+          "doc": "The abbreviation, such as `CEST`, or a numeric one such as `+03`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "LocalTimeKind",
+      "displayName": "LocalTimeKind",
+      "module": "Zone",
+      "source": "Src/Zone.rux",
+      "line": 26,
+      "signature": "pub enum LocalTimeKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "What a local date and time is in a zone.",
+        "markdown": "What a local date and time is in a zone. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/timezone/zone#local-time-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "Unique",
+          "value": "0",
+          "payload": null,
+          "line": 28,
+          "doc": "The local time happened once.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Ambiguous",
+          "value": "1",
+          "payload": null,
+          "line": 30,
+          "doc": "The local time happened twice, as clocks fell back over it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Skipped",
+          "value": "2",
+          "payload": null,
+          "line": 32,
+          "doc": "The local time never happened, as clocks sprang forward over it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "LocalTime",
+      "displayName": "LocalTime",
+      "module": "Zone",
+      "source": "Src/Zone.rux",
+      "line": 40,
+      "signature": "pub struct LocalTime",
+      "typeParams": [],
+      "doc": {
+        "summary": "The moments a local date and time stands for in a zone.",
+        "markdown": "The moments a local date and time stands for in a zone. `Copy`.\nFor a unique time both moments are the same. For an ambiguous one they are its first and second occurrence. For a\nskipped one they are what it would mean under the offset after the change and before it; `Later` is the one\nmost programs want, as it keeps the wall-clock distance from the hour before.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/timezone/zone#local-time"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "kind",
+          "type": "LocalTimeKind",
+          "public": true,
+          "line": 42,
+          "doc": "What the local time is in the zone.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "earlier",
+          "type": "Timestamp",
+          "public": true,
+          "line": 44,
+          "doc": "The earlier candidate moment.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "later",
+          "type": "Timestamp",
+          "public": true,
+          "line": 46,
+          "doc": "The later candidate moment.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "TimeZone",
+      "displayName": "TimeZone",
+      "module": "Zone",
+      "source": "Src/Zone.rux",
+      "line": 51,
+      "signature": "pub struct TimeZone",
+      "typeParams": [],
+      "doc": {
+        "summary": "A time zone, built from a TZif file, a POSIX rule, or the system's settings.",
+        "markdown": "A time zone, built from a TZif file, a POSIX rule, or the system's settings. Not copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/timezone/zone#time-zone"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "name",
+          "type": "Vector<char8>",
+          "public": false,
+          "line": 52,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "names",
+          "type": "Vector<char8>",
+          "public": false,
+          "line": 53,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "transitions",
+          "type": "Vector<int64>",
+          "public": false,
+          "line": 54,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "transitionTypes",
+          "type": "Vector<uint8>",
+          "public": false,
+          "line": 55,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "types",
+          "type": "Vector<ZoneType>",
+          "public": false,
+          "line": 56,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "rule",
+          "type": "Rule",
+          "public": false,
+          "line": 57,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Load",
+          "line": 99,
+          "signature": "pub func Load(allocator: Allocator, name: char8[..]) -> TimeZone ! TimeZoneError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "name", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "TimeZone ! TimeZoneError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Loads the zone named `name` from the tz database: from the directory `TZDIR` names, or else, on the Unix\nsystems, from the directories the database is kept in.",
+            "markdown": "Loads the zone named `name` from the tz database: from the directory `TZDIR` names, or else, on the Unix\nsystems, from the directories the database is kept in.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the zone is kept in" },
+              { "name": "name", "markdown": "the zone's name, such as `Europe/Paris`" }
+            ],
+            "returns": "the zone, or fails with `NotFound`, `InvalidName` or `InvalidData`",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#load"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Local",
+          "line": 145,
+          "signature": "pub func Local(allocator: Allocator) -> TimeZone ! TimeZoneError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "TimeZone ! TimeZoneError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The zone the system is set to.",
+            "markdown": "The zone the system is set to.\nOn the Unix systems that is the one `TZ` gives, as a zone name, a file path after `:` or a POSIX rule, or else\nthe one in `/etc/localtime`. On Windows it is the system's zone, as rules for its standard and daylight time,\nwhich describe the current year's practice and so not the zone's history.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "what the zone is kept in" }],
+            "returns": "the zone, or fails when the system's setting cannot be read",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#local"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "Utc",
+          "line": 92,
+          "signature": "pub func Utc(allocator: Allocator) -> TimeZone ! TimeZoneError",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "TimeZone ! TimeZoneError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "UTC, which has no offset and never changes.",
+            "markdown": "UTC, which has no offset and never changes.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "what the zone is kept in" }],
+            "returns": "the zone, or fails when the allocator refused",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#utc"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromRule",
+          "line": 102,
+          "signature": "pub func FromRule(allocator: Allocator, name: char8[..], rule: char8[..]) -> TimeZone ! TimeZoneError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "name", "type": "char8[..]" },
+            { "name": "rule", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "TimeZone ! TimeZoneError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A zone kept by the POSIX `TZ` rule `rule`, such as `EST5EDT,M3.2.0,M11.1.0`.",
+            "markdown": "A zone kept by the POSIX `TZ` rule `rule`, such as `EST5EDT,M3.2.0,M11.1.0`.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the zone is kept in" },
+              { "name": "name", "markdown": "what to call the zone" },
+              { "name": "rule", "markdown": "the rule" }
+            ],
+            "returns": "the zone, or fails with `InvalidRule`",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#from-rule"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "FromTzif",
+          "line": 116,
+          "signature": "pub func FromTzif(allocator: Allocator, name: char8[..], data: byte[..]) -> TimeZone ! TimeZoneError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "name", "type": "char8[..]" },
+            { "name": "data", "type": "byte[..]" }
+          ],
+          "receiver": null,
+          "returnType": "TimeZone ! TimeZoneError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A zone read from TZif data, the format of the files in a time-zone directory.",
+            "markdown": "A zone read from TZif data, the format of the files in a time-zone directory.\nVersions 1 to 4 are read; from version 2 on, the 64-bit history and the footer rule are used. Leap-second\nrecords are skipped, so a zone from the `right/` directories reads as its `posix/` twin.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the zone is kept in" },
+              { "name": "name", "markdown": "what to call the zone, such as `Europe/Kyiv`" },
+              { "name": "data", "markdown": "the TZif data" }
+            ],
+            "returns": "the zone, or fails with `InvalidData`",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#from-tzif"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Name",
+          "line": 191,
+          "signature": "pub func Name(self: &TimeZone) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&TimeZone",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The zone's name.",
+            "markdown": "The zone's name.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the name it was given or loaded under",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#name"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "StateAt",
+          "line": 199,
+          "signature": "pub func StateAt(self: &TimeZone, moment: Timestamp) -> ZoneState",
+          "typeParams": [],
+          "params": [{ "name": "moment", "type": "Timestamp" }],
+          "receiver": "&TimeZone",
+          "returnType": "ZoneState",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The local time the zone keeps at `moment`.",
+            "markdown": "The local time the zone keeps at `moment`.",
+            "typeParams": [],
+            "params": [{ "name": "moment", "markdown": "the moment" }],
+            "returns": "its offset, whether it is daylight time, and its abbreviation",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#state-at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "OffsetAt",
+          "line": 212,
+          "signature": "pub func OffsetAt(self: &TimeZone, moment: Timestamp) -> UtcOffset",
+          "typeParams": [],
+          "params": [{ "name": "moment", "type": "Timestamp" }],
+          "receiver": "&TimeZone",
+          "returnType": "UtcOffset",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The zone's offset from UTC at `moment`.",
+            "markdown": "The zone's offset from UTC at `moment`.",
+            "typeParams": [],
+            "params": [{ "name": "moment", "markdown": "the moment" }],
+            "returns": "the offset",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#offset-at"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "ToLocal",
+          "line": 220,
+          "signature": "pub func ToLocal(self: &TimeZone, moment: Timestamp) -> OffsetDateTime",
+          "typeParams": [],
+          "params": [{ "name": "moment", "type": "Timestamp" }],
+          "receiver": "&TimeZone",
+          "returnType": "OffsetDateTime",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The local date and time `moment` is in the zone, with its offset.",
+            "markdown": "The local date and time `moment` is in the zone, with its offset.",
+            "typeParams": [],
+            "params": [{ "name": "moment", "markdown": "the moment" }],
+            "returns": "the local date, time and offset",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#to-local"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Resolve",
+          "line": 229,
+          "signature": "pub func Resolve(self: &TimeZone, local: DateTime) -> LocalTime",
+          "typeParams": [],
+          "params": [{ "name": "local", "type": "DateTime" }],
+          "receiver": "&TimeZone",
+          "returnType": "LocalTime",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The moments the local date and time `local` stands for in the zone.",
+            "markdown": "The moments the local date and time `local` stands for in the zone.",
+            "typeParams": [],
+            "params": [{ "name": "local", "markdown": "a date and time on the zone's clocks" }],
+            "returns": "whether it happened once, twice or never, and the candidate moments",
+            "see": ["https://rux-lang.dev/docs/api/timezone/zone#resolve"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

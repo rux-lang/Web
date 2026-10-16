@@ -1,0 +1,1892 @@
+{
+  "schema": 1,
+  "target": "windows-x86_64",
+  "package": {
+    "name": "Url",
+    "namespace": "Rux",
+    "version": "0.1.0",
+    "description": "URLs: parsing, normalizing and resolving them, and reading and building their queries",
+    "license": "MIT",
+    "minRux": "0.4.0",
+    "repository": "https://github.com/rux-lang/Rux",
+    "homepage": "https://rux-lang.dev/docs/api/url",
+    "dependencies": [
+      { "name": "Allocator", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Core", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Memory", "namespace": "Rux", "version": "0.1.0", "targetOS": [] },
+      { "name": "Text", "namespace": "Rux", "version": "0.1.0", "targetOS": [] }
+    ]
+  },
+  "modules": [
+    { "name": "Error", "source": "Src/Error.rux", "header": "Why text is not a URL, or why a URL could not be built." },
+    {
+      "name": "Normalize",
+      "source": "Src/Normalize.rux",
+      "header": "Putting each component in the one form two equivalent URLs share, following section 6.2.2 of RFC 3986.\nPercent-encoded octets are written with upper-case hexadecimal, and those that encode an unreserved character are\nwritten as the character itself. A character a component cannot hold as itself — a space, a non-ASCII byte — is\npercent-encoded rather than refused, as browsers do. The scheme and a registered host name are lower-cased, an IPv4\nhost keeps its dotted form, an IPv6 host is written in the canonical form of RFC 5952, and dot segments are removed\nfrom the path."
+    },
+    {
+      "name": "Parts",
+      "source": "Src/Parts.rux",
+      "header": "Cutting a URL or a relative reference into its components, without judging them yet.\nThe cut follows the regular expression in appendix B of RFC 3986, which every reference matches: a scheme before the\nfirst `:` that comes before any `/`, `?` or `#`; an authority after `//`; a path up to `?` or `#`; a query up to\n`#`; and a fragment after it. The authority is then cut into user information before its last `@`, a host, which\nis bracketed when it is an IPv6 address, and a port after the host's `:`. Judging each component — which\ncharacters it may hold, whether its host and port are well formed — is left to composing the URL from them."
+    },
+    {
+      "name": "Query",
+      "source": "Src/Query.rux",
+      "header": "Reading a query as `name=value` pairs, building one, and decoding a percent-encoded component into text.\nA query is read as HTML forms write it: pairs separated by `&`, a name and a value separated by the first `=`, and\n`+` standing for a space. The pairs come out still encoded, so nothing allocates until a caller decodes one."
+    },
+    {
+      "name": "Url",
+      "source": "Src/Url.rux",
+      "header": "A URL held in its normalized text, with where each component sits in it.\nParsing and resolving both end in composing a URL from pieces of text: the scheme is checked and lower-cased, the\nauthority's user information, host and port are checked and normalized, and the path, query and fragment are put in\nnormal form, with dot segments removed from the path. What comes out is ASCII, and two URLs that RFC 3986 calls\nequivalent under syntax-based normalization come out as the same text, so comparing them is comparing text."
+    }
+  ],
+  "items": [
+    {
+      "kind": "enum",
+      "name": "UrlError",
+      "displayName": "UrlError",
+      "module": "Error",
+      "source": "Src/Error.rux",
+      "line": 5,
+      "signature": "pub enum UrlError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Why text could not be read or resolved as a URL.",
+        "markdown": "Why text could not be read or resolved as a URL. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/url/error#url-error"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "MissingScheme",
+          "value": "1",
+          "payload": null,
+          "line": 7,
+          "doc": "The text has no scheme, so it is a relative reference that needs a base to resolve against.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidScheme",
+          "value": "2",
+          "payload": null,
+          "line": 9,
+          "doc": "The scheme does not start with a letter or holds a character a scheme cannot.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidHost",
+          "value": "3",
+          "payload": null,
+          "line": 11,
+          "doc": "The host is empty where one is required, holds a character a host cannot, or is a malformed IPv6 address.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidPort",
+          "value": "4",
+          "payload": null,
+          "line": 13,
+          "doc": "The port is not a number from 0 to 65535.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidPercentEncoding",
+          "value": "5",
+          "payload": null,
+          "line": 15,
+          "doc": "A `%` is not followed by two hexadecimal digits.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "OutOfMemory",
+          "value": "6",
+          "payload": null,
+          "line": 17,
+          "doc": "The allocator could not supply the storage.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "InvalidText",
+          "value": "7",
+          "payload": null,
+          "line": 19,
+          "doc": "Decoded bytes are not UTF-8 text.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "QueryPair",
+      "displayName": "QueryPair",
+      "module": "Query",
+      "source": "Src/Query.rux",
+      "line": 12,
+      "signature": "pub struct QueryPair",
+      "typeParams": [],
+      "doc": {
+        "summary": "One `name=value` pair of a query, both still percent-encoded.",
+        "markdown": "One `name=value` pair of a query, both still percent-encoded. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/url/query#query-pair"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "name",
+          "type": "char8[..]",
+          "public": true,
+          "line": 14,
+          "doc": "The name, before the first `=`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "value",
+          "type": "char8[..]",
+          "public": true,
+          "line": 16,
+          "doc": "The value, after the first `=`, or empty when there is no `=`.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "QueryPairs",
+      "displayName": "QueryPairs",
+      "module": "Query",
+      "source": "Src/Query.rux",
+      "line": 21,
+      "signature": "pub struct QueryPairs",
+      "typeParams": [],
+      "doc": {
+        "summary": "A walk over a query's pairs, in order, skipping empty ones.",
+        "markdown": "A walk over a query's pairs, in order, skipping empty ones. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/url/query#query-pairs"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "rest",
+          "type": "char8[..]",
+          "public": false,
+          "line": 22,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Iterate",
+          "line": 37,
+          "signature": "pub func Iterate(self: &QueryPairs) -> QueryPairs",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&QueryPairs",
+          "returnType": "QueryPairs",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The walk itself, so that `for pair in Pairs(query)` reads every pair.",
+            "markdown": "The walk itself, so that `for pair in Pairs(query)` reads every pair.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a copy of this walk",
+            "see": ["https://rux-lang.dev/docs/api/url/query#query-pairs-iterate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 46,
+          "signature": "pub func Next(self: &var QueryPairs) -> QueryPair?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var QueryPairs",
+          "returnType": "QueryPair?",
+          "value": null,
+          "conformance": "Iterator",
+          "public": true,
+          "doc": {
+            "summary": "The next pair, or none after the last.",
+            "markdown": "The next pair, or none after the last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the pair",
+            "see": ["https://rux-lang.dev/docs/api/url/query#query-pairs-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Iterator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Pairs",
+      "displayName": "Pairs",
+      "module": "Query",
+      "source": "Src/Query.rux",
+      "line": 29,
+      "signature": "pub func Pairs(query: char8[..]) -> QueryPairs",
+      "typeParams": [],
+      "doc": {
+        "summary": "The pairs of `query`, a query without its `?`, such as the one `Url::Query` returns.",
+        "markdown": "The pairs of `query`, a query without its `?`, such as the one `Url::Query` returns.",
+        "typeParams": [],
+        "params": [{ "name": "query", "markdown": "the query" }],
+        "returns": "a walk over its pairs",
+        "see": ["https://rux-lang.dev/docs/api/url/query#pairs"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "function",
+      "name": "Decode",
+      "displayName": "Decode",
+      "module": "Query",
+      "source": "Src/Query.rux",
+      "line": 68,
+      "signature": "pub func Decode(allocator: Allocator, encoded: char8[..], form: bool) -> String ! UrlError",
+      "typeParams": [],
+      "doc": {
+        "summary": "Decodes a percent-encoded component into text.",
+        "markdown": "Decodes a percent-encoded component into text. With `form`, a `+` is read as a space, as in a query.",
+        "typeParams": [],
+        "params": [
+          { "name": "allocator", "markdown": "what the text is kept in" },
+          { "name": "encoded", "markdown": "the component, such as a path segment or a query value" },
+          { "name": "form", "markdown": "whether `+` stands for a space" }
+        ],
+        "returns": "the text, or fails when an escape is malformed or the bytes are not UTF-8",
+        "see": ["https://rux-lang.dev/docs/api/url/query#decode"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "QueryBuilder",
+      "displayName": "QueryBuilder",
+      "module": "Query",
+      "source": "Src/Query.rux",
+      "line": 90,
+      "signature": "pub struct QueryBuilder",
+      "typeParams": [],
+      "doc": {
+        "summary": "Builds a query from `name=value` pairs, encoding each the way HTML forms do.",
+        "markdown": "Builds a query from `name=value` pairs, encoding each the way HTML forms do.\nNot copied.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/url/query#query-builder"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "bytes",
+          "type": "Bytes",
+          "public": false,
+          "line": 91,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "QueryBuilder",
+          "line": 99,
+          "signature": "pub func QueryBuilder(allocator: Allocator) -> QueryBuilder",
+          "typeParams": [],
+          "params": [{ "name": "allocator", "type": "Allocator" }],
+          "receiver": null,
+          "returnType": "QueryBuilder",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An empty query.",
+            "markdown": "An empty query.",
+            "typeParams": [],
+            "params": [{ "name": "allocator", "markdown": "what the query is kept in" }],
+            "returns": "the builder",
+            "see": ["https://rux-lang.dev/docs/api/url/query#query-builder-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Append",
+          "line": 109,
+          "signature": "pub func Append(self: &var QueryBuilder, name: char8[..], value: char8[..]) -> ! UrlError",
+          "typeParams": [],
+          "params": [
+            { "name": "name", "type": "char8[..]" },
+            { "name": "value", "type": "char8[..]" }
+          ],
+          "receiver": "&var QueryBuilder",
+          "returnType": "! UrlError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Appends a pair, encoding the name and the value: letters, digits, `*`, `-`, `.` and `_` stay, a space becomes\n`+`, and every other byte is percent-encoded.",
+            "markdown": "Appends a pair, encoding the name and the value: letters, digits, `*`, `-`, `.` and `_` stay, a space becomes\n`+`, and every other byte is percent-encoded.",
+            "typeParams": [],
+            "params": [
+              { "name": "name", "markdown": "the name, as text" },
+              { "name": "value", "markdown": "the value, as text" }
+            ],
+            "returns": "nothing, or fails when the allocator refused",
+            "see": ["https://rux-lang.dev/docs/api/url/query#append"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Text",
+          "line": 119,
+          "signature": "pub func Text(self: &QueryBuilder) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&QueryBuilder",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The query built so far, without a `?`, ready for `Url::SetQuery`.",
+            "markdown": "The query built so far, without a `?`, ready for `Url::SetQuery`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the query",
+            "see": ["https://rux-lang.dev/docs/api/url/query#query-builder-text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "enum",
+      "name": "HostKind",
+      "displayName": "HostKind",
+      "module": "Url",
+      "source": "Src/Url.rux",
+      "line": 17,
+      "signature": "pub enum HostKind",
+      "typeParams": [],
+      "doc": {
+        "summary": "What a URL's host is.",
+        "markdown": "What a URL's host is. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/url/url#host-kind"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": "uint8",
+      "cases": [
+        {
+          "name": "None",
+          "value": "0",
+          "payload": null,
+          "line": 19,
+          "doc": "The URL has no authority, so no host.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Domain",
+          "value": "1",
+          "payload": null,
+          "line": 21,
+          "doc": "A registered name, such as `example.com`, or an empty host.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Ipv4",
+          "value": "2",
+          "payload": null,
+          "line": 23,
+          "doc": "A dotted-decimal IPv4 address.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "Ipv6",
+          "value": "3",
+          "payload": null,
+          "line": 25,
+          "doc": "An IPv6 address, written between brackets in the URL.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "members": [],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "Url",
+      "displayName": "Url",
+      "module": "Url",
+      "source": "Src/Url.rux",
+      "line": 32,
+      "signature": "pub struct Url",
+      "typeParams": [],
+      "doc": {
+        "summary": "An absolute URL in normalized form.",
+        "markdown": "An absolute URL in normalized form.\nRead it with `Parse` and resolve references against it with `Resolve`. Every component is a view of the URL's own\ntext, still percent-encoded; `Decode` turns one into text. Copying a URL copies its text.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/url/url#url"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "text",
+          "type": "String",
+          "public": false,
+          "line": 33,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "allocator",
+          "type": "Allocator",
+          "public": false,
+          "line": 34,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "schemeEnd",
+          "type": "uint",
+          "public": false,
+          "line": 35,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hasAuthority",
+          "type": "bool",
+          "public": false,
+          "line": 36,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hasUserinfo",
+          "type": "bool",
+          "public": false,
+          "line": 37,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "userinfoStart",
+          "type": "uint",
+          "public": false,
+          "line": 38,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "usernameEnd",
+          "type": "uint",
+          "public": false,
+          "line": 39,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "userinfoEnd",
+          "type": "uint",
+          "public": false,
+          "line": 40,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hostStart",
+          "type": "uint",
+          "public": false,
+          "line": 41,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hostEnd",
+          "type": "uint",
+          "public": false,
+          "line": 42,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hostKind",
+          "type": "HostKind",
+          "public": false,
+          "line": 43,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hasPort",
+          "type": "bool",
+          "public": false,
+          "line": 44,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "portStart",
+          "type": "uint",
+          "public": false,
+          "line": 45,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "portEnd",
+          "type": "uint",
+          "public": false,
+          "line": 46,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "port",
+          "type": "uint16",
+          "public": false,
+          "line": 47,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "pathStart",
+          "type": "uint",
+          "public": false,
+          "line": 48,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "pathEnd",
+          "type": "uint",
+          "public": false,
+          "line": 49,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hasQuery",
+          "type": "bool",
+          "public": false,
+          "line": 50,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "queryStart",
+          "type": "uint",
+          "public": false,
+          "line": 51,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "queryEnd",
+          "type": "uint",
+          "public": false,
+          "line": 52,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "hasFragment",
+          "type": "bool",
+          "public": false,
+          "line": 53,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "fragmentStart",
+          "type": "uint",
+          "public": false,
+          "line": 54,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "associated",
+          "name": "Parse",
+          "line": 218,
+          "signature": "pub func Parse(allocator: Allocator, text: char8[..]) -> Url ! UrlError",
+          "typeParams": [],
+          "params": [
+            { "name": "allocator", "type": "Allocator" },
+            { "name": "text", "type": "char8[..]" }
+          ],
+          "receiver": null,
+          "returnType": "Url ! UrlError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Reads `text` as an absolute URL and puts it in normalized form.",
+            "markdown": "Reads `text` as an absolute URL and puts it in normalized form.\nSpaces and control characters around the text are ignored. A character a component cannot hold as itself,\nsuch as a space or a non-ASCII byte, is percent-encoded; a host is not, and refuses one.",
+            "typeParams": [],
+            "params": [
+              { "name": "allocator", "markdown": "what the URL's text is kept in" },
+              { "name": "text", "markdown": "the URL" }
+            ],
+            "returns": "the URL, or fails with what is wrong with it; a relative reference fails with `MissingScheme`",
+            "see": ["https://rux-lang.dev/docs/api/url/url#parse"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Resolve",
+          "line": 229,
+          "signature": "pub func Resolve(self: &Url, reference: char8[..]) -> Url ! UrlError",
+          "typeParams": [],
+          "params": [{ "name": "reference", "type": "char8[..]" }],
+          "receiver": "&Url",
+          "returnType": "Url ! UrlError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Resolves `reference` against this URL, as a browser resolves a link on a page, following section 5 of\nRFC 3986.",
+            "markdown": "Resolves `reference` against this URL, as a browser resolves a link on a page, following section 5 of\nRFC 3986. An absolute reference stands on its own; `//host/path`, `/path`, `path`, `?query` and `#fragment`\nreplace what they name and keep the rest of this URL.",
+            "typeParams": [],
+            "params": [{ "name": "reference", "markdown": "an absolute URL or a relative reference" }],
+            "returns": "the resolved URL, kept with this URL's allocator",
+            "see": ["https://rux-lang.dev/docs/api/url/url#resolve"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Text",
+          "line": 260,
+          "signature": "pub func Text(self: &Url) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The whole URL, in normalized form.",
+            "markdown": "The whole URL, in normalized form.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the text",
+            "see": ["https://rux-lang.dev/docs/api/url/url#text"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Scheme",
+          "line": 267,
+          "signature": "pub func Scheme(self: &Url) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The scheme, in lower case, without its `:`.",
+            "markdown": "The scheme, in lower case, without its `:`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the scheme",
+            "see": ["https://rux-lang.dev/docs/api/url/url#scheme"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "HasAuthority",
+          "line": 274,
+          "signature": "pub func HasAuthority(self: &Url) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the URL has an authority: a `//` with a host, as `http:` URLs do and `mailto:` URLs do not.",
+            "markdown": "Whether the URL has an authority: a `//` with a host, as `http:` URLs do and `mailto:` URLs do not.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true when it has one",
+            "see": ["https://rux-lang.dev/docs/api/url/url#has-authority"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Username",
+          "line": 281,
+          "signature": "pub func Username(self: &Url) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The user name before `@`, percent-encoded, or the empty text when there is none.",
+            "markdown": "The user name before `@`, percent-encoded, or the empty text when there is none.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the user name",
+            "see": ["https://rux-lang.dev/docs/api/url/url#username"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Password",
+          "line": 289,
+          "signature": "pub func Password(self: &Url) -> char8[..]?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "char8[..]?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The password after the user name's `:`, percent-encoded, or none when there is none.",
+            "markdown": "The password after the user name's `:`, percent-encoded, or none when there is none.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the password",
+            "see": ["https://rux-lang.dev/docs/api/url/url#password"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Host",
+          "line": 298,
+          "signature": "pub func Host(self: &Url) -> char8[..]?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "char8[..]?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The host: a lower-case name, a dotted IPv4 address, or an IPv6 address without its brackets.",
+            "markdown": "The host: a lower-case name, a dotted IPv4 address, or an IPv6 address without its brackets. None when the URL\nhas no authority.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the host",
+            "see": ["https://rux-lang.dev/docs/api/url/url#host"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "HostKind",
+          "line": 306,
+          "signature": "pub func HostKind(self: &Url) -> HostKind",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "HostKind",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "What kind of host the URL has.",
+            "markdown": "What kind of host the URL has.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the kind",
+            "see": ["https://rux-lang.dev/docs/api/url/url#host-kind-of"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Port",
+          "line": 314,
+          "signature": "pub func Port(self: &Url) -> uint16?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "uint16?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The port written in the URL, or none when there is none or it is the scheme's default, which normalizing\nleaves out.",
+            "markdown": "The port written in the URL, or none when there is none or it is the scheme's default, which normalizing\nleaves out.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the port",
+            "see": ["https://rux-lang.dev/docs/api/url/url#port"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "PortOrDefault",
+          "line": 322,
+          "signature": "pub func PortOrDefault(self: &Url) -> uint16?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "uint16?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The port a connection uses: the one written, or the scheme's default, or none for a scheme without one.",
+            "markdown": "The port a connection uses: the one written, or the scheme's default, or none for a scheme without one.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the port",
+            "see": ["https://rux-lang.dev/docs/api/url/url#port-or-default"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Path",
+          "line": 330,
+          "signature": "pub func Path(self: &Url) -> char8[..]",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "char8[..]",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The path, percent-encoded, without dot segments.",
+            "markdown": "The path, percent-encoded, without dot segments. A URL with an `http`-like scheme always has at least `/`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the path",
+            "see": ["https://rux-lang.dev/docs/api/url/url#path"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "PathSegments",
+          "line": 337,
+          "signature": "pub func PathSegments(self: &Url) -> SegmentIterator",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "SegmentIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The path's segments, between its `/`s.",
+            "markdown": "The path's segments, between its `/`s.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a walk over the segments",
+            "see": ["https://rux-lang.dev/docs/api/url/url#path-segments"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Query",
+          "line": 346,
+          "signature": "pub func Query(self: &Url) -> char8[..]?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "char8[..]?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The query after `?`, percent-encoded, or none when there is no `?`.",
+            "markdown": "The query after `?`, percent-encoded, or none when there is no `?`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the query",
+            "see": ["https://rux-lang.dev/docs/api/url/url#query"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Fragment",
+          "line": 354,
+          "signature": "pub func Fragment(self: &Url) -> char8[..]?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "char8[..]?",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The fragment after `#`, percent-encoded, or none when there is no `#`.",
+            "markdown": "The fragment after `#`, percent-encoded, or none when there is no `#`.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the fragment",
+            "see": ["https://rux-lang.dev/docs/api/url/url#fragment"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetPath",
+          "line": 363,
+          "signature": "pub func SetPath(self: &var Url, path: char8[..]) -> ! UrlError",
+          "typeParams": [],
+          "params": [{ "name": "path", "type": "char8[..]" }],
+          "receiver": "&var Url",
+          "returnType": "! UrlError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Replaces the path.",
+            "markdown": "Replaces the path. A relative path is made absolute when the URL has an authority.",
+            "typeParams": [],
+            "params": [{ "name": "path", "markdown": "the new path, percent-encoded or not" }],
+            "returns": "nothing, or fails when the path cannot be normalized",
+            "see": ["https://rux-lang.dev/docs/api/url/url#set-path"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetQuery",
+          "line": 376,
+          "signature": "pub func SetQuery(self: &var Url, query: char8[..]?) -> ! UrlError",
+          "typeParams": [],
+          "params": [{ "name": "query", "type": "char8[..]?" }],
+          "receiver": "&var Url",
+          "returnType": "! UrlError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Replaces the query, or removes it with none.",
+            "markdown": "Replaces the query, or removes it with none.",
+            "typeParams": [],
+            "params": [{ "name": "query", "markdown": "the new query without its `?`, percent-encoded or not" }],
+            "returns": "nothing, or fails when the query cannot be normalized",
+            "see": ["https://rux-lang.dev/docs/api/url/url#set-query"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "SetFragment",
+          "line": 386,
+          "signature": "pub func SetFragment(self: &var Url, fragment: char8[..]?) -> ! UrlError",
+          "typeParams": [],
+          "params": [{ "name": "fragment", "type": "char8[..]?" }],
+          "receiver": "&var Url",
+          "returnType": "! UrlError",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Replaces the fragment, or removes it with none.",
+            "markdown": "Replaces the fragment, or removes it with none.",
+            "typeParams": [],
+            "params": [{ "name": "fragment", "markdown": "the new fragment without its `#`, percent-encoded or not" }],
+            "returns": "nothing, or fails when the fragment cannot be normalized",
+            "see": ["https://rux-lang.dev/docs/api/url/url#set-fragment"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Equals",
+          "line": 396,
+          "signature": "pub func Equals(self: &Url, other: &Url) -> bool",
+          "typeParams": [],
+          "params": [{ "name": "other", "type": "&Url" }],
+          "receiver": "&Url",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether two URLs are the same, which after normalization means the same text.",
+            "markdown": "Whether two URLs are the same, which after normalization means the same text.",
+            "typeParams": [],
+            "params": [{ "name": "other", "markdown": "the URL to compare with" }],
+            "returns": "true when they are equal",
+            "see": ["https://rux-lang.dev/docs/api/url/url#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
+      "name": "SegmentIterator",
+      "displayName": "SegmentIterator",
+      "module": "Url",
+      "source": "Src/Url.rux",
+      "line": 424,
+      "signature": "pub struct SegmentIterator",
+      "typeParams": [],
+      "doc": {
+        "summary": "A walk over a path's segments, between its `/`s.",
+        "markdown": "A walk over a path's segments, between its `/`s. `Copy`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/url/url#segment-iterator"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "rest",
+          "type": "char8[..]",
+          "public": false,
+          "line": 425,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "done",
+          "type": "bool",
+          "public": false,
+          "line": 426,
+          "doc": null,
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "method",
+          "name": "Iterate",
+          "line": 433,
+          "signature": "pub func Iterate(self: &SegmentIterator) -> SegmentIterator",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&SegmentIterator",
+          "returnType": "SegmentIterator",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The walk itself, so that `for segment in url.PathSegments()` reads every segment.",
+            "markdown": "The walk itself, so that `for segment in url.PathSegments()` reads every segment.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a copy of this walk",
+            "see": ["https://rux-lang.dev/docs/api/url/url#segment-iterator-iterate"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Next",
+          "line": 442,
+          "signature": "pub func Next(self: &var SegmentIterator) -> char8[..]?",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var SegmentIterator",
+          "returnType": "char8[..]?",
+          "value": null,
+          "conformance": "Iterator",
+          "public": true,
+          "doc": {
+            "summary": "The next segment, still percent-encoded, or none after the last.",
+            "markdown": "The next segment, still percent-encoded, or none after the last.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the segment",
+            "see": ["https://rux-lang.dev/docs/api/url/url#segment-iterator-next"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": ["Iterator"],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    }
+  ],
+  "targets": [
+    "windows-x86_64",
+    "windows-aarch64",
+    "linux-x86_64",
+    "linux-aarch64",
+    "macos-x86_64",
+    "macos-aarch64",
+    "freebsd-x86_64",
+    "freebsd-aarch64"
+  ]
+}

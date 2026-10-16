@@ -66,6 +66,11 @@
       "header": "Waiting for a whole span, and saying so when the wait did not happen.\nSleeping looks like the simplest thing in this package and has three ways to be quietly wrong, all of which this\nmodule used to have.\nA signal can cut a Unix wait short. The loop goes back for the remainder rather than returning early, because a\ncaller asked for a span, not for a span unless the process happened to receive a signal.\nWindows takes its interval as a 32-bit millisecond count, which runs out after about 49.7 days. Clamping a longer\nspan to that ceiling is what the previous version did, and it returned as though it had slept for the whole\nhundred days it was asked for. A span longer than the ceiling is now waited for in chunks.\nAnd a wait can simply fail. `nanosleep` reports `EINVAL` for a request it will not honor, and the previous\nversion could not tell that from a completed sleep — both left the remainder at zero — so it returned success\nhaving waited for nothing at all. The wait now reports a `TimeError`, and a caller that ignores it is at least\nmaking that choice.\nThe system wait is reached through the `Waiter` interface so that the chunking and the retry loop can be tested\nagainst an injected one. A test for a hundred-day sleep must not take a hundred days, and a test for an\ninterrupted sleep cannot arrange a signal."
     },
     {
+      "name": "Stopwatch",
+      "source": "Src/Stopwatch.rux",
+      "header": "Elapsed time that can be paused, resumed and split into laps, measured on the monotonic clock.\nOne reading and `Instant.Elapsed` time a single stretch. A stopwatch is for the stretches a program cannot time\nthat way: work done in pieces with pauses between them, a running total read while it is still running, or a\nsequence of laps. It holds the total of the stretches that have finished and, while it runs, the reading the\ncurrent stretch began at, so reading it never stops it.\nThis is a measurement of elapsed time and nothing more. Repetition, warm-up, statistics and keeping the optimizer\nfrom deleting the work being timed are what benchmarking is about, and they belong to a benchmarking tool rather\nthan to a clock."
+    },
+    {
       "name": "Timestamp",
       "source": "Src/Timestamp.rux",
       "header": "The wall clock, in UTC, as a count from the Unix epoch.\nA timestamp is what the machine believes the time is: it jumps when the clock is set, drifts until NTP pulls it\nback, and two machines disagree about it. That is not a defect to paper over — it is what a wall clock is, and\nthe reason `Instant` exists for measuring. What a timestamp is for is naming a moment so another machine, or a\nlater run, can recognize it.\nThe representation is seconds since 1970-01-01T00:00:00 UTC and a nanosecond fraction, normalized exactly as a\n`Duration` is: fraction in [0, 1e9), sign in the seconds, so a moment before the epoch is negative seconds and a\nfraction counting up. Windows counts from 1601 in hundred-nanosecond ticks, and the conversion is one constant\nthe platform package already carries."
@@ -515,7 +520,7 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 154,
+          "line": 155,
           "signature": "pub func WriteDisplay(self: &Date, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -553,7 +558,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 172,
+          "line": 174,
           "signature": "pub func WriteDebug(self: &Date, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -875,7 +880,7 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 187,
+          "line": 189,
           "signature": "pub func WriteDisplay(self: &TimeOfDay, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -913,7 +918,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 205,
+          "line": 208,
           "signature": "pub func WriteDebug(self: &TimeOfDay, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -1107,7 +1112,7 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 221,
+          "line": 224,
           "signature": "pub func WriteDisplay(self: &UtcOffset, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -1145,7 +1150,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 242,
+          "line": 246,
           "signature": "pub func WriteDebug(self: &UtcOffset, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -1356,7 +1361,7 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 259,
+          "line": 263,
           "signature": "pub func WriteDisplay(self: &DateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -1394,7 +1399,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 274,
+          "line": 279,
           "signature": "pub func WriteDebug(self: &DateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -1759,7 +1764,7 @@
       "displayName": "OffsetDateTime",
       "module": "CalendarText",
       "source": "Src/CalendarText.rux",
-      "line": 21,
+      "line": 22,
       "signature": "pub struct OffsetDateTime",
       "typeParams": [],
       "doc": {
@@ -1777,7 +1782,7 @@
           "name": "dateTime",
           "type": "DateTime",
           "public": true,
-          "line": 23,
+          "line": 24,
           "doc": "The local date and time, as stated in `offset`.",
           "targets": [
             "windows-x86_64",
@@ -1794,7 +1799,7 @@
           "name": "offset",
           "type": "UtcOffset",
           "public": true,
-          "line": 25,
+          "line": 26,
           "doc": "The offset from UTC that `dateTime` is stated in.",
           "targets": [
             "windows-x86_64",
@@ -1814,7 +1819,7 @@
         {
           "kind": "constructor",
           "name": "OffsetDateTime",
-          "line": 36,
+          "line": 37,
           "signature": "pub func OffsetDateTime(dateTime: DateTime, offset: UtcOffset) -> OffsetDateTime",
           "typeParams": [],
           "params": [
@@ -1852,7 +1857,7 @@
         {
           "kind": "method",
           "name": "ToTimestamp",
-          "line": 44,
+          "line": 45,
           "signature": "pub func ToTimestamp(self: &OffsetDateTime) -> Timestamp",
           "typeParams": [],
           "params": [],
@@ -1884,7 +1889,7 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 300,
+          "line": 305,
           "signature": "pub func WriteDisplay(self: &OffsetDateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -1922,7 +1927,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 315,
+          "line": 321,
           "signature": "pub func WriteDebug(self: &OffsetDateTime, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -2706,7 +2711,7 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 108,
+          "line": 109,
           "signature": "pub func WriteDisplay(self: &Duration, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -2744,7 +2749,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 127,
+          "line": 129,
           "signature": "pub func WriteDebug(self: &Duration, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
@@ -2798,7 +2803,7 @@
       "displayName": "ParseDuration",
       "module": "DurationText",
       "source": "Src/DurationText.rux",
-      "line": 141,
+      "line": 143,
       "signature": "pub func ParseDuration(text: char8[..]) -> Duration ! TimeParseError",
       "typeParams": [],
       "doc": {
@@ -3419,6 +3424,382 @@
     },
     {
       "kind": "struct",
+      "name": "Stopwatch",
+      "displayName": "Stopwatch",
+      "module": "Stopwatch",
+      "source": "Src/Stopwatch.rux",
+      "line": 14,
+      "signature": "pub struct Stopwatch",
+      "typeParams": [],
+      "doc": {
+        "summary": "A pausable timer over the monotonic clock.",
+        "markdown": "A pausable timer over the monotonic clock.\n`Copy`, owning nothing; a copy is an independent stopwatch with the same history. Starts stopped at zero. The\nelapsed time is the sum of every stretch between a start and a stop, plus the current stretch while running.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/time/stopwatch"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "finished",
+          "type": "Duration",
+          "public": false,
+          "line": 16,
+          "doc": "The total of the stretches that have ended.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "startedAt",
+          "type": "Instant?",
+          "public": false,
+          "line": 18,
+          "doc": "The reading the current stretch began at, present only while running.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "lapMark",
+          "type": "Duration",
+          "public": false,
+          "line": 20,
+          "doc": "The elapsed time when the last lap ended, which is where the next one begins.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [
+        {
+          "kind": "constructor",
+          "name": "Stopwatch",
+          "line": 34,
+          "signature": "pub func Stopwatch() -> Stopwatch",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Stopwatch",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A stopwatch that is stopped and reads zero.",
+            "markdown": "A stopwatch that is stopped and reads zero.\nCannot fail and does not read the clock.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a stopped stopwatch at zero",
+            "see": ["https://rux-lang.dev/docs/api/time/stopwatch#new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "associated",
+          "name": "StartNew",
+          "line": 42,
+          "signature": "pub func StartNew() -> Stopwatch",
+          "typeParams": [],
+          "params": [],
+          "receiver": null,
+          "returnType": "Stopwatch",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "A stopwatch that reads zero and is already running.",
+            "markdown": "A stopwatch that reads zero and is already running.\nReads the clock once. Cannot fail.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a running stopwatch, started now",
+            "see": ["https://rux-lang.dev/docs/api/time/stopwatch#start-new"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Start",
+          "line": 51,
+          "signature": "pub func Start(self: &var Stopwatch)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Stopwatch",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Starts the stopwatch, or resumes it from the total it already holds.",
+            "markdown": "Starts the stopwatch, or resumes it from the total it already holds.\nDoes nothing when it is already running, so a second start does not restart the current stretch. Cannot fail.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/time/stopwatch#start"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Stop",
+          "line": 60,
+          "signature": "pub func Stop(self: &var Stopwatch)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Stopwatch",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Stops the stopwatch, adding the current stretch to its total.",
+            "markdown": "Stops the stopwatch, adding the current stretch to its total.\nDoes nothing when it is already stopped. The total then stays fixed until the stopwatch is started again.\nCannot fail.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/time/stopwatch#stop"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Reset",
+          "line": 69,
+          "signature": "pub func Reset(self: &var Stopwatch)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Stopwatch",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Stops the stopwatch and sets it back to zero, clearing the laps.",
+            "markdown": "Stops the stopwatch and sets it back to zero, clearing the laps.\nCannot fail and does not read the clock.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/time/stopwatch#reset"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Restart",
+          "line": 78,
+          "signature": "pub func Restart(self: &var Stopwatch)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Stopwatch",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Sets the stopwatch back to zero, clearing the laps, and starts it.",
+            "markdown": "Sets the stopwatch back to zero, clearing the laps, and starts it.\nThe same as `Reset` followed by `Start`, with one clock reading. Cannot fail.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/time/stopwatch#restart"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "IsRunning",
+          "line": 87,
+          "signature": "pub func IsRunning(self: &Stopwatch) -> bool",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Stopwatch",
+          "returnType": "bool",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Whether the stopwatch is running.",
+            "markdown": "Whether the stopwatch is running.\nCannot fail and does not read the clock.",
+            "typeParams": [],
+            "params": [],
+            "returns": "true between a start and the next stop or reset",
+            "see": ["https://rux-lang.dev/docs/api/time/stopwatch#is-running"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Elapsed",
+          "line": 99,
+          "signature": "pub func Elapsed(self: &Stopwatch) -> Duration",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Stopwatch",
+          "returnType": "Duration",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "The total elapsed time: every finished stretch, plus the current one while running.",
+            "markdown": "The total elapsed time: every finished stretch, plus the current one while running.\nReading it does not stop or otherwise change the stopwatch. Reads the clock only while running, and two\nreadings of a stopped stopwatch are equal. Cannot fail.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the elapsed time, never negative",
+            "see": ["https://rux-lang.dev/docs/api/time/stopwatch#elapsed"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Lap",
+          "line": 112,
+          "signature": "pub func Lap(self: &var Stopwatch) -> Duration",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var Stopwatch",
+          "returnType": "Duration",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Ends the current lap and returns its length: the elapsed time since the previous lap ended, or since zero.",
+            "markdown": "Ends the current lap and returns its length: the elapsed time since the previous lap ended, or since zero.\nThe stopwatch keeps running or stays stopped as it was; only time the stopwatch counted is part of a lap, so a\nlap spanning a pause excludes the pause. The laps since the last reset add up to the elapsed time at the end of\nthe last one. Cannot fail.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the length of the lap just ended, never negative",
+            "see": ["https://rux-lang.dev/docs/api/time/stopwatch#lap"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        }
+      ],
+      "implements": [],
+      "targets": [
+        "windows-x86_64",
+        "windows-aarch64",
+        "linux-x86_64",
+        "linux-aarch64",
+        "macos-x86_64",
+        "macos-aarch64",
+        "freebsd-x86_64",
+        "freebsd-aarch64"
+      ]
+    },
+    {
+      "kind": "struct",
       "name": "Timestamp",
       "displayName": "Timestamp",
       "module": "Timestamp",
@@ -3836,7 +4217,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 100,
+          "line": 101,
           "signature": "pub func WriteDebug(self: &Timestamp, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
           "typeParams": [],
           "params": [
