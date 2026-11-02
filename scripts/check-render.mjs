@@ -205,7 +205,7 @@ for (const route of ["/docs/api/io", "/docs/api/io/print"]) {
 // instead of the h1: an operator renders as an anchored member heading.
 for (const [route, want] of [
   ["/docs/api/linux/syscalls", null],
-  ["/docs/api/text/string#copy", "="],
+  ["/docs/api/core/semantic-version#equals", "=="],
   ["/blog/release-v0.1.0", null],
   ["/docs/cli/global", null],
 ]) {
