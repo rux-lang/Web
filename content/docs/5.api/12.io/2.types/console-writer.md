@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/TextBoundary.rux
-  line: 80
+  line: 81
 seo:
   title: "ConsoleWriter — Io API"
   description: "A TextWriter over standard output that records the stream's failure where the caller can see it."
@@ -53,7 +53,7 @@ already holds a failure writes nothing at all.
 
 **Returns**: a writer over standard output
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L93)
 
 ## Implements TextWriter
 
@@ -63,9 +63,9 @@ already holds a failure writes nothing at all.
 
 ```rux
 pub func Write(
-    self: &var ConsoleWriter,
+    &var self,
     bytes: char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `bytes` to standard output.
@@ -81,4 +81,4 @@ revalidated, and standard output is not a bounded destination.
 
 **Returns**: success when the stream accepted the whole run
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L108)

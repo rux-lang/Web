@@ -65,15 +65,12 @@ The date and time `moment` names, shifted into `offset`.
 <h3 id="to-timestamp"><code>ToTimestamp</code></h3>
 
 ```rux
-pub func ToTimestamp(
-    self: &DateTime,
-    offset: UtcOffset
-) -> Timestamp
+pub func ToTimestamp(&self, offset: UtcOffset) -> Timestamp
 ```
 
 The moment this date and time name in UTC, shifted by `offset`.
 The shift subtracts: half past nine at plus two is half past seven in UTC. The range of a timestamp dwarfs
-the calendar's, so the conversion cannot overflow for any date [`Date::New`](/docs/api/time/date#new) accepts.
+the calendar's, so the conversion cannot overflow for any date [`Date::FromParts`](/docs/api/time/date#new) accepts.
 
 | Name     | Type        | Description         |
 | -------- | ----------- | ------------------- |
@@ -86,7 +83,7 @@ the calendar's, so the conversion cannot overflow for any date [`Date::New`](/do
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &DateTime, other: DateTime) -> bool
+pub func Equals(&self, other: DateTime) -> bool
 ```
 
 Whether two pairs name the same date and time.
@@ -109,10 +106,10 @@ carrying the offset beside the pair means.
 
 ```rux
 pub func WriteDisplay(
-    self: &DateTime,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the local date and time as `YYYY-MM-DDTHH:MM:SS`, with no offset.
@@ -130,7 +127,7 @@ and `UnsupportedRequest` for a precision past nine.
 
 **Returns**: success when the whole date and time were accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L263)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L266)
 
 ## Implements Debug
 
@@ -140,10 +137,10 @@ and `UnsupportedRequest` for a precision past nine.
 
 ```rux
 pub func WriteDebug(
-    self: &DateTime,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`.
@@ -156,14 +153,14 @@ The failures [`WriteDisplay`](/docs/api/time/date-time#write-display) reports.
 
 **Returns**: success when the whole date and time were accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L279)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L282)
 
 ## Related
 
 <h3 id="parse-date-time"><code>ParseDateTime</code></h3>
 
 ```rux
-pub func ParseDateTime(text: char8[..]) -> DateTime ! TimeParseError
+pub func ParseDateTime(text: char8[..]) -> DateTime throws TimeParseError
 ```
 
 Reads `YYYY-MM-DDTHH:MM:SS[.fraction]`, with no offset.
@@ -172,7 +169,7 @@ and one present is text after the value: a [`DateTime`](/docs/api/time/date-time
 discard it silently. [`ParseRfc3339`](/docs/api/time/offset-date-time#parse-rfc3339) is what reads a moment that carries one.
 The failures [`ParseDate`](/docs/api/time/date#parse-date) and [`ParseTimeOfDay`](/docs/api/time/time-of-day#parse-time-of-day) report, at their offsets within this text.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L269)
 
 **Parameters**
 

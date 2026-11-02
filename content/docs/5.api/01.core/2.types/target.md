@@ -55,10 +55,7 @@ decided while compiling and the untaken side is not emitted.
 <h3 id="has-feature"><code>HasFeature</code></h3>
 
 ```rux
-pub func HasFeature(
-    self: &Target,
-    feature: TargetFeature
-) -> bool
+pub func HasFeature(&self, feature: TargetFeature) -> bool
 ```
 
 Whether the build enables `feature` on this target.

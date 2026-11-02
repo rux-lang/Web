@@ -48,53 +48,53 @@ A lock nobody holds.
 
 **Returns**: the lock
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L27)
 
 **Methods**
 
 <h3 id="acquire"><code>Acquire</code></h3>
 
 ```rux
-pub func Acquire(self: &Lock)
+pub func Acquire(&self)
 ```
 
 Takes the lock, waiting while another thread holds it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L33)
 
 <h3 id="try-acquire"><code>TryAcquire</code></h3>
 
 ```rux
-pub func TryAcquire(self: &Lock) -> bool
+pub func TryAcquire(&self) -> bool
 ```
 
 Takes the lock if nobody holds it, without waiting.
 
 **Returns**: whether the lock was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L42)
 
 <h3 id="release"><code>Release</code></h3>
 
 ```rux
-pub func Release(self: &Lock)
+pub func Release(&self)
 ```
 
 Releases the lock this thread holds, letting one waiting thread take it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L50)
 
 **Constants**
 
 <h3 id="unlocked"><code>Unlocked</code></h3>
 
 ```rux
-pub const Unlocked: Lock = Lock { word: 0 };
+pub const Unlocked: Lock = Self { word: 0 };
 ```
 
 A lock nobody holds, as a constant, so a module variable can start as one: `var Guard: Lock = Lock::Unlocked;`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L22)
 
 <h2 id="once"><code>Once</code></h2>
 
@@ -108,7 +108,7 @@ Runs one initialization once, however many threads ask for it at once.
 The first [`Call`](/docs/api/sync/lock#call) runs its function; every other waits until that has returned and then returns without running
 its own. Everything the function wrote is visible to every thread [`Call`](/docs/api/sync/lock#call) returns on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L66)
 
 **Constructors**
 
@@ -122,14 +122,14 @@ An initialization that has not run.
 
 **Returns**: the once
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L79)
 
 **Methods**
 
 <h3 id="call"><code>Call</code></h3>
 
 ```rux
-pub func Call(self: &Once, initialize: func())
+pub func Call(&self, initialize: func())
 ```
 
 Runs `initialize` if no call has run one yet, and returns once an initialization has finished.
@@ -139,29 +139,29 @@ An initializer that panics ends the process, so a half-finished one is never obs
 | ------------ | -------- | ------------------------ |
 | `initialize` | `func()` | the function to run once |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L87)
 
 <h3 id="is-completed"><code>IsCompleted</code></h3>
 
 ```rux
-pub func IsCompleted(self: &Once) -> bool
+pub func IsCompleted(&self) -> bool
 ```
 
 Whether an initialization has finished.
 
 **Returns**: true once a [`Call`](/docs/api/sync/lock#call) has run its function to the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L118)
 
 **Constants**
 
 <h3 id="incomplete"><code>Incomplete</code></h3>
 
 ```rux
-pub const Incomplete: Once = Once { state: 0 };
+pub const Incomplete: Once = Self { state: 0 };
 ```
 
 An initialization that has not run, as a constant, so a module variable can start as one:
 `var Setup: Once = Once::Incomplete;`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L74)

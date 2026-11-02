@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Value.rux
-  line: 133
+  line: 202
 seo:
   title: "JsonValue — Json API"
   description: "A JSON value: one of the six kinds, owning whatever it holds."
@@ -23,7 +23,6 @@ A JSON value: one of the six kinds, owning whatever it holds.
 
 ```rux
 pub struct JsonValue {
-    pub kind: JsonKind;
     // private fields
 }
 ```
@@ -31,14 +30,9 @@ pub struct JsonValue {
 Move-only, because it owns strings and nested values. The allocator it was built with is carried along, so a
 subtree can be released without the caller having to remember where it came from — which is what makes a
 document assembled from several sources safe to take apart.
-The tag is inspected with [`Kind`](/docs/api/json/json-value#kind) and the payload read with the matching accessor; asking for the wrong one
-reports failure rather than reinterpreting the bytes.
-
-## Fields
-
-| Name   | Type       | Description                     |
-| ------ | ---------- | ------------------------------- |
-| `kind` | `JsonKind` | Which of the six kinds this is. |
+The tag is private: it is read with [`Kind`](/docs/api/json/json-value#kind) and set only together with its payload, so the two never disagree. The
+payload is read with the matching accessor; asking for the wrong one returns `none` rather than reinterpreting the
+bytes.
 
 ## Associated functions
 
@@ -56,7 +50,7 @@ The literal `null`.
 
 **Returns**: the null value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L224)
 
 <h3 id="boolean"><code>Boolean</code></h3>
 
@@ -76,7 +70,7 @@ A boolean value.
 
 **Returns**: that boolean as a value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L175)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L241)
 
 <h3 id="number"><code>Number</code></h3>
 
@@ -84,19 +78,20 @@ A boolean value.
 pub func Number(
     allocator: Allocator,
     text: char8[..]
-) -> JsonValue ! TextError
+) -> JsonValue throws JsonError
 ```
 
-A number, from the text it was written with.
+A number, from the text it is written with, checked against JSON's number grammar as [`JsonNumber`](/docs/api/json/json-number) does.
+Text the grammar refuses, such as `01`, `1e` or `NaN`, is `MalformedNumber`, and no value is made.
 
-| Name        | Type        | Description                  |
-| ----------- | ----------- | ---------------------------- |
-| `allocator` | `Allocator` | where the storage comes from |
-| `text`      | `char8[..]` | the text to act on           |
+| Name        | Type        | Description                              |
+| ----------- | ----------- | ---------------------------------------- |
+| `allocator` | `Allocator` | where the storage comes from             |
+| `text`      | `char8[..]` | the number's text, borrowed for the call |
 
-**Returns**: that text as a number value, or the null value when the allocator refused
+**Returns**: that text as a number value; `MalformedNumber` when the text is not a JSON number
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L254)
 
 <h3 id="text"><code>Text</code></h3>
 
@@ -104,7 +99,7 @@ A number, from the text it was written with.
 pub func Text(
     allocator: Allocator,
     value: char8[..]
-) -> JsonValue ! TextError
+) -> JsonValue throws TextError
 ```
 
 A string value.
@@ -114,9 +109,9 @@ A string value.
 | `allocator` | `Allocator` | where the storage comes from |
 | `value`     | `char8[..]` | the value to act on          |
 
-**Returns**: that text as a string value, or the null value when the allocator refused
+**Returns**: that text as a string value, or `InvalidUtf8` when it is not text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L199)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L275)
 
 <h3 id="array"><code>Array</code></h3>
 
@@ -132,7 +127,7 @@ An empty array.
 
 **Returns**: an empty array
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L286)
 
 <h3 id="object"><code>Object</code></h3>
 
@@ -148,161 +143,146 @@ An empty object.
 
 **Returns**: an empty object
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L220)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L296)
 
 ## Methods
 
 <h3 id="kind"><code>Kind</code></h3>
 
 ```rux
-pub func Kind(self: &JsonValue) -> JsonKind
+pub func Kind(&self) -> JsonKind
 ```
 
 Which kind this value is.
 
 **Returns**: which of the six JSON kinds this is
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L229)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L305)
 
 <h3 id="is-null"><code>IsNull</code></h3>
 
 ```rux
-pub func IsNull(self: &JsonValue) -> bool
+pub func IsNull(&self) -> bool
 ```
 
 Whether this is `null`.
 
 **Returns**: whether this is the null value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L236)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L312)
 
 <h3 id="as-boolean"><code>AsBoolean</code></h3>
 
 ```rux
-pub func AsBoolean(
-    self: &JsonValue,
-    result: *var bool
-) -> bool
+pub func AsBoolean(&self) -> bool?
 ```
 
-The boolean payload, or `false` when this is not a boolean — which [`Kind`](/docs/api/json/json-value#kind) distinguishes from a genuine
-`false`.
+The boolean payload, or `none` when this is not a boolean.
 
-| Name     | Type        | Description                               |
-| -------- | ----------- | ----------------------------------------- |
-| `result` | `*var bool` | receives the value when this reports true |
+**Returns**: the boolean, or `none` when this is not one
 
-**Returns**: whether this is a boolean
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L245)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L319)
 
 <h3 id="as-number"><code>AsNumber</code></h3>
 
 ```rux
-pub func AsNumber(self: &JsonValue) -> *JsonNumber
+pub func AsNumber(&self) -> &JsonNumber?
 ```
 
-The number payload, borrowed.
+The number payload, borrowed, or `none` when this is not a number.
 
-**Returns**: the number, or null when this is not one
+**Returns**: the number, or `none` when this is not one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L254)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L327)
 
 <h3 id="as-text"><code>AsText</code></h3>
 
 ```rux
-pub func AsText(self: &JsonValue) -> StringView
+pub func AsText(&self) -> StringView?
 ```
 
-The string payload, or an empty view when this is not a string.
+The string payload, or `none` when this is not a string.
 
-**Returns**: the string, or an empty view when this is not one
+**Returns**: the string, or `none` when this is not one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L335)
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &JsonValue) -> uint
+pub func Length(&self) -> uint?
 ```
 
-How many elements an array holds, or members an object holds; zero for anything else.
+How many elements an array holds, or members an object holds; `none` for any other kind.
 
-**Returns**: how many elements or members this holds; zero for anything else
+**Returns**: how many elements or members this holds, or `none` when it is neither an array nor an object
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L269)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L343)
 
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(
-    self: &var JsonValue,
-    value: JsonValue
-) -> bool
+pub func Push(&var self, value: JsonValue) throws JsonError
 ```
 
 Appends `value` to an array, taking ownership of it.
-Reports `false` when this is not an array or the allocator refused; `value` is consumed either way, so
-a caller does not have to decide who owns it on failure.
+Throws `WrongKind` when this is not an array; `value` is consumed either way, so a caller does not have to
+decide who owns it on failure. Terminates the program when the array cannot grow.
 
 | Name    | Type        | Description         |
 | ------- | ----------- | ------------------- |
 | `value` | `JsonValue` | the value to act on |
 
-**Returns**: whether the element was appended
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L281)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L354)
 
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
 pub func Insert(
-    self: &var JsonValue,
+    &var self,
     name: String,
     value: JsonValue
-) -> bool
+) throws JsonError
 ```
 
 Appends a member to an object, taking ownership of both name and value.
 The order members are added in is the order they are kept and written, which is what makes a document
 round-trip recognisably. Nothing here rejects a duplicate name — that policy lives in the parser, where
 the caller can choose it.
+Throws `WrongKind` when this is not an object; `name` and `value` are consumed either way. Terminates the
+program when the object cannot grow.
 
 | Name    | Type        | Description         |
 | ------- | ----------- | ------------------- |
 | `name`  | `String`    | the member's name   |
 | `value` | `JsonValue` | the value to act on |
 
-**Returns**: whether the member was added
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L294)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L368)
 
 <h3 id="at"><code>At</code></h3>
 
 ```rux
-pub func At(self: &JsonValue, index: uint) -> *JsonValue
+pub func At(&self, index: uint) -> &JsonValue?
 ```
 
-The element at `index`, borrowed, or null when there is none.
+The element at `index`, borrowed, or `none` when there is none.
+`self` stays borrowed while the reference is in use.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
 
-**Returns**: the element at `index`, or null when there is none
+**Returns**: the element at `index`, or `none` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L304)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L379)
 
 <h3 id="find"><code>Find</code></h3>
 
 ```rux
-pub func Find(
-    self: &JsonValue,
-    name: StringView
-) -> *JsonValue
+pub func Find(&self, name: StringView) -> &JsonValue?
 ```
 
-The value of the member named `name`, borrowed, or null when there is none.
+The value of the member named `name`, borrowed, or `none` when there is none.
 With duplicate names present — which only a permissive parser policy allows — this finds the first,
 since that is the one a reader encounters.
 
@@ -310,36 +290,33 @@ since that is the one a reader encounters.
 | ------ | ------------ | ----------------- |
 | `name` | `StringView` | the member's name |
 
-**Returns**: the first member with that name, or null when there is none
+**Returns**: the first member with that name, or `none` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L316)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L390)
 
 <h3 id="member-at"><code>MemberAt</code></h3>
 
 ```rux
-pub func MemberAt(
-    self: &JsonValue,
-    index: uint
-) -> *JsonMember
+pub func MemberAt(&self, index: uint) -> &JsonMember?
 ```
 
-The member at `index`, borrowed, or null when there is none.
+The member at `index`, borrowed, or `none` when there is none.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
 
-**Returns**: the member at `index`, or null when there is none
+**Returns**: the member at `index`, or `none` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L332)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L405)
 
 <h3 id="remove-first"><code>RemoveFirst</code></h3>
 
 ```rux
 pub func RemoveFirst(
-    self: &var JsonValue,
+    &var self,
     name: StringView
-) -> bool
+) -> JsonMember?
 ```
 
 Removes the first member named `name`, if there is one.
@@ -353,14 +330,14 @@ rules will not allow silently. Duplicates are rare enough that the cost never ma
 | ------ | ------------ | ----------------- |
 | `name` | `StringView` | the member's name |
 
-**Returns**: whether a member with that name was removed
+**Returns**: the member removed, or `none` when this is not an object or holds no member with that name
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L347)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L419)
 
 ## Destructor
 
 ```rux
-func ~JsonValue(self: &var JsonValue)
+func ~JsonValue(&var self)
 ```
 
 Releases everything this value owns.
@@ -368,9 +345,30 @@ Written out rather than left to the compiler, because a value owns its strings a
 theirs: the recursion here is the shape of the document, and stating it makes the ownership of a nested
 tree something a reader can check.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L385)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L443)
 
 ## Related
+
+<h3 id="json-error"><code>JsonError</code></h3>
+
+```rux
+pub enum JsonError: int32 {
+    MalformedNumber = 2,
+    WrongKind = 3
+}
+```
+
+Why a JSON value could not be built or changed.
+Running out of memory is not one of the reasons: a value whose storage cannot be had terminates the program.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L22)
+
+**Cases**
+
+| Name              | Value | Description                                                                              |
+| ----------------- | ----- | ---------------------------------------------------------------------------------------- |
+| `MalformedNumber` | `2`   | Text that JSON's number grammar does not allow, such as `01`, `+1`, `.5`, `1e` or `NaN`. |
+| `WrongKind`       | `3`   | An operation for one kind of value asked of another, such as pushing onto an object.     |
 
 <h3 id="json-kind"><code>JsonKind</code></h3>
 
@@ -387,7 +385,7 @@ pub enum JsonKind: int32 {
 
 Which kind of JSON value this is.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L85)
 
 **Cases**
 
@@ -411,7 +409,7 @@ pub struct JsonMember {
 
 A name-value pair inside an object.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L187)
 
 **Fields**
 
@@ -425,9 +423,9 @@ A name-value pair inside an object.
 <h4 id="json-member-destructor"><code>~JsonMember</code></h4>
 
 ```rux
-func ~JsonMember(self: &var JsonMember)
+func ~JsonMember(&var self)
 ```
 
 Releases the member's name and value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L399)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L454)

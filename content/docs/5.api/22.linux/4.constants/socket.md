@@ -190,7 +190,7 @@ Opens a socket.
 <h2 id="connect"><code>Connect</code></h2>
 
 ```rux
-pub func Connect(
+pub unsafe func Connect(
     fd: FileDescriptor,
     address: *opaque,
     length: uint32
@@ -198,10 +198,11 @@ pub func Connect(
 ```
 
 Connects a socket to `address`, waiting for a stream connection to be made.
+Safety: `address` must be readable for `length` bytes.
 
 **See also**: [https://man7.org/linux/man-pages/man2/connect.2.html](https://man7.org/linux/man-pages/man2/connect.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L130)
 
 **Parameters**
 
@@ -216,7 +217,7 @@ Connects a socket to `address`, waiting for a stream connection to be made.
 <h2 id="bind"><code>Bind</code></h2>
 
 ```rux
-pub func Bind(
+pub unsafe func Bind(
     fd: FileDescriptor,
     address: *opaque,
     length: uint32
@@ -224,10 +225,11 @@ pub func Bind(
 ```
 
 Gives a socket its local address.
+Safety: `address` must be readable for `length` bytes.
 
 **See also**: [https://man7.org/linux/man-pages/man2/bind.2.html](https://man7.org/linux/man-pages/man2/bind.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L142)
 
 **Parameters**
 
@@ -249,7 +251,7 @@ Makes a bound stream socket accept connections.
 
 **See also**: [https://man7.org/linux/man-pages/man2/listen.2.html](https://man7.org/linux/man-pages/man2/listen.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L152)
 
 **Parameters**
 
@@ -263,7 +265,7 @@ Makes a bound stream socket accept connections.
 <h2 id="accept4"><code>Accept4</code></h2>
 
 ```rux
-pub func Accept4(
+pub unsafe func Accept4(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32,
@@ -272,10 +274,12 @@ pub func Accept4(
 ```
 
 Accepts a waiting connection as a new socket.
+Safety: `address` and `length` must be null together, or `length` must be writable and `address` writable for the
+`*length` bytes it states.
 
 **See also**: [https://man7.org/linux/man-pages/man2/accept4.2.html](https://man7.org/linux/man-pages/man2/accept4.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L167)
 
 **Parameters**
 
@@ -291,7 +295,7 @@ Accepts a waiting connection as a new socket.
 <h2 id="sendto"><code>SendTo</code></h2>
 
 ```rux
-pub func SendTo(
+pub unsafe func SendTo(
     fd: FileDescriptor,
     buffer: *opaque,
     count: uint,
@@ -302,10 +306,11 @@ pub func SendTo(
 ```
 
 Sends bytes on a socket, to `address` when it is not connected.
+Safety: `buffer` must be readable for `count` bytes, and a non-null `address` readable for `length` bytes.
 
 **See also**: [https://man7.org/linux/man-pages/man2/sendto.2.html](https://man7.org/linux/man-pages/man2/sendto.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L182)
 
 **Parameters**
 
@@ -323,7 +328,7 @@ Sends bytes on a socket, to `address` when it is not connected.
 <h2 id="receivefrom"><code>ReceiveFrom</code></h2>
 
 ```rux
-pub func ReceiveFrom(
+pub unsafe func ReceiveFrom(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint,
@@ -334,10 +339,12 @@ pub func ReceiveFrom(
 ```
 
 Receives bytes from a socket, and where they came from.
+Safety: `buffer` must be writable for `count` bytes. `address` and `length` must be null together, or `length` must
+be writable and `address` writable for the `*length` bytes it states.
 
 **See also**: [https://man7.org/linux/man-pages/man2/recvfrom.2.html](https://man7.org/linux/man-pages/man2/recvfrom.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L199)
 
 **Parameters**
 
@@ -362,7 +369,7 @@ Ends one or both directions of a connection.
 
 **See also**: [https://man7.org/linux/man-pages/man2/shutdown.2.html](https://man7.org/linux/man-pages/man2/shutdown.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L197)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L210)
 
 **Parameters**
 
@@ -376,7 +383,7 @@ Ends one or both directions of a connection.
 <h2 id="setsocketoption"><code>SetSocketOption</code></h2>
 
 ```rux
-pub func SetSocketOption(
+pub unsafe func SetSocketOption(
     fd: FileDescriptor,
     level: int32,
     name: int32,
@@ -386,10 +393,11 @@ pub func SetSocketOption(
 ```
 
 Sets a socket option.
+Safety: `value` must be readable for `length` bytes.
 
 **See also**: [https://man7.org/linux/man-pages/man2/setsockopt.2.html](https://man7.org/linux/man-pages/man2/setsockopt.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L225)
 
 **Parameters**
 
@@ -406,7 +414,7 @@ Sets a socket option.
 <h2 id="getsocketname"><code>GetSocketName</code></h2>
 
 ```rux
-pub func GetSocketName(
+pub unsafe func GetSocketName(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32
@@ -414,10 +422,11 @@ pub func GetSocketName(
 ```
 
 Reads a socket's local address.
+Safety: `length` must be writable, and `address` writable for the `*length` bytes it states.
 
 **See also**: [https://man7.org/linux/man-pages/man2/getsockname.2.html](https://man7.org/linux/man-pages/man2/getsockname.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L221)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L238)
 
 **Parameters**
 
@@ -432,7 +441,7 @@ Reads a socket's local address.
 <h2 id="getpeername"><code>GetPeerName</code></h2>
 
 ```rux
-pub func GetPeerName(
+pub unsafe func GetPeerName(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32
@@ -440,10 +449,11 @@ pub func GetPeerName(
 ```
 
 Reads the address of a connected socket's peer.
+Safety: `length` must be writable, and `address` writable for the `*length` bytes it states.
 
 **See also**: [https://man7.org/linux/man-pages/man2/getpeername.2.html](https://man7.org/linux/man-pages/man2/getpeername.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L250)
 
 **Parameters**
 

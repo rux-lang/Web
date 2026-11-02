@@ -54,7 +54,7 @@ Copy, carrying one offset.
 <h3 id="offset"><code>Offset</code></h3>
 
 ```rux
-pub func Offset(self: &TimeParseError) -> uint
+pub func Offset(&self) -> uint
 ```
 
 Where in the input the failure was found.

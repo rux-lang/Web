@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Clock.rux
-  line: 10
+  line: 11
 seo:
   title: "Clocks — Linux API"
   description: Reading clocks and sleeping.
@@ -29,7 +29,7 @@ pub const ClockRealtime: int32 = 0;
 
 `CLOCK_REALTIME`: wall-clock time, which can jump when the system clock is set.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L11)
 
 <h2 id="clock-monotonic"><code>ClockMonotonic</code></h2>
 
@@ -41,12 +41,12 @@ pub const ClockMonotonic: int32 = 1;
 Not comparable between boots, and not the clock to record a timestamp with. It is the one to measure a duration
 with, because setting the system clock cannot affect it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L17)
 
 <h2 id="clock-get-time"><code>ClockGetTime</code></h2>
 
 ```rux
-pub func ClockGetTime(
+pub unsafe func ClockGetTime(
     clockId: int32,
     time: *var Timespec
 ) -> int64
@@ -55,9 +55,9 @@ pub func ClockGetTime(
 Reads `clockId` into `time`.
 `clockId` is read by value; `time` is borrowed and written. Returns zero, or a negative error number — [`EINVAL`](/docs/api/linux/errors#einval)
 for a clock this kernel does not have.
-`time` must be non-null and writable.
+Safety: `time` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L27)
 
 **Parameters**
 
@@ -71,7 +71,7 @@ for a clock this kernel does not have.
 <h2 id="nanosleep"><code>Nanosleep</code></h2>
 
 ```rux
-pub func Nanosleep(
+pub unsafe func Nanosleep(
     request: *Timespec,
     remaining: *var Timespec
 ) -> int64
@@ -83,9 +83,10 @@ when the caller does not care. Returns zero, or a negative error number.
 A signal interrupts the wait and reports [`EINTR`](/docs/api/linux/errors#eintr) with the unslept time in `remaining`, which is what makes the
 second argument worth passing: resuming means calling again with what came back, not with the original request.
 The wait is against [`ClockRealtime`](/docs/api/linux/clock#clock-realtime) but is not affected by the clock being set.
-`request` must be non-null, and its nanoseconds must be under one second or the call reports [`EINVAL`](/docs/api/linux/errors#einval).
+Safety: `request` must be non-null and readable, and a non-null `remaining` must be writable. The nanoseconds of
+`request` must be under one second or the call reports [`EINVAL`](/docs/api/linux/errors#einval).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L43)
 
 **Parameters**
 
@@ -104,7 +105,7 @@ pub const ClockProcessCpuTime: int32 = 2;
 
 `CLOCK_PROCESS_CPUTIME_ID`: processor time this process has used.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L49)
 
 <h2 id="clock-thread-cpu-time"><code>ClockThreadCpuTime</code></h2>
 
@@ -114,7 +115,7 @@ pub const ClockThreadCpuTime: int32 = 3;
 
 `CLOCK_THREAD_CPUTIME_ID`: processor time this thread has used.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L53)
 
 <h2 id="clock-monotonic-raw"><code>ClockMonotonicRaw</code></h2>
 
@@ -126,7 +127,7 @@ pub const ClockMonotonicRaw: int32 = 4;
 Ticks at the hardware's own rate rather than a corrected one, which makes it the wrong clock for measuring a
 duration anyone will compare against a wall clock, and the right one for measuring the hardware.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L59)
 
 <h2 id="timer-absolute"><code>TimerAbsolute</code></h2>
 
@@ -136,12 +137,12 @@ pub const TimerAbsolute: int32 = 1;
 
 `TIMER_ABSTIME`: [`ClockNanosleep`](/docs/api/linux/clock#clock-nanosleep) should treat its time as an absolute deadline.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L63)
 
 <h2 id="clock-get-resolution"><code>ClockGetResolution</code></h2>
 
 ```rux
-pub func ClockGetResolution(
+pub unsafe func ClockGetResolution(
     clockId: int32,
     resolution: *var Timespec
 ) -> int64
@@ -150,9 +151,9 @@ pub func ClockGetResolution(
 Reads the resolution of `clockId` into `resolution`.
 Returns zero, or a negative error number. The resolution is the granularity the clock advances by, which is not
 the cost of reading it and not a promise about accuracy.
-`resolution` must be non-null and writable.
+Safety: `resolution` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L73)
 
 **Parameters**
 
@@ -166,7 +167,7 @@ the cost of reading it and not a promise about accuracy.
 <h2 id="clock-nanosleep"><code>ClockNanosleep</code></h2>
 
 ```rux
-pub func ClockNanosleep(
+pub unsafe func ClockNanosleep(
     clockId: int32,
     flags: int32,
     request: *Timespec,
@@ -180,9 +181,9 @@ wait that a signal cut short, and may be null. Returns zero, or a positive error
 its error positively rather than negatively, which is the kernel's inconsistency and not this binding's.
 An absolute wait is what a loop should use: a relative wait restarted after a signal drifts, because the time
 spent handling the signal is not counted.
-`request` must be non-null.
+Safety: `request` must be non-null and readable, and a non-null `remaining` must be writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L90)
 
 **Parameters**
 

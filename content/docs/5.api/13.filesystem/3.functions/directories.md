@@ -27,7 +27,7 @@ Creating, deleting and listing directories.
 pub func MakeDirectory(
     allocator: Allocator,
     path: Path
-) -> ! IoError
+) throws IoError
 ```
 
 Creates the directory `path` names. Its parent must already exist; `AlreadyExists` if the name is taken.
@@ -49,12 +49,12 @@ Creates the directory `path` names. Its parent must already exist; `AlreadyExist
 pub func DeleteDirectory(
     allocator: Allocator,
     path: Path
-) -> ! IoError
+) throws IoError
 ```
 
 Deletes the empty directory `path` names; a directory with anything still in it is refused.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L53)
 
 **Parameters**
 
@@ -77,14 +77,14 @@ A directory read one entry at a time.
 Move-only: [`Release`](/docs/api/filesystem/directories#directory-iterator-release) (or destruction) gives back the platform handle and the record buffer. [`Next`](/docs/api/filesystem/directories#directory-iterator-next) hands each
 name over as a fresh `OsString` owned by the caller.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L100)
 
 **Methods**
 
 <h3 id="directory-iterator-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var DirectoryIterator) -> OsString? ! IoError
+pub func Next(&var self) -> OsString? throws IoError
 ```
 
 Hands over the next entry's name, or reports that the directory is done.
@@ -93,29 +93,29 @@ enumeration. The `.` and `..` entries are skipped.
 
 **Returns**: the next entry's name, or `none` when the directory is done
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L194)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L214)
 
 <h3 id="directory-iterator-release"><code>Release</code></h3>
 
 ```rux
-pub func Release(self: &var DirectoryIterator)
+pub func Release(&var self)
 ```
 
 Gives back the handle and the buffer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L285)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L333)
 
 **Destructor**
 
 <h3 id="directory-iterator-destructor"><code>~DirectoryIterator</code></h3>
 
 ```rux
-func ~DirectoryIterator(self: &var DirectoryIterator)
+func ~DirectoryIterator(&var self)
 ```
 
 [`Release`](/docs/api/filesystem/directories#directory-iterator-release), as the safety net.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L305)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L357)
 
 <h2 id="read-directory"><code>ReadDirectory</code></h2>
 
@@ -123,12 +123,12 @@ func ~DirectoryIterator(self: &var DirectoryIterator)
 pub func ReadDirectory(
     allocator: Allocator,
     path: Path
-) -> DirectoryIterator ! IoError
+) -> DirectoryIterator throws IoError
 ```
 
 Begins enumerating the directory `path` names.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L134)
 
 **Parameters**
 

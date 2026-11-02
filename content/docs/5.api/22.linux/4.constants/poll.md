@@ -177,7 +177,7 @@ pub const EPOLLRDHUP: uint32 = 0x2000;
 <h2 id="fcntl-int"><code>FcntlInt</code></h2>
 
 ```rux
-pub func FcntlInt(
+pub unsafe func FcntlInt(
     fd: FileDescriptor,
     command: int32,
     argument: int64
@@ -185,10 +185,12 @@ pub func FcntlInt(
 ```
 
 Performs `command` on a descriptor with an integer argument.
+Safety: `command` must take an integer argument, such as [`F_GETFL`](/docs/api/linux/poll#f-getfl) or [`F_SETFL`](/docs/api/linux/poll#f-setfl); for a command whose argument is a
+pointer, the kernel would use `argument` as an address.
 
 **See also**: [https://man7.org/linux/man-pages/man2/fcntl.2.html](https://man7.org/linux/man-pages/man2/fcntl.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L112)
 
 **Parameters**
 
@@ -210,7 +212,7 @@ Opens an epoll instance.
 
 **See also**: [https://man7.org/linux/man-pages/man2/epoll_create1.2.html](https://man7.org/linux/man-pages/man2/epoll_create1.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L121)
 
 **Parameters**
 
@@ -223,7 +225,7 @@ Opens an epoll instance.
 <h2 id="epoll-control"><code>EpollControl</code></h2>
 
 ```rux
-pub func EpollControl(
+pub unsafe func EpollControl(
     epoll: FileDescriptor,
     operation: int32,
     fd: FileDescriptor,
@@ -232,10 +234,11 @@ pub func EpollControl(
 ```
 
 Adds, changes or removes the registration of `fd` with an epoll instance.
+Safety: a non-null `event` must be readable for [`EpollEventBytes`](/docs/api/linux/poll#epoll-event-bytes) bytes.
 
 **See also**: [https://man7.org/linux/man-pages/man2/epoll_ctl.2.html](https://man7.org/linux/man-pages/man2/epoll_ctl.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L136)
 
 **Parameters**
 
@@ -251,7 +254,7 @@ Adds, changes or removes the registration of `fd` with an epoll instance.
 <h2 id="epoll-wait"><code>EpollWait</code></h2>
 
 ```rux
-pub func EpollWait(
+pub unsafe func EpollWait(
     epoll: FileDescriptor,
     events: *var opaque,
     capacity: int32,
@@ -260,10 +263,11 @@ pub func EpollWait(
 ```
 
 Waits until a registered descriptor is ready or `timeout` milliseconds pass, filling `events` with what is ready.
+Safety: `events` must be writable for `capacity` events of [`EpollEventBytes`](/docs/api/linux/poll#epoll-event-bytes) bytes each.
 
 **See also**: [https://man7.org/linux/man-pages/man2/epoll_wait.2.html](https://man7.org/linux/man-pages/man2/epoll_wait.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L150)
 
 **Parameters**
 

@@ -63,7 +63,7 @@ ordering either.
 Requires `<` on the element type. Equal elements may be reordered.
 Cannot fail. Makes O(n log n) comparisons and uses O(1) storage beyond the sequence.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L70)
 
 **Type parameters**
 
@@ -94,7 +94,7 @@ there is nothing to recurse into and the stack stays flat. The same depth budget
 O(n log n), against O(n) on average.
 Requires `<` on the element type. Equal elements may be reordered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L89)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L90)
 
 **Type parameters**
 
@@ -130,7 +130,7 @@ is smaller: O(n log count) comparisons, against the O(n log n) a full sort would
 `count` is much smaller than the length and not otherwise.
 Requires `<` on the element type. Equal elements may be reordered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L149)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L155)
 
 **Type parameters**
 
@@ -150,7 +150,7 @@ Requires `<` on the element type. Equal elements may be reordered.
 <h2 id="insertion-sort-range"><code>InsertionSortRange&lt;T&gt;</code></h2>
 
 ```rux
-pub func InsertionSortRange<T>(
+pub unsafe func InsertionSortRange<T>(
     data: *var T,
     low: uint,
     high: uint
@@ -158,8 +158,9 @@ pub func InsertionSortRange<T>(
 ```
 
 Provides the public `InsertionSortRange` operation.
+Safety: `data` must address the elements from `low` up to `high`, all live and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L260)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L277)
 
 **Type parameters**
 
@@ -178,7 +179,7 @@ Provides the public `InsertionSortRange` operation.
 <h2 id="heap-sort-range"><code>HeapSortRange&lt;T&gt;</code></h2>
 
 ```rux
-pub func HeapSortRange<T>(
+pub unsafe func HeapSortRange<T>(
     data: *var T,
     low: uint,
     high: uint
@@ -186,8 +187,9 @@ pub func HeapSortRange<T>(
 ```
 
 Provides the public `HeapSortRange` operation.
+Safety: `data` must address the elements from `low` up to `high`, all live and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L313)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L332)
 
 **Type parameters**
 
@@ -219,7 +221,7 @@ operator at all.
 Cannot fail. Makes O(n log n) comparisons for every input, uses O(1) storage beyond the sequence, and recurses
 O(log n) deep. Equal elements may be reordered: this is not stable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L391)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L411)
 
 **Type parameters**
 
@@ -249,7 +251,7 @@ reversal, for the same reason [`SortDescending`](/docs/api/algorithms/sorting#so
 Cannot fail. Makes O(n log n) comparisons and uses O(1) storage beyond the sequence. Equal elements may be
 reordered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L412)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L433)
 
 **Type parameters**
 
@@ -280,7 +282,7 @@ Exactly [`NthElement`](/docs/api/algorithms/sorting#nth-element), with the order
 Reports false, changing nothing, when `n` is not an index into `items`.
 O(n) comparisons on average and O(n log n) at worst. Equivalent elements may be reordered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L428)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L449)
 
 **Type parameters**
 
@@ -314,7 +316,7 @@ Exactly [`PartialSort`](/docs/api/algorithms/sorting#partial-sort), with the ord
 Reports false, changing nothing, when `count` is larger than the length.
 O(n log count) comparisons. Equivalent elements may be reordered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L481)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L507)
 
 **Type parameters**
 
@@ -405,7 +407,7 @@ holds afterwards is unspecified. `compare` is called O(n log n) times and must b
 Reports false, changing nothing, when `scratch` is shorter than `RequiredScratch(items.length)`.
 Makes O(n log n) comparisons and moves for every input, and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Stable.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Stable.rux#L109)
 
 **Type parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/FormatError.rux
-  line: 103
+  line: 96
 seo:
   title: "ParseFailure — Text API"
   description: A parsing failure that can say where it happened.
@@ -46,4 +46,4 @@ Where in the input the failure was found.
 
 **Returns**: the zero-based UTF-8 byte offset, which is the text's length at end of input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L100)

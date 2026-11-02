@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Vector.rux
-  line: 31
+  line: 36
 seo:
   title: "Vector<T> — Collections API"
   description: A growable contiguous run of elements on storage this vector owns.
@@ -54,7 +54,7 @@ Cannot fail. Runs in constant time.
 
 **Returns**: an empty collection that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L55)
 
 ## Associated functions
 
@@ -64,11 +64,12 @@ Cannot fail. Runs in constant time.
 pub func WithCapacity(
     allocator: Allocator,
     capacity: uint
-) -> Vector<T> ! CollectionError
+) -> Vector<T>
 ```
 
 An empty vector with room for `capacity` elements already taken.
-`allocator` is borrowed for the call and kept. The vector starts empty — capacity is not length.
+`allocator` is borrowed for the call and kept. The vector starts empty — capacity is not length. Terminates
+the program when the storage cannot be had.
 
 | Name        | Type        | Description                        |
 | ----------- | ----------- | ---------------------------------- |
@@ -77,7 +78,7 @@ An empty vector with room for `capacity` elements already taken.
 
 **Returns**: an empty vector with room for that many elements already taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L66)
 
 <h3 id="from-slice"><code>FromSlice</code></h3>
 
@@ -85,12 +86,12 @@ An empty vector with room for `capacity` elements already taken.
 pub func FromSlice(
     allocator: Allocator,
     items: T[..]
-) -> Vector<T> ! CollectionError
+) -> Vector<T>
 ```
 
 A vector holding a copy of every element of `items`, in order.
 `allocator` is borrowed for the call and kept; `items` is borrowed and read. Copies its elements, so a move-only
-element type is built with [`Push`](/docs/api/collections/vector#push) instead.
+element type is built with [`Push`](/docs/api/collections/vector#push) instead. Terminates the program when the storage cannot be had.
 
 | Name        | Type        | Description                  |
 | ----------- | ----------- | ---------------------------- |
@@ -99,28 +100,44 @@ element type is built with [`Push`](/docs/api/collections/vector#push) instead.
 
 **Returns**: a vector holding a copy of those elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L82)
 
 ## Methods
 
 <h3 id="clone"><code>Clone</code></h3>
 
 ```rux
-pub func Clone(self: &Vector<T>) -> Vector<T> ! CollectionError
+pub func Clone(&self) -> Vector<T>
 ```
 
 An independent vector holding a copy of every element of this one.
 `self` is borrowed and left alone. The copy takes exactly the room it needs rather than matching this one's
 capacity, since the spare holds nothing worth reproducing.
+Elements are copied with `=`, so the element type must be plain data that `Core::Copyable` describes; an
+owning element type is rejected while compiling, at the copy. Terminates the program when the storage cannot
+be had; [`TryClone`](/docs/api/collections/vector#try-clone) reports that instead.
 
 **Returns**: an independent copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L100)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L108)
+
+<h3 id="try-clone"><code>TryClone</code></h3>
+
+```rux
+pub func TryClone(&self) -> Vector<T> throws AllocError
+```
+
+An independent vector holding a copy of every element of this one, or why the storage could not be had.
+`self` is borrowed and left alone, whether or not the copy is made. Copies exactly as [`Clone`](/docs/api/collections/vector#clone) does.
+
+**Returns**: an independent copy, or throws the allocator's refusal
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L116)
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &Vector<T>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many elements the vector holds.
@@ -128,12 +145,12 @@ How many elements the vector holds.
 
 **Returns**: how many elements it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L127)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
 ```rux
-pub func Capacity(self: &Vector<T>) -> uint
+pub func Capacity(&self) -> uint
 ```
 
 How many elements the storage could hold without growing.
@@ -141,12 +158,12 @@ How many elements the storage could hold without growing.
 
 **Returns**: how many elements fit before the next growth
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L135)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &Vector<T>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the vector holds no elements.
@@ -154,62 +171,76 @@ Whether the vector holds no elements.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L143)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(
-    self: &var Vector<T>,
-    additional: uint
-) -> ! CollectionError
+pub func Reserve(&var self, additional: uint)
 ```
 
 Makes room for `additional` more elements on top of those already present.
 `self` is borrowed mutably; the length does not change. Capacity only grows here; [`ShrinkToFit`](/docs/api/collections/vector#shrink-to-fit) is what hands
-it back. A failure leaves the vector exactly as it was.
-Reports `CapacityOverflow` when the current length plus `additional` cannot be represented, which is what
-turns a `Reserve(uint::Max)` on a non-empty vector into a reported error rather than a silently tiny capacity.
+it back. Terminates the program when the storage cannot be had, including when the current length plus
+`additional` cannot be represented; [`TryReserve`](/docs/api/collections/vector#try-reserve) reports both instead.
 
 | Name         | Type   | Description                             |
 | ------------ | ------ | --------------------------------------- |
 | `additional` | `uint` | how many more elements to make room for |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L178)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L154)
+<h3 id="try-reserve"><code>TryReserve</code></h3>
+
+```rux
+pub func TryReserve(
+    &var self,
+    additional: uint
+) throws AllocError
+```
+
+Makes room for `additional` more elements on top of those already present, or throws why it could not.
+`self` is borrowed mutably; the length does not change. A failure leaves the vector exactly as it was.
+Throws `Unsupported` when the current length plus `additional` cannot be represented, which is what turns a
+`TryReserve(uint::Max)` on a non-empty vector into a reported error rather than a silently tiny capacity, and
+otherwise whatever the allocator refused with.
+
+| Name         | Type   | Description                             |
+| ------------ | ------ | --------------------------------------- |
+| `additional` | `uint` | how many more elements to make room for |
+
+**Returns**: nothing, or throws the allocator's refusal
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L190)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
 ```rux
-pub func ShrinkToFit(self: &var Vector<T>) -> ! CollectionError
+pub func ShrinkToFit(&var self)
 ```
 
 Releases the capacity past the length.
 `self` is borrowed mutably. A vector with nothing in it gives up its storage entirely and becomes as cheap as
-a new one. A failure leaves the vector usable at its current capacity, since failing to hand memory back is
-never a reason to stop working.
+a new one. Terminates the program when the allocator refuses to move the elements into the smaller block.
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L165)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L198)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var Vector<T>)
+pub func Clear(&var self)
 ```
 
 Destroys every element, keeping the storage.
 `self` is borrowed mutably. The vector is empty afterwards and can be refilled without allocating again.
 Runs in time proportional to the length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L186)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L218)
 
 <h3 id="truncate"><code>Truncate</code></h3>
 
 ```rux
-pub func Truncate(self: &var Vector<T>, length: uint)
+pub func Truncate(&var self, length: uint)
 ```
 
 Destroys the elements past `length`, keeping the storage.
@@ -223,75 +254,79 @@ Runs in time proportional to how many elements go.
 | -------- | ------ | ----------------- |
 | `length` | `uint` | how many elements |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L198)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L230)
 
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(
-    self: &var Vector<T>,
-    value: T
-) -> ! CollectionError
+pub func Push(&var self, value: T)
 ```
 
 Appends one element, growing the storage when it is full.
-`self` is borrowed mutably; `value` is read by value and moved into the vector. A failure leaves the vector
-exactly as it was and the value with the caller.
+`self` is borrowed mutably; `value` is read by value and moved into the vector. Terminates the program when
+the storage cannot grow; [`TryPush`](/docs/api/collections/vector#try-push) reports that instead.
 Amortized constant time: the doubling is what spreads the cost of growing across the appends that caused it.
 
 | Name    | Type | Description         |
 | ------- | ---- | ------------------- |
 | `value` | `T`  | the value to act on |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L264)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L231)
+<h3 id="try-push"><code>TryPush</code></h3>
+
+```rux
+pub func TryPush(&var self, value: T) throws AllocError
+```
+
+Appends one element, growing the storage when it is full, or throws why the storage could not grow.
+`self` is borrowed mutably; `value` is read by value and moved into the vector. A failure leaves the vector
+exactly as it was, and `value` is then destroyed here.
+Amortized constant time, as [`Push`](/docs/api/collections/vector#push) is.
+
+| Name    | Type | Description         |
+| ------- | ---- | ------------------- |
+| `value` | `T`  | the value to act on |
+
+**Returns**: nothing, or throws the allocator's refusal
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L275)
 
 <h3 id="push-slice"><code>PushSlice</code></h3>
 
 ```rux
-pub func PushSlice(
-    self: &var Vector<T>,
-    items: T[..]
-) -> ! CollectionError
+pub func PushSlice(&var self, items: T[..])
 ```
 
 Appends a copy of every element of `items`, in order.
 `self` is borrowed mutably; `items` is borrowed and read. Room for all of them is taken first, so this either
-appends every element or none of them.
+appends every element or terminates the program before appending any.
 
 | Name    | Type    | Description          |
 | ------- | ------- | -------------------- |
 | `items` | `T[..]` | the elements to take |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L290)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L247)
-
-<h3 id="try-pop"><code>TryPop</code></h3>
+<h3 id="pop"><code>Pop</code></h3>
 
 ```rux
-pub func TryPop(self: &var Vector<T>, value: *var T) -> bool
+pub func Pop(&var self) -> T?
 ```
 
 Takes the last element out of the vector.
-`self` is borrowed mutably; `value` receives the element, which is moved out rather than copied, so this is
-how an element that owns something leaves a vector without being destroyed. Reports false and writes nothing
-when the vector is empty.
+`self` is borrowed mutably; the element is moved out rather than copied, so this is how an element that owns
+something leaves a vector without being destroyed. Reports `none` and changes nothing when the vector is empty.
 The storage is kept, so a vector emptied this way costs nothing to refill.
 
-| Name    | Type     | Description                  |
-| ------- | -------- | ---------------------------- |
-| `value` | `*var T` | receives the removed element |
+**Returns**: the removed element, or `none` when the vector is empty
 
-**Returns**: whether there was an element to remove
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L267)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L309)
 
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &Vector<T>, index: uint) -> T?
+pub func Get(&self, index: uint) -> T?
 ```
 
 The element at `index`, or `none` when there is no such index.
@@ -303,53 +338,95 @@ The element at `index`, or `none` when there is no such index.
 
 **Returns**: a copy of the element, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L279)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L323)
 
-<h3 id="reference"><code>Reference</code></h3>
+<h3 id="at"><code>At</code></h3>
 
 ```rux
-pub func Reference(self: &Vector<T>, index: uint) -> (*T)?
+pub func At(&self, index: uint) -> &T?
 ```
 
-A pointer to the element at `index`, or `none` when there is no such index.
-`self` is borrowed; the pointer borrows the element where it sits.
-The pointer is valid until the vector grows, shrinks, or is destroyed.
+The element at `index`, borrowed where it sits, or `none` when there is no such index.
+`self` stays borrowed while the reference is in use, so the vector cannot grow, shrink, or be destroyed under
+it.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
 
-**Returns**: the address of the element, or `none` when the index is out of range
+**Returns**: a reference to the element, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L290)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L335)
+
+<h3 id="at-mutable"><code>AtMutable</code></h3>
+
+```rux
+pub func AtMutable(&var self, index: uint) -> &var T?
+```
+
+The element at `index`, borrowed to be written where it sits, or `none` when there is no such index.
+`self` stays borrowed exclusively while the reference is in use.
+
+| Name    | Type   | Description                   |
+| ------- | ------ | ----------------------------- |
+| `index` | `uint` | which one, counting from zero |
+
+**Returns**: a writable reference to the element, or `none` when the index is out of range
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L346)
 
 <h3 id="set"><code>Set</code></h3>
 
 ```rux
 pub func Set(
-    self: &var Vector<T>,
+    &var self,
     index: uint,
     value: T
-) -> ! CollectionError
+) throws CollectionError
 ```
 
-Replaces the element at `index` with `value`.
-`self` is borrowed mutably. Reports `IndexOutOfRange` and changes nothing when there is no such index.
-The old element is overwritten rather than destroyed. For an element that owns something, take it out first.
+Replaces the element at `index` with `value`, destroying the element that was there.
+`self` is borrowed mutably; `value` is moved in. The old element is destroyed once the new one is in place,
+so an element that owns something is released rather than leaked; [`Replace`](/docs/api/collections/vector#replace) hands it back instead. Reports
+`IndexOutOfRange` and changes nothing when there is no such index, and `value` is then destroyed here.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
-| `value` | `T`    | the value to act on           |
+| `value` | `T`    | the element to store          |
 
 **Returns**: nothing when the element was written, or `IndexOutOfRange`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L302)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L360)
+
+<h3 id="replace"><code>Replace</code></h3>
+
+```rux
+pub func Replace(
+    &var self,
+    index: uint,
+    value: T
+) -> T throws CollectionError
+```
+
+Replaces the element at `index` with `value` and hands back the element that was there.
+`self` is borrowed mutably; `value` is moved in and the old element is moved out to the caller rather than
+destroyed. Reports `IndexOutOfRange` and changes nothing when there is no such index, and `value` is then
+destroyed here.
+
+| Name    | Type   | Description                   |
+| ------- | ------ | ----------------------------- |
+| `index` | `uint` | which one, counting from zero |
+| `value` | `T`    | the element to store          |
+
+**Returns**: the element that was at `index`, or `IndexOutOfRange`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L380)
 
 <h3 id="as-slice"><code>AsSlice</code></h3>
 
 ```rux
-pub func AsSlice(self: &Vector<T>) -> T[..]
+pub func AsSlice(&self) -> T[..]
 ```
 
 The initialized elements as a borrowed read-only view.
@@ -358,12 +435,12 @@ The view is valid until the vector grows, shrinks, or is destroyed.
 
 **Returns**: the elements, borrowed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L313)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L396)
 
 <h3 id="as-mutable-slice"><code>AsMutableSlice</code></h3>
 
 ```rux
-pub func AsMutableSlice(self: &var Vector<T>) -> var T[..]
+pub func AsMutableSlice(&var self) -> var T[..]
 ```
 
 The initialized elements as a borrowed writable view.
@@ -372,12 +449,12 @@ The view is valid until the vector grows, shrinks, or is destroyed.
 
 **Returns**: the elements, borrowed for writing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L322)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L406)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &Vector<T>) -> ValueIterator<T>
+pub func Iterate(&self) -> ValueIterator<T>
 ```
 
 An iterator over the elements, by copy.
@@ -386,12 +463,12 @@ The vector must not grow or shrink while the iterator is alive.
 
 **Returns**: a cursor yielding copies of the elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L331)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L416)
 
 <h3 id="references"><code>References</code></h3>
 
 ```rux
-pub func References(self: &Vector<T>) -> ReferenceIterator<T>
+pub func References(&self) -> ReferenceIterator<T>
 ```
 
 An iterator over pointers to the elements.
@@ -399,12 +476,12 @@ An iterator over pointers to the elements.
 
 **Returns**: a cursor yielding the elements' addresses
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L339)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L424)
 
 <h3 id="mutable-references"><code>MutableReferences</code></h3>
 
 ```rux
-pub func MutableReferences(self: &var Vector<T>) -> MutableReferenceIterator<T>
+pub func MutableReferences(&var self) -> MutableReferenceIterator<T>
 ```
 
 An iterator over writable pointers to initialized elements, without copying them.
@@ -413,22 +490,23 @@ move the vector while any of them is in use, and coordinate aliases that access 
 
 **Returns**: a cursor yielding writable element addresses
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L348)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L433)
 
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
 pub func Insert(
-    self: &var Vector<T>,
+    &var self,
     index: uint,
     value: T
-) -> ! CollectionError
+) throws CollectionError
 ```
 
 Inserts `value` at `index`, moving everything from there on one place along.
 `self` is borrowed mutably; `value` is moved in. An `index` equal to the length appends, which is what makes
 the rejection above it a boundary rather than a blanket refusal; anything past that reports
 `IndexOutOfRange` and changes nothing.
+Terminates the program when the storage cannot grow.
 Runs in time proportional to how many elements follow the insertion point.
 
 | Name    | Type   | Description                   |
@@ -436,14 +514,14 @@ Runs in time proportional to how many elements follow the insertion point.
 | `index` | `uint` | which one, counting from zero |
 | `value` | `T`    | the value to act on           |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+**Returns**: nothing when the element was inserted, or `IndexOutOfRange`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L361)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L447)
 
 <h3 id="remove-at"><code>RemoveAt</code></h3>
 
 ```rux
-pub func RemoveAt(self: &var Vector<T>, index: uint) -> T?
+pub func RemoveAt(&var self, index: uint) -> T?
 ```
 
 Takes the element at `index` out, moving everything after it one place back.
@@ -458,15 +536,12 @@ elements follow the one removed.
 
 **Returns**: the element removed, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L385)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L477)
 
 <h3 id="swap-remove-at"><code>SwapRemoveAt</code></h3>
 
 ```rux
-pub func SwapRemoveAt(
-    self: &var Vector<T>,
-    index: uint
-) -> T?
+pub func SwapRemoveAt(&var self, index: uint) -> T?
 ```
 
 Takes the element at `index` out and moves the last one into its place.
@@ -482,42 +557,38 @@ difference is free.
 
 **Returns**: the element removed, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L406)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L501)
 
 <h3 id="first"><code>First</code></h3>
 
 ```rux
-pub func First(self: &Vector<T>) -> (*T)?
+pub func First(&self) -> &T?
 ```
 
-A pointer to the first element, or `none` for an empty vector.
-`self` is borrowed; the pointer borrows the element where it sits.
+The first element, borrowed where it sits, or `none` for an empty vector.
+`self` stays borrowed while the reference is in use.
 
-**Returns**: the address of the first element, or `none` when empty
+**Returns**: a reference to the first element, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L421)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L519)
 
 <h3 id="last"><code>Last</code></h3>
 
 ```rux
-pub func Last(self: &Vector<T>) -> (*T)?
+pub func Last(&self) -> &T?
 ```
 
-A pointer to the last element, or `none` for an empty vector.
-`self` is borrowed; the pointer borrows the element where it sits.
+The last element, borrowed where it sits, or `none` for an empty vector.
+`self` stays borrowed while the reference is in use.
 
-**Returns**: the address of the last element, or `none` when empty
+**Returns**: a reference to the last element, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L429)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L527)
 
 <h3 id="slice"><code>Slice</code></h3>
 
 ```rux
-pub func Slice(
-    self: &Vector<T>,
-    start: uint,
-    count: uint
-) -> T[..]
+pub func Slice(&self, start: uint, count: uint) -> T[..]
 ```
 
 A borrowed read-only view of `count` elements starting at `start`.
@@ -532,13 +603,13 @@ The view is valid until the vector grows, shrinks, or is destroyed.
 
 **Returns**: that run of elements, borrowed; empty when the range is out of bounds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L442)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L540)
 
 <h3 id="mutable-slice-of"><code>MutableSliceOf</code></h3>
 
 ```rux
 pub func MutableSliceOf(
-    self: &var Vector<T>,
+    &var self,
     start: uint,
     count: uint
 ) -> var T[..]
@@ -555,12 +626,12 @@ The view is valid until the vector grows, shrinks, or is destroyed.
 
 **Returns**: that run borrowed for writing; empty when the range is out of bounds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L459)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L559)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
 ```rux
-pub func IntoIterator(self: Vector<T>) -> VectorIntoIterator<T>
+pub func IntoIterator(self) -> VectorIntoIterator<T>
 ```
 
 Takes the vector apart into an iterator over its elements.
@@ -571,45 +642,43 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: a cursor that consumes the vector as it goes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L476)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L578)
 
 <h3 id="to-array"><code>ToArray</code></h3>
 
 ```rux
-pub func ToArray(self: &Vector<T>) -> Array<T> ! CollectionError
+pub func ToArray(&self) -> Array<T>
 ```
 
 Copies the elements into a fixed-length array.
 `self` is borrowed and keeps its own storage, so both are released independently. Copies its elements, so this
-is for element types where copying means what it says — [`IntoArray`](/docs/api/collections/vector#into-array) is what moves them.
+is for element types where copying means what it says — [`IntoArray`](/docs/api/collections/vector#into-array) is what moves them. Terminates the
+program when the storage cannot be had.
 
 **Returns**: an array holding a copy of the elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L499)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L602)
 
 <h3 id="into-array"><code>IntoArray</code></h3>
 
 ```rux
-pub func IntoArray(self: Vector<T>) -> Array<T> ! CollectionError
+pub func IntoArray(self) -> Array<T>
 ```
 
 Hands the storage itself to a fixed-length array, copying nothing.
 Consumes the vector. The spare capacity is trimmed first, and the trim has to succeed: an array releases its
 block with the layout of its length, so a block still carrying spare capacity would be given back under a layout
-it was not taken with.
-A failed trim is a failed transfer, and the vector is gone either way — it was consumed by the call — so
-its elements are destroyed and an empty array comes back. That costs the elements, which is why it is
-reported rather than silent; a shrink refused by an allocator is close to impossible, since it asks for less
-than it already holds.
+it was not taken with. A trim the allocator refuses terminates the program, as [`ShrinkToFit`](/docs/api/collections/vector#shrink-to-fit) does; it is close
+to impossible, since it asks for less than the block already holds.
 
 **Returns**: an array taking the vector's storage rather than copying it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L513)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L613)
 
 ## Destructor
 
 ```rux
-func ~Vector(self: &var Vector<T>)
+func ~Vector(&var self)
 ```
 
 Destroys every element and releases the storage.
@@ -617,7 +686,7 @@ Runs when the vector's life ends. The spare capacity past the length holds nothi
 elements go first and the block second, since an element destroyed after its storage was released would be
 read from freed memory.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L215)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L249)
 
 ## Related
 
@@ -628,7 +697,7 @@ pub func WriteVectorDebug<T: Debug>(
     writer: &var TextWriter,
     value: &Vector<T>,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a borrowed vector as `[first, second, third]`.
@@ -639,7 +708,7 @@ a move-only element type and the vector still holds all of them afterwards.
 commas are punctuation and are never padded.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L64)
 
 **Type parameters**
 
@@ -667,7 +736,7 @@ The capacity a vector takes when it first has to allocate.
 Four elements rather than one: the first few appends are the common case, and three reallocations to reach four
 elements is three more than the work is worth.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L30)
 
 <h3 id="vector-into-iterator"><code>VectorIntoIterator&lt;T&gt;</code></h3>
 
@@ -683,7 +752,7 @@ This is how a vector of elements that
 own something is emptied into somewhere else — each element is moved out rather than copied, and whatever is
 left when the iterator's life ends is destroyed with it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L532)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L632)
 
 **Type parameters**
 
@@ -698,7 +767,7 @@ left when the iterator's life ends is destroyed with it.
 <h4 id="vector-into-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var VectorIntoIterator<T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next element, moved out, or `none` once every element has been yielded.
@@ -708,18 +777,18 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the next element, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L575)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L674)
 
 **Destructor**
 
 <h4 id="vector-into-iterator-destructor"><code>~VectorIntoIterator</code></h4>
 
 ```rux
-func ~VectorIntoIterator(self: &var VectorIntoIterator<T>)
+func ~VectorIntoIterator(&var self)
 ```
 
 Destroys whatever was not yielded and releases the storage.
 Runs when the iterator's life ends. Everything already yielded belongs to whoever took it and is not touched
 here, which is what makes stopping part-way through safe.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L553)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L650)

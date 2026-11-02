@@ -47,7 +47,7 @@ about must land on exactly one of these three.
 <h3 id="is-less"><code>IsLess</code></h3>
 
 ```rux
-pub func IsLess(self: &Ordering) -> bool
+pub func IsLess(&self) -> bool
 ```
 
 Reports whether the left side of the comparison was the smaller one.
@@ -61,7 +61,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="is-equal"><code>IsEqual</code></h3>
 
 ```rux
-pub func IsEqual(self: &Ordering) -> bool
+pub func IsEqual(&self) -> bool
 ```
 
 Reports whether the two sides compared equal.
@@ -75,7 +75,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="is-greater"><code>IsGreater</code></h3>
 
 ```rux
-pub func IsGreater(self: &Ordering) -> bool
+pub func IsGreater(&self) -> bool
 ```
 
 Reports whether the left side of the comparison was the larger one.
@@ -89,7 +89,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="is-less-or-equal"><code>IsLessOrEqual</code></h3>
 
 ```rux
-pub func IsLessOrEqual(self: &Ordering) -> bool
+pub func IsLessOrEqual(&self) -> bool
 ```
 
 Reports whether the left side was smaller than or equal to the right.
@@ -104,7 +104,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="is-greater-or-equal"><code>IsGreaterOrEqual</code></h3>
 
 ```rux
-pub func IsGreaterOrEqual(self: &Ordering) -> bool
+pub func IsGreaterOrEqual(&self) -> bool
 ```
 
 Reports whether the left side was larger than or equal to the right.
@@ -118,7 +118,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="reverse"><code>Reverse</code></h3>
 
 ```rux
-pub func Reverse(self: Ordering) -> Ordering
+pub func Reverse(self) -> Ordering
 ```
 
 The ordering the same comparison would have given with its two sides swapped.

@@ -53,10 +53,10 @@ Runs in constant time and allocates nothing.
 
 ```rux
 pub func Fill(
-    self: &var SystemEntropy,
+    &var self,
     buffer: *var opaque,
     length: uint
-) -> ! EntropyError
+) throws EntropyError
 ```
 
 Fills `length` bytes of `buffer` from the operating system.
@@ -103,10 +103,10 @@ asking more than once, which `Fill` does.
 <h3 id="fill-from-source"><code>FillFromSource</code></h3>
 
 ```rux
-pub func FillFromSource(
+pub unsafe func FillFromSource(
     buffer: *var opaque,
     length: uint
-) -> ! EntropyError
+) throws EntropyError
 ```
 
 Fills `length` bytes of `buffer` from the system's generator, in one pass.
@@ -119,8 +119,8 @@ middle is retried up to [`MaxEntropyAttempts`](/docs/api/entropy/system-entropy#
 reports `Unsupported`. On Darwin the source cannot fail. On Windows a request above [`MaxEntropyRequest`](/docs/api/entropy/system-entropy#max-entropy-request) reports
 `TooLarge`, since the count is passed as 32 bits.
 Runs in time proportional to `length` and allocates nothing.
-`buffer` must be writable for `length` bytes. On any failure the buffer is zeroized, so a caller who ignores the
-result gets zeros rather than a partly random buffer that would pass a glance.
+Safety: `buffer` must be writable for `length` bytes. On any failure the buffer is zeroized, so a caller who ignores
+the result gets zeros rather than a partly random buffer that would pass a glance.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Source.rux#L55)
 

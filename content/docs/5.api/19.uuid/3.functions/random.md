@@ -22,7 +22,7 @@ seo:
 A version 4 UUID drawn from the operating system's entropy.
 
 ```rux
-pub func Random() -> Uuid ! EntropyError
+pub func Random() -> Uuid throws EntropyError
 ```
 
 Fails with why entropy was unavailable rather than producing a zero-filled UUID with the version bits set, which
@@ -43,7 +43,7 @@ For reproducing a UUID from a recorded seed, or for drawing from a generator oth
 version and variant bits are set regardless of what the bytes say, so the result is always a well-formed
 version 4 UUID.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Random.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Random.rux#L38)
 
 **Parameters**
 

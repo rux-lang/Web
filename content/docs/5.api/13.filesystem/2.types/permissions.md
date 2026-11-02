@@ -78,7 +78,7 @@ Permissions from the read-only flag alone, with the mode synthesized from it.
 <h3 id="is-writable"><code>IsWritable</code></h3>
 
 ```rux
-pub func IsWritable(self: &Permissions) -> bool
+pub func IsWritable(&self) -> bool
 ```
 
 Whether the owner may write.
@@ -96,7 +96,7 @@ pub func SetPermissions(
     allocator: Allocator,
     path: Path,
     permissions: Permissions
-) -> ! IoError
+) throws IoError
 ```
 
 Sets who may do what to the file `path` names.
@@ -104,7 +104,7 @@ On the Unix systems the mode bits are written as given. On Windows only the read
 that alone is written and the rest of `permissions` is ignored — ask [`CapabilitiesOfSystem`](/docs/api/filesystem/capabilities#capabilities-of-system) first if the
 difference matters. A symbolic link is always followed: its own bits mean nothing on any supported system.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L417)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L434)
 
 **Parameters**
 

@@ -48,7 +48,7 @@ Constructs a checksum with nothing written into it yet.
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var Adler32)
+pub func Reset(&var self)
 ```
 
 Puts the checksum back to where [`Adler32()`](/docs/api/hash/adler32) leaves one. Everything written so far is forgotten.
@@ -58,7 +58,7 @@ Puts the checksum back to where [`Adler32()`](/docs/api/hash/adler32) leaves one
 <h3 id="value"><code>Value</code></h3>
 
 ```rux
-pub func Value(self: &Adler32) -> uint32
+pub func Value(&self) -> uint32
 ```
 
 The checksum of everything written so far: the second sum in the high half and the first in the low half.
@@ -75,11 +75,7 @@ Writing more continues from here rather than starting over.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    self: &var Adler32,
-    bytes: *byte,
-    length: uint
-)
+pub func Write(&var self, bytes: *byte, length: uint)
 ```
 
 Adds `length` bytes at `bytes` to the checksum. A zero length changes nothing and is the one case in which
@@ -96,11 +92,11 @@ Runs in time proportional to `length` and allocates nothing.
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var Adler32) -> uint64
+pub func Finish(&var self) -> uint64
 ```
 
 The checksum of everything written so far, widened to 64 bits; the upper half is always zero.
 
 **Returns**: the checksum
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Adler.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Adler.rux#L75)

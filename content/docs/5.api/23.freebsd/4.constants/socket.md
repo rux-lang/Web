@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Socket.rux
-  line: 22
+  line: 23
 seo:
   title: "Sockets — FreeBSD API"
   description: "Address families, socket types and options, and the calls that open, bind and connect sockets."
@@ -29,7 +29,7 @@ pub const AF_INET: int32 = 2;
 
 `AF_INET`: the IPv4 address family.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L23)
 
 <h2 id="af-inet6"><code>AF_INET6</code></h2>
 
@@ -39,7 +39,7 @@ pub const AF_INET6: int32 = 28;
 
 `AF_INET6`: the IPv6 address family.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L28)
 
 <h2 id="sock-stream"><code>SOCK_STREAM</code></h2>
 
@@ -49,7 +49,7 @@ pub const SOCK_STREAM: int32 = 1;
 
 `SOCK_STREAM`: a connected byte stream.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L33)
 
 <h2 id="sock-dgram"><code>SOCK_DGRAM</code></h2>
 
@@ -59,7 +59,7 @@ pub const SOCK_DGRAM: int32 = 2;
 
 `SOCK_DGRAM`: individual datagrams.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L38)
 
 <h2 id="sock-cloexec"><code>SOCK_CLOEXEC</code></h2>
 
@@ -69,7 +69,7 @@ pub const SOCK_CLOEXEC: int32 = 0x10000000;
 
 `SOCK_CLOEXEC`: close the socket when the process starts another program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L43)
 
 <h2 id="sol-socket"><code>SOL_SOCKET</code></h2>
 
@@ -79,7 +79,7 @@ pub const SOL_SOCKET: int32 = 0xffff;
 
 `SOL_SOCKET`: the level of the options every socket has.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L48)
 
 <h2 id="so-reuseaddr"><code>SO_REUSEADDR</code></h2>
 
@@ -89,7 +89,7 @@ pub const SO_REUSEADDR: int32 = 4;
 
 `SO_REUSEADDR`: let a listening address be bound again while old connections to it wind down.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L53)
 
 <h2 id="so-rcvtimeo"><code>SO_RCVTIMEO</code></h2>
 
@@ -99,7 +99,7 @@ pub const SO_RCVTIMEO: int32 = 0x1006;
 
 `SO_RCVTIMEO`: how long a receive waits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L58)
 
 <h2 id="so-sndtimeo"><code>SO_SNDTIMEO</code></h2>
 
@@ -109,7 +109,7 @@ pub const SO_SNDTIMEO: int32 = 0x1005;
 
 `SO_SNDTIMEO`: how long a send waits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L63)
 
 <h2 id="ipproto-tcp"><code>IPPROTO_TCP</code></h2>
 
@@ -119,7 +119,7 @@ pub const IPPROTO_TCP: int32 = 6;
 
 `IPPROTO_TCP`: the level of TCP's options.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L68)
 
 <h2 id="tcp-nodelay"><code>TCP_NODELAY</code></h2>
 
@@ -129,7 +129,7 @@ pub const TCP_NODELAY: int32 = 1;
 
 `TCP_NODELAY`: send small writes at once rather than gathering them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L73)
 
 <h2 id="ipproto-ipv6"><code>IPPROTO_IPV6</code></h2>
 
@@ -139,7 +139,7 @@ pub const IPPROTO_IPV6: int32 = 41;
 
 `IPPROTO_IPV6`: the level of IPv6's options.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L78)
 
 <h2 id="ipv6-v6only"><code>IPV6_V6ONLY</code></h2>
 
@@ -149,7 +149,7 @@ pub const IPV6_V6ONLY: int32 = 27;
 
 `IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L83)
 
 <h2 id="msg-nosignal"><code>MSG_NOSIGNAL</code></h2>
 
@@ -159,7 +159,7 @@ pub const MSG_NOSIGNAL: int32 = 0x20000;
 
 `MSG_NOSIGNAL`: report a closed peer as an error rather than with `SIGPIPE`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L88)
 
 <h2 id="socket"><code>Socket</code></h2>
 
@@ -175,7 +175,7 @@ Opens a socket.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=socket&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=socket&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L96)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L97)
 
 **Parameters**
 
@@ -190,7 +190,7 @@ Opens a socket.
 <h2 id="connect"><code>Connect</code></h2>
 
 ```rux
-pub func Connect(
+pub unsafe func Connect(
     fd: FileDescriptor,
     address: *opaque,
     length: uint32
@@ -198,10 +198,11 @@ pub func Connect(
 ```
 
 Connects a socket to `address`, waiting for a stream connection to be made.
+Safety: `address` must be readable for `length` bytes.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=connect&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=connect&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L112)
 
 **Parameters**
 
@@ -216,7 +217,7 @@ Connects a socket to `address`, waiting for a stream connection to be made.
 <h2 id="bind"><code>Bind</code></h2>
 
 ```rux
-pub func Bind(
+pub unsafe func Bind(
     fd: FileDescriptor,
     address: *opaque,
     length: uint32
@@ -224,10 +225,11 @@ pub func Bind(
 ```
 
 Gives a socket its local address.
+Safety: `address` must be readable for `length` bytes.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=bind&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=bind&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L124)
 
 **Parameters**
 
@@ -249,7 +251,7 @@ Makes a bound stream socket accept connections.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=listen&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=listen&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L128)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L134)
 
 **Parameters**
 
@@ -263,7 +265,7 @@ Makes a bound stream socket accept connections.
 <h2 id="accept4"><code>Accept4</code></h2>
 
 ```rux
-pub func Accept4(
+pub unsafe func Accept4(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32,
@@ -272,10 +274,12 @@ pub func Accept4(
 ```
 
 Accepts a waiting connection as a new socket.
+Safety: `address` and `length` must be null together, or `length` must be writable and `address` writable for the
+`*length` bytes it states.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=accept4&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=accept4&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L149)
 
 **Parameters**
 
@@ -291,7 +295,7 @@ Accepts a waiting connection as a new socket.
 <h2 id="sendto"><code>SendTo</code></h2>
 
 ```rux
-pub func SendTo(
+pub unsafe func SendTo(
     fd: FileDescriptor,
     buffer: *opaque,
     count: uint,
@@ -302,10 +306,11 @@ pub func SendTo(
 ```
 
 Sends bytes on a socket, to `address` when it is not connected.
+Safety: `buffer` must be readable for `count` bytes, and a non-null `address` readable for `length` bytes.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=sendto&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=sendto&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L154)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L164)
 
 **Parameters**
 
@@ -323,7 +328,7 @@ Sends bytes on a socket, to `address` when it is not connected.
 <h2 id="receivefrom"><code>ReceiveFrom</code></h2>
 
 ```rux
-pub func ReceiveFrom(
+pub unsafe func ReceiveFrom(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint,
@@ -334,10 +339,12 @@ pub func ReceiveFrom(
 ```
 
 Receives bytes from a socket, and where they came from.
+Safety: `buffer` must be writable for `count` bytes. `address` and `length` must be null together, or `length` must
+be writable and `address` writable for the `*length` bytes it states.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=recvfrom&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=recvfrom&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L168)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L181)
 
 **Parameters**
 
@@ -362,7 +369,7 @@ Ends one or both directions of a connection.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=shutdown&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=shutdown&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L192)
 
 **Parameters**
 
@@ -376,7 +383,7 @@ Ends one or both directions of a connection.
 <h2 id="setsocketoption"><code>SetSocketOption</code></h2>
 
 ```rux
-pub func SetSocketOption(
+pub unsafe func SetSocketOption(
     fd: FileDescriptor,
     level: int32,
     name: int32,
@@ -386,10 +393,11 @@ pub func SetSocketOption(
 ```
 
 Sets a socket option.
+Safety: `value` must be readable for `length` bytes.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=setsockopt&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=setsockopt&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L207)
 
 **Parameters**
 
@@ -406,7 +414,7 @@ Sets a socket option.
 <h2 id="getsocketname"><code>GetSocketName</code></h2>
 
 ```rux
-pub func GetSocketName(
+pub unsafe func GetSocketName(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32
@@ -414,10 +422,11 @@ pub func GetSocketName(
 ```
 
 Reads a socket's local address.
+Safety: `length` must be writable, and `address` writable for the `*length` bytes it states.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=getsockname&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=getsockname&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L220)
 
 **Parameters**
 
@@ -432,7 +441,7 @@ Reads a socket's local address.
 <h2 id="getpeername"><code>GetPeerName</code></h2>
 
 ```rux
-pub func GetPeerName(
+pub unsafe func GetPeerName(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32
@@ -440,10 +449,11 @@ pub func GetPeerName(
 ```
 
 Reads the address of a connected socket's peer.
+Safety: `length` must be writable, and `address` writable for the `*length` bytes it states.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=getpeername&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=getpeername&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L213)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Socket.rux#L232)
 
 **Parameters**
 

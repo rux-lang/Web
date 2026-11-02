@@ -23,10 +23,10 @@ An incremental digest.
 
 ```rux
 pub interface Digest {
-    func Update(self: &var Self, bytes: char8[..]);
-    func Finish(self: &var Self, into: var char8[..]);
-    func DigestLength(self: &Self) -> uint;
-    func BlockLength(self: &Self) -> uint;
+    func Update(&var self, bytes: char8[..]);
+    func Finish(&var self, into: var char8[..]);
+    func DigestLength(&self) -> uint;
+    func BlockLength(&self) -> uint;
 }
 ```
 
@@ -38,7 +38,7 @@ the caller's state without copying it.
 <h3 id="update"><code>Update</code></h3>
 
 ```rux
-func Update(self: &var Self, bytes: char8[..])
+func Update(&var self, bytes: char8[..])
 ```
 
 Adds `bytes` to what is being hashed.
@@ -54,7 +54,7 @@ legal and changes nothing.
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-func Finish(self: &var Self, into: var char8[..])
+func Finish(&var self, into: var char8[..])
 ```
 
 Writes the digest into `into` and leaves the state unusable for further updates.
@@ -71,7 +71,7 @@ and an implementation is free to consume its state producing one.
 <h3 id="digest-length"><code>DigestLength</code></h3>
 
 ```rux
-func DigestLength(self: &Self) -> uint
+func DigestLength(&self) -> uint
 ```
 
 How many bytes [`Finish`](/docs/api/crypto/digest#finish) writes.
@@ -83,7 +83,7 @@ How many bytes [`Finish`](/docs/api/crypto/digest#finish) writes.
 <h3 id="block-length"><code>BlockLength</code></h3>
 
 ```rux
-func BlockLength(self: &Self) -> uint
+func BlockLength(&self) -> uint
 ```
 
 How many bytes the algorithm processes at a time.

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Memory.rux
-  line: 10
+  line: 11
 seo:
   title: "Memory — FreeBSD API"
   description: "Mapping, protecting and advising on pages of memory."
@@ -29,7 +29,7 @@ pub const ProtectionNone: int32 = 0x00;
 
 `PROT_NONE`: the pages may not be touched at all.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L11)
 
 <h2 id="protection-read"><code>ProtectionRead</code></h2>
 
@@ -39,7 +39,7 @@ pub const ProtectionRead: int32 = 0x01;
 
 `PROT_READ`: the pages may be read.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L15)
 
 <h2 id="protection-write"><code>ProtectionWrite</code></h2>
 
@@ -49,7 +49,7 @@ pub const ProtectionWrite: int32 = 0x02;
 
 `PROT_WRITE`: the pages may be written.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L19)
 
 <h2 id="protection-execute"><code>ProtectionExecute</code></h2>
 
@@ -59,7 +59,7 @@ pub const ProtectionExecute: int32 = 0x04;
 
 `PROT_EXEC`: the pages may be executed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L23)
 
 <h2 id="map-shared"><code>MapShared</code></h2>
 
@@ -69,7 +69,7 @@ pub const MapShared: int32 = 0x0001;
 
 `MAP_SHARED`: writes are visible to other mappings of the same object and reach it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L27)
 
 <h2 id="map-private"><code>MapPrivate</code></h2>
 
@@ -79,7 +79,7 @@ pub const MapPrivate: int32 = 0x0002;
 
 `MAP_PRIVATE`: writes are private to this mapping and never reach the object.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L31)
 
 <h2 id="map-fixed"><code>MapFixed</code></h2>
 
@@ -89,7 +89,7 @@ pub const MapFixed: int32 = 0x0010;
 
 `MAP_FIXED`: place the mapping exactly at the requested address, replacing whatever was there.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L35)
 
 <h2 id="map-exclusive"><code>MapExclusive</code></h2>
 
@@ -102,7 +102,7 @@ The one way to ask whether a range is free: a fixed, exclusive request over anyt
 [`ENOMEM`](/docs/api/freebsd/errors#enomem), and one over a hole takes it. [`Mprotect`](/docs/api/freebsd/memory#mprotect) cannot answer that question, since it skips the holes in a
 range rather than refusing them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L42)
 
 <h2 id="map-anonymous"><code>MapAnonymous</code></h2>
 
@@ -113,12 +113,12 @@ pub const MapAnonymous: int32 = 0x1000;
 `MAP_ANON`: the mapping is backed by zeroed pages rather than by a file.
 FreeBSD numbers this differently from Linux, which is one of the reasons the two packages are separate.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L47)
 
 <h2 id="mmap"><code>Mmap</code></h2>
 
 ```rux
-pub func Mmap(
+pub unsafe func Mmap(
     address: *opaque,
     length: uint,
     protection: int32,
@@ -131,10 +131,10 @@ pub func Mmap(
 Creates a mapping and returns its address, or a negative error number.
 `address` is a hint unless [`MapFixed`](/docs/api/freebsd/memory#map-fixed) is set. `fd` is the object to map, or `-1` with [`MapAnonymous`](/docs/api/freebsd/memory#map-anonymous). Testing the
 result needs `Errors::IsError` rather than a sign test, since a valid address may have its top bit set.
-[`MapFixed`](/docs/api/freebsd/memory#map-fixed) replaces whatever occupies the address, including a mapping this program depends on, unless
-[`MapExclusive`](/docs/api/freebsd/memory#map-exclusive) is set with it.
+Safety: with [`MapFixed`](/docs/api/freebsd/memory#map-fixed), the range at `address` must hold nothing the program still uses, since the mapping replaces
+whatever occupies it, including a mapping this program depends on, unless [`MapExclusive`](/docs/api/freebsd/memory#map-exclusive) is set with it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L62)
 
 **Parameters**
 
@@ -152,14 +152,17 @@ result needs `Errors::IsError` rather than a sign test, since a valid address ma
 <h2 id="munmap"><code>Munmap</code></h2>
 
 ```rux
-pub func Munmap(address: *opaque, length: uint) -> int64
+pub unsafe func Munmap(
+    address: *opaque,
+    length: uint
+) -> int64
 ```
 
 Releases the mapping that begins at `address` and spans `length` bytes.
 Returns zero, or a negative error number. Releasing a range that was never mapped succeeds and does nothing.
-Every pointer into the range becomes invalid.
+Safety: the range must be one the caller mapped and no longer uses. Every pointer into it becomes invalid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L82)
 
 **Parameters**
 
@@ -173,13 +176,14 @@ Every pointer into the range becomes invalid.
 <h2 id="brk"><code>Brk</code></h2>
 
 ```rux
-pub func Brk(address: *opaque) -> int64
+pub unsafe func Brk(address: *opaque) -> int64
 ```
 
 Sets the program break and returns where it ended up.
 Reports failure by not moving rather than by an error number. The break is a single process-wide value.
+Safety: a non-null `address` must not lower the break below memory anything in the process still uses.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L89)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L92)
 
 **Parameters**
 
@@ -197,7 +201,7 @@ pub const AdviseNormal: int32 = 0;
 
 `MADV_NORMAL`: no advice; the default.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L98)
 
 <h2 id="advise-random"><code>AdviseRandom</code></h2>
 
@@ -207,7 +211,7 @@ pub const AdviseRandom: int32 = 1;
 
 `MADV_RANDOM`: the pages will be touched in no useful order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L102)
 
 <h2 id="advise-sequential"><code>AdviseSequential</code></h2>
 
@@ -217,7 +221,7 @@ pub const AdviseSequential: int32 = 2;
 
 `MADV_SEQUENTIAL`: the pages will be touched in order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L106)
 
 <h2 id="advise-will-need"><code>AdviseWillNeed</code></h2>
 
@@ -227,7 +231,7 @@ pub const AdviseWillNeed: int32 = 3;
 
 `MADV_WILLNEED`: the pages will be read soon.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L110)
 
 <h2 id="advise-dont-need"><code>AdviseDontNeed</code></h2>
 
@@ -240,7 +244,7 @@ FreeBSD's meaning is weaker than Linux's: it does not discard the pages, so an a
 as zero afterwards. `MADV_FREE` is the one that lets the kernel take the storage, and that difference is exactly
 why an advice value must not be carried between the two packages.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L117)
 
 <h2 id="advise-free"><code>AdviseFree</code></h2>
 
@@ -250,12 +254,12 @@ pub const AdviseFree: int32 = 5;
 
 `MADV_FREE`: the pages may be reclaimed, and read back as zero if they are.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L121)
 
 <h2 id="mprotect"><code>Mprotect</code></h2>
 
 ```rux
-pub func Mprotect(
+pub unsafe func Mprotect(
     address: *opaque,
     length: uint,
     protection: int32
@@ -266,8 +270,9 @@ Changes what may be done with the pages covering a range.
 `address` must be page-aligned. Returns zero, or a negative error number. Removing a permission takes effect at
 once, so a thread touching the range concurrently faults.
 Nothing checks that the range was ever mapped, and a hardened system refuses writable executable memory.
+Safety: the range must be one the caller mapped, and nothing may still need an access `protection` removes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L133)
 
 **Parameters**
 
@@ -282,7 +287,7 @@ Nothing checks that the range was ever mapped, and a hardened system refuses wri
 <h2 id="madvise"><code>Madvise</code></h2>
 
 ```rux
-pub func Madvise(
+pub unsafe func Madvise(
     address: *opaque,
     length: uint,
     advice: int32
@@ -291,9 +296,10 @@ pub func Madvise(
 
 Tells the kernel how the pages covering a range are about to be used.
 Advice is advice: the kernel is free to ignore it. [`AdviseFree`](/docs/api/freebsd/memory#advise-free) is the one that actually releases storage.
-[`AdviseFree`](/docs/api/freebsd/memory#advise-free) loses whatever the range held.
+Safety: the range must be one the caller mapped, and with [`AdviseFree`](/docs/api/freebsd/memory#advise-free) it must hold nothing still needed, since that
+advice loses whatever the range held.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L146)
 
 **Parameters**
 
@@ -313,7 +319,7 @@ pub const CtlHardware: int32 = 6;
 
 `CTL_HW`: the sysctl branch describing the machine.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L151)
 
 <h2 id="hw-pagesize"><code>HardwarePageSize</code></h2>
 
@@ -323,7 +329,7 @@ pub const HardwarePageSize: int32 = 7;
 
 `HW_PAGESIZE`: the leaf under [`CtlHardware`](/docs/api/freebsd/memory#ctl-hw) holding the page size, in bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L155)
 
 <h2 id="query-page-size"><code>QueryPageSize</code></h2>
 
@@ -338,6 +344,6 @@ power of two and is the granularity [`Mmap`](/docs/api/freebsd/memory#mmap) roun
 A caller that cannot use a failure has no business asking: the whole point of returning one is that a system
 which will not answer is not a system to guess about.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L160)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Memory.rux#L165)
 
 **Returns**: the page size in bytes, or a negative error number

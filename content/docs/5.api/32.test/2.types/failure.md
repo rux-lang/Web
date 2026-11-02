@@ -30,8 +30,8 @@ pub struct TestFailure {
 ```
 
 Why a test did not pass. `Copy`.
-A test fails with it through `fail` or `?`, and is counted as skipped rather than failed when it was made with
-[`Skip`](/docs/api/test/failure#skip).
+A test fails with it through `throw` or a check marked with `try`, and is counted as skipped rather than failed
+when it was made with [`Skip`](/docs/api/test/failure#skip).
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Failure.rux#L14)
 
@@ -74,7 +74,7 @@ A skip, which the runner counts apart from failures, saying why the test did not
 <h3 id="message"><code>Message</code></h3>
 
 ```rux
-pub func Message(self: &TestFailure) -> char8[..]
+pub func Message(&self) -> char8[..]
 ```
 
 The message, or a skip's reason.
@@ -86,7 +86,7 @@ The message, or a skip's reason.
 <h3 id="is-skip"><code>IsSkip</code></h3>
 
 ```rux
-pub func IsSkip(self: &TestFailure) -> bool
+pub func IsSkip(&self) -> bool
 ```
 
 Whether this is a skip rather than a failure.

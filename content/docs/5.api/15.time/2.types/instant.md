@@ -50,10 +50,7 @@ Cannot fail on any supported system: the monotonic clock exists from boot and ne
 <h3 id="since"><code>Since</code></h3>
 
 ```rux
-pub func Since(
-    self: &Instant,
-    earlier: Instant
-) -> Duration?
+pub func Since(&self, earlier: Instant) -> Duration?
 ```
 
 The time between `earlier` and this reading, or `None` when `earlier` is not earlier.
@@ -66,19 +63,19 @@ visible bug instead of a wildly large duration.
 
 **Returns**: the time between the two readings, or `None` when `earlier` is not earlier
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L64)
 
 <h3 id="elapsed"><code>Elapsed</code></h3>
 
 ```rux
-pub func Elapsed(self: &Instant) -> Duration
+pub func Elapsed(&self) -> Duration
 ```
 
 The time from this reading to now.
 
 **Returns**: the time from this reading to now
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L75)
 
 ## Implements Debug
 
@@ -88,10 +85,10 @@ The time from this reading to now.
 
 ```rux
 pub func WriteDebug(
-    self: &Instant,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the reading as `Instant(nanoseconds: N)`.

@@ -132,6 +132,22 @@ Generates simple tones on the speaker.
 
 **Returns**: non-zero on success, and zero on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
 
+<h2 id="free-console"><code>FreeConsole</code></h2>
+
+```rux
+pub extern func FreeConsole() -> bool32
+```
+
+Detaches the calling process from its console, closing the console when no other process is attached to it.
+A window program built as a console program calls it first, so the console that started with it goes away.
+The standard handles still name the old console afterwards, and writing to them fails.
+
+**See also**: [https://learn.microsoft.com/en-us/windows/console/freeconsole](https://learn.microsoft.com/en-us/windows/console/freeconsole)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L144)
+
+**Returns**: non-zero on success, and zero on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
+
 <h2 id="get-console-mode"><code>GetConsoleMode</code></h2>
 
 ```rux
@@ -145,7 +161,7 @@ Retrieves the current input or output mode of a console screen buffer.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/getconsolemode](https://learn.microsoft.com/en-us/windows/console/getconsolemode)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L153)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L161)
 
 **Parameters**
 
@@ -166,7 +182,7 @@ Retrieves a handle to the specified standard device (standard input, standard ou
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/getstdhandle](https://learn.microsoft.com/en-us/windows/console/getstdhandle)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L264)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L281)
 
 **Parameters**
 
@@ -192,7 +208,7 @@ Reads characters from a console input buffer.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/readconsole](https://learn.microsoft.com/en-us/windows/console/readconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L368)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L385)
 
 **Parameters**
 
@@ -222,7 +238,7 @@ Writes a character string to a console screen buffer beginning at the current cu
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/writeconsole](https://learn.microsoft.com/en-us/windows/console/writeconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L539)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L556)
 
 **Parameters**
 

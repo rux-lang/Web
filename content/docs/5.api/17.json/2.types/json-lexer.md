@@ -61,7 +61,7 @@ A lexer over `input` under `limits`.
 <h3 id="position"><code>Position</code></h3>
 
 ```rux
-pub func Position(self: &JsonLexer) -> uint
+pub func Position(&self) -> uint
 ```
 
 Where reading has reached, as a byte offset.
@@ -73,14 +73,14 @@ Where reading has reached, as a byte offset.
 <h3 id="next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var JsonLexer) -> JsonToken
+pub func Next(&var self) -> JsonToken
 ```
 
 The next token.
 
 **Returns**: the next token, or the end-of-input token
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Lexer.rux#L341)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Lexer.rux#L357)
 
 ## Related
 

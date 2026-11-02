@@ -34,12 +34,12 @@ Borrows the bytes, which must outlive it.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L12)
 
-**Associated functions**
+**Constructors**
 
-<h3 id="byte-reader-new"><code>New</code></h3>
+<h3 id="byte-reader-new"><code>ByteReader</code></h3>
 
 ```rux
-pub func New(bytes: char8[..]) -> ByteReader
+pub func ByteReader(bytes: char8[..]) -> ByteReader
 ```
 
 A reader of `bytes`, at their start.
@@ -57,7 +57,7 @@ A reader of `bytes`, at their start.
 <h3 id="byte-reader-position"><code>Position</code></h3>
 
 ```rux
-pub func Position(self: &ByteReader) -> uint
+pub func Position(&self) -> uint
 ```
 
 How many bytes have been read or skipped.
@@ -69,7 +69,7 @@ How many bytes have been read or skipped.
 <h3 id="byte-reader-remaining"><code>Remaining</code></h3>
 
 ```rux
-pub func Remaining(self: &ByteReader) -> char8[..]
+pub func Remaining(&self) -> char8[..]
 ```
 
 The bytes not yet read.
@@ -86,9 +86,9 @@ The bytes not yet read.
 
 ```rux
 pub func Read(
-    self: &var ByteReader,
+    &var self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Copies the next bytes into `into`, as many as fit.
@@ -109,10 +109,10 @@ Copies the next bytes into `into`, as many as fit.
 
 ```rux
 pub func Seek(
-    self: &var ByteReader,
+    &var self,
     origin: SeekFrom,
     offset: int64
-) -> uint64 ! IoError
+) -> uint64 throws IoError
 ```
 
 Moves the position, anywhere from the start to the end of the bytes.
@@ -124,7 +124,7 @@ Moves the position, anywhere from the start to the end of the bytes.
 
 **Returns**: the new position, or fails with `InvalidInput` for one before the start or past the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L79)
 
 <h2 id="byte-writer"><code>ByteWriter</code></h2>
 
@@ -137,14 +137,14 @@ pub struct ByteWriter {
 A writer that keeps what is written in a growing block of memory. Not copied.
 Writing at a position before the end, after a seek, overwrites what is there and extends past it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L90)
 
-**Associated functions**
+**Constructors**
 
-<h3 id="byte-writer-new"><code>New</code></h3>
+<h3 id="byte-writer-new"><code>ByteWriter</code></h3>
 
 ```rux
-pub func New(allocator: Allocator) -> ByteWriter
+pub func ByteWriter(allocator: Allocator) -> ByteWriter
 ```
 
 An empty writer that takes its storage from `allocator` as it grows.
@@ -162,7 +162,7 @@ An empty writer that takes its storage from `allocator` as it grows.
 <h3 id="byte-writer-bytes"><code>Bytes</code></h3>
 
 ```rux
-pub func Bytes(self: &ByteWriter) -> char8[..]
+pub func Bytes(&self) -> char8[..]
 ```
 
 Everything written so far. The view lasts until the next write, [`Clear`](/docs/api/io/memory-stream#byte-writer-clear) or [`Release`](/docs/api/io/memory-stream#byte-writer-release).
@@ -174,34 +174,34 @@ Everything written so far. The view lasts until the next write, [`Clear`](/docs/
 <h3 id="byte-writer-length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &ByteWriter) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many bytes have been written.
 
 **Returns**: the length
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L119)
 
 <h3 id="byte-writer-clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var ByteWriter)
+pub func Clear(&var self)
 ```
 
 Forgets what was written, keeping the storage for what comes next.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L125)
 
 <h3 id="byte-writer-release"><code>Release</code></h3>
 
 ```rux
-pub func Release(self: &var ByteWriter)
+pub func Release(&var self)
 ```
 
 Gives the storage back and empties the writer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L132)
 
 **Implements Writer**
 
@@ -211,9 +211,9 @@ Gives the storage back and empties the writer.
 
 ```rux
 pub func Write(
-    self: &var ByteWriter,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Writes all of `bytes` at the position, growing the storage as needed.
@@ -224,19 +224,19 @@ Writes all of `bytes` at the position, growing the storage as needed.
 
 **Returns**: how many were written, which is all of them, or fails with `LimitExceeded` when storage runs out
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L179)
 
 <h3 id="byte-writer-flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var ByteWriter) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Does nothing: the bytes are already where they go.
 
 **Returns**: nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L202)
 
 **Implements Seeker**
 
@@ -246,10 +246,10 @@ Does nothing: the bytes are already where they go.
 
 ```rux
 pub func Seek(
-    self: &var ByteWriter,
+    &var self,
     origin: SeekFrom,
     offset: int64
-) -> uint64 ! IoError
+) -> uint64 throws IoError
 ```
 
 Moves the position at which the next write lands, anywhere from the start to the end of what was written.
@@ -261,14 +261,14 @@ Moves the position at which the next write lands, anywhere from the start to the
 
 **Returns**: the new position, or fails with `InvalidInput` for one before the start or past the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L198)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L211)
 
 **Destructor**
 
 <h3 id="byte-writer-destructor"><code>~ByteWriter</code></h3>
 
 ```rux
-func ~ByteWriter(self: &var ByteWriter)
+func ~ByteWriter(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L169)

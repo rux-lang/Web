@@ -28,7 +28,7 @@ pub func Resolve(
     allocator: Allocator,
     host: char8[..],
     port: uint16
-) -> Vector<SocketAddress> ! IoError
+) -> Vector<SocketAddress> throws IoError
 ```
 
 The addresses of `host`, each with `port`, in the order the resolver prefers them, without repeats.

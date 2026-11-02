@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Pcg64.rux
-  line: 20
+  line: 22
 seo:
   title: "Pcg64Dxsm — Random API"
   description: A PCG64-DXSM generator.
@@ -43,7 +43,7 @@ A generator seeded by spreading `seed` through [`SplitMix64`](/docs/api/random/s
 
 **Returns**: a generator seeded with that value, on the default stream
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Pcg64.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Pcg64.rux#L34)
 
 ## Associated functions
 
@@ -68,7 +68,7 @@ their own index.
 
 **Returns**: a generator seeded with that value, on the given stream
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Pcg64.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Pcg64.rux#L46)
 
 ## Implements RandomGenerator
 
@@ -77,7 +77,7 @@ their own index.
 <h3 id="next-uint64"><code>NextUint64</code></h3>
 
 ```rux
-pub func NextUint64(self: &var Pcg64Dxsm) -> uint64
+pub func NextUint64(&var self) -> uint64
 ```
 
 The next word.
@@ -87,7 +87,7 @@ value rather than collapsing any of it.
 
 **Returns**: the next 64 bits
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Pcg64.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Pcg64.rux#L80)
 
 ## Related
 
@@ -100,12 +100,12 @@ pub const PcgMultiplier: uint64 = 0xDA942042E4DD58B5;
 The multiplier used by both the state step and the output function.
 PCG's "cheap" 64-bit multiplier, which the DXSM variant uses in the 128-bit step as well.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Pcg64.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Pcg64.rux#L18)
 
 <h3 id="pcg-from-entropy"><code>PcgFromEntropy</code></h3>
 
 ```rux
-pub func PcgFromEntropy() -> Pcg64Dxsm ! EntropyError
+pub func PcgFromEntropy() -> Pcg64Dxsm throws EntropyError
 ```
 
 A [`Pcg64Dxsm`](/docs/api/random/pcg64-dxsm) seeded from the operating system's entropy, on the default stream.
@@ -118,7 +118,7 @@ Fails and recovers exactly as [`XoshiroFromEntropy`](/docs/api/random/xoshiro256
 <h3 id="pcg-from-entropy-with-stream"><code>PcgFromEntropyWithStream</code></h3>
 
 ```rux
-pub func PcgFromEntropyWithStream(stream: uint64) -> Pcg64Dxsm ! EntropyError
+pub func PcgFromEntropyWithStream(stream: uint64) -> Pcg64Dxsm throws EntropyError
 ```
 
 A [`Pcg64Dxsm`](/docs/api/random/pcg64-dxsm) seeded from entropy on the stream `stream` selects.

@@ -113,7 +113,7 @@ pub func BitsOfFloat32(value: float32) -> uint32
 The bits of `value`, as they are stored.
 As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the narrower width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L45)
 
 **Parameters**
 
@@ -132,7 +132,7 @@ pub func BitsOfFloat16(value: float16) -> uint16
 The bits of `value`, as they are stored.
 As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the half-precision width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L56)
 
 **Parameters**
 
@@ -151,7 +151,7 @@ pub func BitsOfFloat8(value: float8) -> uint8
 The bits of `value`, as they are stored.
 As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the eight-bit width: a sign, four exponent bits and three stored significand bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L67)
 
 **Parameters**
 
@@ -171,7 +171,7 @@ The `float64` whose bits are `bits`.
 Writes the value's storage from an integer of the same width through a raw pointer, which is the inverse of
 [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64) and unsafe for the same reason: there is no conversion that preserves a representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L251)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L271)
 
 **Parameters**
 
@@ -190,7 +190,7 @@ pub func Float32FromBits(bits: uint32) -> float32
 The `float32` whose bits are `bits`.
 As [`Float64FromBits`](/docs/api/format/float-bits#float64-from-bits), at the narrower width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L283)
 
 **Parameters**
 

@@ -25,7 +25,7 @@ Lazy adaptors over any iterator — map, filter, skip, take, enumerate, zip and 
 
 ```rux
 pub interface Cursor {
-    func Next(self: &var Self) -> T?;
+    func Next(&var self) -> T?;
 }
 ```
 
@@ -39,7 +39,7 @@ A type conforms by having the method, whether or not it says `extend X : Cursor<
 <h3 id="cursor-next"><code>Next</code></h3>
 
 ```rux
-func Next(self: &var Self) -> T?
+func Next(&var self) -> T?
 ```
 
 The next item, or `none` once there are no more.
@@ -71,7 +71,7 @@ A cursor over the elements of a slice, by copy. `Copy`.
 <h3 id="slice-cursor-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var SliceCursor<T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next element, or `none` after the last.
@@ -129,7 +129,7 @@ The items of a cursor, each passed through a function.
 <h3 id="mapped-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var Mapped<I, T, U>) -> U?
+pub func Next(&var self) -> U?
 ```
 
 The next item, transformed.
@@ -192,7 +192,7 @@ The items of a cursor that pass a test.
 <h3 id="filtered-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var Filtered<I, T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next item that passes the test.
@@ -254,7 +254,7 @@ At most a number of items from the front of a cursor.
 <h3 id="taken-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var Taken<I, T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next item, or `none` once the count is reached; the wrapped cursor is not asked again after that.
@@ -316,7 +316,7 @@ The items of a cursor after a number of them.
 <h3 id="skipped-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var Skipped<I, T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next item, passing over the skipped ones the first time it is asked.
@@ -404,7 +404,7 @@ The items of a cursor with their positions.
 <h3 id="enumerated-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var Enumerated<I, T>) -> Indexed<T>?
+pub func Next(&var self) -> Indexed<T>?
 ```
 
 The next item with its position.
@@ -491,7 +491,7 @@ The items of two cursors side by side.
 <h3 id="zipped-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var Zipped<I, J, A, B>) -> Pair<A, B>?
+pub func Next(&var self) -> Pair<A, B>?
 ```
 
 The next item of each, or `none` once either runs out.
@@ -556,7 +556,7 @@ The items of one cursor and then of another.
 <h3 id="chained-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var Chained<I, J, T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next item of the first cursor, then of the second once the first has run out.

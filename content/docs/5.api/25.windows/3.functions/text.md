@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Kernel.rux
-  line: 331
+  line: 348
 seo:
   title: "Text conversion — Windows API"
   description: Converting between code pages and UTF-16.
@@ -47,7 +47,7 @@ Maps a character string to a UTF-16 wide character string.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar](https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-multibytetowidechar)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L331)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L348)
 
 **Parameters**
 
@@ -81,7 +81,7 @@ Converts UTF-16 text to another code page.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte](https://learn.microsoft.com/en-us/windows/win32/api/stringapiset/nf-stringapiset-widechartomultibyte)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L519)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L536)
 
 **Parameters**
 

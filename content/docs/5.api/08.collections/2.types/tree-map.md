@@ -59,38 +59,38 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: an empty collection that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L35)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &TreeMap<K, V>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many entries the map holds.
 
 **Returns**: how many entries it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L42)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &TreeMap<K, V>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the map holds no entries.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L49)
 
 <h3 id="contains-key"><code>ContainsKey</code></h3>
 
 ```rux
-pub func ContainsKey(self: &TreeMap<K, V>, key: K) -> bool
+pub func ContainsKey(&self, key: K) -> bool
 ```
 
 Whether `key` has a value in the map.
@@ -102,12 +102,12 @@ Runs in time proportional to the height, which is at most twice the logarithm of
 
 **Returns**: whether an entry with that key is present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L58)
 
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &TreeMap<K, V>, key: K) -> V?
+pub func Get(&self, key: K) -> V?
 ```
 
 A copy of the value stored under `key`, or `none`.
@@ -118,65 +118,52 @@ A copy of the value stored under `key`, or `none`.
 
 **Returns**: a copy of the value, or `none` when the key is absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L66)
 
-<h3 id="reference"><code>Reference</code></h3>
+<h3 id="find"><code>Find</code></h3>
 
 ```rux
-pub func Reference(self: &TreeMap<K, V>, key: K) -> (*V)?
+pub func Find(&self, key: K) -> &V?
 ```
 
-A borrow of the value stored under `key`, or `none`.
-The borrow stays valid while the map is untouched — and, unlike a hash map's, across insertions and removals
-of other keys too, since a node keeps its address while the tree is rearranged around it. It ends when this
-key is removed or the map dies.
+The value stored under `key`, borrowed where it sits, or `none`.
+`self` stays borrowed while the reference is in use, so nothing can be inserted or removed under it.
 
 | Name  | Type | Description        |
 | ----- | ---- | ------------------ |
 | `key` | `K`  | the key to look up |
 
-**Returns**: the address of the value, or `none` when the key is absent
+**Returns**: a reference to the value, or `none` when the key is absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L78)
 
-<h3 id="try-reference-mutable"><code>TryReferenceMutable</code></h3>
+<h3 id="find-mutable"><code>FindMutable</code></h3>
 
 ```rux
-pub func TryReferenceMutable(
-    self: &var TreeMap<K, V>,
-    key: K,
-    value: *var *var V
-) -> bool
+pub func FindMutable(&var self, key: K) -> &var V?
 ```
 
-Points `value` at the value stored under `key` so it can be written through, and reports whether there was
-one.
-`value` is left untouched when this reports `false`. Two calls rather than an `(*var V)?` because an
-option of a writable pointer does not survive lowering; this is the same answer in the shape that does.
+The value stored under `key`, borrowed to be written where it sits, or `none`.
+`self` stays borrowed exclusively while the reference is in use. Assigning through it replaces the value and
+destroys the one that was there.
 
-| Name    | Type          | Description                              |
-| ------- | ------------- | ---------------------------------------- |
-| `key`   | `K`           | the key to look up                       |
-| `value` | `*var *var V` | receives the address of the stored value |
+| Name  | Type | Description        |
+| ----- | ---- | ------------------ |
+| `key` | `K`  | the key to look up |
 
-**Returns**: whether the key was present
+**Returns**: a writable reference to the value, or `none` when the key is absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L96)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L91)
 
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(
-    self: &var TreeMap<K, V>,
-    key: K,
-    value: V
-) -> ! CollectionError
+pub func Insert(&var self, key: K, value: V)
 ```
 
 Stores `value` under `key`, replacing and destroying whatever was there.
-Takes ownership of both. Reports `OutOfMemory` when the node cannot be allocated, in which case the map is
-unchanged — but the key and the value are destroyed rather than handed back, since there is nowhere to put
-them. [`Replace`](/docs/api/collections/tree-map#replace) is the one to use when the displaced value is wanted.
+Takes ownership of both. Terminates the program when the node cannot be allocated. [`Replace`](/docs/api/collections/tree-map#replace) is the one to use
+when the displaced value is wanted.
 Runs in time proportional to the height, with at most two rotations, and allocates one node for a key that is
 new and nothing at all for one already there.
 
@@ -185,22 +172,16 @@ new and nothing at all for one already there.
 | `key`   | `K`  | the key to look up  |
 | `value` | `V`  | the value to act on |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L113)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L106)
 
 <h3 id="replace"><code>Replace</code></h3>
 
 ```rux
-pub func Replace(
-    self: &var TreeMap<K, V>,
-    key: K,
-    value: V
-) -> V? ! CollectionError
+pub func Replace(&var self, key: K, value: V) -> V?
 ```
 
 Stores `value` under `key` and hands back the value it displaced, or `none` for a key that was not there.
-A failure is reported apart from the absence, so "nothing was there" and "nothing was stored" never meet.
+Terminates the program when the node for a new key cannot be allocated.
 
 | Name    | Type | Description         |
 | ------- | ---- | ------------------- |
@@ -209,12 +190,12 @@ A failure is reported apart from the absence, so "nothing was there" and "nothin
 
 **Returns**: the value that was there, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L117)
 
 <h3 id="remove"><code>Remove</code></h3>
 
 ```rux
-pub func Remove(self: &var TreeMap<K, V>, key: K) -> V?
+pub func Remove(&var self, key: K) -> V?
 ```
 
 Takes the entry stored under `key` out of the map and hands its value back, or `none`.
@@ -226,15 +207,12 @@ Cannot fail. Runs in time proportional to the height, with at most three rotatio
 
 **Returns**: the value that was stored, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L133)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L126)
 
 <h3 id="remove-entry"><code>RemoveEntry</code></h3>
 
 ```rux
-pub func RemoveEntry(
-    self: &var TreeMap<K, V>,
-    key: K
-) -> KeyValue<K, V>?
+pub func RemoveEntry(&var self, key: K) -> KeyValue<K, V>?
 ```
 
 Takes the entry stored under `key` out and hands back the key as well as the value, or `none`.
@@ -247,22 +225,22 @@ the one every entry below it was ordered against, not the one just passed in.
 
 **Returns**: the whole entry, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L140)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var TreeMap<K, V>)
+pub func Clear(&var self)
 ```
 
 Destroys every entry, leaving an empty map that is still usable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L150)
 
 <h3 id="first"><code>First</code></h3>
 
 ```rux
-pub func First(self: &TreeMap<K, V>) -> KeyValue<K, V>?
+pub func First(&self) -> KeyValue<K, V>?
 ```
 
 The entry with the smallest key, or `none` for an empty map.
@@ -270,27 +248,24 @@ Runs in time proportional to the height and allocates nothing.
 
 **Returns**: the entry with the smallest key, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L166)
 
 <h3 id="last"><code>Last</code></h3>
 
 ```rux
-pub func Last(self: &TreeMap<K, V>) -> KeyValue<K, V>?
+pub func Last(&self) -> KeyValue<K, V>?
 ```
 
 The entry with the largest key, or `none` for an empty map.
 
 **Returns**: the entry with the largest key, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L177)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L174)
 
 <h3 id="floor"><code>Floor</code></h3>
 
 ```rux
-pub func Floor(
-    self: &TreeMap<K, V>,
-    key: K
-) -> KeyValue<K, V>?
+pub func Floor(&self, key: K) -> KeyValue<K, V>?
 ```
 
 The entry with the largest key at or below `key`, or `none` when every key is above it.
@@ -304,15 +279,12 @@ Runs in time proportional to the height and allocates nothing.
 
 **Returns**: the entry with the largest key at or below `key`, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L188)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L186)
 
 <h3 id="ceiling"><code>Ceiling</code></h3>
 
 ```rux
-pub func Ceiling(
-    self: &TreeMap<K, V>,
-    key: K
-) -> KeyValue<K, V>?
+pub func Ceiling(&self, key: K) -> KeyValue<K, V>?
 ```
 
 The entry with the smallest key at or above `key`, or `none` when every key is below it.
@@ -323,12 +295,12 @@ The entry with the smallest key at or above `key`, or `none` when every key is b
 
 **Returns**: the entry with the smallest key at or above `key`, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L209)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L212)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &TreeMap<K, V>) -> TreeMapIterator<K, V>
+pub func Iterate(&self) -> TreeMapIterator<K, V>
 ```
 
 A walk over this map, smallest key first, leaving it untouched.
@@ -336,13 +308,13 @@ A walk over this map, smallest key first, leaving it untouched.
 
 **Returns**: a cursor over the entries in key order
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L230)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L238)
 
 <h3 id="range"><code>Range</code></h3>
 
 ```rux
 pub func Range(
-    self: &TreeMap<K, V>,
+    &self,
     start: K,
     end: K
 ) -> TreeMapRangeIterator<K, V>
@@ -353,6 +325,7 @@ Half-open, so `Range(a, b)` and `Range(b, c)` together give exactly `Range(a, c)
 nothing missed. A range whose `end` is not above its `start` hands back nothing.
 Starting costs a descent rather than a walk from the smallest key, so a small range out of a large map is
 cheap.
+`self` is borrowed and must outlive the walk, which must not run across an insertion or a removal.
 
 | Name    | Type | Description                              |
 | ------- | ---- | ---------------------------------------- |
@@ -361,12 +334,12 @@ cheap.
 
 **Returns**: a cursor over the entries whose keys fall in `[start, end)`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L243)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L253)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
 ```rux
-pub func IntoIterator(self: TreeMap<K, V>) -> TreeMapIntoIterator<K, V>
+pub func IntoIterator(self) -> TreeMapIntoIterator<K, V>
 ```
 
 A walk that consumes this map, smallest key first.
@@ -374,7 +347,7 @@ Takes ownership; the map is gone afterwards.
 
 **Returns**: a cursor that consumes the map as it goes, in key order
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L267)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L280)
 
 ## Related
 
@@ -385,7 +358,7 @@ pub func WriteTreeMapDebug<K: Debug, V: Debug>(
     writer: &var TextWriter,
     value: &TreeMap<K, V>,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a borrowed ordered map as `{key: value, key: value}`, in key order.
@@ -396,7 +369,7 @@ The walk crosses every edge of the tree twice and allocates nothing, and nothing
 key and value is shown through a borrow of the node holding it. `spec` is handed to each unchanged.
 Reports whatever the writer or an entry's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L195)
 
 **Type parameters**
 
@@ -426,7 +399,7 @@ pub struct TreeMapIterator<K, V> {
 A walk over a borrowed map, smallest key first.
 Copies each entry out as it goes, so the map is untouched and keeps everything it holds.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L286)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L299)
 
 **Type parameters**
 
@@ -440,7 +413,7 @@ Copies each entry out as it goes, so the map is untouched and keeps everything i
 <h4 id="tree-map-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var TreeMapIterator<K, V>) -> KeyValue<K, V>?
+pub func Next(&var self) -> KeyValue<K, V>?
 ```
 
 The next entry in key order, or `none` when there are no more.
@@ -448,7 +421,7 @@ Runs in constant amortized time: every edge of the tree is crossed exactly twice
 
 **Returns**: the next entry in key order, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L296)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L309)
 
 <h3 id="tree-map-range-iterator"><code>TreeMapRangeIterator&lt;K, V&gt;</code></h3>
 
@@ -460,7 +433,7 @@ pub struct TreeMapRangeIterator<K, V> {
 
 A walk over a borrowed map that stops at a bound.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L308)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L325)
 
 **Type parameters**
 
@@ -474,14 +447,14 @@ A walk over a borrowed map that stops at a bound.
 <h4 id="tree-map-range-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var TreeMapRangeIterator<K, V>) -> KeyValue<K, V>?
+pub func Next(&var self) -> KeyValue<K, V>?
 ```
 
 The next entry below the bound, or `none` once the walk reaches it.
 
 **Returns**: the next entry in key order, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L321)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L338)
 
 <h3 id="tree-map-into-iterator"><code>TreeMapIntoIterator&lt;K, V&gt;</code></h3>
 
@@ -495,7 +468,7 @@ A walk that consumes the map, smallest key first.
 Owns the nodes, and destroys whatever is left in them when it dies — so a walk stopped part-way destroys the
 rest exactly once, and nothing already handed out is destroyed twice.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L339)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L361)
 
 **Type parameters**
 
@@ -509,7 +482,7 @@ rest exactly once, and nothing already handed out is destroyed twice.
 <h4 id="tree-map-into-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var TreeMapIntoIterator<K, V>) -> KeyValue<K, V>?
+pub func Next(&var self) -> KeyValue<K, V>?
 ```
 
 The next entry in key order, or `none` when there are no more.
@@ -519,4 +492,4 @@ linearithmic where the borrowed walk is linear — the price of handing out owne
 
 **Returns**: the next entry in key order, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L354)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeMap.rux#L373)

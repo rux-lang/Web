@@ -33,7 +33,7 @@ It is written for looking things up. To learn the language from the beginning, f
 
 ::u-page-grid
 :u-page-card{title="Functions" description="Declarations, parameters, overloading, function types and Main." icon="i-lucide-square-function" to="/docs/lang/functions/declaration" variant="subtle"}
-:u-page-card{title="Structures" description="Structs, methods with typed receivers, constructors and extensions." icon="i-lucide-box" to="/docs/lang/structs/overview" variant="subtle"}
+:u-page-card{title="Structures" description="Structs, methods with &self and &var self receivers, constructors and extensions." icon="i-lucide-box" to="/docs/lang/structs/overview" variant="subtle"}
 :u-page-card{title="Enumerations" description="Scalar enums with a backing type and explicit values." icon="i-lucide-list-ordered" to="/docs/lang/enums/overview" variant="subtle"}
 :u-page-card{title="Variants" description="Tagged unions whose cases carry their own data." icon="i-lucide-split" to="/docs/lang/variants/overview" variant="subtle"}
 :u-page-card{title="Unions" description="Untagged overlays of several types in one place." icon="i-lucide-layers" to="/docs/lang/unions/overview" variant="subtle"}
@@ -47,7 +47,7 @@ It is written for looking things up. To learn the language from the beginning, f
 
 ::u-page-grid
 :u-page-card{title="Optionals" description="T? and none, ?? fallbacks and ? propagation." icon="i-lucide-circle-dashed" to="/docs/lang/optionals/overview" variant="subtle"}
-:u-page-card{title="Errors" description="Fallibles T ! E, fail, catch, propagation and panics." icon="i-lucide-triangle-alert" to="/docs/lang/errors/overview" variant="subtle"}
+:u-page-card{title="Errors" description="throws E, throw, marking calls with try, catch arms and panics." icon="i-lucide-triangle-alert" to="/docs/lang/errors/overview" variant="subtle"}
 :u-page-card{title="Sum types" description="A | B values, typed patterns and the is test." icon="i-lucide-combine" to="/docs/lang/sums/overview" variant="subtle"}
 ::
 
@@ -55,7 +55,7 @@ It is written for looking things up. To learn the language from the beginning, f
 
 ::u-page-grid
 :u-page-card{title="References" description="Borrowing with &T and &var T, and the exclusivity rule." icon="i-lucide-link" to="/docs/lang/references/overview" variant="subtle"}
-:u-page-card{title="Pointers" description="*T and *var T, @ and *, null, arithmetic and slicing." icon="i-lucide-mouse-pointer-2" to="/docs/lang/pointers/overview" variant="subtle"}
+:u-page-card{title="Pointers" description="*T and *var T, @ and *, null, arithmetic, slicing and unsafe." icon="i-lucide-mouse-pointer-2" to="/docs/lang/pointers/overview" variant="subtle"}
 :u-page-card{title="Ownership" description="Copies and moves, destructors and defer." icon="i-lucide-key-round" to="/docs/lang/ownership/overview" variant="subtle"}
 :u-page-card{title="Memory layout" description="sizeof, alignof, padding and the layout of native forms." icon="i-lucide-ruler" to="/docs/lang/memory/layout" variant="subtle"}
 ::
@@ -72,7 +72,7 @@ It is written for looking things up. To learn the language from the beginning, f
 
 ::u-page-grid
 :u-page-card{title="Compile time" description="when, the #target, #build, #compiler, #source and #config context, intrinsics and diagnostics." icon="i-lucide-cpu" to="/docs/lang/comptime/overview" variant="subtle"}
-:u-page-card{title="Attributes" description="#Link, #Abi, #NoReturn, #Warn, #Error, #Allow, #Format and #Test." icon="i-lucide-at-sign" to="/docs/lang/attributes/overview" variant="subtle"}
+:u-page-card{title="Attributes" description="#Link, #Abi, #NoReturn, #Warn, #Error, #Allow, #Format, #Test and #Unsendable." icon="i-lucide-at-sign" to="/docs/lang/attributes/overview" variant="subtle"}
 :u-page-card{title="Foreign Function Interface" description="extern declarations, linking libraries and inline assembly." icon="i-lucide-cable" to="/docs/lang/ffi/overview" variant="subtle"}
 ::
 

@@ -29,16 +29,16 @@ pub struct BufferedReader {
 
 Move-only: it owns its buffer. The reader it wraps is borrowed through the interface value and must outlive it.
 
-## Associated functions
+## Constructors
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>BufferedReader</code></h3>
 
 ```rux
-pub func New(
+pub func BufferedReader(
     allocator: Allocator,
     source: Reader,
     capacity: uint
-) -> BufferedReader ! IoError
+) -> BufferedReader throws IoError
 ```
 
 A buffered reader over `source` with `capacity` bytes of buffer.
@@ -51,26 +51,26 @@ A buffered reader over `source` with `capacity` bytes of buffer.
 
 **Returns**: the buffered stream; `Other` when the allocator refused the buffer
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L46)
 
 ## Methods
 
 <h3 id="available"><code>Available</code></h3>
 
 ```rux
-pub func Available(self: &BufferedReader) -> uint
+pub func Available(&self) -> uint
 ```
 
 How many buffered bytes wait unread.
 
 **Returns**: how many bytes are already buffered and can be taken without a read
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L68)
 
 <h3 id="buffered"><code>Buffered</code></h3>
 
 ```rux
-pub func Buffered(self: &BufferedReader) -> char8[..]
+pub func Buffered(&self) -> char8[..]
 ```
 
 The unread bytes, borrowed, without consuming them.
@@ -78,12 +78,12 @@ What line reading is built from: look, decide, then [`Consume`](/docs/api/io/buf
 
 **Returns**: the buffered bytes, borrowed and valid until the next fill
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L76)
 
 <h3 id="consume"><code>Consume</code></h3>
 
 ```rux
-pub func Consume(self: &var BufferedReader, count: uint)
+pub func Consume(&var self, count: uint)
 ```
 
 Marks `count` buffered bytes as read.
@@ -97,12 +97,12 @@ Marks `count` buffered bytes as read.
 <h3 id="fill"><code>Fill</code></h3>
 
 ```rux
-pub func Fill(self: &var BufferedReader) -> ! IoError
+pub func Fill(&var self) throws IoError
 ```
 
 Refills an empty buffer from the source, retrying interruptions.
-Reports what the source reported; `EndOfStream` when the source is done. A source that reports success
-while handing over nothing breaks the [`Reader`](/docs/api/io/reader) contract, and is reported as the end rather than looped on.
+Reports what the source reported, `WouldBlock` included, and `EndOfStream` when the source is done. A source
+that reports success while handing over nothing is reported as the end rather than looped on.
 
 **Returns**: success when at least one byte is buffered; [`IsEnd`](/docs/api/io/io-error#is-end) at the end of the source
 
@@ -112,13 +112,14 @@ while handing over nothing breaks the [`Reader`](/docs/api/io/reader) contract, 
 
 ```rux
 pub func Read(
-    self: &var BufferedReader,
+    &var self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Fills what it can of `into`: from the buffer while it has bytes, straight from the source for a request
 already larger than the whole buffer.
+Interruptions of the source are retried; any other failure, `WouldBlock` included, is returned as itself.
 
 | Name   | Type            | Description        |
 | ------ | --------------- | ------------------ |
@@ -126,27 +127,27 @@ already larger than the whole buffer.
 
 **Returns**: how many bytes were read; [`IsEnd`](/docs/api/io/io-error#is-end) at the end of input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L117)
 
 <h3 id="release"><code>Release</code></h3>
 
 ```rux
-pub func Release(self: &var BufferedReader)
+pub func Release(&var self)
 ```
 
 Gives the buffer back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L144)
 
 ## Destructor
 
 ```rux
-func ~BufferedReader(self: &var BufferedReader)
+func ~BufferedReader(&var self)
 ```
 
 Gives the buffer back. Unread buffered bytes are abandoned, which loses nothing anybody asked for.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L154)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L159)
 
 ## Related
 

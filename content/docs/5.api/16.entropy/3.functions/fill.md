@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Fill.rux
-  line: 140
+  line: 142
 seo:
   title: "Fill — Entropy API"
   description: Fills length bytes of buffer from the operating system.
@@ -22,16 +22,16 @@ seo:
 Fills `length` bytes of `buffer` from the operating system.
 
 ```rux
-pub func Fill(
+pub unsafe func Fill(
     buffer: *var opaque,
     length: uint
-) -> ! EntropyError
+) throws EntropyError
 ```
 
 `buffer` is borrowed and written; `length` is read by value. This is the call to make when there is no reason to
 name a source: it is [`FillFrom`](/docs/api/entropy/entropy-source#fill-from) over [`SystemEntropy`](/docs/api/entropy/system-entropy), with the same contract.
 Runs in time proportional to `length` and allocates nothing.
-`buffer` must be writable for `length` bytes. On any failure the whole buffer is zeroized.
+Safety: `buffer` must be writable for `length` bytes. On any failure the whole buffer is zeroized.
 
 ## Parameters
 

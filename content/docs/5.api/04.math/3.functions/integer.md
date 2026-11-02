@@ -207,7 +207,7 @@ overflows readily - two coprime values multiply - so the flag is the usual case 
 division is done before the multiplication so a representable answer is not lost to an intermediate that is not.
 `result` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L128)
 
 **Type parameters**
 
@@ -241,7 +241,7 @@ one, including zero: the empty product is one, and every identity that matters d
 wrapped power when this returns `true`, so a caller who wants modular arithmetic can use it directly. Runs in time
 proportional to the number of bits in `exponent`. `result` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L156)
 
 **Type parameters**
 

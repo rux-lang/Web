@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Value.rux
-  line: 54
+  line: 63
 seo:
   title: "TomlValue — Toml API"
   description: "A TOML value: one of the ten kinds, owning whatever it holds."
@@ -23,21 +23,14 @@ A TOML value: one of the ten kinds, owning whatever it holds.
 
 ```rux
 pub struct TomlValue {
-    pub kind: TomlKind;
-    pub integer: int64;
     // private fields
 }
 ```
 
 Move-only, because it owns strings and nested values. The allocator it was built with travels with it, so a
 subtree can be released without the caller having to remember where it came from.
-
-## Fields
-
-| Name      | Type       | Description                                                       |
-| --------- | ---------- | ----------------------------------------------------------------- |
-| `kind`    | `TomlKind` | Which of the ten kinds this is.                                   |
-| `integer` | `int64`    | The payload of an [`Integer`](/docs/api/toml/toml-value#integer). |
+The kind is private: it is read with [`Kind`](/docs/api/toml/toml-value#kind) and set only together with its payload, so the two never disagree,
+and the accessor for another kind returns `none` rather than reinterpreting the bytes.
 
 ## Associated functions
 
@@ -55,7 +48,7 @@ An empty table, which is also the shape every other kind is built from: TOML has
 
 **Returns**: an empty table
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L103)
 
 <h3 id="array"><code>Array</code></h3>
 
@@ -71,7 +64,7 @@ An empty array.
 
 **Returns**: an empty array
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L127)
 
 <h3 id="text"><code>Text</code></h3>
 
@@ -79,7 +72,7 @@ An empty array.
 pub func Text(
     allocator: Allocator,
     value: char8[..]
-) -> TomlValue ! TextError
+) -> TomlValue throws TextError
 ```
 
 A string value, whose bytes are copied and validated as UTF-8.
@@ -89,9 +82,9 @@ A string value, whose bytes are copied and validated as UTF-8.
 | `allocator` | `Allocator` | where the storage comes from |
 | `value`     | `char8[..]` | the value to act on          |
 
-**Returns**: that text as a string value, or an empty table when the allocator refused
+**Returns**: that text as a string value, or `InvalidUtf8` when it is not text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L138)
 
 <h3 id="from-string"><code>FromString</code></h3>
 
@@ -111,7 +104,7 @@ A string value copying an already-built string.
 
 **Returns**: that owned string as a string value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L150)
 
 <h3 id="integer"><code>Integer</code></h3>
 
@@ -131,7 +124,7 @@ An integer value.
 
 **Returns**: that integer as a value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L163)
 
 <h3 id="float"><code>Float</code></h3>
 
@@ -151,7 +144,7 @@ A float value, which TOML — unlike JSON — allows to be an infinity or a NaN.
 
 **Returns**: that float as a value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L169)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L175)
 
 <h3 id="boolean"><code>Boolean</code></h3>
 
@@ -171,7 +164,7 @@ A boolean value.
 
 **Returns**: that boolean as a value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L181)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L187)
 
 <h3 id="offset-date-time"><code>OffsetDateTime</code></h3>
 
@@ -195,7 +188,7 @@ A date and time with a known offset, which names a moment on the timeline.
 
 **Returns**: a value carrying the date, the time and the offset from UTC
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L195)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L201)
 
 <h3 id="local-date-time"><code>LocalDateTime</code></h3>
 
@@ -217,7 +210,7 @@ A date and time with no offset, which names a wall clock reading rather than a m
 
 **Returns**: a value carrying the date and the time, with no offset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L216)
 
 <h3 id="local-date"><code>LocalDate</code></h3>
 
@@ -237,7 +230,7 @@ A date with no time.
 
 **Returns**: a value carrying the date alone
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L223)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L229)
 
 <h3 id="local-time"><code>LocalTime</code></h3>
 
@@ -257,233 +250,189 @@ A time with no date.
 
 **Returns**: a value carrying the time alone
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L235)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L241)
 
 ## Methods
 
 <h3 id="kind"><code>Kind</code></h3>
 
 ```rux
-pub func Kind(self: &TomlValue) -> TomlKind
+pub func Kind(&self) -> TomlKind
 ```
 
 Which kind this value is.
 
 **Returns**: which of the TOML kinds this is
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L245)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L251)
 
 <h3 id="as-boolean"><code>AsBoolean</code></h3>
 
 ```rux
-pub func AsBoolean(
-    self: &TomlValue,
-    result: *var bool
-) -> bool
+pub func AsBoolean(&self) -> bool?
 ```
 
-The boolean payload, or `false` when this is not a boolean — which [`Kind`](/docs/api/toml/toml-value#kind) distinguishes from a genuine
-`false`.
+The boolean payload, or `none` when this is not a boolean.
 
-| Name     | Type        | Description                               |
-| -------- | ----------- | ----------------------------------------- |
-| `result` | `*var bool` | receives the value when this reports true |
+**Returns**: the boolean, or `none` when this is not one
 
-**Returns**: whether this is a boolean
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L254)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L258)
 
 <h3 id="as-integer"><code>AsInteger</code></h3>
 
 ```rux
-pub func AsInteger(
-    self: &TomlValue,
-    result: *var int64
-) -> bool
+pub func AsInteger(&self) -> int64?
 ```
 
-The integer payload, or `false` when this is not an integer.
+The integer payload, or `none` when this is not an integer.
 A float is not converted, even when its value happens to be whole: TOML distinguishes `1` from `1.0` and
 collapsing them here would throw away a distinction the document was making.
 
-| Name     | Type         | Description                               |
-| -------- | ------------ | ----------------------------------------- |
-| `result` | `*var int64` | receives the value when this reports true |
+**Returns**: the integer, or `none` when this is not one
 
-**Returns**: whether this is an integer
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L266)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L268)
 
 <h3 id="as-float"><code>AsFloat</code></h3>
 
 ```rux
-pub func AsFloat(
-    self: &TomlValue,
-    result: *var float64
-) -> bool
+pub func AsFloat(&self) -> float64?
 ```
 
-The float payload, or `false` when this is not a float.
+The float payload, or `none` when this is not a float.
 
-| Name     | Type           | Description                               |
-| -------- | -------------- | ----------------------------------------- |
-| `result` | `*var float64` | receives the value when this reports true |
-
-**Returns**: whether this is a float
+**Returns**: the float, or `none` when this is not one
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L276)
 
 <h3 id="as-text"><code>AsText</code></h3>
 
 ```rux
-pub func AsText(self: &TomlValue) -> StringView
+pub func AsText(&self) -> StringView?
 ```
 
-The string payload, or an empty view when this is not a string.
+The string payload, or `none` when this is not a string.
 
-**Returns**: the string, or an empty view when this is not one
+**Returns**: the string, or `none` when this is not one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L285)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L284)
 
 <h3 id="as-date"><code>AsDate</code></h3>
 
 ```rux
-pub func AsDate(self: &TomlValue, result: *var Date) -> bool
+pub func AsDate(&self) -> Date?
 ```
 
-The date part, or `false` when this kind has none.
+The date part, or `none` when this kind has none.
 
-| Name     | Type        | Description                               |
-| -------- | ----------- | ----------------------------------------- |
-| `result` | `*var Date` | receives the value when this reports true |
+**Returns**: the date, or `none` when this value carries none
 
-**Returns**: whether this carries a date
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L294)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L292)
 
 <h3 id="as-time"><code>AsTime</code></h3>
 
 ```rux
-pub func AsTime(
-    self: &TomlValue,
-    result: *var TimeOfDay
-) -> bool
+pub func AsTime(&self) -> TimeOfDay?
 ```
 
-The time part, or `false` when this kind has none.
+The time part, or `none` when this kind has none.
 
-| Name     | Type             | Description                               |
-| -------- | ---------------- | ----------------------------------------- |
-| `result` | `*var TimeOfDay` | receives the value when this reports true |
+**Returns**: the time of day, or `none` when this value carries none
 
-**Returns**: whether this carries a time
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L307)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L303)
 
 <h3 id="as-offset"><code>AsOffset</code></h3>
 
 ```rux
-pub func AsOffset(
-    self: &TomlValue,
-    result: *var UtcOffset
-) -> bool
+pub func AsOffset(&self) -> UtcOffset?
 ```
 
-The offset, or `false` when this is not an offset date-time.
+The offset, or `none` when this is not an offset date-time.
 A local date-time deliberately has none: it names a wall clock reading, and inventing an offset for it is
 how a meeting ends up an hour out.
 
-| Name     | Type             | Description                               |
-| -------- | ---------------- | ----------------------------------------- |
-| `result` | `*var UtcOffset` | receives the value when this reports true |
+**Returns**: the offset from UTC, or `none` when this value carries none
 
-**Returns**: whether this carries an offset from UTC
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L322)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L316)
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &TomlValue) -> uint
+pub func Length(&self) -> uint?
 ```
 
-How many elements an array holds, or entries a table holds; zero for anything else.
+How many elements an array holds, or entries a table holds; `none` for any other kind.
 
-**Returns**: how many elements or entries this holds; zero for anything else
+**Returns**: how many elements or entries this holds, or `none` when it is neither an array nor a table
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L331)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L324)
 
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(
-    self: &var TomlValue,
-    value: TomlValue
-) -> bool
+pub func Push(&var self, value: TomlValue) throws TomlError
 ```
 
 Appends `value` to an array, taking ownership of it.
-Reports `false` when this is not an array or the allocator refused; `value` is consumed either way, so a
-caller does not have to decide who owns it on failure.
+Throws `WrongKind` when this is not an array; `value` is consumed either way, so a caller does not have to
+decide who owns it on failure. Terminates the program when the array cannot grow.
 
 | Name    | Type        | Description         |
 | ------- | ----------- | ------------------- |
 | `value` | `TomlValue` | the value to act on |
 
-**Returns**: whether the element was appended
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L343)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L335)
 
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
 pub func Insert(
-    self: &var TomlValue,
+    &var self,
     key: String,
     value: TomlValue
-) -> bool
+) throws TomlError
 ```
 
 Appends an entry to a table, copying the key and taking ownership of the value.
 The order entries are added in is the order they are kept and written, which is what makes a document
 round-trip recognisably. Nothing here rejects a repeated key — that is the parser's business, where the
 three different ways of repeating one can be told apart.
+Throws `WrongKind` when this is not a table; `key` and `value` are consumed either way. Terminates the program
+when the table cannot grow.
 
 | Name    | Type        | Description         |
 | ------- | ----------- | ------------------- |
 | `key`   | `String`    | the key to look up  |
 | `value` | `TomlValue` | the value to act on |
 
-**Returns**: whether the entry was added
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L356)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L349)
 
 <h3 id="at"><code>At</code></h3>
 
 ```rux
-pub func At(self: &TomlValue, index: uint) -> *TomlValue
+pub func At(&self, index: uint) -> &TomlValue?
 ```
 
-The element at `index`, borrowed, or null when there is none.
+The element at `index`, borrowed, or `none` when there is none.
+`self` stays borrowed while the reference is in use.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
 
-**Returns**: the element at `index`, or null when there is none
+**Returns**: the element at `index`, or `none` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L366)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L360)
 
 <h3 id="at-mutable"><code>AtMutable</code></h3>
 
 ```rux
 pub func AtMutable(
-    self: &var TomlValue,
+    &var self,
     index: uint
-) -> *var TomlValue
+) -> &var TomlValue?
 ```
 
-The element at `index`, borrowed for modification, or null when there is none.
+The element at `index`, borrowed for modification, or `none` when there is none.
 This is how an array of tables grows: the header that opens a new one appends, and the lines under it
 are written into the last element in place.
 
@@ -491,71 +440,65 @@ are written into the last element in place.
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
 
-**Returns**: the element at `index` for writing, or null when there is none
+**Returns**: the element at `index` for writing, or `none` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L378)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L371)
 
 <h3 id="find"><code>Find</code></h3>
 
 ```rux
-pub func Find(
-    self: &TomlValue,
-    key: StringView
-) -> *TomlValue
+pub func Find(&self, key: StringView) -> &TomlValue?
 ```
 
-The value under `key`, borrowed, or null when the table has none.
+The value under `key`, borrowed, or `none` when the table has none.
 
 | Name  | Type         | Description        |
 | ----- | ------------ | ------------------ |
 | `key` | `StringView` | the key to look up |
 
-**Returns**: the entry with that key, or null when there is none
+**Returns**: the value under that key, or `none` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L388)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L380)
 
 <h3 id="find-mutable"><code>FindMutable</code></h3>
 
 ```rux
 pub func FindMutable(
-    self: &var TomlValue,
+    &var self,
     key: StringView
-) -> *var TomlValue
+) -> &var TomlValue?
 ```
 
-The value under `key`, borrowed for modification, or null when the table has none.
+The value under `key`, borrowed for modification, or `none` when the table has none.
 
 | Name  | Type         | Description        |
 | ----- | ------------ | ------------------ |
 | `key` | `StringView` | the key to look up |
 
-**Returns**: the entry with that key for writing, or null when there is none
+**Returns**: the value under that key for writing, or `none` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L404)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L395)
 
 <h3 id="entry-at"><code>EntryAt</code></h3>
 
 ```rux
-pub func EntryAt(
-    self: &TomlValue,
-    index: uint
-) -> *TomlEntry
+pub func EntryAt(&self, index: uint) -> &TomlEntry?
 ```
 
-The entry at `index`, borrowed, or null when there is none.
+The entry at `index`, borrowed, or `none` when there is none.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
 
-**Returns**: the entry at `index`, or null when there is none
+**Returns**: the entry at `index`, or `none` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L420)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L410)
 
 ## Destructor
 
 ```rux
-func ~TomlValue(self: &var TomlValue)
+func ~TomlValue(&var self)
 ```
 
 Releases everything this value owns.
@@ -563,7 +506,7 @@ Written out rather than left to the compiler, because a value owns its string an
 theirs: the recursion here is the shape of the document, and stating it makes the ownership of a nested
 tree something a reader can check.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L431)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L444)
 
 ## Related
 
@@ -586,7 +529,7 @@ pub enum TomlKind: int32 {
 
 Which kind of TOML value this is.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L17)
 
 **Cases**
 
@@ -614,7 +557,7 @@ pub struct TomlEntry {
 
 One entry of a table: its key and its value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L42)
 
 **Fields**
 
@@ -628,9 +571,28 @@ One entry of a table: its key and its value.
 <h4 id="toml-entry-destructor"><code>~TomlEntry</code></h4>
 
 ```rux
-func ~TomlEntry(self: &var TomlEntry)
+func ~TomlEntry(&var self)
 ```
 
 Releases the key and the value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L447)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L455)
+
+<h3 id="toml-error"><code>TomlError</code></h3>
+
+```rux
+pub enum TomlError: int32 {
+    WrongKind = 1
+}
+```
+
+Why a TOML value could not be changed.
+Running out of memory is not one of the reasons: a value whose storage cannot be had terminates the program.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Value.rux#L52)
+
+**Cases**
+
+| Name        | Value | Description                                                                        |
+| ----------- | ----- | ---------------------------------------------------------------------------------- |
+| `WrongKind` | `1`   | An operation for one kind of value asked of another, such as pushing onto a table. |

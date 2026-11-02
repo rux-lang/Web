@@ -50,7 +50,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="fill"><code>Fill</code></h3>
 
 ```rux
-pub func Fill(self: &FormatSpec) -> char8
+pub func Fill(&self) -> char8
 ```
 
 The byte that pads a rendering narrower than the width.
@@ -63,7 +63,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="alignment"><code>Alignment</code></h3>
 
 ```rux
-pub func Alignment(self: &FormatSpec) -> FormatAlign
+pub func Alignment(&self) -> FormatAlign
 ```
 
 Where the padding goes.
@@ -78,7 +78,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="shows-sign"><code>ShowsSign</code></h3>
 
 ```rux
-pub func ShowsSign(self: &FormatSpec) -> bool
+pub func ShowsSign(&self) -> bool
 ```
 
 Whether a non-negative number should carry a `+`.
@@ -91,7 +91,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="is-alternate"><code>IsAlternate</code></h3>
 
 ```rux
-pub func IsAlternate(self: &FormatSpec) -> bool
+pub func IsAlternate(&self) -> bool
 ```
 
 Whether a based integer should carry its `0b`, `0o` or `0x` prefix.
@@ -104,7 +104,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="zero-pads"><code>ZeroPads</code></h3>
 
 ```rux
-pub func ZeroPads(self: &FormatSpec) -> bool
+pub func ZeroPads(&self) -> bool
 ```
 
 Whether a number pads with zeros inside itself rather than with fill outside itself.
@@ -117,7 +117,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="width"><code>Width</code></h3>
 
 ```rux
-pub func Width(self: &FormatSpec) -> uint
+pub func Width(&self) -> uint
 ```
 
 The fewest Unicode scalar values the rendering should occupy.
@@ -131,7 +131,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="precision"><code>Precision</code></h3>
 
 ```rux
-pub func Precision(self: &FormatSpec) -> uint
+pub func Precision(&self) -> uint
 ```
 
 How many characters of text to keep, or how many digits a float carries.
@@ -146,7 +146,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="has-precision"><code>HasPrecision</code></h3>
 
 ```rux
-pub func HasPrecision(self: &FormatSpec) -> bool
+pub func HasPrecision(&self) -> bool
 ```
 
 Whether the placeholder named a precision at all.
@@ -159,7 +159,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="base"><code>Base</code></h3>
 
 ```rux
-pub func Base(self: &FormatSpec) -> FormatBase
+pub func Base(&self) -> FormatBase
 ```
 
 The base an integer should render in.
@@ -172,7 +172,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="style"><code>Style</code></h3>
 
 ```rux
-pub func Style(self: &FormatSpec) -> char8[..]
+pub func Style(&self) -> char8[..]
 ```
 
 The style the specification named, or an empty slice when it named none.
@@ -188,7 +188,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="has-style"><code>HasStyle</code></h3>
 
 ```rux
-pub func HasStyle(self: &FormatSpec) -> bool
+pub func HasStyle(&self) -> bool
 ```
 
 Whether the specification named a style at all.
@@ -201,7 +201,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="style-is"><code>StyleIs</code></h3>
 
 ```rux
-pub func StyleIs(self: &FormatSpec, name: char8[..]) -> bool
+pub func StyleIs(&self, name: char8[..]) -> bool
 ```
 
 Whether the specification named exactly the style `name`.
@@ -257,14 +257,14 @@ pub func WriteFill(
     writer: &var TextWriter,
     spec: FormatSpec,
     count: uint
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `count` copies of the spec's fill byte.
 Reports whatever the writer reported, stopping at the first refusal rather than continuing to a destination
 that has already said no.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L56)
 
 **Parameters**
 
@@ -284,7 +284,7 @@ pub func WriteAligned(
     spec: FormatSpec,
     rendered: char8[..],
     numeric: bool
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `rendered` into `writer` under `spec`'s width, fill and alignment.
@@ -293,7 +293,7 @@ without. A rendering already at or past the requested width is written through u
 Reports whatever the writer reported. A failure part-way leaves whatever the destination had already accepted;
 what that means is the destination's own documented guarantee.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L76)
 
 **Parameters**
 
@@ -313,7 +313,7 @@ pub func WriteDisplayAligned(
     writer: &var TextWriter,
     value: &Display,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value writes
@@ -324,7 +324,7 @@ which is what keeps its own call from coming back here, and the room is then pad
 long for the room is written through unpadded, since a width that short would add no padding anyway.
 Reports whatever the value or the writer reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L101)
 
 **Parameters**
 
@@ -393,7 +393,7 @@ digits of its magnitude, not as its two's-complement bits: `{:b}` of `-5` is `-1
 <h3 id="parse-format-spec"><code>ParseFormatSpec</code></h3>
 
 ```rux
-pub func ParseFormatSpec(text: char8[..]) -> FormatSpec ! FormatError
+pub func ParseFormatSpec(text: char8[..]) -> FormatSpec throws FormatError
 ```
 
 Parses the text between `{:` and `}`.
@@ -412,7 +412,7 @@ unprintable or brace fill, a `.` with no digits after it, a width or precision w
 `uint`, or any byte that can begin none of the remaining pieces. Nothing is written and no partial
 specification escapes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L300)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L310)
 
 **Parameters**
 
@@ -425,7 +425,7 @@ specification escapes.
 <h3 id="reject-style"><code>RejectStyle</code></h3>
 
 ```rux
-pub func RejectStyle(spec: FormatSpec) -> ! FormatError
+pub func RejectStyle(spec: FormatSpec) throws FormatError
 ```
 
 Refuses a specification that names any style.
@@ -434,7 +434,7 @@ question. A value with no styles of its own calls this so that `{:q}` is refused
 as though nothing had been asked for.
 Reports `UnsupportedRequest` when a style was written.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L383)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L406)
 
 **Parameters**
 
@@ -447,7 +447,7 @@ Reports `UnsupportedRequest` when a style was written.
 <h3 id="reject-non-base-style"><code>RejectNonBaseStyle</code></h3>
 
 ```rux
-pub func RejectNonBaseStyle(spec: FormatSpec) -> ! FormatError
+pub func RejectNonBaseStyle(spec: FormatSpec) throws FormatError
 ```
 
 Refuses a specification whose style is not one of the integer bases.
@@ -456,7 +456,7 @@ So a style that left the base decimal is one this value has no meaning for, whic
 the integer counterpart of [`RejectStyle`](/docs/api/text/format-spec#reject-style) and exists for the same reason.
 Reports `UnsupportedRequest` for a style that names no base.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L396)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L419)
 
 **Parameters**
 

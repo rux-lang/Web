@@ -46,7 +46,7 @@ Where a match is in the text searched: from byte `start` up to byte `end`. `Copy
 <h3 id="match-length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &Match) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many bytes the match spans.
@@ -58,7 +58,7 @@ How many bytes the match spans.
 <h3 id="match-slice"><code>Slice</code></h3>
 
 ```rux
-pub func Slice(self: &Match, text: char8[..]) -> char8[..]
+pub func Slice(&self, text: char8[..]) -> char8[..]
 ```
 
 The matched part of `text`, which must be the text that was searched.
@@ -88,15 +88,15 @@ Backreferences and lookaround are refused: without them every search takes time 
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L68)
 
-**Associated functions**
+**Constructors**
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>Regex</code></h3>
 
 ```rux
-pub func New(
+pub func Regex(
     allocator: Allocator,
     pattern: char8[..]
-) -> Regex ! RegexError
+) -> Regex throws RegexError
 ```
 
 Compiles `pattern`.
@@ -108,26 +108,26 @@ Compiles `pattern`.
 
 **Returns**: the compiled pattern, or why it could not be compiled and where
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L243)
 
 **Methods**
 
 <h3 id="group-count"><code>GroupCount</code></h3>
 
 ```rux
-pub func GroupCount(self: &Regex) -> uint
+pub func GroupCount(&self) -> uint
 ```
 
 How many capturing groups the pattern has, not counting the whole match.
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L324)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L315)
 
 <h3 id="group-index"><code>GroupIndex</code></h3>
 
 ```rux
-pub func GroupIndex(self: &Regex, name: char8[..]) -> uint?
+pub func GroupIndex(&self, name: char8[..]) -> uint?
 ```
 
 The number of the group called `name`.
@@ -138,15 +138,12 @@ The number of the group called `name`.
 
 **Returns**: its number, or `none` when no group has that name
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L332)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L323)
 
 <h3 id="is-match"><code>IsMatch</code></h3>
 
 ```rux
-pub func IsMatch(
-    self: &Regex,
-    text: char8[..]
-) -> bool ! RegexError
+pub func IsMatch(&self, text: char8[..]) -> bool
 ```
 
 Whether the pattern matches anywhere in `text`. Stops at the first match it sees.
@@ -155,17 +152,14 @@ Whether the pattern matches anywhere in `text`. Stops at the first match it sees
 | ------ | ----------- | ------------------ |
 | `text` | `char8[..]` | the text to search |
 
-**Returns**: whether there is a match, or fails when the search's storage could not be allocated
+**Returns**: whether there is a match
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L341)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L332)
 
 <h3 id="find"><code>Find</code></h3>
 
 ```rux
-pub func Find(
-    self: &Regex,
-    text: char8[..]
-) -> Match? ! RegexError
+pub func Find(&self, text: char8[..]) -> Match?
 ```
 
 The leftmost match in `text`; among matches starting there, the one a backtracking matcher would choose.
@@ -176,16 +170,16 @@ The leftmost match in `text`; among matches starting there, the one a backtracki
 
 **Returns**: the match, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L356)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L347)
 
 <h3 id="find-at"><code>FindAt</code></h3>
 
 ```rux
 pub func FindAt(
-    self: &Regex,
+    &self,
     text: char8[..],
     start: uint
-) -> Match? ! RegexError
+) -> Match?
 ```
 
 The leftmost match in `text` at or after byte `start`. Anchors and word boundaries still see the text before
@@ -198,15 +192,12 @@ The leftmost match in `text` at or after byte `start`. Anchors and word boundari
 
 **Returns**: the match, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L366)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L357)
 
 <h3 id="capture"><code>Capture</code></h3>
 
 ```rux
-pub func Capture(
-    self: &Regex,
-    text: char8[..]
-) -> Captures? ! RegexError
+pub func Capture(&self, text: char8[..]) -> Captures?
 ```
 
 The leftmost match in `text`, with where each group matched.
@@ -217,16 +208,16 @@ The leftmost match in `text`, with where each group matched.
 
 **Returns**: the groups, or `none` when there is no match
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L378)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L369)
 
 <h3 id="capture-at"><code>CaptureAt</code></h3>
 
 ```rux
 pub func CaptureAt(
-    self: &Regex,
+    &self,
     text: char8[..],
     start: uint
-) -> Captures? ! RegexError
+) -> Captures?
 ```
 
 The leftmost match in `text` at or after byte `start`, with where each group matched.
@@ -238,15 +229,12 @@ The leftmost match in `text` at or after byte `start`, with where each group mat
 
 **Returns**: the groups, or `none` when there is no match
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L387)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L378)
 
 <h3 id="find-all"><code>FindAll</code></h3>
 
 ```rux
-pub func FindAll(
-    self: &Regex,
-    text: char8[..]
-) -> MatchIterator ! RegexError
+pub func FindAll(&self, text: char8[..]) -> MatchIterator
 ```
 
 Every match in `text`, leftmost first and never overlapping. An empty match right after another match is
@@ -258,15 +246,12 @@ skipped, so `a*` finds three matches in `baab`: before the `b`, `aa`, and at the
 
 **Returns**: the matches in turn
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L410)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L401)
 
 <h3 id="split"><code>Split</code></h3>
 
 ```rux
-pub func Split(
-    self: &Regex,
-    text: char8[..]
-) -> SplitIterator ! RegexError
+pub func Split(&self, text: char8[..]) -> SplitIterator
 ```
 
 The parts of `text` between the matches.
@@ -277,17 +262,17 @@ The parts of `text` between the matches.
 
 **Returns**: the parts in turn
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L418)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L409)
 
 <h3 id="replace"><code>Replace</code></h3>
 
 ```rux
 pub func Replace(
-    self: &Regex,
+    &self,
     allocator: Allocator,
     text: char8[..],
     replacement: char8[..]
-) -> String ! RegexError
+) -> String
 ```
 
 `text` with every match replaced by `replacement`, in which `$1` or `${1}` stands for what group 1 matched,
@@ -302,17 +287,17 @@ group that did not match, or does not exist, stands for nothing.
 
 **Returns**: the new text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L430)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L421)
 
 <h3 id="replace-first"><code>ReplaceFirst</code></h3>
 
 ```rux
 pub func ReplaceFirst(
-    self: &Regex,
+    &self,
     allocator: Allocator,
     text: char8[..],
     replacement: char8[..]
-) -> String ! RegexError
+) -> String
 ```
 
 `text` with its first match replaced by `replacement`, which is read as [`Replace`](/docs/api/regex/regex#replace) reads it.
@@ -325,7 +310,7 @@ pub func ReplaceFirst(
 
 **Returns**: the new text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L441)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L432)
 
 <h2 id="match-iterator"><code>MatchIterator</code></h2>
 
@@ -338,7 +323,7 @@ pub struct MatchIterator {
 The matches of a pattern in a text, one after another, leftmost first and never overlapping. Not copied.
 Borrows the regex and the text, which must outlive it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L154)
 
 **Implements Iterator**
 
@@ -347,14 +332,14 @@ Borrows the regex and the text, which must outlive it.
 <h3 id="match-iterator-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var MatchIterator) -> Match?
+pub func Next(&var self) -> Match?
 ```
 
 The next match, or `none` after the last.
 
 **Returns**: the match
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L167)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L162)
 
 <h2 id="split-iterator"><code>SplitIterator</code></h2>
 
@@ -367,7 +352,7 @@ pub struct SplitIterator {
 The parts of a text between the matches of a pattern. Not copied.
 Borrows the regex and the text, which must outlive it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L177)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L172)
 
 **Implements Iterator**
 
@@ -376,7 +361,7 @@ Borrows the regex and the text, which must outlive it.
 <h3 id="split-iterator-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var SplitIterator) -> char8[..]?
+pub func Next(&var self) -> char8[..]?
 ```
 
 The next part, or `none` after the last. There is always one more part than there are matches, so a match at
@@ -384,7 +369,7 @@ either end gives an empty part there.
 
 **Returns**: the part
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L188)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L183)
 
 <h2 id="captures"><code>Captures</code></h2>
 
@@ -397,26 +382,26 @@ pub struct Captures {
 The groups of one match: where each matched, or that it did not. Not copied.
 Borrows the regex it came from for the group names, so it must not outlive the regex.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L205)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L200)
 
 **Methods**
 
 <h3 id="captures-count"><code>Count</code></h3>
 
 ```rux
-pub func Count(self: &Captures) -> uint
+pub func Count(&self) -> uint
 ```
 
 How many groups there are, counting the whole match as group 0.
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L210)
 
 <h3 id="captures-group"><code>Group</code></h3>
 
 ```rux
-pub func Group(self: &Captures, index: uint) -> Match?
+pub func Group(&self, index: uint) -> Match?
 ```
 
 Where group `index` matched: 0 is the whole match, and the groups count from 1 in the order their `(` appear.
@@ -427,12 +412,12 @@ Where group `index` matched: 0 is the whole match, and the groups count from 1 i
 
 **Returns**: where it matched, or `none` when it did not take part in the match or there is no such group
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L225)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L218)
 
 <h3 id="captures-named"><code>Named</code></h3>
 
 ```rux
-pub func Named(self: &Captures, name: char8[..]) -> Match?
+pub func Named(&self, name: char8[..]) -> Match?
 ```
 
 Where the group called `name` matched.
@@ -443,7 +428,7 @@ Where the group called `name` matched.
 
 **Returns**: where it matched, or `none` when it did not take part in the match or there is no such group
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L238)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L231)
 
 <h2 id="escape"><code>Escape</code></h2>
 
@@ -451,13 +436,13 @@ Where the group called `name` matched.
 pub func Escape(
     allocator: Allocator,
     text: char8[..]
-) -> String ! RegexError
+) -> String
 ```
 
 `text` with every character a pattern gives a meaning to escaped, so that the result, as a pattern, matches
 `text` and nothing else.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L546)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Regex.rux#L537)
 
 **Parameters**
 

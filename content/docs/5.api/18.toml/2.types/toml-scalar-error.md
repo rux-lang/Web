@@ -48,7 +48,7 @@ underscores included — and reachable through `Text::ParseFailure`.
 <h3 id="offset"><code>Offset</code></h3>
 
 ```rux
-pub func Offset(self: &TomlScalarError) -> uint
+pub func Offset(&self) -> uint
 ```
 
 Where in the scalar's text the failure was found.
@@ -66,10 +66,10 @@ Borrows the failure and leaves it untouched. Cannot fail; runs in constant time 
 
 ```rux
 pub func WriteDisplay(
-    self: &TomlScalarError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the description of why the scalar could not be read, without the position.
@@ -94,10 +94,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 ```rux
 pub func WriteDebug(
-    self: &TomlScalarError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Names the case and its position: `TomlScalarError::Malformed(3)`.

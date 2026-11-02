@@ -25,5 +25,5 @@ A type whose values may move to another thread: the bound a thread's context and
 pub interface Sendable {}
 ```
 
-Every type satisfies it except a reference and a type that is or holds one declared `#Unsendable()`, which is how
+Every type satisfies it except a reference and a type that is or holds one declared `#Unsendable`, which is how
 a type whose state is not safe to share across threads, such as `Rc`, keeps to the thread that made it.

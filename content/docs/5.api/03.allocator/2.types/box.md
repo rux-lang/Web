@@ -27,7 +27,7 @@ pub struct Box<T> {
 }
 ```
 
-Move-only: its copy operation is prohibited and [`~Box`](/docs/api/allocator/box#destructor) releases its allocation. Transfer one with `<-`; the
+Move-only: its copy operation is prohibited and [`~Box`](/docs/api/allocator/box#destructor) releases its allocation. Transfer one with `move`; the
 source is then moved-out and reading it is rejected while compiling rather than at run time.
 The storage is released when the box is destroyed, at whichever scope exit, return, `break`, `continue` or
 overwriting assignment the value's life ends at.
@@ -38,18 +38,40 @@ overwriting assignment the value's life ends at.
 | ---- | ---------------------------- |
 | `T`  | the type the box owns one of |
 
-## Associated functions
+## Constructors
 
-<h3 id="create"><code>Create</code></h3>
+<h3 id="create"><code>Box</code></h3>
 
 ```rux
-pub func Create(
-    allocator: Allocator,
-    value: T
-) -> Box<T> ! AllocError
+pub func Box(allocator: Allocator, value: T) -> Box<T>
 ```
 
 Puts `value` on the heap and hands back the box that owns it.
+`allocator` is borrowed for the call and kept in the box. `value` is consumed and the box owns it.
+Terminates the program when the allocator refuses; [`TryCreate`](/docs/api/allocator/box#try-create) reports the refusal instead.
+Runs in whatever time the allocator takes, and allocates exactly one block.
+
+| Name        | Type        | Description                  |
+| ----------- | ----------- | ---------------------------- |
+| `allocator` | `Allocator` | where the storage comes from |
+| `value`     | `T`         | the value to move into it    |
+
+**Returns**: the box
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L41)
+
+## Associated functions
+
+<h3 id="try-create"><code>TryCreate</code></h3>
+
+```rux
+pub func TryCreate(
+    allocator: Allocator,
+    value: T
+) -> Box<T> throws AllocError
+```
+
+Puts `value` on the heap and hands back the box that owns it, or throws why the allocator refused.
 `allocator` is borrowed for the call and kept in the box. `value` is consumed: on success the box owns it,
 and on failure it is destroyed rather than leaked.
 Runs in whatever time the allocator takes, and allocates exactly one block.
@@ -59,75 +81,80 @@ Runs in whatever time the allocator takes, and allocates exactly one block.
 | `allocator` | `Allocator` | where the storage comes from |
 | `value`     | `T`         | the value to move into it    |
 
-**Returns**: the box, or why the allocator refused
+**Returns**: the box, or throws why the allocator refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L53)
 
 ## Methods
 
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &Box<T>) -> *var T
+pub func Get(&self) -> &T?
 ```
 
-The value this box holds.
-`self` is borrowed and stays the caller's; the pointer borrows the box's storage and is valid only while the
-box is. Returns null for a box whose value has been taken out.
+The value this box holds, borrowed where it sits, or `none` for a box whose value has been taken out.
+`self` stays borrowed while the reference is in use, so the box cannot be emptied, moved or destroyed under it.
 Cannot fail. Runs in constant time and allocates nothing.
-The pointer dies with the box. Holding it past a move of the box is holding a pointer into released storage.
 
-**Returns**: the address of the held value, or null when the box is empty
+**Returns**: a reference to the held value, or `none` when the box is empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L69)
+
+<h3 id="get-mutable"><code>GetMutable</code></h3>
+
+```rux
+pub func GetMutable(&var self) -> &var T?
+```
+
+The value this box holds, borrowed to be written where it sits, or `none` for a box whose value has been
+taken out.
+`self` stays borrowed exclusively while the reference is in use.
+Cannot fail. Runs in constant time and allocates nothing.
+
+**Returns**: a writable reference to the held value, or `none` when the box is empty
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L81)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &Box<T>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether this box still holds a value.
-`self` is borrowed. False only for a box whose value [`TryTake`](/docs/api/allocator/box#try-take) has moved out, which is a box that owns
+`self` is borrowed. False only for a box whose value [`Take`](/docs/api/allocator/box#take) has moved out, which is a box that owns
 nothing and releases nothing.
 Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether the box holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L93)
 
-<h3 id="try-take"><code>TryTake</code></h3>
+<h3 id="take"><code>Take</code></h3>
 
 ```rux
-pub func TryTake(
-    self: &var Box<T>,
-    destination: *var T
-) -> bool
+pub func Take(&var self) -> T?
 ```
 
 Moves the value out of the box, leaving the box empty, and releases the storage.
-`self` is borrowed mutably and is left empty. `destination` receives the value and must not be null; it is
-left unwritten when this reports `false`, which happens only for a box that is already empty.
+`self` is borrowed mutably and is left empty. Reports `none` only for a box that is already empty.
 The storage goes back to the allocator here rather than at the box's destruction, so a caller taking the
 value out does not have to keep the box alive afterwards.
 Runs in whatever time the allocator takes.
 
-| Name          | Type     | Description             |
-| ------------- | -------- | ----------------------- |
-| `destination` | `*var T` | receives the held value |
+**Returns**: the held value, or `none` when the box is empty
 
-**Returns**: whether there was a value to take
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L104)
 
 ## Destructor
 
 ```rux
-func ~Box(self: &var Box<T>)
+func ~Box(&var self)
 ```
 
 Destroys the value and releases its storage, if the box still holds any.
 Runs when the box's life ends, and does nothing for a box whose value was taken out. A box that was moved
 away is not destroyed where it used to live, so the storage is released exactly once.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Box.rux#L121)

@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Parser.rux
-  line: 874
+  line: 860
 seo:
   title: "TomlParse — Toml API"
   description: "Reads input into a table, or says why it could not and where."
@@ -25,7 +25,7 @@ Reads `input` into a table, or says why it could not and where.
 pub func TomlParse(
     allocator: Allocator,
     input: char8[..]
-) -> TomlValue ! TomlParseFailure
+) -> TomlValue throws TomlParseFailure
 ```
 
 A refusal gives back no document at all. Whatever had been read when the parser stopped is released here,

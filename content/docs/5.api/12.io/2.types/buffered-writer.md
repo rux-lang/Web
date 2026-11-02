@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Buffered.rux
-  line: 164
+  line: 169
 seo:
   title: "BufferedWriter — Io API"
   description: A writer that gathers small writes into a buffer and sends it in one piece.
@@ -31,16 +31,16 @@ Move-only: it owns its buffer. Its destructor flushes as a safety net and discar
 destructor has nowhere to report; the explicit [`Flush`](/docs/api/io/buffered-writer#flush) is where errors are seen, and the caller who cares
 calls it before letting go.
 
-## Associated functions
+## Constructors
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>BufferedWriter</code></h3>
 
 ```rux
-pub func New(
+pub func BufferedWriter(
     allocator: Allocator,
     sink: Writer,
     capacity: uint
-) -> BufferedWriter ! IoError
+) -> BufferedWriter throws IoError
 ```
 
 A buffered writer over `sink` with `capacity` bytes of buffer.
@@ -53,41 +53,41 @@ A buffered writer over `sink` with `capacity` bytes of buffer.
 
 **Returns**: the buffered stream; `Other` when the allocator refused the buffer
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L189)
 
 ## Methods
 
 <h3 id="pending"><code>Pending</code></h3>
 
 ```rux
-pub func Pending(self: &BufferedWriter) -> uint
+pub func Pending(&self) -> uint
 ```
 
 How many bytes wait unsent.
 
 **Returns**: how many bytes are written but not yet flushed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L201)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L204)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var BufferedWriter) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Sends everything gathered, then asks the sink to flush too.
 
 **Returns**: success when everything buffered reached the sink
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L208)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L211)
 
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
 pub func Write(
-    self: &var BufferedWriter,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Takes `bytes`: into the buffer while they fit, around it in one piece when they never would.
@@ -98,26 +98,26 @@ Takes `bytes`: into the buffer while they fit, around it in one piece when they 
 
 **Returns**: how many bytes were taken, which is all of them
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L225)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L229)
 
 <h3 id="abandon"><code>Abandon</code></h3>
 
 ```rux
-pub func Abandon(self: &var BufferedWriter)
+pub func Abandon(&var self)
 ```
 
 Gives the buffer back without sending what it holds.
 For the caller who has decided the bytes must not go — the one case where losing them is the point.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L244)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L250)
 
 ## Destructor
 
 ```rux
-func ~BufferedWriter(self: &var BufferedWriter)
+func ~BufferedWriter(&var self)
 ```
 
 Flushes as a safety net — the outcome has nowhere to go, so a caller who cares flushed already — then
 gives the buffer back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L259)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Buffered.rux#L265)

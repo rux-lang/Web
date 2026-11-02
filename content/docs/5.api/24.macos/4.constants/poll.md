@@ -178,7 +178,7 @@ A change or an empty event: `filter` on `ident` with `flags`, reporting `userDat
 <h2 id="fcntl-int"><code>FcntlInt</code></h2>
 
 ```rux
-pub func FcntlInt(
+pub unsafe func FcntlInt(
     fd: FileDescriptor,
     command: int32,
     argument: int64
@@ -186,10 +186,12 @@ pub func FcntlInt(
 ```
 
 Performs `command` on a descriptor with an integer argument.
+Safety: `command` must take an integer argument, such as [`F_GETFL`](/docs/api/macos/poll#f-getfl) or [`F_SETFL`](/docs/api/macos/poll#f-setfl); for a command whose argument is a
+pointer, [`fcntl`](/docs/api/macos/spawn#fcntl) would use `argument` as an address.
 
 **See also**: [https://keith.github.io/xcode-man-pages/fcntl.2.html](https://keith.github.io/xcode-man-pages/fcntl.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Poll.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Poll.rux#L104)
 
 **Parameters**
 
@@ -211,14 +213,14 @@ Opens a kqueue.
 
 **See also**: [https://keith.github.io/xcode-man-pages/kqueue.2.html](https://keith.github.io/xcode-man-pages/kqueue.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Poll.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Poll.rux#L112)
 
 **Returns**: the kqueue's descriptor, or a negative error number
 
 <h2 id="kevent-call"><code>KeventCall</code></h2>
 
 ```rux
-pub func KeventCall(
+pub unsafe func KeventCall(
     queue: FileDescriptor,
     changes: *Kevent,
     changeCount: int32,
@@ -229,10 +231,12 @@ pub func KeventCall(
 ```
 
 Applies `changeCount` changes, then waits until an event is ready or `timeout` passes, filling `events`.
+Safety: a non-null `changes` must be readable for `changeCount` events, a non-null `events` writable for
+`eventCount` events, and a non-null `timeout` readable.
 
 **See also**: [https://keith.github.io/xcode-man-pages/kevent.2.html](https://keith.github.io/xcode-man-pages/kevent.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Poll.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Poll.rux#L129)
 
 **Parameters**
 

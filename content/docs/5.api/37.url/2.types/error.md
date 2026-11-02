@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Error.rux
-  line: 5
+  line: 6
 seo:
   title: "Errors — Url API"
   description: Why a URL could not be parsed.
@@ -30,14 +30,13 @@ pub enum UrlError: uint8 {
     InvalidHost = 3,
     InvalidPort = 4,
     InvalidPercentEncoding = 5,
-    OutOfMemory = 6,
     InvalidText = 7
 }
 ```
 
 Why text could not be read or resolved as a URL. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Error.rux#L5)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Error.rux#L6)
 
 **Cases**
 
@@ -48,5 +47,4 @@ Why text could not be read or resolved as a URL. `Copy`.
 | `InvalidHost`            | `3`   | The host is empty where one is required, holds a character a host cannot, or is a malformed IPv6 address. |
 | `InvalidPort`            | `4`   | The port is not a number from 0 to 65535.                                                                 |
 | `InvalidPercentEncoding` | `5`   | A `%` is not followed by two hexadecimal digits.                                                          |
-| `OutOfMemory`            | `6`   | The allocator could not supply the storage.                                                               |
 | `InvalidText`            | `7`   | Decoded bytes are not UTF-8 text.                                                                         |

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Find.rux
-  line: 194
+  line: 201
 seo:
   title: "Comparing slices — Algorithms API"
   description: "Element-by-element equality, the first difference and lexicographic order between two slices."
@@ -33,7 +33,7 @@ equal for their whole common length — so two slices of different lengths that 
 the shorter length, and two identical slices report `none`.
 Cannot fail. Runs in time proportional to the shorter length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L194)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L201)
 
 **Type parameters**
 
@@ -61,7 +61,7 @@ Both are borrowed and read. Different lengths are never equal, and two empty sli
 pointers hold.
 Cannot fail. Runs in time proportional to the shorter length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L214)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L222)
 
 **Type parameters**
 
@@ -92,7 +92,7 @@ Requires `<` and `==` on the element type. Use [`CompareBy`](/docs/api/algorithm
 wanted order is not its own.
 Cannot fail. Runs in time proportional to the shorter length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L231)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L239)
 
 **Type parameters**
 
@@ -125,7 +125,7 @@ exactly as [`Compare`](/docs/api/algorithms/comparing#compare) is, and the way t
 by something other than their own.
 Cannot fail. Runs in time proportional to the shorter length and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L255)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L265)
 
 **Type parameters**
 

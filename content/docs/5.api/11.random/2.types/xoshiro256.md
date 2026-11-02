@@ -76,7 +76,7 @@ seed rather than accepted into a generator that would return zero forever.
 <h3 id="next-uint64"><code>NextUint64</code></h3>
 
 ```rux
-pub func NextUint64(self: &var Xoshiro256) -> uint64
+pub func NextUint64(&var self) -> uint64
 ```
 
 The next word.
@@ -92,12 +92,12 @@ two implementations agree on the first word rather than being one step apart for
 <h3 id="xoshiro-from-entropy"><code>XoshiroFromEntropy</code></h3>
 
 ```rux
-pub func XoshiroFromEntropy() -> Xoshiro256 ! EntropyError
+pub func XoshiroFromEntropy() -> Xoshiro256 throws EntropyError
 ```
 
 A [`Xoshiro256`](/docs/api/random/xoshiro256) seeded from the operating system's entropy.
 Fails with why the entropy could not be obtained. A caller that is content with a predictable generator when
-the system has no entropy recovers explicitly, as in `XoshiroFromEntropy() catch { else => Xoshiro256(0u64) }`.
+the system has no entropy recovers explicitly, as in `try XoshiroFromEntropy() catch { _ => Xoshiro256(0u64) }`.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Seeding.rux#L18)
 

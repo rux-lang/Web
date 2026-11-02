@@ -74,7 +74,7 @@ pub func Panic(message: char8[..])
 
 Terminates the program, reporting `message`.
 `message` is read by value; this never returns. Use it where a case is unreachable by construction rather than
-unlikely — a caller who could have handled the failure should have been given a fallible `T ! E` instead.
+unlikely — a caller who could have handled the failure should have been given a function that `throws E` instead.
 Reports the message, the enclosing function, and the file, line and column of the call, then terminates. Does not
 unwind: no destructor runs.
 Runs in constant time and allocates nothing.

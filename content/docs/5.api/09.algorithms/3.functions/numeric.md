@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Numeric.rux
-  line: 17
+  line: 19
 seo:
   title: "Numeric sequences — Algorithms API"
   description: "Running sums and scans, counting sequences, and an overflow-free midpoint."
@@ -34,7 +34,7 @@ Writes the running sums of `items` into `into`: element `i` becomes the sum of t
 `into` may be `items` itself. Requires `+` on the element type, with whatever overflow it has.
 Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L19)
 
 **Type parameters**
 
@@ -66,7 +66,7 @@ left to right with `combine`. [`PartialSum`](/docs/api/algorithms/numeric#partia
 `into` may be `items` itself.
 Runs in time proportional to the length and allocates nothing beyond whatever `combine` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L48)
 
 **Type parameters**
 
@@ -101,7 +101,7 @@ in none.
 `into` may be `items` itself.
 Runs in time proportional to the length and allocates nothing beyond whatever `combine` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L79)
 
 **Type parameters**
 
@@ -130,7 +130,7 @@ Fills `into` with `start`, `start + step`, `start + 2 * step` and so on.
 Requires `+` on the element type, with whatever overflow it has.
 Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L102)
 
 **Type parameters**
 
@@ -166,7 +166,7 @@ Halfway between `a` and `b`, without overflowing to infinity when both are near 
 | `pub func Midpoint(a: uint32, b: uint32) -> uint32`    | Halfway between `a` and `b`, rounded toward `a`, without overflowing however far apart they are.          |
 | `pub func Midpoint(a: float64, b: float64) -> float64` | Halfway between `a` and `b`, without overflowing to infinity when both are near the largest finite value. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L118)
 
 **Parameters**
 

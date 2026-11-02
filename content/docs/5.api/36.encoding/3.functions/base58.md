@@ -48,12 +48,12 @@ in memory can have; runs in constant time and allocates nothing.
 pub func Base58Encode(
     bytes: byte[..],
     into: var char8[..]
-) -> uint ! FormatError
+) -> uint throws FormatError
 
 pub func Base58Encode(
     text: char8[..],
     into: var char8[..]
-) -> uint ! FormatError
+) -> uint throws FormatError
 ```
 
 Writes `bytes` as Base58 into the front of `into`.
@@ -62,10 +62,10 @@ the encoded form does not fit `into`; `Base58EncodedMaxLength(bytes.length)` cha
 leaves `into` filled with zero bytes, because the conversion used it as scratch space. Room past the encoded form
 is not touched on success.
 
-| Overload                                                                            | Summary                                                        |
-| ----------------------------------------------------------------------------------- | -------------------------------------------------------------- |
-| `pub func Base58Encode(bytes: byte[..], into: var char8[..]) -> uint ! FormatError` | Writes `bytes` as Base58 into the front of `into`.             |
-| `pub func Base58Encode(text: char8[..], into: var char8[..]) -> uint ! FormatError` | Writes the bytes of `text` as Base58 into the front of `into`. |
+| Overload                                                                                 | Summary                                                        |
+| ---------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `pub func Base58Encode(bytes: byte[..], into: var char8[..]) -> uint throws FormatError` | Writes `bytes` as Base58 into the front of `into`.             |
+| `pub func Base58Encode(text: char8[..], into: var char8[..]) -> uint throws FormatError` | Writes the bytes of `text` as Base58 into the front of `into`. |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base58.rux#L64)
 
@@ -85,7 +85,7 @@ is not touched on success.
 pub func Base58Decode(
     text: char8[..],
     into: var byte[..]
-) -> uint ! DecodeError
+) -> uint throws DecodeError
 ```
 
 Reads Base58 text in the Bitcoin alphabet into the front of `into`.

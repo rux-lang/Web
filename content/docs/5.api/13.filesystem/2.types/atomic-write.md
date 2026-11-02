@@ -39,7 +39,7 @@ in place, which is the behavior that makes this worth using.
 pub func Begin(
     allocator: Allocator,
     target: Path
-) -> AtomicWrite ! IoError
+) -> AtomicWrite throws IoError
 ```
 
 Begins replacing `target`.
@@ -53,14 +53,14 @@ target need not exist; if it does, it is untouched until [`Commit`](/docs/api/fi
 
 **Returns**: a write in progress against a temporary file
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L48)
 
 ## Methods
 
 <h3 id="stream"><code>Stream</code></h3>
 
 ```rux
-pub func Stream(self: &var AtomicWrite) -> FileStream
+pub func Stream(&var self) -> FileStream
 ```
 
 A stored writer over the partial file.
@@ -70,27 +70,27 @@ The [`AtomicWrite`](/docs/api/filesystem/atomic-write) must outlive the result a
 
 **Returns**: a stream over the partial file, held by address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L71)
 
 <h3 id="target"><code>Target</code></h3>
 
 ```rux
-pub func Target(self: &AtomicWrite) -> Path
+pub func Target(&self) -> Path
 ```
 
 The name the finished file will take.
 
 **Returns**: the path the contents will take when committed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L78)
 
 <h3 id="commit"><code>Commit</code></h3>
 
 ```rux
 pub func Commit(
-    self: &var AtomicWrite,
+    &var self,
     allocator: Allocator
-) -> ! IoError
+) throws IoError
 ```
 
 Forces the contents to the device and moves them onto the target.
@@ -107,15 +107,15 @@ rather than being durable on some and pretending on the rest.
 
 **Returns**: success when the target now holds the contents; on failure it still holds the old ones
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L92)
 
 <h3 id="abandon"><code>Abandon</code></h3>
 
 ```rux
 pub func Abandon(
-    self: &var AtomicWrite,
+    &var self,
     allocator: Allocator
-) -> ! IoError
+) throws IoError
 ```
 
 Throws the partial file away and leaves the target as it was.
@@ -126,17 +126,17 @@ Throws the partial file away and leaves the target as it was.
 
 **Returns**: success when the temporary file was removed and the target left alone
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L109)
 
 <h3 id="release"><code>Release</code></h3>
 
 ```rux
-pub func Release(self: &var AtomicWrite)
+pub func Release(&var self)
 ```
 
 Gives the buffers back. The temporary's own destructor removes any partial file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L117)
 
 ## Implements Writer
 
@@ -146,9 +146,9 @@ Gives the buffers back. The temporary's own destructor removes any partial file.
 
 ```rux
 pub func Write(
-    self: &var AtomicWrite,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Writes into the partial file.
@@ -163,12 +163,12 @@ One attempt, partial on purpose, exactly as the underlying file's is; `WriteAll`
 
 **Returns**: how much of it the file took
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L140)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var AtomicWrite) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Flushes the partial file, which holds nothing back.
@@ -176,19 +176,19 @@ Flushes the partial file, which holds nothing back.
 
 **Returns**: what the file reported
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L149)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L148)
 
 ## Destructor
 
 ```rux
-func ~AtomicWrite(self: &var AtomicWrite)
+func ~AtomicWrite(&var self)
 ```
 
 Discards an uncommitted replacement, leaving the target untouched.
 This is the property that makes the type worth using: an early return or a failure part-way through
 writing leaves the old contents exactly where they were, with no partial file left behind.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L125)
 
 ## Related
 
@@ -199,13 +199,13 @@ pub func WriteAtomically(
     allocator: Allocator,
     target: Path,
     contents: char8[..]
-) -> ! IoError
+) throws IoError
 ```
 
 Replaces `target` with `contents`, atomically.
 The one-shot form of the type above, for the common case where the whole file is already in hand.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L160)
 
 **Parameters**
 

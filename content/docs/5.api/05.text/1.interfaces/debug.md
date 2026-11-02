@@ -26,7 +26,7 @@ pub interface Debug {
     func WriteDebug(
         writer: &var TextWriter,
         spec: FormatSpec
-    ) -> ! FormatError;
+    ) throws FormatError;
 }
 ```
 
@@ -41,7 +41,7 @@ value by its numeric form where [`Display`](/docs/api/text/display) would replac
 func WriteDebug(
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes this value's inspection text under `spec`.
@@ -76,7 +76,7 @@ pub func WriteDebugValue(
     writer: &var TextWriter,
     value: Debug,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `value` under `spec` through its [`Debug`](/docs/api/text/debug) implementation.
@@ -99,7 +99,7 @@ Writes `value` under `spec` through its [`Debug`](/docs/api/text/debug) implemen
 pub func WriteEscaped(
     writer: &var TextWriter,
     text: char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `text` with the characters that would be ambiguous or invisible replaced by escapes.
@@ -127,9 +127,9 @@ Reports whatever the writer reported, stopping at the first refusal.
 ```rux
 pub func WriteOptionalDebug<T: Debug>(
     writer: &var TextWriter,
-    value: &T?,
+    value: &((T?)),
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a borrowed optional as `Some(value)` or `none`.
@@ -139,7 +139,7 @@ cannot be copied, as many times as wanted, and the optional still holds it after
 Reports whatever the writer or the payload's implementation reported, stopping at the first refusal, so a
 destination that has already refused something is not written to again.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L40)
 
 **Type parameters**
 
@@ -152,28 +152,28 @@ destination that has already refused something is not written to again.
 | Name     | Type              | Description                                 |
 | -------- | ----------------- | ------------------------------------------- |
 | `writer` | `&var TextWriter` | the destination                             |
-| `value`  | `&T?`             | the optional to show, borrowed for the call |
+| `value`  | `&((T?))`         | the optional to show, borrowed for the call |
 | `spec`   | `FormatSpec`      | what to show the payload under              |
 
 **Returns**: success when the whole rendering was accepted
 
-<h3 id="write-fallible-debug"><code>WriteFallibleDebug&lt;T, E&gt;</code></h3>
+<h3 id="write-result-debug"><code>WriteResultDebug&lt;T, E&gt;</code></h3>
 
 ```rux
-pub func WriteFallibleDebug<T: Debug, E: Debug>(
+pub func WriteResultDebug<T: Debug, E: Debug>(
     writer: &var TextWriter,
-    value: &(T ! E),
+    value: &Result<T, E>,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
-Writes a borrowed fallible as `Success(value)` or `Failure(reason)`.
-Both payloads are borrowed, so neither channel is consumed by being shown. The names are the native channel
-names, so what is written names the case a reader would branch on.
+Writes a borrowed `Result` as `Success(value)` or `Failure(reason)`.
+Both payloads are borrowed, so neither case is consumed by being shown. The names are the case names, so what
+is written names the case a reader would branch on.
 `spec` is handed to whichever payload is present and describes it rather than the wrapper.
 Reports whatever the writer or the payload's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L66)
 
 **Type parameters**
 
@@ -184,11 +184,11 @@ Reports whatever the writer or the payload's implementation reported, stopping a
 
 **Parameters**
 
-| Name     | Type              | Description                                 |
-| -------- | ----------------- | ------------------------------------------- |
-| `writer` | `&var TextWriter` | the destination                             |
-| `value`  | `&(T ! E)`        | the fallible to show, borrowed for the call |
-| `spec`   | `FormatSpec`      | what to show the payload under              |
+| Name     | Type              | Description                               |
+| -------- | ----------------- | ----------------------------------------- |
+| `writer` | `&var TextWriter` | the destination                           |
+| `value`  | `&Result<T, E>`   | the result to show, borrowed for the call |
+| `spec`   | `FormatSpec`      | what to show the payload under            |
 
 **Returns**: success when the whole rendering was accepted
 
@@ -199,7 +199,7 @@ pub func WriteSliceDebug<T: Debug>(
     writer: &var TextWriter,
     items: T[..],
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a borrowed run of elements as `[first, second, third]`.
@@ -213,7 +213,7 @@ commas are punctuation and are never padded.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal rather than
 continuing through the rest of the run.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L98)
 
 **Type parameters**
 

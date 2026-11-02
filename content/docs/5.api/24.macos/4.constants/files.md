@@ -196,7 +196,7 @@ pub const SeekEnd: int32 = 2;
 <h2 id="read"><code>Read</code></h2>
 
 ```rux
-pub func Read(
+pub unsafe func Read(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint
@@ -206,7 +206,7 @@ pub func Read(
 Reads up to `count` bytes from `fd` into `buffer`.
 `buffer` is borrowed and written. Returns the number of bytes read, zero at end of file, or a negative error
 number. A short count is ordinary.
-`buffer` must be writable for `count` bytes.
+Safety: `buffer` must be writable for `count` bytes.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L95)
 
@@ -223,7 +223,7 @@ number. A short count is ordinary.
 <h2 id="write"><code>Write</code></h2>
 
 ```rux
-pub func Write(
+pub unsafe func Write(
     fd: FileDescriptor,
     buffer: *opaque,
     count: uint
@@ -233,7 +233,7 @@ pub func Write(
 Writes up to `count` bytes from `buffer` to `fd`.
 `buffer` is borrowed and read. Returns the number of bytes written, or a negative error number. A short count is
 ordinary and the rest has to be written by calling again.
-`buffer` must be readable for `count` bytes.
+Safety: `buffer` must be readable for `count` bytes.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L108)
 
@@ -269,7 +269,7 @@ Returns zero, or a negative error number. A failure does not mean the descriptor
 <h2 id="open-at"><code>OpenAt</code></h2>
 
 ```rux
-pub func OpenAt(
+pub unsafe func OpenAt(
     directoryFd: FileDescriptor,
     path: *char8,
     flags: int32,
@@ -279,9 +279,9 @@ pub func OpenAt(
 
 Opens `path` relative to `directoryFd` and returns a descriptor, or a negative error number.
 `directoryFd` is [`AtFdCwd`](/docs/api/macos/files#at-fd-cwd) for an ordinary path. `mode` is read only when [`OpenCreate`](/docs/api/macos/files#open-create) is set.
-`path` must be non-null and terminated. The mode is masked by the process umask.
+Safety: `path` must be non-null and terminated. The mode is masked by the process umask.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L130)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L131)
 
 **Parameters**
 
@@ -306,7 +306,7 @@ pub func Lseek(
 
 Moves the file offset of `fd` and returns where it ended up, or a negative error number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L141)
 
 **Parameters**
 
@@ -321,7 +321,7 @@ Moves the file offset of `fd` and returns where it ended up, or a negative error
 <h2 id="fstat"><code>Fstat</code></h2>
 
 ```rux
-pub func Fstat(
+pub unsafe func Fstat(
     fd: FileDescriptor,
     statBuffer: *var opaque
 ) -> int64
@@ -329,9 +329,9 @@ pub func Fstat(
 
 Fills `statBuffer` with what the kernel knows about the file behind `fd`.
 Returns zero, or a negative error number.
-`statBuffer` must be writable for the whole of the 64-bit-inode `struct stat`, which is 144 bytes.
+Safety: `statBuffer` must be writable for the whole of the 64-bit-inode `struct stat`, which is 144 bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L193)
 
 **Parameters**
 
@@ -345,7 +345,7 @@ Returns zero, or a negative error number.
 <h2 id="fstat-at"><code>FstatAt</code></h2>
 
 ```rux
-pub func FstatAt(
+pub unsafe func FstatAt(
     directoryFd: FileDescriptor,
     path: *char8,
     statBuffer: *var opaque,
@@ -356,10 +356,10 @@ pub func FstatAt(
 Fills `statBuffer` with what the kernel knows about the file `path` names.
 `directoryFd` is [`AtFdCwd`](/docs/api/macos/files#at-fd-cwd) for an ordinary path. `flags` is zero to follow a symbolic link at the end of the
 path, or [`SymlinkNoFollow`](/docs/api/macos/directories#symlink-no-follow) to describe the link itself. Returns zero, or a negative error number.
-`statBuffer` must be writable for the whole of the 64-bit-inode `struct stat`, which is 144 bytes and whose
-layout this package does not model.
+Safety: `path` must be non-null and NUL-terminated, and `statBuffer` must be writable for the whole of the
+64-bit-inode `struct stat`, which is 144 bytes and whose layout this package does not model.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L204)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L208)
 
 **Parameters**
 
@@ -375,7 +375,7 @@ layout this package does not model.
 <h2 id="fchmod-at"><code>FchmodAt</code></h2>
 
 ```rux
-pub func FchmodAt(
+pub unsafe func FchmodAt(
     directoryFd: FileDescriptor,
     path: *char8,
     mode: FileMode,
@@ -386,8 +386,9 @@ pub func FchmodAt(
 Sets the permission bits of the file `path` names.
 `directoryFd` is [`AtFdCwd`](/docs/api/macos/files#at-fd-cwd) for an ordinary path. `flags` may carry [`SymlinkNoFollow`](/docs/api/macos/directories#symlink-no-follow). Returns zero, or a
 negative error number.
+Safety: `path` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L222)
 
 **Parameters**
 
@@ -403,7 +404,7 @@ negative error number.
 <h2 id="utimens-at"><code>UtimensAt</code></h2>
 
 ```rux
-pub func UtimensAt(
+pub unsafe func UtimensAt(
     directoryFd: FileDescriptor,
     path: *char8,
     times: *opaque,
@@ -415,8 +416,10 @@ Sets the access and modification times of the file `path` names.
 `times` is borrowed and holds two `timespec` values — access first, then modification — each a whole-second
 count and a nanosecond fraction, both 8 bytes. A null `times` sets both to now. `flags` may carry
 [`SymlinkNoFollow`](/docs/api/macos/directories#symlink-no-follow). Returns zero, or a negative error number.
+Safety: `path` must be non-null and NUL-terminated, and a non-null `times` must be readable for two `timespec`
+values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L231)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L238)
 
 **Parameters**
 
@@ -441,7 +444,7 @@ This is weaker on Darwin than everywhere else: it hands the data to the device w
 commit it, so a power failure can still lose a write this reported as flushed. `F_FULLFSYNC` through [`fcntl`](/docs/api/macos/spawn#fcntl) is
 what actually waits, and this package does not wrap it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L289)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L299)
 
 **Parameters**
 
@@ -463,7 +466,7 @@ pub func Ftruncate(
 Sets the length of the file behind `fd` to `length`.
 Growing creates a hole rather than allocating, so a later write into it can still fail with [`ENOSPC`](/docs/api/macos/errors#enospc).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L299)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L310)
 
 **Parameters**
 
@@ -486,7 +489,7 @@ pub func Dup2(
 Makes `newFd` a copy of `oldFd`, closing whatever `newFd` was.
 Returns `newFd`, or a negative error number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L347)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L359)
 
 **Parameters**
 
@@ -500,15 +503,15 @@ Returns `newFd`, or a negative error number.
 <h2 id="pipe"><code>Pipe</code></h2>
 
 ```rux
-pub func Pipe(descriptors: *var int32) -> int64
+pub unsafe func Pipe(descriptors: *var int32) -> int64
 ```
 
 Creates a pipe and writes its two descriptors into `descriptors`.
 The reading end lands at index zero and the writing end at index one. Darwin has no `pipe2`, so close-on-exec has
 to be set afterwards through [`fcntl`](/docs/api/macos/spawn#fcntl) — which leaves a window another thread can execute through.
-`descriptors` must be writable for two `int32` values.
+Safety: `descriptors` must be writable for two `int32` values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L358)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L371)
 
 **Parameters**
 

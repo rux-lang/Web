@@ -134,6 +134,26 @@ pub const ERROR_DISK_FULL: uint32 = 112;
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L67)
 
+<h2 id="error-insufficient-buffer"><code>ERROR_INSUFFICIENT_BUFFER</code></h2>
+
+```rux
+pub const ERROR_INSUFFICIENT_BUFFER: uint32 = 122;
+```
+
+`ERROR_INSUFFICIENT_BUFFER`: the buffer was too small; the call set its length argument to the bytes needed.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L72)
+
+<h2 id="error-more-data"><code>ERROR_MORE_DATA</code></h2>
+
+```rux
+pub const ERROR_MORE_DATA: uint32 = 234;
+```
+
+`ERROR_MORE_DATA`: the buffer was too small for the value; a registry call reports this one instead.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L77)
+
 <h2 id="error-privilege-not-held"><code>ERROR_PRIVILEGE_NOT_HELD</code></h2>
 
 ```rux
@@ -144,7 +164,7 @@ pub const ERROR_PRIVILEGE_NOT_HELD: uint32 = 1314;
 What refuses [`CreateSymbolicLinkW`](/docs/api/windows/file-system#create-symbolic-link-w) on a machine without Developer Mode, where creating a symbolic link needs
 `SeCreateSymbolicLinkPrivilege` — a restriction no other supported system places on the same operation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L84)
 
 <h2 id="error-no-more-files"><code>ERROR_NO_MORE_FILES</code></h2>
 
@@ -156,7 +176,7 @@ pub const ERROR_NO_MORE_FILES: uint32 = 18;
 Reported by [`FindNextFileW`](/docs/api/windows/file-system#find-next-file-w) at the end of an enumeration, where nothing has gone wrong at all — the caller
 distinguishes it from a real failure by this code.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L91)
 
 <h2 id="error-already-exists"><code>ERROR_ALREADY_EXISTS</code></h2>
 
@@ -168,7 +188,7 @@ pub const ERROR_ALREADY_EXISTS: uint32 = 183;
 Reported by [`CreateDirectoryW`](/docs/api/windows/file-system#create-directory-w) where [`ERROR_FILE_EXISTS`](/docs/api/windows/errors#error-file-exists) is reported by the file calls, which is why a caller
 asking "was it already there" has to accept both.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L98)
 
 <h2 id="error-invalid-address"><code>ERROR_INVALID_ADDRESS</code></h2>
 
@@ -178,7 +198,7 @@ pub const ERROR_INVALID_ADDRESS: uint32 = 487;
 
 `ERROR_INVALID_ADDRESS`: the address is not one the operation can use.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L103)
 
 <h2 id="error-commitment-limit"><code>ERROR_COMMITMENT_LIMIT</code></h2>
 
@@ -189,7 +209,7 @@ pub const ERROR_COMMITMENT_LIMIT: uint32 = 1455;
 `ERROR_COMMITMENT_LIMIT`: the system's commit limit is reached, so nothing more can be backed.
 What a large commit fails with when the page file cannot grow, as distinct from running out of address space.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L109)
 
 <h2 id="get-last-error"><code>GetLastError</code></h2>
 
@@ -201,6 +221,6 @@ Retrieves the calling thread's last-error code value.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L237)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L254)
 
 **Returns**: the calling thread's last error code, which only a documented failure sets

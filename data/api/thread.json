@@ -307,7 +307,7 @@
           "kind": "method",
           "name": "WithStackSize",
           "line": 49,
-          "signature": "pub func WithStackSize(self: &ThreadOptions, size: uint) -> ThreadOptions",
+          "signature": "pub func WithStackSize(&self, size: uint) -> ThreadOptions",
           "typeParams": [],
           "params": [{ "name": "size", "type": "uint" }],
           "receiver": "&ThreadOptions",
@@ -339,7 +339,7 @@
           "kind": "method",
           "name": "StackSize",
           "line": 56,
-          "signature": "pub func StackSize(self: &ThreadOptions) -> uint",
+          "signature": "pub func StackSize(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&ThreadOptions",
@@ -441,8 +441,8 @@
         {
           "kind": "method",
           "name": "Join",
-          "line": 78,
-          "signature": "pub func Join(self: &var JoinHandle<R>) -> R",
+          "line": 76,
+          "signature": "pub func Join(&var self) -> R",
           "typeParams": [],
           "params": [],
           "receiver": "&var JoinHandle<R>",
@@ -473,8 +473,8 @@
         {
           "kind": "method",
           "name": "Detach",
-          "line": 93,
-          "signature": "pub func Detach(self: &var JoinHandle<R>)",
+          "line": 98,
+          "signature": "pub func Detach(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var JoinHandle<R>",
@@ -505,8 +505,8 @@
         {
           "kind": "method",
           "name": "IsJoinable",
-          "line": 108,
-          "signature": "pub func IsJoinable(self: &JoinHandle<R>) -> bool",
+          "line": 120,
+          "signature": "pub func IsJoinable(&self) -> bool",
           "typeParams": [],
           "params": [],
           "receiver": "&JoinHandle<R>",
@@ -537,8 +537,8 @@
         {
           "kind": "destructor",
           "name": "~JoinHandle",
-          "line": 112,
-          "signature": "func ~JoinHandle(self: &var JoinHandle<R>)",
+          "line": 124,
+          "signature": "func ~JoinHandle(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var JoinHandle<R>",
@@ -585,8 +585,8 @@
       "displayName": "Spawn<T, R>",
       "module": "Spawn",
       "source": "Src/Spawn.rux",
-      "line": 126,
-      "signature": "pub func Spawn<T: Sendable, R: Sendable>(entry: func(T) -> R, context: T) -> JoinHandle<R> ! ThreadError",
+      "line": 138,
+      "signature": "pub func Spawn<T: Sendable, R: Sendable>(entry: func(T) -> R, context: T) -> JoinHandle<R> throws ThreadError",
       "typeParams": [
         { "name": "T", "bounds": ["Sendable"] },
         { "name": "R", "bounds": ["Sendable"] }
@@ -629,8 +629,8 @@
       "displayName": "SpawnWith<T, R>",
       "module": "Spawn",
       "source": "Src/Spawn.rux",
-      "line": 138,
-      "signature": "pub func SpawnWith<T: Sendable, R: Sendable>(options: ThreadOptions, entry: func(T) -> R, context: T) -> JoinHandle<R> ! ThreadError",
+      "line": 150,
+      "signature": "pub func SpawnWith<T: Sendable, R: Sendable>(options: ThreadOptions, entry: func(T) -> R, context: T) -> JoinHandle<R> throws ThreadError",
       "typeParams": [
         { "name": "T", "bounds": ["Sendable"] },
         { "name": "R", "bounds": ["Sendable"] }

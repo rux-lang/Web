@@ -44,10 +44,10 @@ not a representable value here.
 
 ## Associated functions
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>FromParts</code></h3>
 
 ```rux
-pub func New(
+pub func FromParts(
     hour: uint8,
     minute: uint8,
     second: uint8,
@@ -85,7 +85,7 @@ Midnight exactly.
 <h3 id="seconds-from-midnight"><code>SecondsFromMidnight</code></h3>
 
 ```rux
-pub func SecondsFromMidnight(self: &TimeOfDay) -> uint32
+pub func SecondsFromMidnight(&self) -> uint32
 ```
 
 The seconds from midnight to this time, ignoring the fraction.
@@ -102,10 +102,10 @@ The seconds from midnight to this time, ignoring the fraction.
 
 ```rux
 pub func WriteDisplay(
-    self: &TimeOfDay,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the time as `HH:MM:SS`, with a fractional part when there is one.
@@ -121,7 +121,7 @@ and `UnsupportedRequest` for a precision past nine, which no fraction has.
 
 **Returns**: success when the whole time was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L192)
 
 ## Implements Debug
 
@@ -131,10 +131,10 @@ and `UnsupportedRequest` for a precision past nine, which no fraction has.
 
 ```rux
 pub func WriteDebug(
-    self: &TimeOfDay,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`.
@@ -147,21 +147,21 @@ The failures [`WriteDisplay`](/docs/api/time/time-of-day#write-display) reports.
 
 **Returns**: success when the whole time was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L208)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L211)
 
 ## Related
 
 <h3 id="parse-time-of-day"><code>ParseTimeOfDay</code></h3>
 
 ```rux
-pub func ParseTimeOfDay(text: char8[..]) -> TimeOfDay ! TimeParseError
+pub func ParseTimeOfDay(text: char8[..]) -> TimeOfDay throws TimeParseError
 ```
 
 Reads `HH:MM:SS` with an optional fractional second.
 Reports `InvalidSyntax` for a shape that does not match, `InvalidTime` for a field outside its range, and
 `ExcessiveFraction` for more fraction digits than a nanosecond holds. Second 60 folds rather than failing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L246)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L254)
 
 **Parameters**
 

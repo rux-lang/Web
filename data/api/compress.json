@@ -53,8 +53,8 @@
       "displayName": "Compress",
       "module": "Buffers",
       "source": "Src/Buffers.rux",
-      "line": 102,
-      "signature": "pub func Compress(allocator: Allocator, data: byte[..], format: Format, level: Level) -> Vector<byte> ! IoError",
+      "line": 108,
+      "signature": "pub func Compress(allocator: Allocator, data: byte[..], format: Format, level: Level) -> Vector<byte> throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Compresses `data` in `format` at `level`.",
@@ -93,8 +93,8 @@
       "displayName": "Compress",
       "module": "Buffers",
       "source": "Src/Buffers.rux",
-      "line": 123,
-      "signature": "pub func Compress(allocator: Allocator, data: char8[..], format: Format, level: Level) -> Vector<byte> ! IoError",
+      "line": 131,
+      "signature": "pub func Compress(allocator: Allocator, data: char8[..], format: Format, level: Level) -> Vector<byte> throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Compresses text in `format` at `level`: its UTF-8 bytes, as the Io streams carry them, so text needs no cast to\nbytes first.",
@@ -133,8 +133,8 @@
       "displayName": "Decompress",
       "module": "Buffers",
       "source": "Src/Buffers.rux",
-      "line": 134,
-      "signature": "pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> ! IoError",
+      "line": 143,
+      "signature": "pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Decompresses `data`, a whole stream in `format`.",
@@ -172,8 +172,8 @@
       "displayName": "Decompress",
       "module": "Buffers",
       "source": "Src/Buffers.rux",
-      "line": 164,
-      "signature": "pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> ! IoError",
+      "line": 179,
+      "signature": "pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream.",
@@ -211,7 +211,7 @@
       "displayName": "CompressWriter",
       "module": "Deflate",
       "source": "Src/Deflate.rux",
-      "line": 31,
+      "line": 32,
       "signature": "pub struct CompressWriter",
       "typeParams": [],
       "doc": {
@@ -229,7 +229,7 @@
           "name": "sink",
           "type": "Writer",
           "public": false,
-          "line": 32,
+          "line": 33,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -246,7 +246,7 @@
           "name": "format",
           "type": "Format",
           "public": false,
-          "line": 33,
+          "line": 34,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -263,7 +263,7 @@
           "name": "level",
           "type": "Level",
           "public": false,
-          "line": 34,
+          "line": 35,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -280,7 +280,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 35,
+          "line": 36,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -297,7 +297,7 @@
           "name": "data",
           "type": "*var uint8",
           "public": false,
-          "line": 36,
+          "line": 42,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -314,7 +314,7 @@
           "name": "dataLength",
           "type": "uint",
           "public": false,
-          "line": 37,
+          "line": 43,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -331,7 +331,7 @@
           "name": "blockStart",
           "type": "uint",
           "public": false,
-          "line": 38,
+          "line": 44,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -348,7 +348,7 @@
           "name": "head",
           "type": "*var int32",
           "public": false,
-          "line": 39,
+          "line": 45,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -365,7 +365,7 @@
           "name": "previous",
           "type": "*var int32",
           "public": false,
-          "line": 40,
+          "line": 46,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -382,7 +382,7 @@
           "name": "tokens",
           "type": "*var uint32",
           "public": false,
-          "line": 41,
+          "line": 47,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -399,7 +399,7 @@
           "name": "tokenCount",
           "type": "uint",
           "public": false,
-          "line": 42,
+          "line": 48,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -416,7 +416,7 @@
           "name": "output",
           "type": "*var uint8",
           "public": false,
-          "line": 43,
+          "line": 49,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -433,7 +433,7 @@
           "name": "outputLength",
           "type": "uint",
           "public": false,
-          "line": 44,
+          "line": 50,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -450,7 +450,7 @@
           "name": "bits",
           "type": "uint64",
           "public": false,
-          "line": 45,
+          "line": 51,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -467,7 +467,7 @@
           "name": "bitCount",
           "type": "uint",
           "public": false,
-          "line": 46,
+          "line": 52,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -484,7 +484,7 @@
           "name": "started",
           "type": "bool",
           "public": false,
-          "line": 47,
+          "line": 53,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -501,7 +501,7 @@
           "name": "finished",
           "type": "bool",
           "public": false,
-          "line": 48,
+          "line": 54,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -518,7 +518,7 @@
           "name": "crc",
           "type": "Crc32",
           "public": false,
-          "line": 49,
+          "line": 55,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -535,7 +535,7 @@
           "name": "adler",
           "type": "Adler32",
           "public": false,
-          "line": 50,
+          "line": 56,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -552,7 +552,7 @@
           "name": "size",
           "type": "uint32",
           "public": false,
-          "line": 51,
+          "line": 57,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -570,10 +570,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "associated",
-          "name": "New",
-          "line": 77,
-          "signature": "pub func New(allocator: Allocator, sink: Writer, format: Format, level: Level) -> CompressWriter ! IoError",
+          "kind": "constructor",
+          "name": "CompressWriter",
+          "line": 83,
+          "signature": "pub func CompressWriter(allocator: Allocator, sink: Writer, format: Format, level: Level) -> CompressWriter throws IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -614,8 +614,8 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 101,
-          "signature": "pub func Finish(self: &var CompressWriter) -> ! IoError",
+          "line": 114,
+          "signature": "pub func Finish(&var self) throws IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var CompressWriter",
@@ -646,8 +646,8 @@
         {
           "kind": "destructor",
           "name": "~CompressWriter",
-          "line": 494,
-          "signature": "func ~CompressWriter(self: &var CompressWriter)",
+          "line": 564,
+          "signature": "func ~CompressWriter(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var CompressWriter",
@@ -678,8 +678,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 508,
-          "signature": "pub func Write(self: &var CompressWriter, bytes: char8[..]) -> uint ! IoError",
+          "line": 581,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var CompressWriter",
@@ -710,8 +710,8 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 541,
-          "signature": "pub func Flush(self: &var CompressWriter) -> ! IoError",
+          "line": 619,
+          "signature": "pub func Flush(&var self) throws IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var CompressWriter",
@@ -1018,7 +1018,7 @@
           "name": "input",
           "type": "*var char8",
           "public": false,
-          "line": 34,
+          "line": 37,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1035,7 +1035,7 @@
           "name": "inputLength",
           "type": "uint",
           "public": false,
-          "line": 35,
+          "line": 38,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1052,7 +1052,7 @@
           "name": "inputAt",
           "type": "uint",
           "public": false,
-          "line": 36,
+          "line": 39,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1069,7 +1069,7 @@
           "name": "bits",
           "type": "uint64",
           "public": false,
-          "line": 37,
+          "line": 40,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1086,7 +1086,7 @@
           "name": "bitCount",
           "type": "uint",
           "public": false,
-          "line": 38,
+          "line": 41,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1103,7 +1103,7 @@
           "name": "window",
           "type": "*var uint8",
           "public": false,
-          "line": 39,
+          "line": 42,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1120,7 +1120,7 @@
           "name": "windowAt",
           "type": "uint",
           "public": false,
-          "line": 40,
+          "line": 43,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1137,7 +1137,7 @@
           "name": "written",
           "type": "uint64",
           "public": false,
-          "line": 41,
+          "line": 44,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1154,7 +1154,7 @@
           "name": "state",
           "type": "uint8",
           "public": false,
-          "line": 42,
+          "line": 45,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1171,7 +1171,7 @@
           "name": "final",
           "type": "bool",
           "public": false,
-          "line": 43,
+          "line": 46,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1188,7 +1188,7 @@
           "name": "failed",
           "type": "bool",
           "public": false,
-          "line": 44,
+          "line": 47,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1205,7 +1205,7 @@
           "name": "storedLeft",
           "type": "uint",
           "public": false,
-          "line": 45,
+          "line": 48,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1222,7 +1222,7 @@
           "name": "copyLength",
           "type": "uint",
           "public": false,
-          "line": 46,
+          "line": 49,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1239,7 +1239,7 @@
           "name": "copyDistance",
           "type": "uint",
           "public": false,
-          "line": 47,
+          "line": 50,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1256,7 +1256,7 @@
           "name": "literals",
           "type": "DecodeTable",
           "public": false,
-          "line": 48,
+          "line": 51,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1273,7 +1273,7 @@
           "name": "distances",
           "type": "DecodeTable",
           "public": false,
-          "line": 49,
+          "line": 52,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1290,7 +1290,7 @@
           "name": "crc",
           "type": "Crc32",
           "public": false,
-          "line": 50,
+          "line": 53,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1307,7 +1307,7 @@
           "name": "adler",
           "type": "Adler32",
           "public": false,
-          "line": 51,
+          "line": 54,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1324,7 +1324,7 @@
           "name": "memberSize",
           "type": "uint32",
           "public": false,
-          "line": 52,
+          "line": 55,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1342,10 +1342,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "associated",
-          "name": "New",
-          "line": 64,
-          "signature": "pub func New(allocator: Allocator, source: Reader, format: Format) -> DecompressReader ! IoError",
+          "kind": "constructor",
+          "name": "DecompressReader",
+          "line": 65,
+          "signature": "pub func DecompressReader(allocator: Allocator, source: Reader, format: Format) -> DecompressReader throws IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -1384,8 +1384,8 @@
         {
           "kind": "destructor",
           "name": "~DecompressReader",
-          "line": 385,
-          "signature": "func ~DecompressReader(self: &var DecompressReader)",
+          "line": 419,
+          "signature": "func ~DecompressReader(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var DecompressReader",
@@ -1416,8 +1416,8 @@
         {
           "kind": "method",
           "name": "Read",
-          "line": 404,
-          "signature": "pub func Read(self: &var DecompressReader, into: var char8[..]) -> uint ! IoError",
+          "line": 438,
+          "signature": "pub func Read(&var self, into: var char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var DecompressReader",

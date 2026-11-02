@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/HashMap.rux
-  line: 394
+  line: 408
 seo:
   title: "KeyValue<K, V> — Collections API"
   description: "One entry of a map, as a value a caller can hold."

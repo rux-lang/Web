@@ -54,11 +54,10 @@ pub variant UuidParseError {
 
 Why text could not be read as a UUID.
 Failure-only: every case is a failure, and each carries the zero-based UTF-8 byte offset into the text where it
-was found. Success is the other channel of `Uuid ! UuidParseError`, so there is no case here meaning nothing went
-wrong.
+was found. Success is the [`Uuid`](/docs/api/uuid/uuid) a parse returns, so there is no case here meaning nothing went wrong.
 Copy, carrying one offset and owning nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L40)
 
 **Cases**
 
@@ -76,7 +75,7 @@ Copy, carrying one offset and owning nothing.
 <h3 id="uuid-parse-error-offset"><code>Offset</code></h3>
 
 ```rux
-pub func Offset(self: &UuidParseError) -> uint
+pub func Offset(&self) -> uint
 ```
 
 Where in the input the failure was found.
@@ -84,13 +83,13 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 
 **Returns**: the zero-based UTF-8 byte offset, which is the text's length at end of input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L60)
 
 <h2 id="parse"><code>Parse</code></h2>
 
 ```rux
-pub func Parse(text: char8[..]) -> Uuid ! UuidParseError
-pub func Parse(text: StringView) -> Uuid ! UuidParseError
+pub func Parse(text: char8[..]) -> Uuid throws UuidParseError
+pub func Parse(text: StringView) -> Uuid throws UuidParseError
 ```
 
 Reads a UUID from its canonical or URN text form.
@@ -102,12 +101,12 @@ Reports `WrongLength` for text that is neither form's length, `BadPrefix` for a 
 other character that is not a digit. Each carries the byte offset into `text` where it was found. A refused
 parse produces no value at all rather than a half-filled one.
 
-| Overload                                                    | Summary                                            |
-| ----------------------------------------------------------- | -------------------------------------------------- |
-| `pub func Parse(text: char8[..]) -> Uuid ! UuidParseError`  | Reads a UUID from its canonical or URN text form.  |
-| `pub func Parse(text: StringView) -> Uuid ! UuidParseError` | Reads a UUID from the text a `StringView` borrows. |
+| Overload                                                         | Summary                                            |
+| ---------------------------------------------------------------- | -------------------------------------------------- |
+| `pub func Parse(text: char8[..]) -> Uuid throws UuidParseError`  | Reads a UUID from its canonical or URN text form.  |
+| `pub func Parse(text: StringView) -> Uuid throws UuidParseError` | Reads a UUID from the text a `StringView` borrows. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L94)
 
 **Parameters**
 
@@ -123,7 +122,7 @@ parse produces no value at all rather than a half-filled one.
 pub func Format(
     value: &Uuid,
     into: var char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the canonical text form into `into`, in lower case.
@@ -133,7 +132,7 @@ Reports `InsufficientCapacity` when `into` is shorter than [`UuidTextLength`](/d
 short destination is refused rather than filled with what fits, because a truncated UUID is a different string
 rather than a shorter one. Room past the thirty-six characters is not touched.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L199)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L198)
 
 **Parameters**
 
@@ -150,14 +149,14 @@ rather than a shorter one. Room past the thirty-six characters is not touched.
 pub func FormatUpper(
     value: &Uuid,
     into: var char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the canonical text form into `into`, in upper case.
 Offered because some formats demand it; [`Format`](/docs/api/uuid/text#format) is what a program should write when it has the choice.
 The failure [`Format`](/docs/api/uuid/text#format) reports, for the same reason and with the same guarantee.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L212)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L211)
 
 **Parameters**
 
@@ -174,14 +173,14 @@ The failure [`Format`](/docs/api/uuid/text#format) reports, for the same reason 
 pub func FormatUrn(
     value: &Uuid,
     into: var char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the URN form into `into`: the canonical form after `urn:uuid:`.
 Reports `InsufficientCapacity` when `into` is shorter than [`UuidUrnLength`](/docs/api/uuid/text#uuid-urn-length), leaving it exactly as it was. The
 form is refused whole, so a destination never receives a prefix with nothing after it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L233)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L232)
 
 **Parameters**
 

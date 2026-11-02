@@ -631,6 +631,17 @@ export const PACKAGES = [
         title: "Winsock",
         description: "Starting Winsock, address families, sockets and their options, and name resolution.",
       },
+      window: {
+        title: "Windows and messages",
+        description: "Registering a window class, creating windows, the message loop, painting and DPI.",
+      },
+      gdi: { title: "GDI", description: "Fonts and text drawing through the Graphics Device Interface." },
+      registry: { title: "Registry", description: "Reading typed values from the registry with `RegGetValueW`." },
+      version: { title: "Version", description: "The operating system version, read through `RtlGetVersion`." },
+      "system-information": {
+        title: "System information",
+        description: "Memory, processor architecture and logical processor information.",
+      },
     },
   },
   {

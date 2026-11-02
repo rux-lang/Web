@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Keccak.rux
-  line: 105
+  line: 106
 seo:
   title: "Sha3 — Crypto API"
   description: An incremental SHA-3 hash at any of its four sizes.
@@ -41,7 +41,7 @@ A SHA3-224 state.
 
 **Returns**: a hasher producing a 224-bit digest
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L138)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L139)
 
 <h3 id="new-256"><code>New256</code></h3>
 
@@ -53,7 +53,7 @@ A SHA3-256 state.
 
 **Returns**: a hasher producing a 256-bit digest
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L146)
 
 <h3 id="new-384"><code>New384</code></h3>
 
@@ -65,7 +65,7 @@ A SHA3-384 state.
 
 **Returns**: a hasher producing a 384-bit digest
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L153)
 
 <h3 id="new-512"><code>New512</code></h3>
 
@@ -77,7 +77,7 @@ A SHA3-512 state.
 
 **Returns**: a hasher producing a 512-bit digest
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L160)
 
 ## Implements Digest
 
@@ -86,7 +86,7 @@ A SHA3-512 state.
 <h3 id="update"><code>Update</code></h3>
 
 ```rux
-pub func Update(self: &var Sha3, bytes: char8[..])
+pub func Update(&var self, bytes: char8[..])
 ```
 
 Absorbs `bytes` into the state.
@@ -95,12 +95,12 @@ Absorbs `bytes` into the state.
 | ------- | ----------- | ------------------- |
 | `bytes` | `char8[..]` | the bytes to absorb |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L177)
 
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var Sha3, into: var char8[..])
+pub func Finish(&var self, into: var char8[..])
 ```
 
 Pads, permutes once more, and squeezes the digest out.
@@ -112,46 +112,47 @@ from one that works at every other length.
 | ------ | --------------- | ------------------- |
 | `into` | `var char8[..]` | receives the output |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L195)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L197)
 
 <h3 id="digest-length"><code>DigestLength</code></h3>
 
 ```rux
-pub func DigestLength(self: &Sha3) -> uint
+pub func DigestLength(&self) -> uint
 ```
 
 Twenty-eight, thirty-two, forty-eight or sixty-four bytes.
 
 **Returns**: how many bytes a digest occupies
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L221)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L225)
 
 <h3 id="block-length"><code>BlockLength</code></h3>
 
 ```rux
-pub func BlockLength(self: &Sha3) -> uint
+pub func BlockLength(&self) -> uint
 ```
 
 The rate, which differs per size — unlike the SHA-2 family, whose block is fixed.
 
 **Returns**: how many bytes the compression function consumes at a time
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L228)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L232)
 
 ## Related
 
 <h3 id="keccak-permute"><code>KeccakPermute</code></h3>
 
 ```rux
-pub func KeccakPermute(lanes: *var uint64)
+pub unsafe func KeccakPermute(lanes: *var uint64)
 ```
 
 The Keccak-f[1600] permutation, applied in place to twenty-five lanes.
 Twenty-four rounds of five steps: theta mixes each column into its neighbours, rho rotates each lane by its
 own offset, pi moves the lanes around, chi is the only non-linear step, and iota breaks the symmetry that
 would otherwise make every round identical.
+Safety: `lanes` must address twenty-five readable and writable lanes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L47)
 
 **Parameters**
 
@@ -167,7 +168,7 @@ pub func Sha3Of224(bytes: char8[..], into: var char8[..])
 
 The SHA3-224 digest of `bytes`, in one call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L237)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L241)
 
 **Parameters**
 
@@ -184,7 +185,7 @@ pub func Sha3Of256(bytes: char8[..], into: var char8[..])
 
 The SHA3-256 digest of `bytes`, in one call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L247)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L251)
 
 **Parameters**
 
@@ -201,7 +202,7 @@ pub func Sha3Of384(bytes: char8[..], into: var char8[..])
 
 The SHA3-384 digest of `bytes`, in one call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L257)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L261)
 
 **Parameters**
 
@@ -218,7 +219,7 @@ pub func Sha3Of512(bytes: char8[..], into: var char8[..])
 
 The SHA3-512 digest of `bytes`, in one call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L267)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Keccak.rux#L271)
 
 **Parameters**
 

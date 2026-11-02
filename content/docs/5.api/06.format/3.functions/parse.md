@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/ParseInteger.rux
-  line: 80
+  line: 86
 seo:
   title: "Parsing integers, booleans and characters — Format API"
   description: "Reading an integer of any width and base, a boolean or one character from text."
@@ -24,20 +24,20 @@ Reading an integer of any width and base, a boolean or one character from text.
 <h2 id="parse-uint8"><code>ParseUint8</code></h2>
 
 ```rux
-pub func ParseUint8(str: char8[..]) -> uint8 ! ParseError
-pub func ParseUint8(str: StringView) -> uint8 ! ParseError
+pub func ParseUint8(str: char8[..]) -> uint8 throws ParseError
+pub func ParseUint8(str: StringView) -> uint8 throws ParseError
 ```
 
 Parses a `uint8`: an optional `+`, an optional base prefix, and digits.
 Reports `Overflow` for a value the width cannot hold, `InvalidCharacter` at the first byte that is not
 part of the grammar — a `-` included, since no unsigned value is negative.
 
-| Overload                                                     | Summary                                                                 |
-| ------------------------------------------------------------ | ----------------------------------------------------------------------- |
-| `pub func ParseUint8(str: char8[..]) -> uint8 ! ParseError`  | Parses a `uint8`: an optional `+`, an optional base prefix, and digits. |
-| `pub func ParseUint8(str: StringView) -> uint8 ! ParseError` | The same grammar for a view, which is what a caller holding text has.   |
+| Overload                                                          | Summary                                                                 |
+| ----------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `pub func ParseUint8(str: char8[..]) -> uint8 throws ParseError`  | Parses a `uint8`: an optional `+`, an optional base prefix, and digits. |
+| `pub func ParseUint8(str: StringView) -> uint8 throws ParseError` | The same grammar for a view, which is what a caller holding text has.   |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L86)
 
 **Parameters**
 
@@ -50,20 +50,20 @@ part of the grammar — a `-` included, since no unsigned value is negative.
 <h2 id="parse-int8"><code>ParseInt8</code></h2>
 
 ```rux
-pub func ParseInt8(str: char8[..]) -> int8 ! ParseError
-pub func ParseInt8(str: StringView) -> int8 ! ParseError
+pub func ParseInt8(str: char8[..]) -> int8 throws ParseError
+pub func ParseInt8(str: StringView) -> int8 throws ParseError
 ```
 
 Parses an `int8`: an optional sign, an optional base prefix, and digits.
 The negative bound is one larger than the positive one, because the most negative value has no positive
 counterpart: the value one past the largest positive fits only with its sign.
 
-| Overload                                                   | Summary                                                                  |
-| ---------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `pub func ParseInt8(str: char8[..]) -> int8 ! ParseError`  | Parses an `int8`: an optional sign, an optional base prefix, and digits. |
-| `pub func ParseInt8(str: StringView) -> int8 ! ParseError` | The same grammar for a view, which is what a caller holding text has.    |
+| Overload                                                        | Summary                                                                  |
+| --------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `pub func ParseInt8(str: char8[..]) -> int8 throws ParseError`  | Parses an `int8`: an optional sign, an optional base prefix, and digits. |
+| `pub func ParseInt8(str: StringView) -> int8 throws ParseError` | The same grammar for a view, which is what a caller holding text has.    |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L101)
 
 **Parameters**
 
@@ -76,20 +76,20 @@ counterpart: the value one past the largest positive fits only with its sign.
 <h2 id="parse-uint16"><code>ParseUint16</code></h2>
 
 ```rux
-pub func ParseUint16(str: char8[..]) -> uint16 ! ParseError
-pub func ParseUint16(str: StringView) -> uint16 ! ParseError
+pub func ParseUint16(str: char8[..]) -> uint16 throws ParseError
+pub func ParseUint16(str: StringView) -> uint16 throws ParseError
 ```
 
 Parses a `uint16`: an optional `+`, an optional base prefix, and digits.
 Reports `Overflow` for a value the width cannot hold, `InvalidCharacter` at the first byte that is not
 part of the grammar — a `-` included, since no unsigned value is negative.
 
-| Overload                                                       | Summary                                                                  |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `pub func ParseUint16(str: char8[..]) -> uint16 ! ParseError`  | Parses a `uint16`: an optional `+`, an optional base prefix, and digits. |
-| `pub func ParseUint16(str: StringView) -> uint16 ! ParseError` | The same grammar for a view, which is what a caller holding text has.    |
+| Overload                                                            | Summary                                                                  |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `pub func ParseUint16(str: char8[..]) -> uint16 throws ParseError`  | Parses a `uint16`: an optional `+`, an optional base prefix, and digits. |
+| `pub func ParseUint16(str: StringView) -> uint16 throws ParseError` | The same grammar for a view, which is what a caller holding text has.    |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L117)
 
 **Parameters**
 
@@ -102,20 +102,20 @@ part of the grammar — a `-` included, since no unsigned value is negative.
 <h2 id="parse-int16"><code>ParseInt16</code></h2>
 
 ```rux
-pub func ParseInt16(str: char8[..]) -> int16 ! ParseError
-pub func ParseInt16(str: StringView) -> int16 ! ParseError
+pub func ParseInt16(str: char8[..]) -> int16 throws ParseError
+pub func ParseInt16(str: StringView) -> int16 throws ParseError
 ```
 
 Parses an `int16`: an optional sign, an optional base prefix, and digits.
 The negative bound is one larger than the positive one, because the most negative value has no positive
 counterpart: the value one past the largest positive fits only with its sign.
 
-| Overload                                                     | Summary                                                                   |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `pub func ParseInt16(str: char8[..]) -> int16 ! ParseError`  | Parses an `int16`: an optional sign, an optional base prefix, and digits. |
-| `pub func ParseInt16(str: StringView) -> int16 ! ParseError` | The same grammar for a view, which is what a caller holding text has.     |
+| Overload                                                          | Summary                                                                   |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `pub func ParseInt16(str: char8[..]) -> int16 throws ParseError`  | Parses an `int16`: an optional sign, an optional base prefix, and digits. |
+| `pub func ParseInt16(str: StringView) -> int16 throws ParseError` | The same grammar for a view, which is what a caller holding text has.     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L132)
 
 **Parameters**
 
@@ -128,20 +128,20 @@ counterpart: the value one past the largest positive fits only with its sign.
 <h2 id="parse-uint32"><code>ParseUint32</code></h2>
 
 ```rux
-pub func ParseUint32(str: char8[..]) -> uint32 ! ParseError
-pub func ParseUint32(str: StringView) -> uint32 ! ParseError
+pub func ParseUint32(str: char8[..]) -> uint32 throws ParseError
+pub func ParseUint32(str: StringView) -> uint32 throws ParseError
 ```
 
 Parses a `uint32`: an optional `+`, an optional base prefix, and digits.
 Reports `Overflow` for a value the width cannot hold, `InvalidCharacter` at the first byte that is not
 part of the grammar — a `-` included, since no unsigned value is negative.
 
-| Overload                                                       | Summary                                                                  |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `pub func ParseUint32(str: char8[..]) -> uint32 ! ParseError`  | Parses a `uint32`: an optional `+`, an optional base prefix, and digits. |
-| `pub func ParseUint32(str: StringView) -> uint32 ! ParseError` | The same grammar for a view, which is what a caller holding text has.    |
+| Overload                                                            | Summary                                                                  |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `pub func ParseUint32(str: char8[..]) -> uint32 throws ParseError`  | Parses a `uint32`: an optional `+`, an optional base prefix, and digits. |
+| `pub func ParseUint32(str: StringView) -> uint32 throws ParseError` | The same grammar for a view, which is what a caller holding text has.    |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L148)
 
 **Parameters**
 
@@ -154,20 +154,20 @@ part of the grammar — a `-` included, since no unsigned value is negative.
 <h2 id="parse-int32"><code>ParseInt32</code></h2>
 
 ```rux
-pub func ParseInt32(str: char8[..]) -> int32 ! ParseError
-pub func ParseInt32(str: StringView) -> int32 ! ParseError
+pub func ParseInt32(str: char8[..]) -> int32 throws ParseError
+pub func ParseInt32(str: StringView) -> int32 throws ParseError
 ```
 
 Parses an `int32`: an optional sign, an optional base prefix, and digits.
 The negative bound is one larger than the positive one, because the most negative value has no positive
 counterpart: the value one past the largest positive fits only with its sign.
 
-| Overload                                                     | Summary                                                                   |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `pub func ParseInt32(str: char8[..]) -> int32 ! ParseError`  | Parses an `int32`: an optional sign, an optional base prefix, and digits. |
-| `pub func ParseInt32(str: StringView) -> int32 ! ParseError` | The same grammar for a view, which is what a caller holding text has.     |
+| Overload                                                          | Summary                                                                   |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `pub func ParseInt32(str: char8[..]) -> int32 throws ParseError`  | Parses an `int32`: an optional sign, an optional base prefix, and digits. |
+| `pub func ParseInt32(str: StringView) -> int32 throws ParseError` | The same grammar for a view, which is what a caller holding text has.     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L163)
 
 **Parameters**
 
@@ -180,20 +180,20 @@ counterpart: the value one past the largest positive fits only with its sign.
 <h2 id="parse-uint64"><code>ParseUint64</code></h2>
 
 ```rux
-pub func ParseUint64(str: char8[..]) -> uint64 ! ParseError
-pub func ParseUint64(str: StringView) -> uint64 ! ParseError
+pub func ParseUint64(str: char8[..]) -> uint64 throws ParseError
+pub func ParseUint64(str: StringView) -> uint64 throws ParseError
 ```
 
 Parses a `uint64`: an optional `+`, an optional base prefix, and digits.
 Reports `Overflow` for a value the width cannot hold, `InvalidCharacter` at the first byte that is not
 part of the grammar — a `-` included, since no unsigned value is negative.
 
-| Overload                                                       | Summary                                                                  |
-| -------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| `pub func ParseUint64(str: char8[..]) -> uint64 ! ParseError`  | Parses a `uint64`: an optional `+`, an optional base prefix, and digits. |
-| `pub func ParseUint64(str: StringView) -> uint64 ! ParseError` | The same grammar for a view, which is what a caller holding text has.    |
+| Overload                                                            | Summary                                                                  |
+| ------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `pub func ParseUint64(str: char8[..]) -> uint64 throws ParseError`  | Parses a `uint64`: an optional `+`, an optional base prefix, and digits. |
+| `pub func ParseUint64(str: StringView) -> uint64 throws ParseError` | The same grammar for a view, which is what a caller holding text has.    |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L179)
 
 **Parameters**
 
@@ -206,20 +206,20 @@ part of the grammar — a `-` included, since no unsigned value is negative.
 <h2 id="parse-int64"><code>ParseInt64</code></h2>
 
 ```rux
-pub func ParseInt64(str: char8[..]) -> int64 ! ParseError
-pub func ParseInt64(str: StringView) -> int64 ! ParseError
+pub func ParseInt64(str: char8[..]) -> int64 throws ParseError
+pub func ParseInt64(str: StringView) -> int64 throws ParseError
 ```
 
 Parses an `int64`: an optional sign, an optional base prefix, and digits.
 The negative bound is one larger than the positive one, because the most negative value has no positive
 counterpart: the value one past the largest positive fits only with its sign.
 
-| Overload                                                     | Summary                                                                   |
-| ------------------------------------------------------------ | ------------------------------------------------------------------------- |
-| `pub func ParseInt64(str: char8[..]) -> int64 ! ParseError`  | Parses an `int64`: an optional sign, an optional base prefix, and digits. |
-| `pub func ParseInt64(str: StringView) -> int64 ! ParseError` | The same grammar for a view, which is what a caller holding text has.     |
+| Overload                                                          | Summary                                                                   |
+| ----------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `pub func ParseInt64(str: char8[..]) -> int64 throws ParseError`  | Parses an `int64`: an optional sign, an optional base prefix, and digits. |
+| `pub func ParseInt64(str: StringView) -> int64 throws ParseError` | The same grammar for a view, which is what a caller holding text has.     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L190)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L196)
 
 **Parameters**
 
@@ -232,20 +232,20 @@ counterpart: the value one past the largest positive fits only with its sign.
 <h2 id="parse-uint128"><code>ParseUint128</code></h2>
 
 ```rux
-pub func ParseUint128(str: char8[..]) -> uint128 ! ParseError
-pub func ParseUint128(str: StringView) -> uint128 ! ParseError
+pub func ParseUint128(str: char8[..]) -> uint128 throws ParseError
+pub func ParseUint128(str: StringView) -> uint128 throws ParseError
 ```
 
 Parses a `uint128`: an optional `+`, an optional base prefix, and digits.
 Reports `Overflow` for a value the width cannot hold, `InvalidCharacter` at the first byte that is not
 part of the grammar — a `-` included, since no unsigned value is negative.
 
-| Overload                                                         | Summary                                                                   |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `pub func ParseUint128(str: char8[..]) -> uint128 ! ParseError`  | Parses a `uint128`: an optional `+`, an optional base prefix, and digits. |
-| `pub func ParseUint128(str: StringView) -> uint128 ! ParseError` | The same grammar for a view, which is what a caller holding text has.     |
+| Overload                                                              | Summary                                                                   |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `pub func ParseUint128(str: char8[..]) -> uint128 throws ParseError`  | Parses a `uint128`: an optional `+`, an optional base prefix, and digits. |
+| `pub func ParseUint128(str: StringView) -> uint128 throws ParseError` | The same grammar for a view, which is what a caller holding text has.     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L206)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L212)
 
 **Parameters**
 
@@ -258,20 +258,20 @@ part of the grammar — a `-` included, since no unsigned value is negative.
 <h2 id="parse-int128"><code>ParseInt128</code></h2>
 
 ```rux
-pub func ParseInt128(str: char8[..]) -> int128 ! ParseError
-pub func ParseInt128(str: StringView) -> int128 ! ParseError
+pub func ParseInt128(str: char8[..]) -> int128 throws ParseError
+pub func ParseInt128(str: StringView) -> int128 throws ParseError
 ```
 
 Parses an `int128`: an optional sign, an optional base prefix, and digits.
 The negative bound is one larger than the positive one, because the most negative value has no positive
 counterpart: the value one past the largest positive fits only with its sign.
 
-| Overload                                                       | Summary                                                                    |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `pub func ParseInt128(str: char8[..]) -> int128 ! ParseError`  | Parses an `int128`: an optional sign, an optional base prefix, and digits. |
-| `pub func ParseInt128(str: StringView) -> int128 ! ParseError` | The same grammar for a view, which is what a caller holding text has.      |
+| Overload                                                            | Summary                                                                    |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `pub func ParseInt128(str: char8[..]) -> int128 throws ParseError`  | Parses an `int128`: an optional sign, an optional base prefix, and digits. |
+| `pub func ParseInt128(str: StringView) -> int128 throws ParseError` | The same grammar for a view, which is what a caller holding text has.      |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L223)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L229)
 
 **Parameters**
 
@@ -284,20 +284,20 @@ counterpart: the value one past the largest positive fits only with its sign.
 <h2 id="parse-uint256"><code>ParseUint256</code></h2>
 
 ```rux
-pub func ParseUint256(str: char8[..]) -> uint256 ! ParseError
-pub func ParseUint256(str: StringView) -> uint256 ! ParseError
+pub func ParseUint256(str: char8[..]) -> uint256 throws ParseError
+pub func ParseUint256(str: StringView) -> uint256 throws ParseError
 ```
 
 Parses a `uint256`: an optional `+`, an optional base prefix, and digits.
 Reports `Overflow` for a value the width cannot hold, `InvalidCharacter` at the first byte that is not
 part of the grammar — a `-` included, since no unsigned value is negative.
 
-| Overload                                                         | Summary                                                                   |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `pub func ParseUint256(str: char8[..]) -> uint256 ! ParseError`  | Parses a `uint256`: an optional `+`, an optional base prefix, and digits. |
-| `pub func ParseUint256(str: StringView) -> uint256 ! ParseError` | The same grammar for a view, which is what a caller holding text has.     |
+| Overload                                                              | Summary                                                                   |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `pub func ParseUint256(str: char8[..]) -> uint256 throws ParseError`  | Parses a `uint256`: an optional `+`, an optional base prefix, and digits. |
+| `pub func ParseUint256(str: StringView) -> uint256 throws ParseError` | The same grammar for a view, which is what a caller holding text has.     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L239)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L249)
 
 **Parameters**
 
@@ -310,20 +310,20 @@ part of the grammar — a `-` included, since no unsigned value is negative.
 <h2 id="parse-int256"><code>ParseInt256</code></h2>
 
 ```rux
-pub func ParseInt256(str: char8[..]) -> int256 ! ParseError
-pub func ParseInt256(str: StringView) -> int256 ! ParseError
+pub func ParseInt256(str: char8[..]) -> int256 throws ParseError
+pub func ParseInt256(str: StringView) -> int256 throws ParseError
 ```
 
 Parses an `int256`: an optional sign, an optional base prefix, and digits.
 The negative bound is one larger than the positive one, because the most negative value has no positive
 counterpart: the value one past the largest positive fits only with its sign.
 
-| Overload                                                       | Summary                                                                    |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `pub func ParseInt256(str: char8[..]) -> int256 ! ParseError`  | Parses an `int256`: an optional sign, an optional base prefix, and digits. |
-| `pub func ParseInt256(str: StringView) -> int256 ! ParseError` | The same grammar for a view, which is what a caller holding text has.      |
+| Overload                                                            | Summary                                                                    |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `pub func ParseInt256(str: char8[..]) -> int256 throws ParseError`  | Parses an `int256`: an optional sign, an optional base prefix, and digits. |
+| `pub func ParseInt256(str: StringView) -> int256 throws ParseError` | The same grammar for a view, which is what a caller holding text has.      |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L256)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L266)
 
 **Parameters**
 
@@ -336,20 +336,20 @@ counterpart: the value one past the largest positive fits only with its sign.
 <h2 id="parse-uint512"><code>ParseUint512</code></h2>
 
 ```rux
-pub func ParseUint512(str: char8[..]) -> uint512 ! ParseError
-pub func ParseUint512(str: StringView) -> uint512 ! ParseError
+pub func ParseUint512(str: char8[..]) -> uint512 throws ParseError
+pub func ParseUint512(str: StringView) -> uint512 throws ParseError
 ```
 
 Parses a `uint512`: an optional `+`, an optional base prefix, and digits.
 Reports `Overflow` for a value the width cannot hold, `InvalidCharacter` at the first byte that is not
 part of the grammar — a `-` included, since no unsigned value is negative.
 
-| Overload                                                         | Summary                                                                   |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `pub func ParseUint512(str: char8[..]) -> uint512 ! ParseError`  | Parses a `uint512`: an optional `+`, an optional base prefix, and digits. |
-| `pub func ParseUint512(str: StringView) -> uint512 ! ParseError` | The same grammar for a view, which is what a caller holding text has.     |
+| Overload                                                              | Summary                                                                   |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `pub func ParseUint512(str: char8[..]) -> uint512 throws ParseError`  | Parses a `uint512`: an optional `+`, an optional base prefix, and digits. |
+| `pub func ParseUint512(str: StringView) -> uint512 throws ParseError` | The same grammar for a view, which is what a caller holding text has.     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L272)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L286)
 
 **Parameters**
 
@@ -362,20 +362,20 @@ part of the grammar — a `-` included, since no unsigned value is negative.
 <h2 id="parse-int512"><code>ParseInt512</code></h2>
 
 ```rux
-pub func ParseInt512(str: char8[..]) -> int512 ! ParseError
-pub func ParseInt512(str: StringView) -> int512 ! ParseError
+pub func ParseInt512(str: char8[..]) -> int512 throws ParseError
+pub func ParseInt512(str: StringView) -> int512 throws ParseError
 ```
 
 Parses an `int512`: an optional sign, an optional base prefix, and digits.
 The negative bound is one larger than the positive one, because the most negative value has no positive
 counterpart: the value one past the largest positive fits only with its sign.
 
-| Overload                                                       | Summary                                                                    |
-| -------------------------------------------------------------- | -------------------------------------------------------------------------- |
-| `pub func ParseInt512(str: char8[..]) -> int512 ! ParseError`  | Parses an `int512`: an optional sign, an optional base prefix, and digits. |
-| `pub func ParseInt512(str: StringView) -> int512 ! ParseError` | The same grammar for a view, which is what a caller holding text has.      |
+| Overload                                                            | Summary                                                                    |
+| ------------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| `pub func ParseInt512(str: char8[..]) -> int512 throws ParseError`  | Parses an `int512`: an optional sign, an optional base prefix, and digits. |
+| `pub func ParseInt512(str: StringView) -> int512 throws ParseError` | The same grammar for a view, which is what a caller holding text has.      |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L289)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseInteger.rux#L303)
 
 **Parameters**
 
@@ -388,18 +388,18 @@ counterpart: the value one past the largest positive fits only with its sign.
 <h2 id="parse-bool"><code>ParseBool</code></h2>
 
 ```rux
-pub func ParseBool(str: char8[..]) -> bool ! ParseError
-pub func ParseBool(str: StringView) -> bool ! ParseError
+pub func ParseBool(str: char8[..]) -> bool throws ParseError
+pub func ParseBool(str: StringView) -> bool throws ParseError
 ```
 
 Parses `true` or `false`, exactly.
 Reports `Empty` for no bytes and `InvalidCharacter` at the start for anything else, including a correct word
 with trailing bytes.
 
-| Overload                                                   | Summary                            |
-| ---------------------------------------------------------- | ---------------------------------- |
-| `pub func ParseBool(str: char8[..]) -> bool ! ParseError`  | Parses `true` or `false`, exactly. |
-| `pub func ParseBool(str: StringView) -> bool ! ParseError` | The same words for a view.         |
+| Overload                                                        | Summary                            |
+| --------------------------------------------------------------- | ---------------------------------- |
+| `pub func ParseBool(str: char8[..]) -> bool throws ParseError`  | Parses `true` or `false`, exactly. |
+| `pub func ParseBool(str: StringView) -> bool throws ParseError` | The same words for a view.         |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseValue.rux#L16)
 
@@ -414,18 +414,18 @@ with trailing bytes.
 <h2 id="parse-char"><code>ParseChar</code></h2>
 
 ```rux
-pub func ParseChar(str: char8[..]) -> char32 ! ParseError
-pub func ParseChar(str: StringView) -> char32 ! ParseError
+pub func ParseChar(str: char8[..]) -> char32 throws ParseError
+pub func ParseChar(str: StringView) -> char32 throws ParseError
 ```
 
 Parses exactly one character.
 Reports `Empty` for no bytes, and `InvalidCharacter` for bytes that are not one whole scalar value — ill-formed
 UTF-8 at zero, a second character at its own index.
 
-| Overload                                                     | Summary                               |
-| ------------------------------------------------------------ | ------------------------------------- |
-| `pub func ParseChar(str: char8[..]) -> char32 ! ParseError`  | Parses exactly one character.         |
-| `pub func ParseChar(str: StringView) -> char32 ! ParseError` | The same single character for a view. |
+| Overload                                                          | Summary                               |
+| ----------------------------------------------------------------- | ------------------------------------- |
+| `pub func ParseChar(str: char8[..]) -> char32 throws ParseError`  | Parses exactly one character.         |
+| `pub func ParseChar(str: StringView) -> char32 throws ParseError` | The same single character for a view. |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseValue.rux#L40)
 

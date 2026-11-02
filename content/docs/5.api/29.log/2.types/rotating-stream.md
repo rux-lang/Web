@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Rotation.rux
-  line: 127
+  line: 124
 seo:
   title: "RotatingStream — Log API"
   description: "A stored borrow of a RotatingFile that speaks Writer, for a Logger to keep."
@@ -37,9 +37,9 @@ The address is private, and [`RotatingFile::Stream`](/docs/api/log/rotating-file
 
 ```rux
 pub func Write(
-    self: &var RotatingStream,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Writes through the borrowed file, which may move its current file aside first.
@@ -50,16 +50,16 @@ Writes through the borrowed file, which may move its current file aside first.
 
 **Returns**: how many bytes were taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L134)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var RotatingStream) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Flushes the borrowed file.
 
 **Returns**: success when everything written reached the system
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L143)

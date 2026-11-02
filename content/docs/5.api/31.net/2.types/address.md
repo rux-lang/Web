@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Address.rux
-  line: 12
+  line: 13
 seo:
   title: "Addresses — Net API"
   description: "IPv4, IPv6 and socket addresses: reading them, writing them and classifying them."
@@ -31,7 +31,7 @@ pub struct Ipv4Address {
 
 An IPv4 address. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L13)
 
 **Fields**
 
@@ -39,12 +39,12 @@ An IPv4 address. `Copy`.
 | -------- | ---------- | ---------------------------------------- |
 | `octets` | `uint8[N]` | The four octets, most significant first. |
 
-**Associated functions**
+**Constructors**
 
-<h3 id="ipv4-new"><code>New</code></h3>
+<h3 id="ipv4-new"><code>Ipv4Address</code></h3>
 
 ```rux
-pub func New(
+pub func Ipv4Address(
     a: uint8,
     b: uint8,
     c: uint8,
@@ -63,7 +63,9 @@ The address `a.b.c.d`.
 
 **Returns**: the address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L88)
+
+**Associated functions**
 
 <h3 id="ipv4-localhost"><code>Localhost</code></h3>
 
@@ -75,7 +77,7 @@ pub func Localhost() -> Ipv4Address
 
 **Returns**: the loopback address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L95)
 
 <h3 id="ipv4-unspecified"><code>Unspecified</code></h3>
 
@@ -87,7 +89,7 @@ pub func Unspecified() -> Ipv4Address
 
 **Returns**: the unspecified address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L102)
 
 <h3 id="ipv4-parse"><code>Parse</code></h3>
 
@@ -103,77 +105,74 @@ Reads dotted-decimal text such as `192.168.0.1`, each octet without leading zero
 
 **Returns**: the address, or none when the text is not one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L110)
 
 **Methods**
 
 <h3 id="ipv4-is-loopback"><code>IsLoopback</code></h3>
 
 ```rux
-pub func IsLoopback(self: &Ipv4Address) -> bool
+pub func IsLoopback(&self) -> bool
 ```
 
 Whether this is a loopback address, in `127.0.0.0/8`.
 
 **Returns**: true for loopback
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L138)
 
 <h3 id="ipv4-is-unspecified"><code>IsUnspecified</code></h3>
 
 ```rux
-pub func IsUnspecified(self: &Ipv4Address) -> bool
+pub func IsUnspecified(&self) -> bool
 ```
 
 Whether this is the unspecified address, `0.0.0.0`, which binds every local address.
 
 **Returns**: true for `0.0.0.0`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L145)
 
 <h3 id="ipv4-is-private"><code>IsPrivate</code></h3>
 
 ```rux
-pub func IsPrivate(self: &Ipv4Address) -> bool
+pub func IsPrivate(&self) -> bool
 ```
 
 Whether this is a private address of RFC 1918: in `10.0.0.0/8`, `172.16.0.0/12` or `192.168.0.0/16`.
 
 **Returns**: true for a private address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L152)
 
 <h3 id="ipv4-is-link-local"><code>IsLinkLocal</code></h3>
 
 ```rux
-pub func IsLinkLocal(self: &Ipv4Address) -> bool
+pub func IsLinkLocal(&self) -> bool
 ```
 
 Whether this is a link-local address, in `169.254.0.0/16`.
 
 **Returns**: true for a link-local address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L160)
 
 <h3 id="ipv4-is-multicast"><code>IsMulticast</code></h3>
 
 ```rux
-pub func IsMulticast(self: &Ipv4Address) -> bool
+pub func IsMulticast(&self) -> bool
 ```
 
 Whether this is a multicast address, in `224.0.0.0/4`.
 
 **Returns**: true for a multicast address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L167)
 
 <h3 id="ipv4-write-text"><code>WriteText</code></h3>
 
 ```rux
-pub func WriteText(
-    self: &Ipv4Address,
-    into: var char8[..]
-) -> uint
+pub func WriteText(&self, into: var char8[..]) -> uint
 ```
 
 Writes the address in dotted-decimal form into `into`, at most 15 characters.
@@ -184,15 +183,12 @@ Writes the address in dotted-decimal form into `into`, at most 15 characters.
 
 **Returns**: how many characters the text takes, which is more than were written when `into` is too short
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L175)
 
 <h3 id="ipv4-equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(
-    self: &Ipv4Address,
-    other: Ipv4Address
-) -> bool
+pub func Equals(&self, other: Ipv4Address) -> bool
 ```
 
 Whether two addresses are the same.
@@ -203,7 +199,7 @@ Whether two addresses are the same.
 
 **Returns**: true when they are equal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L190)
 
 **Implements Display**
 
@@ -213,10 +209,10 @@ Whether two addresses are the same.
 
 ```rux
 pub func WriteDisplay(
-    self: &Ipv4Address,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the address in dotted-decimal form, under the placeholder's width, fill and alignment. No style is
@@ -229,7 +225,7 @@ understood. Reports whatever the writer reported, and `UnsupportedRequest` for a
 
 **Returns**: success when the whole address was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L639)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L640)
 
 <h2 id="ipv6-address"><code>Ipv6Address</code></h2>
 
@@ -241,7 +237,7 @@ pub struct Ipv6Address {
 
 An IPv6 address. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L20)
 
 **Fields**
 
@@ -261,7 +257,7 @@ pub func Localhost() -> Ipv6Address
 
 **Returns**: the loopback address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L199)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L200)
 
 <h3 id="ipv6-unspecified"><code>Unspecified</code></h3>
 
@@ -273,7 +269,7 @@ pub func Unspecified() -> Ipv6Address
 
 **Returns**: the unspecified address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L208)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L209)
 
 <h3 id="ipv6-parse"><code>Parse</code></h3>
 
@@ -289,38 +285,38 @@ Reads text such as `2001:db8::1` or `::ffff:192.0.2.1`. A zone such as `%eth0` i
 
 **Returns**: the address, or none when the text is not one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L216)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L217)
 
 **Methods**
 
 <h3 id="ipv6-is-loopback"><code>IsLoopback</code></h3>
 
 ```rux
-pub func IsLoopback(self: &Ipv6Address) -> bool
+pub func IsLoopback(&self) -> bool
 ```
 
 Whether this is the loopback address, `::1`.
 
 **Returns**: true for loopback
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L299)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L300)
 
 <h3 id="ipv6-is-unspecified"><code>IsUnspecified</code></h3>
 
 ```rux
-pub func IsUnspecified(self: &Ipv6Address) -> bool
+pub func IsUnspecified(&self) -> bool
 ```
 
 Whether this is the unspecified address, `::`, which binds every local address.
 
 **Returns**: true for `::`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L311)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L312)
 
 <h3 id="ipv6-is-private"><code>IsPrivate</code></h3>
 
 ```rux
-pub func IsPrivate(self: &Ipv6Address) -> bool
+pub func IsPrivate(&self) -> bool
 ```
 
 Whether this is a unique local address of RFC 4193, in `fc00::/7`: the IPv6 counterpart of a private IPv4
@@ -328,51 +324,48 @@ address.
 
 **Returns**: true for a unique local address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L324)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L325)
 
 <h3 id="ipv6-is-link-local"><code>IsLinkLocal</code></h3>
 
 ```rux
-pub func IsLinkLocal(self: &Ipv6Address) -> bool
+pub func IsLinkLocal(&self) -> bool
 ```
 
 Whether this is a link-local address, in `fe80::/10`.
 
 **Returns**: true for a link-local address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L331)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L332)
 
 <h3 id="ipv6-is-multicast"><code>IsMulticast</code></h3>
 
 ```rux
-pub func IsMulticast(self: &Ipv6Address) -> bool
+pub func IsMulticast(&self) -> bool
 ```
 
 Whether this is a multicast address, in `ff00::/8`.
 
 **Returns**: true for a multicast address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L338)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L339)
 
 <h3 id="ipv6-as-mapped-ipv4"><code>AsMappedIpv4</code></h3>
 
 ```rux
-pub func AsMappedIpv4(self: &Ipv6Address) -> Ipv4Address?
+pub func AsMappedIpv4(&self) -> Ipv4Address?
 ```
 
 The IPv4 address this one maps, for an address in `::ffff:0:0/96`, or none for any other.
 
 **Returns**: the mapped IPv4 address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L345)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L346)
 
 <h3 id="ipv6-write-text"><code>WriteText</code></h3>
 
 ```rux
-pub func WriteText(
-    self: &Ipv6Address,
-    into: var char8[..]
-) -> uint
+pub func WriteText(&self, into: var char8[..]) -> uint
 ```
 
 Writes the address in the canonical form of RFC 5952 into `into`, at most 45 characters. An IPv4-mapped
@@ -384,15 +377,12 @@ address keeps its IPv4 tail in dotted-decimal form, as `::ffff:192.0.2.1`.
 
 **Returns**: how many characters the text takes, which is more than were written when `into` is too short
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L360)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L361)
 
 <h3 id="ipv6-equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(
-    self: &Ipv6Address,
-    other: Ipv6Address
-) -> bool
+pub func Equals(&self, other: Ipv6Address) -> bool
 ```
 
 Whether two addresses are the same.
@@ -403,7 +393,7 @@ Whether two addresses are the same.
 
 **Returns**: true when they are equal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L422)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L423)
 
 **Implements Display**
 
@@ -413,10 +403,10 @@ Whether two addresses are the same.
 
 ```rux
 pub func WriteDisplay(
-    self: &Ipv6Address,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the address in the canonical form of RFC 5952, under the placeholder's width, fill and alignment. No
@@ -429,7 +419,7 @@ style is understood. Reports whatever the writer reported, and `UnsupportedReque
 
 **Returns**: success when the whole address was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L654)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L655)
 
 <h2 id="ip-address"><code>IpAddress</code></h2>
 
@@ -441,7 +431,7 @@ pub struct IpAddress {
 
 An IPv4 or IPv6 address. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L27)
 
 **Associated functions**
 
@@ -459,7 +449,7 @@ An IPv4 address as an IP address.
 
 **Returns**: the IP address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L437)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L438)
 
 <h3 id="from-ipv6"><code>FromIpv6</code></h3>
 
@@ -475,7 +465,7 @@ An IPv6 address as an IP address.
 
 **Returns**: the IP address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L445)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L446)
 
 <h3 id="ip-parse"><code>Parse</code></h3>
 
@@ -491,113 +481,110 @@ Reads an IPv4 or IPv6 address.
 
 **Returns**: the address, or none when the text is neither
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L453)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L454)
 
 **Methods**
 
 <h3 id="is-ipv6"><code>IsIpv6</code></h3>
 
 ```rux
-pub func IsIpv6(self: &IpAddress) -> bool
+pub func IsIpv6(&self) -> bool
 ```
 
 Whether this is an IPv6 address.
 
 **Returns**: true for IPv6
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L467)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L468)
 
 <h3 id="as-ipv4"><code>AsIpv4</code></h3>
 
 ```rux
-pub func AsIpv4(self: &IpAddress) -> Ipv4Address?
+pub func AsIpv4(&self) -> Ipv4Address?
 ```
 
 The IPv4 address, or none for an IPv6 one.
 
 **Returns**: the IPv4 address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L474)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L475)
 
 <h3 id="as-ipv6"><code>AsIpv6</code></h3>
 
 ```rux
-pub func AsIpv6(self: &IpAddress) -> Ipv6Address?
+pub func AsIpv6(&self) -> Ipv6Address?
 ```
 
 The IPv6 address, or none for an IPv4 one.
 
 **Returns**: the IPv6 address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L482)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L483)
 
 <h3 id="ip-is-loopback"><code>IsLoopback</code></h3>
 
 ```rux
-pub func IsLoopback(self: &IpAddress) -> bool
+pub func IsLoopback(&self) -> bool
 ```
 
 Whether this is a loopback address.
 
 **Returns**: true for loopback
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L490)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L491)
 
 <h3 id="ip-is-unspecified"><code>IsUnspecified</code></h3>
 
 ```rux
-pub func IsUnspecified(self: &IpAddress) -> bool
+pub func IsUnspecified(&self) -> bool
 ```
 
 Whether this is the unspecified address, `0.0.0.0` or `::`.
 
 **Returns**: true for the unspecified address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L497)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L498)
 
 <h3 id="ip-is-private"><code>IsPrivate</code></h3>
 
 ```rux
-pub func IsPrivate(self: &IpAddress) -> bool
+pub func IsPrivate(&self) -> bool
 ```
 
 Whether this is a private IPv4 address or a unique local IPv6 address.
 
 **Returns**: true for a private address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L504)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L505)
 
 <h3 id="ip-is-link-local"><code>IsLinkLocal</code></h3>
 
 ```rux
-pub func IsLinkLocal(self: &IpAddress) -> bool
+pub func IsLinkLocal(&self) -> bool
 ```
 
 Whether this is a link-local address.
 
 **Returns**: true for a link-local address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L511)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L512)
 
 <h3 id="ip-is-multicast"><code>IsMulticast</code></h3>
 
 ```rux
-pub func IsMulticast(self: &IpAddress) -> bool
+pub func IsMulticast(&self) -> bool
 ```
 
 Whether this is a multicast address.
 
 **Returns**: true for a multicast address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L518)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L519)
 
 <h3 id="ip-write-text"><code>WriteText</code></h3>
 
 ```rux
-pub func WriteText(
-    self: &IpAddress,
-    into: var char8[..]
-) -> uint
+pub func WriteText(&self, into: var char8[..]) -> uint
 ```
 
 Writes the address into `into`, at most 45 characters.
@@ -608,12 +595,12 @@ Writes the address into `into`, at most 45 characters.
 
 **Returns**: how many characters the text takes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L526)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L527)
 
 <h3 id="ip-equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &IpAddress, other: IpAddress) -> bool
+pub func Equals(&self, other: IpAddress) -> bool
 ```
 
 Whether two addresses are the same, which an IPv4 and an IPv6 address never are.
@@ -624,7 +611,7 @@ Whether two addresses are the same, which an IPv4 and an IPv6 address never are.
 
 **Returns**: true when they are equal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L534)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L535)
 
 **Implements Display**
 
@@ -634,10 +621,10 @@ Whether two addresses are the same, which an IPv4 and an IPv6 address never are.
 
 ```rux
 pub func WriteDisplay(
-    self: &IpAddress,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the address as its IPv4 or IPv6 form does, under the placeholder's width, fill and alignment. No
@@ -650,7 +637,7 @@ style is understood. Reports whatever the writer reported, and `UnsupportedReque
 
 **Returns**: success when the whole address was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L669)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L670)
 
 <h2 id="socket-address"><code>SocketAddress</code></h2>
 
@@ -663,7 +650,7 @@ pub struct SocketAddress {
 
 An IP address and a port: where a socket is bound or connected. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L35)
 
 **Fields**
 
@@ -672,12 +659,15 @@ An IP address and a port: where a socket is bound or connected. `Copy`.
 | `ip`   | `IpAddress` | The address. |
 | `port` | `uint16`    | The port.    |
 
-**Associated functions**
+**Constructors**
 
-<h3 id="socket-address-new"><code>New</code></h3>
+<h3 id="socket-address-new"><code>SocketAddress</code></h3>
 
 ```rux
-pub func New(ip: IpAddress, port: uint16) -> SocketAddress
+pub func SocketAddress(
+    ip: IpAddress,
+    port: uint16
+) -> SocketAddress
 ```
 
 An address and a port.
@@ -689,7 +679,9 @@ An address and a port.
 
 **Returns**: the socket address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L546)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L547)
+
+**Associated functions**
 
 <h3 id="socket-address-parse"><code>Parse</code></h3>
 
@@ -705,17 +697,14 @@ Reads `address:port`, with an IPv6 address in brackets, as in `[::1]:8080`.
 
 **Returns**: the socket address, or none when the text is not one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L554)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L555)
 
 **Methods**
 
 <h3 id="socket-address-write-text"><code>WriteText</code></h3>
 
 ```rux
-pub func WriteText(
-    self: &SocketAddress,
-    into: var char8[..]
-) -> uint
+pub func WriteText(&self, into: var char8[..]) -> uint
 ```
 
 Writes `address:port` into `into`, an IPv6 address in brackets, at most 47 characters.
@@ -726,15 +715,15 @@ Writes `address:port` into `into`, an IPv6 address in brackets, at most 47 chara
 
 **Returns**: how many characters the text takes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L597)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L598)
 
 <h3 id="socket-address-to-string"><code>ToString</code></h3>
 
 ```rux
 pub func ToString(
-    self: &SocketAddress,
+    &self,
     allocator: Allocator
-) -> String ! TextError
+) -> String throws TextError
 ```
 
 The text of the address, as [`WriteText`](/docs/api/net/address#socket-address-write-text) writes it.
@@ -745,15 +734,12 @@ The text of the address, as [`WriteText`](/docs/api/net/address#socket-address-w
 
 **Returns**: the text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L615)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L616)
 
 <h3 id="socket-address-equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(
-    self: &SocketAddress,
-    other: SocketAddress
-) -> bool
+pub func Equals(&self, other: SocketAddress) -> bool
 ```
 
 Whether two socket addresses are the same.
@@ -764,7 +750,7 @@ Whether two socket addresses are the same.
 
 **Returns**: true when they are equal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L625)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L626)
 
 **Implements Display**
 
@@ -774,10 +760,10 @@ Whether two socket addresses are the same.
 
 ```rux
 pub func WriteDisplay(
-    self: &SocketAddress,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the address and port, an IPv6 address in brackets, under the placeholder's width, fill and alignment.
@@ -790,4 +776,4 @@ No style is understood. Reports whatever the writer reported, and `UnsupportedRe
 
 **Returns**: success when the whole address was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L684)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Address.rux#L685)

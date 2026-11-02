@@ -55,9 +55,10 @@ pub struct Url {
 
 An absolute URL in normalized form.
 Read it with [`Parse`](/docs/api/url/url#parse) and resolve references against it with [`Resolve`](/docs/api/url/url#resolve). Every component is a view of the URL's own
-text, still percent-encoded; [`Decode`](/docs/api/url/query#decode) turns one into text. Copying a URL copies its text.
+text, still percent-encoded; [`Decode`](/docs/api/url/query#decode) turns one into text.
+A URL owns its text, so it is move-only, and [`Clone`](/docs/api/url/url#clone) makes an independent copy.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L33)
 
 **Associated functions**
 
@@ -67,7 +68,7 @@ text, still percent-encoded; [`Decode`](/docs/api/url/query#decode) turns one in
 pub func Parse(
     allocator: Allocator,
     text: char8[..]
-) -> Url ! UrlError
+) -> Url throws UrlError
 ```
 
 Reads `text` as an absolute URL and puts it in normalized form.
@@ -81,7 +82,7 @@ such as a space or a non-ASCII byte, is percent-encoded; a host is not, and refu
 
 **Returns**: the URL, or fails with what is wrong with it; a relative reference fails with `MissingScheme`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L218)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L223)
 
 **Methods**
 
@@ -89,9 +90,9 @@ such as a space or a non-ASCII byte, is percent-encoded; a host is not, and refu
 
 ```rux
 pub func Resolve(
-    self: &Url,
+    &self,
     reference: char8[..]
-) -> Url ! UrlError
+) -> Url throws UrlError
 ```
 
 Resolves `reference` against this URL, as a browser resolves a link on a page, following section 5 of
@@ -104,72 +105,72 @@ replace what they name and keep the rest of this URL.
 
 **Returns**: the resolved URL, kept with this URL's allocator
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L229)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L234)
 
 <h3 id="text"><code>Text</code></h3>
 
 ```rux
-pub func Text(self: &Url) -> char8[..]
+pub func Text(&self) -> char8[..]
 ```
 
 The whole URL, in normalized form.
 
 **Returns**: the text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L260)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L265)
 
 <h3 id="scheme"><code>Scheme</code></h3>
 
 ```rux
-pub func Scheme(self: &Url) -> char8[..]
+pub func Scheme(&self) -> char8[..]
 ```
 
 The scheme, in lower case, without its `:`.
 
 **Returns**: the scheme
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L267)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L272)
 
 <h3 id="has-authority"><code>HasAuthority</code></h3>
 
 ```rux
-pub func HasAuthority(self: &Url) -> bool
+pub func HasAuthority(&self) -> bool
 ```
 
 Whether the URL has an authority: a `//` with a host, as `http:` URLs do and `mailto:` URLs do not.
 
 **Returns**: true when it has one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L274)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L279)
 
 <h3 id="username"><code>Username</code></h3>
 
 ```rux
-pub func Username(self: &Url) -> char8[..]
+pub func Username(&self) -> char8[..]
 ```
 
 The user name before `@`, percent-encoded, or the empty text when there is none.
 
 **Returns**: the user name
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L281)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L286)
 
 <h3 id="password"><code>Password</code></h3>
 
 ```rux
-pub func Password(self: &Url) -> char8[..]?
+pub func Password(&self) -> char8[..]?
 ```
 
 The password after the user name's `:`, percent-encoded, or none when there is none.
 
 **Returns**: the password
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L289)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L294)
 
 <h3 id="host"><code>Host</code></h3>
 
 ```rux
-pub func Host(self: &Url) -> char8[..]?
+pub func Host(&self) -> char8[..]?
 ```
 
 The host: a lower-case name, a dotted IPv4 address, or an IPv6 address without its brackets. None when the URL
@@ -177,24 +178,24 @@ has no authority.
 
 **Returns**: the host
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L298)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L303)
 
 <h3 id="host-kind-of"><code>HostKind</code></h3>
 
 ```rux
-pub func HostKind(self: &Url) -> HostKind
+pub func HostKind(&self) -> HostKind
 ```
 
 What kind of host the URL has.
 
 **Returns**: the kind
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L306)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L311)
 
 <h3 id="port"><code>Port</code></h3>
 
 ```rux
-pub func Port(self: &Url) -> uint16?
+pub func Port(&self) -> uint16?
 ```
 
 The port written in the URL, or none when there is none or it is the scheme's default, which normalizing
@@ -202,75 +203,72 @@ leaves out.
 
 **Returns**: the port
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L314)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L319)
 
 <h3 id="port-or-default"><code>PortOrDefault</code></h3>
 
 ```rux
-pub func PortOrDefault(self: &Url) -> uint16?
+pub func PortOrDefault(&self) -> uint16?
 ```
 
 The port a connection uses: the one written, or the scheme's default, or none for a scheme without one.
 
 **Returns**: the port
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L322)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L327)
 
 <h3 id="path"><code>Path</code></h3>
 
 ```rux
-pub func Path(self: &Url) -> char8[..]
+pub func Path(&self) -> char8[..]
 ```
 
 The path, percent-encoded, without dot segments. A URL with an `http`-like scheme always has at least `/`.
 
 **Returns**: the path
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L330)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L335)
 
 <h3 id="path-segments"><code>PathSegments</code></h3>
 
 ```rux
-pub func PathSegments(self: &Url) -> SegmentIterator
+pub func PathSegments(&self) -> SegmentIterator
 ```
 
 The path's segments, between its `/`s.
 
 **Returns**: a walk over the segments
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L337)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L342)
 
 <h3 id="query"><code>Query</code></h3>
 
 ```rux
-pub func Query(self: &Url) -> char8[..]?
+pub func Query(&self) -> char8[..]?
 ```
 
 The query after `?`, percent-encoded, or none when there is no `?`.
 
 **Returns**: the query
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L346)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L351)
 
 <h3 id="fragment"><code>Fragment</code></h3>
 
 ```rux
-pub func Fragment(self: &Url) -> char8[..]?
+pub func Fragment(&self) -> char8[..]?
 ```
 
 The fragment after `#`, percent-encoded, or none when there is no `#`.
 
 **Returns**: the fragment
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L354)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L359)
 
 <h3 id="set-path"><code>SetPath</code></h3>
 
 ```rux
-pub func SetPath(
-    self: &var Url,
-    path: char8[..]
-) -> ! UrlError
+pub func SetPath(&var self, path: char8[..]) throws UrlError
 ```
 
 Replaces the path. A relative path is made absolute when the URL has an authority.
@@ -281,15 +279,15 @@ Replaces the path. A relative path is made absolute when the URL has an authorit
 
 **Returns**: nothing, or fails when the path cannot be normalized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L363)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L368)
 
 <h3 id="set-query"><code>SetQuery</code></h3>
 
 ```rux
 pub func SetQuery(
-    self: &var Url,
+    &var self,
     query: char8[..]?
-) -> ! UrlError
+) throws UrlError
 ```
 
 Replaces the query, or removes it with none.
@@ -300,15 +298,15 @@ Replaces the query, or removes it with none.
 
 **Returns**: nothing, or fails when the query cannot be normalized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L376)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L381)
 
 <h3 id="set-fragment"><code>SetFragment</code></h3>
 
 ```rux
 pub func SetFragment(
-    self: &var Url,
+    &var self,
     fragment: char8[..]?
-) -> ! UrlError
+) throws UrlError
 ```
 
 Replaces the fragment, or removes it with none.
@@ -319,12 +317,12 @@ Replaces the fragment, or removes it with none.
 
 **Returns**: nothing, or fails when the fragment cannot be normalized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L386)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L391)
 
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &Url, other: &Url) -> bool
+pub func Equals(&self, other: &Url) -> bool
 ```
 
 Whether two URLs are the same, which after normalization means the same text.
@@ -335,7 +333,22 @@ Whether two URLs are the same, which after normalization means the same text.
 
 **Returns**: true when they are equal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L396)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L401)
+
+<h3 id="clone"><code>Clone</code></h3>
+
+```rux
+pub func Clone(&self) -> Url
+```
+
+An independent copy, with text of its own from the same allocator.
+A URL owns its text, so `=` cannot copy it; this is how to keep two. The copy is equal to this URL and
+changing either leaves the other as it was.
+Terminates the program when its text cannot be stored.
+
+**Returns**: the copy
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L411)
 
 <h2 id="segment-iterator"><code>SegmentIterator</code></h2>
 
@@ -347,21 +360,21 @@ pub struct SegmentIterator {
 
 A walk over a path's segments, between its `/`s. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L424)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L473)
 
 **Methods**
 
 <h3 id="segment-iterator-iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &SegmentIterator) -> SegmentIterator
+pub func Iterate(&self) -> SegmentIterator
 ```
 
 The walk itself, so that `for segment in url.PathSegments()` reads every segment.
 
 **Returns**: a copy of this walk
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L433)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L482)
 
 **Implements Iterator**
 
@@ -370,11 +383,11 @@ The walk itself, so that `for segment in url.PathSegments()` reads every segment
 <h3 id="segment-iterator-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var SegmentIterator) -> char8[..]?
+pub func Next(&var self) -> char8[..]?
 ```
 
 The next segment, still percent-encoded, or none after the last.
 
 **Returns**: the segment
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L442)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L491)

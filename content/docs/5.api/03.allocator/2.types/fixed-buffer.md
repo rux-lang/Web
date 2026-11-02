@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/FixedBuffer.rux
-  line: 17
+  line: 18
 seo:
   title: "FixedBuffer — Allocator API"
   description: An allocator that advances a pointer through storage it does not own.
@@ -35,7 +35,7 @@ bytes to two callers. Use [`Handle`](/docs/api/allocator/fixed-buffer#handle) wh
 <h3 id="new"><code>FixedBuffer</code></h3>
 
 ```rux
-pub func FixedBuffer(
+pub unsafe func FixedBuffer(
     storage: *var opaque,
     capacity: uint
 ) -> FixedBuffer
@@ -46,8 +46,8 @@ An allocator over `capacity` bytes at `storage`.
 a null `storage`, gives an allocator that refuses every request with `OutOfMemory` — which is a usable
 allocator rather than an error, and is what a caller testing exhaustion wants.
 Cannot fail. Runs in constant time and allocates nothing.
-The storage must stay valid and untouched by anything else for as long as this allocator or any handle to it
-is used. Nothing here tracks that.
+Safety: the storage must stay valid and untouched by anything else for as long as this allocator or any handle
+to it is used. Nothing here tracks that.
 
 | Name       | Type          | Description                       |
 | ---------- | ------------- | --------------------------------- |
@@ -56,29 +56,29 @@ is used. Nothing here tracks that.
 
 **Returns**: the buffer, having handed out nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L41)
 
 ## Methods
 
 <h3 id="handle"><code>Handle</code></h3>
 
 ```rux
-pub func Handle(self: *var FixedBuffer) -> FixedBufferHandle
+pub unsafe func Handle(*var self) -> FixedBufferHandle
 ```
 
 A copyable interface adapter pointing at this allocator.
 `self` is borrowed mutably and stays the caller's. Everything allocated through the handle advances this
 allocator's state rather than a copy of it, which is the whole reason the handle exists.
-The handle borrows the allocator and must not outlive it or survive it being moved.
+Safety: the handle borrows the allocator and must not outlive it or survive it being moved.
 
 **Returns**: a copyable adapter pointing at this buffer
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L57)
 
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var FixedBuffer)
+pub func Reset(&var self)
 ```
 
 Rewinds every allocation, making the whole buffer available again.
@@ -86,12 +86,12 @@ Rewinds every allocation, making the whole buffer available again.
 Cannot fail. Runs in constant time and allocates nothing.
 Nothing may be read from or written to any earlier allocation afterwards.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L66)
 
 <h3 id="bytes-used"><code>BytesUsed</code></h3>
 
 ```rux
-pub func BytesUsed(self: &FixedBuffer) -> uint
+pub func BytesUsed(&self) -> uint
 ```
 
 How many bytes have been handed out, including alignment padding.
@@ -99,12 +99,12 @@ How many bytes have been handed out, including alignment padding.
 
 **Returns**: how many bytes have been handed out
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L75)
 
 <h3 id="bytes-remaining"><code>BytesRemaining</code></h3>
 
 ```rux
-pub func BytesRemaining(self: &FixedBuffer) -> uint
+pub func BytesRemaining(&self) -> uint
 ```
 
 How many bytes remain, before any alignment padding the next request needs.
@@ -112,7 +112,7 @@ How many bytes remain, before any alignment padding the next request needs.
 
 **Returns**: how many bytes are left to hand out
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L83)
 
 ## Related
 
@@ -126,7 +126,7 @@ pub struct FixedBufferHandle {
 
 A copyable interface adapter pointing at a [`FixedBuffer`](/docs/api/allocator/fixed-buffer).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L141)
 
 **Implements Allocator**
 
@@ -136,9 +136,9 @@ A copyable interface adapter pointing at a [`FixedBuffer`](/docs/api/allocator/f
 
 ```rux
 pub func Allocate(
-    self: &FixedBufferHandle,
+    &self,
     layout: Layout
-) -> (*var opaque) ! AllocError
+) -> *var opaque throws AllocError
 ```
 
 Takes storage matching `layout` from the buffer.
@@ -155,16 +155,16 @@ The storage lives until the allocator is reset, and no longer.
 
 **Returns**: the address of the storage, or why none was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L157)
 
 <h4 id="fixed-buffer-handle-deallocate"><code>Deallocate</code></h4>
 
 ```rux
 pub func Deallocate(
-    self: &FixedBufferHandle,
+    &self,
     block: *var opaque,
     layout: Layout
-) -> ! AllocError
+) throws AllocError
 ```
 
 Accepts a release and rewinds only the most recent allocation.
@@ -179,17 +179,17 @@ generic code that releases what it takes.
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L135)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L174)
 
 <h4 id="fixed-buffer-handle-reallocate"><code>Reallocate</code></h4>
 
 ```rux
 pub func Reallocate(
-    self: &FixedBufferHandle,
+    &self,
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
-) -> (*var opaque) ! AllocError
+) -> *var opaque throws AllocError
 ```
 
 Grows or shrinks a block, extending the most recent allocation in place where the buffer has room.
@@ -206,4 +206,4 @@ it rewound off of, so the result is releasable with the layout it was asked for.
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L192)

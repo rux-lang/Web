@@ -38,7 +38,7 @@ A socket listening for TCP connections. Not copied.
 <h3 id="bind"><code>Bind</code></h3>
 
 ```rux
-pub func Bind(address: SocketAddress) -> TcpListener ! IoError
+pub func Bind(address: SocketAddress) -> TcpListener throws IoError
 ```
 
 Listens at `address`. Port zero lets the system choose a free port, which [`LocalAddress`](/docs/api/net/tcp#listener-local-address) then gives.
@@ -49,41 +49,38 @@ Listens at `address`. Port zero lets the system choose a free port, which [`Loca
 
 **Returns**: the listener, or fails with `AddressInUse`, `AddressUnavailable` or `PermissionDenied`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L42)
 
 **Methods**
 
 <h3 id="accept"><code>Accept</code></h3>
 
 ```rux
-pub func Accept(self: &TcpListener) -> TcpStream ! IoError
+pub func Accept(&self) -> TcpStream throws IoError
 ```
 
 Waits for a connection and accepts it.
 
 **Returns**: the connected stream, whose [`PeerAddress`](/docs/api/net/tcp#peer-address) says who connected
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L53)
 
 <h3 id="listener-local-address"><code>LocalAddress</code></h3>
 
 ```rux
-pub func LocalAddress(self: &TcpListener) -> SocketAddress ! IoError
+pub func LocalAddress(&self) -> SocketAddress throws IoError
 ```
 
 The address the listener is bound to, with the port the system chose for port zero.
 
 **Returns**: the address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L62)
 
 <h3 id="listener-set-non-blocking"><code>SetNonBlocking</code></h3>
 
 ```rux
-pub func SetNonBlocking(
-    self: &TcpListener,
-    enabled: bool
-) -> ! IoError
+pub func SetNonBlocking(&self, enabled: bool) throws IoError
 ```
 
 Makes calls on the listener fail with `WouldBlock` when they would wait, or wait again.
@@ -96,29 +93,29 @@ A non-blocking socket is meant for a [`Poller`](/docs/api/net/poller), which say
 
 **Returns**: success when the mode is set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L72)
 
 <h3 id="listener-poll-source"><code>PollSource</code></h3>
 
 ```rux
-pub func PollSource(self: &TcpListener) -> PollSource
+pub func PollSource(&self) -> PollSource
 ```
 
 The listener as a [`Poller`](/docs/api/net/poller) watches it, valid while the listener is open.
 
 **Returns**: the source to register
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L79)
 
 **Destructor**
 
 <h3 id="tcp-listener-destructor"><code>~TcpListener</code></h3>
 
 ```rux
-func ~TcpListener(self: &var TcpListener)
+func ~TcpListener(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L83)
 
 <h2 id="tcp-stream"><code>TcpStream</code></h2>
 
@@ -137,7 +134,7 @@ A connected TCP stream: an `Io::Reader` of what the peer sends and an `Io::Write
 <h3 id="connect"><code>Connect</code></h3>
 
 ```rux
-pub func Connect(address: SocketAddress) -> TcpStream ! IoError
+pub func Connect(address: SocketAddress) -> TcpStream throws IoError
 ```
 
 Connects to `address`, waiting until the connection is made or refused.
@@ -148,41 +145,41 @@ Connects to `address`, waiting until the connection is made or refused.
 
 **Returns**: the stream, or fails with `ConnectionRefused`, `Unreachable` or `TimedOut`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L94)
 
 **Methods**
 
 <h3 id="local-address"><code>LocalAddress</code></h3>
 
 ```rux
-pub func LocalAddress(self: &TcpStream) -> SocketAddress ! IoError
+pub func LocalAddress(&self) -> SocketAddress throws IoError
 ```
 
 The address of this end of the connection.
 
 **Returns**: the address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L104)
 
 <h3 id="peer-address"><code>PeerAddress</code></h3>
 
 ```rux
-pub func PeerAddress(self: &TcpStream) -> SocketAddress ! IoError
+pub func PeerAddress(&self) -> SocketAddress throws IoError
 ```
 
 The address of the other end.
 
 **Returns**: the address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L111)
 
 <h3 id="shutdown"><code>Shutdown</code></h3>
 
 ```rux
 pub func Shutdown(
-    self: &TcpStream,
+    &self,
     direction: ShutdownDirection
-) -> ! IoError
+) throws IoError
 ```
 
 Ends one or both directions of the connection while the socket stays open.
@@ -193,15 +190,12 @@ Ends one or both directions of the connection while the socket stays open.
 
 **Returns**: nothing, or fails when the connection is already gone
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L123)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L119)
 
 <h3 id="set-no-delay"><code>SetNoDelay</code></h3>
 
 ```rux
-pub func SetNoDelay(
-    self: &TcpStream,
-    enabled: bool
-) -> ! IoError
+pub func SetNoDelay(&self, enabled: bool) throws IoError
 ```
 
 Sends small writes at once rather than gathering them, which suits request and response exchanges.
@@ -212,15 +206,15 @@ Sends small writes at once rather than gathering them, which suits request and r
 
 **Returns**: nothing, or fails when the system refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L127)
 
 <h3 id="set-read-timeout"><code>SetReadTimeout</code></h3>
 
 ```rux
 pub func SetReadTimeout(
-    self: &TcpStream,
+    &self,
     timeout: Duration?
-) -> ! IoError
+) throws IoError
 ```
 
 How long a read may wait before failing with `TimedOut`, or none to wait without a limit.
@@ -231,15 +225,15 @@ How long a read may wait before failing with `TimedOut`, or none to wait without
 
 **Returns**: nothing, or fails when the system refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L139)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L135)
 
 <h3 id="set-write-timeout"><code>SetWriteTimeout</code></h3>
 
 ```rux
 pub func SetWriteTimeout(
-    self: &TcpStream,
+    &self,
     timeout: Duration?
-) -> ! IoError
+) throws IoError
 ```
 
 How long a write may wait before failing with `TimedOut`, or none to wait without a limit.
@@ -250,15 +244,12 @@ How long a write may wait before failing with `TimedOut`, or none to wait withou
 
 **Returns**: nothing, or fails when the system refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L143)
 
 <h3 id="set-non-blocking"><code>SetNonBlocking</code></h3>
 
 ```rux
-pub func SetNonBlocking(
-    self: &TcpStream,
-    enabled: bool
-) -> ! IoError
+pub func SetNonBlocking(&self, enabled: bool) throws IoError
 ```
 
 Makes calls on the stream fail with `WouldBlock` when they would wait, or wait again.
@@ -270,19 +261,19 @@ A non-blocking socket is meant for a [`Poller`](/docs/api/net/poller), which say
 
 **Returns**: success when the mode is set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L156)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L152)
 
 <h3 id="poll-source"><code>PollSource</code></h3>
 
 ```rux
-pub func PollSource(self: &TcpStream) -> PollSource
+pub func PollSource(&self) -> PollSource
 ```
 
 The stream as a [`Poller`](/docs/api/net/poller) watches it, valid while the stream is open.
 
 **Returns**: the source to register
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L159)
 
 **Implements Reader**
 
@@ -292,9 +283,9 @@ The stream as a [`Poller`](/docs/api/net/poller) watches it, valid while the str
 
 ```rux
 pub func Read(
-    self: &var TcpStream,
+    &var self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Reads what the peer has sent, waiting while it has sent nothing.
@@ -305,7 +296,7 @@ Reads what the peer has sent, waiting while it has sent nothing.
 
 **Returns**: how many were read, or fails with `EndOfStream` once the peer closed its side
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L185)
 
 **Implements Writer**
 
@@ -315,9 +306,9 @@ Reads what the peer has sent, waiting while it has sent nothing.
 
 ```rux
 pub func Write(
-    self: &var TcpStream,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Sends some of `bytes`, waiting while the connection's buffer is full.
@@ -328,29 +319,29 @@ Sends some of `bytes`, waiting while the connection's buffer is full.
 
 **Returns**: how many were sent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L198)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var TcpStream) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Does nothing: a stream sends what is written to it without holding any back.
 
 **Returns**: nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L206)
 
 **Destructor**
 
 <h3 id="tcp-stream-destructor"><code>~TcpStream</code></h3>
 
 ```rux
-func ~TcpStream(self: &var TcpStream)
+func ~TcpStream(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L167)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L163)
 
 <h2 id="shutdown-direction"><code>ShutdownDirection</code></h2>
 

@@ -79,14 +79,14 @@ pub func MetadataOf(
     allocator: Allocator,
     path: Path,
     followLinks: bool
-) -> Metadata ! IoError
+) -> Metadata throws IoError
 ```
 
 Describes the file `path` names.
 `followLinks` decides what a symbolic link at the end of the path means: following it describes the target,
 and not following it describes the link, which is the only way `SymbolicLink` is ever reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L362)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L365)
 
 **Parameters**
 
@@ -107,14 +107,14 @@ pub func SetTimes(
     accessed: Timestamp,
     modified: Timestamp,
     followLinks: bool
-) -> ! IoError
+) throws IoError
 ```
 
 Sets the access and modification times of the file `path` names.
 Creation time is not settable here: Windows would allow it and the Unix systems would not, and an operation
 that silently means different things on different systems is worse than one that is not offered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L456)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L479)
 
 **Parameters**
 

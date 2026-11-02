@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Sleep.rux
-  line: 202
+  line: 204
 seo:
   title: "SleepFor — Time API"
   description: Stops the calling thread for at least span.
@@ -22,7 +22,7 @@ seo:
 Stops the calling thread for at least `span`.
 
 ```rux
-pub func SleepFor(span: Duration) -> ! TimeError
+pub func SleepFor(span: Duration) throws TimeError
 ```
 
 At least: the system wakes the thread no earlier, and how much later is the scheduler's business. A negative or
@@ -33,7 +33,7 @@ one system wait can express is waited for in chunks rather than clamped, so a hu
 days.
 Fails with `InvalidDuration` when the system refused the request, which a normalized non-negative span should not
 produce, and `Failed` for anything else. A caller with nothing to do about a failed wait says so with
-`SleepFor(span) catch { else => {} }`; the point is that it is no longer indistinguishable from success.
+`try SleepFor(span) catch { _ => {} }`; the point is that it is no longer indistinguishable from success.
 
 ## Parameters
 
@@ -116,7 +116,7 @@ How many waits [`SleepFor`](/docs/api/time/sleep) will make before giving up on 
 A [`Waiter`](/docs/api/time/waiter) that reports success without waiting and without reducing the remainder would spin forever. This is
 not a limit any real wait reaches: the system waiter always either advances or fails.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L161)
 
 <h3 id="sleep-using"><code>SleepUsing&lt;W&gt;</code></h3>
 
@@ -124,7 +124,7 @@ not a limit any real wait reaches: the system waiter always either advances or f
 pub func SleepUsing<W: Waiter>(
     waiter: &var W,
     span: Duration
-) -> ! TimeError
+) throws TimeError
 ```
 
 Waits out `span` through `waiter`, retrying interruptions and chunking what one wait cannot express.
@@ -135,7 +135,7 @@ Fails with whatever the waiter failed with, having stopped there rather than ask
 when the waiter neither advanced nor failed [`MaximumWaitAttempts`](/docs/api/time/sleep#maximum-wait-attempts) times running, which no real wait does and which
 is what keeps a broken implementation from hanging a program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L175)
 
 **Type parameters**
 

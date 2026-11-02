@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Stream.rux
-  line: 27
+  line: 28
 seo:
   title: "Writer — Io API"
   description: Somewhere bytes go.
@@ -24,10 +24,10 @@ Somewhere bytes go.
 ```rux
 pub interface Writer {
     func Write(
-        self: &var Self,
+        &var self,
         bytes: char8[..]
-    ) -> uint ! IoError;
-    func Flush(self: &var Self) -> ! IoError;
+    ) -> uint throws IoError;
+    func Flush(&var self) throws IoError;
 }
 ```
 
@@ -37,9 +37,9 @@ pub interface Writer {
 
 ```rux
 func Write(
-    self: &var Self,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Takes what it can of `bytes` and succeeds with how much.
@@ -50,19 +50,19 @@ Takes what it can of `bytes` and succeeds with how much.
 
 **Returns**: how many bytes were taken, which may be fewer than offered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L33)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-func Flush(self: &var Self) -> ! IoError
+func Flush(&var self) throws IoError
 ```
 
 Pushes whatever is held toward the destination.
 
 **Returns**: success when everything held reached the destination
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L38)
 
 ## Implementations
 
@@ -80,14 +80,17 @@ Pushes whatever is held toward the destination.
 pub func WriteAll(
     writer: &var Writer,
     bytes: char8[..]
-) -> ! IoError
+) throws IoError
 ```
 
 Writes all of `bytes`, looping over partial writes, or says why it could not.
-A writer that accepts nothing while reporting success is refused with `WriteZero` after a few rounds: a loop
-that spins on it would hang the caller on a stream that will never take the rest.
+Interruptions are retried at once. A writer that accepts nothing while reporting success is refused with
+`WriteZero` after [`ZeroProgressLimit`](/docs/api/io/reader#zero-progress-limit) rounds: a loop that spins on it would hang the caller on a stream that will
+never take the rest. Any other failure, `WouldBlock` included, is returned as itself, with some of `bytes`
+possibly written and how much not reported: a caller writing to a non-blocking stream writes incrementally with
+`Write`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L107)
 
 **Parameters**
 

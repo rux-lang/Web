@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Events.rux
-  line: 62
+  line: 58
 seo:
   title: "TomlEventReader — Toml API"
   description: "Reads a document as events, in order, without building a tree."
@@ -43,30 +43,14 @@ A reader over `input`.
 
 **Returns**: a reader positioned before the first event
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L89)
 
 ## Methods
-
-<h3 id="failure"><code>Failure</code></h3>
-
-```rux
-pub func Failure(self: &TomlEventReader) -> TomlParseFailure?
-```
-
-Why reading stopped, positioned, or `none` while nothing has gone wrong.
-This is what a caller asks after [`Next`](/docs/api/toml/toml-event-reader#next) reports `Error`. A lexical refusal carries the lexer's own reason
-inside it rather than in a second call, so a caller holding the failure is holding all of it — and it is
-the same [`TomlParseFailure`](/docs/api/toml/toml-parse-failure) the tree parser answers, so the two ways of reading a document report a
-refusal in one vocabulary rather than two.
-
-**Returns**: the failure, positioned at the token the reader stopped on, or `none`
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L118)
 
 <h3 id="span"><code>Span</code></h3>
 
 ```rux
-pub func Span(self: &TomlEventReader) -> char8[..]
+pub func Span(&self) -> char8[..]
 ```
 
 The bytes the current event's token spans, as written: a string is still escaped and a number is still
@@ -74,81 +58,82 @@ text.
 
 **Returns**: the raw text the current event covers, borrowed from the input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L135)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L125)
 
 <h3 id="form"><code>Form</code></h3>
 
 ```rux
-pub func Form(self: &TomlEventReader) -> TomlTextForm
+pub func Form(&self) -> TomlTextForm
 ```
 
 Which string form the current text event was written in, which decoding it needs.
 
 **Returns**: which quoting form the current text was written in
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L134)
 
 <h3 id="line"><code>Line</code></h3>
 
 ```rux
-pub func Line(self: &TomlEventReader) -> uint
+pub func Line(&self) -> uint
 ```
 
 Which line the current event is on, counting from one.
 
 **Returns**: the current event's line, counting from one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L149)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L141)
 
 <h3 id="column"><code>Column</code></h3>
 
 ```rux
-pub func Column(self: &TomlEventReader) -> uint
+pub func Column(&self) -> uint
 ```
 
 Which column the current event is at, counting from one, in bytes.
 
 **Returns**: the current event's column, counting from one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L156)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L148)
 
 <h3 id="is-table-array"><code>IsTableArray</code></h3>
 
 ```rux
-pub func IsTableArray(self: &TomlEventReader) -> bool
+pub func IsTableArray(&self) -> bool
 ```
 
 Whether the header being read was written `[[name]]` rather than `[name]`.
 
 **Returns**: whether the current header opens an array of tables rather than a table
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L155)
 
 <h3 id="depth"><code>Depth</code></h3>
 
 ```rux
-pub func Depth(self: &TomlEventReader) -> uint
+pub func Depth(&self) -> uint
 ```
 
 How deep inside arrays and inline tables the reader is.
 
 **Returns**: how many tables are currently open
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L162)
 
 <h3 id="next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var TomlEventReader) -> TomlEvent
+pub func Next(&var self) -> TomlEvent? throws TomlParseFailure
 ```
 
-The next event, or `End` when the document is finished.
-After an `Error` every later call returns `End`: everything past a refusal would be read from a position
-the document never meant.
+The next event, or `none` when the document is finished.
+A refusal is thrown as the same positioned [`TomlParseFailure`](/docs/api/toml/toml-parse-failure) the tree parser answers, so the two ways of
+reading a document report a refusal in one vocabulary; every later call throws it again, because everything
+past a refusal would be read from a position the document never meant.
 
-**Returns**: the next event, or the end-of-input event
+**Returns**: the next event, or `none` at the end of the document
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L245)
 
 ## Related
 
@@ -156,8 +141,6 @@ the document never meant.
 
 ```rux
 pub enum TomlEvent: int32 {
-    End = 0,
-    Error = 1,
     HeaderStart = 2,
     HeaderEnd = 3,
     KeyStart = 4,
@@ -174,7 +157,7 @@ pub enum TomlEvent: int32 {
 }
 ```
 
-What just happened in the document.
+What just happened in the document. The end of the document is `none` from `Next`, and a refusal is thrown.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Events.rux#L15)
 
@@ -182,8 +165,6 @@ What just happened in the document.
 
 | Name               | Value | Description                                                                                                                                     |
 | ------------------ | ----- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
-| `End`              | `0`   | The document is finished.                                                                                                                       |
-| `Error`            | `1`   | Something went wrong; the reason is on the reader.                                                                                              |
 | `HeaderStart`      | `2`   | A `[name]` or `[[name]]` header opened; [`IsTableArray`](/docs/api/toml/toml-event-reader#is-table-array) says which, and the key parts follow. |
 | `HeaderEnd`        | `3`   | The header's key path is complete.                                                                                                              |
 | `KeyStart`         | `4`   | A key-value pair began; the key parts follow, and then the value.                                                                               |

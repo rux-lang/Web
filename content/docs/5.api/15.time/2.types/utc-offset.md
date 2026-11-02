@@ -75,7 +75,7 @@ would turn parsing into policy.
 <h3 id="total-seconds"><code>TotalSeconds</code></h3>
 
 ```rux
-pub func TotalSeconds(self: &UtcOffset) -> int32
+pub func TotalSeconds(&self) -> int32
 ```
 
 The whole seconds east of UTC, negative west.
@@ -92,10 +92,10 @@ The whole seconds east of UTC, negative west.
 
 ```rux
 pub func WriteDisplay(
-    self: &UtcOffset,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the offset as `Z` for UTC, and as a signed `+HH:MM` otherwise.
@@ -112,7 +112,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style other
 
 **Returns**: success when the whole offset was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L224)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L227)
 
 ## Implements Debug
 
@@ -122,10 +122,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style other
 
 ```rux
 pub func WriteDebug(
-    self: &UtcOffset,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`.
@@ -138,4 +138,4 @@ The failures [`WriteDisplay`](/docs/api/time/utc-offset#write-display) reports.
 
 **Returns**: success when the whole offset was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L246)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L249)

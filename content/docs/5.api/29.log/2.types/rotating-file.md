@@ -44,7 +44,7 @@ pub func Open(
     path: Path,
     limit: uint64,
     keep: uint
-) -> RotatingFile ! IoError
+) -> RotatingFile throws IoError
 ```
 
 Opens `path` for appending, creating it if missing, to be moved aside before it grows past `limit` bytes.
@@ -58,26 +58,26 @@ Opens `path` for appending, creating it if missing, to be moved aside before it 
 
 **Returns**: the open file, or why it could not be opened; `InvalidInput` for a zero limit or an overlong path
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L45)
 
 ## Methods
 
 <h3 id="size"><code>Size</code></h3>
 
 ```rux
-pub func Size(self: &RotatingFile) -> uint64
+pub func Size(&self) -> uint64
 ```
 
 How many bytes the current file holds.
 
 **Returns**: its size, counting what this value wrote
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L58)
 
 <h3 id="rotate"><code>Rotate</code></h3>
 
 ```rux
-pub func Rotate(self: &var RotatingFile) -> ! IoError
+pub func Rotate(&var self) throws IoError
 ```
 
 Moves the current file aside now and starts an empty one, whatever its size.
@@ -86,24 +86,24 @@ and every later write fails with `InvalidHandle` until a rotation succeeds.
 
 **Returns**: success when an empty current file is open
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L67)
 
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
-pub func Close(self: &var RotatingFile) -> ! IoError
+pub func Close(&var self) throws IoError
 ```
 
 Closes the current file, reporting what closing it said.
 
 **Returns**: success when the file is closed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L85)
 
 <h3 id="stream"><code>Stream</code></h3>
 
 ```rux
-pub func Stream(self: *var RotatingFile) -> RotatingStream
+pub func Stream(*var self) -> RotatingStream
 ```
 
 A stored borrow of this file for a [`Logger`](/docs/api/log/logger#logger), which keeps its destination.
@@ -111,7 +111,7 @@ The file must outlive the stream and must not be moved while one exists; nothing
 
 **Returns**: a stream writing through this file
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L96)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L93)
 
 ## Implements Writer
 
@@ -121,9 +121,9 @@ The file must outlive the stream and must not be moved while one exists; nothing
 
 ```rux
 pub func Write(
-    self: &var RotatingFile,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Writes `bytes`, moving the current file aside first when they would take it past the limit.
@@ -135,16 +135,16 @@ An empty current file is never moved aside, so a write larger than the limit lan
 
 **Returns**: how many bytes were taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L104)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var RotatingFile) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Flushes the current file, which holds nothing back.
 
 **Returns**: success when everything written reached the system
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L116)

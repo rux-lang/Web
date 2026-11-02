@@ -70,7 +70,7 @@ The level named `text`, in any case; `warning` is read as `warn`.
 <h3 id="name"><code>Name</code></h3>
 
 ```rux
-pub func Name(self: &Level) -> char8[..]
+pub func Name(&self) -> char8[..]
 ```
 
 The level's name in lower case, as JSON records give it: `trace`, `debug`, `info`, `warn` or `error`.
@@ -82,7 +82,7 @@ The level's name in lower case, as JSON records give it: `trace`, `debug`, `info
 <h3 id="label"><code>Label</code></h3>
 
 ```rux
-pub func Label(self: &Level) -> char8[..]
+pub func Label(&self) -> char8[..]
 ```
 
 The level's label in upper case and five columns wide, as text records give it.

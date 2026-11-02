@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Legacy.rux
-  line: 205
+  line: 209
 seo:
   title: "LegacySha1 — Crypto API"
   description: An incremental SHA-1.
@@ -42,14 +42,14 @@ A SHA-1 state.
 
 **Returns**: a SHA-1 hasher, which is broken and is here only to read what already exists
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L220)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L224)
 
 ## Methods
 
 <h3 id="update"><code>Update</code></h3>
 
 ```rux
-pub func Update(self: &var LegacySha1, bytes: char8[..])
+pub func Update(&var self, bytes: char8[..])
 ```
 
 Adds `bytes` to the message.
@@ -58,12 +58,12 @@ Adds `bytes` to the message.
 | ------- | ----------- | ------------------- |
 | `bytes` | `char8[..]` | the bytes to absorb |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L297)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L302)
 
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var LegacySha1, into: var char8[..])
+pub func Finish(&var self, into: var char8[..])
 ```
 
 Writes the twenty-byte digest into `into`.
@@ -72,7 +72,7 @@ Writes the twenty-byte digest into `into`.
 | ------ | --------------- | ------------------- |
 | `into` | `var char8[..]` | receives the output |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L314)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L320)
 
 ## Related
 
@@ -84,7 +84,7 @@ pub func LegacySha1Of(bytes: char8[..], into: var char8[..])
 
 The SHA-1 digest of `bytes`. **Broken for collision resistance; see the note at the top of this file.**
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L352)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L360)
 
 **Parameters**
 

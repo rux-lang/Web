@@ -68,23 +68,23 @@ pub func HexEncode(
     bytes: byte[..],
     into: var char8[..],
     letterCase: HexCase
-) -> uint ! FormatError
+) -> uint throws FormatError
 
 pub func HexEncode(
     text: char8[..],
     into: var char8[..],
     letterCase: HexCase
-) -> uint ! FormatError
+) -> uint throws FormatError
 ```
 
 Writes `bytes` as hexadecimal digits into `into`, two per byte, high nibble first.
 Runs in time that depends only on the length of `bytes`. Reports `InsufficientCapacity` when `into` is shorter
 than `HexEncodedLength(bytes.length)`, leaving it exactly as it was; room past the encoded form is not touched.
 
-| Overload                                                                                              | Summary                                                                            |
-| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| `pub func HexEncode(bytes: byte[..], into: var char8[..], letterCase: HexCase) -> uint ! FormatError` | Writes `bytes` as hexadecimal digits into `into`, two per byte, high nibble first. |
-| `pub func HexEncode(text: char8[..], into: var char8[..], letterCase: HexCase) -> uint ! FormatError` | Writes the bytes of `text` as hexadecimal digits into `into`, two per byte.        |
+| Overload                                                                                                   | Summary                                                                            |
+| ---------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `pub func HexEncode(bytes: byte[..], into: var char8[..], letterCase: HexCase) -> uint throws FormatError` | Writes `bytes` as hexadecimal digits into `into`, two per byte, high nibble first. |
+| `pub func HexEncode(text: char8[..], into: var char8[..], letterCase: HexCase) -> uint throws FormatError` | Writes the bytes of `text` as hexadecimal digits into `into`, two per byte.        |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L39)
 
@@ -102,14 +102,14 @@ than `HexEncodedLength(bytes.length)`, leaving it exactly as it was; room past t
 <h2 id="hex-decoded-length"><code>HexDecodedLength</code></h2>
 
 ```rux
-pub func HexDecodedLength(text: char8[..]) -> uint ! DecodeError
+pub func HexDecodedLength(text: char8[..]) -> uint throws DecodeError
 ```
 
 How many bytes the hexadecimal text decodes to, after checking that its length is even.
 Only the length is checked; the digits themselves are checked by [`HexDecode`](/docs/api/encoding/hex#hex-decode). Reports `InvalidLength` at the
 end of the text when it has an odd number of characters. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L73)
 
 **Parameters**
 
@@ -125,7 +125,7 @@ end of the text when it has an odd number of characters. Runs in constant time a
 pub func HexDecode(
     text: char8[..],
     into: var byte[..]
-) -> uint ! DecodeError
+) -> uint throws DecodeError
 ```
 
 Reads hexadecimal digits of either case from `text` into `into`, one byte per pair.
@@ -134,7 +134,7 @@ odd number of characters and `InvalidCharacter` at the first character that is n
 `into` untouched in both cases, because the whole text is checked before anything is written. Reports
 `InsufficientCapacity` with the length needed when `into` is too short, also leaving it untouched.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L87)
 
 **Parameters**
 
@@ -157,7 +157,7 @@ A borrowed byte sequence that renders as hexadecimal under a format placeholder.
 Lets a caller write `Render("{}", ViewHex(digest))` instead of sizing a buffer first. The view borrows the bytes
 and must not outlive them. Copy, owning nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L128)
 
 **Implements Display**
 
@@ -167,10 +167,10 @@ and must not outlive them. Copy, owning nothing.
 
 ```rux
 pub func WriteDisplay(
-    self: &HexView,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the bytes as hexadecimal digits, padded to the placeholder's width.
@@ -185,7 +185,7 @@ reported, and `UnsupportedRequest` for a precision or any other style.
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L148)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L152)
 
 <h2 id="view-hex"><code>ViewHex</code></h2>
 
@@ -199,7 +199,7 @@ pub func ViewHex(
 Borrows `bytes` for rendering as hexadecimal.
 Cannot fail and allocates nothing; the view reads `bytes` each time it is rendered, so it must not outlive them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L135)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Hex.rux#L139)
 
 **Parameters**
 

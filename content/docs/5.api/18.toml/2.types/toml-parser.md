@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Parser.rux
-  line: 286
+  line: 279
 seo:
   title: "TomlParser — Toml API"
   description: A parser over a document.
@@ -49,14 +49,14 @@ A parser over `input` under `limits`.
 
 **Returns**: a parser ready to read the input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L310)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L303)
 
 ## Methods
 
 <h3 id="failure"><code>Failure</code></h3>
 
 ```rux
-pub func Failure(self: &TomlParser) -> TomlParseFailure?
+pub func Failure(&self) -> TomlParseFailure?
 ```
 
 Why parsing stopped, positioned, or `none` while nothing has gone wrong.
@@ -64,24 +64,24 @@ A caller using [`Parse`](/docs/api/toml/toml-parser#parse) never needs this: the
 
 **Returns**: the failure, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L335)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L328)
 
 <h3 id="failed"><code>Failed</code></h3>
 
 ```rux
-pub func Failed(self: &TomlParser) -> bool
+pub func Failed(&self) -> bool
 ```
 
 Whether parsing has failed.
 
 **Returns**: whether the parse stopped on a failure
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L343)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L336)
 
 <h3 id="parse"><code>Parse</code></h3>
 
 ```rux
-pub func Parse(self: &var TomlParser) -> TomlValue ! TomlParseFailure
+pub func Parse(&var self) -> TomlValue throws TomlParseFailure
 ```
 
 Reads the whole document into a table.
@@ -94,7 +94,7 @@ reads configuration; it does not edit files.
 
 **Returns**: the document, or the failure and where it was found
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L830)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L812)
 
 ## Related
 
@@ -108,7 +108,7 @@ pub struct TomlLimits {
 
 What a parse will accept.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L227)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L221)
 
 **Associated functions**
 
@@ -123,7 +123,7 @@ document built to exhaust the stack does not.
 
 **Returns**: the limits an ordinary parse uses
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L237)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L231)
 
 <h4 id="toml-limits-unlimited"><code>Unlimited</code></h4>
 
@@ -135,4 +135,4 @@ Limits that refuse nothing, for input already known to be trustworthy.
 
 **Returns**: limits that refuse nothing, for input that is already trusted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L244)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L238)

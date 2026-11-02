@@ -9,7 +9,7 @@ api:
   kind: variant
   version: 0.1.0
   source: Src/FormatError.rux
-  line: 36
+  line: 31
 seo:
   title: "FormatError — Text API"
   description: Why a formatting operation did not produce the text it was asked for.
@@ -33,8 +33,8 @@ pub variant FormatError {
 }
 ```
 
-Failure-only: every case is a failure, and success is the other channel of the `! FormatError` or
-`T ! FormatError` that reports it rather than a case here. Which case arises says who must fix it, so the
+Failure-only: every case is a failure, and success is what an operation that `throws FormatError` returns
+rather than a case here. Which case arises says who must fix it, so the
 categories are not interchangeable and a writer may not invent the ones that belong to the parser or the value.
 Copy, and cheap to return: the widest payload is a pair of counts.
 
@@ -47,7 +47,7 @@ Copy, and cheap to return: the widest payload is a pair of counts.
 | `ArgumentCountMismatch(uint, uint)` | A pattern's placeholders and the arguments supplied did not agree: expected first, supplied second.                                                                                      |
 | `InsufficientCapacity`              | The destination is bounded and cannot accept the whole write. Nothing partial is left behind by a writer that promises otherwise; see the writer's own contract.                         |
 | `ValueOutOfRange`                   | The value is valid but cannot be represented in the form requested, such as a timestamp outside the calendar range a format covers.                                                      |
-| `TextFailure(TextFailureKind)`      | Text handling failed, for the reason carried. This is where an allocation failure or rejected UTF-8 arrives.                                                                             |
+| `TextFailure(TextFailureKind)`      | Text handling failed, for the reason carried. This is where rejected UTF-8 arrives.                                                                                                      |
 | `WriterFailure`                     | The destination failed on its own terms. Its details stay with the adapter that produced it, which is the only thing that knows what a failure of that destination means.                |
 
 ## Methods
@@ -55,7 +55,7 @@ Copy, and cheap to return: the widest payload is a pair of counts.
 <h3 id="is-writer-failure"><code>IsWriterFailure</code></h3>
 
 ```rux
-pub func IsWriterFailure(self: &FormatError) -> bool
+pub func IsWriterFailure(&self) -> bool
 ```
 
 Whether this failure came from the destination rather than from the text or the request.
@@ -65,7 +65,7 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 
 **Returns**: true for `WriterFailure`, false for every other case
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L60)
 
 ## Implements Display
 
@@ -75,10 +75,10 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 
 ```rux
 pub func WriteDisplay(
-    self: &FormatError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the description of why a value could not be turned into text.
@@ -94,7 +94,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L139)
 
 ## Implements Debug
 
@@ -104,10 +104,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 ```rux
 pub func WriteDebug(
-    self: &FormatError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Names the case and the payload it carries: `FormatError::InvalidSpecification(12)`.
@@ -122,7 +122,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L162)
 
 ## Related
 
@@ -130,29 +130,24 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 ```rux
 pub variant TextFailureKind {
-    OutOfMemory,
-    LengthOverflow,
     InvalidUtf8,
     NotABoundary
 }
 ```
 
 The ways text handling fails, with no case for success.
-A deliberate narrowing of [`TextError`](/docs/api/text/text-error): the same four failures, minus its `None`. That absence is the point, since
-this is what a `FormatError::TextFailure` carries and a failure payload must not be able to say "nothing went
-wrong".
+The same failures as [`TextError`](/docs/api/text/text-error), carried by a `FormatError::TextFailure`. Running out of memory is not one of
+them: a builder that cannot grow terminates the program.
 Copy, carrying no payload and owning nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L18)
 
 **Cases**
 
-| Name             | Description                                                                             |
-| ---------------- | --------------------------------------------------------------------------------------- |
-| `OutOfMemory`    | The allocator could not supply the storage a write needed.                              |
-| `LengthOverflow` | A length or offset computation passed what a `uint` can hold.                           |
-| `InvalidUtf8`    | The bytes offered were not well-formed UTF-8.                                           |
-| `NotABoundary`   | A byte offset that is not where a character starts, and so not a place text may be cut. |
+| Name           | Description                                                                             |
+| -------------- | --------------------------------------------------------------------------------------- |
+| `InvalidUtf8`  | The bytes offered were not well-formed UTF-8.                                           |
+| `NotABoundary` | A byte offset that is not where a character starts, and so not a place text may be cut. |
 
 **Implements Display**
 
@@ -162,10 +157,10 @@ Copy, carrying no payload and owning nothing.
 
 ```rux
 pub func WriteDisplay(
-    self: &TextFailureKind,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same description [`TextError`](/docs/api/text/text-error) gives the same failure, which is the point of sharing one writer.
@@ -178,7 +173,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L108)
 
 **Implements Debug**
 
@@ -188,10 +183,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 ```rux
 pub func WriteDebug(
-    self: &TextFailureKind,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Names the case, qualified by its type: `TextFailureKind::InvalidUtf8`.
@@ -204,7 +199,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L130)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L122)
 
 <h3 id="text-failure-of"><code>TextFailureOf</code></h3>
 
@@ -214,7 +209,7 @@ pub func TextFailureOf(error: TextError) -> TextFailureKind
 
 The failure-only kind corresponding to `error`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L72)
 
 **Parameters**
 
@@ -232,10 +227,10 @@ pub func FromTextError(error: TextError) -> FormatError
 
 `error` translated across the boundary between this package's status convention and the formatting protocol.
 This is the only sanctioned crossing: every text failure becomes a `TextFailure` carrying the reason. It is the
-mapper a formatting operation hands a text operation's failure to, as in `builder.Append(view)? else (e =>
-FromTextError(e))`.
+mapper a formatting operation hands a text operation's failure to, as in `try builder.Append(view) catch {
+e => throw FromTextError(e) }`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L84)
 
 **Parameters**
 

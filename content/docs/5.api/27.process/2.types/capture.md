@@ -39,35 +39,35 @@ The bytes are kept as the program wrote them, which is usually but not always UT
 <h3 id="status"><code>Status</code></h3>
 
 ```rux
-pub func Status(self: &CapturedOutput) -> ExitStatus
+pub func Status(&self) -> ExitStatus
 ```
 
 How the program finished.
 
 **Returns**: its exit status
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Capture.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Capture.rux#L24)
 
 <h3 id="output"><code>Output</code></h3>
 
 ```rux
-pub func Output(self: &CapturedOutput) -> char8[..]
+pub func Output(&self) -> char8[..]
 ```
 
 Everything the program wrote to its standard output.
 
 **Returns**: the bytes, valid while the captured output lives
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Capture.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Capture.rux#L31)
 
 <h3 id="error"><code>Error</code></h3>
 
 ```rux
-pub func Error(self: &CapturedOutput) -> char8[..]
+pub func Error(&self) -> char8[..]
 ```
 
 Everything the program wrote to its standard error.
 
 **Returns**: the bytes, valid while the captured output lives
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Capture.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Capture.rux#L38)

@@ -45,7 +45,7 @@ pub func SetFormat(format: LogFormat)
 
 Writes process-wide records in `format` from now on. The format starts as [`Text`](/docs/api/log/field#text).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L29)
 
 **Parameters**
 
@@ -61,7 +61,7 @@ pub func SetTimestamps(enabled: bool)
 
 Whether process-wide records start with the time. They start with it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L38)
 
 **Parameters**
 
@@ -77,7 +77,7 @@ pub func Enabled(level: Level) -> bool
 
 Whether a process-wide record at `level` would be written.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L48)
 
 **Parameters**
 
@@ -100,7 +100,7 @@ pub func Log(
 Writes a process-wide record at `level` with `message` and `fields` to standard error, if the level is enabled.
 A record that cannot be written is dropped.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L61)
 
 **Parameters**
 
@@ -124,7 +124,7 @@ Writes a process-wide `Trace` record with no fields.
 | `pub func Trace(message: char8[..], fields: Field[..])` | Writes a process-wide `Trace` record.                |
 | `pub func Trace(message: char8[..])`                    | Writes a process-wide `Trace` record with no fields. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L80)
 
 **Parameters**
 
@@ -147,7 +147,7 @@ Writes a process-wide `Debug` record with no fields.
 | `pub func Debug(message: char8[..], fields: Field[..])` | Writes a process-wide `Debug` record.                |
 | `pub func Debug(message: char8[..])`                    | Writes a process-wide `Debug` record with no fields. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L95)
 
 **Parameters**
 
@@ -170,7 +170,7 @@ Writes a process-wide `Info` record with no fields.
 | `pub func Info(message: char8[..], fields: Field[..])` | Writes a process-wide `Info` record.                |
 | `pub func Info(message: char8[..])`                    | Writes a process-wide `Info` record with no fields. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L110)
 
 **Parameters**
 
@@ -193,7 +193,7 @@ Writes a process-wide `Warn` record with no fields.
 | `pub func Warn(message: char8[..], fields: Field[..])` | Writes a process-wide `Warn` record.                |
 | `pub func Warn(message: char8[..])`                    | Writes a process-wide `Warn` record with no fields. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L125)
 
 **Parameters**
 
@@ -216,7 +216,7 @@ Writes a process-wide `Error` record with no fields.
 | `pub func Error(message: char8[..], fields: Field[..])` | Writes a process-wide `Error` record.                |
 | `pub func Error(message: char8[..])`                    | Writes a process-wide `Error` record with no fields. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Global.rux#L140)
 
 **Parameters**
 

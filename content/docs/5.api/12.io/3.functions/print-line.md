@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/PrintLine.rux
-  line: 16
+  line: 15
 seo:
   title: "PrintLine — Io API"
   description: "Writes a value's text to standard output, then a newline."
@@ -24,14 +24,14 @@ Writes a value's text to standard output, then a newline.
 ```rux
 pub func PrintLine() -> IoError?
 
-pub func PrintLine(value: String) -> IoError?
+pub func PrintLine(value: &String) -> IoError?
 
 pub func PrintLine(value: char8[..]) -> IoError?
 
 pub func PrintLine(value: StringView) -> IoError?
 
 pub func PrintLine(
-    #Format() format: char8[..],
+    #Format format: char8[..],
     ...
 ) -> IoError?
 
@@ -98,79 +98,79 @@ no empty line behind and returns its own failure. `PrintLine()` writes the newli
 Text with no arguments after it is written verbatim, braces and all. Given arguments, it is a pattern whose `{}`
 and `{:spec}` placeholders take them in order, and `{{` and `}}` write a literal brace.
 
-| Overload                                                           | Summary                                                                              |
-| ------------------------------------------------------------------ | ------------------------------------------------------------------------------------ |
-| `pub func PrintLine() -> IoError?`                                 | Writes a newline to standard output.                                                 |
-| `pub func PrintLine(value: String) -> IoError?`                    | Writes a value's text to standard output, then a newline.                            |
-| `pub func PrintLine(value: char8[..]) -> IoError?`                 | Writes text to standard output verbatim, then a newline.                             |
-| `pub func PrintLine(value: StringView) -> IoError?`                | Writes the text a `StringView` borrows to standard output, then a newline.           |
-| `pub func PrintLine(#Format() format: char8[..], ...) -> IoError?` | Writes `format` with each placeholder replaced by the next argument, then a newline. |
-| `pub func PrintLine(value: bool8) -> IoError?`                     | Writes a `bool8` to standard output, then a newline.                                 |
-| `pub func PrintLine(value: bool16) -> IoError?`                    | Writes a `bool16` to standard output, then a newline.                                |
-| `pub func PrintLine(value: bool32) -> IoError?`                    | Writes a `bool32` to standard output, then a newline.                                |
-| `pub func PrintLine(value: bool64) -> IoError?`                    | Writes a `bool64` to standard output, then a newline.                                |
-| `pub func PrintLine(value: bool128) -> IoError?`                   | Writes a `bool128` to standard output, then a newline.                               |
-| `pub func PrintLine(value: bool256) -> IoError?`                   | Writes a `bool256` to standard output, then a newline.                               |
-| `pub func PrintLine(value: bool512) -> IoError?`                   | Writes a `bool512` to standard output, then a newline.                               |
-| `pub func PrintLine(value: char8) -> IoError?`                     | Writes a `char8` to standard output, then a newline.                                 |
-| `pub func PrintLine(value: char16) -> IoError?`                    | Writes a `char16` to standard output, then a newline.                                |
-| `pub func PrintLine(value: char32) -> IoError?`                    | Writes a `char32` to standard output, then a newline.                                |
-| `pub func PrintLine(value: char64) -> IoError?`                    | Writes a `char64` to standard output, then a newline.                                |
-| `pub func PrintLine(value: char128) -> IoError?`                   | Writes a `char128` to standard output, then a newline.                               |
-| `pub func PrintLine(value: char256) -> IoError?`                   | Writes a `char256` to standard output, then a newline.                               |
-| `pub func PrintLine(value: char512) -> IoError?`                   | Writes a `char512` to standard output, then a newline.                               |
-| `pub func PrintLine(value: int8) -> IoError?`                      | Writes a `int8` to standard output, then a newline.                                  |
-| `pub func PrintLine(value: int16) -> IoError?`                     | Writes a `int16` to standard output, then a newline.                                 |
-| `pub func PrintLine(value: int32) -> IoError?`                     | Writes a `int32` to standard output, then a newline.                                 |
-| `pub func PrintLine(value: int64) -> IoError?`                     | Writes a `int64` to standard output, then a newline.                                 |
-| `pub func PrintLine(value: uint8) -> IoError?`                     | Writes a `uint8` to standard output, then a newline.                                 |
-| `pub func PrintLine(value: uint16) -> IoError?`                    | Writes a `uint16` to standard output, then a newline.                                |
-| `pub func PrintLine(value: uint32) -> IoError?`                    | Writes a `uint32` to standard output, then a newline.                                |
-| `pub func PrintLine(value: uint64) -> IoError?`                    | Writes a `uint64` to standard output, then a newline.                                |
-| `pub func PrintLine(value: int) -> IoError?`                       | Writes a `int` to standard output, then a newline.                                   |
-| `pub func PrintLine(value: uint) -> IoError?`                      | Writes a `uint` to standard output, then a newline.                                  |
-| `pub func PrintLine(value: float8) -> IoError?`                    | Writes a `float8` to standard output, then a newline.                                |
-| `pub func PrintLine(value: float16) -> IoError?`                   | Writes a `float16` to standard output, then a newline.                               |
-| `pub func PrintLine(value: float32) -> IoError?`                   | Writes a `float32` to standard output, then a newline.                               |
-| `pub func PrintLine(value: float64) -> IoError?`                   | Writes a `float64` to standard output, then a newline.                               |
+| Overload                                                         | Summary                                                                              |
+| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `pub func PrintLine() -> IoError?`                               | Writes a newline to standard output.                                                 |
+| `pub func PrintLine(value: &String) -> IoError?`                 | Writes a value's text to standard output, then a newline.                            |
+| `pub func PrintLine(value: char8[..]) -> IoError?`               | Writes text to standard output verbatim, then a newline.                             |
+| `pub func PrintLine(value: StringView) -> IoError?`              | Writes the text a `StringView` borrows to standard output, then a newline.           |
+| `pub func PrintLine(#Format format: char8[..], ...) -> IoError?` | Writes `format` with each placeholder replaced by the next argument, then a newline. |
+| `pub func PrintLine(value: bool8) -> IoError?`                   | Writes a `bool8` to standard output, then a newline.                                 |
+| `pub func PrintLine(value: bool16) -> IoError?`                  | Writes a `bool16` to standard output, then a newline.                                |
+| `pub func PrintLine(value: bool32) -> IoError?`                  | Writes a `bool32` to standard output, then a newline.                                |
+| `pub func PrintLine(value: bool64) -> IoError?`                  | Writes a `bool64` to standard output, then a newline.                                |
+| `pub func PrintLine(value: bool128) -> IoError?`                 | Writes a `bool128` to standard output, then a newline.                               |
+| `pub func PrintLine(value: bool256) -> IoError?`                 | Writes a `bool256` to standard output, then a newline.                               |
+| `pub func PrintLine(value: bool512) -> IoError?`                 | Writes a `bool512` to standard output, then a newline.                               |
+| `pub func PrintLine(value: char8) -> IoError?`                   | Writes a `char8` to standard output, then a newline.                                 |
+| `pub func PrintLine(value: char16) -> IoError?`                  | Writes a `char16` to standard output, then a newline.                                |
+| `pub func PrintLine(value: char32) -> IoError?`                  | Writes a `char32` to standard output, then a newline.                                |
+| `pub func PrintLine(value: char64) -> IoError?`                  | Writes a `char64` to standard output, then a newline.                                |
+| `pub func PrintLine(value: char128) -> IoError?`                 | Writes a `char128` to standard output, then a newline.                               |
+| `pub func PrintLine(value: char256) -> IoError?`                 | Writes a `char256` to standard output, then a newline.                               |
+| `pub func PrintLine(value: char512) -> IoError?`                 | Writes a `char512` to standard output, then a newline.                               |
+| `pub func PrintLine(value: int8) -> IoError?`                    | Writes a `int8` to standard output, then a newline.                                  |
+| `pub func PrintLine(value: int16) -> IoError?`                   | Writes a `int16` to standard output, then a newline.                                 |
+| `pub func PrintLine(value: int32) -> IoError?`                   | Writes a `int32` to standard output, then a newline.                                 |
+| `pub func PrintLine(value: int64) -> IoError?`                   | Writes a `int64` to standard output, then a newline.                                 |
+| `pub func PrintLine(value: uint8) -> IoError?`                   | Writes a `uint8` to standard output, then a newline.                                 |
+| `pub func PrintLine(value: uint16) -> IoError?`                  | Writes a `uint16` to standard output, then a newline.                                |
+| `pub func PrintLine(value: uint32) -> IoError?`                  | Writes a `uint32` to standard output, then a newline.                                |
+| `pub func PrintLine(value: uint64) -> IoError?`                  | Writes a `uint64` to standard output, then a newline.                                |
+| `pub func PrintLine(value: int) -> IoError?`                     | Writes a `int` to standard output, then a newline.                                   |
+| `pub func PrintLine(value: uint) -> IoError?`                    | Writes a `uint` to standard output, then a newline.                                  |
+| `pub func PrintLine(value: float8) -> IoError?`                  | Writes a `float8` to standard output, then a newline.                                |
+| `pub func PrintLine(value: float16) -> IoError?`                 | Writes a `float16` to standard output, then a newline.                               |
+| `pub func PrintLine(value: float32) -> IoError?`                 | Writes a `float32` to standard output, then a newline.                               |
+| `pub func PrintLine(value: float64) -> IoError?`                 | Writes a `float64` to standard output, then a newline.                               |
 
 ## Parameters
 
-| Name               | Type         | Description        |
-| ------------------ | ------------ | ------------------ |
-| `value`            | `String`     | the value to write |
-| `value`            | `char8[..]`  | the value to write |
-| `value`            | `StringView` | the value to write |
-| `#Format() format` | `char8[..]`  |                    |
-| `...`              |              |                    |
-| `value`            | `bool8`      | the value to write |
-| `value`            | `bool16`     | the value to write |
-| `value`            | `bool32`     | the value to write |
-| `value`            | `bool64`     | the value to write |
-| `value`            | `bool128`    | the value to write |
-| `value`            | `bool256`    | the value to write |
-| `value`            | `bool512`    | the value to write |
-| `value`            | `char8`      | the value to write |
-| `value`            | `char16`     | the value to write |
-| `value`            | `char32`     | the value to write |
-| `value`            | `char64`     | the value to write |
-| `value`            | `char128`    | the value to write |
-| `value`            | `char256`    | the value to write |
-| `value`            | `char512`    | the value to write |
-| `value`            | `int8`       | the value to write |
-| `value`            | `int16`      | the value to write |
-| `value`            | `int32`      | the value to write |
-| `value`            | `int64`      | the value to write |
-| `value`            | `uint8`      | the value to write |
-| `value`            | `uint16`     | the value to write |
-| `value`            | `uint32`     | the value to write |
-| `value`            | `uint64`     | the value to write |
-| `value`            | `int`        | the value to write |
-| `value`            | `uint`       | the value to write |
-| `value`            | `float8`     | the value to write |
-| `value`            | `float16`    | the value to write |
-| `value`            | `float32`    | the value to write |
-| `value`            | `float64`    | the value to write |
+| Name             | Type         | Description        |
+| ---------------- | ------------ | ------------------ |
+| `value`          | `&String`    | the value to write |
+| `value`          | `char8[..]`  | the value to write |
+| `value`          | `StringView` | the value to write |
+| `#Format format` | `char8[..]`  |                    |
+| `...`            |              |                    |
+| `value`          | `bool8`      | the value to write |
+| `value`          | `bool16`     | the value to write |
+| `value`          | `bool32`     | the value to write |
+| `value`          | `bool64`     | the value to write |
+| `value`          | `bool128`    | the value to write |
+| `value`          | `bool256`    | the value to write |
+| `value`          | `bool512`    | the value to write |
+| `value`          | `char8`      | the value to write |
+| `value`          | `char16`     | the value to write |
+| `value`          | `char32`     | the value to write |
+| `value`          | `char64`     | the value to write |
+| `value`          | `char128`    | the value to write |
+| `value`          | `char256`    | the value to write |
+| `value`          | `char512`    | the value to write |
+| `value`          | `int8`       | the value to write |
+| `value`          | `int16`      | the value to write |
+| `value`          | `int32`      | the value to write |
+| `value`          | `int64`      | the value to write |
+| `value`          | `uint8`      | the value to write |
+| `value`          | `uint16`     | the value to write |
+| `value`          | `uint32`     | the value to write |
+| `value`          | `uint64`     | the value to write |
+| `value`          | `int`        | the value to write |
+| `value`          | `uint`       | the value to write |
+| `value`          | `float8`     | the value to write |
+| `value`          | `float16`    | the value to write |
+| `value`          | `float32`    | the value to write |
+| `value`          | `float64`    | the value to write |
 
 **Returns**: the failure, or `none` when the whole value was written
 
@@ -184,7 +184,7 @@ pub func PrintValueLine(value: Display) -> IoError?
 
 Writes a value's text to standard output, then a newline.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Print.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Print.rux#L57)
 
 **Parameters**
 
@@ -200,7 +200,7 @@ Writes a value's text to standard output, then a newline.
 pub func WriteValueLine<T: Display>(
     writer: &var TextWriter,
     value: &T
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a value's text, then a newline, and writes the newline only if the value went out whole.
@@ -216,7 +216,7 @@ borrowed, so it may be written as often as wanted and is still the caller's.
 Reports the value's own failure when it has one, without attempting the newline. Otherwise reports whatever the
 newline's write reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L183)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L190)
 
 **Type parameters**
 
@@ -238,9 +238,9 @@ newline's write reported.
 ```rux
 pub func WriteFormatLine(
     writer: &var TextWriter,
-    #Format() format: char8[..],
+    #Format format: char8[..],
     ...
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `format` with each `{}` replaced by the next argument, then a newline, on the same rule.
@@ -249,17 +249,17 @@ does not match and a destination that refused all leave no terminator behind. No
 arguments write themselves as they are reached. They arrive as interface values, which is what a variadic can
 carry, so a move-only argument goes through [`WriteValueLine`](/docs/api/io/print-line#write-value-line) instead of through a placeholder.
 A literal `format` has its placeholders counted against the arguments while compiling, since it is marked
-`#Format()`. Reports the formatting failure when there is one, without attempting the newline. Otherwise reports
+`#Format`. Reports the formatting failure when there is one, without attempting the newline. Otherwise reports
 whatever the newline's write reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L200)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L207)
 
 **Parameters**
 
-| Name               | Type              | Description     |
-| ------------------ | ----------------- | --------------- |
-| `writer`           | `&var TextWriter` | the destination |
-| `#Format() format` | `char8[..]`       |                 |
-| `...`              |                   |                 |
+| Name             | Type              | Description     |
+| ---------------- | ----------------- | --------------- |
+| `writer`         | `&var TextWriter` | the destination |
+| `#Format format` | `char8[..]`       |                 |
+| `...`            |                   |                 |
 
 **Returns**: success when the whole line was accepted

@@ -82,7 +82,7 @@ and the handle is no longer valid
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-freelibrary](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-freelibrary)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L153)
 
 **Parameters**
 
@@ -104,7 +104,7 @@ exactly as the parent passed it, quotes and all; [`CommandLineToArgvW`](/docs/ap
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getcommandlinew](https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getcommandlinew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L169)
 
 **Returns**: the NUL-terminated UTF-16 command line, which is never null
 
@@ -124,7 +124,7 @@ terminator, and the call returns `size`.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamew](https://learn.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulefilenamew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L181)
 
 **Parameters**
 
@@ -136,6 +136,28 @@ terminator, and the call returns `size`.
 
 **Returns**: the path's length without its terminator, `size` when it was cut, or zero on failure with the
 reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
+
+<h2 id="get-module-handle-w"><code>GetModuleHandleW</code></h2>
+
+```rux
+pub extern func GetModuleHandleW(moduleName: *char16) -> *var opaque
+```
+
+Retrieves the handle of a module the process has loaded; a null name is the process's executable.
+The handle is not counted, so it is not passed to [`FreeLibrary`](/docs/api/windows/process#free-library). It is what a window class names as its
+instance, and what [`CreateWindowExW`](/docs/api/windows/window#create-window-ex-w) is given with it.
+
+**See also**: [https://learn.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandlew](https://learn.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandlew)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L190)
+
+**Parameters**
+
+| Name         | Type      | Description                                                       |
+| ------------ | --------- | ----------------------------------------------------------------- |
+| `moduleName` | `*char16` | the NUL-terminated UTF-16 module name, or null for the executable |
+
+**Returns**: the module, or null on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
 
 <h2 id="get-environment-strings-w"><code>GetEnvironmentStringsW</code></h2>
 
@@ -150,7 +172,7 @@ appear in it.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getenvironmentstringsw](https://learn.microsoft.com/windows/win32/api/processenv/nf-processenv-getenvironmentstringsw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L190)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L207)
 
 **Returns**: the environment block, or null on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
 
@@ -164,7 +186,7 @@ Retrieves the process identifier of the calling process.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocessid](https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocessid)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L196)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L213)
 
 **Returns**: the calling process's identifier
 
@@ -178,7 +200,7 @@ Retrieves the number of active processors in a processor group, or in all of the
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getactiveprocessorcount](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getactiveprocessorcount)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L203)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L220)
 
 **Parameters**
 
@@ -199,7 +221,7 @@ Retrieves the thread identifier of the calling thread.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthreadid](https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentthreadid)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L209)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L226)
 
 **Returns**: the calling thread's identifier
 
@@ -216,7 +238,7 @@ Retrieves the address of an exported symbol.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getprocaddress](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getprocaddress)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L251)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L268)
 
 **Parameters**
 
@@ -237,7 +259,7 @@ Loads a DLL into the calling process.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya](https://learn.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L311)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L328)
 
 **Parameters**
 
@@ -264,7 +286,7 @@ Creates a thread to execute within the virtual address space of the calling proc
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createthread](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createthread)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L472)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L489)
 
 **Parameters**
 
@@ -289,7 +311,7 @@ Suspends the execution of the current thread until the time-out interval elapses
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-sleep](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-sleep)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L491)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L508)
 
 **Parameters**
 
@@ -307,7 +329,7 @@ Causes the calling thread to yield execution to another thread that is ready to 
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-switchtothread](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-switchtothread)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L497)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L514)
 
 **Returns**: non-zero on success, and zero on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
 
@@ -324,7 +346,7 @@ Waits until the specified object is in the signaled state or the time-out interv
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitforsingleobject)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L505)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L522)
 
 **Parameters**
 

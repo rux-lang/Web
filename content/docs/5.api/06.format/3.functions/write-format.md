@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Format.rux
-  line: 122
+  line: 119
 seo:
   title: "WriteFormat — Format API"
   description: "Writes format into writer, with each {} replaced by the next argument."
@@ -24,9 +24,9 @@ Writes `format` into `writer`, with each `{}` replaced by the next argument.
 ```rux
 pub func WriteFormat(
     writer: &var TextWriter,
-    #Format() format: char8[..],
+    #Format format: char8[..],
     ...
-) -> ! FormatError
+) throws FormatError
 ```
 
 A placeholder is `{}`, or `{:spec}` carrying fill, alignment, sign, width, precision and style — see
@@ -34,7 +34,7 @@ A placeholder is `{}`, or `{:spec}` carrying fill, alignment, sign, width, preci
 The pattern is checked before any of it is written, so a pattern that is wrong produces no output rather than a
 prefix of one. What is checked is the pattern and the argument count, both of which are known at the call site;
 a value's own rendering can still fail partway, and what it managed to write stays written. `format` is marked
-`#Format()`, so when it is a string literal the compiler counts its placeholders against the arguments and a
+`#Format`, so when it is a string literal the compiler counts its placeholders against the arguments and a
 mismatch is reported while compiling rather than as `ArgumentCountMismatch`.
 Reports `InvalidSpecification` with the byte offset into `format` for a specification that does not parse, a
 brace the grammar does not allow, or a placeholder with no closing brace; `ArgumentCountMismatch` with the
@@ -44,10 +44,10 @@ written.
 
 ## Parameters
 
-| Name               | Type              | Description     |
-| ------------------ | ----------------- | --------------- |
-| `writer`           | `&var TextWriter` | the destination |
-| `#Format() format` | `char8[..]`       |                 |
-| `...`              |                   |                 |
+| Name             | Type              | Description     |
+| ---------------- | ----------------- | --------------- |
+| `writer`         | `&var TextWriter` | the destination |
+| `#Format format` | `char8[..]`       |                 |
+| `...`            |                   |                 |
 
 **Returns**: success when the whole pattern and every argument were accepted

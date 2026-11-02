@@ -73,7 +73,7 @@ export const PARTS = [
     slug: "errors",
     title: "Errors",
     icon: "i-lucide-triangle-alert",
-    summary: "Operations that can fail: T ! E",
+    summary: "Operations that can fail: throws, throw and try",
     checkpoints: [{ slug: "calculator", title: "Calculator" }],
   },
   {

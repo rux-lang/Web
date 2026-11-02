@@ -52,7 +52,7 @@ A resolver that asks `servers`, waiting five seconds for each answer and going r
 
 **Returns**: the resolver
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L154)
 
 <h3 id="from-system"><code>FromSystem</code></h3>
 
@@ -69,14 +69,14 @@ options, of `/etc/resolv.conf` on Linux. With no servers to read, the one on thi
 
 **Returns**: the resolver
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L164)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L166)
 
 ## Methods
 
 <h3 id="set-timeout"><code>SetTimeout</code></h3>
 
 ```rux
-pub func SetTimeout(self: &var Resolver, timeout: Duration)
+pub func SetTimeout(&var self, timeout: Duration)
 ```
 
 How long a query waits for its answer.
@@ -85,12 +85,12 @@ How long a query waits for its answer.
 | --------- | ---------- | ------------------------ |
 | `timeout` | `Duration` | the wait for each answer |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L171)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L173)
 
 <h3 id="set-attempts"><code>SetAttempts</code></h3>
 
 ```rux
-pub func SetAttempts(self: &var Resolver, attempts: uint)
+pub func SetAttempts(&var self, attempts: uint)
 ```
 
 How many times the servers are gone round before a lookup gives up.
@@ -99,17 +99,17 @@ How many times the servers are gone round before a lookup gives up.
 | ---------- | ------ | ---------------------------------- |
 | `attempts` | `uint` | the number of rounds, at least one |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L180)
 
 <h3 id="lookup"><code>Lookup</code></h3>
 
 ```rux
 pub func Lookup(
-    self: &Resolver,
+    &self,
     allocator: Allocator,
     host: char8[..],
     port: uint16
-) -> Vector<SocketAddress> ! IoError
+) -> Vector<SocketAddress> throws IoError
 ```
 
 Asks the servers for `host`'s addresses: its IPv4 addresses first, then its IPv6 ones, each with `port`.
@@ -123,4 +123,4 @@ The hosts file is not read; [`Resolve`](/docs/api/net/resolve#resolve) reads it 
 
 **Returns**: the addresses; `NotFound` when the name has none or does not exist, `TimedOut` when no server answered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L191)

@@ -129,7 +129,7 @@ its own.
 
 ```rux
 pub func WithVersion(
-    self: &CommandSpec,
+    &self,
     version: char8[..]
 ) -> CommandSpec
 ```
@@ -148,7 +148,7 @@ This command with `version`, which `--version` then reports.
 
 ```rux
 pub func WithOptions(
-    self: &CommandSpec,
+    &self,
     options: OptionSpec[..]
 ) -> CommandSpec
 ```
@@ -167,7 +167,7 @@ This command with `options`, which must outlive it.
 
 ```rux
 pub func WithPositionals(
-    self: &CommandSpec,
+    &self,
     positionals: PositionalSpec[..]
 ) -> CommandSpec
 ```
@@ -186,7 +186,7 @@ This command with `positionals`, which must outlive it.
 
 ```rux
 pub func WithCommands(
-    self: &CommandSpec,
+    &self,
     commands: CommandSpec[..]
 ) -> CommandSpec
 ```

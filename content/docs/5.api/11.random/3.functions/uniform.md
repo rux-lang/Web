@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Uniform.rux
-  line: 22
+  line: 23
 seo:
   title: "Uniform ranges — Random API"
   description: Uniform integers and floats in a bounded range.
@@ -34,7 +34,7 @@ A uniform value in `[0, bound)`.
 A bound of zero has no values to choose from and gives zero, which is the only answer that is not a lie.
 Runs in constant expected time; the loop below runs more than once with probability under `bound / 2^64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Uniform.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Uniform.rux#L23)
 
 **Type parameters**
 
@@ -67,7 +67,7 @@ means. `low` above `high` is an empty range and gives `low`. The full range of t
 a span of every value is a bound of 2^64, which does not fit in a `uint64`, and is handled as its own case
 rather than by an arithmetic accident.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Uniform.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Uniform.rux#L50)
 
 **Type parameters**
 
@@ -99,7 +99,7 @@ A uniform signed value in `[low, high]`, both ends included.
 The span is computed in unsigned arithmetic, so a range crossing zero — or spanning the whole width, where
 the difference of the ends overflows a signed type — is ordinary rather than a special case.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Uniform.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Uniform.rux#L69)
 
 **Type parameters**
 
@@ -131,7 +131,7 @@ A uniform `float64` in `[low, high)`.
 The interval is half-open at the top, matching [`NextFloat64`](/docs/api/random/random-generator#next-float64). A reversed pair gives `low`, and an interval so
 wide that its span overflows to an infinity gives values across the whole of it rather than a NaN.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Uniform.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Uniform.rux#L85)
 
 **Type parameters**
 

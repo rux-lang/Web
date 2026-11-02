@@ -147,7 +147,7 @@ over from an earlier failure is still there. Clear it through [`ErrnoLocationFor
 is to be read.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L325)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L335)
 
 **Parameters**
 
@@ -172,7 +172,7 @@ reported through `errno`.
 Cannot fail. Runs in constant time and allocates nothing.
 The address belongs to the calling thread and must not be handed to another one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L339)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L350)
 
 **Returns**: the address of the general runtime's `errno` for this thread
 
@@ -193,7 +193,7 @@ defect: the Universal CRT does not export the formatted-output family, so moving
 `__stdio_common_*` entry points declared first.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L355)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L366)
 
 **Returns**: the general runtime's `errno` for this thread
 
@@ -205,7 +205,7 @@ pub const EDOM: c_int = 33;
 
 `EDOM`: an argument outside the domain over which a math function is defined.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L361)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L373)
 
 <h2 id="erange"><code>ERANGE</code></h2>
 
@@ -215,7 +215,7 @@ pub const ERANGE: c_int = 34;
 
 `ERANGE`: a result too large or too small for the return type to express.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L365)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L377)
 
 <h2 id="eilseq"><code>EILSEQ</code></h2>
 
@@ -235,4 +235,4 @@ pub const EILSEQ: c_int = 86;
 
 `EILSEQ`: a byte sequence that does not form a valid character.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L388)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L400)

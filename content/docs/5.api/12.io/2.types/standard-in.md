@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Standard.rux
-  line: 120
+  line: 135
 seo:
   title: "StandardIn — Io API"
   description: "Standard input, with the console-versus-redirection question answered at acquisition."
@@ -52,7 +52,7 @@ Asks the platform once whether the stream is a console; nothing is opened, and n
 
 **Returns**: the stream, which the process owns for its whole life
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L155)
 
 ## Implements Reader
 
@@ -62,9 +62,9 @@ Asks the platform once whether the stream is a console; nothing is opened, and n
 
 ```rux
 pub func Read(
-    self: &var StandardIn,
+    &var self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Fills what it can of `into` from standard input.
@@ -75,4 +75,4 @@ Fills what it can of `into` from standard input.
 
 **Returns**: how many bytes were read; [`IsEnd`](/docs/api/io/io-error#is-end) at the end of input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L179)

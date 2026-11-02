@@ -51,69 +51,66 @@ An empty queue that has not allocated anything.
 
 **Returns**: the queue
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L23)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &PriorityQueue<T>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many elements it holds.
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L30)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &PriorityQueue<T>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether it holds nothing.
 
 **Returns**: whether it is empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L37)
 
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(
-    self: &var PriorityQueue<T>,
-    value: T
-) -> ! CollectionError
+pub func Push(&var self, value: T)
 ```
 
-Adds `value`, moving it in. Logarithmic time, amortized over the vector's growth.
+Adds `value`, moving it in. Logarithmic time, amortized over the vector's growth. Terminates the program when
+the storage cannot grow.
 
 | Name    | Type | Description |
 | ------- | ---- | ----------- |
 | `value` | `T`  | the element |
 
-**Returns**: nothing, or why there was no room; the queue is unchanged on failure
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L45)
 
 <h3 id="peek"><code>Peek</code></h3>
 
 ```rux
-pub func Peek(self: &PriorityQueue<T>) -> (*T)?
+pub func Peek(&self) -> &T?
 ```
 
-The largest element, without taking it out.
+The largest element, borrowed where it sits, without taking it out.
+`self` stays borrowed while the reference is in use, so the queue cannot change under it.
 
-**Returns**: a pointer to it, valid until the queue next changes, or `none` when the queue is empty
+**Returns**: a reference to it, or `none` when the queue is empty
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L62)
 
 <h3 id="pop"><code>Pop</code></h3>
 
 ```rux
-pub func Pop(self: &var PriorityQueue<T>) -> T?
+pub func Pop(&var self) -> T?
 ```
 
 Takes the largest element out. Logarithmic time.
@@ -125,21 +122,21 @@ Takes the largest element out. Logarithmic time.
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var PriorityQueue<T>)
+pub func Clear(&var self)
 ```
 
 Destroys every element, keeping the storage.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L93)
 
 <h3 id="as-slice"><code>AsSlice</code></h3>
 
 ```rux
-pub func AsSlice(self: &PriorityQueue<T>) -> T[..]
+pub func AsSlice(&self) -> T[..]
 ```
 
 The elements in heap order: the largest first, the rest in no useful order.
 
 **Returns**: a view of them, valid until the queue next changes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/PriorityQueue.rux#L100)

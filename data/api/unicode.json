@@ -221,7 +221,7 @@
       "displayName": "ToUpperFull",
       "module": "Case",
       "source": "Src/Case.rux",
-      "line": 97,
+      "line": 104,
       "signature": "pub func ToUpperFull(scalar: char32, into: var char32[..], written: *var uint) -> bool",
       "typeParams": [],
       "doc": {
@@ -260,7 +260,7 @@
       "displayName": "ToLowerFull",
       "module": "Case",
       "source": "Src/Case.rux",
-      "line": 108,
+      "line": 115,
       "signature": "pub func ToLowerFull(scalar: char32, into: var char32[..], written: *var uint) -> bool",
       "typeParams": [],
       "doc": {
@@ -299,7 +299,7 @@
       "displayName": "Fold",
       "module": "Case",
       "source": "Src/Case.rux",
-      "line": 122,
+      "line": 129,
       "signature": "pub func Fold(scalar: char32, into: var char32[..], written: *var uint) -> bool",
       "typeParams": [],
       "doc": {
@@ -1910,7 +1910,7 @@
       "displayName": "CountGraphemes",
       "module": "Graphemes",
       "source": "Src/Graphemes.rux",
-      "line": 170,
+      "line": 178,
       "signature": "pub func CountGraphemes(text: char32[..]) -> uint",
       "typeParams": [],
       "doc": {
@@ -1980,7 +1980,7 @@
       "displayName": "DecomposeCanonical",
       "module": "Normalize",
       "source": "Src/Normalize.rux",
-      "line": 112,
+      "line": 118,
       "signature": "pub func DecomposeCanonical(text: char32[..], into: var char32[..], written: *var uint) -> bool",
       "typeParams": [],
       "doc": {
@@ -2019,7 +2019,7 @@
       "displayName": "DecomposeCompatibility",
       "module": "Normalize",
       "source": "Src/Normalize.rux",
-      "line": 123,
+      "line": 129,
       "signature": "pub func DecomposeCompatibility(text: char32[..], into: var char32[..], written: *var uint) -> bool",
       "typeParams": [],
       "doc": {
@@ -2058,7 +2058,7 @@
       "displayName": "NormalizeCanonical",
       "module": "Normalize",
       "source": "Src/Normalize.rux",
-      "line": 238,
+      "line": 261,
       "signature": "pub func NormalizeCanonical(text: char32[..], into: var char32[..], written: *var uint) -> bool",
       "typeParams": [],
       "doc": {
@@ -2097,7 +2097,7 @@
       "displayName": "NormalizeCompatibility",
       "module": "Normalize",
       "source": "Src/Normalize.rux",
-      "line": 252,
+      "line": 277,
       "signature": "pub func NormalizeCompatibility(text: char32[..], into: var char32[..], written: *var uint) -> bool",
       "typeParams": [],
       "doc": {
@@ -2960,7 +2960,7 @@
           "kind": "method",
           "name": "Equals",
           "line": 69,
-          "signature": "pub func Equals(self: &Script, other: Script) -> bool",
+          "signature": "pub func Equals(&self, other: Script) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Script" }],
           "receiver": "&Script",
@@ -2992,7 +2992,7 @@
           "kind": "method",
           "name": "Number",
           "line": 76,
-          "signature": "pub func Number(self: &Script) -> uint32",
+          "signature": "pub func Number(&self) -> uint32",
           "typeParams": [],
           "params": [],
           "receiver": "&Script",
@@ -3024,7 +3024,7 @@
           "kind": "method",
           "name": "WriteName",
           "line": 84,
-          "signature": "pub func WriteName(self: &Script, into: var char8[..]) -> uint",
+          "signature": "pub func WriteName(&self, into: var char8[..]) -> uint",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&Script",

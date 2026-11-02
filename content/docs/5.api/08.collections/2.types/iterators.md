@@ -69,7 +69,7 @@ The storage must not be grown, freed or otherwise moved while this is alive.
 <h3 id="value-iterator-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var ValueIterator<T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next element, or `none` once the run is exhausted.
@@ -92,7 +92,7 @@ An iterator that yields a pointer to each element of a run.
 Works for any element type, including one that owns something and may not be copied: the pointer borrows the
 element where it sits rather than taking it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L66)
 
 **Type parameters**
 
@@ -120,7 +120,7 @@ this or any pointer it yielded is still in use.
 
 **Returns**: a cursor yielding those elements' addresses
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L84)
 
 **Implements Iterator**
 
@@ -129,7 +129,7 @@ this or any pointer it yielded is still in use.
 <h3 id="reference-iterator-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var ReferenceIterator<T>) -> (*T)?
+pub func Next(&var self) -> (*T)?
 ```
 
 A pointer to the next element, or `none` once the run is exhausted.
@@ -138,7 +138,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the next element, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L95)
 
 <h2 id="mutable-reference-iterator"><code>MutableReferenceIterator&lt;T&gt;</code></h2>
 
@@ -151,7 +151,7 @@ pub struct MutableReferenceIterator<T> {
 An iterator that yields a writable pointer to each element of a run.
 Elements remain in their storage, so move-only elements can be modified without copying or moving them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L105)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L109)
 
 **Type parameters**
 
@@ -178,7 +178,7 @@ storage while any of them is in use. Coordinate access through aliases to the sa
 
 **Returns**: a cursor yielding writable addresses
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L126)
 
 **Implements Iterator**
 
@@ -187,7 +187,7 @@ storage while any of them is in use. Coordinate access through aliases to the sa
 <h3 id="mutable-reference-iterator-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var MutableReferenceIterator<T>) -> (*var T)?
+pub func Next(&var self) -> (*var T)?
 ```
 
 The next writable element pointer, or `none` once exhausted.
@@ -196,4 +196,4 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the next element's address, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L133)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Iteration.rux#L137)

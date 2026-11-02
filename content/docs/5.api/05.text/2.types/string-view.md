@@ -90,10 +90,7 @@ answers rather than errors: a scalar walk reads past a truncated sequence, and a
 <h3 id="starts-with"><code>StartsWith</code></h3>
 
 ```rux
-pub func StartsWith(
-    self: &StringView,
-    prefix: StringView
-) -> bool
+pub func StartsWith(&self, prefix: StringView) -> bool
 ```
 
 Whether this view begins with `prefix`.
@@ -111,10 +108,7 @@ Runs in time proportional to the prefix and allocates nothing.
 <h3 id="ends-with"><code>EndsWith</code></h3>
 
 ```rux
-pub func EndsWith(
-    self: &StringView,
-    suffix: StringView
-) -> bool
+pub func EndsWith(&self, suffix: StringView) -> bool
 ```
 
 Whether this view ends with `suffix`.
@@ -125,15 +119,12 @@ Whether this view ends with `suffix`.
 
 **Returns**: whether the text ends with `suffix`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L37)
 
 <h3 id="index-of"><code>IndexOf</code></h3>
 
 ```rux
-pub func IndexOf(
-    self: &StringView,
-    needle: StringView
-) -> uint?
+pub func IndexOf(&self, needle: StringView) -> uint?
 ```
 
 The byte index where `needle` first occurs, or `none`.
@@ -147,15 +138,12 @@ is used with is the same as proportional to the text.
 
 **Returns**: the byte offset of the first occurrence, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L57)
 
 <h3 id="last-index-of"><code>LastIndexOf</code></h3>
 
 ```rux
-pub func LastIndexOf(
-    self: &StringView,
-    needle: StringView
-) -> uint?
+pub func LastIndexOf(&self, needle: StringView) -> uint?
 ```
 
 The byte index where `needle` last occurs, or `none`.
@@ -166,15 +154,12 @@ The byte index where `needle` last occurs, or `none`.
 
 **Returns**: the byte offset of the last occurrence, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L86)
 
 <h3 id="contains"><code>Contains</code></h3>
 
 ```rux
-pub func Contains(
-    self: &StringView,
-    needle: StringView
-) -> bool
+pub func Contains(&self, needle: StringView) -> bool
 ```
 
 Whether `needle` occurs anywhere in this view.
@@ -185,12 +170,12 @@ Whether `needle` occurs anywhere in this view.
 
 **Returns**: whether `needle` occurs anywhere in the text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L114)
 
 <h3 id="trim-start"><code>TrimStart</code></h3>
 
 ```rux
-pub func TrimStart(self: &StringView) -> StringView
+pub func TrimStart(&self) -> StringView
 ```
 
 This view without the ASCII whitespace at its start.
@@ -198,36 +183,36 @@ Borrows: what comes back names the same bytes, further in.
 
 **Returns**: the text without its leading ASCII spaces
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L122)
 
 <h3 id="trim-end"><code>TrimEnd</code></h3>
 
 ```rux
-pub func TrimEnd(self: &StringView) -> StringView
+pub func TrimEnd(&self) -> StringView
 ```
 
 This view without the ASCII whitespace at its end.
 
 **Returns**: the text without its trailing ASCII spaces
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L134)
 
 <h3 id="trim"><code>Trim</code></h3>
 
 ```rux
-pub func Trim(self: &StringView) -> StringView
+pub func Trim(&self) -> StringView
 ```
 
 This view without the ASCII whitespace at either end.
 
 **Returns**: the text without its leading and trailing ASCII spaces
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L146)
 
 <h3 id="lines"><code>Lines</code></h3>
 
 ```rux
-pub func Lines(self: &StringView) -> LineIterator
+pub func Lines(&self) -> LineIterator
 ```
 
 A walk over the lines of this view, each without its line break.
@@ -237,13 +222,13 @@ has two lines and empty text has none. A lone `\r` is part of its line.
 
 **Returns**: a cursor over the lines
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L148)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L157)
 
 <h3 id="split"><code>Split</code></h3>
 
 ```rux
 pub func Split(
-    self: &StringView,
+    &self,
     separator: StringView
 ) -> SplitIterator
 ```
@@ -257,12 +242,12 @@ A walk over the parts of this view between occurrences of `separator`.
 
 **Returns**: a cursor over the pieces between separators
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L166)
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &StringView) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many bytes the view spans.
@@ -275,7 +260,7 @@ Not how many characters: that is [`ScalarCount`](/docs/api/text/string-view#scal
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &StringView) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the view spans no bytes.
@@ -287,7 +272,7 @@ Whether the view spans no bytes.
 <h3 id="bytes"><code>Bytes</code></h3>
 
 ```rux
-pub func Bytes(self: &StringView) -> char8[..]
+pub func Bytes(&self) -> char8[..]
 ```
 
 The bytes themselves, for handing to something that reads bytes.
@@ -299,7 +284,7 @@ The bytes themselves, for handing to something that reads bytes.
 <h3 id="scalar-count"><code>ScalarCount</code></h3>
 
 ```rux
-pub func ScalarCount(self: &StringView) -> uint
+pub func ScalarCount(&self) -> uint
 ```
 
 How many scalar values the view holds.
@@ -313,7 +298,7 @@ method rather than a field.
 <h3 id="is-boundary"><code>IsBoundary</code></h3>
 
 ```rux
-pub func IsBoundary(self: &StringView, index: uint) -> bool
+pub func IsBoundary(&self, index: uint) -> bool
 ```
 
 Whether `index` is where a scalar value starts, and so a place this view may be cut.
@@ -329,11 +314,7 @@ Whether `index` is where a scalar value starts, and so a place this view may be 
 <h3 id="part"><code>Part</code></h3>
 
 ```rux
-pub func Part(
-    self: &StringView,
-    start: uint,
-    end: uint
-) -> StringView?
+pub func Part(&self, start: uint, end: uint) -> StringView?
 ```
 
 The part of this view from `start` up to `end`, or `none` when either is not a boundary or they are the
@@ -354,7 +335,7 @@ Runs in constant time and allocates nothing.
 <h3 id="scalar-at"><code>ScalarAt</code></h3>
 
 ```rux
-pub func ScalarAt(self: &StringView, index: uint) -> char32?
+pub func ScalarAt(&self, index: uint) -> char32?
 ```
 
 The scalar value starting at `index`, or `none` when `index` is not a boundary inside the view.
@@ -365,30 +346,23 @@ The scalar value starting at `index`, or `none` when `index` is not a boundary i
 
 **Returns**: the scalar value beginning at `index`, or `none` when it is not a boundary
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L113)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L114)
 
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(
-    self: &StringView,
-    other: &StringView
-) -> bool
-
-pub func Equals(
-    self: &StringView,
-    other: StringView
-) -> bool
+pub func Equals(&self, other: &StringView) -> bool
+pub func Equals(&self, other: StringView) -> bool
 ```
 
 Whether two views hold the same bytes.
 Byte equality, which for well-formed UTF-8 is scalar-by-scalar equality, since each scalar value has exactly
 one encoding. It is not equality after normalization, which is a different question and a different package.
 
-| Overload                                                         | Summary                                                                                      |
-| ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `pub func Equals(self: &StringView, other: &StringView) -> bool` | Whether two views hold the same bytes.                                                       |
-| `pub func Equals(self: &StringView, other: StringView) -> bool`  | Whether this view and `other` hold the same bytes, as `Equals` with a borrowed view answers. |
+| Overload                                             | Summary                                                                                      |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| `pub func Equals(&self, other: &StringView) -> bool` | Whether two views hold the same bytes.                                                       |
+| `pub func Equals(&self, other: StringView) -> bool`  | Whether this view and `other` hold the same bytes, as `Equals` with a borrowed view answers. |
 
 | Name    | Type                         | Description                  |
 | ------- | ---------------------------- | ---------------------------- |
@@ -396,30 +370,23 @@ one encoding. It is not equality after normalization, which is a different quest
 
 **Returns**: whether both hold the same bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L127)
 
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(
-    self: &StringView,
-    other: &StringView
-) -> Ordering
-
-pub func Compare(
-    self: &StringView,
-    other: StringView
-) -> Ordering
+pub func Compare(&self, other: &StringView) -> Ordering
+pub func Compare(&self, other: StringView) -> Ordering
 ```
 
 How this view orders against `other`, shortest first where one is a prefix of the other.
 Byte order, which for UTF-8 is also code point order: the encoding is built so that comparing bytes and
 comparing scalar values give the same answer. It is not alphabetical in any language.
 
-| Overload                                                              | Summary                                                                                                        |
-| --------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `pub func Compare(self: &StringView, other: &StringView) -> Ordering` | How this view orders against `other`, shortest first where one is a prefix of the other.                       |
-| `pub func Compare(self: &StringView, other: StringView) -> Ordering`  | How this view orders against `other`, as `Compare` with a borrowed view answers, taking the view as it stands. |
+| Overload                                                  | Summary                                                                                                        |
+| --------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `pub func Compare(&self, other: &StringView) -> Ordering` | How this view orders against `other`, shortest first where one is a prefix of the other.                       |
+| `pub func Compare(&self, other: StringView) -> Ordering`  | How this view orders against `other`, as `Compare` with a borrowed view answers, taking the view as it stands. |
 
 | Name    | Type                         | Description                  |
 | ------- | ---------------------------- | ---------------------------- |
@@ -427,12 +394,12 @@ comparing scalar values give the same answer. It is not alphabetical in any lang
 
 **Returns**: how the two order byte by byte, which is code-point order for UTF-8
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L144)
 
 <h3 id="scalars"><code>Scalars</code></h3>
 
 ```rux
-pub func Scalars(self: &StringView) -> ScalarIterator
+pub func Scalars(&self) -> ScalarIterator
 ```
 
 A walk over this view's scalar values.
@@ -440,7 +407,7 @@ A walk over this view's scalar values.
 
 **Returns**: a cursor over the text's scalar values
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L184)
 
 ## Implements Display
 
@@ -450,10 +417,10 @@ A walk over this view's scalar values.
 
 ```rux
 pub func WriteDisplay(
-    self: &StringView,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes what this view spans, truncated to the spec's precision and padded to its width.
@@ -478,10 +445,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style, sinc
 
 ```rux
 pub func WriteDebug(
-    self: &StringView,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes what this view spans, quoted and escaped.
@@ -512,7 +479,7 @@ Whether `byte` is ASCII whitespace: space, tab, newline, carriage return, form f
 ASCII only, deliberately. Unicode calls a good many more characters whitespace, and which ones is a question for
 the tables; every one of them is multi-byte, so trimming by this rule never cuts a character in half.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L172)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L181)
 
 **Parameters**
 
@@ -533,7 +500,7 @@ pub struct SplitIterator {
 A walk over the parts of a view between occurrences of a separator.
 Every part is a borrow of the original, so splitting allocates nothing however many parts there are.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L180)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L189)
 
 **Implements Iterator**
 
@@ -542,7 +509,7 @@ Every part is a borrow of the original, so splitting allocates nothing however m
 <h4 id="split-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var SplitIterator) -> StringView?
+pub func Next(&var self) -> StringView?
 ```
 
 The next part, or `none` when the walk is over.
@@ -553,7 +520,7 @@ endless walk.
 
 **Returns**: the next piece, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L198)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L207)
 
 <h3 id="line-iterator"><code>LineIterator</code></h3>
 
@@ -566,7 +533,7 @@ pub struct LineIterator {
 A walk over the lines of a view, each without its line break.
 Every line is a borrow of the original, so walking allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L220)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L229)
 
 **Implements Iterator**
 
@@ -575,14 +542,14 @@ Every line is a borrow of the original, so walking allocates nothing.
 <h4 id="line-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var LineIterator) -> StringView?
+pub func Next(&var self) -> StringView?
 ```
 
 The next line, without its `\n` or `\r\n`, or `none` after the last.
 
 **Returns**: the next line, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L231)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L240)
 
 <h3 id="scalar-iterator"><code>ScalarIterator</code></h3>
 
@@ -594,7 +561,7 @@ pub struct ScalarIterator {
 
 A walk over the scalar values of a view, first to last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L185)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L191)
 
 **Implements Iterator**
 
@@ -603,7 +570,7 @@ A walk over the scalar values of a view, first to last.
 <h4 id="scalar-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var ScalarIterator) -> char32?
+pub func Next(&var self) -> char32?
 ```
 
 The next scalar value, or `none` at the end.
@@ -612,4 +579,4 @@ so reaching one means the bytes were vouched for and were not.
 
 **Returns**: the next scalar value, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L198)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L204)

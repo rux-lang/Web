@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Socket.rux
-  line: 217
+  line: 233
 seo:
   title: "Name resolution — macOS API"
   description: getaddrinfo and the list of addresses it returns.
@@ -38,7 +38,7 @@ pub struct AddressInfo {
 
 The C library's `addrinfo`: one result of [`getaddrinfo`](/docs/api/macos/resolve#getaddrinfo), linked to the next.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L233)
 
 **Fields**
 
@@ -68,7 +68,7 @@ Looks up the addresses of a host and service.
 
 **See also**: [https://keith.github.io/xcode-man-pages/getaddrinfo.3.html](https://keith.github.io/xcode-man-pages/getaddrinfo.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L246)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L262)
 
 **Parameters**
 
@@ -91,7 +91,7 @@ Frees the results of [`getaddrinfo`](/docs/api/macos/resolve#getaddrinfo).
 
 **See also**: [https://keith.github.io/xcode-man-pages/freeaddrinfo.3.html](https://keith.github.io/xcode-man-pages/freeaddrinfo.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L268)
 
 **Parameters**
 

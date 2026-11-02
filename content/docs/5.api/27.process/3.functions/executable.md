@@ -24,7 +24,7 @@ The path of the file the process is running.
 <h2 id="current-executable"><code>CurrentExecutable</code></h2>
 
 ```rux
-pub func CurrentExecutable(allocator: Allocator) -> PathBuffer ! IoError
+pub func CurrentExecutable(allocator: Allocator) -> PathBuffer throws IoError
 ```
 
 The path of the executable file the process is running, as the system loaded it.

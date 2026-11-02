@@ -9,7 +9,7 @@ api:
   kind: enum
   version: 0.1.0
   source: Src/TextError.rux
-  line: 13
+  line: 11
 seo:
   title: "TextError — Text API"
   description: What went wrong.
@@ -23,24 +23,20 @@ What went wrong.
 
 ```rux
 pub enum TextError: int32 {
-    OutOfMemory = 1,
-    LengthOverflow = 2,
     InvalidUtf8 = 3,
     NotABoundary = 4
 }
 ```
 
-Every case is a failure. An operation that can fail returns its result, or nothing, through a native fallible
-`T ! TextError`, so success is the other channel rather than a case here.
+Every case is a failure. An operation that can fail returns its result, or nothing, and declares
+`throws TextError`, so success is the return value rather than a case here.
 
 ## Cases
 
-| Name             | Value | Description                                                                             |
-| ---------------- | ----- | --------------------------------------------------------------------------------------- |
-| `OutOfMemory`    | `1`   | The allocator could not supply the storage.                                             |
-| `LengthOverflow` | `2`   | A length or offset computation passed what a `uint` can hold.                           |
-| `InvalidUtf8`    | `3`   | The bytes are not well-formed UTF-8.                                                    |
-| `NotABoundary`   | `4`   | A byte offset that is not where a character starts, and so not a place text may be cut. |
+| Name           | Value | Description                                                                             |
+| -------------- | ----- | --------------------------------------------------------------------------------------- |
+| `InvalidUtf8`  | `3`   | The bytes are not well-formed UTF-8.                                                    |
+| `NotABoundary` | `4`   | A byte offset that is not where a character starts, and so not a place text may be cut. |
 
 ## Implements Display
 
@@ -50,10 +46,10 @@ Every case is a failure. An operation that can fail returns its result, or nothi
 
 ```rux
 pub func WriteDisplay(
-    self: &TextError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the description of what went wrong, or `no error` for success.
@@ -68,7 +64,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/TextError.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/TextError.rux#L76)
 
 ## Implements Debug
 
@@ -78,10 +74,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 ```rux
 pub func WriteDebug(
-    self: &TextError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Names the case, qualified by its type: `TextError::InvalidUtf8`.
@@ -94,27 +90,4 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/TextError.rux#L98)
-
-## Related
-
-<h3 id="from-alloc-error"><code>FromAllocError</code></h3>
-
-```rux
-pub func FromAllocError(error: AllocError) -> TextError
-```
-
-The text error an allocator's failure becomes.
-Everything an allocator can refuse is a failure to supply storage as far as text is concerned; the distinctions
-the allocator draws are about the request, and this package makes no requests a caller could have made
-differently.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/TextError.rux#L31)
-
-**Parameters**
-
-| Name    | Type         | Description               |
-| ------- | ------------ | ------------------------- |
-| `error` | `AllocError` | why the allocator refused |
-
-**Returns**: the same failure as a text error
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/TextError.rux#L92)

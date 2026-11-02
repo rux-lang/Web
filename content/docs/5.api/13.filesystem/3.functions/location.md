@@ -36,7 +36,7 @@ limit is what every system uses for the same reason, and reaching it is reported
 <h2 id="current-directory"><code>CurrentDirectory</code></h2>
 
 ```rux
-pub func CurrentDirectory(allocator: Allocator) -> OsString ! IoError
+pub func CurrentDirectory(allocator: Allocator) -> OsString throws IoError
 ```
 
 The process's working directory, as an absolute path.
@@ -57,14 +57,14 @@ The process's working directory, as an absolute path.
 pub func SetCurrentDirectory(
     allocator: Allocator,
     path: Path
-) -> ! IoError
+) throws IoError
 ```
 
 Makes `path` the process's working directory.
 Process-wide and immediately visible to every thread, which invalidates every relative path any of them was
 about to resolve. Nothing in this package calls it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L70)
 
 **Parameters**
 
@@ -81,7 +81,7 @@ about to resolve. Nothing in this package calls it.
 pub func Absolute(
     allocator: Allocator,
     path: Path
-) -> PathBuffer ! IoError
+) -> PathBuffer throws IoError
 ```
 
 `path` made absolute against the working directory and simplified lexically.
@@ -89,7 +89,7 @@ Arithmetic, not a question for the filesystem: the path need not exist, nothing 
 link is resolved — so a `..` that crosses one is simplified away as though it did not. [`Canonicalize`](/docs/api/filesystem/location#canonicalize) is the
 operation that tells the truth about links, at the cost of requiring the file to be there.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L97)
 
 **Parameters**
 
@@ -106,7 +106,7 @@ operation that tells the truth about links, at the cost of requiring the file to
 pub func Canonicalize(
     allocator: Allocator,
     path: Path
-) -> PathBuffer ! IoError
+) -> PathBuffer throws IoError
 ```
 
 The one true name of the existing file `path` refers to.
@@ -118,7 +118,7 @@ On Windows the answer arrives in the verbatim form and spelled as the filesystem
 name actually has, short names expanded — because that is what the system reports, and rewriting it would be
 this package guessing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L218)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L217)
 
 **Parameters**
 

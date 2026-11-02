@@ -30,8 +30,8 @@ pub enum EntropyError {
 }
 ```
 
-Every case is a failure: nothing was written that a caller may rely on. A filled buffer is the success channel of
-the `! EntropyError` the fill returns.
+Every case is a failure: nothing was written that a caller may rely on. A fill that succeeds returns nothing and
+leaves the buffer filled; one that fails throws this.
 
 ## Cases
 
@@ -47,7 +47,7 @@ the `! EntropyError` the fill returns.
 <h3 id="is-transient"><code>IsTransient</code></h3>
 
 ```rux
-pub func IsTransient(self: *EntropyError) -> bool
+pub func IsTransient(self) -> bool
 ```
 
 Whether trying again might work.

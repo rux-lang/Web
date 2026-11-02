@@ -98,12 +98,12 @@ pub func ConvertWrapping<From, To>(
 
 Converts a primitive value to another primitive type, keeping whatever fits.
 `value` is read by value; `result` receives the destination type's own answer, wrapping an integer around its
-range, truncating a float toward zero, and rounding a narrowed float. This is what `as` does, named so that
-discarding the rest on purpose reads differently from discarding it by accident.
+range, truncating a float toward zero, and rounding a narrowed float. Where an integer `as` stops the program on a
+value the destination cannot hold, this keeps the low bits, as `Truncate` does for one integer type.
 Cannot fail: every value has a wrapped conversion. Runs in constant time and allocates nothing.
 `result` must be non-null. This is not checked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L67)
 
 **Type parameters**
 
@@ -137,7 +137,7 @@ and yields zero.
 Cannot fail: the answer is always the nearest representable value. Runs in constant time and allocates nothing.
 `result` must be non-null. This is not checked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L89)
 
 **Type parameters**
 

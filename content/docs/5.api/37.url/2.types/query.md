@@ -58,7 +58,7 @@ A walk over a query's pairs, in order, skipping empty ones. `Copy`.
 <h3 id="query-pairs-iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &QueryPairs) -> QueryPairs
+pub func Iterate(&self) -> QueryPairs
 ```
 
 The walk itself, so that `for pair in Pairs(query)` reads every pair.
@@ -74,7 +74,7 @@ The walk itself, so that `for pair in Pairs(query)` reads every pair.
 <h3 id="query-pairs-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var QueryPairs) -> QueryPair?
+pub func Next(&var self) -> QueryPair?
 ```
 
 The next pair, or none after the last.
@@ -108,7 +108,7 @@ pub func Decode(
     allocator: Allocator,
     encoded: char8[..],
     form: bool
-) -> String ! UrlError
+) -> String throws UrlError
 ```
 
 Decodes a percent-encoded component into text. With `form`, a `+` is read as a space, as in a query.
@@ -162,10 +162,10 @@ An empty query.
 
 ```rux
 pub func Append(
-    self: &var QueryBuilder,
+    &var self,
     name: char8[..],
     value: char8[..]
-) -> ! UrlError
+)
 ```
 
 Appends a pair, encoding the name and the value: letters, digits, `*`, `-`, `.` and `_` stay, a space becomes
@@ -176,18 +176,16 @@ Appends a pair, encoding the name and the value: letters, digits, `*`, `-`, `.` 
 | `name`  | `char8[..]` | the name, as text  |
 | `value` | `char8[..]` | the value, as text |
 
-**Returns**: nothing, or fails when the allocator refused
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Query.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Query.rux#L108)
 
 <h3 id="query-builder-text"><code>Text</code></h3>
 
 ```rux
-pub func Text(self: &QueryBuilder) -> char8[..]
+pub func Text(&self) -> char8[..]
 ```
 
 The query built so far, without a `?`, ready for [`Url::SetQuery`](/docs/api/url/url#set-query).
 
 **Returns**: the query
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Query.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Query.rux#L118)

@@ -31,6 +31,129 @@ A target pointer-sized signed integer.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L7)
 
+**Methods**
+
+<h3 id="int-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: int) -> int?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type  | Description      |
+| ------- | ----- | ---------------- |
+| `other` | `int` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`int`](/docs/api/core/integers#int)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L29)
+
+<h3 id="int-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: int) -> int?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type  | Description           |
+| ------- | ----- | --------------------- |
+| `other` | `int` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`int`](/docs/api/core/integers#int)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L40)
+
+<h3 id="int-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: int) -> int?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type  | Description              |
+| ------- | ----- | ------------------------ |
+| `other` | `int` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`int`](/docs/api/core/integers#int)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L52)
+
+<h3 id="int-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: int) -> int
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type  | Description      |
+| ------- | ----- | ---------------- |
+| `other` | `int` | the value to add |
+
+**Returns**: the sum, or the limit of [`int`](/docs/api/core/integers#int) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L63)
+
+<h3 id="int-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: int) -> int
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to whichever limit it ran past.
+Never stops the program.
+
+| Name    | Type  | Description           |
+| ------- | ----- | --------------------- |
+| `other` | `int` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`int`](/docs/api/core/integers#int) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L72)
+
+<h3 id="int-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: int) -> int
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type  | Description              |
+| ------- | ----- | ------------------------ |
+| `other` | `int` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`int`](/docs/api/core/integers#int) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L81)
+
+<h3 id="int-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`int`](/docs/api/core/integers#int), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L91)
+
 **Constants**
 
 <h3 id="int-bits"><code>Bits</code></h3>
@@ -82,6 +205,129 @@ extend int8
 A signed integer in 8 bits, two's complement.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L7)
+
+**Methods**
+
+<h3 id="int8-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: int8) -> int8?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type   | Description      |
+| ------- | ------ | ---------------- |
+| `other` | `int8` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`int8`](/docs/api/core/integers#int8)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L29)
+
+<h3 id="int8-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: int8) -> int8?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type   | Description           |
+| ------- | ------ | --------------------- |
+| `other` | `int8` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`int8`](/docs/api/core/integers#int8)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L40)
+
+<h3 id="int8-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: int8) -> int8?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type   | Description              |
+| ------- | ------ | ------------------------ |
+| `other` | `int8` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`int8`](/docs/api/core/integers#int8)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L52)
+
+<h3 id="int8-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: int8) -> int8
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type   | Description      |
+| ------- | ------ | ---------------- |
+| `other` | `int8` | the value to add |
+
+**Returns**: the sum, or the limit of [`int8`](/docs/api/core/integers#int8) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L63)
+
+<h3 id="int8-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: int8) -> int8
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to whichever limit it ran past.
+Never stops the program.
+
+| Name    | Type   | Description           |
+| ------- | ------ | --------------------- |
+| `other` | `int8` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`int8`](/docs/api/core/integers#int8) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L72)
+
+<h3 id="int8-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: int8) -> int8
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type   | Description              |
+| ------- | ------ | ------------------------ |
+| `other` | `int8` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`int8`](/docs/api/core/integers#int8) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L81)
+
+<h3 id="int8-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`int8`](/docs/api/core/integers#int8), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L91)
 
 **Constants**
 
@@ -135,6 +381,129 @@ A signed integer in 16 bits, two's complement.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L7)
 
+**Methods**
+
+<h3 id="int16-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: int16) -> int16?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type    | Description      |
+| ------- | ------- | ---------------- |
+| `other` | `int16` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`int16`](/docs/api/core/integers#int16)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L29)
+
+<h3 id="int16-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: int16) -> int16?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type    | Description           |
+| ------- | ------- | --------------------- |
+| `other` | `int16` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`int16`](/docs/api/core/integers#int16)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L40)
+
+<h3 id="int16-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: int16) -> int16?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type    | Description              |
+| ------- | ------- | ------------------------ |
+| `other` | `int16` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`int16`](/docs/api/core/integers#int16)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L52)
+
+<h3 id="int16-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: int16) -> int16
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type    | Description      |
+| ------- | ------- | ---------------- |
+| `other` | `int16` | the value to add |
+
+**Returns**: the sum, or the limit of [`int16`](/docs/api/core/integers#int16) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L63)
+
+<h3 id="int16-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: int16) -> int16
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to whichever limit it ran past.
+Never stops the program.
+
+| Name    | Type    | Description           |
+| ------- | ------- | --------------------- |
+| `other` | `int16` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`int16`](/docs/api/core/integers#int16) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L72)
+
+<h3 id="int16-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: int16) -> int16
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type    | Description              |
+| ------- | ------- | ------------------------ |
+| `other` | `int16` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`int16`](/docs/api/core/integers#int16) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L81)
+
+<h3 id="int16-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`int16`](/docs/api/core/integers#int16), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L91)
+
 **Constants**
 
 <h3 id="int16-bits"><code>Bits</code></h3>
@@ -186,6 +555,129 @@ extend int32
 A signed integer in 32 bits, two's complement.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L7)
+
+**Methods**
+
+<h3 id="int32-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: int32) -> int32?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type    | Description      |
+| ------- | ------- | ---------------- |
+| `other` | `int32` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`int32`](/docs/api/core/integers#int32)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L29)
+
+<h3 id="int32-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: int32) -> int32?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type    | Description           |
+| ------- | ------- | --------------------- |
+| `other` | `int32` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`int32`](/docs/api/core/integers#int32)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L40)
+
+<h3 id="int32-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: int32) -> int32?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type    | Description              |
+| ------- | ------- | ------------------------ |
+| `other` | `int32` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`int32`](/docs/api/core/integers#int32)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L52)
+
+<h3 id="int32-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: int32) -> int32
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type    | Description      |
+| ------- | ------- | ---------------- |
+| `other` | `int32` | the value to add |
+
+**Returns**: the sum, or the limit of [`int32`](/docs/api/core/integers#int32) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L63)
+
+<h3 id="int32-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: int32) -> int32
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to whichever limit it ran past.
+Never stops the program.
+
+| Name    | Type    | Description           |
+| ------- | ------- | --------------------- |
+| `other` | `int32` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`int32`](/docs/api/core/integers#int32) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L72)
+
+<h3 id="int32-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: int32) -> int32
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type    | Description              |
+| ------- | ------- | ------------------------ |
+| `other` | `int32` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`int32`](/docs/api/core/integers#int32) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L81)
+
+<h3 id="int32-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`int32`](/docs/api/core/integers#int32), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L91)
 
 **Constants**
 
@@ -239,6 +731,129 @@ A signed integer in 64 bits, two's complement.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L7)
 
+**Methods**
+
+<h3 id="int64-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: int64) -> int64?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type    | Description      |
+| ------- | ------- | ---------------- |
+| `other` | `int64` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`int64`](/docs/api/core/integers#int64)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L29)
+
+<h3 id="int64-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: int64) -> int64?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type    | Description           |
+| ------- | ------- | --------------------- |
+| `other` | `int64` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`int64`](/docs/api/core/integers#int64)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L40)
+
+<h3 id="int64-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: int64) -> int64?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type    | Description              |
+| ------- | ------- | ------------------------ |
+| `other` | `int64` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`int64`](/docs/api/core/integers#int64)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L52)
+
+<h3 id="int64-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: int64) -> int64
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type    | Description      |
+| ------- | ------- | ---------------- |
+| `other` | `int64` | the value to add |
+
+**Returns**: the sum, or the limit of [`int64`](/docs/api/core/integers#int64) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L63)
+
+<h3 id="int64-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: int64) -> int64
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to whichever limit it ran past.
+Never stops the program.
+
+| Name    | Type    | Description           |
+| ------- | ------- | --------------------- |
+| `other` | `int64` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`int64`](/docs/api/core/integers#int64) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L72)
+
+<h3 id="int64-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: int64) -> int64
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type    | Description              |
+| ------- | ------- | ------------------------ |
+| `other` | `int64` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`int64`](/docs/api/core/integers#int64) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L81)
+
+<h3 id="int64-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`int64`](/docs/api/core/integers#int64), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L91)
+
 **Constants**
 
 <h3 id="int64-bits"><code>Bits</code></h3>
@@ -290,6 +905,129 @@ extend int128
 A signed integer in 128 bits, two's complement.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L7)
+
+**Methods**
+
+<h3 id="int128-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: int128) -> int128?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `int128` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`int128`](/docs/api/core/integers#int128)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L29)
+
+<h3 id="int128-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: int128) -> int128?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `int128` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`int128`](/docs/api/core/integers#int128)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L40)
+
+<h3 id="int128-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: int128) -> int128?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `int128` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`int128`](/docs/api/core/integers#int128)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L52)
+
+<h3 id="int128-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: int128) -> int128
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `int128` | the value to add |
+
+**Returns**: the sum, or the limit of [`int128`](/docs/api/core/integers#int128) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L63)
+
+<h3 id="int128-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: int128) -> int128
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to whichever limit it ran past.
+Never stops the program.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `int128` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`int128`](/docs/api/core/integers#int128) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L72)
+
+<h3 id="int128-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: int128) -> int128
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `int128` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`int128`](/docs/api/core/integers#int128) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L81)
+
+<h3 id="int128-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`int128`](/docs/api/core/integers#int128), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L91)
 
 **Constants**
 
@@ -343,6 +1081,129 @@ A signed integer in 256 bits, two's complement.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L7)
 
+**Methods**
+
+<h3 id="int256-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: int256) -> int256?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `int256` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`int256`](/docs/api/core/integers#int256)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L29)
+
+<h3 id="int256-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: int256) -> int256?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `int256` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`int256`](/docs/api/core/integers#int256)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L40)
+
+<h3 id="int256-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: int256) -> int256?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `int256` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`int256`](/docs/api/core/integers#int256)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L52)
+
+<h3 id="int256-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: int256) -> int256
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `int256` | the value to add |
+
+**Returns**: the sum, or the limit of [`int256`](/docs/api/core/integers#int256) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L63)
+
+<h3 id="int256-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: int256) -> int256
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to whichever limit it ran past.
+Never stops the program.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `int256` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`int256`](/docs/api/core/integers#int256) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L72)
+
+<h3 id="int256-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: int256) -> int256
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `int256` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`int256`](/docs/api/core/integers#int256) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L81)
+
+<h3 id="int256-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`int256`](/docs/api/core/integers#int256), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L91)
+
 **Constants**
 
 <h3 id="int256-bits"><code>Bits</code></h3>
@@ -394,6 +1255,129 @@ extend int512
 A signed integer in 512 bits, two's complement.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L7)
+
+**Methods**
+
+<h3 id="int512-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: int512) -> int512?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `int512` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`int512`](/docs/api/core/integers#int512)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L29)
+
+<h3 id="int512-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: int512) -> int512?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `int512` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`int512`](/docs/api/core/integers#int512)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L40)
+
+<h3 id="int512-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: int512) -> int512?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `int512` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`int512`](/docs/api/core/integers#int512)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L52)
+
+<h3 id="int512-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: int512) -> int512
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `int512` | the value to add |
+
+**Returns**: the sum, or the limit of [`int512`](/docs/api/core/integers#int512) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L63)
+
+<h3 id="int512-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: int512) -> int512
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to whichever limit it ran past.
+Never stops the program.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `int512` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`int512`](/docs/api/core/integers#int512) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L72)
+
+<h3 id="int512-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: int512) -> int512
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the minimum or the maximum.
+Never stops the program.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `int512` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`int512`](/docs/api/core/integers#int512) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L81)
+
+<h3 id="int512-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`int512`](/docs/api/core/integers#int512), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L91)
 
 **Constants**
 
@@ -447,6 +1431,129 @@ A target pointer-sized unsigned integer.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L6)
 
+**Methods**
+
+<h3 id="uint-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: uint) -> uint?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type   | Description      |
+| ------- | ------ | ---------------- |
+| `other` | `uint` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`uint`](/docs/api/core/integers#uint)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L28)
+
+<h3 id="uint-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: uint) -> uint?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type   | Description           |
+| ------- | ------ | --------------------- |
+| `other` | `uint` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`uint`](/docs/api/core/integers#uint)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L39)
+
+<h3 id="uint-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: uint) -> uint?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type   | Description              |
+| ------- | ------ | ------------------------ |
+| `other` | `uint` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`uint`](/docs/api/core/integers#uint)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L51)
+
+<h3 id="uint-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: uint) -> uint
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type   | Description      |
+| ------- | ------ | ---------------- |
+| `other` | `uint` | the value to add |
+
+**Returns**: the sum, or the limit of [`uint`](/docs/api/core/integers#uint) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L62)
+
+<h3 id="uint-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: uint) -> uint
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to zero.
+Never stops the program.
+
+| Name    | Type   | Description           |
+| ------- | ------ | --------------------- |
+| `other` | `uint` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`uint`](/docs/api/core/integers#uint) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L71)
+
+<h3 id="uint-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: uint) -> uint
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type   | Description              |
+| ------- | ------ | ------------------------ |
+| `other` | `uint` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`uint`](/docs/api/core/integers#uint) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L80)
+
+<h3 id="uint-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`uint`](/docs/api/core/integers#uint), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L90)
+
 **Constants**
 
 <h3 id="uint-bits"><code>Bits</code></h3>
@@ -498,6 +1605,129 @@ extend uint8
 An unsigned integer in 8 bits.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L7)
+
+**Methods**
+
+<h3 id="uint8-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: uint8) -> uint8?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type    | Description      |
+| ------- | ------- | ---------------- |
+| `other` | `uint8` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`uint8`](/docs/api/core/integers#uint8)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L29)
+
+<h3 id="uint8-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: uint8) -> uint8?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type    | Description           |
+| ------- | ------- | --------------------- |
+| `other` | `uint8` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`uint8`](/docs/api/core/integers#uint8)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L40)
+
+<h3 id="uint8-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: uint8) -> uint8?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type    | Description              |
+| ------- | ------- | ------------------------ |
+| `other` | `uint8` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`uint8`](/docs/api/core/integers#uint8)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L52)
+
+<h3 id="uint8-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: uint8) -> uint8
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type    | Description      |
+| ------- | ------- | ---------------- |
+| `other` | `uint8` | the value to add |
+
+**Returns**: the sum, or the limit of [`uint8`](/docs/api/core/integers#uint8) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L63)
+
+<h3 id="uint8-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: uint8) -> uint8
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to zero.
+Never stops the program.
+
+| Name    | Type    | Description           |
+| ------- | ------- | --------------------- |
+| `other` | `uint8` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`uint8`](/docs/api/core/integers#uint8) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L72)
+
+<h3 id="uint8-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: uint8) -> uint8
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type    | Description              |
+| ------- | ------- | ------------------------ |
+| `other` | `uint8` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`uint8`](/docs/api/core/integers#uint8) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L81)
+
+<h3 id="uint8-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`uint8`](/docs/api/core/integers#uint8), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L91)
 
 **Constants**
 
@@ -551,6 +1781,129 @@ An unsigned integer in 16 bits.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L7)
 
+**Methods**
+
+<h3 id="uint16-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: uint16) -> uint16?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `uint16` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`uint16`](/docs/api/core/integers#uint16)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L29)
+
+<h3 id="uint16-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: uint16) -> uint16?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `uint16` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`uint16`](/docs/api/core/integers#uint16)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L40)
+
+<h3 id="uint16-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: uint16) -> uint16?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `uint16` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`uint16`](/docs/api/core/integers#uint16)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L52)
+
+<h3 id="uint16-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: uint16) -> uint16
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `uint16` | the value to add |
+
+**Returns**: the sum, or the limit of [`uint16`](/docs/api/core/integers#uint16) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L63)
+
+<h3 id="uint16-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: uint16) -> uint16
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to zero.
+Never stops the program.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `uint16` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`uint16`](/docs/api/core/integers#uint16) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L72)
+
+<h3 id="uint16-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: uint16) -> uint16
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `uint16` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`uint16`](/docs/api/core/integers#uint16) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L81)
+
+<h3 id="uint16-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`uint16`](/docs/api/core/integers#uint16), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L91)
+
 **Constants**
 
 <h3 id="uint16-bits"><code>Bits</code></h3>
@@ -602,6 +1955,129 @@ extend uint32
 An unsigned integer in 32 bits.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L7)
+
+**Methods**
+
+<h3 id="uint32-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: uint32) -> uint32?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `uint32` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`uint32`](/docs/api/core/integers#uint32)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L29)
+
+<h3 id="uint32-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: uint32) -> uint32?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `uint32` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`uint32`](/docs/api/core/integers#uint32)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L40)
+
+<h3 id="uint32-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: uint32) -> uint32?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `uint32` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`uint32`](/docs/api/core/integers#uint32)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L52)
+
+<h3 id="uint32-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: uint32) -> uint32
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `uint32` | the value to add |
+
+**Returns**: the sum, or the limit of [`uint32`](/docs/api/core/integers#uint32) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L63)
+
+<h3 id="uint32-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: uint32) -> uint32
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to zero.
+Never stops the program.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `uint32` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`uint32`](/docs/api/core/integers#uint32) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L72)
+
+<h3 id="uint32-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: uint32) -> uint32
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `uint32` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`uint32`](/docs/api/core/integers#uint32) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L81)
+
+<h3 id="uint32-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`uint32`](/docs/api/core/integers#uint32), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L91)
 
 **Constants**
 
@@ -655,6 +2131,129 @@ An unsigned integer in 64 bits.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L7)
 
+**Methods**
+
+<h3 id="uint64-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: uint64) -> uint64?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `uint64` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`uint64`](/docs/api/core/integers#uint64)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L29)
+
+<h3 id="uint64-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: uint64) -> uint64?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `uint64` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`uint64`](/docs/api/core/integers#uint64)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L40)
+
+<h3 id="uint64-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: uint64) -> uint64?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `uint64` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`uint64`](/docs/api/core/integers#uint64)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L52)
+
+<h3 id="uint64-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: uint64) -> uint64
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type     | Description      |
+| ------- | -------- | ---------------- |
+| `other` | `uint64` | the value to add |
+
+**Returns**: the sum, or the limit of [`uint64`](/docs/api/core/integers#uint64) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L63)
+
+<h3 id="uint64-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: uint64) -> uint64
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to zero.
+Never stops the program.
+
+| Name    | Type     | Description           |
+| ------- | -------- | --------------------- |
+| `other` | `uint64` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`uint64`](/docs/api/core/integers#uint64) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L72)
+
+<h3 id="uint64-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: uint64) -> uint64
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type     | Description              |
+| ------- | -------- | ------------------------ |
+| `other` | `uint64` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`uint64`](/docs/api/core/integers#uint64) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L81)
+
+<h3 id="uint64-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`uint64`](/docs/api/core/integers#uint64), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L91)
+
 **Constants**
 
 <h3 id="uint64-bits"><code>Bits</code></h3>
@@ -706,6 +2305,129 @@ extend uint128
 An unsigned integer in 128 bits.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L7)
+
+**Methods**
+
+<h3 id="uint128-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: uint128) -> uint128?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type      | Description      |
+| ------- | --------- | ---------------- |
+| `other` | `uint128` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`uint128`](/docs/api/core/integers#uint128)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L29)
+
+<h3 id="uint128-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: uint128) -> uint128?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type      | Description           |
+| ------- | --------- | --------------------- |
+| `other` | `uint128` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`uint128`](/docs/api/core/integers#uint128)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L40)
+
+<h3 id="uint128-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: uint128) -> uint128?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type      | Description              |
+| ------- | --------- | ------------------------ |
+| `other` | `uint128` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`uint128`](/docs/api/core/integers#uint128)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L52)
+
+<h3 id="uint128-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: uint128) -> uint128
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type      | Description      |
+| ------- | --------- | ---------------- |
+| `other` | `uint128` | the value to add |
+
+**Returns**: the sum, or the limit of [`uint128`](/docs/api/core/integers#uint128) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L63)
+
+<h3 id="uint128-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: uint128) -> uint128
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to zero.
+Never stops the program.
+
+| Name    | Type      | Description           |
+| ------- | --------- | --------------------- |
+| `other` | `uint128` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`uint128`](/docs/api/core/integers#uint128) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L72)
+
+<h3 id="uint128-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: uint128) -> uint128
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type      | Description              |
+| ------- | --------- | ------------------------ |
+| `other` | `uint128` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`uint128`](/docs/api/core/integers#uint128) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L81)
+
+<h3 id="uint128-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`uint128`](/docs/api/core/integers#uint128), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L91)
 
 **Constants**
 
@@ -759,6 +2481,129 @@ An unsigned integer in 256 bits.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L7)
 
+**Methods**
+
+<h3 id="uint256-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: uint256) -> uint256?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type      | Description      |
+| ------- | --------- | ---------------- |
+| `other` | `uint256` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`uint256`](/docs/api/core/integers#uint256)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L29)
+
+<h3 id="uint256-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: uint256) -> uint256?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type      | Description           |
+| ------- | --------- | --------------------- |
+| `other` | `uint256` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`uint256`](/docs/api/core/integers#uint256)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L40)
+
+<h3 id="uint256-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: uint256) -> uint256?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type      | Description              |
+| ------- | --------- | ------------------------ |
+| `other` | `uint256` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`uint256`](/docs/api/core/integers#uint256)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L52)
+
+<h3 id="uint256-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: uint256) -> uint256
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type      | Description      |
+| ------- | --------- | ---------------- |
+| `other` | `uint256` | the value to add |
+
+**Returns**: the sum, or the limit of [`uint256`](/docs/api/core/integers#uint256) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L63)
+
+<h3 id="uint256-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: uint256) -> uint256
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to zero.
+Never stops the program.
+
+| Name    | Type      | Description           |
+| ------- | --------- | --------------------- |
+| `other` | `uint256` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`uint256`](/docs/api/core/integers#uint256) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L72)
+
+<h3 id="uint256-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: uint256) -> uint256
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type      | Description              |
+| ------- | --------- | ------------------------ |
+| `other` | `uint256` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`uint256`](/docs/api/core/integers#uint256) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L81)
+
+<h3 id="uint256-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`uint256`](/docs/api/core/integers#uint256), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L91)
+
 **Constants**
 
 <h3 id="uint256-bits"><code>Bits</code></h3>
@@ -810,6 +2655,129 @@ extend uint512
 An unsigned integer in 512 bits.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L7)
+
+**Methods**
+
+<h3 id="uint512-checked-add"><code>CheckedAdd</code></h3>
+
+```rux
+pub func CheckedAdd(&self, other: uint512) -> uint512?
+```
+
+Adds `other` to this value, or reports that the sum does not fit.
+Never stops the program: where `+` would, this returns none and the caller decides what an overflow means.
+
+| Name    | Type      | Description      |
+| ------- | --------- | ---------------- |
+| `other` | `uint512` | the value to add |
+
+**Returns**: the sum, or none when it lies outside the range of [`uint512`](/docs/api/core/integers#uint512)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L29)
+
+<h3 id="uint512-checked-sub"><code>CheckedSub</code></h3>
+
+```rux
+pub func CheckedSub(&self, other: uint512) -> uint512?
+```
+
+Subtracts `other` from this value, or reports that the difference does not fit.
+Never stops the program: where `-` would, this returns none.
+
+| Name    | Type      | Description           |
+| ------- | --------- | --------------------- |
+| `other` | `uint512` | the value to subtract |
+
+**Returns**: the difference, or none when it lies outside the range of [`uint512`](/docs/api/core/integers#uint512)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L40)
+
+<h3 id="uint512-checked-mul"><code>CheckedMul</code></h3>
+
+```rux
+pub func CheckedMul(&self, other: uint512) -> uint512?
+```
+
+Multiplies this value by `other`, or reports that the product does not fit.
+Never stops the program: where `*` would, this returns none, which is how a size computed from a count is
+checked before it is used.
+
+| Name    | Type      | Description              |
+| ------- | --------- | ------------------------ |
+| `other` | `uint512` | the value to multiply by |
+
+**Returns**: the product, or none when it lies outside the range of [`uint512`](/docs/api/core/integers#uint512)
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L52)
+
+<h3 id="uint512-saturating-add"><code>SaturatingAdd</code></h3>
+
+```rux
+pub func SaturatingAdd(&self, other: uint512) -> uint512
+```
+
+Adds `other` to this value, clamping a sum that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type      | Description      |
+| ------- | --------- | ---------------- |
+| `other` | `uint512` | the value to add |
+
+**Returns**: the sum, or the limit of [`uint512`](/docs/api/core/integers#uint512) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L63)
+
+<h3 id="uint512-saturating-sub"><code>SaturatingSub</code></h3>
+
+```rux
+pub func SaturatingSub(&self, other: uint512) -> uint512
+```
+
+Subtracts `other` from this value, clamping a difference that does not fit to zero.
+Never stops the program.
+
+| Name    | Type      | Description           |
+| ------- | --------- | --------------------- |
+| `other` | `uint512` | the value to subtract |
+
+**Returns**: the difference, or the limit of [`uint512`](/docs/api/core/integers#uint512) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L72)
+
+<h3 id="uint512-saturating-mul"><code>SaturatingMul</code></h3>
+
+```rux
+pub func SaturatingMul(&self, other: uint512) -> uint512
+```
+
+Multiplies this value by `other`, clamping a product that does not fit to the maximum.
+Never stops the program.
+
+| Name    | Type      | Description              |
+| ------- | --------- | ------------------------ |
+| `other` | `uint512` | the value to multiply by |
+
+**Returns**: the product, or the limit of [`uint512`](/docs/api/core/integers#uint512) it ran past
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L81)
+
+<h3 id="uint512-truncate"><code>Truncate</code></h3>
+
+```rux
+pub func Truncate<T>(&self) -> T
+```
+
+The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
+the low byte of a word does. A wider `T` extends the value by the signedness of [`uint512`](/docs/api/core/integers#uint512), as `as` does.
+
+| Type parameter | Description                    |
+| -------------- | ------------------------------ |
+| `T`            | the integer type to convert to |
+
+**Returns**: the low bits of this value as a `T`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L91)
 
 **Constants**
 

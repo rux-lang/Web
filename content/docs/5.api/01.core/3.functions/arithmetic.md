@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Arithmetic.rux
-  line: 24
+  line: 23
 seo:
   title: "Integer arithmetic — Core API"
   description: "Checked, wrapping and saturating arithmetic at every integer width, the limits of an integer type, and the uint64 intrinsics allocation sizes are computed with."
@@ -31,7 +31,7 @@ The largest value the integer type of `sample` can hold.
 `sample` is read by value and only its type matters; its value is never used. Returns the maximum by copy.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L23)
 
 **Type parameters**
 
@@ -58,7 +58,7 @@ The smallest value the integer type of `sample` can hold.
 the most negative value for a signed one.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L40)
 
 **Type parameters**
 
@@ -91,7 +91,7 @@ wants the wrapped answer does not have to compute it again. `result` must not be
 Returns `true` when the sum overflowed. Never traps, so the caller decides what a sum too large to express means.
 Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L60)
 
 **Type parameters**
 
@@ -161,7 +161,7 @@ product is an allocation far smaller than the caller asked for, so the report ha
 used. Never traps, including for the one signed pair whose quotient cannot be taken.
 Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L111)
 
 **Type parameters**
 
@@ -186,11 +186,11 @@ pub func AddWrapping<T>(left: T, right: T) -> T
 ```
 
 Adds two integers, wrapping around the type's range.
-`left` and `right` are read by value; the sum is returned by copy. This is what `+` already does, named so that
-wrapping on purpose reads differently from wrapping by accident.
+`left` and `right` are read by value; the sum is returned by copy. This is what `+%` does, named for code that
+passes the operation around.
 Cannot fail: every pair of operands has a wrapped sum. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L139)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L141)
 
 **Type parameters**
 
@@ -217,7 +217,7 @@ Subtracts one integer from another, wrapping around the type's range.
 `left` and `right` are read by value; the difference is returned by copy.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L153)
 
 **Type parameters**
 
@@ -244,7 +244,7 @@ Multiplies two integers, wrapping around the type's range.
 `left` and `right` are read by value; the product is returned by copy.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L165)
 
 **Type parameters**
 
@@ -273,7 +273,7 @@ signed type a sum too small becomes the minimum.
 Cannot fail: the answer is always the nearest representable value to the true sum. Runs in constant time and
 allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L177)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L179)
 
 **Type parameters**
 
@@ -301,7 +301,7 @@ Subtracts one integer from another, clamping to the type's range instead of wrap
 difference becomes zero; for a signed one the difference clamps to whichever limit it ran past.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L197)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L199)
 
 **Type parameters**
 
@@ -329,7 +329,7 @@ Multiplies two integers, clamping to the type's range instead of wrapping.
 and for a signed type a product too small becomes the minimum.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Arithmetic.rux#L219)
 
 **Type parameters**
 
@@ -345,93 +345,3 @@ Cannot fail. Runs in constant time and allocates nothing.
 | `right` | `T`  | the right operand |
 
 **Returns**: the product, clamped to the type's range rather than wrapped
-
-<h2 id="checked-add"><code>CheckedAdd</code></h2>
-
-```rux
-pub func CheckedAdd(
-    left: uint64,
-    right: uint64,
-    result: *var uint64
-) -> bool
-```
-
-Adds two unsigned 64-bit values and reports whether the true sum is representable.
-`left` and `right` are read by value. `result` receives the sum the machine produced, which is the true sum when
-this returns `false` and the wrapped one when it returns `true`; it is written in both cases.
-Returns `true` when the sum overflowed. The operation never traps, so the caller decides what a value too large to
-express becomes.
-Runs in constant time and allocates nothing. The compiler emits the arithmetic and the check where the call is
-written rather than calling out to a helper.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Checked.rux#L19)
-
-**Parameters**
-
-| Name     | Type          | Description                                               |
-| -------- | ------------- | --------------------------------------------------------- |
-| `left`   | `uint64`      | the left operand                                          |
-| `right`  | `uint64`      | the right operand                                         |
-| `result` | `*var uint64` | receives the answer the machine produced, true or wrapped |
-
-**Returns**: true when the sum does not fit; `result` then holds the wrapped sum
-
-<h2 id="checked-sub"><code>CheckedSub</code></h2>
-
-```rux
-pub func CheckedSub(
-    left: uint64,
-    right: uint64,
-    result: *var uint64
-) -> bool
-```
-
-Subtracts one unsigned 64-bit value from another and reports whether the true difference is representable.
-`left` and `right` are read by value. `result` receives the difference the machine produced, which is the true one
-when this returns `false` and the wrapped one when it returns `true`; it is written in both cases.
-Returns `true` when the difference is negative and therefore not representable. The operation never traps.
-Runs in constant time and allocates nothing. The compiler emits the arithmetic and the check where the call is
-written rather than calling out to a helper.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Checked.rux#L32)
-
-**Parameters**
-
-| Name     | Type          | Description                                               |
-| -------- | ------------- | --------------------------------------------------------- |
-| `left`   | `uint64`      | the left operand                                          |
-| `right`  | `uint64`      | the right operand                                         |
-| `result` | `*var uint64` | receives the answer the machine produced, true or wrapped |
-
-**Returns**: true when the difference does not fit; `result` then holds the wrapped difference
-
-<h2 id="checked-mul"><code>CheckedMul</code></h2>
-
-```rux
-pub func CheckedMul(
-    left: uint64,
-    right: uint64,
-    result: *var uint64
-) -> bool
-```
-
-Multiplies two unsigned 64-bit values and reports whether the true product is representable.
-`left` and `right` are read by value. `result` receives the product the machine produced, which is the true product
-when this returns `false` and the wrapped one when it returns `true`; it is written in both cases.
-Returns `true` when the product overflowed. This is the operation an allocation size is computed with: a wrapped
-product is an allocation far smaller than the caller asked for, so the report has to be checked before the size is
-used.
-Runs in constant time and allocates nothing. The compiler emits the arithmetic and the check where the call is
-written rather than calling out to a helper.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Checked.rux#L47)
-
-**Parameters**
-
-| Name     | Type          | Description                                               |
-| -------- | ------------- | --------------------------------------------------------- |
-| `left`   | `uint64`      | the left operand                                          |
-| `right`  | `uint64`      | the right operand                                         |
-| `result` | `*var uint64` | receives the answer the machine produced, true or wrapped |
-
-**Returns**: true when the product does not fit; `result` then holds the wrapped product

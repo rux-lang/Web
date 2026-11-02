@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/OsString.rux
-  line: 135
+  line: 140
 seo:
   title: "OsString — Path API"
   description: Native text that owns its units.
@@ -27,7 +27,9 @@ pub struct OsString {
 }
 ```
 
-Copyable with value semantics: each copy owns an independent native-unit block.
+Move-only: it owns its native-unit block and gives it back when it dies. [`Clone`](/docs/api/path/os-string#clone) makes an independent copy.
+Storage invariant, which every `unsafe` block here relies on: `data` is null exactly when `length` is zero, and
+otherwise addresses a block of `length` initialized units from `allocator`.
 
 ## Constructors
 
@@ -45,7 +47,7 @@ Native text of no length, which has allocated nothing.
 
 **Returns**: an empty owned string that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L165)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L154)
 
 ## Associated functions
 
@@ -55,21 +57,21 @@ Native text of no length, which has allocated nothing.
 pub func FromView(
     allocator: Allocator,
     view: OsStringView
-) -> OsString ! TextError
+) -> OsString
 ```
 
 An owning copy of what `view` spans, exactly as it stands.
-This is the lossless direction: whatever the system handed over survives, valid text or not. It fails with
-`OutOfMemory` when the copy cannot be made.
+This is the lossless direction: whatever the system handed over survives, valid text or not. Terminates the
+program when the copy cannot be made.
 
 | Name        | Type           | Description                  |
 | ----------- | -------------- | ---------------------------- |
 | `allocator` | `Allocator`    | where the storage comes from |
 | `view`      | `OsStringView` | the borrowed text to copy    |
 
-**Returns**: a copy of `view` this string owns, or an empty one when the allocator refused
+**Returns**: a copy of `view` this string owns
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L165)
 
 <h3 id="from-text"><code>FromText</code></h3>
 
@@ -77,12 +79,12 @@ This is the lossless direction: whatever the system handed over survives, valid 
 pub func FromText(
     allocator: Allocator,
     text: char8[..]
-) -> OsString ! TextError
+) -> OsString
 ```
 
 An owning native copy of UTF-8 text.
 The direction that always succeeds: valid text encodes into either representation, byte for byte on the
-Unix systems and through UTF-16 on Windows. It fails only when the allocation does.
+Unix systems and through UTF-16 on Windows. It terminates the program when the allocation fails.
 The bytes must be well-formed UTF-8, which everything in `Rux/Text` produces and vouches for.
 
 | Name        | Type        | Description                  |
@@ -90,73 +92,76 @@ The bytes must be well-formed UTF-8, which everything in `Rux/Text` produces and
 | `allocator` | `Allocator` | where the storage comes from |
 | `text`      | `char8[..]` | the text to act on           |
 
-**Returns**: the text converted to the platform's own units, or why it could not be
+**Returns**: the text converted to the platform's own units
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L244)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L232)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &OsString) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many native units the text holds.
 
 **Returns**: how many units the value holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L199)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L184)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &OsString) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the text holds nothing.
 
 **Returns**: whether it holds no units at all
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L206)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L191)
 
 <h3 id="view"><code>View</code></h3>
 
 ```rux
-pub func View(self: &OsString) -> OsStringView
+pub func View(&self) -> OsStringView
 ```
 
 A view over this text, which is what everything read-only takes.
 
 **Returns**: a borrowed view of the owned units
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L213)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L198)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var OsString)
+pub func Clear(&var self)
 ```
 
 Gives the block back and leaves text of no length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L219)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L205)
 
-## Operators
+## Implements Cloneable
 
-<h3 id="copy"><code>=</code></h3>
+`OsString` conforms to `Cloneable`.
+
+<h3 id="clone"><code>Clone</code></h3>
 
 ```rux
-pub func =(self: &var OsString, other: &OsString)
+pub func Clone(&self) -> OsString
 ```
 
-Deep-copies native units into independent storage from the same allocator.
+An independent copy in a block of its own from the same allocator.
+Borrows the source and leaves it unchanged. Terminates the program when the allocator refuses, since the copy
+it promises cannot be made.
+Runs in time proportional to the length.
 
-| Name    | Type        | Description                  |
-| ------- | ----------- | ---------------------------- |
-| `other` | `&OsString` | the value to compare against |
+**Returns**: a copy that owns its own units
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L148)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L310)
 
 ## Implements Display
 
@@ -166,10 +171,10 @@ Deep-copies native units into independent storage from the same allocator.
 
 ```rux
 pub func WriteDisplay(
-    self: &OsString,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The lossy rendering of the units this text owns.
@@ -182,7 +187,7 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L239)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L251)
 
 ## Implements Debug
 
@@ -192,10 +197,10 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 
 ```rux
 pub func WriteDebug(
-    self: &OsString,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The exact rendering of the units this text owns.
@@ -208,17 +213,17 @@ The failures [`OsStringView::WriteDebug`](/docs/api/path/os-string-view#write-de
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L264)
 
 ## Destructor
 
 ```rux
-func ~OsString(self: &var OsString)
+func ~OsString(&var self)
 ```
 
 Gives the block back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L220)
 
 ## Related
 

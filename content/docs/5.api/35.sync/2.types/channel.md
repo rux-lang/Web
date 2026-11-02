@@ -57,14 +57,14 @@ A channel with room for `capacity` values. Zero capacity is a program error, as 
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L41)
 
 **Methods**
 
 <h3 id="clone"><code>Clone</code></h3>
 
 ```rux
-pub func Clone(self: &Channel<T>) -> Channel<T>
+pub func Clone(&self) -> Channel<T>
 ```
 
 Another handle to the same channel.
@@ -76,7 +76,7 @@ Another handle to the same channel.
 <h3 id="send"><code>Send</code></h3>
 
 ```rux
-pub func Send(self: &Channel<T>, value: T) -> ! T
+pub func Send(&self, value: T) throws T
 ```
 
 Sends `value`, waiting while the channel is full.
@@ -87,12 +87,12 @@ Sends `value`, waiting while the channel is full.
 
 **Returns**: nothing, or fails with the value when the channel is closed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L69)
 
 <h3 id="try-send"><code>TrySend</code></h3>
 
 ```rux
-pub func TrySend(self: &Channel<T>, value: T) -> ! T
+pub func TrySend(&self, value: T) throws T
 ```
 
 Sends `value` if there is room, without waiting.
@@ -103,73 +103,73 @@ Sends `value` if there is room, without waiting.
 
 **Returns**: nothing, or fails with the value when the channel is full or closed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L99)
 
 <h3 id="receive"><code>Receive</code></h3>
 
 ```rux
-pub func Receive(self: &Channel<T>) -> T?
+pub func Receive(&self) -> T?
 ```
 
 Receives the oldest value, waiting while the channel is empty.
 
 **Returns**: the value, or none once the channel is closed and empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L100)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L117)
 
 <h3 id="try-receive"><code>TryReceive</code></h3>
 
 ```rux
-pub func TryReceive(self: &Channel<T>) -> T?
+pub func TryReceive(&self) -> T?
 ```
 
 Receives the oldest value if there is one, without waiting.
 
 **Returns**: the value, or none when the channel is empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L147)
 
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
-pub func Close(self: &Channel<T>)
+pub func Close(&self)
 ```
 
 Closes the channel: sends fail from now on, and receivers take what is left and then get none. Closing a
 closed channel does nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L166)
 
 <h3 id="is-closed"><code>IsClosed</code></h3>
 
 ```rux
-pub func IsClosed(self: &Channel<T>) -> bool
+pub func IsClosed(&self) -> bool
 ```
 
 Whether the channel was closed.
 
 **Returns**: true once [`Close`](/docs/api/sync/channel#close) was called on any handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L186)
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &Channel<T>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many values wait in the channel right now, which other threads may change at any moment.
 
 **Returns**: the number of values
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L201)
 
 **Destructor**
 
 <h3 id="channel-destructor"><code>~Channel</code></h3>
 
 ```rux
-func ~Channel(self: &var Channel<T>)
+func ~Channel(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L237)

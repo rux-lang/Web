@@ -64,10 +64,7 @@ they are the same key after this step. A shorter key is padded with zeros.
 <h3 id="update"><code>Update</code></h3>
 
 ```rux
-pub func Update<D: Digest>(
-    self: &var Hmac<D>,
-    bytes: char8[..]
-)
+pub func Update<D: Digest>(&var self, bytes: char8[..])
 ```
 
 Adds `bytes` to the message being authenticated.
@@ -80,15 +77,12 @@ Adds `bytes` to the message being authenticated.
 | ------- | ----------- | ------------------- |
 | `bytes` | `char8[..]` | the bytes to absorb |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L100)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L101)
 
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish<D: Digest>(
-    self: &var Hmac<D>,
-    into: var char8[..]
-)
+pub func Finish<D: Digest>(&var self, into: var char8[..])
 ```
 
 Writes the authentication tag into `into`.
@@ -101,12 +95,12 @@ Writes the authentication tag into `into`.
 | ------ | --------------- | ------------------- |
 | `into` | `var char8[..]` | receives the output |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L109)
 
 <h3 id="tag-length"><code>TagLength</code></h3>
 
 ```rux
-pub func TagLength<D: Digest>(self: &Hmac<D>) -> uint
+pub func TagLength<D: Digest>(&self) -> uint
 ```
 
 How many bytes [`Finish`](/docs/api/crypto/hmac#finish) writes: the underlying digest's length.
@@ -117,7 +111,7 @@ How many bytes [`Finish`](/docs/api/crypto/hmac#finish) writes: the underlying d
 
 **Returns**: how many bytes a tag occupies, which is the digest's length
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L120)
 
 ## Related
 
@@ -147,7 +141,7 @@ pub func HmacOf<D: Digest>(
 
 The HMAC of `message` under `key`, in one call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L132)
 
 **Type parameters**
 

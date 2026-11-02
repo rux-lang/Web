@@ -23,8 +23,8 @@ A hash being computed, one write at a time.
 
 ```rux
 pub interface Hasher {
-    func Write(self: &var Self, bytes: *byte, length: uint);
-    func Finish(self: &var Self) -> uint64;
+    func Write(&var self, bytes: *byte, length: uint);
+    func Finish(&var self) -> uint64;
 }
 ```
 
@@ -39,7 +39,7 @@ is given — no address, no counter, no clock.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-func Write(self: &var Self, bytes: *byte, length: uint)
+func Write(&var self, bytes: *byte, length: uint)
 ```
 
 Adds `length` bytes at `bytes` to what is being hashed.
@@ -58,7 +58,7 @@ Runs in time proportional to `length` and allocates nothing.
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-func Finish(self: &var Self) -> uint64
+func Finish(&var self) -> uint64
 ```
 
 The hash of everything written so far.
@@ -87,7 +87,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="hash-bytes"><code>HashBytes&lt;H&gt;</code></h3>
 
 ```rux
-pub func HashBytes<H: Hasher>(
+pub unsafe func HashBytes<H: Hasher>(
     hasher: &var H,
     bytes: *byte,
     length: uint
@@ -99,7 +99,7 @@ Writes `length` bytes and returns the hash, for a caller with nothing else to ad
 must be written out — `HashBytes<Fnv1a64>(hasher, data, length)` — because a generic argument is never
 inferred.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`bytes` must be readable for `length` bytes.
+Safety: `bytes` must be readable for `length` bytes.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Hasher.rux#L50)
 

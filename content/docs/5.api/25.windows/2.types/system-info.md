@@ -23,8 +23,16 @@ What [`GetSystemInfo`](/docs/api/windows/system-info#get-system-info) reports ab
 
 ```rux
 pub struct SystemInfo {
+    pub processorArchitecture: uint32;
     pub pageSize: uint32;
-    // private fields
+    pub minimumApplicationAddress: *var opaque;
+    pub maximumApplicationAddress: *var opaque;
+    pub activeProcessorMask: uint64;
+    pub numberOfProcessors: uint32;
+    pub processorType: uint32;
+    pub allocationGranularity: uint32;
+    pub processorLevel: uint16;
+    pub processorRevision: uint16;
 }
 ```
 
@@ -34,9 +42,18 @@ is 64 KiB rather than a page. A reservation therefore wastes address space that 
 
 ## Fields
 
-| Name       | Type     | Description                                                        |
-| ---------- | -------- | ------------------------------------------------------------------ |
-| `pageSize` | `uint32` | The size of a page, which is what memory protection is applied at. |
+| Name                        | Type          | Description                                                                                                                                                                                                                                                                                   |
+| --------------------------- | ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `processorArchitecture`     | `uint32`      | The processor architecture, such as [`PROCESSOR_ARCHITECTURE_AMD64`](/docs/api/windows/system-information#processor-architecture-amd64), in the low 16 bits. The field is a union in C whose upper 16 bits are reserved, so the architecture is `(processorArchitecture & 0xFFFF) as uint16`. |
+| `pageSize`                  | `uint32`      | The size of a page, which is what memory protection is applied at.                                                                                                                                                                                                                            |
+| `minimumApplicationAddress` | `*var opaque` | The lowest address an application may have.                                                                                                                                                                                                                                                   |
+| `maximumApplicationAddress` | `*var opaque` | The highest address an application may have.                                                                                                                                                                                                                                                  |
+| `activeProcessorMask`       | `uint64`      | A mask of the processors this process may run on.                                                                                                                                                                                                                                             |
+| `numberOfProcessors`        | `uint32`      | How many logical processors the machine has in the calling process's processor group.                                                                                                                                                                                                         |
+| `processorType`             | `uint32`      | The processor type, obsolete; read `processorArchitecture` instead.                                                                                                                                                                                                                           |
+| `allocationGranularity`     | `uint32`      | The granularity a reservation's base address is rounded to, which is not the page size.                                                                                                                                                                                                       |
+| `processorLevel`            | `uint16`      | The processor level, which depends on the architecture: the family on x86-64.                                                                                                                                                                                                                 |
+| `processorRevision`         | `uint16`      | The processor revision, which depends on the architecture: the model and stepping on x86-64.                                                                                                                                                                                                  |
 
 ## Related
 
@@ -51,7 +68,7 @@ Cannot fail and reports nothing: the structure is always filled.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsysteminfo](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsysteminfo)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L231)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L248)
 
 **Parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Deque.rux
-  line: 28
+  line: 31
 seo:
   title: "Deque<T> — Collections API"
   description: A double-ended queue over a circular buffer.
@@ -63,12 +63,12 @@ Cannot fail. Runs in constant time.
 pub func WithCapacity(
     allocator: Allocator,
     capacity: uint
-) -> Deque<T> ! CollectionError
+) -> Deque<T>
 ```
 
 An empty deque with room for `capacity` elements already taken.
 `allocator` is borrowed for the call and kept. The capacity actually taken is rounded up to a power of two,
-since that is what the ring's masking needs.
+since that is what the ring's masking needs. Terminates the program when the storage cannot be had.
 
 | Name        | Type        | Description                        |
 | ----------- | ----------- | ---------------------------------- |
@@ -85,12 +85,12 @@ since that is what the ring's masking needs.
 pub func FromSlice(
     allocator: Allocator,
     items: T[..]
-) -> Deque<T> ! CollectionError
+) -> Deque<T>
 ```
 
 A deque holding a copy of every element of `items`, front to back.
 `allocator` is borrowed for the call and kept; `items` is borrowed and read. Copies its elements, so a move-only
-element type is built with [`PushBack`](/docs/api/collections/deque#push-back) instead.
+element type is built with [`PushBack`](/docs/api/collections/deque#push-back) instead. Terminates the program when the storage cannot be had.
 
 | Name        | Type        | Description                  |
 | ----------- | ----------- | ---------------------------- |
@@ -106,20 +106,23 @@ element type is built with [`PushBack`](/docs/api/collections/deque#push-back) i
 <h3 id="clone"><code>Clone</code></h3>
 
 ```rux
-pub func Clone(self: &Deque<T>) -> Deque<T> ! CollectionError
+pub func Clone(&self) -> Deque<T>
 ```
 
 An independent deque holding a copy of every element of this one, in order.
 `self` is borrowed and left alone. The copy starts contiguous whatever this one's elements were doing.
+Elements are copied with `=`, so the element type must be plain data that `Core::Copyable` describes; an
+owning element type is rejected while compiling, at the copy. Terminates the program when the storage cannot
+be had.
 
 **Returns**: an independent copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L103)
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &Deque<T>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many elements the deque holds.
@@ -127,12 +130,12 @@ How many elements the deque holds.
 
 **Returns**: how many elements it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L113)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L120)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
 ```rux
-pub func Capacity(self: &Deque<T>) -> uint
+pub func Capacity(&self) -> uint
 ```
 
 How many elements the ring could hold without growing.
@@ -140,12 +143,12 @@ How many elements the ring could hold without growing.
 
 **Returns**: how many elements fit before the next growth
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L128)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &Deque<T>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the deque holds no elements.
@@ -153,103 +156,85 @@ Whether the deque holds no elements.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L136)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(
-    self: &var Deque<T>,
-    additional: uint
-) -> ! CollectionError
+pub func Reserve(&var self, additional: uint)
 ```
 
 Makes room for `additional` more elements on top of those already present.
-`self` is borrowed mutably; the length does not change. A failure leaves the deque exactly as it was.
+`self` is borrowed mutably; the length does not change. Terminates the program when the storage cannot be
+had.
 
 | Name         | Type   | Description                             |
 | ------------ | ------ | --------------------------------------- |
 | `additional` | `uint` | how many more elements to make room for |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L184)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L192)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
 ```rux
-pub func ShrinkToFit(self: &var Deque<T>) -> ! CollectionError
+pub func ShrinkToFit(&var self)
 ```
 
 Releases the capacity the length does not need.
 `self` is borrowed mutably. The capacity stays a power of two, so this gives back what rounding leaves spare
-rather than everything above the length. An empty deque gives up its storage entirely.
-A failure leaves the deque usable at its current capacity: failing to hand memory back is never a reason to
-stop working.
+rather than everything above the length. An empty deque gives up its storage entirely. Terminates the program
+when the smaller block cannot be had.
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L196)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L201)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var Deque<T>)
+pub func Clear(&var self)
 ```
 
 Destroys every element, keeping the storage.
 `self` is borrowed mutably. The front returns to physical zero, so the next run of additions does not wrap.
 Runs in time proportional to the length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L224)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L230)
 
 <h3 id="push-front"><code>PushFront</code></h3>
 
 ```rux
-pub func PushFront(
-    self: &var Deque<T>,
-    value: T
-) -> ! CollectionError
+pub func PushFront(&var self, value: T)
 ```
 
 Adds an element at the front, growing the ring when it is full.
-`self` is borrowed mutably; `value` is moved in. A failure leaves the deque exactly as it was and the value
-with the caller.
+`self` is borrowed mutably; `value` is moved in. Terminates the program when the ring cannot grow.
 Amortized constant time.
 
 | Name    | Type | Description         |
 | ------- | ---- | ------------------- |
 | `value` | `T`  | the value to act on |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L256)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L262)
 
 <h3 id="push-back"><code>PushBack</code></h3>
 
 ```rux
-pub func PushBack(
-    self: &var Deque<T>,
-    value: T
-) -> ! CollectionError
+pub func PushBack(&var self, value: T)
 ```
 
 Adds an element at the back, growing the ring when it is full.
-`self` is borrowed mutably; `value` is moved in. A failure leaves the deque exactly as it was.
+`self` is borrowed mutably; `value` is moved in. Terminates the program when the ring cannot grow.
 Amortized constant time.
 
 | Name    | Type | Description         |
 | ------- | ---- | ------------------- |
 | `value` | `T`  | the value to act on |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L273)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L278)
 
 <h3 id="pop-front"><code>PopFront</code></h3>
 
 ```rux
-pub func PopFront(self: &var Deque<T>) -> T?
+pub func PopFront(&var self) -> T?
 ```
 
 Takes the front element out.
@@ -259,12 +244,12 @@ The storage is kept, so a deque emptied this way costs nothing to refill.
 
 **Returns**: the element taken from the front, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L288)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L293)
 
 <h3 id="pop-back"><code>PopBack</code></h3>
 
 ```rux
-pub func PopBack(self: &var Deque<T>) -> T?
+pub func PopBack(&var self) -> T?
 ```
 
 Takes the back element out.
@@ -273,39 +258,39 @@ deque.
 
 **Returns**: the element taken from the back, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L301)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L308)
 
 <h3 id="front"><code>Front</code></h3>
 
 ```rux
-pub func Front(self: &Deque<T>) -> (*T)?
+pub func Front(&self) -> &T?
 ```
 
-A pointer to the front element, or `none` for an empty deque.
-`self` is borrowed; the pointer borrows the element where it sits.
-The pointer is valid until the deque grows, shrinks, or is made contiguous.
+The front element, borrowed where it sits, or `none` for an empty deque.
+`self` stays borrowed while the reference is in use, so the deque cannot grow, shrink, or be made contiguous
+under it.
 
-**Returns**: the address of the first element, or `none` when empty
+**Returns**: a reference to the first element, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L312)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L321)
 
 <h3 id="back"><code>Back</code></h3>
 
 ```rux
-pub func Back(self: &Deque<T>) -> (*T)?
+pub func Back(&self) -> &T?
 ```
 
-A pointer to the back element, or `none` for an empty deque.
-`self` is borrowed; the pointer borrows the element where it sits.
+The back element, borrowed where it sits, or `none` for an empty deque.
+`self` stays borrowed while the reference is in use.
 
-**Returns**: the address of the last element, or `none` when empty
+**Returns**: a reference to the last element, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L320)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L329)
 
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &Deque<T>, index: uint) -> T?
+pub func Get(&self, index: uint) -> T?
 ```
 
 The element at `index`, counting from the front, or `none` when there is no such index.
@@ -318,53 +303,96 @@ it happens to sit physically.
 
 **Returns**: a copy of the element, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L331)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L340)
 
-<h3 id="reference"><code>Reference</code></h3>
+<h3 id="at"><code>At</code></h3>
 
 ```rux
-pub func Reference(self: &Deque<T>, index: uint) -> (*T)?
+pub func At(&self, index: uint) -> &T?
 ```
 
-A pointer to the element at `index`, or `none` when there is no such index.
-`self` is borrowed; the pointer borrows the element where it sits.
-The pointer is valid until the deque grows, shrinks, or is made contiguous.
+The element at `index`, counting from the front, borrowed where it sits, or `none` when there is no such
+index.
+`self` stays borrowed while the reference is in use.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
 
-**Returns**: the address of the element, or `none` when the index is out of range
+**Returns**: a reference to the element, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L342)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L352)
+
+<h3 id="at-mutable"><code>AtMutable</code></h3>
+
+```rux
+pub func AtMutable(&var self, index: uint) -> &var T?
+```
+
+The element at `index`, counting from the front, borrowed to be written where it sits, or `none` when there
+is no such index.
+`self` stays borrowed exclusively while the reference is in use.
+
+| Name    | Type   | Description                   |
+| ------- | ------ | ----------------------------- |
+| `index` | `uint` | which one, counting from zero |
+
+**Returns**: a writable reference to the element, or `none` when the index is out of range
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L364)
 
 <h3 id="set"><code>Set</code></h3>
 
 ```rux
 pub func Set(
-    self: &var Deque<T>,
+    &var self,
     index: uint,
     value: T
-) -> ! CollectionError
+) throws CollectionError
 ```
 
-Replaces the element at `index` with `value`.
-`self` is borrowed mutably. Reports `IndexOutOfRange` and changes nothing when there is no such index.
-The old element is overwritten rather than destroyed. For an element that owns something, take it out first.
+Replaces the element at `index` with `value`, destroying the element that was there.
+`self` is borrowed mutably; `value` is moved in. The old element is destroyed once the new one is in place,
+so an element that owns something is released rather than leaked; [`Replace`](/docs/api/collections/deque#replace) hands it back instead. Reports
+`IndexOutOfRange` and changes nothing when there is no such index, and `value` is then destroyed here.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
-| `value` | `T`    | the value to act on           |
+| `value` | `T`    | the element to store          |
 
 **Returns**: nothing when the element was written, or `IndexOutOfRange`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L354)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L378)
+
+<h3 id="replace"><code>Replace</code></h3>
+
+```rux
+pub func Replace(
+    &var self,
+    index: uint,
+    value: T
+) -> T throws CollectionError
+```
+
+Replaces the element at `index` with `value` and hands back the element that was there.
+`self` is borrowed mutably; `value` is moved in and the old element is moved out to the caller rather than
+destroyed. Reports `IndexOutOfRange` and changes nothing when there is no such index, and `value` is then
+destroyed here.
+
+| Name    | Type   | Description                   |
+| ------- | ------ | ----------------------------- |
+| `index` | `uint` | which one, counting from zero |
+| `value` | `T`    | the element to store          |
+
+**Returns**: the element that was at `index`, or `IndexOutOfRange`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L399)
 
 <h3 id="is-contiguous"><code>IsContiguous</code></h3>
 
 ```rux
-pub func IsContiguous(self: &Deque<T>) -> bool
+pub func IsContiguous(&self) -> bool
 ```
 
 Whether the elements occupy one unbroken run.
@@ -373,35 +401,28 @@ ring. This is what says whether [`AsSlice`](/docs/api/collections/deque#as-slice
 
 **Returns**: whether the elements sit in one run, which is what [`AsSlice`](/docs/api/collections/deque#as-slice) needs
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L365)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L416)
 
 <h3 id="as-slices"><code>AsSlices</code></h3>
 
 ```rux
-pub func AsSlices(
-    self: &Deque<T>,
-    front: *var T[..],
-    back: *var T[..]
-)
+pub func AsSlices(&self) -> (T[..], T[..])
 ```
 
 The elements as at most two runs, front run first, without moving anything.
-`self` is borrowed; `front` and `back` receive the two runs and either may be null. The second run is empty
-whenever the storage is already contiguous, so joining the two always gives the elements in order.
+`self` is borrowed. The second run is empty whenever the storage is already contiguous, so joining the two
+always gives the elements in order.
 This is the view that costs nothing. [`AsSlice`](/docs/api/collections/deque#as-slice) gives one run instead, and pays a rotation for it.
 Both views are valid until the deque grows, shrinks, or is made contiguous.
 
-| Name    | Type         | Description                                                        |
-| ------- | ------------ | ------------------------------------------------------------------ |
-| `front` | `*var T[..]` | receives the first run of elements                                 |
-| `back`  | `*var T[..]` | receives the second, which is empty when the storage is contiguous |
+**Returns**: the first run of elements and the second, which is empty when the storage is contiguous
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L378)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L428)
 
 <h3 id="make-contiguous"><code>MakeContiguous</code></h3>
 
 ```rux
-pub func MakeContiguous(self: &var Deque<T>)
+pub func MakeContiguous(&var self)
 ```
 
 Moves the elements so they occupy one unbroken run starting at physical zero.
@@ -410,12 +431,12 @@ element to zero and preserves cyclic order for every slot at once, so no element
 individually.
 Every pointer and view into the deque is invalidated, and so is any physical index a caller recorded.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L413)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L450)
 
 <h3 id="as-slice"><code>AsSlice</code></h3>
 
 ```rux
-pub func AsSlice(self: &var Deque<T>) -> T[..]
+pub func AsSlice(&var self) -> T[..]
 ```
 
 Every element as one borrowed read-only view, moving them together first.
@@ -425,12 +446,12 @@ The view is valid until the deque grows, shrinks, or is made contiguous again.
 
 **Returns**: the elements, borrowed; empty unless the storage is contiguous
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L425)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L464)
 
 <h3 id="as-mutable-slice"><code>AsMutableSlice</code></h3>
 
 ```rux
-pub func AsMutableSlice(self: &var Deque<T>) -> var T[..]
+pub func AsMutableSlice(&var self) -> var T[..]
 ```
 
 Every element as one borrowed writable view, moving them together first.
@@ -439,12 +460,12 @@ The view is valid until the deque grows, shrinks, or is made contiguous again.
 
 **Returns**: the elements borrowed for writing; empty unless the storage is contiguous
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L435)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L476)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &var Deque<T>) -> ValueIterator<T>
+pub func Iterate(&var self) -> ValueIterator<T>
 ```
 
 An iterator over the elements, front to back, by copy.
@@ -454,12 +475,12 @@ The deque must not grow or shrink while the iterator is alive.
 
 **Returns**: a cursor yielding copies of the elements, front to back
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L446)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L489)
 
 <h3 id="references"><code>References</code></h3>
 
 ```rux
-pub func References(self: &var Deque<T>) -> ReferenceIterator<T>
+pub func References(&var self) -> ReferenceIterator<T>
 ```
 
 An iterator over pointers to the elements, front to back.
@@ -467,19 +488,19 @@ An iterator over pointers to the elements, front to back.
 
 **Returns**: a cursor yielding the elements' addresses, front to back
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L454)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L497)
 
 ## Destructor
 
 ```rux
-func ~Deque(self: &var Deque<T>)
+func ~Deque(&var self)
 ```
 
 Destroys every element and releases the storage.
 Runs when the deque's life ends. The elements go first and the block second, since an element destroyed after
 its storage was released would be read from freed memory.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L240)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L248)
 
 ## Related
 
@@ -492,7 +513,7 @@ pub const MinimumDequeCapacity: uint = 4;
 The capacity a deque takes when it first has to allocate.
 Four slots, and a power of two like every capacity after it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Deque.rux#L25)
 
 <h3 id="write-deque-debug"><code>WriteDequeDebug&lt;T&gt;</code></h3>
 
@@ -501,7 +522,7 @@ pub func WriteDequeDebug<T: Debug>(
     writer: &var TextWriter,
     value: &Deque<T>,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a borrowed deque as `[front, ..., back]`, front element first.
@@ -513,7 +534,7 @@ making the elements contiguous first would be a diagnostic quietly moving a call
 `spec` describes the elements, exactly as for a vector.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L99)
 
 **Type parameters**
 

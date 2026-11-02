@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Scalar.rux
-  line: 164
+  line: 170
 seo:
   title: "Scalars — Toml API"
   description: "Reading TOML integers, floats and date-times from their source text."
@@ -24,7 +24,7 @@ Reading TOML integers, floats and date-times from their source text.
 <h2 id="toml-parse-integer"><code>TomlParseInteger</code></h2>
 
 ```rux
-pub func TomlParseInteger(text: char8[..]) -> int64 ! TomlScalarError
+pub func TomlParseInteger(text: char8[..]) -> int64 throws TomlScalarError
 ```
 
 Reads an integer, in any of the four bases TOML writes.
@@ -35,7 +35,7 @@ reason — the grammar does not offer one, so accepting it would be inventing a 
 `OutOfRange` at the start when the digits are a number `int64` cannot hold. Every offset is into `text` as
 written, underscores included.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L164)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L170)
 
 **Parameters**
 
@@ -48,7 +48,7 @@ written, underscores included.
 <h2 id="toml-parse-float"><code>TomlParseFloat</code></h2>
 
 ```rux
-pub func TomlParseFloat(text: char8[..]) -> float64 ! TomlScalarError
+pub func TomlParseFloat(text: char8[..]) -> float64 throws TomlScalarError
 ```
 
 Reads a float, including the infinities and NaN that TOML can spell and JSON cannot.
@@ -58,7 +58,7 @@ accept and some do not, so a document containing one means different things in d
 `OutOfRange` at the start when the digits are a number `float64` cannot hold. Every offset is into `text` as
 written, underscores included.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L244)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L255)
 
 **Parameters**
 
@@ -83,7 +83,7 @@ Which of the four date-time shapes a token turned out to be.
 There is no case for "not a date-time": text that is none of the four is a failure with a position, not a
 fifth shape a caller has to remember to check for before reading the fields beside it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L359)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L381)
 
 **Cases**
 
@@ -110,7 +110,7 @@ The parts that the shape does not carry are present and meaningless — a `DateO
 because the fields have to hold something — so `shape` is what decides which of them to read. That is why the
 shape travels with the value rather than being returned beside it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L375)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L397)
 
 **Fields**
 
@@ -124,7 +124,7 @@ shape travels with the value rather than being returned beside it.
 <h2 id="toml-parse-date-time"><code>TomlParseDateTime</code></h2>
 
 ```rux
-pub func TomlParseDateTime(text: char8[..]) -> TomlDateTime ! TomlScalarError
+pub func TomlParseDateTime(text: char8[..]) -> TomlDateTime throws TomlScalarError
 ```
 
 Reads any of TOML's four date-time forms, reporting which one it was.
@@ -136,7 +136,7 @@ did not.
 field the calendar rejects, or the end of the text when it stops early. The calendar's own refusals arrive
 here too: the thirty-first of February is four correct digit pairs and not a date.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L397)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L419)
 
 **Parameters**
 

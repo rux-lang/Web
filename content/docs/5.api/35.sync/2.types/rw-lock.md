@@ -57,26 +57,26 @@ A new lock guarding `value`. Running out of memory for it is a program error.
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L48)
 
 **Methods**
 
 <h3 id="clone"><code>Clone</code></h3>
 
 ```rux
-pub func Clone(self: &RwLock<T>) -> RwLock<T>
+pub func Clone(&self) -> RwLock<T>
 ```
 
 Another handle to the same value.
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L57)
 
 <h3 id="read"><code>Read</code></h3>
 
 ```rux
-pub func Read(self: &RwLock<T>) -> ReadGuard<T>
+pub func Read(&self) -> ReadGuard<T>
 ```
 
 Takes a shared hold, waiting while a writer holds the lock.
@@ -88,24 +88,24 @@ Takes a shared hold, waiting while a writer holds the lock.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(self: &RwLock<T>) -> WriteGuard<T>
+pub func Write(&self) -> WriteGuard<T>
 ```
 
 Takes the exclusive hold, waiting while any reader or writer holds the lock.
 
 **Returns**: the write guard
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L96)
 
 **Destructor**
 
 <h3 id="rw-lock-destructor"><code>~RwLock</code></h3>
 
 ```rux
-func ~RwLock(self: &var RwLock<T>)
+func ~RwLock(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L119)
 
 <h2 id="read-guard"><code>ReadGuard&lt;T&gt;</code></h2>
 
@@ -130,24 +130,25 @@ A shared hold on an [`RwLock<T>`](/docs/api/sync/rw-lock#rw-lock): the value may
 <h3 id="read-guard-get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &ReadGuard<T>) -> *T
+pub func Get(&self) -> &T
 ```
 
-The guarded value, to read while the guard holds the lock.
+The guarded value, borrowed for reading while the guard holds the lock.
+The guard stays borrowed while the reference is in use, so it cannot be dropped under it.
 
-**Returns**: the value's address
+**Returns**: a reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L135)
 
 **Destructor**
 
 <h3 id="read-guard-destructor"><code>~ReadGuard</code></h3>
 
 ```rux
-func ~ReadGuard(self: &var ReadGuard<T>)
+func ~ReadGuard(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L140)
 
 <h2 id="write-guard"><code>WriteGuard&lt;T&gt;</code></h2>
 
@@ -172,21 +173,35 @@ The exclusive hold on an [`RwLock<T>`](/docs/api/sync/rw-lock#rw-lock): the valu
 <h3 id="write-guard-get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &WriteGuard<T>) -> *var T
+pub func Get(&self) -> &T
 ```
 
-The guarded value, which this thread alone may read and write while the guard holds the lock.
+The guarded value, borrowed for reading while the guard holds the lock.
+The guard stays borrowed while the reference is in use, so it cannot be dropped under it.
 
-**Returns**: the value's address
+**Returns**: a reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L133)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L163)
+
+<h3 id="write-guard-get-mutable"><code>GetMutable</code></h3>
+
+```rux
+pub func GetMutable(&var self) -> &var T
+```
+
+The guarded value, borrowed for writing, which this thread alone may do while the guard holds the lock.
+The guard stays borrowed exclusively while the reference is in use.
+
+**Returns**: a writable reference to the value
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L172)
 
 **Destructor**
 
 <h3 id="write-guard-destructor"><code>~WriteGuard</code></h3>
 
 ```rux
-func ~WriteGuard(self: &var WriteGuard<T>)
+func ~WriteGuard(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L177)

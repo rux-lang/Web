@@ -38,16 +38,16 @@ outlive this value — which is what a rename into place is built on.
 | ------ | ------ | -------------- |
 | `file` | `File` | The open file. |
 
-## Associated functions
+## Constructors
 
-<h3 id="create"><code>Create</code></h3>
+<h3 id="create"><code>TemporaryFile</code></h3>
 
 ```rux
-pub func Create(
+pub func TemporaryFile(
     allocator: Allocator,
     directory: Path,
     prefix: char8[..]
-) -> TemporaryFile ! IoError
+) -> TemporaryFile throws IoError
 ```
 
 Creates a new temporary file in `directory`, named from `prefix` and sixteen hex digits of entropy.
@@ -62,29 +62,29 @@ collision, and the next name is tried.
 
 **Returns**: the created file, which is removed when closed unless kept
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L105)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L102)
 
 ## Methods
 
 <h3 id="path"><code>AsPath</code></h3>
 
 ```rux
-pub func AsPath(self: &TemporaryFile) -> Path
+pub func AsPath(&self) -> Path
 ```
 
 The file's path, for handing to something that needs a name.
 
 **Returns**: the path it was created at
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L131)
 
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
 pub func Close(
-    self: &var TemporaryFile,
+    &var self,
     allocator: Allocator
-) -> ! IoError
+) throws IoError
 ```
 
 Closes the file and deletes it, reporting the first thing that went wrong.
@@ -95,24 +95,24 @@ Closes the file and deletes it, reporting the first thing that went wrong.
 
 **Returns**: success when it was removed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L139)
 
 <h3 id="keep"><code>Keep</code></h3>
 
 ```rux
-pub func Keep(self: &var TemporaryFile) -> ! IoError
+pub func Keep(&var self) throws IoError
 ```
 
 Closes the file and leaves it where it is, giving up the name.
 
 **Returns**: success when it will be left in place rather than removed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L155)
 
 ## Destructor
 
 ```rux
-func ~TemporaryFile(self: &var TemporaryFile)
+func ~TemporaryFile(&var self)
 ```
 
 Closes and deletes with the outcome discarded: the safety net, not the contract.
@@ -120,7 +120,7 @@ A destructor has nowhere to report a failed deletion, so a caller who needs to k
 this guarantees is that a temporary file is never left behind by an early return or a failure path, which
 is the reason the type exists.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L169)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L165)
 
 ## Related
 
@@ -139,7 +139,7 @@ honest response to an entropy source that has stopped being one.
 <h3 id="temporary-directory"><code>TemporaryDirectory</code></h3>
 
 ```rux
-pub func TemporaryDirectory(allocator: Allocator) -> PathBuffer ! IoError
+pub func TemporaryDirectory(allocator: Allocator) -> PathBuffer throws IoError
 ```
 
 The directory the system sets aside for temporary files.

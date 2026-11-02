@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Error.rux
-  line: 5
+  line: 7
 seo:
   title: "Errors — Regex API"
   description: "Why a pattern was refused, and where in it."
@@ -38,14 +38,13 @@ pub enum RegexErrorKind: uint8 {
     DuplicateGroupName = 11,
     Unsupported = 12,
     InvalidText = 13,
-    TooLarge = 14,
-    OutOfMemory = 15
+    TooLarge = 14
 }
 ```
 
 What went wrong. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Error.rux#L5)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Error.rux#L7)
 
 **Cases**
 
@@ -65,7 +64,6 @@ What went wrong. `Copy`.
 | `Unsupported`        | `12`  | The pattern uses lookaround, a backreference or something else that cannot be matched in linear time.                             |
 | `InvalidText`        | `13`  | The pattern is not UTF-8 text.                                                                                                    |
 | `TooLarge`           | `14`  | The compiled pattern would be too large, usually from counted repetitions inside each other, or its groups are nested too deeply. |
-| `OutOfMemory`        | `15`  | The allocator could not supply the storage.                                                                                       |
 
 <h2 id="regex-error"><code>RegexError</code></h2>
 
@@ -82,10 +80,10 @@ Why a pattern could not be compiled, and where. `Copy`.
 
 **Fields**
 
-| Name     | Type             | Description                                                                                                              |
-| -------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `kind`   | `RegexErrorKind` | What went wrong.                                                                                                         |
-| `offset` | `uint`           | The byte offset in the pattern where it went wrong; zero for failures that have no place, such as running out of memory. |
+| Name     | Type             | Description                                         |
+| -------- | ---------------- | --------------------------------------------------- |
+| `kind`   | `RegexErrorKind` | What went wrong.                                    |
+| `offset` | `uint`           | The byte offset in the pattern where it went wrong. |
 
 **Associated functions**
 
@@ -107,16 +105,4 @@ An error of `kind` at `offset`.
 
 **Returns**: the error
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Error.rux#L55)
-
-<h3 id="out-of-memory"><code>OutOfMemory</code></h3>
-
-```rux
-pub func OutOfMemory() -> RegexError
-```
-
-The error for storage the allocator could not supply.
-
-**Returns**: the error
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Error.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Regex/Src/Error.rux#L54)

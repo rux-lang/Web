@@ -22,7 +22,7 @@ seo:
 Fills up to `length` bytes of `buffer` with unpredictable bytes.
 
 ```rux
-pub func GetRandom(
+pub unsafe func GetRandom(
     buffer: *var opaque,
     length: uint,
     flags: uint32
@@ -35,7 +35,7 @@ A short count is ordinary rather than a failure: a request over 256 bytes can be
 caller needing the whole buffer must call again for the rest. Without [`RandomNonBlocking`](/docs/api/linux/get-random#random-non-blocking) the first call in the
 life of a system may wait for the pool to be seeded; after that it does not wait at all.
 Runs in time proportional to `length` and allocates nothing.
-`buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or the
+Safety: `buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or the
 unwritten tail stays whatever it held — which for a key is the worst possible outcome.
 
 ## Parameters

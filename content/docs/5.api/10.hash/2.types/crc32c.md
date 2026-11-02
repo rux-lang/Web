@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Crc.rux
-  line: 183
+  line: 141
 seo:
   title: "Crc32c — Hash API"
   description: "The CRC-32C of a message, computed a byte at a time."
@@ -44,26 +44,26 @@ Constructs a checksum with nothing written into it yet.
 
 **Returns**: a hasher with nothing written to it yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L192)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L150)
 
 ## Methods
 
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var Crc32c)
+pub func Reset(&var self)
 ```
 
 Puts the checksum back to where [`Crc32c()`](/docs/api/hash/crc32c) leaves one.
 `self` is borrowed mutably. Everything written so far is forgotten.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L200)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L158)
 
 <h3 id="value"><code>Value</code></h3>
 
 ```rux
-pub func Value(self: &Crc32c) -> uint32
+pub func Value(&self) -> uint32
 ```
 
 The checksum of everything written so far.
@@ -72,7 +72,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the checksum of everything written so far
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L209)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L167)
 
 ## Implements Hasher
 
@@ -81,11 +81,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    self: &var Crc32c,
-    bytes: *byte,
-    length: uint
-)
+pub func Write(&var self, bytes: *byte, length: uint)
 ```
 
 Adds `length` bytes at `bytes` to the checksum.
@@ -99,12 +95,12 @@ Runs in time proportional to `length` and allocates nothing.
 | `bytes`  | `*byte` | the bytes to absorb                  |
 | `length` | `uint`  | how many bytes; zero absorbs nothing |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L223)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L181)
 
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var Crc32c) -> uint64
+pub func Finish(&var self) -> uint64
 ```
 
 The checksum of everything written so far, widened to 64 bits.
@@ -113,7 +109,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the hash of everything written since the last reset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L238)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L198)
 
 ## Related
 
@@ -130,26 +126,30 @@ The reflected Castagnoli generator polynomial, which is what iSCSI, ext4, Btrfs 
 <h3 id="crc32c-table"><code>Crc32cTable</code></h3>
 
 ```rux
-pub const Crc32cTable: uint32[N] = …;
+pub const Crc32cTable: uint32[N] = DivisionTable(Crc32cPolynomial);
 ```
 
 One byte of division by [`Crc32cPolynomial`](/docs/api/hash/crc32c#crc32c-polynomial), precomputed for every possible byte.
+The compiler computes the table from the polynomial.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L45)
 
 <h3 id="crc32c-of"><code>Crc32cOf</code></h3>
 
 ```rux
-pub func Crc32cOf(bytes: *byte, length: uint) -> uint32
+pub unsafe func Crc32cOf(
+    bytes: *byte,
+    length: uint
+) -> uint32
 ```
 
 The CRC-32C of `length` bytes at `bytes`.
 `bytes` is borrowed and read; `length` is read by value. A zero length gives zero, and is the one case in which
 `bytes` may be null.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`bytes` must be readable for `length` bytes.
+Safety: `bytes` must be readable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L267)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Crc.rux#L227)
 
 **Parameters**
 

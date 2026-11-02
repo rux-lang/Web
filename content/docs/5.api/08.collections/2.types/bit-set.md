@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/BitSet.rux
-  line: 11
+  line: 12
 seo:
   title: "BitSet — Collections API"
   description: A growable set of bits.
@@ -45,29 +45,26 @@ An empty set that spans no bits and has allocated nothing.
 
 **Returns**: the set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L24)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &BitSet) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many bits the set spans, set or not.
 
 **Returns**: the length in bits
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L31)
 
 <h3 id="resize"><code>Resize</code></h3>
 
 ```rux
-pub func Resize(
-    self: &var BitSet,
-    length: uint
-) -> ! CollectionError
+pub func Resize(&var self, length: uint)
 ```
 
 Spans `length` bits: new bits are unset, and bits past a shorter length are dropped.
@@ -76,14 +73,12 @@ Spans `length` bits: new bits are unset, and bits past a shorter length are drop
 | -------- | ------ | ------------------ |
 | `length` | `uint` | the length in bits |
 
-**Returns**: nothing, or why there was no room
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L38)
 
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &BitSet, index: uint) -> bool
+pub func Get(&self, index: uint) -> bool
 ```
 
 Whether bit `index` is set; false for one past the length.
@@ -94,15 +89,12 @@ Whether bit `index` is set; false for one past the length.
 
 **Returns**: whether it is set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L54)
 
 <h3 id="set"><code>Set</code></h3>
 
 ```rux
-pub func Set(
-    self: &var BitSet,
-    index: uint
-) -> ! CollectionError
+pub func Set(&var self, index: uint)
 ```
 
 Sets bit `index`, growing the set to span it.
@@ -111,14 +103,12 @@ Sets bit `index`, growing the set to span it.
 | ------- | ------ | ----------- |
 | `index` | `uint` | the bit     |
 
-**Returns**: nothing, or why there was no room to grow
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L62)
 
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var BitSet, index: uint)
+pub func Reset(&var self, index: uint)
 ```
 
 Unsets bit `index`. A bit past the length is already unset.
@@ -127,15 +117,12 @@ Unsets bit `index`. A bit past the length is already unset.
 | ------- | ------ | ----------- |
 | `index` | `uint` | the bit     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L71)
 
 <h3 id="toggle"><code>Toggle</code></h3>
 
 ```rux
-pub func Toggle(
-    self: &var BitSet,
-    index: uint
-) -> ! CollectionError
+pub func Toggle(&var self, index: uint)
 ```
 
 Flips bit `index`, growing the set to span it.
@@ -144,48 +131,46 @@ Flips bit `index`, growing the set to span it.
 | ------- | ------ | ----------- |
 | `index` | `uint` | the bit     |
 
-**Returns**: nothing, or why there was no room to grow
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L80)
 
 <h3 id="count"><code>Count</code></h3>
 
 ```rux
-pub func Count(self: &BitSet) -> uint
+pub func Count(&self) -> uint
 ```
 
 How many bits are set.
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L89)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &BitSet) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether no bit is set.
 
 **Returns**: whether the set is empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L98)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var BitSet)
+pub func Clear(&var self)
 ```
 
 Unsets every bit, keeping the length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L107)
 
 <h3 id="next-set"><code>NextSet</code></h3>
 
 ```rux
-pub func NextSet(self: &BitSet, from: uint) -> uint?
+pub func NextSet(&self, from: uint) -> uint?
 ```
 
 The lowest set bit at or after `from`, which walks the set in order.
@@ -196,15 +181,12 @@ The lowest set bit at or after `from`, which walks the set in order.
 
 **Returns**: the bit, or `none` when no bit there or after is set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L120)
 
 <h3 id="union-with"><code>UnionWith</code></h3>
 
 ```rux
-pub func UnionWith(
-    self: &var BitSet,
-    other: &BitSet
-) -> ! CollectionError
+pub func UnionWith(&var self, other: &BitSet)
 ```
 
 Sets every bit that is set in `other`, growing to span it.
@@ -213,14 +195,12 @@ Sets every bit that is set in `other`, growing to span it.
 | ------- | --------- | ------------- |
 | `other` | `&BitSet` | the other set |
 
-**Returns**: nothing, or why there was no room to grow
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L141)
 
 <h3 id="intersect-with"><code>IntersectWith</code></h3>
 
 ```rux
-pub func IntersectWith(self: &var BitSet, other: &BitSet)
+pub func IntersectWith(&var self, other: &BitSet)
 ```
 
 Unsets every bit that is not set in `other`.
@@ -229,12 +209,12 @@ Unsets every bit that is not set in `other`.
 | ------- | --------- | ------------- |
 | `other` | `&BitSet` | the other set |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L160)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L155)
 
 <h3 id="difference-with"><code>DifferenceWith</code></h3>
 
 ```rux
-pub func DifferenceWith(self: &var BitSet, other: &BitSet)
+pub func DifferenceWith(&var self, other: &BitSet)
 ```
 
 Unsets every bit that is set in `other`.
@@ -243,12 +223,12 @@ Unsets every bit that is set in `other`.
 | ------- | --------- | ------------- |
 | `other` | `&BitSet` | the other set |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L168)
 
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &BitSet, other: &BitSet) -> bool
+pub func Equals(&self, other: &BitSet) -> bool
 ```
 
 Whether the same bits are set in both, whatever their lengths.
@@ -259,4 +239,4 @@ Whether the same bits are set in both, whatever their lengths.
 
 **Returns**: whether they hold the same members
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/BitSet.rux#L182)

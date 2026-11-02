@@ -65,29 +65,26 @@ pub struct ArgumentIterator {
 A walk over the process's arguments in order, the program first.
 `Copy`; each copy walks on its own from where it was copied. Holds only a position, so it allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L35)
 
 **Methods**
 
 <h3 id="argument-iterator-iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &ArgumentIterator) -> ArgumentIterator
+pub func Iterate(&self) -> ArgumentIterator
 ```
 
 The walk itself, so that `for argument in Arguments()` reads every argument.
 
 **Returns**: a copy of this walk from its current position
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L52)
 
 <h3 id="argument-iterator-skip"><code>Skip</code></h3>
 
 ```rux
-pub func Skip(
-    self: &var ArgumentIterator,
-    count: uint
-) -> ArgumentIterator
+pub func Skip(&var self, count: uint) -> ArgumentIterator
 ```
 
 Leaves out the next `count` arguments, as `Skip(1)` leaves out the program.
@@ -99,7 +96,7 @@ Advances the walk and returns it, so the call can be chained in a `for` header. 
 
 **Returns**: this walk, advanced
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L61)
 
 **Implements Iterator**
 
@@ -108,14 +105,14 @@ Advances the walk and returns it, so the call can be chained in a `for` header. 
 <h3 id="argument-iterator-next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var ArgumentIterator) -> OsStringView?
+pub func Next(&var self) -> OsStringView?
 ```
 
 The next argument, or none after the last.
 
 **Returns**: the argument's native units, borrowing storage the process owns for its whole life
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L71)
 
 <h2 id="arguments"><code>Arguments</code></h2>
 
@@ -127,6 +124,6 @@ Every argument the process was started with, the program first.
 Cannot fail and allocates nothing. Use `Skip(1)` on the result, or start a loop at index one, to leave out the
 program's own name.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Arguments.rux#L44)
 
 **Returns**: a walk over the arguments

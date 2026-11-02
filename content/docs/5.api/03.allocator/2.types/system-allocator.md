@@ -56,9 +56,9 @@ sufficient; no adapter or owning conversion is required.
 
 ```rux
 pub func Allocate(
-    self: &SystemAllocator,
+    &self,
     layout: Layout
-) -> (*var opaque) ! AllocError
+) -> *var opaque throws AllocError
 ```
 
 Takes storage matching `layout` from the operating system.
@@ -80,10 +80,10 @@ The storage is the caller's until [`Deallocate`](/docs/api/allocator/system-allo
 
 ```rux
 pub func Deallocate(
-    self: &SystemAllocator,
+    &self,
     block: *var opaque,
     layout: Layout
-) -> ! AllocError
+) throws AllocError
 ```
 
 Gives the storage behind `block` back to the operating system.
@@ -99,17 +99,17 @@ Every pointer into the block becomes invalid.
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L113)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L118)
 
 <h3 id="reallocate"><code>Reallocate</code></h3>
 
 ```rux
 pub func Reallocate(
-    self: &SystemAllocator,
+    &self,
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
-) -> (*var opaque) ! AllocError
+) -> *var opaque throws AllocError
 ```
 
 Changes the size of a block by taking a new one and copying what fits.
@@ -128,7 +128,7 @@ The old pointer is invalid once this succeeds. On failure it is untouched and st
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L149)
 
 ## Related
 

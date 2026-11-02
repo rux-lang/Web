@@ -96,7 +96,7 @@
       "displayName": "ClockRealtime",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 10,
+      "line": 11,
       "signature": "pub const ClockRealtime: int32",
       "typeParams": [],
       "doc": {
@@ -122,7 +122,7 @@
       "displayName": "ClockMonotonic",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 16,
+      "line": 17,
       "signature": "pub const ClockMonotonic: int32",
       "typeParams": [],
       "doc": {
@@ -148,12 +148,12 @@
       "displayName": "ClockGetTime",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 26,
-      "signature": "pub func ClockGetTime(clockId: int32, time: *var Timespec) -> int64",
+      "line": 27,
+      "signature": "pub unsafe func ClockGetTime(clockId: int32, time: *var Timespec) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Reads `clockId` into `time`.",
-        "markdown": "Reads `clockId` into `time`.\n`clockId` is read by value; `time` is borrowed and written. Returns zero, or a negative error number — `EINVAL`\nfor a clock this kernel does not have.\n`time` must be non-null and writable.",
+        "markdown": "Reads `clockId` into `time`.\n`clockId` is read by value; `time` is borrowed and written. Returns zero, or a negative error number — `EINVAL`\nfor a clock this kernel does not have.\nSafety: `time` must be non-null and writable.",
         "typeParams": [],
         "params": [
           { "name": "clockId", "markdown": "which clock to read" },
@@ -177,12 +177,12 @@
       "displayName": "Nanosleep",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 41,
-      "signature": "pub func Nanosleep(request: *Timespec, remaining: *var Timespec) -> int64",
+      "line": 43,
+      "signature": "pub unsafe func Nanosleep(request: *Timespec, remaining: *var Timespec) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Suspends the caller for the requested duration.",
-        "markdown": "Suspends the caller for the requested duration.\n`request` is borrowed and read; `remaining` is borrowed and written when the wait was cut short, and may be null\nwhen the caller does not care. Returns zero, or a negative error number.\nA signal interrupts the wait and reports `EINTR` with the unslept time in `remaining`, which is what makes the\nsecond argument worth passing: resuming means calling again with what came back, not with the original request.\nThe wait is against `ClockRealtime` but is not affected by the clock being set.\n`request` must be non-null, and its nanoseconds must be under one second or the call reports `EINVAL`.",
+        "markdown": "Suspends the caller for the requested duration.\n`request` is borrowed and read; `remaining` is borrowed and written when the wait was cut short, and may be null\nwhen the caller does not care. Returns zero, or a negative error number.\nA signal interrupts the wait and reports `EINTR` with the unslept time in `remaining`, which is what makes the\nsecond argument worth passing: resuming means calling again with what came back, not with the original request.\nThe wait is against `ClockRealtime` but is not affected by the clock being set.\nSafety: `request` must be non-null and readable, and a non-null `remaining` must be writable. The nanoseconds of\n`request` must be under one second or the call reports `EINVAL`.",
         "typeParams": [],
         "params": [
           { "name": "request", "markdown": "how long to wait" },
@@ -209,7 +209,7 @@
       "displayName": "ClockProcessCpuTime",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 47,
+      "line": 49,
       "signature": "pub const ClockProcessCpuTime: int32",
       "typeParams": [],
       "doc": {
@@ -235,7 +235,7 @@
       "displayName": "ClockThreadCpuTime",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 51,
+      "line": 53,
       "signature": "pub const ClockThreadCpuTime: int32",
       "typeParams": [],
       "doc": {
@@ -261,7 +261,7 @@
       "displayName": "ClockMonotonicRaw",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 57,
+      "line": 59,
       "signature": "pub const ClockMonotonicRaw: int32",
       "typeParams": [],
       "doc": {
@@ -287,7 +287,7 @@
       "displayName": "TimerAbsolute",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 61,
+      "line": 63,
       "signature": "pub const TimerAbsolute: int32",
       "typeParams": [],
       "doc": {
@@ -313,12 +313,12 @@
       "displayName": "ClockGetResolution",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 71,
-      "signature": "pub func ClockGetResolution(clockId: int32, resolution: *var Timespec) -> int64",
+      "line": 73,
+      "signature": "pub unsafe func ClockGetResolution(clockId: int32, resolution: *var Timespec) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Reads the resolution of `clockId` into `resolution`.",
-        "markdown": "Reads the resolution of `clockId` into `resolution`.\nReturns zero, or a negative error number. The resolution is the granularity the clock advances by, which is not\nthe cost of reading it and not a promise about accuracy.\n`resolution` must be non-null and writable.",
+        "markdown": "Reads the resolution of `clockId` into `resolution`.\nReturns zero, or a negative error number. The resolution is the granularity the clock advances by, which is not\nthe cost of reading it and not a promise about accuracy.\nSafety: `resolution` must be non-null and writable.",
         "typeParams": [],
         "params": [
           { "name": "clockId", "markdown": "which clock to describe" },
@@ -342,12 +342,12 @@
       "displayName": "ClockNanosleep",
       "module": "Clock",
       "source": "Src/Clock.rux",
-      "line": 88,
-      "signature": "pub func ClockNanosleep(clockId: int32, flags: int32, request: *Timespec, remaining: *var Timespec) -> int64",
+      "line": 90,
+      "signature": "pub unsafe func ClockNanosleep(clockId: int32, flags: int32, request: *Timespec, remaining: *var Timespec) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Suspends the caller against a named clock, optionally until an absolute time.",
-        "markdown": "Suspends the caller against a named clock, optionally until an absolute time.\n`flags` is zero for a relative wait or `TimerAbsolute` for a deadline. `remaining` is written only for a relative\nwait that a signal cut short, and may be null. Returns zero, or a positive error number — this one call reports\nits error positively rather than negatively, which is the kernel's inconsistency and not this binding's.\nAn absolute wait is what a loop should use: a relative wait restarted after a signal drifts, because the time\nspent handling the signal is not counted.\n`request` must be non-null.",
+        "markdown": "Suspends the caller against a named clock, optionally until an absolute time.\n`flags` is zero for a relative wait or `TimerAbsolute` for a deadline. `remaining` is written only for a relative\nwait that a signal cut short, and may be null. Returns zero, or a positive error number — this one call reports\nits error positively rather than negatively, which is the kernel's inconsistency and not this binding's.\nAn absolute wait is what a loop should use: a relative wait restarted after a signal drifts, because the time\nspent handling the signal is not counted.\nSafety: `request` must be non-null and readable, and a non-null `remaining` must be writable.",
         "typeParams": [],
         "params": [
           { "name": "clockId", "markdown": "which clock to wait against" },
@@ -678,11 +678,11 @@
       "module": "Entropy",
       "source": "Src/Entropy.rux",
       "line": 33,
-      "signature": "pub func GetRandom(buffer: *var opaque, length: uint, flags: uint32) -> int64",
+      "signature": "pub unsafe func GetRandom(buffer: *var opaque, length: uint, flags: uint32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Fills up to `length` bytes of `buffer` with unpredictable bytes.",
-        "markdown": "Fills up to `length` bytes of `buffer` with unpredictable bytes.\n`buffer` is borrowed and written; `length` and `flags` are read by value. Returns the number of bytes actually\nwritten, or a negative error number.\nA short count is ordinary rather than a failure: a request over 256 bytes can be cut short by a signal, and a\ncaller needing the whole buffer must call again for the rest. Without `RandomNonBlocking` the first call in the\nlife of a system may wait for the pool to be seeded; after that it does not wait at all.\nRuns in time proportional to `length` and allocates nothing.\n`buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or the\nunwritten tail stays whatever it held — which for a key is the worst possible outcome.",
+        "markdown": "Fills up to `length` bytes of `buffer` with unpredictable bytes.\n`buffer` is borrowed and written; `length` and `flags` are read by value. Returns the number of bytes actually\nwritten, or a negative error number.\nA short count is ordinary rather than a failure: a request over 256 bytes can be cut short by a signal, and a\ncaller needing the whole buffer must call again for the rest. Without `RandomNonBlocking` the first call in the\nlife of a system may wait for the pool to be seeded; after that it does not wait at all.\nRuns in time proportional to `length` and allocates nothing.\nSafety: `buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or the\nunwritten tail stays whatever it held — which for a key is the worst possible outcome.",
         "typeParams": [],
         "params": [
           { "name": "buffer", "markdown": "receives the bytes" },
@@ -1566,11 +1566,11 @@
       "module": "File",
       "source": "Src/File.rux",
       "line": 36,
-      "signature": "pub func Read(fd: FileDescriptor, buffer: *var opaque, count: uint) -> int64",
+      "signature": "pub unsafe func Read(fd: FileDescriptor, buffer: *var opaque, count: uint) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Reads up to `count` bytes from `fd` into `buffer`.",
-        "markdown": "Reads up to `count` bytes from `fd` into `buffer`.\n`fd` and `count` are read by value; `buffer` is borrowed and written. Returns the number of bytes actually read,\nzero at end of file, or a negative error number.\nA count smaller than `count` is ordinary and is not an end of file: a pipe, a terminal, or a signal can each cut a\nread short. Only zero means the source has ended.\n`buffer` must be writable for `count` bytes. The kernel checks the address and reports `EFAULT` rather than\nfaulting, but it does not check the length against anything the caller knows.",
+        "markdown": "Reads up to `count` bytes from `fd` into `buffer`.\n`fd` and `count` are read by value; `buffer` is borrowed and written. Returns the number of bytes actually read,\nzero at end of file, or a negative error number.\nA count smaller than `count` is ordinary and is not an end of file: a pipe, a terminal, or a signal can each cut a\nread short. Only zero means the source has ended.\nSafety: `buffer` must be writable for `count` bytes. The kernel checks the address and reports `EFAULT` rather than\nfaulting, but it does not check the length against anything the caller knows.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "an open descriptor" },
@@ -1596,11 +1596,11 @@
       "module": "File",
       "source": "Src/File.rux",
       "line": 51,
-      "signature": "pub func Write(fd: FileDescriptor, buffer: *opaque, count: uint) -> int64",
+      "signature": "pub unsafe func Write(fd: FileDescriptor, buffer: *opaque, count: uint) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Writes up to `count` bytes from `buffer` to `fd`.",
-        "markdown": "Writes up to `count` bytes from `buffer` to `fd`.\n`fd` and `count` are read by value; `buffer` is borrowed and read. Returns the number of bytes actually written,\nor a negative error number.\nA count smaller than `count` is ordinary, and the rest has to be written by calling again from where this\nstopped. Writing to a pipe whose reader has closed raises `SIGPIPE` before this can report `EPIPE`.\n`buffer` must be readable for `count` bytes.",
+        "markdown": "Writes up to `count` bytes from `buffer` to `fd`.\n`fd` and `count` are read by value; `buffer` is borrowed and read. Returns the number of bytes actually written,\nor a negative error number.\nA count smaller than `count` is ordinary, and the rest has to be written by calling again from where this\nstopped. Writing to a pipe whose reader has closed raises `SIGPIPE` before this can report `EPIPE`.\nSafety: `buffer` must be readable for `count` bytes.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "an open descriptor" },
@@ -1651,7 +1651,7 @@
       "displayName": "AtFdCwd",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 70,
+      "line": 71,
       "signature": "pub const AtFdCwd: int32",
       "typeParams": [],
       "doc": {
@@ -1677,7 +1677,7 @@
       "displayName": "OpenReadOnly",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 74,
+      "line": 75,
       "signature": "pub const OpenReadOnly: int32",
       "typeParams": [],
       "doc": {
@@ -1703,7 +1703,7 @@
       "displayName": "OpenWriteOnly",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 78,
+      "line": 79,
       "signature": "pub const OpenWriteOnly: int32",
       "typeParams": [],
       "doc": {
@@ -1729,7 +1729,7 @@
       "displayName": "OpenReadWrite",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 82,
+      "line": 83,
       "signature": "pub const OpenReadWrite: int32",
       "typeParams": [],
       "doc": {
@@ -1755,7 +1755,7 @@
       "displayName": "OpenCreate",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 86,
+      "line": 87,
       "signature": "pub const OpenCreate: int32",
       "typeParams": [],
       "doc": {
@@ -1781,7 +1781,7 @@
       "displayName": "OpenExclusive",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 91,
+      "line": 92,
       "signature": "pub const OpenExclusive: int32",
       "typeParams": [],
       "doc": {
@@ -1807,7 +1807,7 @@
       "displayName": "OpenTruncate",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 95,
+      "line": 96,
       "signature": "pub const OpenTruncate: int32",
       "typeParams": [],
       "doc": {
@@ -1833,7 +1833,7 @@
       "displayName": "OpenAppend",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 99,
+      "line": 100,
       "signature": "pub const OpenAppend: int32",
       "typeParams": [],
       "doc": {
@@ -1859,7 +1859,7 @@
       "displayName": "OpenNonBlocking",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 103,
+      "line": 104,
       "signature": "pub const OpenNonBlocking: int32",
       "typeParams": [],
       "doc": {
@@ -1885,7 +1885,7 @@
       "displayName": "OpenCloseOnExec",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 109,
+      "line": 110,
       "signature": "pub const OpenCloseOnExec: int32",
       "typeParams": [],
       "doc": {
@@ -1911,7 +1911,7 @@
       "displayName": "OpenDirectory",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 119,
+      "line": 120,
       "signature": "pub const OpenDirectory: int32",
       "typeParams": [],
       "doc": {
@@ -1937,7 +1937,7 @@
       "displayName": "OpenDirectory",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 126,
+      "line": 127,
       "signature": "pub const OpenDirectory: int32",
       "typeParams": [],
       "doc": {
@@ -1963,7 +1963,7 @@
       "displayName": "SeekSet",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 133,
+      "line": 134,
       "signature": "pub const SeekSet: int32",
       "typeParams": [],
       "doc": {
@@ -1989,7 +1989,7 @@
       "displayName": "SeekCurrent",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 137,
+      "line": 138,
       "signature": "pub const SeekCurrent: int32",
       "typeParams": [],
       "doc": {
@@ -2015,7 +2015,7 @@
       "displayName": "SeekEnd",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 141,
+      "line": 142,
       "signature": "pub const SeekEnd: int32",
       "typeParams": [],
       "doc": {
@@ -2041,12 +2041,12 @@
       "displayName": "OpenAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 156,
-      "signature": "pub func OpenAt(directoryFd: FileDescriptor, path: *char8, flags: int32, mode: FileMode) -> int64",
+      "line": 157,
+      "signature": "pub unsafe func OpenAt(directoryFd: FileDescriptor, path: *char8, flags: int32, mode: FileMode) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Opens `path` relative to `directoryFd` and returns a descriptor, or a negative error number.",
-        "markdown": "Opens `path` relative to `directoryFd` and returns a descriptor, or a negative error number.\n`directoryFd` is a descriptor for the directory a relative path is resolved against, or `AtFdCwd` for the current\none; an absolute path ignores it. `path` is borrowed and must be null-terminated. `flags` is one of the three\naccess modes combined with whatever else applies. `mode` is the permission bits a newly created file gets, and is\nread only when `OpenCreate` is set.\nThis is the only open the package offers, because it is the only one AArch64 has.\n`path` must be non-null and terminated. The mode is masked by the process umask, which this cannot see.",
+        "markdown": "Opens `path` relative to `directoryFd` and returns a descriptor, or a negative error number.\n`directoryFd` is a descriptor for the directory a relative path is resolved against, or `AtFdCwd` for the current\none; an absolute path ignores it. `path` is borrowed and must be null-terminated. `flags` is one of the three\naccess modes combined with whatever else applies. `mode` is the permission bits a newly created file gets, and is\nread only when `OpenCreate` is set.\nThis is the only open the package offers, because it is the only one AArch64 has.\nSafety: `path` must be non-null and terminated. The mode is masked by the process umask, which this cannot see.",
         "typeParams": [],
         "params": [
           {
@@ -2075,7 +2075,7 @@
       "displayName": "Lseek",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 170,
+      "line": 171,
       "signature": "pub func Lseek(fd: FileDescriptor, offset: FileOffset, whence: int32) -> int64",
       "typeParams": [],
       "doc": {
@@ -2105,12 +2105,12 @@
       "displayName": "Getdents64",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 184,
-      "signature": "pub func Getdents64(fd: FileDescriptor, buffer: *var opaque, count: uint) -> int64",
+      "line": 187,
+      "signature": "pub unsafe func Getdents64(fd: FileDescriptor, buffer: *var opaque, count: uint) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Reads directory entries from `fd` into `buffer`, and returns the bytes filled, zero at the end, or a negative\nerror number.",
-        "markdown": "Reads directory entries from `fd` into `buffer`, and returns the bytes filled, zero at the end, or a negative\nerror number.\nThe buffer holds packed `linux_dirent64` records: inode at offset 0 (8 bytes), a seek cookie at 8 (8 bytes),\nthe record's length at 16 (2 bytes), the entry type at 18 (1 byte), and the NUL-terminated name from 19. The\nkernel writes as many whole records as fit; call again for the rest.",
+        "markdown": "Reads directory entries from `fd` into `buffer`, and returns the bytes filled, zero at the end, or a negative\nerror number.\nThe buffer holds packed `linux_dirent64` records: inode at offset 0 (8 bytes), a seek cookie at 8 (8 bytes),\nthe record's length at 16 (2 bytes), the entry type at 18 (1 byte), and the NUL-terminated name from 19. The\nkernel writes as many whole records as fit; call again for the rest.\nSafety: `buffer` must be writable for `count` bytes.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "an open descriptor" },
@@ -2135,12 +2135,12 @@
       "displayName": "LinkAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 198,
-      "signature": "pub func LinkAt(oldDirectoryFd: FileDescriptor, oldPath: *char8, newDirectoryFd: FileDescriptor, newPath: *char8, flags: int32) -> int64",
+      "line": 202,
+      "signature": "pub unsafe func LinkAt(oldDirectoryFd: FileDescriptor, oldPath: *char8, newDirectoryFd: FileDescriptor, newPath: *char8, flags: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Creates a hard link: `newPath` becomes a second name for the file `oldPath` names.",
-        "markdown": "Creates a hard link: `newPath` becomes a second name for the file `oldPath` names.\nReturns zero, or a negative error number. `flags` is zero to leave a symbolic link at `oldPath` unfollowed,\nor `FollowSymlinks` to link what it points at.",
+        "markdown": "Creates a hard link: `newPath` becomes a second name for the file `oldPath` names.\nReturns zero, or a negative error number. `flags` is zero to leave a symbolic link at `oldPath` unfollowed,\nor `FollowSymlinks` to link what it points at.\nSafety: `oldPath` and `newPath` must be non-null and NUL-terminated.",
         "typeParams": [],
         "params": [
           { "name": "oldDirectoryFd", "markdown": "the directory `oldPath` is relative to" },
@@ -2167,7 +2167,7 @@
       "displayName": "FollowSymlinks",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 206,
+      "line": 210,
       "signature": "pub const FollowSymlinks: int32",
       "typeParams": [],
       "doc": {
@@ -2193,12 +2193,12 @@
       "displayName": "SymlinkAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 216,
-      "signature": "pub func SymlinkAt(target: *char8, newDirectoryFd: FileDescriptor, linkPath: *char8) -> int64",
+      "line": 221,
+      "signature": "pub unsafe func SymlinkAt(target: *char8, newDirectoryFd: FileDescriptor, linkPath: *char8) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Creates a symbolic link at `linkPath` holding `target` as its text.",
-        "markdown": "Creates a symbolic link at `linkPath` holding `target` as its text.\nReturns zero, or a negative error number. The target is stored, not checked: a dangling link is created as\nreadily as a good one, which is a property callers rely on.",
+        "markdown": "Creates a symbolic link at `linkPath` holding `target` as its text.\nReturns zero, or a negative error number. The target is stored, not checked: a dangling link is created as\nreadily as a good one, which is a property callers rely on.\nSafety: `target` and `linkPath` must be non-null and NUL-terminated.",
         "typeParams": [],
         "params": [
           { "name": "target", "markdown": "the text the link will hold, which need not exist" },
@@ -2223,7 +2223,7 @@
       "displayName": "SymlinkNoFollow",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 222,
+      "line": 227,
       "signature": "pub const SymlinkNoFollow: int32",
       "typeParams": [],
       "doc": {
@@ -2249,12 +2249,12 @@
       "displayName": "FstatAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 235,
-      "signature": "pub func FstatAt(directoryFd: FileDescriptor, path: *char8, statBuffer: *var opaque, flags: int32) -> int64",
+      "line": 241,
+      "signature": "pub unsafe func FstatAt(directoryFd: FileDescriptor, path: *char8, statBuffer: *var opaque, flags: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Fills `statBuffer` with what the kernel knows about the file `path` names.",
-        "markdown": "Fills `statBuffer` with what the kernel knows about the file `path` names.\nThe kernel's own name for this call is `newfstatat`, which `SysNewFstatAt` keeps; the wrapper is spelled the way\nmacOS and FreeBSD spell theirs, so one name reaches the call on all three systems.\n`statBuffer` must be writable for the whole of the architecture's `struct stat`, whose layout this package\ndoes not model: 144 bytes on x86-64 and 128 on AArch64, with the fields at different offsets in each.",
+        "markdown": "Fills `statBuffer` with what the kernel knows about the file `path` names.\nThe kernel's own name for this call is `newfstatat`, which `SysNewFstatAt` keeps; the wrapper is spelled the way\nmacOS and FreeBSD spell theirs, so one name reaches the call on all three systems.\nSafety: `path` must be non-null and NUL-terminated, and `statBuffer` must be writable for the whole of the\narchitecture's `struct stat`, whose layout this package does not model: 144 bytes on x86-64 and 128 on AArch64, with\nthe fields at different offsets in each.",
         "typeParams": [],
         "params": [
           {
@@ -2286,12 +2286,12 @@
       "displayName": "FchmodAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 249,
-      "signature": "pub func FchmodAt(directoryFd: FileDescriptor, path: *char8, mode: FileMode, flags: int32) -> int64",
+      "line": 256,
+      "signature": "pub unsafe func FchmodAt(directoryFd: FileDescriptor, path: *char8, mode: FileMode, flags: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Sets the permission bits of the file `path` names.",
-        "markdown": "Sets the permission bits of the file `path` names.\n`directoryFd` is `AtFdCwd` for an ordinary path. Returns zero, or a negative error number. Linux does not\nsupport `SymlinkNoFollow` here and reports `EOPNOTSUPP` for it: a symbolic link's own bits mean nothing.",
+        "markdown": "Sets the permission bits of the file `path` names.\n`directoryFd` is `AtFdCwd` for an ordinary path. Returns zero, or a negative error number. Linux does not\nsupport `SymlinkNoFollow` here and reports `EOPNOTSUPP` for it: a symbolic link's own bits mean nothing.\nSafety: `path` must be non-null and NUL-terminated.",
         "typeParams": [],
         "params": [
           {
@@ -2320,12 +2320,12 @@
       "displayName": "UtimensAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 264,
-      "signature": "pub func UtimensAt(directoryFd: FileDescriptor, path: *char8, times: *opaque, flags: int32) -> int64",
+      "line": 273,
+      "signature": "pub unsafe func UtimensAt(directoryFd: FileDescriptor, path: *char8, times: *opaque, flags: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Sets the access and modification times of the file `path` names.",
-        "markdown": "Sets the access and modification times of the file `path` names.\n`times` is borrowed and holds two `timespec` values — access first, then modification — each a whole-second\ncount and a nanosecond fraction, both 8 bytes. A null `times` sets both to now. `flags` may carry\n`SymlinkNoFollow`. Returns zero, or a negative error number.",
+        "markdown": "Sets the access and modification times of the file `path` names.\n`times` is borrowed and holds two `timespec` values — access first, then modification — each a whole-second\ncount and a nanosecond fraction, both 8 bytes. A null `times` sets both to now. `flags` may carry\n`SymlinkNoFollow`. Returns zero, or a negative error number.\nSafety: `path` must be non-null and NUL-terminated, and a non-null `times` must be readable for two `timespec`\nvalues.",
         "typeParams": [],
         "params": [
           {
@@ -2354,12 +2354,12 @@
       "displayName": "Getcwd",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 277,
-      "signature": "pub func Getcwd(buffer: *var char8, size: uint) -> int64",
+      "line": 286,
+      "signature": "pub unsafe func Getcwd(buffer: *var char8, size: uint) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Writes the current working directory's absolute path into `buffer`, NUL-terminated.",
-        "markdown": "Writes the current working directory's absolute path into `buffer`, NUL-terminated.\nReturns the length written including the terminator, or a negative error number; `ERANGE` where the buffer is\ntoo small for the answer.\n`buffer` must be writable for `size` bytes.",
+        "markdown": "Writes the current working directory's absolute path into `buffer`, NUL-terminated.\nReturns the length written including the terminator, or a negative error number; `ERANGE` where the buffer is\ntoo small for the answer.\nSafety: `buffer` must be writable for `size` bytes.",
         "typeParams": [],
         "params": [
           { "name": "buffer", "markdown": "receives the working directory as a null-terminated path" },
@@ -2383,12 +2383,12 @@
       "displayName": "Chdir",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 287,
-      "signature": "pub func Chdir(path: *char8) -> int64",
+      "line": 297,
+      "signature": "pub unsafe func Chdir(path: *char8) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Makes `path` the process's working directory.",
-        "markdown": "Makes `path` the process's working directory.\nReturns zero, or a negative error number. The change is process-wide and immediately visible to every thread,\nwhich is why nothing above this should call it casually.",
+        "markdown": "Makes `path` the process's working directory.\nReturns zero, or a negative error number. The change is process-wide and immediately visible to every thread,\nwhich is why nothing above this should call it casually.\nSafety: `path` must be non-null and NUL-terminated.",
         "typeParams": [],
         "params": [{ "name": "path", "markdown": "the directory to move to" }],
         "returns": "zero, or a negative error number",
@@ -2409,12 +2409,12 @@
       "displayName": "ReadlinkAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 301,
-      "signature": "pub func ReadlinkAt(directoryFd: FileDescriptor, path: *char8, buffer: *var char8, size: uint) -> int64",
+      "line": 312,
+      "signature": "pub unsafe func ReadlinkAt(directoryFd: FileDescriptor, path: *char8, buffer: *var char8, size: uint) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Reads the text a symbolic link holds into `buffer`.",
-        "markdown": "Reads the text a symbolic link holds into `buffer`.\n`directoryFd` is `AtFdCwd` for an ordinary path. Returns the number of bytes written, or a negative error\nnumber. The text is **not** NUL-terminated, and is silently truncated where it does not fit, so a caller that\nfilled the buffer exactly cannot tell truncation from a perfect fit and should retry with more room.",
+        "markdown": "Reads the text a symbolic link holds into `buffer`.\n`directoryFd` is `AtFdCwd` for an ordinary path. Returns the number of bytes written, or a negative error\nnumber. The text is **not** NUL-terminated, and is silently truncated where it does not fit, so a caller that\nfilled the buffer exactly cannot tell truncation from a perfect fit and should retry with more room.\nSafety: `path` must be non-null and NUL-terminated, and `buffer` must be writable for `size` bytes.",
         "typeParams": [],
         "params": [
           {
@@ -2443,7 +2443,7 @@
       "displayName": "Fsync",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 311,
+      "line": 322,
       "signature": "pub func Fsync(fd: FileDescriptor) -> int64",
       "typeParams": [],
       "doc": {
@@ -2469,7 +2469,7 @@
       "displayName": "Ftruncate",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 322,
+      "line": 334,
       "signature": "pub func Ftruncate(fd: FileDescriptor, length: FileOffset) -> int64",
       "typeParams": [],
       "doc": {
@@ -2498,12 +2498,12 @@
       "displayName": "UnlinkAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 337,
-      "signature": "pub func UnlinkAt(directoryFd: FileDescriptor, path: *char8, flags: int32) -> int64",
+      "line": 350,
+      "signature": "pub unsafe func UnlinkAt(directoryFd: FileDescriptor, path: *char8, flags: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Removes the name `path` from its directory.",
-        "markdown": "Removes the name `path` from its directory.\n`flags` is zero to remove a file, or `RemoveDirectory` to remove an empty directory. Returns zero, or a negative\nerror number.\nRemoving a name does not free the file: anything still holding it open keeps reading and writing it, and the\nstorage goes only when the last descriptor closes.\n`path` must be non-null and terminated.",
+        "markdown": "Removes the name `path` from its directory.\n`flags` is zero to remove a file, or `RemoveDirectory` to remove an empty directory. Returns zero, or a negative\nerror number.\nRemoving a name does not free the file: anything still holding it open keeps reading and writing it, and the\nstorage goes only when the last descriptor closes.\nSafety: `path` must be non-null and terminated.",
         "typeParams": [],
         "params": [
           {
@@ -2531,7 +2531,7 @@
       "displayName": "RemoveDirectory",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 343,
+      "line": 356,
       "signature": "pub const RemoveDirectory: int32",
       "typeParams": [],
       "doc": {
@@ -2557,12 +2557,12 @@
       "displayName": "MkdirAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 353,
-      "signature": "pub func MkdirAt(directoryFd: FileDescriptor, path: *char8, mode: FileMode) -> int64",
+      "line": 366,
+      "signature": "pub unsafe func MkdirAt(directoryFd: FileDescriptor, path: *char8, mode: FileMode) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Creates a directory named `path` with permission bits `mode`.",
-        "markdown": "Creates a directory named `path` with permission bits `mode`.\nReturns zero, or a negative error number — `EEXIST` when the name is taken, which is how this is used as a lock.\n`path` must be non-null and terminated. The mode is masked by the process umask.",
+        "markdown": "Creates a directory named `path` with permission bits `mode`.\nReturns zero, or a negative error number — `EEXIST` when the name is taken, which is how this is used as a lock.\nSafety: `path` must be non-null and terminated. The mode is masked by the process umask.",
         "typeParams": [],
         "params": [
           {
@@ -2590,12 +2590,12 @@
       "displayName": "RenameAt",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 368,
-      "signature": "pub func RenameAt(oldDirectoryFd: FileDescriptor, oldPath: *char8, newDirectoryFd: FileDescriptor, newPath: *char8) -> int64",
+      "line": 381,
+      "signature": "pub unsafe func RenameAt(oldDirectoryFd: FileDescriptor, oldPath: *char8, newDirectoryFd: FileDescriptor, newPath: *char8) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Renames `oldPath` to `newPath`, each resolved against its own directory descriptor.",
-        "markdown": "Renames `oldPath` to `newPath`, each resolved against its own directory descriptor.\nReturns zero, or a negative error number. Within one file system this replaces any existing `newPath` atomically,\nwhich is what makes it the way to publish a file that was written under a temporary name. Across file systems it\nreports `EXDEV` rather than copying.\nBoth paths must be non-null and terminated.",
+        "markdown": "Renames `oldPath` to `newPath`, each resolved against its own directory descriptor.\nReturns zero, or a negative error number. Within one file system this replaces any existing `newPath` atomically,\nwhich is what makes it the way to publish a file that was written under a temporary name. Across file systems it\nreports `EXDEV` rather than copying.\nSafety: both paths must be non-null and terminated.",
         "typeParams": [],
         "params": [
           { "name": "oldDirectoryFd", "markdown": "the directory `oldPath` is relative to" },
@@ -2621,12 +2621,12 @@
       "displayName": "Fstat",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 384,
-      "signature": "pub func Fstat(fd: FileDescriptor, statBuffer: *var opaque) -> int64",
+      "line": 397,
+      "signature": "pub unsafe func Fstat(fd: FileDescriptor, statBuffer: *var opaque) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Fills `statBuffer` with what the kernel knows about the file behind `fd`.",
-        "markdown": "Fills `statBuffer` with what the kernel knows about the file behind `fd`.\n`statBuffer` is borrowed and written with the kernel's `struct stat`, whose layout this package does not model:\nit differs by architecture, and reading it needs a declaration that says which. Returns zero, or a negative error\nnumber.\n`statBuffer` must be writable for the whole of the architecture's `struct stat`, which is 144 bytes on x86-64 and\n128 on AArch64. Nothing here checks that.",
+        "markdown": "Fills `statBuffer` with what the kernel knows about the file behind `fd`.\n`statBuffer` is borrowed and written with the kernel's `struct stat`, whose layout this package does not model:\nit differs by architecture, and reading it needs a declaration that says which. Returns zero, or a negative error\nnumber.\nSafety: `statBuffer` must be writable for the whole of the architecture's `struct stat`, which is 144 bytes on\nx86-64 and 128 on AArch64. Nothing here checks that.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "an open descriptor" },
@@ -2650,7 +2650,7 @@
       "displayName": "Dup3",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 398,
+      "line": 411,
       "signature": "pub func Dup3(oldFd: FileDescriptor, newFd: FileDescriptor, flags: int32) -> int64",
       "typeParams": [],
       "doc": {
@@ -2680,12 +2680,12 @@
       "displayName": "Pipe2",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 410,
-      "signature": "pub func Pipe2(descriptors: *var int32, flags: int32) -> int64",
+      "line": 424,
+      "signature": "pub unsafe func Pipe2(descriptors: *var int32, flags: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Creates a pipe and writes its two descriptors into `descriptors`.",
-        "markdown": "Creates a pipe and writes its two descriptors into `descriptors`.\n`descriptors` is borrowed and receives the reading end at index zero and the writing end at index one. `flags`\nmay carry `OpenCloseOnExec` and `OpenNonBlocking`. Returns zero, or a negative error number.\n`descriptors` must be writable for two `int32` values.",
+        "markdown": "Creates a pipe and writes its two descriptors into `descriptors`.\n`descriptors` is borrowed and receives the reading end at index zero and the writing end at index one. `flags`\nmay carry `OpenCloseOnExec` and `OpenNonBlocking`. Returns zero, or a negative error number.\nSafety: `descriptors` must be writable for two `int32` values.",
         "typeParams": [],
         "params": [
           { "name": "descriptors", "markdown": "receives the read end at index zero and the write end at index one" },
@@ -2761,12 +2761,12 @@
       "displayName": "FutexWait",
       "module": "Futex",
       "source": "Src/Futex.rux",
-      "line": 35,
-      "signature": "pub func FutexWait(address: *uint32, expected: uint32, timeout: *Timespec) -> int64",
+      "line": 36,
+      "signature": "pub unsafe func FutexWait(address: *uint32, expected: uint32, timeout: *Timespec) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Sleeps while `*address` equals `expected`, until a wake, a signal or the timeout.",
-        "markdown": "Sleeps while `*address` equals `expected`, until a wake, a signal or the timeout.\nReturns at once with `-EAGAIN` when the word already differs, which is how a caller learns it changed.",
+        "markdown": "Sleeps while `*address` equals `expected`, until a wake, a signal or the timeout.\nReturns at once with `-EAGAIN` when the word already differs, which is how a caller learns it changed.\nSafety: `address` must point at a live, four-byte aligned word, and a non-null `timeout` must be readable.",
         "typeParams": [],
         "params": [
           { "name": "address", "markdown": "the word to wait on, four-byte aligned" },
@@ -2797,12 +2797,12 @@
       "displayName": "FutexWake",
       "module": "Futex",
       "source": "Src/Futex.rux",
-      "line": 46,
-      "signature": "pub func FutexWake(address: *uint32, count: int32) -> int64",
+      "line": 48,
+      "signature": "pub unsafe func FutexWake(address: *uint32, count: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Wakes up to `count` threads sleeping on `address`.",
-        "markdown": "Wakes up to `count` threads sleeping on `address`.",
+        "markdown": "Wakes up to `count` threads sleeping on `address`.\nSafety: `address` must point at a live, four-byte aligned word.",
         "typeParams": [],
         "params": [
           { "name": "address", "markdown": "the word they wait on" },
@@ -2829,7 +2829,7 @@
       "displayName": "ProtectionNone",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 11,
+      "line": 12,
       "signature": "pub const ProtectionNone: int32",
       "typeParams": [],
       "doc": {
@@ -2855,7 +2855,7 @@
       "displayName": "ProtectionRead",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 15,
+      "line": 16,
       "signature": "pub const ProtectionRead: int32",
       "typeParams": [],
       "doc": {
@@ -2881,7 +2881,7 @@
       "displayName": "ProtectionWrite",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 19,
+      "line": 20,
       "signature": "pub const ProtectionWrite: int32",
       "typeParams": [],
       "doc": {
@@ -2907,7 +2907,7 @@
       "displayName": "ProtectionExecute",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 23,
+      "line": 24,
       "signature": "pub const ProtectionExecute: int32",
       "typeParams": [],
       "doc": {
@@ -2933,7 +2933,7 @@
       "displayName": "MapShared",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 27,
+      "line": 28,
       "signature": "pub const MapShared: int32",
       "typeParams": [],
       "doc": {
@@ -2959,7 +2959,7 @@
       "displayName": "MapPrivate",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 31,
+      "line": 32,
       "signature": "pub const MapPrivate: int32",
       "typeParams": [],
       "doc": {
@@ -2985,7 +2985,7 @@
       "displayName": "MapFixed",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 36,
+      "line": 37,
       "signature": "pub const MapFixed: int32",
       "typeParams": [],
       "doc": {
@@ -3011,7 +3011,7 @@
       "displayName": "MapAnonymous",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 41,
+      "line": 42,
       "signature": "pub const MapAnonymous: int32",
       "typeParams": [],
       "doc": {
@@ -3037,12 +3037,12 @@
       "displayName": "Mmap",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 58,
-      "signature": "pub func Mmap(address: *opaque, length: uint, protection: int32, flags: int32, fd: int32, offset: uint64) -> int64",
+      "line": 60,
+      "signature": "pub unsafe func Mmap(address: *opaque, length: uint, protection: int32, flags: int32, fd: int32, offset: uint64) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Creates a mapping and returns its address, or a negative error number.",
-        "markdown": "Creates a mapping and returns its address, or a negative error number.\n`address` is a hint unless `MapFixed` is set, and null asks the kernel to choose. `length` is rounded up to a\nwhole number of pages. `fd` is the object to map, or `-1` with `MapAnonymous`. `offset` must be page-aligned.\nReturns the mapping's address as an integer. Testing it needs `Errors::IsError` rather than a sign test: a valid\naddress may have its top bit set, and only the kernel's reserved `-4095` through `-1` range is a failure.\nThe mapping outlives nothing on its own — it stays until `Munmap` releases it or the process ends.\n`MapFixed` replaces whatever occupies the address, including a mapping this program depends on.",
+        "markdown": "Creates a mapping and returns its address, or a negative error number.\n`address` is a hint unless `MapFixed` is set, and null asks the kernel to choose. `length` is rounded up to a\nwhole number of pages. `fd` is the object to map, or `-1` with `MapAnonymous`. `offset` must be page-aligned.\nReturns the mapping's address as an integer. Testing it needs `Errors::IsError` rather than a sign test: a valid\naddress may have its top bit set, and only the kernel's reserved `-4095` through `-1` range is a failure.\nThe mapping outlives nothing on its own — it stays until `Munmap` releases it or the process ends.\nSafety: with `MapFixed`, the range at `address` must hold nothing the program still uses, since the mapping replaces\nwhatever occupies it, including a mapping this program depends on.",
         "typeParams": [],
         "params": [
           { "name": "address", "markdown": "a hint for where to map, or null to let the kernel choose" },
@@ -3070,12 +3070,12 @@
       "displayName": "Munmap",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 79,
-      "signature": "pub func Munmap(address: *opaque, length: uint) -> int64",
+      "line": 83,
+      "signature": "pub unsafe func Munmap(address: *opaque, length: uint) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Releases the mapping that begins at `address` and spans `length` bytes.",
-        "markdown": "Releases the mapping that begins at `address` and spans `length` bytes.\n`address` must be page-aligned; `length` is rounded up to whole pages. Returns zero, or a negative error number.\nReleasing a range that was never mapped succeeds and does nothing, so this cannot be used to discover whether a\nrange was mapped.\nEvery pointer into the range becomes invalid, and the address space may be handed to a later mapping at once.",
+        "markdown": "Releases the mapping that begins at `address` and spans `length` bytes.\n`address` must be page-aligned; `length` is rounded up to whole pages. Returns zero, or a negative error number.\nReleasing a range that was never mapped succeeds and does nothing, so this cannot be used to discover whether a\nrange was mapped.\nSafety: the range must be one the caller mapped and no longer uses. Every pointer into it becomes invalid, and the\naddress space may be handed to a later mapping at once.",
         "typeParams": [],
         "params": [
           { "name": "address", "markdown": "a page-aligned address to release from" },
@@ -3099,12 +3099,12 @@
       "displayName": "Brk",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 91,
-      "signature": "pub func Brk(address: *opaque) -> int64",
+      "line": 96,
+      "signature": "pub unsafe func Brk(address: *opaque) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Sets the program break and returns where it ended up.",
-        "markdown": "Sets the program break and returns where it ended up.\n`address` is the requested new break, or null to ask where it is. Returns the resulting break, which is the old\none when the request could not be met — this call reports failure by not moving rather than by an error number.\nThe break is a single process-wide value. Anything else in the process that uses it, including a C runtime that\nwas linked in, is using the same one.",
+        "markdown": "Sets the program break and returns where it ended up.\n`address` is the requested new break, or null to ask where it is. Returns the resulting break, which is the old\none when the request could not be met — this call reports failure by not moving rather than by an error number.\nThe break is a single process-wide value. Anything else in the process that uses it, including a C runtime that\nwas linked in, is using the same one.\nSafety: a non-null `address` must not lower the break below memory anything in the process still uses.",
         "typeParams": [],
         "params": [{ "name": "address", "markdown": "where to move the program break, or null to read it" }],
         "returns": "the resulting break, or a negative error number",
@@ -3125,7 +3125,7 @@
       "displayName": "AdviseDontNeed",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 99,
+      "line": 104,
       "signature": "pub const AdviseDontNeed: int32",
       "typeParams": [],
       "doc": {
@@ -3151,7 +3151,7 @@
       "displayName": "AdviseWillNeed",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 103,
+      "line": 108,
       "signature": "pub const AdviseWillNeed: int32",
       "typeParams": [],
       "doc": {
@@ -3177,7 +3177,7 @@
       "displayName": "AdviseRandom",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 107,
+      "line": 112,
       "signature": "pub const AdviseRandom: int32",
       "typeParams": [],
       "doc": {
@@ -3203,7 +3203,7 @@
       "displayName": "AdviseSequential",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 111,
+      "line": 116,
       "signature": "pub const AdviseSequential: int32",
       "typeParams": [],
       "doc": {
@@ -3229,12 +3229,12 @@
       "displayName": "Mprotect",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 125,
-      "signature": "pub func Mprotect(address: *opaque, length: uint, protection: int32) -> int64",
+      "line": 131,
+      "signature": "pub unsafe func Mprotect(address: *opaque, length: uint, protection: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Changes what may be done with the pages covering `address` through `address + length`.",
-        "markdown": "Changes what may be done with the pages covering `address` through `address + length`.\n`address` must be page-aligned; `length` is rounded up to whole pages. `protection` is the same set `Mmap` takes.\nReturns zero, or a negative error number.\nRemoving a permission takes effect at once, so a thread touching the range concurrently faults rather than\nfinishing what it started.\nNothing here checks that the range was ever mapped, and marking executable memory writable at the same time is\nwhat a hardened system refuses.",
+        "markdown": "Changes what may be done with the pages covering `address` through `address + length`.\n`address` must be page-aligned; `length` is rounded up to whole pages. `protection` is the same set `Mmap` takes.\nReturns zero, or a negative error number.\nRemoving a permission takes effect at once, so a thread touching the range concurrently faults rather than\nfinishing what it started.\nNothing here checks that the range was ever mapped, and marking executable memory writable at the same time is\nwhat a hardened system refuses.\nSafety: the range must be one the caller mapped, and nothing may still need an access `protection` removes.",
         "typeParams": [],
         "params": [
           { "name": "address", "markdown": "a page-aligned address" },
@@ -3259,12 +3259,12 @@
       "displayName": "Madvise",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 139,
-      "signature": "pub func Madvise(address: *opaque, length: uint, advice: int32) -> int64",
+      "line": 146,
+      "signature": "pub unsafe func Madvise(address: *opaque, length: uint, advice: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Tells the kernel how the pages covering a range are about to be used.",
-        "markdown": "Tells the kernel how the pages covering a range are about to be used.\n`address` must be page-aligned. Returns zero, or a negative error number. Advice is advice: the kernel is free to\nignore all of it, with the exception of `AdviseDontNeed`, which actually discards.\n`AdviseDontNeed` loses whatever the range held. On anonymous memory that is a zeroing; on a private file mapping\nit discards the modifications rather than writing them back.",
+        "markdown": "Tells the kernel how the pages covering a range are about to be used.\n`address` must be page-aligned. Returns zero, or a negative error number. Advice is advice: the kernel is free to\nignore all of it, with the exception of `AdviseDontNeed`, which actually discards.\nSafety: the range must be one the caller mapped, and with `AdviseDontNeed` it must hold nothing still needed, since\nthat advice loses whatever the range held. On anonymous memory that is a zeroing; on a private file mapping it\ndiscards the modifications rather than writing them back.",
         "typeParams": [],
         "params": [
           { "name": "address", "markdown": "a page-aligned address" },
@@ -3289,7 +3289,7 @@
       "displayName": "AuxPageSize",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 144,
+      "line": 151,
       "signature": "pub const AuxPageSize: uint64",
       "typeParams": [],
       "doc": {
@@ -3315,7 +3315,7 @@
       "displayName": "AuxNull",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 148,
+      "line": 155,
       "signature": "pub const AuxNull: uint64",
       "typeParams": [],
       "doc": {
@@ -3341,7 +3341,7 @@
       "displayName": "QueryPageSize",
       "module": "Memory",
       "source": "Src/Memory.rux",
-      "line": 163,
+      "line": 170,
       "signature": "pub func QueryPageSize() -> int64",
       "typeParams": [],
       "doc": {
@@ -3783,12 +3783,12 @@
       "displayName": "FcntlInt",
       "module": "Poll",
       "source": "Src/Poll.rux",
-      "line": 110,
-      "signature": "pub func FcntlInt(fd: FileDescriptor, command: int32, argument: int64) -> int64",
+      "line": 112,
+      "signature": "pub unsafe func FcntlInt(fd: FileDescriptor, command: int32, argument: int64) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Performs `command` on a descriptor with an integer argument.",
-        "markdown": "Performs `command` on a descriptor with an integer argument.",
+        "markdown": "Performs `command` on a descriptor with an integer argument.\nSafety: `command` must take an integer argument, such as `F_GETFL` or `F_SETFL`; for a command whose argument is a\npointer, the kernel would use `argument` as an address.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "the descriptor" },
@@ -3816,7 +3816,7 @@
       "displayName": "EpollCreate1",
       "module": "Poll",
       "source": "Src/Poll.rux",
-      "line": 119,
+      "line": 121,
       "signature": "pub func EpollCreate1(flags: int32) -> int64",
       "typeParams": [],
       "doc": {
@@ -3845,12 +3845,12 @@
       "displayName": "EpollControl",
       "module": "Poll",
       "source": "Src/Poll.rux",
-      "line": 132,
-      "signature": "pub func EpollControl(epoll: FileDescriptor, operation: int32, fd: FileDescriptor, event: *opaque) -> int64",
+      "line": 136,
+      "signature": "pub unsafe func EpollControl(epoll: FileDescriptor, operation: int32, fd: FileDescriptor, event: *opaque) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Adds, changes or removes the registration of `fd` with an epoll instance.",
-        "markdown": "Adds, changes or removes the registration of `fd` with an epoll instance.",
+        "markdown": "Adds, changes or removes the registration of `fd` with an epoll instance.\nSafety: a non-null `event` must be readable for `EpollEventBytes` bytes.",
         "typeParams": [],
         "params": [
           { "name": "epoll", "markdown": "the instance" },
@@ -3882,12 +3882,12 @@
       "displayName": "EpollWait",
       "module": "Poll",
       "source": "Src/Poll.rux",
-      "line": 145,
-      "signature": "pub func EpollWait(epoll: FileDescriptor, events: *var opaque, capacity: int32, timeout: int32) -> int64",
+      "line": 150,
+      "signature": "pub unsafe func EpollWait(epoll: FileDescriptor, events: *var opaque, capacity: int32, timeout: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Waits until a registered descriptor is ready or `timeout` milliseconds pass, filling `events` with what is ready.",
-        "markdown": "Waits until a registered descriptor is ready or `timeout` milliseconds pass, filling `events` with what is ready.",
+        "markdown": "Waits until a registered descriptor is ready or `timeout` milliseconds pass, filling `events` with what is ready.\nSafety: `events` must be writable for `capacity` events of `EpollEventBytes` bytes each.",
         "typeParams": [],
         "params": [
           { "name": "epoll", "markdown": "the instance" },
@@ -3916,7 +3916,7 @@
       "displayName": "Exit",
       "module": "Process",
       "source": "Src/Process.rux",
-      "line": 17,
+      "line": 18,
       "signature": "pub func Exit(code: int32)",
       "typeParams": [],
       "doc": {
@@ -3942,7 +3942,7 @@
       "displayName": "GetPid",
       "module": "Process",
       "source": "Src/Process.rux",
-      "line": 27,
+      "line": 29,
       "signature": "pub func GetPid() -> ProcessId",
       "typeParams": [],
       "doc": {
@@ -4519,12 +4519,12 @@
       "displayName": "Connect",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 126,
-      "signature": "pub func Connect(fd: FileDescriptor, address: *opaque, length: uint32) -> int64",
+      "line": 130,
+      "signature": "pub unsafe func Connect(fd: FileDescriptor, address: *opaque, length: uint32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Connects a socket to `address`, waiting for a stream connection to be made.",
-        "markdown": "Connects a socket to `address`, waiting for a stream connection to be made.",
+        "markdown": "Connects a socket to `address`, waiting for a stream connection to be made.\nSafety: `address` must be readable for `length` bytes.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "the socket" },
@@ -4552,12 +4552,12 @@
       "displayName": "Bind",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 137,
-      "signature": "pub func Bind(fd: FileDescriptor, address: *opaque, length: uint32) -> int64",
+      "line": 142,
+      "signature": "pub unsafe func Bind(fd: FileDescriptor, address: *opaque, length: uint32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Gives a socket its local address.",
-        "markdown": "Gives a socket its local address.",
+        "markdown": "Gives a socket its local address.\nSafety: `address` must be readable for `length` bytes.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "the socket" },
@@ -4582,7 +4582,7 @@
       "displayName": "Listen",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 147,
+      "line": 152,
       "signature": "pub func Listen(fd: FileDescriptor, backlog: int32) -> int64",
       "typeParams": [],
       "doc": {
@@ -4614,12 +4614,12 @@
       "displayName": "Accept4",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 159,
-      "signature": "pub func Accept4(fd: FileDescriptor, address: *var opaque, length: *var uint32, flags: int32) -> int64",
+      "line": 167,
+      "signature": "pub unsafe func Accept4(fd: FileDescriptor, address: *var opaque, length: *var uint32, flags: int32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Accepts a waiting connection as a new socket.",
-        "markdown": "Accepts a waiting connection as a new socket.",
+        "markdown": "Accepts a waiting connection as a new socket.\nSafety: `address` and `length` must be null together, or `length` must be writable and `address` writable for the\n`*length` bytes it states.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "the listening socket" },
@@ -4648,12 +4648,12 @@
       "displayName": "SendTo",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 173,
-      "signature": "pub func SendTo(fd: FileDescriptor, buffer: *opaque, count: uint, flags: int32, address: *opaque, length: uint32) -> int64",
+      "line": 182,
+      "signature": "pub unsafe func SendTo(fd: FileDescriptor, buffer: *opaque, count: uint, flags: int32, address: *opaque, length: uint32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Sends bytes on a socket, to `address` when it is not connected.",
-        "markdown": "Sends bytes on a socket, to `address` when it is not connected.",
+        "markdown": "Sends bytes on a socket, to `address` when it is not connected.\nSafety: `buffer` must be readable for `count` bytes, and a non-null `address` readable for `length` bytes.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "the socket" },
@@ -4684,12 +4684,12 @@
       "displayName": "ReceiveFrom",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 187,
-      "signature": "pub func ReceiveFrom(fd: FileDescriptor, buffer: *var opaque, count: uint, flags: int32, address: *var opaque, length: *var uint32) -> int64",
+      "line": 199,
+      "signature": "pub unsafe func ReceiveFrom(fd: FileDescriptor, buffer: *var opaque, count: uint, flags: int32, address: *var opaque, length: *var uint32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Receives bytes from a socket, and where they came from.",
-        "markdown": "Receives bytes from a socket, and where they came from.",
+        "markdown": "Receives bytes from a socket, and where they came from.\nSafety: `buffer` must be writable for `count` bytes. `address` and `length` must be null together, or `length` must\nbe writable and `address` writable for the `*length` bytes it states.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "the socket" },
@@ -4720,7 +4720,7 @@
       "displayName": "Shutdown",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 197,
+      "line": 210,
       "signature": "pub func Shutdown(fd: FileDescriptor, how: int32) -> int64",
       "typeParams": [],
       "doc": {
@@ -4752,12 +4752,12 @@
       "displayName": "SetSocketOption",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 210,
-      "signature": "pub func SetSocketOption(fd: FileDescriptor, level: int32, name: int32, value: *opaque, length: uint32) -> int64",
+      "line": 225,
+      "signature": "pub unsafe func SetSocketOption(fd: FileDescriptor, level: int32, name: int32, value: *opaque, length: uint32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Sets a socket option.",
-        "markdown": "Sets a socket option.",
+        "markdown": "Sets a socket option.\nSafety: `value` must be readable for `length` bytes.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "the socket" },
@@ -4787,12 +4787,12 @@
       "displayName": "GetSocketName",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 221,
-      "signature": "pub func GetSocketName(fd: FileDescriptor, address: *var opaque, length: *var uint32) -> int64",
+      "line": 238,
+      "signature": "pub unsafe func GetSocketName(fd: FileDescriptor, address: *var opaque, length: *var uint32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Reads a socket's local address.",
-        "markdown": "Reads a socket's local address.",
+        "markdown": "Reads a socket's local address.\nSafety: `length` must be writable, and `address` writable for the `*length` bytes it states.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "the socket" },
@@ -4820,12 +4820,12 @@
       "displayName": "GetPeerName",
       "module": "Socket",
       "source": "Src/Socket.rux",
-      "line": 232,
-      "signature": "pub func GetPeerName(fd: FileDescriptor, address: *var opaque, length: *var uint32) -> int64",
+      "line": 250,
+      "signature": "pub unsafe func GetPeerName(fd: FileDescriptor, address: *var opaque, length: *var uint32) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "Reads the address of a connected socket's peer.",
-        "markdown": "Reads the address of a connected socket's peer.",
+        "markdown": "Reads the address of a connected socket's peer.\nSafety: `length` must be writable, and `address` writable for the `*length` bytes it states.",
         "typeParams": [],
         "params": [
           { "name": "fd", "markdown": "the socket" },

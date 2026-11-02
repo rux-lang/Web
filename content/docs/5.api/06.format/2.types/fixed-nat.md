@@ -70,7 +70,7 @@ Cannot fail: one limb always fits. Runs in constant time and allocates nothing.
 <h3 id="is-zero"><code>IsZero</code></h3>
 
 ```rux
-pub func IsZero(self: &FixedNat) -> bool
+pub func IsZero(&self) -> bool
 ```
 
 Whether this is zero.
@@ -83,7 +83,7 @@ Borrows the value. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="bit-length"><code>BitLength</code></h3>
 
 ```rux
-pub func BitLength(self: &FixedNat) -> uint
+pub func BitLength(&self) -> uint
 ```
 
 How many bits the value occupies, counting from its highest set bit.
@@ -96,7 +96,7 @@ Zero has no bits. Borrows the value; runs in time proportional to one limb and a
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(self: &FixedNat, other: &FixedNat) -> int32
+pub func Compare(&self, other: &FixedNat) -> int32
 ```
 
 How this value orders against `other`.
@@ -113,7 +113,7 @@ Borrows both. Cannot fail; runs in time proportional to the length and allocates
 <h3 id="assign"><code>Assign</code></h3>
 
 ```rux
-pub func Assign(self: &var FixedNat, other: &FixedNat)
+pub func Assign(&var self, other: &FixedNat)
 ```
 
 Replaces this value with `other`.
@@ -129,7 +129,7 @@ Cannot fail: both have the same capacity. Runs in time proportional to the capac
 
 ```rux
 pub func MultiplyAddSmall(
-    self: &var FixedNat,
+    &var self,
     factor: uint64,
     addend: uint64
 ) -> bool
@@ -153,10 +153,7 @@ was — a caller that sees this has passed the bound Docs/NarrowFloat.md proves 
 <h3 id="multiply-small"><code>MultiplySmall</code></h3>
 
 ```rux
-pub func MultiplySmall(
-    self: &var FixedNat,
-    factor: uint64
-) -> bool
+pub func MultiplySmall(&var self, factor: uint64) -> bool
 ```
 
 Multiplies by `factor`.
@@ -173,10 +170,7 @@ Answers false when the product does not fit, leaving the value as it was.
 <h3 id="add-small"><code>AddSmall</code></h3>
 
 ```rux
-pub func AddSmall(
-    self: &var FixedNat,
-    addend: uint64
-) -> bool
+pub func AddSmall(&var self, addend: uint64) -> bool
 ```
 
 Adds `addend`.
@@ -193,7 +187,7 @@ Answers false when the sum does not fit, leaving the value as it was.
 <h3 id="shift-left"><code>ShiftLeft</code></h3>
 
 ```rux
-pub func ShiftLeft(self: &var FixedNat, bits: uint) -> bool
+pub func ShiftLeft(&var self, bits: uint) -> bool
 ```
 
 Shifts left by `bits`, which multiplies by two to that power.
@@ -211,7 +205,7 @@ width a shift needs is known before any of it happens.
 <h3 id="add"><code>Add</code></h3>
 
 ```rux
-pub func Add(self: &var FixedNat, other: &FixedNat) -> bool
+pub func Add(&var self, other: &FixedNat) -> bool
 ```
 
 Adds `other`.
@@ -228,7 +222,7 @@ Answers false when the sum needs more limbs than the capacity holds, leaving the
 <h3 id="subtract"><code>Subtract</code></h3>
 
 ```rux
-pub func Subtract(self: &var FixedNat, other: &FixedNat)
+pub func Subtract(&var self, other: &FixedNat)
 ```
 
 Subtracts `other`, which must not be larger than this value.
@@ -244,10 +238,7 @@ has no answer in an unsigned type, and this borrows past the top rather than rep
 <h3 id="multiply-power-of-ten"><code>MultiplyPowerOfTen</code></h3>
 
 ```rux
-pub func MultiplyPowerOfTen(
-    self: &var FixedNat,
-    power: uint
-) -> bool
+pub func MultiplyPowerOfTen(&var self, power: uint) -> bool
 ```
 
 Multiplies by ten to the `power`.
@@ -269,10 +260,7 @@ it is reached only past a bound that is proved not to be.
 <h3 id="set-power-of-two"><code>SetPowerOfTwo</code></h3>
 
 ```rux
-pub func SetPowerOfTwo(
-    self: &var FixedNat,
-    bits: uint
-) -> bool
+pub func SetPowerOfTwo(&var self, bits: uint) -> bool
 ```
 
 Replaces this value with two to the `bits`.
@@ -289,7 +277,7 @@ Answers false when `bits` is past the capacity, leaving the value as it was.
 <h3 id="low64"><code>Low64</code></h3>
 
 ```rux
-pub func Low64(self: &FixedNat) -> uint64
+pub func Low64(&self) -> uint64
 ```
 
 The value's low sixty-four bits.

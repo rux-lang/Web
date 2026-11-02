@@ -24,10 +24,10 @@ Something that can fill a buffer with unpredictable bytes.
 ```rux
 pub interface EntropySource {
     func Fill(
-        self: &var Self,
+        &var self,
         buffer: *var opaque,
         length: uint
-    ) -> ! EntropyError;
+    ) throws EntropyError;
 }
 ```
 
@@ -40,10 +40,10 @@ demand. An implementation either fills the whole buffer and succeeds, or fails w
 
 ```rux
 func Fill(
-    self: &var Self,
+    &var self,
     buffer: *var opaque,
     length: uint
-) -> ! EntropyError
+) throws EntropyError
 ```
 
 Fills `length` bytes of `buffer` with unpredictable bytes.
@@ -72,11 +72,11 @@ partial survives.
 <h3 id="fill-from"><code>FillFrom</code></h3>
 
 ```rux
-pub func FillFrom(
+pub unsafe func FillFrom(
     source: &var EntropySource,
     buffer: *var opaque,
     length: uint
-) -> ! EntropyError
+) throws EntropyError
 ```
 
 Fills `length` bytes of `buffer` from `source`, in as many calls as it takes.
@@ -86,10 +86,10 @@ A request larger than a single call accepts is split, so a caller need not know 
 part-way through a split request is a failure of the whole request: there is no state in which some of a buffer
 is unpredictable and the rest is not, because nothing downstream could act on the difference.
 Runs in time proportional to `length` and allocates nothing.
-`buffer` must be writable for `length` bytes. On any failure the whole buffer is zeroized, including the parts an
-earlier call filled successfully.
+Safety: `buffer` must be writable for `length` bytes. On any failure the whole buffer is zeroized, including the
+parts an earlier call filled successfully.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Fill.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Fill.rux#L81)
 
 **Parameters**
 
@@ -104,12 +104,12 @@ earlier call filled successfully.
 <h3 id="fill-with-retries"><code>FillWithRetries</code></h3>
 
 ```rux
-pub func FillWithRetries(
+pub unsafe func FillWithRetries(
     source: &var EntropySource,
     buffer: *var opaque,
     length: uint,
     attempts: uint
-) -> ! EntropyError
+) throws EntropyError
 ```
 
 Fills `length` bytes of `buffer` from `source`, trying again while the failure says trying again might work.
@@ -119,10 +119,10 @@ Only a transient failure is retried — `Interrupted`, which says a signal arriv
 wrong. A system with no source and a provider that refused are both reported at once, because repeating them
 would only take longer to reach the same answer.
 Runs in time proportional to `length` times the attempts made, and allocates nothing.
-`buffer` must be writable for `length` bytes. Every failed attempt zeroizes the buffer, so a failure that
+Safety: `buffer` must be writable for `length` bytes. Every failed attempt zeroizes the buffer, so a failure that
 exhausts the attempts leaves zeros.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Fill.rux#L113)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Fill.rux#L115)
 
 **Parameters**
 

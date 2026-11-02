@@ -54,14 +54,14 @@ pub struct EncodingWriter {
 A writer that encodes what is written to it onto another writer. Not copied.
 The text is complete only once [`Finish`](/docs/api/encoding/stream#encoding-writer-finish) has written the last group and its padding.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L76)
 
-**Associated functions**
+**Constructors**
 
-<h3 id="encoding-writer-new"><code>New</code></h3>
+<h3 id="encoding-writer-new"><code>EncodingWriter</code></h3>
 
 ```rux
-pub func New(
+pub func EncodingWriter(
     sink: Writer,
     codec: StreamCodec
 ) -> EncodingWriter
@@ -76,14 +76,14 @@ A writer encoding with `codec` onto `sink`.
 
 **Returns**: the writer
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L90)
 
 **Methods**
 
 <h3 id="encoding-writer-finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var EncodingWriter) -> ! IoError
+pub func Finish(&var self) throws IoError
 ```
 
 Ends the text: encodes the bytes of an incomplete last group, with padding where the form uses it, and
@@ -91,7 +91,7 @@ flushes the writer underneath. Nothing more may be written afterwards.
 
 **Returns**: nothing, or why the writer underneath failed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L106)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L105)
 
 **Implements Writer**
 
@@ -101,9 +101,9 @@ flushes the writer underneath. Nothing more may be written afterwards.
 
 ```rux
 pub func Write(
-    self: &var EncodingWriter,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Encodes `bytes`, writing every complete group and holding back the rest of an incomplete one.
@@ -114,12 +114,12 @@ Encodes `bytes`, writing every complete group and holding back the rest of an in
 
 **Returns**: how many were taken, which is all of them, or fails with `InvalidInput` after [`Finish`](/docs/api/encoding/stream#encoding-writer-finish)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L123)
 
 <h3 id="encoding-writer-flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var EncodingWriter) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Flushes the writer underneath. An incomplete group stays held back, since its characters depend on bytes
@@ -127,7 +127,7 @@ not yet written; [`Finish`](/docs/api/encoding/stream#encoding-writer-finish) is
 
 **Returns**: nothing, or why the writer underneath failed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L163)
 
 <h2 id="decoding-reader"><code>DecodingReader</code></h2>
 
@@ -141,14 +141,14 @@ A reader that decodes text from another reader into bytes. Not copied.
 The text is held to the same rules as the slice decoders, so text that would not decode whole fails with
 `InvalidInput` when the reader reaches it. Crockford Base32 skips its hyphens, as its specification asks.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L171)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L173)
 
-**Associated functions**
+**Constructors**
 
-<h3 id="decoding-reader-new"><code>New</code></h3>
+<h3 id="decoding-reader-new"><code>DecodingReader</code></h3>
 
 ```rux
-pub func New(
+pub func DecodingReader(
     source: Reader,
     codec: StreamCodec
 ) -> DecodingReader
@@ -173,9 +173,9 @@ A reader decoding `codec` text from `source`.
 
 ```rux
 pub func Read(
-    self: &var DecodingReader,
+    &var self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Decodes into `into` as many bytes as are ready, reading more text when none are.
@@ -187,4 +187,4 @@ Decodes into `into` as many bytes as are ready, reading more text when none are.
 **Returns**: how many were decoded, or fails with `EndOfStream` after the last, or with `InvalidInput` for text
 that is not in the form
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L253)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Stream.rux#L255)

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Hashing.rux
-  line: 25
+  line: 26
 seo:
   title: "Hashing — Collections API"
   description: Ready-made seeded hash and equality callbacks for the key types a hash map or set is keyed on.
@@ -36,7 +36,7 @@ The seeded hash of a `uint`.
 the same value differently.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L26)
 
 **Parameters**
 
@@ -60,7 +60,7 @@ pub func HashUint64(
 
 The seeded hash of a `uint64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L38)
 
 **Parameters**
 
@@ -84,7 +84,7 @@ pub func HashUint32(
 
 The seeded hash of a `uint32`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L50)
 
 **Parameters**
 
@@ -108,7 +108,7 @@ pub func HashInt64(
 
 The seeded hash of an `int64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L62)
 
 **Parameters**
 
@@ -132,7 +132,7 @@ pub func HashInt32(
 
 The seeded hash of an `int32`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L74)
 
 **Parameters**
 
@@ -156,7 +156,7 @@ pub func HashChar8(
 
 The seeded hash of a `char8`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L86)
 
 **Parameters**
 
@@ -183,7 +183,7 @@ The seeded hash of a run of characters, which is what a string key comes to.
 is what makes a text key usable at all.
 Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L100)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L101)
 
 **Parameters**
 
@@ -203,7 +203,7 @@ pub func EqualsUint(left: uint, right: uint) -> bool
 
 Whether two `uint` keys are the same.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L111)
 
 **Parameters**
 
@@ -222,7 +222,7 @@ pub func EqualsUint64(left: uint64, right: uint64) -> bool
 
 Whether two `uint64` keys are the same.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L120)
 
 **Parameters**
 
@@ -241,7 +241,7 @@ pub func EqualsUint32(left: uint32, right: uint32) -> bool
 
 Whether two `uint32` keys are the same.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L129)
 
 **Parameters**
 
@@ -260,7 +260,7 @@ pub func EqualsInt64(left: int64, right: int64) -> bool
 
 Whether two `int64` keys are the same.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L138)
 
 **Parameters**
 
@@ -279,7 +279,7 @@ pub func EqualsInt32(left: int32, right: int32) -> bool
 
 Whether two `int32` keys are the same.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L147)
 
 **Parameters**
 
@@ -298,7 +298,7 @@ pub func EqualsChar8(left: char8, right: char8) -> bool
 
 Whether two `char8` keys are the same.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L154)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L156)
 
 **Parameters**
 
@@ -324,7 +324,7 @@ pointers hold.
 Compares eight bytes at a time, finishing with the last eight, which may overlap words already compared; runs of
 four to seven bytes compare their first and last four. Only shorter runs go byte by byte.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L167)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Hashing.rux#L169)
 
 **Parameters**
 

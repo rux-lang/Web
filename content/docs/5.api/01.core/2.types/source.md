@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Source.rux
-  line: 10
+  line: 11
 seo:
   title: "Source — Core API"
   description: The location of the expression that reads it.
@@ -38,15 +38,15 @@ the constant it folds to; the text fields borrow the compiler's own storage, whi
 
 ## Fields
 
-| Name       | Type        | Description                                                                     |
-| ---------- | ----------- | ------------------------------------------------------------------------------- |
-| `line`     | `uint`      | The one-based line of the reading expression.                                   |
-| `column`   | `uint`      | The one-based column of the reading expression.                                 |
-| `file`     | `char8[..]` | The source file as the build named it, which is the spelling a diagnostic uses. |
-| `fileName` | `char8[..]` | The file's last path component, with its extension.                             |
-| `filePath` | `char8[..]` | The file's path, relative to the package root where the file belongs to one.    |
-| `function` | `char8[..]` | The enclosing function, qualified with its type for a method.                   |
-| `module`   | `char8[..]` | The enclosing module path, relative to the package root.                        |
+| Name       | Type        | Description                                                                                                                        |
+| ---------- | ----------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `line`     | `uint`      | The one-based line of the reading expression.                                                                                      |
+| `column`   | `uint`      | The one-based column of the reading expression.                                                                                    |
+| `file`     | `char8[..]` | The source file as the build named it, which is the spelling a diagnostic uses.                                                    |
+| `fileName` | `char8[..]` | The file's last path component, with its extension.                                                                                |
+| `filePath` | `char8[..]` | The file's path, relative to the package root where the file belongs to one.                                                       |
+| `function` | `char8[..]` | The enclosing function, qualified with its type for a method.                                                                      |
+| `module`   | `char8[..]` | The path of the `module` blocks around the read, such as `Tools::Inner`; empty at the top of a file, since a file is not a module. |
 
 ## Related
 
@@ -58,4 +58,4 @@ pub const #source: Source;
 
 The reading expression's own location, as a compile-time value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Source.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Source.rux#L31)

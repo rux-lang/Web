@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Access.rux
-  line: 107
+  line: 110
 seo:
   title: "Unaligned and byte-order access — Memory API"
   description: Reading and writing values at any alignment and in either byte order.
@@ -24,7 +24,7 @@ Reading and writing values at any alignment and in either byte order.
 <h2 id="load-unaligned"><code>LoadUnaligned&lt;T&gt;</code></h2>
 
 ```rux
-pub func LoadUnaligned<T>(
+pub unsafe func LoadUnaligned<T>(
     source: *opaque,
     destination: *var T
 )
@@ -36,10 +36,10 @@ non-null.
 The bytes are taken one at a time, so this is correct at any address on any machine — including the ones where a
 misaligned load faults rather than merely costing more.
 Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
-`source` must be readable for `sizeof(T)` bytes. The bytes are taken as they are, so a value that is not a valid
-`T` stays invalid; this reinterprets rather than validating.
+Safety: `source` must be readable for `sizeof(T)` bytes. The bytes are taken as they are, so a value that is not a
+valid `T` stays invalid; this reinterprets rather than validating.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L110)
 
 **Type parameters**
 
@@ -57,7 +57,7 @@ Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
 <h2 id="store-unaligned"><code>StoreUnaligned&lt;T&gt;</code></h2>
 
 ```rux
-pub func StoreUnaligned<T>(
+pub unsafe func StoreUnaligned<T>(
     destination: *var opaque,
     value: *T
 )
@@ -66,9 +66,9 @@ pub func StoreUnaligned<T>(
 Writes a value of `T` to `destination`, whatever `destination` is aligned to.
 `value` is borrowed and read; `destination` is borrowed and receives `sizeof(T)` bytes. Both must be non-null.
 Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
-`destination` must be writable for `sizeof(T)` bytes.
+Safety: `destination` must be writable for `sizeof(T)` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L122)
 
 **Type parameters**
 
@@ -86,7 +86,10 @@ Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
 <h2 id="reverse-block"><code>ReverseBlock</code></h2>
 
 ```rux
-pub func ReverseBlock(buffer: *var opaque, length: uint)
+pub unsafe func ReverseBlock(
+    buffer: *var opaque,
+    length: uint
+)
 ```
 
 Reverses the order of `length` bytes at `buffer`, in place.
@@ -94,9 +97,9 @@ Reverses the order of `length` bytes at `buffer`, in place.
 This is the byte-order conversion for a run of bytes rather than for one value; `Core::ReverseBytes` is the one
 that takes an integer.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`buffer` must be readable and writable for `length` bytes.
+Safety: `buffer` must be readable and writable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L135)
 
 **Parameters**
 
@@ -108,7 +111,7 @@ Cannot fail. Runs in time proportional to `length` and allocates nothing.
 <h2 id="load-little-endian"><code>LoadLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func LoadLittleEndian<T>(
+pub unsafe func LoadLittleEndian<T>(
     source: *opaque,
     destination: *var T
 )
@@ -120,9 +123,9 @@ Both must be non-null. Needs no alignment.
 This is the pair of calls a file or wire format actually needs: the bytes are wherever the format put them, and
 their order is the format's rather than the machine's.
 Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
-`source` must be readable for `sizeof(T)` bytes.
+Safety: `source` must be readable for `sizeof(T)` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L160)
 
 **Type parameters**
 
@@ -140,7 +143,7 @@ Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
 <h2 id="load-big-endian"><code>LoadBigEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func LoadBigEndian<T>(
+pub unsafe func LoadBigEndian<T>(
     source: *opaque,
     destination: *var T
 )
@@ -150,9 +153,9 @@ Reads a `T` from `source`, taking the bytes as big-endian.
 `source` is borrowed and `sizeof(T)` bytes are read; `destination` receives the value in the target's own order.
 Both must be non-null. Needs no alignment. This is network byte order.
 Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
-`source` must be readable for `sizeof(T)` bytes.
+Safety: `source` must be readable for `sizeof(T)` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L176)
 
 **Type parameters**
 
@@ -170,7 +173,7 @@ Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
 <h2 id="store-little-endian"><code>StoreLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func StoreLittleEndian<T>(
+pub unsafe func StoreLittleEndian<T>(
     destination: *var opaque,
     value: *T
 )
@@ -180,9 +183,9 @@ Writes a `T` to `destination` as little-endian bytes.
 `value` is borrowed and read; `destination` receives `sizeof(T)` bytes. Both must be non-null. Needs no
 alignment.
 Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
-`destination` must be writable for `sizeof(T)` bytes.
+Safety: `destination` must be writable for `sizeof(T)` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L192)
 
 **Type parameters**
 
@@ -200,7 +203,7 @@ Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
 <h2 id="store-big-endian"><code>StoreBigEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func StoreBigEndian<T>(
+pub unsafe func StoreBigEndian<T>(
     destination: *var opaque,
     value: *T
 )
@@ -210,9 +213,9 @@ Writes a `T` to `destination` as big-endian bytes.
 `value` is borrowed and read; `destination` receives `sizeof(T)` bytes. Both must be non-null. Needs no
 alignment.
 Cannot fail. Runs in time proportional to `sizeof(T)` and allocates nothing.
-`destination` must be writable for `sizeof(T)` bytes.
+Safety: `destination` must be writable for `sizeof(T)` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L205)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L208)
 
 **Type parameters**
 

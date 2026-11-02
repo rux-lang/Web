@@ -74,7 +74,7 @@ called once per element with the accumulator so far and the element, starting fr
 The mirror of [`Fold`](/docs/api/algorithms/folding#fold), and a different answer for any `combine` that is not associative.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `combine` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L52)
 
 **Type parameters**
 
@@ -106,7 +106,7 @@ Requires `+` on the element type. Overflow behaves exactly as `+` does on that t
 caller who needs checking folds a checked addition instead.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L74)
 
 **Type parameters**
 
@@ -135,7 +135,7 @@ it must be one rather than zero for the answer to mean anything.
 Requires `*` on the element type. Overflow behaves exactly as `*` does on that type.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L95)
 
 **Type parameters**
 
@@ -169,7 +169,7 @@ Reports false, having written nothing, when the two lengths differ — for the s
 partial result is worse than a refused one when the caller cannot tell how far it got.
 Runs in time proportional to the length and allocates nothing beyond whatever `transform` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L119)
 
 **Type parameters**
 

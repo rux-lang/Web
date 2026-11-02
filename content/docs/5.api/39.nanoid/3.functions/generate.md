@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Generate.rux
-  line: 56
+  line: 61
 seo:
   title: "Generating — NanoId API"
   description: "Generating an identifier into a buffer of your own, from any alphabet and entropy source."
@@ -24,12 +24,12 @@ Generating an identifier into a buffer of your own, from any alphabet and entrop
 <h2 id="generate-nano-id"><code>GenerateNanoId</code></h2>
 
 ```rux
-pub func GenerateNanoId(into: var char8[..]) -> ! EntropyError
+pub func GenerateNanoId(into: var char8[..]) throws EntropyError
 
 pub func GenerateNanoId(
     into: var char8[..],
     alphabet: char8[..]
-) -> ! NanoIdError
+) throws NanoIdError
 ```
 
 Fills the whole of `into` with an identifier from the default alphabet, using the operating system's generator.
@@ -38,12 +38,12 @@ random byte, so a twenty-one-character identifier costs twenty-one bytes of entr
 reported when it could not supply random bytes, leaving `into` zeroized. An empty `into` succeeds and requests
 nothing.
 
-| Overload                                                                             | Summary                                                                                                         |
-| ------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------- |
-| `pub func GenerateNanoId(into: var char8[..]) -> ! EntropyError`                     | Fills the whole of `into` with an identifier from the default alphabet, using the operating system's generator. |
-| `pub func GenerateNanoId(into: var char8[..], alphabet: char8[..]) -> ! NanoIdError` | Fills the whole of `into` with an identifier drawn from `alphabet`, using the operating system's generator.     |
+| Overload                                                                               | Summary                                                                                                         |
+| -------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| `pub func GenerateNanoId(into: var char8[..]) throws EntropyError`                     | Fills the whole of `into` with an identifier from the default alphabet, using the operating system's generator. |
+| `pub func GenerateNanoId(into: var char8[..], alphabet: char8[..]) throws NanoIdError` | Fills the whole of `into` with an identifier drawn from `alphabet`, using the operating system's generator.     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/Generate.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/Generate.rux#L61)
 
 **Parameters**
 
@@ -61,7 +61,7 @@ pub func GenerateNanoIdFrom(
     source: &var EntropySource,
     into: var char8[..],
     alphabet: char8[..]
-) -> ! NanoIdError
+) throws NanoIdError
 ```
 
 Fills the whole of `into` with an identifier drawn from `alphabet`, using random bytes from `source`.
@@ -70,7 +70,7 @@ bytes `source` supplies, so a deterministic source gives deterministic identifie
 from [`ValidateAlphabet`](/docs/api/nanoid/alphabet#validate-alphabet) before using `source`, leaving `into` untouched, and `Entropy` with what `source`
 reported, leaving `into` zeroized.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/Generate.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/NanoId/Src/Generate.rux#L89)
 
 **Parameters**
 

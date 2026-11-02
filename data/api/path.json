@@ -211,7 +211,7 @@
           "kind": "method",
           "name": "Length",
           "line": 53,
-          "signature": "pub func Length(self: &OsStringView) -> uint",
+          "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&OsStringView",
@@ -243,7 +243,7 @@
           "kind": "method",
           "name": "IsEmpty",
           "line": 60,
-          "signature": "pub func IsEmpty(self: &OsStringView) -> bool",
+          "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
           "receiver": "&OsStringView",
@@ -275,7 +275,7 @@
           "kind": "method",
           "name": "Units",
           "line": 67,
-          "signature": "pub func Units(self: &OsStringView) -> OsUnit[..]",
+          "signature": "pub func Units(&self) -> OsUnit[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&OsStringView",
@@ -307,7 +307,7 @@
           "kind": "method",
           "name": "Equals",
           "line": 77,
-          "signature": "pub func Equals(self: &OsStringView, other: &OsStringView) -> bool",
+          "signature": "pub func Equals(&self, other: &OsStringView) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&OsStringView" }],
           "receiver": "&OsStringView",
@@ -338,8 +338,8 @@
         {
           "kind": "method",
           "name": "ToText",
-          "line": 95,
-          "signature": "pub func ToText(self: &OsStringView, allocator: Allocator) -> String ! TextError",
+          "line": 96,
+          "signature": "pub func ToText(&self, allocator: Allocator) -> String throws TextError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": "&OsStringView",
@@ -370,8 +370,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 208,
-          "signature": "pub func WriteDisplay(self: &OsStringView, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 220,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -408,8 +408,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 226,
-          "signature": "pub func WriteDebug(self: &OsStringView, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 238,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -462,12 +462,12 @@
       "displayName": "OsString",
       "module": "OsString",
       "source": "Src/OsString.rux",
-      "line": 135,
+      "line": 140,
       "signature": "pub struct OsString",
       "typeParams": [],
       "doc": {
         "summary": "Native text that owns its units.",
-        "markdown": "Native text that owns its units.\nCopyable with value semantics: each copy owns an independent native-unit block.",
+        "markdown": "Native text that owns its units.\nMove-only: it owns its native-unit block and gives it back when it dies. `Clone` makes an independent copy.\nStorage invariant, which every `unsafe` block here relies on: `data` is null exactly when `length` is zero, and\notherwise addresses a block of `length` initialized units from `allocator`.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -480,7 +480,7 @@
           "name": "data",
           "type": "*var OsUnit",
           "public": false,
-          "line": 137,
+          "line": 142,
           "doc": "The units, or null for no length.",
           "targets": [
             "windows-x86_64",
@@ -497,7 +497,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 139,
+          "line": 144,
           "doc": "How many units there are.",
           "targets": [
             "windows-x86_64",
@@ -514,7 +514,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 141,
+          "line": 146,
           "doc": "Where the block came from, and where it goes back to.",
           "targets": [
             "windows-x86_64",
@@ -532,41 +532,9 @@
       "cases": [],
       "members": [
         {
-          "kind": "operator",
-          "name": "=",
-          "line": 148,
-          "signature": "pub func =(self: &var OsString, other: &OsString)",
-          "typeParams": [],
-          "params": [{ "name": "other", "type": "&OsString" }],
-          "receiver": "&var OsString",
-          "returnType": null,
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "Deep-copies native units into independent storage from the same allocator.",
-            "markdown": "Deep-copies native units into independent storage from the same allocator.",
-            "typeParams": [],
-            "params": [{ "name": "other", "markdown": "the value to compare against" }],
-            "returns": null,
-            "see": ["https://rux-lang.dev/docs/api/path/os-string#copy"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
           "kind": "constructor",
           "name": "OsString",
-          "line": 165,
+          "line": 154,
           "signature": "pub func OsString(allocator: Allocator) -> OsString",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
@@ -598,27 +566,27 @@
         {
           "kind": "associated",
           "name": "FromView",
-          "line": 176,
-          "signature": "pub func FromView(allocator: Allocator, view: OsStringView) -> OsString ! TextError",
+          "line": 165,
+          "signature": "pub func FromView(allocator: Allocator, view: OsStringView) -> OsString",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
             { "name": "view", "type": "OsStringView" }
           ],
           "receiver": null,
-          "returnType": "OsString ! TextError",
+          "returnType": "OsString",
           "value": null,
           "conformance": null,
           "public": true,
           "doc": {
             "summary": "An owning copy of what `view` spans, exactly as it stands.",
-            "markdown": "An owning copy of what `view` spans, exactly as it stands.\nThis is the lossless direction: whatever the system handed over survives, valid text or not. It fails with\n`OutOfMemory` when the copy cannot be made.",
+            "markdown": "An owning copy of what `view` spans, exactly as it stands.\nThis is the lossless direction: whatever the system handed over survives, valid text or not. Terminates the\nprogram when the copy cannot be made.",
             "typeParams": [],
             "params": [
               { "name": "allocator", "markdown": "where the storage comes from" },
               { "name": "view", "markdown": "the borrowed text to copy" }
             ],
-            "returns": "a copy of `view` this string owns, or an empty one when the allocator refused",
+            "returns": "a copy of `view` this string owns",
             "see": ["https://rux-lang.dev/docs/api/path/os-string#from-view"],
             "deprecated": null
           },
@@ -636,8 +604,8 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 199,
-          "signature": "pub func Length(self: &OsString) -> uint",
+          "line": 184,
+          "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&OsString",
@@ -668,8 +636,8 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 206,
-          "signature": "pub func IsEmpty(self: &OsString) -> bool",
+          "line": 191,
+          "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
           "receiver": "&OsString",
@@ -700,8 +668,8 @@
         {
           "kind": "method",
           "name": "View",
-          "line": 213,
-          "signature": "pub func View(self: &OsString) -> OsStringView",
+          "line": 198,
+          "signature": "pub func View(&self) -> OsStringView",
           "typeParams": [],
           "params": [],
           "receiver": "&OsString",
@@ -732,8 +700,8 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 219,
-          "signature": "pub func Clear(self: &var OsString)",
+          "line": 205,
+          "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var OsString",
@@ -764,8 +732,8 @@
         {
           "kind": "destructor",
           "name": "~OsString",
-          "line": 232,
-          "signature": "func ~OsString(self: &var OsString)",
+          "line": 220,
+          "signature": "func ~OsString(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var OsString",
@@ -796,27 +764,27 @@
         {
           "kind": "associated",
           "name": "FromText",
-          "line": 244,
-          "signature": "pub func FromText(allocator: Allocator, text: char8[..]) -> OsString ! TextError",
+          "line": 232,
+          "signature": "pub func FromText(allocator: Allocator, text: char8[..]) -> OsString",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
             { "name": "text", "type": "char8[..]" }
           ],
           "receiver": null,
-          "returnType": "OsString ! TextError",
+          "returnType": "OsString",
           "value": null,
           "conformance": null,
           "public": true,
           "doc": {
             "summary": "An owning native copy of UTF-8 text.",
-            "markdown": "An owning native copy of UTF-8 text.\nThe direction that always succeeds: valid text encodes into either representation, byte for byte on the\nUnix systems and through UTF-16 on Windows. It fails only when the allocation does.\nThe bytes must be well-formed UTF-8, which everything in `Rux/Text` produces and vouches for.",
+            "markdown": "An owning native copy of UTF-8 text.\nThe direction that always succeeds: valid text encodes into either representation, byte for byte on the\nUnix systems and through UTF-16 on Windows. It terminates the program when the allocation fails.\nThe bytes must be well-formed UTF-8, which everything in `Rux/Text` produces and vouches for.",
             "typeParams": [],
             "params": [
               { "name": "allocator", "markdown": "where the storage comes from" },
               { "name": "text", "markdown": "the text to act on" }
             ],
-            "returns": "the text converted to the platform's own units, or why it could not be",
+            "returns": "the text converted to the platform's own units",
             "see": ["https://rux-lang.dev/docs/api/path/os-string#from-text"],
             "deprecated": null
           },
@@ -833,9 +801,41 @@
         },
         {
           "kind": "method",
+          "name": "Clone",
+          "line": 310,
+          "signature": "pub func Clone(&self) -> OsString",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&OsString",
+          "returnType": "OsString",
+          "value": null,
+          "conformance": "Cloneable",
+          "public": true,
+          "doc": {
+            "summary": "An independent copy in a block of its own from the same allocator.",
+            "markdown": "An independent copy in a block of its own from the same allocator.\nBorrows the source and leaves it unchanged. Terminates the program when the allocator refuses, since the copy\nit promises cannot be made.\nRuns in time proportional to the length.",
+            "typeParams": [],
+            "params": [],
+            "returns": "a copy that owns its own units",
+            "see": ["https://rux-lang.dev/docs/api/path/os-string#clone"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
           "name": "WriteDisplay",
-          "line": 239,
-          "signature": "pub func WriteDisplay(self: &OsString, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 251,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -872,8 +872,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 252,
-          "signature": "pub func WriteDebug(self: &OsString, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 264,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -908,7 +908,7 @@
           ]
         }
       ],
-      "implements": ["Display", "Debug"],
+      "implements": ["Cloneable", "Display", "Debug"],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",
@@ -1035,7 +1035,7 @@
           "kind": "method",
           "name": "Parent",
           "line": 15,
-          "signature": "pub func Parent(self: &Path) -> Path?",
+          "signature": "pub func Parent(&self) -> Path?",
           "typeParams": [],
           "params": [],
           "receiver": "&Path",
@@ -1066,8 +1066,8 @@
         {
           "kind": "method",
           "name": "FileName",
-          "line": 40,
-          "signature": "pub func FileName(self: &Path) -> OsStringView?",
+          "line": 45,
+          "signature": "pub func FileName(&self) -> OsStringView?",
           "typeParams": [],
           "params": [],
           "receiver": "&Path",
@@ -1098,8 +1098,8 @@
         {
           "kind": "method",
           "name": "Stem",
-          "line": 60,
-          "signature": "pub func Stem(self: &Path) -> OsStringView?",
+          "line": 68,
+          "signature": "pub func Stem(&self) -> OsStringView?",
           "typeParams": [],
           "params": [],
           "receiver": "&Path",
@@ -1130,8 +1130,8 @@
         {
           "kind": "method",
           "name": "Extension",
-          "line": 74,
-          "signature": "pub func Extension(self: &Path) -> OsStringView?",
+          "line": 83,
+          "signature": "pub func Extension(&self) -> OsStringView?",
           "typeParams": [],
           "params": [],
           "receiver": "&Path",
@@ -1227,7 +1227,7 @@
           "kind": "method",
           "name": "Length",
           "line": 65,
-          "signature": "pub func Length(self: &Path) -> uint",
+          "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Path",
@@ -1259,7 +1259,7 @@
           "kind": "method",
           "name": "IsEmpty",
           "line": 72,
-          "signature": "pub func IsEmpty(self: &Path) -> bool",
+          "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
           "receiver": "&Path",
@@ -1291,7 +1291,7 @@
           "kind": "method",
           "name": "AsView",
           "line": 79,
-          "signature": "pub func AsView(self: &Path) -> OsStringView",
+          "signature": "pub func AsView(&self) -> OsStringView",
           "typeParams": [],
           "params": [],
           "receiver": "&Path",
@@ -1323,7 +1323,7 @@
           "kind": "method",
           "name": "Equals",
           "line": 89,
-          "signature": "pub func Equals(self: &Path, other: Path) -> bool",
+          "signature": "pub func Equals(&self, other: Path) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Path" }],
           "receiver": "&Path",
@@ -1355,7 +1355,7 @@
           "kind": "method",
           "name": "Components",
           "line": 97,
-          "signature": "pub func Components(self: &Path) -> ComponentIterator",
+          "signature": "pub func Components(&self) -> ComponentIterator",
           "typeParams": [],
           "params": [],
           "receiver": "&Path",
@@ -1386,8 +1386,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 267,
-          "signature": "pub func WriteDisplay(self: &Path, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 279,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1424,8 +1424,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 280,
-          "signature": "pub func WriteDebug(self: &Path, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 292,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1534,7 +1534,7 @@
           "kind": "method",
           "name": "Next",
           "line": 118,
-          "signature": "pub func Next(self: &var ComponentIterator) -> OsStringView?",
+          "signature": "pub func Next(&var self) -> OsStringView?",
           "typeParams": [],
           "params": [],
           "receiver": "&var ComponentIterator",
@@ -1581,12 +1581,12 @@
       "displayName": "PathBuffer",
       "module": "PathBuffer",
       "source": "Src/PathBuffer.rux",
-      "line": 13,
+      "line": 15,
       "signature": "pub struct PathBuffer",
       "typeParams": [],
       "doc": {
         "summary": "An owning, growable path.",
-        "markdown": "An owning, growable path.\nMove-only: it prohibits copying and gives its block back with `~PathBuffer`.",
+        "markdown": "An owning, growable path.\nMove-only: it prohibits copying and gives its block back with `~PathBuffer`.\nStorage invariant, which every `unsafe` block here relies on: `length <= capacity`; `data` is null exactly when\n`capacity` is zero, and otherwise addresses a block of `capacity` units from `allocator` whose first `length` are\ninitialized.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -1598,8 +1598,8 @@
         {
           "name": "data",
           "type": "*var OsUnit",
-          "public": true,
-          "line": 15,
+          "public": false,
+          "line": 17,
           "doc": "The units, or null before the first push.",
           "targets": [
             "windows-x86_64",
@@ -1615,8 +1615,8 @@
         {
           "name": "length",
           "type": "uint",
-          "public": true,
-          "line": 17,
+          "public": false,
+          "line": 19,
           "doc": "How many units are in use.",
           "targets": [
             "windows-x86_64",
@@ -1633,7 +1633,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 19,
+          "line": 21,
           "doc": "How many units the block holds.",
           "targets": [
             "windows-x86_64",
@@ -1650,7 +1650,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": true,
-          "line": 21,
+          "line": 23,
           "doc": "Where the block came from, and where it goes back to.",
           "targets": [
             "windows-x86_64",
@@ -1670,7 +1670,7 @@
         {
           "kind": "constructor",
           "name": "PathBuffer",
-          "line": 32,
+          "line": 31,
           "signature": "pub func PathBuffer(allocator: Allocator) -> PathBuffer",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
@@ -1702,15 +1702,15 @@
         {
           "kind": "associated",
           "name": "FromPath",
-          "line": 41,
-          "signature": "pub func FromPath(allocator: Allocator, path: Path) -> PathBuffer ! TextError",
+          "line": 40,
+          "signature": "pub func FromPath(allocator: Allocator, path: Path) -> PathBuffer",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
             { "name": "path", "type": "Path" }
           ],
           "receiver": null,
-          "returnType": "PathBuffer ! TextError",
+          "returnType": "PathBuffer",
           "value": null,
           "conformance": null,
           "public": true,
@@ -1722,7 +1722,7 @@
               { "name": "allocator", "markdown": "where the storage comes from" },
               { "name": "path", "markdown": "the path to act on" }
             ],
-            "returns": "a copy of `path` this buffer owns, or an empty one when the allocator refused",
+            "returns": "a copy of `path` this buffer owns",
             "see": ["https://rux-lang.dev/docs/api/path/path-buffer#from-path"],
             "deprecated": null
           },
@@ -1740,8 +1740,8 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 50,
-          "signature": "pub func Length(self: &PathBuffer) -> uint",
+          "line": 49,
+          "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&PathBuffer",
@@ -1772,8 +1772,8 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 57,
-          "signature": "pub func IsEmpty(self: &PathBuffer) -> bool",
+          "line": 56,
+          "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
           "receiver": "&PathBuffer",
@@ -1804,8 +1804,8 @@
         {
           "kind": "method",
           "name": "AsPath",
-          "line": 65,
-          "signature": "pub func AsPath(self: &PathBuffer) -> Path",
+          "line": 64,
+          "signature": "pub func AsPath(&self) -> Path",
           "typeParams": [],
           "params": [],
           "receiver": "&PathBuffer",
@@ -1836,12 +1836,12 @@
         {
           "kind": "method",
           "name": "Push",
-          "line": 112,
-          "signature": "pub func Push(self: &var PathBuffer, segment: OsStringView) -> ! TextError",
+          "line": 116,
+          "signature": "pub func Push(&var self, segment: OsStringView)",
           "typeParams": [],
           "params": [{ "name": "segment", "type": "OsStringView" }],
           "receiver": "&var PathBuffer",
-          "returnType": "! TextError",
+          "returnType": null,
           "value": null,
           "conformance": null,
           "public": true,
@@ -1850,7 +1850,7 @@
             "markdown": "Appends `segment` as one more component, supplying the separator where one is missing.\nA segment that is itself absolute — opening with a separator — replaces the buffer instead of extending\nit, which is what joining means everywhere paths are joined: `join(a, /b)` is `/b`.",
             "typeParams": [],
             "params": [{ "name": "segment", "markdown": "the component to append" }],
-            "returns": "nothing when the component was appended, or why not",
+            "returns": null,
             "see": ["https://rux-lang.dev/docs/api/path/path-buffer#push"],
             "deprecated": null
           },
@@ -1867,9 +1867,41 @@
         },
         {
           "kind": "method",
+          "name": "Pop",
+          "line": 138,
+          "signature": "pub func Pop(&var self)",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&var PathBuffer",
+          "returnType": null,
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "Drops the last component, leaving a root separator in place.",
+            "markdown": "Drops the last component, leaving a root separator in place.\n`Pop` on `/usr/bin` leaves `/usr`, on `/usr` leaves `/`, and on `/` leaves `/`. Nothing is allocated.",
+            "typeParams": [],
+            "params": [],
+            "returns": null,
+            "see": ["https://rux-lang.dev/docs/api/path/path-buffer#pop"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
           "name": "Release",
-          "line": 129,
-          "signature": "pub func Release(self: &var PathBuffer)",
+          "line": 155,
+          "signature": "pub func Release(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var PathBuffer",
@@ -1900,8 +1932,8 @@
         {
           "kind": "destructor",
           "name": "~PathBuffer",
-          "line": 144,
-          "signature": "func ~PathBuffer(self: &var PathBuffer)",
+          "line": 170,
+          "signature": "func ~PathBuffer(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var PathBuffer",
@@ -1932,8 +1964,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 293,
-          "signature": "pub func WriteDisplay(self: &PathBuffer, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 305,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1970,8 +2002,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 306,
-          "signature": "pub func WriteDebug(self: &PathBuffer, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 318,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2024,8 +2056,8 @@
       "displayName": "Join",
       "module": "PathBuffer",
       "source": "Src/PathBuffer.rux",
-      "line": 157,
-      "signature": "pub func Join(allocator: Allocator, base: Path, segment: OsStringView) -> PathBuffer ! TextError",
+      "line": 183,
+      "signature": "pub func Join(allocator: Allocator, base: Path, segment: OsStringView) -> PathBuffer",
       "typeParams": [],
       "doc": {
         "summary": "A fresh buffer holding `base` with `segment` pushed onto it.",
@@ -2036,7 +2068,7 @@
           { "name": "base", "markdown": "the path to extend" },
           { "name": "segment", "markdown": "the component to append" }
         ],
-        "returns": "`base` with `segment` appended, or why it could not be",
+        "returns": "`base` with `segment` appended",
         "see": ["https://rux-lang.dev/docs/api/path/path-buffer#join"],
         "deprecated": null
       },
@@ -2063,8 +2095,8 @@
       "displayName": "Normalize",
       "module": "PathBuffer",
       "source": "Src/PathBuffer.rux",
-      "line": 173,
-      "signature": "pub func Normalize(allocator: Allocator, path: Path) -> PathBuffer ! TextError",
+      "line": 199,
+      "signature": "pub func Normalize(allocator: Allocator, path: Path) -> PathBuffer",
       "typeParams": [],
       "doc": {
         "summary": "A fresh buffer holding `path` lexically simplified: separator runs collapsed to the preferred separator, `.`\nsegments dropped, and `..` resolved against the segment before it.",
@@ -2074,7 +2106,7 @@
           { "name": "allocator", "markdown": "where the storage comes from" },
           { "name": "path", "markdown": "the path to act on" }
         ],
-        "returns": "the path with its redundant components resolved, or why it could not be",
+        "returns": "the path with its redundant components resolved",
         "see": ["https://rux-lang.dev/docs/api/path/path-buffer#normalize"],
         "deprecated": null
       },
@@ -2243,7 +2275,7 @@
       "displayName": "HasRoot",
       "module": "Prefix",
       "source": "Src/Prefix.rux",
-      "line": 106,
+      "line": 123,
       "signature": "pub func HasRoot(path: Path) -> bool",
       "typeParams": [],
       "doc": {
@@ -2278,7 +2310,7 @@
       "displayName": "IsAbsolute",
       "module": "Prefix",
       "source": "Src/Prefix.rux",
-      "line": 123,
+      "line": 141,
       "signature": "pub func IsAbsolute(path: Path) -> bool",
       "typeParams": [],
       "doc": {

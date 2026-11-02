@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/String.rux
-  line: 21
+  line: 24
 seo:
   title: "String — Text API"
   description: Text that owns its bytes.
@@ -23,20 +23,14 @@ Text that owns its bytes.
 
 ```rux
 pub struct String {
-    pub data: *var char8;
-    pub length: uint;
     // private fields
 }
 ```
 
-Copyable with value semantics: each copy owns an independent block and gives it back when it dies.
-
-## Fields
-
-| Name     | Type         | Description                                        |
-| -------- | ------------ | -------------------------------------------------- |
-| `data`   | `*var char8` | The bytes, or null for text of no length.          |
-| `length` | `uint`       | How many bytes there are. Not how many characters. |
+Move-only: it owns its block and gives it back when it dies. [`Clone`](/docs/api/text/string#clone) makes an independent copy explicitly.
+Storage invariant, which every operation keeps and every `unsafe` block here relies on: `length <= capacity`;
+`data` is null exactly when `capacity` is zero, and otherwise addresses a block of `capacity` bytes from
+`allocator` whose first `length` bytes are initialized, well-formed UTF-8.
 
 ## Constructors
 
@@ -56,7 +50,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: an empty string that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L45)
 
 ## Associated functions
 
@@ -66,13 +60,13 @@ Cannot fail. Runs in constant time and allocates nothing.
 pub func FromValidated(
     allocator: Allocator,
     bytes: char8[..]
-) -> String ! TextError
+) -> String
 ```
 
 A copy of bytes the caller vouches are UTF-8.
 Skips the pass [`FromBytes`](/docs/api/text/string#from-bytes) makes, which is what to use when the bytes came from something that already
 guarantees it — another string, a view, this package's own output.
-Fails with `OutOfMemory` when the copy cannot be made.
+Terminates the program when the copy cannot be made.
 The bytes must be well-formed UTF-8. Everything downstream assumes it, so bytes that are not produce wrong
 answers rather than errors.
 
@@ -83,7 +77,7 @@ answers rather than errors.
 
 **Returns**: a string over those bytes, taken as valid without checking
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L59)
 
 <h3 id="from-bytes"><code>FromBytes</code></h3>
 
@@ -91,12 +85,12 @@ answers rather than errors.
 pub func FromBytes(
     allocator: Allocator,
     bytes: char8[..]
-) -> String ! TextError
+) -> String throws TextError
 ```
 
 A copy of `bytes` as text, or why it could not be made.
 `bytes` is borrowed and copied, so what it names stays the caller's. It fails with `InvalidUtf8` when the
-bytes are not text and `OutOfMemory` when the copy cannot be made.
+bytes are not text, and terminates the program when the copy cannot be made.
 Runs in time proportional to the length — one pass to check, one to copy — and allocates once.
 
 | Name        | Type        | Description                  |
@@ -106,7 +100,7 @@ Runs in time proportional to the length — one pass to check, one to copy — a
 
 **Returns**: a string over those bytes, or an empty one when they are not valid UTF-8
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L95)
 
 <h3 id="from-view"><code>FromView</code></h3>
 
@@ -114,11 +108,12 @@ Runs in time proportional to the length — one pass to check, one to copy — a
 pub func FromView(
     allocator: Allocator,
     view: StringView
-) -> String ! TextError
+) -> String
 ```
 
 A copy of what `view` spans.
-The view was checked when it was made, so this copies without checking again.
+The view was checked when it was made, so this copies without checking again. Terminates the program when
+the copy cannot be made.
 
 | Name        | Type         | Description                  |
 | ----------- | ------------ | ---------------------------- |
@@ -127,14 +122,14 @@ The view was checked when it was made, so this copies without checking again.
 
 **Returns**: a copy of that text this string owns
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L107)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &String) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many bytes the text spans.
@@ -142,36 +137,36 @@ Not how many characters: that is [`ScalarCount`](/docs/api/text/string#scalar-co
 
 **Returns**: how many bytes the text occupies
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L115)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &String) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the text spans no bytes.
 
 **Returns**: whether the text has no bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L122)
 
 <h3 id="bytes"><code>Bytes</code></h3>
 
 ```rux
-pub func Bytes(self: &String) -> char8[..]
+pub func Bytes(&self) -> char8[..]
 ```
 
 The bytes themselves, borrowed.
 
 **Returns**: the text's bytes, borrowed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L129)
 
 <h3 id="view"><code>View</code></h3>
 
 ```rux
-pub func View(self: &String) -> StringView
+pub func View(&self) -> StringView
 ```
 
 A view over this string, which is what to pass to anything that only reads.
@@ -179,24 +174,24 @@ Copies nothing. The view borrows this string and must not outlive it.
 
 **Returns**: a borrowed view of the text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L138)
 
 <h3 id="scalar-count"><code>ScalarCount</code></h3>
 
 ```rux
-pub func ScalarCount(self: &String) -> uint
+pub func ScalarCount(&self) -> uint
 ```
 
 How many characters the text holds.
 
 **Returns**: how many Unicode scalar values the text holds, which is not its byte length
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L145)
 
 <h3 id="is-boundary"><code>IsBoundary</code></h3>
 
 ```rux
-pub func IsBoundary(self: &String, index: uint) -> bool
+pub func IsBoundary(&self, index: uint) -> bool
 ```
 
 Whether `index` is where a character starts, and so a place the text may be cut.
@@ -207,16 +202,12 @@ Whether `index` is where a character starts, and so a place the text may be cut.
 
 **Returns**: whether `index` falls between two scalar values rather than inside one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L153)
 
 <h3 id="part"><code>Part</code></h3>
 
 ```rux
-pub func Part(
-    self: &String,
-    start: uint,
-    end: uint
-) -> StringView?
+pub func Part(&self, start: uint, end: uint) -> StringView?
 ```
 
 A borrowed view of the part from `start` up to `end`, or `none` when either end is not a boundary.
@@ -230,16 +221,16 @@ makes an owning copy.
 
 **Returns**: the text between the two offsets, or `none` when either is not a boundary
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L164)
 
 <h3 id="substring"><code>Substring</code></h3>
 
 ```rux
 pub func Substring(
-    self: &String,
+    &self,
     start: uint,
     end: uint
-) -> String ! TextError
+) -> String throws TextError
 ```
 
 An owning copy of the part from `start` up to `end`.
@@ -252,24 +243,25 @@ Fails with `NotABoundary` when either end would cut a character in half.
 
 **Returns**: an owned copy of that range, or why it could not be made
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L177)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L175)
 
-<h3 id="clone"><code>Clone</code></h3>
+<h3 id="try-clone"><code>TryClone</code></h3>
 
 ```rux
-pub func Clone(self: &String) -> String ! TextError
+pub func TryClone(&self) -> String throws AllocError
 ```
 
-An independent copy, with a block of its own from the same allocator.
+An independent copy, with a block of its own from the same allocator, or why the block could not be had.
+`self` is borrowed and left alone, whether or not the copy is made.
 
-**Returns**: an independent copy
+**Returns**: an independent copy, or throws the allocator's refusal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L185)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L184)
 
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &String, other: &String) -> bool
+pub func Equals(&self, other: &String) -> bool
 ```
 
 Whether two strings hold the same bytes.
@@ -280,12 +272,12 @@ Whether two strings hold the same bytes.
 
 **Returns**: whether both hold the same bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L193)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L192)
 
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(self: &String, other: &String) -> Ordering
+pub func Compare(&self, other: &String) -> Ordering
 ```
 
 How this string orders against `other`, by bytes, which for UTF-8 is also by code point.
@@ -296,24 +288,24 @@ How this string orders against `other`, by bytes, which for UTF-8 is also by cod
 
 **Returns**: how the two order byte by byte, which is code-point order for UTF-8
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L203)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L202)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var String)
+pub func Clear(&var self)
 ```
 
 Gives the block back and leaves text of no length behind.
 Rarely needed: a string releases itself when it dies. This is for releasing one early, and is safe to call
 twice because what it leaves behind owns nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L213)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L212)
 
 <h3 id="replace-with"><code>ReplaceWith</code></h3>
 
 ```rux
-pub func ReplaceWith(self: &var String, value: String)
+pub func ReplaceWith(&var self, value: String)
 ```
 
 Replaces this string with `value`, transferring its block after releasing the old one.
@@ -324,25 +316,7 @@ independent original.
 | ------- | -------- | ------------------- |
 | `value` | `String` | the value to act on |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L230)
-
-## Operators
-
-<h3 id="copy"><code>=</code></h3>
-
-```rux
-pub func =(self: &var String, other: &String)
-```
-
-Deep-copies `other` into independent storage from the same allocator.
-The special copy operation cannot report allocation failure, so it terminates on exhaustion. Use [`Clone`](/docs/api/text/string#clone)
-when failure must be handled. The source remains valid and unchanged.
-
-| Name    | Type      | Description                  |
-| ------- | --------- | ---------------------------- |
-| `other` | `&String` | the value to compare against |
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L229)
 
 ## Implements Display
 
@@ -352,10 +326,10 @@ when failure must be handled. The source remains valid and unchanged.
 
 ```rux
 pub func WriteDisplay(
-    self: &String,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes this string's bytes.
@@ -378,10 +352,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style, sinc
 
 ```rux
 pub func WriteDebug(
-    self: &String,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes this string quoted and escaped.
@@ -396,13 +370,30 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L35)
 
+## Implements Cloneable
+
+`String` conforms to `Cloneable`.
+
+<h3 id="clone"><code>Clone</code></h3>
+
+```rux
+pub func Clone(&self) -> String
+```
+
+An independent copy, with a block of its own from the same allocator.
+Terminates the program when the copy cannot be made; [`TryClone`](/docs/api/text/string#try-clone) reports that instead.
+
+**Returns**: an independent copy
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L254)
+
 ## Destructor
 
 ```rux
-func ~String(self: &var String)
+func ~String(&var self)
 ```
 
 Gives the block back.
 Runs when the string dies. Copies have independent blocks, so each destructor releases exactly its own.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L245)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/String.rux#L244)

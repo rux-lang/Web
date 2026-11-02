@@ -46,7 +46,7 @@ Reports the length through `written`, or `false` without a defined result when t
 decompositions are fully expanded in the tables, so nothing recurses.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L118)
 
 **Parameters**
 
@@ -71,7 +71,7 @@ pub func DecomposeCompatibility(
 Writes the compatibility decomposition of `text` into `into`, marks in canonical order: NFKD.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L123)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L129)
 
 **Parameters**
 
@@ -96,7 +96,7 @@ pub func NormalizeCanonical(
 Writes the NFC of `text` into `into`: canonical decomposition, canonical order, then composition.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L238)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L261)
 
 **Parameters**
 
@@ -121,7 +121,7 @@ pub func NormalizeCompatibility(
 Writes the NFKC of `text` into `into`: compatibility decomposition, canonical order, then composition.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L277)
 
 **Parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Table.rux
-  line: 95
+  line: 100
 seo:
   title: "Table<K, V> — Collections API"
   description: The open-addressing table HashMap and HashSet are both built on.
@@ -60,14 +60,14 @@ into never allocates.
 
 **Returns**: an empty table that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L127)
 
 ## Associated functions
 
 <h3 id="capacity-for"><code>CapacityFor</code></h3>
 
 ```rux
-pub func CapacityFor(length: uint) -> uint ! CollectionError
+pub func CapacityFor(length: uint) -> uint throws AllocError
 ```
 
 The smallest power-of-two capacity that holds `length` entries without passing the three-quarter load factor.
@@ -78,16 +78,16 @@ covers growing and settling alike.
 | -------- | ------ | ----------------- |
 | `length` | `uint` | how many elements |
 
-**Returns**: the table size that holds that many entries, or `CapacityOverflow` when there is none
+**Returns**: the table size that holds that many entries, or throws `Unsupported` when there is none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L315)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L327)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &Table<K, V>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many entries the table holds.
@@ -95,12 +95,12 @@ How many entries the table holds.
 
 **Returns**: how many entries it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L144)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
 ```rux
-pub func Capacity(self: &Table<K, V>) -> uint
+pub func Capacity(&self) -> uint
 ```
 
 How many slots the table has.
@@ -109,12 +109,12 @@ them free, because a table run fuller than that spends its time displacing entri
 
 **Returns**: how many slots it has
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L153)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &Table<K, V>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the table holds no entries.
@@ -122,12 +122,12 @@ Whether the table holds no entries.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L161)
 
 <h3 id="is-occupied"><code>IsOccupied</code></h3>
 
 ```rux
-pub func IsOccupied(self: &Table<K, V>, index: uint) -> bool
+pub func IsOccupied(&self, index: uint) -> bool
 ```
 
 Whether the slot at `index` holds an entry.
@@ -139,13 +139,13 @@ Whether the slot at `index` holds an entry.
 
 **Returns**: whether that slot holds an entry
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L168)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L170)
 
 <h3 id="find"><code>Find</code></h3>
 
 ```rux
 pub func Find(
-    self: &Table<K, V>,
+    &self,
     key: K,
     hash: func(K, uint64, uint64) -> uint64,
     equals: func(K, K) -> bool
@@ -167,63 +167,130 @@ Runs in constant expected time and allocates nothing.
 
 **Returns**: the slot the key belongs in, occupied or not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L193)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L197)
 
 <h3 id="rehash"><code>Rehash</code></h3>
 
 ```rux
-pub func Rehash(
-    self: &var Table<K, V>,
+pub unsafe func Rehash(
+    &var self,
     capacity: uint,
     hash: func(K, uint64, uint64) -> uint64
-) -> ! CollectionError
+)
 ```
 
 Rebuilds the table at `capacity` slots, reinserting every entry.
-`self` is borrowed mutably; `hash` must be the one the table was filled with. A failure leaves the table
-exactly as it was: the new runs are taken and filled before the old ones are released.
+`self` is borrowed mutably; `hash` must be the one the table was filled with. Terminates the program when the
+new runs cannot be had; [`TryRehash`](/docs/api/collections/table#try-rehash) reports that instead.
 Runs in time proportional to the capacity.
+Safety: `capacity` must be a power of two no smaller than [`MinimumTableCapacity`](/docs/api/collections/table#minimum-table-capacity), as [`CapacityFor`](/docs/api/collections/table#capacity-for) returns:
+every slot index is masked by it, so any other value addresses past the runs.
 
 | Name       | Type                                | Description                                                |
 | ---------- | ----------------------------------- | ---------------------------------------------------------- |
 | `capacity` | `uint`                              | how many elements to make room for                         |
 | `hash`     | `func(K, uint64, uint64) -> uint64` | how a key is hashed, taking the key and the two seed words |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L348)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L335)
+<h3 id="try-rehash"><code>TryRehash</code></h3>
+
+```rux
+pub unsafe func TryRehash(
+    &var self,
+    capacity: uint,
+    hash: func(K, uint64, uint64) -> uint64
+) throws AllocError
+```
+
+Rebuilds the table at `capacity` slots, reinserting every entry, or throws why the new runs could not be had.
+`self` is borrowed mutably; `hash` must be the one the table was filled with. A failure leaves the table
+exactly as it was: the new runs are taken and filled before the old ones are released.
+Runs in time proportional to the capacity.
+Safety: `capacity` must be a power of two no smaller than [`MinimumTableCapacity`](/docs/api/collections/table#minimum-table-capacity), as [`CapacityFor`](/docs/api/collections/table#capacity-for) returns:
+every slot index is masked by it, so any other value addresses past the runs.
+
+| Name       | Type                                | Description                                                |
+| ---------- | ----------------------------------- | ---------------------------------------------------------- |
+| `capacity` | `uint`                              | how many elements to make room for                         |
+| `hash`     | `func(K, uint64, uint64) -> uint64` | how a key is hashed, taking the key and the two seed words |
+
+**Returns**: nothing, or throws the allocator's refusal
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L362)
 
 <h3 id="ensure-room"><code>EnsureRoom</code></h3>
 
 ```rux
 pub func EnsureRoom(
-    self: &var Table<K, V>,
+    &var self,
     hash: func(K, uint64, uint64) -> uint64
-) -> ! CollectionError
+)
 ```
 
 Makes sure one more entry will fit, growing the table when it will not.
-`self` is borrowed mutably; `hash` must be the one the table was filled with.
+`self` is borrowed mutably; `hash` must be the one the table was filled with. Terminates the program when the
+table cannot grow; [`TryEnsureRoom`](/docs/api/collections/table#try-ensure-room) reports that instead.
 
 | Name   | Type                                | Description                                                |
 | ------ | ----------------------------------- | ---------------------------------------------------------- |
 | `hash` | `func(K, uint64, uint64) -> uint64` | how a key is hashed, taking the key and the two seed words |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L433)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L403)
+<h3 id="try-ensure-room"><code>TryEnsureRoom</code></h3>
+
+```rux
+pub func TryEnsureRoom(
+    &var self,
+    hash: func(K, uint64, uint64) -> uint64
+) throws AllocError
+```
+
+Makes sure one more entry will fit, growing the table when it will not, or throws why it could not grow.
+`self` is borrowed mutably; `hash` must be the one the table was filled with. A failure leaves the table
+exactly as it was.
+
+| Name   | Type                                | Description                                                |
+| ------ | ----------------------------------- | ---------------------------------------------------------- |
+| `hash` | `func(K, uint64, uint64) -> uint64` | how a key is hashed, taking the key and the two seed words |
+
+**Returns**: nothing, or throws the allocator's refusal
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L443)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
 pub func Reserve(
-    self: &var Table<K, V>,
+    &var self,
     additional: uint,
     hash: func(K, uint64, uint64) -> uint64
-) -> ! CollectionError
+)
 ```
 
 Makes room for `additional` more entries on top of those already present.
+`self` is borrowed mutably; the length does not change. Terminates the program when the table cannot grow;
+[`TryReserve`](/docs/api/collections/table#try-reserve) reports that instead.
+
+| Name         | Type                                | Description                                                |
+| ------------ | ----------------------------------- | ---------------------------------------------------------- |
+| `additional` | `uint`                              | how many more elements to make room for                    |
+| `hash`       | `func(K, uint64, uint64) -> uint64` | how a key is hashed, taking the key and the two seed words |
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L453)
+
+<h3 id="try-reserve"><code>TryReserve</code></h3>
+
+```rux
+pub func TryReserve(
+    &var self,
+    additional: uint,
+    hash: func(K, uint64, uint64) -> uint64
+) throws AllocError
+```
+
+Makes room for `additional` more entries on top of those already present, or throws why it could not.
 `self` is borrowed mutably; the length does not change. A failure leaves the table exactly as it was.
 
 | Name         | Type                                | Description                                                |
@@ -231,53 +298,51 @@ Makes room for `additional` more entries on top of those already present.
 | `additional` | `uint`                              | how many more elements to make room for                    |
 | `hash`       | `func(K, uint64, uint64) -> uint64` | how a key is hashed, taking the key and the two seed words |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+**Returns**: nothing, or throws the allocator's refusal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L416)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L463)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
 ```rux
 pub func ShrinkToFit(
-    self: &var Table<K, V>,
+    &var self,
     hash: func(K, uint64, uint64) -> uint64
-) -> ! CollectionError
+)
 ```
 
 Releases the capacity the entry count does not need.
-`self` is borrowed mutably. An empty table gives up its storage entirely. A failure leaves the table usable
-at its current capacity, since failing to hand memory back is never a reason to stop working.
+`self` is borrowed mutably. An empty table gives up its storage entirely. Terminates the program when the
+allocator refuses the smaller runs.
 
 | Name   | Type                                | Description                                                |
 | ------ | ----------------------------------- | ---------------------------------------------------------- |
 | `hash` | `func(K, uint64, uint64) -> uint64` | how a key is hashed, taking the key and the two seed words |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L430)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L476)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var Table<K, V>)
+pub func Clear(&var self)
 ```
 
 Destroys every entry, keeping the storage.
 `self` is borrowed mutably. Runs in time proportional to the capacity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L443)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L490)
 
 ## Destructor
 
 ```rux
-func ~Table(self: &var Table<K, V>)
+func ~Table(&var self)
 ```
 
 Destroys every entry and releases the storage.
 Runs when the table's life ends. The entries go first and the runs second, since one destroyed after its
 storage was released would be read from freed memory.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L477)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L529)
 
 ## Related
 
@@ -290,7 +355,7 @@ pub const SlotEmpty: uint8 = 0;
 The state byte of a slot that has never held an entry, and does not now.
 Distances are stored one higher than they are, so zero can mean empty and nothing else has to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L38)
 
 <h3 id="maximum-probe-distance"><code>MaximumProbeDistance</code></h3>
 
@@ -303,7 +368,7 @@ A byte holds the distance plus one, so 254 is what fits. Reaching it means the h
 these keys, and a table that grew would only spread the same collisions over more slots — so the insertion is
 refused rather than looped on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L45)
 
 <h3 id="minimum-table-capacity"><code>MinimumTableCapacity</code></h3>
 
@@ -314,4 +379,4 @@ pub const MinimumTableCapacity: uint = 8;
 Eight slots is where a table starts.
 Below that the load factor rounds away to nothing useful.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Table.rux#L50)

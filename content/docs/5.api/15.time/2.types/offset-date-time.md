@@ -69,7 +69,7 @@ invalid. Runs in constant time and allocates nothing.
 <h3 id="to-timestamp"><code>ToTimestamp</code></h3>
 
 ```rux
-pub func ToTimestamp(self: &OffsetDateTime) -> Timestamp
+pub func ToTimestamp(&self) -> Timestamp
 ```
 
 The moment this names in UTC.
@@ -87,10 +87,10 @@ Cannot fail; runs in constant time and allocates nothing.
 
 ```rux
 pub func WriteDisplay(
-    self: &OffsetDateTime,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the moment as RFC 3339: `YYYY-MM-DDTHH:MM:SS[.fraction]` followed by `Z` or a signed `HH:MM`.
@@ -107,7 +107,7 @@ and `UnsupportedRequest` for a precision past nine.
 
 **Returns**: success when the whole moment was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L305)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L308)
 
 ## Implements Debug
 
@@ -117,10 +117,10 @@ and `UnsupportedRequest` for a precision past nine.
 
 ```rux
 pub func WriteDebug(
-    self: &OffsetDateTime,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`.
@@ -133,14 +133,14 @@ The failures [`WriteDisplay`](/docs/api/time/offset-date-time#write-display) rep
 
 **Returns**: success when the whole moment was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L321)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarText.rux#L324)
 
 ## Related
 
 <h3 id="parse-rfc3339"><code>ParseRfc3339</code></h3>
 
 ```rux
-pub func ParseRfc3339(text: char8[..]) -> OffsetDateTime ! TimeParseError
+pub func ParseRfc3339(text: char8[..]) -> OffsetDateTime throws TimeParseError
 ```
 
 Reads `YYYY-MM-DDTHH:MM:SS[.fraction](Z|+HH:MM|-HH:MM)`.
@@ -151,7 +151,7 @@ moment.
 The failures the date, time and offset readers report, plus `InvalidSyntax` for text after the offset. Each
 carries the byte offset where it was found.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L280)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L288)
 
 **Parameters**
 

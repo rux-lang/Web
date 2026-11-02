@@ -73,14 +73,14 @@ The format these bits are read under.
 
 **Returns**: which format the bits are in
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L75)
 
 ## Methods
 
 <h3 id="value"><code>Value</code></h3>
 
 ```rux
-pub func Value(self: &Float80) -> float80
+pub func Value(&self) -> float80
 ```
 
 The `float80` these bits encode, for arithmetic on a value that was read or built here.
@@ -89,84 +89,84 @@ zero.
 
 **Returns**: the primitive with this value's bit pattern
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L56)
 
 <h3 id="bits"><code>Bits</code></h3>
 
 ```rux
-pub func Bits(self: &Float80) -> uint128
+pub func Bits(&self) -> uint128
 ```
 
 The bits.
 
 **Returns**: the value's bit pattern
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L68)
 
 <h3 id="is-nan"><code>IsNan</code></h3>
 
 ```rux
-pub func IsNan(self: &Float80) -> bool
+pub func IsNan(&self) -> bool
 ```
 
 Whether this is not a number.
 
 **Returns**: whether the value is a NaN
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L87)
 
 <h3 id="is-infinite"><code>IsInfinite</code></h3>
 
 ```rux
-pub func IsInfinite(self: &Float80) -> bool
+pub func IsInfinite(&self) -> bool
 ```
 
 Whether this is an infinity of either sign.
 
 **Returns**: whether the value is either infinity
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L89)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L94)
 
 <h3 id="is-finite"><code>IsFinite</code></h3>
 
 ```rux
-pub func IsFinite(self: &Float80) -> bool
+pub func IsFinite(&self) -> bool
 ```
 
 Whether this is an ordinary value: neither a NaN nor an infinity.
 
 **Returns**: whether the value is neither infinite nor a NaN
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L96)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L101)
 
 <h3 id="is-negative"><code>IsNegative</code></h3>
 
 ```rux
-pub func IsNegative(self: &Float80) -> bool
+pub func IsNegative(&self) -> bool
 ```
 
 Whether the sign bit is set, which a negative zero answers yes to.
 
 **Returns**: whether the sign bit is set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L109)
 
 <h3 id="format-with"><code>FormatWith</code></h3>
 
 ```rux
 pub func FormatWith(
-    self: &Float80,
+    &self,
     allocator: Allocator,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes this value's text under `spec`, taking the working storage from `allocator`.
 The shortest decimal that reads back as the same bits, or the digits a precision asks for. This is the only
 way to render one of these: they implement neither `Display` nor `Debug`, because the exact arithmetic
 their text needs allocates and those protocols offer nowhere to say from where.
-Reports whatever the writer reported, `UnsupportedRequest` for any style, and `TextFailure(OutOfMemory)`
+Reports whatever the writer reported and `UnsupportedRequest` for any style, and terminates the program
 where `allocator` could not supply the working storage.
 
 | Name        | Type              | Description                          |
@@ -177,4 +177,4 @@ where `allocator` could not supply the working storage.
 
 **Returns**: success when the complete rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L120)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L125)

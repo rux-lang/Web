@@ -29,12 +29,12 @@ pub struct Poller {
 
 Not copied.
 
-## Associated functions
+## Constructors
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>Poller</code></h3>
 
 ```rux
-pub func New(allocator: Allocator) -> Poller ! IoError
+pub func Poller(allocator: Allocator) -> Poller throws IoError
 ```
 
 A poller with no sockets registered.
@@ -45,7 +45,7 @@ A poller with no sockets registered.
 
 **Returns**: the poller, or why the system would not make one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L132)
 
 ## Methods
 
@@ -53,11 +53,11 @@ A poller with no sockets registered.
 
 ```rux
 pub func Register(
-    self: &var Poller,
+    &var self,
     source: PollSource,
     token: uint64,
     interest: Interest
-) -> ! IoError
+) throws IoError
 ```
 
 Watches `source` for `interest`, reporting it with `token`.
@@ -70,17 +70,17 @@ Watches `source` for `interest`, reporting it with `token`.
 
 **Returns**: success, or `AlreadyExists` when the socket is registered already
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L158)
 
 <h3 id="modify"><code>Modify</code></h3>
 
 ```rux
 pub func Modify(
-    self: &var Poller,
+    &var self,
     source: PollSource,
     token: uint64,
     interest: Interest
-) -> ! IoError
+) throws IoError
 ```
 
 Changes what a registered socket is watched for, and the token it is reported with.
@@ -93,15 +93,15 @@ Changes what a registered socket is watched for, and the token it is reported wi
 
 **Returns**: success, or `NotFound` when the socket is not registered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L169)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L168)
 
 <h3 id="deregister"><code>Deregister</code></h3>
 
 ```rux
 pub func Deregister(
-    self: &var Poller,
+    &var self,
     source: PollSource
-) -> ! IoError
+) throws IoError
 ```
 
 Stops watching a socket.
@@ -112,16 +112,16 @@ Stops watching a socket.
 
 **Returns**: success, or `NotFound` when the socket is not registered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L177)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L176)
 
 <h3 id="wait"><code>Wait</code></h3>
 
 ```rux
 pub func Wait(
-    self: &var Poller,
+    &var self,
     events: var PollEvent[..],
     timeout: Duration?
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Waits until a registered socket is ready or `timeout` passes, and reports the ready sockets into `events`.
@@ -133,15 +133,15 @@ Waits until a registered socket is ready or `timeout` passes, and reports the re
 
 **Returns**: how many events were filled; zero after the timeout or when a signal ended the wait early
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L200)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L201)
 
 ## Destructor
 
 ```rux
-func ~Poller(self: &var Poller)
+func ~Poller(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L373)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L403)
 
 ## Related
 

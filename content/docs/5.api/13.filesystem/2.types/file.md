@@ -40,7 +40,7 @@ pub func Open(
     allocator: Allocator,
     path: Path,
     options: OpenOptions
-) -> File ! IoError
+) -> File throws IoError
 ```
 
 Opens `path` under `options`.
@@ -55,26 +55,26 @@ in the platform's own terms, translated.
 
 **Returns**: the open file
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L165)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L186)
 
 ## Methods
 
 <h3 id="is-open"><code>IsOpen</code></h3>
 
 ```rux
-pub func IsOpen(self: &File) -> bool
+pub func IsOpen(&self) -> bool
 ```
 
 Whether the handle is still open.
 
 **Returns**: whether the file is open
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L234)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L261)
 
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
-pub func Close(self: &var File) -> ! IoError
+pub func Close(&var self) throws IoError
 ```
 
 Closes the handle and reports what the platform said.
@@ -83,12 +83,12 @@ gave the handle back. This is the error-visible path; a written file deserves it
 
 **Returns**: success when the descriptor was released; closing twice is not an error
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L243)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L270)
 
 <h3 id="sync"><code>Sync</code></h3>
 
 ```rux
-pub func Sync(self: &var File) -> ! IoError
+pub func Sync(&var self) throws IoError
 ```
 
 Forces everything written through to the storage device.
@@ -97,12 +97,12 @@ failure, and the one a caller who just wrote something they cannot lose actually
 
 **Returns**: success when the system reported the data durable
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L140)
 
 <h3 id="size"><code>Size</code></h3>
 
 ```rux
-pub func Size(self: &var File) -> uint64 ! IoError
+pub func Size(&var self) -> uint64 throws IoError
 ```
 
 The file's length in bytes.
@@ -112,15 +112,12 @@ arrives with the metadata work.
 
 **Returns**: the file's size in bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L160)
 
 <h3 id="set-length"><code>SetLength</code></h3>
 
 ```rux
-pub func SetLength(
-    self: &var File,
-    length: uint64
-) -> ! IoError
+pub func SetLength(&var self, length: uint64) throws IoError
 ```
 
 Sets the file's length: shrinking discards what was past the new end, growing leaves a hole.
@@ -133,12 +130,12 @@ grows the file again — the same rule as seeking past the end.
 
 **Returns**: success when the file is that size; extending reads back as zeros
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L187)
 
 <h3 id="stream"><code>Stream</code></h3>
 
 ```rux
-pub func Stream(self: *var File) -> FileStream
+pub func Stream(*var self) -> FileStream
 ```
 
 A stored borrow of this file, for a value that must keep a stream beyond one call.
@@ -148,12 +145,12 @@ The file must outlive the result and must not be moved while it exists. See [`Fi
 
 **Returns**: a stream over this file, holding its address, which is what makes it storable
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L195)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L229)
 
 <h3 id="metadata"><code>Metadata</code></h3>
 
 ```rux
-pub func Metadata(self: &File) -> Metadata ! IoError
+pub func Metadata(&self) -> Metadata throws IoError
 ```
 
 Describes this open file.
@@ -162,7 +159,7 @@ query the way a path-based one can.
 
 **Returns**: what the system knows about the open file
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L391)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L403)
 
 ## Implements Reader
 
@@ -172,9 +169,9 @@ query the way a path-based one can.
 
 ```rux
 pub func Read(
-    self: &var File,
+    &var self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Reads what one attempt yields into `into`; a short count is not an error and the end is `EndOfStream`.
@@ -195,9 +192,9 @@ Reads what one attempt yields into `into`; a short count is not an error and the
 
 ```rux
 pub func Write(
-    self: &var File,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Writes what one attempt takes of `bytes`; a short count means call again, which `WriteAll` does.
@@ -208,19 +205,19 @@ Writes what one attempt takes of `bytes`; a short count means call again, which 
 
 **Returns**: how many bytes were taken, which may be fewer than offered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L66)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var File) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Nothing: these writes hold nothing back. Durability is [`Sync`](/docs/api/filesystem/file#sync), which is a different promise.
 
 **Returns**: success when everything written reached the system
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L93)
 
 ## Implements Seeker
 
@@ -230,10 +227,10 @@ Nothing: these writes hold nothing back. Durability is [`Sync`](/docs/api/filesy
 
 ```rux
 pub func Seek(
-    self: &var File,
+    &var self,
     origin: SeekFrom,
     offset: int64
-) -> uint64 ! IoError
+) -> uint64 throws IoError
 ```
 
 Moves the position `offset` bytes from `origin` and reports where it landed.
@@ -248,17 +245,17 @@ end regardless, because append is a property of the writes, not of the position.
 
 **Returns**: the resulting offset from the start
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L107)
 
 ## Destructor
 
 ```rux
-func ~File(self: &var File)
+func ~File(&var self)
 ```
 
 Closes with the outcome discarded: the safety net, not the contract.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L256)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L286)
 
 ## Related
 

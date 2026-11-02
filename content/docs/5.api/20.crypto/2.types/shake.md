@@ -60,7 +60,7 @@ A SHAKE256 state: 256 bits of security, absorbing 136 bytes at a time.
 <h3 id="update"><code>Update</code></h3>
 
 ```rux
-pub func Update(self: &var Shake, bytes: char8[..])
+pub func Update(&var self, bytes: char8[..])
 ```
 
 Absorbs `bytes` into the state.
@@ -77,7 +77,7 @@ ignores such a call rather than corrupting the stream.
 <h3 id="read"><code>Read</code></h3>
 
 ```rux
-pub func Read(self: &var Shake, into: var char8[..])
+pub func Read(&var self, into: var char8[..])
 ```
 
 Fills `into` with the next bytes of the stream.
@@ -88,19 +88,19 @@ The first read applies the padding, after which [`Update`](/docs/api/crypto/shak
 | ------ | --------------- | ------------------- |
 | `into` | `var char8[..]` | receives the output |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Shake.rux#L100)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Shake.rux#L102)
 
 <h3 id="rate"><code>Rate</code></h3>
 
 ```rux
-pub func Rate(self: &Shake) -> uint
+pub func Rate(&self) -> uint
 ```
 
 How many bytes the state absorbs or squeezes before permuting.
 
 **Returns**: how many bytes the sponge absorbs or squeezes per permutation
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Shake.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Shake.rux#L125)
 
 ## Related
 
@@ -112,7 +112,7 @@ pub func Shake128Of(bytes: char8[..], into: var char8[..])
 
 `into.length` bytes of SHAKE128 over `bytes`, in one call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Shake.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Shake.rux#L134)
 
 **Parameters**
 
@@ -129,7 +129,7 @@ pub func Shake256Of(bytes: char8[..], into: var char8[..])
 
 `into.length` bytes of SHAKE256 over `bytes`, in one call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Shake.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Shake.rux#L144)
 
 **Parameters**
 

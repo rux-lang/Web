@@ -147,23 +147,6 @@
             "freebsd-x86_64",
             "freebsd-aarch64"
           ]
-        },
-        {
-          "name": "OutOfMemory",
-          "value": "6",
-          "payload": null,
-          "line": 17,
-          "doc": "The allocator could not supply the storage.",
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
         }
       ],
       "members": [],
@@ -185,7 +168,7 @@
       "displayName": "ZoneState",
       "module": "Zone",
       "source": "Src/Zone.rux",
-      "line": 15,
+      "line": 16,
       "signature": "pub struct ZoneState",
       "typeParams": [],
       "doc": {
@@ -203,7 +186,7 @@
           "name": "offset",
           "type": "UtcOffset",
           "public": true,
-          "line": 17,
+          "line": 18,
           "doc": "The offset from UTC.",
           "targets": [
             "windows-x86_64",
@@ -220,7 +203,7 @@
           "name": "daylight",
           "type": "bool",
           "public": true,
-          "line": 19,
+          "line": 20,
           "doc": "Whether this is daylight-saving time.",
           "targets": [
             "windows-x86_64",
@@ -237,7 +220,7 @@
           "name": "abbreviation",
           "type": "char8[..]",
           "public": true,
-          "line": 21,
+          "line": 22,
           "doc": "The abbreviation, such as `CEST`, or a numeric one such as `+03`.",
           "targets": [
             "windows-x86_64",
@@ -272,7 +255,7 @@
       "displayName": "LocalTimeKind",
       "module": "Zone",
       "source": "Src/Zone.rux",
-      "line": 26,
+      "line": 27,
       "signature": "pub enum LocalTimeKind",
       "typeParams": [],
       "doc": {
@@ -292,7 +275,7 @@
           "name": "Unique",
           "value": "0",
           "payload": null,
-          "line": 28,
+          "line": 29,
           "doc": "The local time happened once.",
           "targets": [
             "windows-x86_64",
@@ -309,7 +292,7 @@
           "name": "Ambiguous",
           "value": "1",
           "payload": null,
-          "line": 30,
+          "line": 31,
           "doc": "The local time happened twice, as clocks fell back over it.",
           "targets": [
             "windows-x86_64",
@@ -326,7 +309,7 @@
           "name": "Skipped",
           "value": "2",
           "payload": null,
-          "line": 32,
+          "line": 33,
           "doc": "The local time never happened, as clocks sprang forward over it.",
           "targets": [
             "windows-x86_64",
@@ -359,7 +342,7 @@
       "displayName": "LocalTime",
       "module": "Zone",
       "source": "Src/Zone.rux",
-      "line": 40,
+      "line": 41,
       "signature": "pub struct LocalTime",
       "typeParams": [],
       "doc": {
@@ -377,7 +360,7 @@
           "name": "kind",
           "type": "LocalTimeKind",
           "public": true,
-          "line": 42,
+          "line": 43,
           "doc": "What the local time is in the zone.",
           "targets": [
             "windows-x86_64",
@@ -394,7 +377,7 @@
           "name": "earlier",
           "type": "Timestamp",
           "public": true,
-          "line": 44,
+          "line": 45,
           "doc": "The earlier candidate moment.",
           "targets": [
             "windows-x86_64",
@@ -411,7 +394,7 @@
           "name": "later",
           "type": "Timestamp",
           "public": true,
-          "line": 46,
+          "line": 47,
           "doc": "The later candidate moment.",
           "targets": [
             "windows-x86_64",
@@ -446,7 +429,7 @@
       "displayName": "TimeZone",
       "module": "Zone",
       "source": "Src/Zone.rux",
-      "line": 51,
+      "line": 52,
       "signature": "pub struct TimeZone",
       "typeParams": [],
       "doc": {
@@ -464,7 +447,7 @@
           "name": "name",
           "type": "Vector<char8>",
           "public": false,
-          "line": 52,
+          "line": 53,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -481,7 +464,7 @@
           "name": "names",
           "type": "Vector<char8>",
           "public": false,
-          "line": 53,
+          "line": 54,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -498,7 +481,7 @@
           "name": "transitions",
           "type": "Vector<int64>",
           "public": false,
-          "line": 54,
+          "line": 55,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -515,7 +498,7 @@
           "name": "transitionTypes",
           "type": "Vector<uint8>",
           "public": false,
-          "line": 55,
+          "line": 56,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -532,7 +515,7 @@
           "name": "types",
           "type": "Vector<ZoneType>",
           "public": false,
-          "line": 56,
+          "line": 57,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -549,7 +532,7 @@
           "name": "rule",
           "type": "Rule",
           "public": false,
-          "line": 57,
+          "line": 58,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -569,8 +552,8 @@
         {
           "kind": "associated",
           "name": "Load",
-          "line": 99,
-          "signature": "pub func Load(allocator: Allocator, name: char8[..]) -> TimeZone ! TimeZoneError",
+          "line": 101,
+          "signature": "pub func Load(allocator: Allocator, name: char8[..]) -> TimeZone throws TimeZoneError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -607,8 +590,8 @@
         {
           "kind": "associated",
           "name": "Local",
-          "line": 145,
-          "signature": "pub func Local(allocator: Allocator) -> TimeZone ! TimeZoneError",
+          "line": 149,
+          "signature": "pub func Local(allocator: Allocator) -> TimeZone throws TimeZoneError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -640,20 +623,20 @@
           "kind": "associated",
           "name": "Utc",
           "line": 92,
-          "signature": "pub func Utc(allocator: Allocator) -> TimeZone ! TimeZoneError",
+          "signature": "pub func Utc(allocator: Allocator) -> TimeZone",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
-          "returnType": "TimeZone ! TimeZoneError",
+          "returnType": "TimeZone",
           "value": null,
           "conformance": null,
           "public": true,
           "doc": {
             "summary": "UTC, which has no offset and never changes.",
-            "markdown": "UTC, which has no offset and never changes.",
+            "markdown": "UTC, which has no offset and never changes.\nCannot fail: its rule is a constant every reader accepts, and running out of memory terminates the program.",
             "typeParams": [],
             "params": [{ "name": "allocator", "markdown": "what the zone is kept in" }],
-            "returns": "the zone, or fails when the allocator refused",
+            "returns": "the zone",
             "see": ["https://rux-lang.dev/docs/api/timezone/zone#utc"],
             "deprecated": null
           },
@@ -671,8 +654,8 @@
         {
           "kind": "associated",
           "name": "FromRule",
-          "line": 102,
-          "signature": "pub func FromRule(allocator: Allocator, name: char8[..], rule: char8[..]) -> TimeZone ! TimeZoneError",
+          "line": 104,
+          "signature": "pub func FromRule(allocator: Allocator, name: char8[..], rule: char8[..]) -> TimeZone throws TimeZoneError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -711,8 +694,8 @@
         {
           "kind": "associated",
           "name": "FromTzif",
-          "line": 116,
-          "signature": "pub func FromTzif(allocator: Allocator, name: char8[..], data: byte[..]) -> TimeZone ! TimeZoneError",
+          "line": 118,
+          "signature": "pub func FromTzif(allocator: Allocator, name: char8[..], data: byte[..]) -> TimeZone throws TimeZoneError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -751,8 +734,8 @@
         {
           "kind": "method",
           "name": "Name",
-          "line": 191,
-          "signature": "pub func Name(self: &TimeZone) -> char8[..]",
+          "line": 194,
+          "signature": "pub func Name(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&TimeZone",
@@ -783,8 +766,8 @@
         {
           "kind": "method",
           "name": "StateAt",
-          "line": 199,
-          "signature": "pub func StateAt(self: &TimeZone, moment: Timestamp) -> ZoneState",
+          "line": 202,
+          "signature": "pub func StateAt(&self, moment: Timestamp) -> ZoneState",
           "typeParams": [],
           "params": [{ "name": "moment", "type": "Timestamp" }],
           "receiver": "&TimeZone",
@@ -815,8 +798,8 @@
         {
           "kind": "method",
           "name": "OffsetAt",
-          "line": 212,
-          "signature": "pub func OffsetAt(self: &TimeZone, moment: Timestamp) -> UtcOffset",
+          "line": 215,
+          "signature": "pub func OffsetAt(&self, moment: Timestamp) -> UtcOffset",
           "typeParams": [],
           "params": [{ "name": "moment", "type": "Timestamp" }],
           "receiver": "&TimeZone",
@@ -847,8 +830,8 @@
         {
           "kind": "method",
           "name": "ToLocal",
-          "line": 220,
-          "signature": "pub func ToLocal(self: &TimeZone, moment: Timestamp) -> OffsetDateTime",
+          "line": 223,
+          "signature": "pub func ToLocal(&self, moment: Timestamp) -> OffsetDateTime",
           "typeParams": [],
           "params": [{ "name": "moment", "type": "Timestamp" }],
           "receiver": "&TimeZone",
@@ -879,8 +862,8 @@
         {
           "kind": "method",
           "name": "Resolve",
-          "line": 229,
-          "signature": "pub func Resolve(self: &TimeZone, local: DateTime) -> LocalTime",
+          "line": 232,
+          "signature": "pub func Resolve(&self, local: DateTime) -> LocalTime",
           "typeParams": [],
           "params": [{ "name": "local", "type": "DateTime" }],
           "receiver": "&TimeZone",

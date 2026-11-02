@@ -44,7 +44,7 @@ pub const UMTX_OP_WAKE_PRIVATE: int32 = 16;
 <h2 id="umtx-wait"><code>UmtxWait</code></h2>
 
 ```rux
-pub func UmtxWait(
+pub unsafe func UmtxWait(
     address: *uint32,
     expected: uint32,
     timeout: *Timespec
@@ -52,10 +52,11 @@ pub func UmtxWait(
 ```
 
 Sleeps while `*address` equals `expected`, until a wake, a signal or the timeout.
+Safety: `address` must point at a live, four-byte aligned word, and a non-null `timeout` must be readable.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=_umtx_op&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=_umtx_op&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L28)
 
 **Parameters**
 
@@ -70,14 +71,18 @@ Sleeps while `*address` equals `expected`, until a wake, a signal or the timeout
 <h2 id="umtx-wake"><code>UmtxWake</code></h2>
 
 ```rux
-pub func UmtxWake(address: *uint32, count: int32) -> int64
+pub unsafe func UmtxWake(
+    address: *uint32,
+    count: int32
+) -> int64
 ```
 
 Wakes up to `count` threads sleeping on `address`.
+Safety: `address` must point at a live, four-byte aligned word.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=_umtx_op&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=_umtx_op&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L41)
 
 **Parameters**
 

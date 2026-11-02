@@ -56,7 +56,7 @@ pub const ClockMonotonicRaw: int32 = 4;
 <h2 id="clock-get-time"><code>ClockGetTime</code></h2>
 
 ```rux
-pub func ClockGetTime(
+pub unsafe func ClockGetTime(
     clockId: int32,
     time: *var Timespec
 ) -> int64
@@ -65,7 +65,7 @@ pub func ClockGetTime(
 Reads `clockId` into `time`.
 Callers pass an explicit address, as they do on Linux and FreeBSD: `ClockGetTime(ClockMonotonic, @time)`.
 The call itself needs macOS 10.12 or later; an older release has no such symbol and the program will not launch.
-`time` must be non-null and writable for a whole [`Timespec`](/docs/api/macos/timespec).
+Safety: `time` must be non-null and writable for a whole [`Timespec`](/docs/api/macos/timespec).
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L30)
 
@@ -81,7 +81,7 @@ The call itself needs macOS 10.12 or later; an older release has no such symbol 
 <h2 id="clock-get-resolution"><code>ClockGetResolution</code></h2>
 
 ```rux
-pub func ClockGetResolution(
+pub unsafe func ClockGetResolution(
     clockId: int32,
     resolution: *var Timespec
 ) -> int64
@@ -90,7 +90,7 @@ pub func ClockGetResolution(
 Reads the resolution of `clockId` into `resolution`.
 The resolution is the granularity the clock advances by, not the cost of reading it and not a promise about
 accuracy. Like [`ClockGetTime`](/docs/api/macos/clock#clock-get-time), it needs macOS 10.12 or later.
-`resolution` must be non-null and writable for a whole [`Timespec`](/docs/api/macos/timespec).
+Safety: `resolution` must be non-null and writable for a whole [`Timespec`](/docs/api/macos/timespec).
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L42)
 
@@ -106,14 +106,14 @@ accuracy. Like [`ClockGetTime`](/docs/api/macos/clock#clock-get-time), it needs 
 <h2 id="get-time-of-day"><code>GetTimeOfDay</code></h2>
 
 ```rux
-pub func GetTimeOfDay(time: *var Timeval) -> int64
+pub unsafe func GetTimeOfDay(time: *var Timeval) -> int64
 ```
 
 Reads the wall clock into `time`, to microsecond resolution.
 The second argument of the underlying call is an obsolete time-zone output that this passes as null.
 [`Timeval`](/docs/api/macos/timeval) has Darwin's layout: an eight-byte second count and a four-byte microsecond count, not two 64-bit
 fields.
-`time` must be non-null and writable for a whole [`Timeval`](/docs/api/macos/timeval).
+Safety: `time` must be non-null and writable for a whole [`Timeval`](/docs/api/macos/timeval).
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L54)
 
@@ -128,7 +128,7 @@ fields.
 <h2 id="nanosleep"><code>Nanosleep</code></h2>
 
 ```rux
-pub func Nanosleep(
+pub unsafe func Nanosleep(
     request: *Timespec,
     remaining: *var Timespec
 ) -> int64
@@ -136,9 +136,10 @@ pub func Nanosleep(
 
 Suspends the caller for the requested duration.
 [`EINTR`](/docs/api/macos/errors#eintr) with the unslept time left in `remaining` is how a signal cutting the wait short is reported.
-`request` must be non-null, and its nanoseconds must be under one second.
+Safety: `request` must be non-null and readable, and a non-null `remaining` must be writable. The nanoseconds of
+`request` must be under one second.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L66)
 
 **Parameters**
 

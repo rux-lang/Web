@@ -44,13 +44,13 @@ pub func Filled(
     allocator: Allocator,
     length: uint,
     value: T
-) -> Array<T> ! CollectionError
+) -> Array<T>
 ```
 
 An array of `length` elements, every one a copy of `value`.
 `allocator` is borrowed for the call and kept; `value` is read by value and copied into every position. A
 length of zero gives an empty array that owns a zero-sized block and is released like any other.
-A failure hands back no array at all, so there is nothing half-built to destroy.
+Terminates the program when the storage cannot be had.
 Runs in time proportional to `length`.
 
 | Name        | Type        | Description                  |
@@ -61,7 +61,7 @@ Runs in time proportional to `length`.
 
 **Returns**: an array of `length` copies of `value`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L42)
 
 <h3 id="from-slice"><code>FromSlice</code></h3>
 
@@ -69,12 +69,12 @@ Runs in time proportional to `length`.
 pub func FromSlice(
     allocator: Allocator,
     items: T[..]
-) -> Array<T> ! CollectionError
+) -> Array<T>
 ```
 
 An array holding a copy of every element of `items`, in order.
 `allocator` is borrowed for the call and kept; `items` is borrowed and read. An empty slice gives an empty
-array.
+array. Terminates the program when the storage cannot be had.
 Runs in time proportional to the slice's length.
 
 | Name        | Type        | Description                  |
@@ -84,31 +84,32 @@ Runs in time proportional to the slice's length.
 
 **Returns**: an array holding a copy of those elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L63)
 
 ## Methods
 
 <h3 id="clone"><code>Clone</code></h3>
 
 ```rux
-pub func Clone(self: &Array<T>) -> Array<T> ! CollectionError
+pub func Clone(&self) -> Array<T>
 ```
 
 An independent array holding a copy of every element of this one.
 `self` is borrowed and left alone. The copy has its own storage from the same allocator, so both are released
 independently.
-Copying elements is what this does, so an element that owns something ends up owned twice — which is why
-this is only usable where copying an element means what it says.
+Elements are copied with `=`, so the element type must be plain data that `Core::Copyable` describes; an
+owning element type is rejected while compiling, at the copy. Terminates the program when the storage cannot
+be had.
 Runs in time proportional to the length.
 
 **Returns**: an independent copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L85)
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &Array<T>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many elements the array holds.
@@ -116,12 +117,12 @@ How many elements the array holds.
 
 **Returns**: how many elements it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L93)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &Array<T>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the array holds no elements.
@@ -129,12 +130,12 @@ Whether the array holds no elements.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L101)
 
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &Array<T>, index: uint) -> T?
+pub func Get(&self, index: uint) -> T?
 ```
 
 The element at `index`, or `none` when there is no such index.
@@ -147,55 +148,95 @@ indexing the slice directly.
 
 **Returns**: a copy of the element, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L111)
 
-<h3 id="reference"><code>Reference</code></h3>
+<h3 id="at"><code>At</code></h3>
 
 ```rux
-pub func Reference(self: &Array<T>, index: uint) -> (*T)?
+pub func At(&self, index: uint) -> &T?
 ```
 
-A pointer to the element at `index`, or `none` when there is no such index.
-`self` is borrowed; the pointer borrows the element where it sits. This is how an element that owns something
-is read without being copied.
-The pointer is valid until the array is destroyed or moved.
+The element at `index`, borrowed where it sits, or `none` when there is no such index.
+`self` stays borrowed while the reference is in use. This is how an element that owns something is read
+without being copied.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
 
-**Returns**: the address of the element, or `none` when the index is out of range
+**Returns**: a reference to the element, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L123)
+
+<h3 id="at-mutable"><code>AtMutable</code></h3>
+
+```rux
+pub func AtMutable(&var self, index: uint) -> &var T?
+```
+
+The element at `index`, borrowed to be written where it sits, or `none` when there is no such index.
+`self` stays borrowed exclusively while the reference is in use.
+
+| Name    | Type   | Description                   |
+| ------- | ------ | ----------------------------- |
+| `index` | `uint` | which one, counting from zero |
+
+**Returns**: a writable reference to the element, or `none` when the index is out of range
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L134)
 
 <h3 id="set"><code>Set</code></h3>
 
 ```rux
 pub func Set(
-    self: &var Array<T>,
+    &var self,
     index: uint,
     value: T
-) -> ! CollectionError
+) throws CollectionError
 ```
 
-Replaces the element at `index` with `value`.
-`self` is borrowed mutably; `value` is read by value. Reports `IndexOutOfRange` and changes nothing when
-there is no such index.
-The old element is overwritten rather than destroyed. For an element that owns something, take it out first.
+Replaces the element at `index` with `value`, destroying the element that was there.
+`self` is borrowed mutably; `value` is moved in. The old element is destroyed once the new one is in place,
+so an element that owns something is released rather than leaked; [`Replace`](/docs/api/collections/array#replace) hands it back instead. Reports
+`IndexOutOfRange` and changes nothing when there is no such index, and `value` is then destroyed here.
 
 | Name    | Type   | Description                   |
 | ------- | ------ | ----------------------------- |
 | `index` | `uint` | which one, counting from zero |
-| `value` | `T`    | the value to act on           |
+| `value` | `T`    | the element to store          |
 
 **Returns**: nothing when the element was written, or `IndexOutOfRange`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L148)
+
+<h3 id="replace"><code>Replace</code></h3>
+
+```rux
+pub func Replace(
+    &var self,
+    index: uint,
+    value: T
+) -> T throws CollectionError
+```
+
+Replaces the element at `index` with `value` and hands back the element that was there.
+`self` is borrowed mutably; `value` is moved in and the old element is moved out to the caller rather than
+destroyed. Reports `IndexOutOfRange` and changes nothing when there is no such index, and `value` is then
+destroyed here.
+
+| Name    | Type   | Description                   |
+| ------- | ------ | ----------------------------- |
+| `index` | `uint` | which one, counting from zero |
+| `value` | `T`    | the element to store          |
+
+**Returns**: the element that was at `index`, or `IndexOutOfRange`
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L168)
 
 <h3 id="as-slice"><code>AsSlice</code></h3>
 
 ```rux
-pub func AsSlice(self: &Array<T>) -> T[..]
+pub func AsSlice(&self) -> T[..]
 ```
 
 The whole array as a borrowed read-only view.
@@ -204,12 +245,12 @@ The view is valid until the array is destroyed or moved.
 
 **Returns**: the elements, borrowed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L184)
 
 <h3 id="as-mutable-slice"><code>AsMutableSlice</code></h3>
 
 ```rux
-pub func AsMutableSlice(self: &var Array<T>) -> var T[..]
+pub func AsMutableSlice(&var self) -> var T[..]
 ```
 
 The whole array as a borrowed writable view.
@@ -219,12 +260,12 @@ The view is valid until the array is destroyed or moved.
 
 **Returns**: the elements, borrowed for writing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L195)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &Array<T>) -> ValueIterator<T>
+pub func Iterate(&self) -> ValueIterator<T>
 ```
 
 An iterator over the elements, by copy.
@@ -232,12 +273,12 @@ An iterator over the elements, by copy.
 
 **Returns**: a cursor yielding copies of the elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L204)
 
 <h3 id="references"><code>References</code></h3>
 
 ```rux
-pub func References(self: &Array<T>) -> ReferenceIterator<T>
+pub func References(&self) -> ReferenceIterator<T>
 ```
 
 An iterator over pointers to the elements.
@@ -245,12 +286,12 @@ An iterator over pointers to the elements.
 
 **Returns**: a cursor yielding the elements' addresses
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L171)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L212)
 
 <h3 id="mutable-references"><code>MutableReferences</code></h3>
 
 ```rux
-pub func MutableReferences(self: &var Array<T>) -> MutableReferenceIterator<T>
+pub func MutableReferences(&var self) -> MutableReferenceIterator<T>
 ```
 
 An iterator over writable pointers to the elements, without copying them.
@@ -259,12 +300,12 @@ while any of them is in use, and coordinate aliases that access the same element
 
 **Returns**: a cursor yielding writable element addresses
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L180)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L221)
 
 ## Destructor
 
 ```rux
-func ~Array(self: &var Array<T>)
+func ~Array(&var self)
 ```
 
 Destroys every element and releases the storage.
@@ -272,7 +313,7 @@ Runs when the array's life ends. Elements go first and the block second, which i
 an element destroyed after its storage was released would be read from freed memory.
 An array that was moved away is not destroyed where it used to live, so this happens exactly once.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L230)
 
 ## Related
 
@@ -283,7 +324,7 @@ pub func WriteArrayDebug<T: Debug>(
     writer: &var TextWriter,
     value: &Array<T>,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a borrowed array as `[first, second, third]`.
@@ -292,7 +333,7 @@ shown without disturbing one of them.
 `spec` describes the elements, exactly as for a vector.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L80)
 
 **Type parameters**
 

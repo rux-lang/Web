@@ -22,7 +22,7 @@ seo:
 Fills up to `length` bytes of `buffer` with unpredictable bytes.
 
 ```rux
-pub func GetRandom(
+pub unsafe func GetRandom(
     buffer: *var opaque,
     length: uint,
     flags: uint32
@@ -32,7 +32,7 @@ pub func GetRandom(
 Returns the number of bytes actually written, or a negative error number. A request over 256 bytes may be cut
 short, and a caller needing the whole buffer must call again for the rest.
 Runs in time proportional to `length` and allocates nothing.
-`buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or the
+Safety: `buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or the
 unwritten tail stays whatever it held — which for a key is the worst possible outcome.
 
 ## Parameters

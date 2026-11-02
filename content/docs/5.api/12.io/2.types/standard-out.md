@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Standard.rux
-  line: 269
+  line: 301
 seo:
   title: "StandardOut — Io API"
   description: "Standard output: a byte Writer whose encoding matches where the bytes land."
@@ -39,7 +39,7 @@ The process's standard output.
 
 **Returns**: the stream, which the process owns for its whole life
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L280)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L312)
 
 ## Implements Writer
 
@@ -49,9 +49,9 @@ The process's standard output.
 
 ```rux
 pub func Write(
-    self: &var StandardOut,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Writes what it can of `bytes` to standard output.
@@ -62,16 +62,16 @@ Writes what it can of `bytes` to standard output.
 
 **Returns**: how many bytes were taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L298)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L332)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var StandardOut) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Nothing: these writes hold nothing back.
 
 **Returns**: success, since everything written already reached the system
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L305)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L339)

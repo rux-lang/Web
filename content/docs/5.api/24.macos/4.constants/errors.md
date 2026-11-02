@@ -329,7 +329,7 @@ do, so a caller reads all three with [`IsError`](/docs/api/macos/errors#is-error
 A call that legitimately returns `-1` would be misread, which is why nothing here wraps one.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Errors.rux#L167)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Errors.rux#L168)
 
 **Parameters**
 
@@ -349,7 +349,7 @@ Whether a normalized result is one of the reserved error values.
 `result` is read by value. True for `-4095` through `-1`.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Errors.rux#L179)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Errors.rux#L180)
 
 **Parameters**
 
@@ -369,7 +369,7 @@ The error number a normalized result carries, or zero when it carries none.
 `result` is read by value; the number is returned positive, as a man page names it.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Errors.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Errors.rux#L190)
 
 **Parameters**
 

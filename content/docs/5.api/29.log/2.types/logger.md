@@ -36,12 +36,12 @@ ones to share between threads.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L13)
 
-**Associated functions**
+**Constructors**
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>Logger</code></h3>
 
 ```rux
-pub func New(
+pub func Logger(
     allocator: Allocator,
     sink: Writer,
     format: LogFormat
@@ -58,14 +58,14 @@ A logger writing records in `format` to `sink`, at level [`Info`](/docs/api/log/
 
 **Returns**: the logger
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L30)
 
 **Methods**
 
 <h3 id="set-level"><code>SetLevel</code></h3>
 
 ```rux
-pub func SetLevel(self: &var Logger, level: Level)
+pub func SetLevel(&var self, level: Level)
 ```
 
 Writes records at `level` and above from now on.
@@ -74,24 +74,24 @@ Writes records at `level` and above from now on.
 | ------- | ------- | ------------------------------ |
 | `level` | `Level` | the least severe level written |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L45)
 
 <h3 id="minimum-level"><code>MinimumLevel</code></h3>
 
 ```rux
-pub func MinimumLevel(self: &Logger) -> Level
+pub func MinimumLevel(&self) -> Level
 ```
 
 The least severe level written.
 
 **Returns**: the level
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L52)
 
 <h3 id="enabled"><code>Enabled</code></h3>
 
 ```rux
-pub func Enabled(self: &Logger, level: Level) -> bool
+pub func Enabled(&self, level: Level) -> bool
 ```
 
 Whether a record at `level` would be written, by this logger's level and the build's [`CompiledLevel`](/docs/api/log/level#compiled-level). Worth
@@ -103,12 +103,12 @@ asking before working out fields that cost something to compute.
 
 **Returns**: whether it would be written
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L61)
 
 <h3 id="set-timestamps"><code>SetTimestamps</code></h3>
 
 ```rux
-pub func SetTimestamps(self: &var Logger, enabled: bool)
+pub func SetTimestamps(&var self, enabled: bool)
 ```
 
 Whether records start with the time. Leaving it out suits a destination that adds its own, such as a service
@@ -118,12 +118,12 @@ manager's journal.
 | --------- | ------ | ------------------------- |
 | `enabled` | `bool` | whether to write the time |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L69)
 
 <h3 id="set-context"><code>SetContext</code></h3>
 
 ```rux
-pub func SetContext(self: &var Logger, fields: Field[..])
+pub func SetContext(&var self, fields: Field[..])
 ```
 
 Fields written with every record, before the record's own, such as a request's identifier.
@@ -132,25 +132,25 @@ Fields written with every record, before the record's own, such as a request's i
 | -------- | ----------- | -------------------------------------------- |
 | `fields` | `Field[..]` | the fields, borrowed until they are replaced |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L76)
 
 <h3 id="failure"><code>Failure</code></h3>
 
 ```rux
-pub func Failure(self: &Logger) -> IoError?
+pub func Failure(&self) -> IoError?
 ```
 
 The first failure to write a record, or `none` when every record was written.
 
 **Returns**: the failure
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L83)
 
 <h3 id="log"><code>Log</code></h3>
 
 ```rux
 pub func Log(
-    self: &var Logger,
+    &var self,
     level: Level,
     message: char8[..],
     fields: Field[..]
@@ -165,36 +165,36 @@ Writes a record at `level` with `message` and `fields`, if the level is enabled.
 | `message` | `char8[..]` | what happened              |
 | `fields`  | `Field[..]` | the values that go with it |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L92)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var Logger)
+pub func Flush(&var self)
 ```
 
 Asks the stream to deliver what it holds.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L107)
 
 <h3 id="trace"><code>Trace</code></h3>
 
 ```rux
 pub func Trace(
-    self: &var Logger,
+    &var self,
     message: char8[..],
     fields: Field[..]
 )
 
-pub func Trace(self: &var Logger, message: char8[..])
+pub func Trace(&var self, message: char8[..])
 ```
 
 Writes a `Trace` record with no fields.
 
-| Overload                                                                   | Summary                                 |
-| -------------------------------------------------------------------------- | --------------------------------------- |
-| `pub func Trace(self: &var Logger, message: char8[..], fields: Field[..])` | Writes a `Trace` record.                |
-| `pub func Trace(self: &var Logger, message: char8[..])`                    | Writes a `Trace` record with no fields. |
+| Overload                                                           | Summary                                 |
+| ------------------------------------------------------------------ | --------------------------------------- |
+| `pub func Trace(&var self, message: char8[..], fields: Field[..])` | Writes a `Trace` record.                |
+| `pub func Trace(&var self, message: char8[..])`                    | Writes a `Trace` record with no fields. |
 
 | Name      | Type        | Description                |
 | --------- | ----------- | -------------------------- |
@@ -207,20 +207,20 @@ Writes a `Trace` record with no fields.
 
 ```rux
 pub func Debug(
-    self: &var Logger,
+    &var self,
     message: char8[..],
     fields: Field[..]
 )
 
-pub func Debug(self: &var Logger, message: char8[..])
+pub func Debug(&var self, message: char8[..])
 ```
 
 Writes a `Debug` record with no fields.
 
-| Overload                                                                   | Summary                                 |
-| -------------------------------------------------------------------------- | --------------------------------------- |
-| `pub func Debug(self: &var Logger, message: char8[..], fields: Field[..])` | Writes a `Debug` record.                |
-| `pub func Debug(self: &var Logger, message: char8[..])`                    | Writes a `Debug` record with no fields. |
+| Overload                                                           | Summary                                 |
+| ------------------------------------------------------------------ | --------------------------------------- |
+| `pub func Debug(&var self, message: char8[..], fields: Field[..])` | Writes a `Debug` record.                |
+| `pub func Debug(&var self, message: char8[..])`                    | Writes a `Debug` record with no fields. |
 
 | Name      | Type        | Description                |
 | --------- | ----------- | -------------------------- |
@@ -233,20 +233,20 @@ Writes a `Debug` record with no fields.
 
 ```rux
 pub func Info(
-    self: &var Logger,
+    &var self,
     message: char8[..],
     fields: Field[..]
 )
 
-pub func Info(self: &var Logger, message: char8[..])
+pub func Info(&var self, message: char8[..])
 ```
 
 Writes an `Info` record with no fields.
 
-| Overload                                                                  | Summary                                 |
-| ------------------------------------------------------------------------- | --------------------------------------- |
-| `pub func Info(self: &var Logger, message: char8[..], fields: Field[..])` | Writes an `Info` record.                |
-| `pub func Info(self: &var Logger, message: char8[..])`                    | Writes an `Info` record with no fields. |
+| Overload                                                          | Summary                                 |
+| ----------------------------------------------------------------- | --------------------------------------- |
+| `pub func Info(&var self, message: char8[..], fields: Field[..])` | Writes an `Info` record.                |
+| `pub func Info(&var self, message: char8[..])`                    | Writes an `Info` record with no fields. |
 
 | Name      | Type        | Description                |
 | --------- | ----------- | -------------------------- |
@@ -259,20 +259,20 @@ Writes an `Info` record with no fields.
 
 ```rux
 pub func Warn(
-    self: &var Logger,
+    &var self,
     message: char8[..],
     fields: Field[..]
 )
 
-pub func Warn(self: &var Logger, message: char8[..])
+pub func Warn(&var self, message: char8[..])
 ```
 
 Writes a `Warn` record with no fields.
 
-| Overload                                                                  | Summary                                |
-| ------------------------------------------------------------------------- | -------------------------------------- |
-| `pub func Warn(self: &var Logger, message: char8[..], fields: Field[..])` | Writes a `Warn` record.                |
-| `pub func Warn(self: &var Logger, message: char8[..])`                    | Writes a `Warn` record with no fields. |
+| Overload                                                          | Summary                                |
+| ----------------------------------------------------------------- | -------------------------------------- |
+| `pub func Warn(&var self, message: char8[..], fields: Field[..])` | Writes a `Warn` record.                |
+| `pub func Warn(&var self, message: char8[..])`                    | Writes a `Warn` record with no fields. |
 
 | Name      | Type        | Description                |
 | --------- | ----------- | -------------------------- |
@@ -285,20 +285,20 @@ Writes a `Warn` record with no fields.
 
 ```rux
 pub func Error(
-    self: &var Logger,
+    &var self,
     message: char8[..],
     fields: Field[..]
 )
 
-pub func Error(self: &var Logger, message: char8[..])
+pub func Error(&var self, message: char8[..])
 ```
 
 Writes an `Error` record with no fields.
 
-| Overload                                                                   | Summary                                  |
-| -------------------------------------------------------------------------- | ---------------------------------------- |
-| `pub func Error(self: &var Logger, message: char8[..], fields: Field[..])` | Writes an `Error` record.                |
-| `pub func Error(self: &var Logger, message: char8[..])`                    | Writes an `Error` record with no fields. |
+| Overload                                                           | Summary                                  |
+| ------------------------------------------------------------------ | ---------------------------------------- |
+| `pub func Error(&var self, message: char8[..], fields: Field[..])` | Writes an `Error` record.                |
+| `pub func Error(&var self, message: char8[..])`                    | Writes an `Error` record with no fields. |
 
 | Name      | Type        | Description                |
 | --------- | ----------- | -------------------------- |

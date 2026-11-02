@@ -76,13 +76,13 @@ pub func Base32Encode(
     bytes: byte[..],
     into: var char8[..],
     form: Base32Variant
-) -> uint ! FormatError
+) -> uint throws FormatError
 
 pub func Base32Encode(
     text: char8[..],
     into: var char8[..],
     form: Base32Variant
-) -> uint ! FormatError
+) -> uint throws FormatError
 ```
 
 Writes `bytes` as Base32 into `into`.
@@ -91,10 +91,10 @@ length of `bytes`. Reports `InsufficientCapacity` when `into` is shorter than
 `Base32EncodedLength(bytes.length, form)`, leaving it exactly as it was; room past the encoded form is not
 touched.
 
-| Overload                                                                                                 | Summary                                           |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `pub func Base32Encode(bytes: byte[..], into: var char8[..], form: Base32Variant) -> uint ! FormatError` | Writes `bytes` as Base32 into `into`.             |
-| `pub func Base32Encode(text: char8[..], into: var char8[..], form: Base32Variant) -> uint ! FormatError` | Writes the bytes of `text` as Base32 into `into`. |
+| Overload                                                                                                      | Summary                                           |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `pub func Base32Encode(bytes: byte[..], into: var char8[..], form: Base32Variant) -> uint throws FormatError` | Writes `bytes` as Base32 into `into`.             |
+| `pub func Base32Encode(text: char8[..], into: var char8[..], form: Base32Variant) -> uint throws FormatError` | Writes the bytes of `text` as Base32 into `into`. |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base32.rux#L122)
 
@@ -115,7 +115,7 @@ touched.
 pub func Base32DecodedLength(
     text: char8[..],
     form: Base32Variant
-) -> uint ! DecodeError
+) -> uint throws DecodeError
 ```
 
 How many bytes the Base32 text decodes to, after checking its length and the placement of its padding.
@@ -142,7 +142,7 @@ pub func Base32Decode(
     text: char8[..],
     into: var byte[..],
     form: Base32Variant
-) -> uint ! DecodeError
+) -> uint throws DecodeError
 ```
 
 Reads Base32 text in `form` into `into`.
@@ -152,7 +152,7 @@ the first character outside the alphabet, `NonCanonical` at a last character who
 `InsufficientCapacity` with the length needed when `into` is too short. Every refusal leaves `into` untouched,
 because the whole text is checked before anything is written.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base32.rux#L235)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base32.rux#L236)
 
 **Parameters**
 

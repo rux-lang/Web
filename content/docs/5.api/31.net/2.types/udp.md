@@ -58,7 +58,7 @@ A UDP socket. Not copied.
 <h3 id="bind"><code>Bind</code></h3>
 
 ```rux
-pub func Bind(address: SocketAddress) -> UdpSocket ! IoError
+pub func Bind(address: SocketAddress) -> UdpSocket throws IoError
 ```
 
 A socket bound to `address`. Port zero lets the system choose a free port, which [`LocalAddress`](/docs/api/net/udp#local-address) then gives.
@@ -69,7 +69,7 @@ A socket bound to `address`. Port zero lets the system choose a free port, which
 
 **Returns**: the socket, or fails with `AddressInUse` or `AddressUnavailable`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L32)
 
 **Methods**
 
@@ -77,10 +77,10 @@ A socket bound to `address`. Port zero lets the system choose a free port, which
 
 ```rux
 pub func SendTo(
-    self: &UdpSocket,
+    &self,
     bytes: char8[..],
     target: SocketAddress
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Sends `bytes` as one datagram to `target`.
@@ -92,15 +92,15 @@ Sends `bytes` as one datagram to `target`.
 
 **Returns**: how many bytes were sent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L44)
 
 <h3 id="receive-from"><code>ReceiveFrom</code></h3>
 
 ```rux
 pub func ReceiveFrom(
-    self: &UdpSocket,
+    &self,
     into: var char8[..]
-) -> Datagram ! IoError
+) -> Datagram throws IoError
 ```
 
 Waits for a datagram and puts it in `into`.
@@ -111,15 +111,12 @@ Waits for a datagram and puts it in `into`.
 
 **Returns**: its length and its sender
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L52)
 
 <h3 id="connect"><code>Connect</code></h3>
 
 ```rux
-pub func Connect(
-    self: &UdpSocket,
-    peer: SocketAddress
-) -> ! IoError
+pub func Connect(&self, peer: SocketAddress) throws IoError
 ```
 
 Sends to and receives from `peer` only, so [`Send`](/docs/api/net/udp#send) and [`Receive`](/docs/api/net/udp#receive) need no address.
@@ -130,15 +127,15 @@ Sends to and receives from `peer` only, so [`Send`](/docs/api/net/udp#send) and 
 
 **Returns**: nothing, or fails when the system refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L62)
 
 <h3 id="send"><code>Send</code></h3>
 
 ```rux
 pub func Send(
-    self: &UdpSocket,
+    &self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Sends `bytes` as one datagram to the connected peer.
@@ -149,15 +146,15 @@ Sends `bytes` as one datagram to the connected peer.
 
 **Returns**: how many bytes were sent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L70)
 
 <h3 id="receive"><code>Receive</code></h3>
 
 ```rux
 pub func Receive(
-    self: &UdpSocket,
+    &self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Waits for a datagram from the connected peer and puts it in `into`.
@@ -168,27 +165,27 @@ Waits for a datagram from the connected peer and puts it in `into`.
 
 **Returns**: its length
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L78)
 
 <h3 id="local-address"><code>LocalAddress</code></h3>
 
 ```rux
-pub func LocalAddress(self: &UdpSocket) -> SocketAddress ! IoError
+pub func LocalAddress(&self) -> SocketAddress throws IoError
 ```
 
 The address the socket is bound to.
 
 **Returns**: the address
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L85)
 
 <h3 id="set-read-timeout"><code>SetReadTimeout</code></h3>
 
 ```rux
 pub func SetReadTimeout(
-    self: &UdpSocket,
+    &self,
     timeout: Duration?
-) -> ! IoError
+) throws IoError
 ```
 
 How long a receive may wait before failing with `TimedOut`, or none to wait without a limit.
@@ -199,15 +196,12 @@ How long a receive may wait before failing with `TimedOut`, or none to wait with
 
 **Returns**: nothing, or fails when the system refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L93)
 
 <h3 id="set-non-blocking"><code>SetNonBlocking</code></h3>
 
 ```rux
-pub func SetNonBlocking(
-    self: &UdpSocket,
-    enabled: bool
-) -> ! IoError
+pub func SetNonBlocking(&self, enabled: bool) throws IoError
 ```
 
 Makes calls on the socket fail with `WouldBlock` when they would wait, or wait again.
@@ -219,26 +213,26 @@ A non-blocking socket is meant for a [`Poller`](/docs/api/net/poller), which say
 
 **Returns**: success when the mode is set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L102)
 
 <h3 id="poll-source"><code>PollSource</code></h3>
 
 ```rux
-pub func PollSource(self: &UdpSocket) -> PollSource
+pub func PollSource(&self) -> PollSource
 ```
 
 The socket as a [`Poller`](/docs/api/net/poller) watches it, valid while the socket is open.
 
 **Returns**: the source to register
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L109)
 
 **Destructor**
 
 <h3 id="udp-socket-destructor"><code>~UdpSocket</code></h3>
 
 ```rux
-func ~UdpSocket(self: &var UdpSocket)
+func ~UdpSocket(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L113)

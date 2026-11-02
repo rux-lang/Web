@@ -109,7 +109,7 @@ pub func HasRoot(path: Path) -> bool
 
 Whether `path` has a root: a separator standing where the segments begin.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Prefix.rux#L106)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Prefix.rux#L123)
 
 **Parameters**
 
@@ -129,7 +129,7 @@ Whether `path` names one place regardless of any current directory.
 On the Unix systems, rooted is absolute. On Windows a rooted drive (`C:\x`), a share and a verbatim path are
 absolute; `C:name` is drive-relative and `\name` drive-absent, and neither names one place on its own.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Prefix.rux#L123)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Prefix.rux#L141)
 
 **Parameters**
 

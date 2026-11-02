@@ -9,7 +9,7 @@ api:
   kind: enum
   version: 0.1.0
   source: Src/Error.rux
-  line: 10
+  line: 15
 seo:
   title: "AllocError — Allocator API"
   description: "Why an allocation, reallocation or release did not do what was asked."
@@ -42,7 +42,7 @@ pub enum AllocError: uint8 {
 <h3 id="is-transient"><code>IsTransient</code></h3>
 
 ```rux
-pub func IsTransient(self: AllocError) -> bool
+pub func IsTransient(self) -> bool
 ```
 
 Whether a later attempt could plausibly succeed.
@@ -51,4 +51,27 @@ Whether a later attempt could plausibly succeed.
 
 **Returns**: whether asking again later could succeed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Error.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Error.rux#L32)
+
+## Related
+
+<h3 id="allocation-failed"><code>AllocationFailed</code></h3>
+
+```rux
+pub func AllocationFailed(error: AllocError)
+```
+
+Terminates the program, reporting that an allocation was refused and why.
+This is what an owning type does when the storage it needs cannot be had: running out of memory is not an error
+its caller is expected to handle, and code that can recover calls the type's `Try*` operation instead. Does not
+unwind, so no destructor runs.
+A size that cannot be represented at all, such as a capacity whose byte count overflows, is reported as
+`Unsupported`: no allocator could serve it.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Error.rux#L46)
+
+**Parameters**
+
+| Name    | Type         | Description               |
+| ------- | ------------ | ------------------------- |
+| `error` | `AllocError` | why the allocator refused |

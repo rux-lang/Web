@@ -36,7 +36,7 @@
     {
       "name": "IoError",
       "source": "Src/IoError.rux",
-      "header": "What went wrong at the edge of the machine.\nAn I/O failure is not one thing. Some report a fact about the world — the file is not there, the disk is full,\npermission was refused — and a caller acts on which fact. Some report a moment: the operation was interrupted,\nor would block, and the right response is to go again. And the end of a stream is not a failure at all, but it\narrives through the same channel, so it lives in the same type where nobody can lose it.\nThe set is deliberately the meanings shared by every platform, with the raw code carried beside the meaning:\ntranslation loses detail, and the detail is sometimes the diagnosis. Success is not in the set: an operation that\ncan fail returns a native fallible, and `IoError` is only ever its failure."
+      "header": "What went wrong at the edge of the machine.\nAn I/O failure is not one thing. Some report a fact about the world — the file is not there, the disk is full,\npermission was refused — and a caller acts on which fact. Some report a moment, and the two moments differ: an\ninterruption is answered by going again at once, while a would-block is answered by waiting until the stream is\nready, so going again at once would only spin. And the end of a stream is not a failure at all, but it arrives\nthrough the same channel, so it lives in the same type where nobody can lose it; running out partway through\nsomething that needed more bytes is a failure, and has a kind of its own.\nThe set is deliberately the meanings shared by every platform, with the raw code carried beside the meaning:\ntranslation loses detail, and the detail is sometimes the diagnosis. Success is not in the set: an operation that\ncan fail declares `throws IoError`, and `IoError` is only ever what it throws."
     },
     {
       "name": "MemoryStream",
@@ -66,12 +66,12 @@
     {
       "name": "Stream",
       "source": "Src/Stream.rux",
-      "header": "The three things a stream can be asked, and the helpers every asker shares.\nA `Reader` fills what it can of a buffer and succeeds with how much; a `Writer` takes what it can and succeeds with\nhow much; a `Seeker` moves the position and succeeds with where it landed. Partial progress is the interfaces'\nhonest unit — a socket hands over what has arrived, a pipe takes what fits — and the all-or-nothing shapes callers\nusually want are the shared helpers, written once: `ReadExact` and `WriteAll` loop over partial progress, retry the\ntransient reports, and refuse to spin on a stream that makes none.\nCall-time streams are borrowed as interface references, so concrete readers and writers can be used directly\nwithout copying their state or manufacturing an adapter. An interface value is still useful when a stream must\nbe stored, because references deliberately cannot escape into fields."
+      "header": "The three things a stream can be asked, and the helpers every asker shares.\nA `Reader` fills what it can of a buffer and succeeds with how much; a `Writer` takes what it can and succeeds with\nhow much; a `Seeker` moves the position and succeeds with where it landed. Partial progress is the interfaces'\nhonest unit — a socket hands over what has arrived, a pipe takes what fits — and the all-or-nothing shapes callers\nusually want are the shared helpers, written once: `ReadExact` and `WriteAll` loop over partial progress, retry\ninterruptions, hand a would-block back to the caller, and refuse to spin on a stream that makes no progress.\nCall-time streams are borrowed as interface references, so concrete readers and writers can be used directly\nwithout copying their state or manufacturing an adapter. An interface value is still useful when a stream must\nbe stored, because references deliberately cannot escape into fields."
     },
     {
       "name": "TextBoundary",
       "source": "Src/TextBoundary.rux",
-      "header": "Where a stream and the text protocols meet, and what each says to the other.\n`Rux/Text` describes values and knows nothing about streams; this package moves bytes and knows nothing about\nrendering. They have to agree at exactly one place — a `TextWriter` over a stream — and the whole difficulty is\nthat neither error type can hold the other's failures. `FormatError` has one case for a destination failing,\n`WriterFailure`, with deliberately no room for details, because Text has no vocabulary for a broken pipe and\nshould not pretend to. `IoError` has no case for a placeholder that does not parse.\nSo the crossing is made in both directions, once, here.\nGoing out, `FromIoError` turns what a stream reported into what a formatter understands: success stays success\nand every failure becomes `WriterFailure`. That is lossy on purpose, and the loss is made good by the adapter,\nwhich records the original `IoError` in an optional slot the caller holds. So the formatter learns exactly what it\ncan act on — stop writing — and the caller learns exactly what happened.\nComing back, `ToIoError` turns a formatting failure into something a stream's caller can act on, and the one\ndistinction it must preserve is the one that decides what to do next: a destination that failed may be worth\nretrying elsewhere, while a request that was wrong will be wrong again. A malformed pattern, a specification a\nvalue does not support, an argument count that does not match, and a value outside the form asked for are all\nthe caller's own request, and all arrive as `InvalidInput`. Text that was not valid UTF-8 is `InvalidText`, which\nis a fact about the bytes. A bounded destination that filled up is `LimitExceeded`. This used to be one line\nmapping everything to `InvalidText`, which told a caller who had written `{:q}` that their bytes were not text.\nWhat is *not* done is stuffing a `FormatError` into `IoError`'s `raw` field. That field is `errno` on the Unix\nsystems and the Win32 code on Windows, and a caller reading it expects to be able to look the number up. A\ncaller who needs to know which formatting failure it was builds a `ConsoleWriter` — or any other `TextWriter` —\nand calls `Text::WriteValue` themselves, which hands back the `FormatError` whole."
+      "header": "Where a stream and the text protocols meet, and what each says to the other.\n`Rux/Text` describes values and knows nothing about streams; this package moves bytes and knows nothing about\nrendering. They have to agree at exactly one place — a `TextWriter` over a stream — and the whole difficulty is\nthat neither error type can hold the other's failures. `FormatError` has one case for a destination failing,\n`WriterFailure`, with deliberately no room for details, because Text has no vocabulary for a broken pipe and\nshould not pretend to. `IoError` has no case for a placeholder that does not parse.\nSo the crossing is made in both directions, once, here.\nGoing out, `FromIoError` turns an error a stream threw into what a formatter understands: every failure becomes\n`WriterFailure`. That is lossy on purpose, and the loss is made good by the adapter,\nwhich records the original `IoError` in an optional slot the caller holds. So the formatter learns exactly what it\ncan act on — stop writing — and the caller learns exactly what happened.\nComing back, `ToIoError` turns a formatting failure into something a stream's caller can act on, and the one\ndistinction it must preserve is the one that decides what to do next: a destination that failed may be worth\nretrying elsewhere, while a request that was wrong will be wrong again. A malformed pattern, a specification a\nvalue does not support, an argument count that does not match, and a value outside the form asked for are all\nthe caller's own request, and all arrive as `InvalidInput`. Text that was not valid UTF-8 is `InvalidText`, which\nis a fact about the bytes. A bounded destination that filled up is `LimitExceeded`. This used to be one line\nmapping everything to `InvalidText`, which told a caller who had written `{:q}` that their bytes were not text.\nWhat is *not* done is stuffing a `FormatError` into `IoError`'s `raw` field. That field is `errno` on the Unix\nsystems and the Win32 code on Windows, and a caller reading it expects to be able to look the number up. A\ncaller who needs to know which formatting failure it was builds a `ConsoleWriter` — or any other `TextWriter` —\nand calls `Text::WriteValue` themselves, which hands back the `FormatError` whole."
     },
     {
       "name": "TextRead",
@@ -86,7 +86,7 @@
       "displayName": "Endian",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 16,
+      "line": 17,
       "signature": "pub enum Endian",
       "typeParams": [],
       "doc": {
@@ -106,7 +106,7 @@
           "name": "Little",
           "value": "0",
           "payload": null,
-          "line": 18,
+          "line": 19,
           "doc": "The least significant byte first: x86-64, AArch64, and most formats born on them.",
           "targets": [
             "windows-x86_64",
@@ -123,7 +123,7 @@
           "name": "Big",
           "value": "1",
           "payload": null,
-          "line": 20,
+          "line": 21,
           "doc": "The most significant byte first: network order, and the older big machines.",
           "targets": [
             "windows-x86_64",
@@ -156,8 +156,8 @@
       "displayName": "ReadWord",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 31,
-      "signature": "pub func ReadWord(reader: &var Reader, endian: Endian, width: uint) -> uint512 ! IoError",
+      "line": 32,
+      "signature": "pub func ReadWord(reader: &var Reader, endian: Endian, width: uint) -> uint512 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `width`-byte unsigned word in the given order, into the low bytes of the result.",
@@ -168,7 +168,7 @@
           { "name": "endian", "markdown": "which byte order the value is stored in" },
           { "name": "width", "markdown": "how many bytes the value occupies" }
         ],
-        "returns": "the value read, in the low bytes; `IsEnd` when the stream ended first",
+        "returns": "the value read, in the low bytes; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-word"],
         "deprecated": null
       },
@@ -195,8 +195,8 @@
       "displayName": "WriteWord",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 53,
-      "signature": "pub func WriteWord(writer: &var Writer, endian: Endian, width: uint, value: uint512) -> ! IoError",
+      "line": 54,
+      "signature": "pub func WriteWord(writer: &var Writer, endian: Endian, width: uint, value: uint512) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the low `width` bytes of `value` in the given order.",
@@ -235,8 +235,8 @@
       "displayName": "ReadUint8",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 72,
-      "signature": "pub func ReadUint8(reader: &var Reader, endian: Endian) -> uint8 ! IoError",
+      "line": 73,
+      "signature": "pub func ReadUint8(reader: &var Reader, endian: Endian) -> uint8 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `uint8` in the given order.",
@@ -246,7 +246,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-uint8"],
         "deprecated": null
       },
@@ -273,8 +273,8 @@
       "displayName": "WriteUint8",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 83,
-      "signature": "pub func WriteUint8(writer: &var Writer, endian: Endian, value: uint8) -> ! IoError",
+      "line": 84,
+      "signature": "pub func WriteUint8(writer: &var Writer, endian: Endian, value: uint8) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes a `uint8` in the given order.",
@@ -312,8 +312,8 @@
       "displayName": "ReadInt8",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 92,
-      "signature": "pub func ReadInt8(reader: &var Reader, endian: Endian) -> int8 ! IoError",
+      "line": 93,
+      "signature": "pub func ReadInt8(reader: &var Reader, endian: Endian) -> int8 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads an `int8`: the unsigned bytes, reinterpreted in two's complement.",
@@ -323,7 +323,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-int8"],
         "deprecated": null
       },
@@ -350,8 +350,8 @@
       "displayName": "WriteInt8",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 103,
-      "signature": "pub func WriteInt8(writer: &var Writer, endian: Endian, value: int8) -> ! IoError",
+      "line": 104,
+      "signature": "pub func WriteInt8(writer: &var Writer, endian: Endian, value: int8) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes an `int8`: its two's-complement bytes, unchanged.",
@@ -389,8 +389,8 @@
       "displayName": "ReadUint16",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 112,
-      "signature": "pub func ReadUint16(reader: &var Reader, endian: Endian) -> uint16 ! IoError",
+      "line": 113,
+      "signature": "pub func ReadUint16(reader: &var Reader, endian: Endian) -> uint16 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `uint16` in the given order.",
@@ -400,7 +400,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-uint16"],
         "deprecated": null
       },
@@ -427,8 +427,8 @@
       "displayName": "WriteUint16",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 123,
-      "signature": "pub func WriteUint16(writer: &var Writer, endian: Endian, value: uint16) -> ! IoError",
+      "line": 124,
+      "signature": "pub func WriteUint16(writer: &var Writer, endian: Endian, value: uint16) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes a `uint16` in the given order.",
@@ -466,8 +466,8 @@
       "displayName": "ReadInt16",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 132,
-      "signature": "pub func ReadInt16(reader: &var Reader, endian: Endian) -> int16 ! IoError",
+      "line": 133,
+      "signature": "pub func ReadInt16(reader: &var Reader, endian: Endian) -> int16 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads an `int16`: the unsigned bytes, reinterpreted in two's complement.",
@@ -477,7 +477,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-int16"],
         "deprecated": null
       },
@@ -504,8 +504,8 @@
       "displayName": "WriteInt16",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 143,
-      "signature": "pub func WriteInt16(writer: &var Writer, endian: Endian, value: int16) -> ! IoError",
+      "line": 144,
+      "signature": "pub func WriteInt16(writer: &var Writer, endian: Endian, value: int16) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes an `int16`: its two's-complement bytes, unchanged.",
@@ -543,8 +543,8 @@
       "displayName": "ReadUint32",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 152,
-      "signature": "pub func ReadUint32(reader: &var Reader, endian: Endian) -> uint32 ! IoError",
+      "line": 153,
+      "signature": "pub func ReadUint32(reader: &var Reader, endian: Endian) -> uint32 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `uint32` in the given order.",
@@ -554,7 +554,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-uint32"],
         "deprecated": null
       },
@@ -581,8 +581,8 @@
       "displayName": "WriteUint32",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 163,
-      "signature": "pub func WriteUint32(writer: &var Writer, endian: Endian, value: uint32) -> ! IoError",
+      "line": 164,
+      "signature": "pub func WriteUint32(writer: &var Writer, endian: Endian, value: uint32) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes a `uint32` in the given order.",
@@ -620,8 +620,8 @@
       "displayName": "ReadInt32",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 172,
-      "signature": "pub func ReadInt32(reader: &var Reader, endian: Endian) -> int32 ! IoError",
+      "line": 173,
+      "signature": "pub func ReadInt32(reader: &var Reader, endian: Endian) -> int32 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads an `int32`: the unsigned bytes, reinterpreted in two's complement.",
@@ -631,7 +631,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-int32"],
         "deprecated": null
       },
@@ -658,8 +658,8 @@
       "displayName": "WriteInt32",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 183,
-      "signature": "pub func WriteInt32(writer: &var Writer, endian: Endian, value: int32) -> ! IoError",
+      "line": 184,
+      "signature": "pub func WriteInt32(writer: &var Writer, endian: Endian, value: int32) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes an `int32`: its two's-complement bytes, unchanged.",
@@ -697,8 +697,8 @@
       "displayName": "ReadUint64",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 192,
-      "signature": "pub func ReadUint64(reader: &var Reader, endian: Endian) -> uint64 ! IoError",
+      "line": 193,
+      "signature": "pub func ReadUint64(reader: &var Reader, endian: Endian) -> uint64 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `uint64` in the given order.",
@@ -708,7 +708,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-uint64"],
         "deprecated": null
       },
@@ -735,8 +735,8 @@
       "displayName": "WriteUint64",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 203,
-      "signature": "pub func WriteUint64(writer: &var Writer, endian: Endian, value: uint64) -> ! IoError",
+      "line": 204,
+      "signature": "pub func WriteUint64(writer: &var Writer, endian: Endian, value: uint64) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes a `uint64` in the given order.",
@@ -774,8 +774,8 @@
       "displayName": "ReadInt64",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 212,
-      "signature": "pub func ReadInt64(reader: &var Reader, endian: Endian) -> int64 ! IoError",
+      "line": 213,
+      "signature": "pub func ReadInt64(reader: &var Reader, endian: Endian) -> int64 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads an `int64`: the unsigned bytes, reinterpreted in two's complement.",
@@ -785,7 +785,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-int64"],
         "deprecated": null
       },
@@ -812,8 +812,8 @@
       "displayName": "WriteInt64",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 223,
-      "signature": "pub func WriteInt64(writer: &var Writer, endian: Endian, value: int64) -> ! IoError",
+      "line": 224,
+      "signature": "pub func WriteInt64(writer: &var Writer, endian: Endian, value: int64) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes an `int64`: its two's-complement bytes, unchanged.",
@@ -851,8 +851,8 @@
       "displayName": "ReadUint128",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 232,
-      "signature": "pub func ReadUint128(reader: &var Reader, endian: Endian) -> uint128 ! IoError",
+      "line": 233,
+      "signature": "pub func ReadUint128(reader: &var Reader, endian: Endian) -> uint128 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `uint128` in the given order.",
@@ -862,7 +862,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-uint128"],
         "deprecated": null
       },
@@ -889,8 +889,8 @@
       "displayName": "WriteUint128",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 243,
-      "signature": "pub func WriteUint128(writer: &var Writer, endian: Endian, value: uint128) -> ! IoError",
+      "line": 244,
+      "signature": "pub func WriteUint128(writer: &var Writer, endian: Endian, value: uint128) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes a `uint128` in the given order.",
@@ -928,8 +928,8 @@
       "displayName": "ReadInt128",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 252,
-      "signature": "pub func ReadInt128(reader: &var Reader, endian: Endian) -> int128 ! IoError",
+      "line": 253,
+      "signature": "pub func ReadInt128(reader: &var Reader, endian: Endian) -> int128 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads an `int128`: the unsigned bytes, reinterpreted in two's complement.",
@@ -939,7 +939,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-int128"],
         "deprecated": null
       },
@@ -966,8 +966,8 @@
       "displayName": "WriteInt128",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 263,
-      "signature": "pub func WriteInt128(writer: &var Writer, endian: Endian, value: int128) -> ! IoError",
+      "line": 264,
+      "signature": "pub func WriteInt128(writer: &var Writer, endian: Endian, value: int128) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes an `int128`: its two's-complement bytes, unchanged.",
@@ -1005,8 +1005,8 @@
       "displayName": "ReadUint256",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 272,
-      "signature": "pub func ReadUint256(reader: &var Reader, endian: Endian) -> uint256 ! IoError",
+      "line": 273,
+      "signature": "pub func ReadUint256(reader: &var Reader, endian: Endian) -> uint256 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `uint256` in the given order.",
@@ -1016,7 +1016,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-uint256"],
         "deprecated": null
       },
@@ -1043,8 +1043,8 @@
       "displayName": "WriteUint256",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 283,
-      "signature": "pub func WriteUint256(writer: &var Writer, endian: Endian, value: uint256) -> ! IoError",
+      "line": 284,
+      "signature": "pub func WriteUint256(writer: &var Writer, endian: Endian, value: uint256) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes a `uint256` in the given order.",
@@ -1082,8 +1082,8 @@
       "displayName": "ReadInt256",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 292,
-      "signature": "pub func ReadInt256(reader: &var Reader, endian: Endian) -> int256 ! IoError",
+      "line": 293,
+      "signature": "pub func ReadInt256(reader: &var Reader, endian: Endian) -> int256 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads an `int256`: the unsigned bytes, reinterpreted in two's complement.",
@@ -1093,7 +1093,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-int256"],
         "deprecated": null
       },
@@ -1120,8 +1120,8 @@
       "displayName": "WriteInt256",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 303,
-      "signature": "pub func WriteInt256(writer: &var Writer, endian: Endian, value: int256) -> ! IoError",
+      "line": 304,
+      "signature": "pub func WriteInt256(writer: &var Writer, endian: Endian, value: int256) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes an `int256`: its two's-complement bytes, unchanged.",
@@ -1159,8 +1159,8 @@
       "displayName": "ReadUint512",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 312,
-      "signature": "pub func ReadUint512(reader: &var Reader, endian: Endian) -> uint512 ! IoError",
+      "line": 313,
+      "signature": "pub func ReadUint512(reader: &var Reader, endian: Endian) -> uint512 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `uint512` in the given order.",
@@ -1170,7 +1170,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-uint512"],
         "deprecated": null
       },
@@ -1197,8 +1197,8 @@
       "displayName": "WriteUint512",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 323,
-      "signature": "pub func WriteUint512(writer: &var Writer, endian: Endian, value: uint512) -> ! IoError",
+      "line": 324,
+      "signature": "pub func WriteUint512(writer: &var Writer, endian: Endian, value: uint512) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes a `uint512` in the given order.",
@@ -1236,8 +1236,8 @@
       "displayName": "ReadInt512",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 332,
-      "signature": "pub func ReadInt512(reader: &var Reader, endian: Endian) -> int512 ! IoError",
+      "line": 333,
+      "signature": "pub func ReadInt512(reader: &var Reader, endian: Endian) -> int512 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads an `int512`: the unsigned bytes, reinterpreted in two's complement.",
@@ -1247,7 +1247,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-int512"],
         "deprecated": null
       },
@@ -1274,8 +1274,8 @@
       "displayName": "WriteInt512",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 343,
-      "signature": "pub func WriteInt512(writer: &var Writer, endian: Endian, value: int512) -> ! IoError",
+      "line": 344,
+      "signature": "pub func WriteInt512(writer: &var Writer, endian: Endian, value: int512) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes an `int512`: its two's-complement bytes, unchanged.",
@@ -1313,8 +1313,8 @@
       "displayName": "ReadFloat32",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 352,
-      "signature": "pub func ReadFloat32(reader: &var Reader, endian: Endian) -> float32 ! IoError",
+      "line": 353,
+      "signature": "pub func ReadFloat32(reader: &var Reader, endian: Endian) -> float32 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `float32` as the IEEE 754 bit pattern of its width.",
@@ -1324,7 +1324,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-float32"],
         "deprecated": null
       },
@@ -1351,8 +1351,8 @@
       "displayName": "WriteFloat32",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 365,
-      "signature": "pub func WriteFloat32(writer: &var Writer, endian: Endian, value: float32) -> ! IoError",
+      "line": 367,
+      "signature": "pub func WriteFloat32(writer: &var Writer, endian: Endian, value: float32) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes a `float32` as the IEEE 754 bit pattern of its width.",
@@ -1390,8 +1390,8 @@
       "displayName": "ReadFloat64",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 377,
-      "signature": "pub func ReadFloat64(reader: &var Reader, endian: Endian) -> float64 ! IoError",
+      "line": 380,
+      "signature": "pub func ReadFloat64(reader: &var Reader, endian: Endian) -> float64 throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a `float64` as the IEEE 754 bit pattern of its width.",
@@ -1401,7 +1401,7 @@
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "endian", "markdown": "which byte order the value is stored in" }
         ],
-        "returns": "the value read; `IsEnd` when the stream ended first",
+        "returns": "the value read; `IsEnd` if the stream had ended, `UnexpectedEnd` if it ended partway",
         "see": ["https://rux-lang.dev/docs/api/io/binary#read-float64"],
         "deprecated": null
       },
@@ -1428,8 +1428,8 @@
       "displayName": "WriteFloat64",
       "module": "Binary",
       "source": "Src/Binary.rux",
-      "line": 390,
-      "signature": "pub func WriteFloat64(writer: &var Writer, endian: Endian, value: float64) -> ! IoError",
+      "line": 394,
+      "signature": "pub func WriteFloat64(writer: &var Writer, endian: Endian, value: float64) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes a `float64` as the IEEE 754 bit pattern of its width.",
@@ -1623,10 +1623,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "associated",
-          "name": "New",
-          "line": 49,
-          "signature": "pub func New(allocator: Allocator, source: Reader, capacity: uint) -> BufferedReader ! IoError",
+          "kind": "constructor",
+          "name": "BufferedReader",
+          "line": 46,
+          "signature": "pub func BufferedReader(allocator: Allocator, source: Reader, capacity: uint) -> BufferedReader throws IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -1665,8 +1665,8 @@
         {
           "kind": "method",
           "name": "Available",
-          "line": 70,
-          "signature": "pub func Available(self: &BufferedReader) -> uint",
+          "line": 68,
+          "signature": "pub func Available(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&BufferedReader",
@@ -1697,8 +1697,8 @@
         {
           "kind": "method",
           "name": "Buffered",
-          "line": 78,
-          "signature": "pub func Buffered(self: &BufferedReader) -> char8[..]",
+          "line": 76,
+          "signature": "pub func Buffered(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&BufferedReader",
@@ -1730,7 +1730,7 @@
           "kind": "method",
           "name": "Consume",
           "line": 85,
-          "signature": "pub func Consume(self: &var BufferedReader, count: uint)",
+          "signature": "pub func Consume(&var self, count: uint)",
           "typeParams": [],
           "params": [{ "name": "count", "type": "uint" }],
           "receiver": "&var BufferedReader",
@@ -1762,7 +1762,7 @@
           "kind": "method",
           "name": "Fill",
           "line": 94,
-          "signature": "pub func Fill(self: &var BufferedReader) -> ! IoError",
+          "signature": "pub func Fill(&var self) throws IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var BufferedReader",
@@ -1772,7 +1772,7 @@
           "public": true,
           "doc": {
             "summary": "Refills an empty buffer from the source, retrying interruptions.",
-            "markdown": "Refills an empty buffer from the source, retrying interruptions.\nReports what the source reported; `EndOfStream` when the source is done. A source that reports success\nwhile handing over nothing breaks the `Reader` contract, and is reported as the end rather than looped on.",
+            "markdown": "Refills an empty buffer from the source, retrying interruptions.\nReports what the source reported, `WouldBlock` included, and `EndOfStream` when the source is done. A source\nthat reports success while handing over nothing is reported as the end rather than looped on.",
             "typeParams": [],
             "params": [],
             "returns": "success when at least one byte is buffered; `IsEnd` at the end of the source",
@@ -1793,8 +1793,8 @@
         {
           "kind": "method",
           "name": "Read",
-          "line": 115,
-          "signature": "pub func Read(self: &var BufferedReader, into: var char8[..]) -> uint ! IoError",
+          "line": 117,
+          "signature": "pub func Read(&var self, into: var char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var BufferedReader",
@@ -1804,7 +1804,7 @@
           "public": true,
           "doc": {
             "summary": "Fills what it can of `into`: from the buffer while it has bytes, straight from the source for a request\nalready larger than the whole buffer.",
-            "markdown": "Fills what it can of `into`: from the buffer while it has bytes, straight from the source for a request\nalready larger than the whole buffer.",
+            "markdown": "Fills what it can of `into`: from the buffer while it has bytes, straight from the source for a request\nalready larger than the whole buffer.\nInterruptions of the source are retried; any other failure, `WouldBlock` included, is returned as itself.",
             "typeParams": [],
             "params": [{ "name": "into", "markdown": "receives the bytes" }],
             "returns": "how many bytes were read; `IsEnd` at the end of input",
@@ -1825,8 +1825,8 @@
         {
           "kind": "method",
           "name": "Release",
-          "line": 140,
-          "signature": "pub func Release(self: &var BufferedReader)",
+          "line": 144,
+          "signature": "pub func Release(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var BufferedReader",
@@ -1857,8 +1857,8 @@
         {
           "kind": "destructor",
           "name": "~BufferedReader",
-          "line": 154,
-          "signature": "func ~BufferedReader(self: &var BufferedReader)",
+          "line": 159,
+          "signature": "func ~BufferedReader(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var BufferedReader",
@@ -1905,7 +1905,7 @@
       "displayName": "BufferedWriter",
       "module": "Buffered",
       "source": "Src/Buffered.rux",
-      "line": 164,
+      "line": 169,
       "signature": "pub struct BufferedWriter",
       "typeParams": [],
       "doc": {
@@ -1923,7 +1923,7 @@
           "name": "sink",
           "type": "Writer",
           "public": false,
-          "line": 166,
+          "line": 171,
           "doc": "Where the gathered bytes go.",
           "targets": [
             "windows-x86_64",
@@ -1940,7 +1940,7 @@
           "name": "data",
           "type": "*var char8",
           "public": false,
-          "line": 168,
+          "line": 173,
           "doc": "The buffer, or null once it has been given back.",
           "targets": [
             "windows-x86_64",
@@ -1957,7 +1957,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 170,
+          "line": 175,
           "doc": "How much the buffer holds.",
           "targets": [
             "windows-x86_64",
@@ -1974,7 +1974,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 172,
+          "line": 177,
           "doc": "How much of it is gathered.",
           "targets": [
             "windows-x86_64",
@@ -1991,7 +1991,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 174,
+          "line": 179,
           "doc": "Where the buffer came from.",
           "targets": [
             "windows-x86_64",
@@ -2009,10 +2009,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "associated",
-          "name": "New",
-          "line": 187,
-          "signature": "pub func New(allocator: Allocator, sink: Writer, capacity: uint) -> BufferedWriter ! IoError",
+          "kind": "constructor",
+          "name": "BufferedWriter",
+          "line": 189,
+          "signature": "pub func BufferedWriter(allocator: Allocator, sink: Writer, capacity: uint) -> BufferedWriter throws IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -2051,8 +2051,8 @@
         {
           "kind": "method",
           "name": "Pending",
-          "line": 201,
-          "signature": "pub func Pending(self: &BufferedWriter) -> uint",
+          "line": 204,
+          "signature": "pub func Pending(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&BufferedWriter",
@@ -2083,8 +2083,8 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 208,
-          "signature": "pub func Flush(self: &var BufferedWriter) -> ! IoError",
+          "line": 211,
+          "signature": "pub func Flush(&var self) throws IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var BufferedWriter",
@@ -2115,8 +2115,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 225,
-          "signature": "pub func Write(self: &var BufferedWriter, bytes: char8[..]) -> uint ! IoError",
+          "line": 229,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var BufferedWriter",
@@ -2147,8 +2147,8 @@
         {
           "kind": "method",
           "name": "Abandon",
-          "line": 244,
-          "signature": "pub func Abandon(self: &var BufferedWriter)",
+          "line": 250,
+          "signature": "pub func Abandon(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var BufferedWriter",
@@ -2179,8 +2179,8 @@
         {
           "kind": "destructor",
           "name": "~BufferedWriter",
-          "line": 259,
-          "signature": "func ~BufferedWriter(self: &var BufferedWriter)",
+          "line": 265,
+          "signature": "func ~BufferedWriter(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var BufferedWriter",
@@ -2227,7 +2227,7 @@
       "displayName": "IoErrorKind",
       "module": "IoError",
       "source": "Src/IoError.rux",
-      "line": 14,
+      "line": 16,
       "signature": "pub enum IoErrorKind",
       "typeParams": [],
       "doc": {
@@ -2247,7 +2247,7 @@
           "name": "EndOfStream",
           "value": "1",
           "payload": null,
-          "line": 16,
+          "line": 18,
           "doc": "The stream ended: not a failure, but it arrives where failures do.",
           "targets": [
             "windows-x86_64",
@@ -2264,7 +2264,7 @@
           "name": "NotFound",
           "value": "2",
           "payload": null,
-          "line": 18,
+          "line": 20,
           "doc": "The named thing does not exist.",
           "targets": [
             "windows-x86_64",
@@ -2281,7 +2281,7 @@
           "name": "PermissionDenied",
           "value": "3",
           "payload": null,
-          "line": 20,
+          "line": 22,
           "doc": "The system refused on rights.",
           "targets": [
             "windows-x86_64",
@@ -2298,7 +2298,7 @@
           "name": "AlreadyExists",
           "value": "4",
           "payload": null,
-          "line": 22,
+          "line": 24,
           "doc": "The named thing exists where something new was to be made.",
           "targets": [
             "windows-x86_64",
@@ -2315,7 +2315,7 @@
           "name": "IsDirectory",
           "value": "5",
           "payload": null,
-          "line": 24,
+          "line": 26,
           "doc": "A directory stood where a file was expected.",
           "targets": [
             "windows-x86_64",
@@ -2332,7 +2332,7 @@
           "name": "NotDirectory",
           "value": "6",
           "payload": null,
-          "line": 26,
+          "line": 28,
           "doc": "A file stood where a directory was expected.",
           "targets": [
             "windows-x86_64",
@@ -2349,7 +2349,7 @@
           "name": "StorageFull",
           "value": "7",
           "payload": null,
-          "line": 28,
+          "line": 30,
           "doc": "The device has no room left.",
           "targets": [
             "windows-x86_64",
@@ -2366,8 +2366,8 @@
           "name": "Interrupted",
           "value": "8",
           "payload": null,
-          "line": 30,
-          "doc": "The operation was interrupted and may simply be retried.",
+          "line": 32,
+          "doc": "The operation was interrupted before doing anything and may simply be retried at once.",
           "targets": [
             "windows-x86_64",
             "windows-aarch64",
@@ -2383,8 +2383,8 @@
           "name": "WouldBlock",
           "value": "9",
           "payload": null,
-          "line": 32,
-          "doc": "The operation would block a stream opened not to.",
+          "line": 34,
+          "doc": "The operation would block a stream opened not to; retry once the stream is ready, not at once.",
           "targets": [
             "windows-x86_64",
             "windows-aarch64",
@@ -2400,7 +2400,7 @@
           "name": "InvalidHandle",
           "value": "10",
           "payload": null,
-          "line": 34,
+          "line": 36,
           "doc": "A handle that is not open, or not open for this.",
           "targets": [
             "windows-x86_64",
@@ -2417,7 +2417,7 @@
           "name": "InvalidInput",
           "value": "11",
           "payload": null,
-          "line": 36,
+          "line": 38,
           "doc": "An argument the system rejected.",
           "targets": [
             "windows-x86_64",
@@ -2434,7 +2434,7 @@
           "name": "TimedOut",
           "value": "12",
           "payload": null,
-          "line": 38,
+          "line": 40,
           "doc": "The operation ran out of time.",
           "targets": [
             "windows-x86_64",
@@ -2451,7 +2451,7 @@
           "name": "WriteZero",
           "value": "13",
           "payload": null,
-          "line": 40,
+          "line": 42,
           "doc": "A write reported fewer bytes than asked and cannot continue.",
           "targets": [
             "windows-x86_64",
@@ -2468,7 +2468,7 @@
           "name": "InvalidText",
           "value": "15",
           "payload": null,
-          "line": 42,
+          "line": 44,
           "doc": "Bytes that were required to be UTF-8 text and are not.",
           "targets": [
             "windows-x86_64",
@@ -2485,7 +2485,7 @@
           "name": "LimitExceeded",
           "value": "16",
           "payload": null,
-          "line": 44,
+          "line": 46,
           "doc": "A bounded operation met its bound before its end.",
           "targets": [
             "windows-x86_64",
@@ -2502,7 +2502,7 @@
           "name": "ConnectionRefused",
           "value": "17",
           "payload": null,
-          "line": 46,
+          "line": 48,
           "doc": "The other end refused the connection: nothing listens there.",
           "targets": [
             "windows-x86_64",
@@ -2519,7 +2519,7 @@
           "name": "ConnectionReset",
           "value": "18",
           "payload": null,
-          "line": 48,
+          "line": 50,
           "doc": "The other end reset the connection.",
           "targets": [
             "windows-x86_64",
@@ -2536,7 +2536,7 @@
           "name": "ConnectionAborted",
           "value": "19",
           "payload": null,
-          "line": 50,
+          "line": 52,
           "doc": "The connection was aborted on this side.",
           "targets": [
             "windows-x86_64",
@@ -2553,7 +2553,7 @@
           "name": "NotConnected",
           "value": "20",
           "payload": null,
-          "line": 52,
+          "line": 54,
           "doc": "The socket is not connected.",
           "targets": [
             "windows-x86_64",
@@ -2570,7 +2570,7 @@
           "name": "AddressInUse",
           "value": "21",
           "payload": null,
-          "line": 54,
+          "line": 56,
           "doc": "The local address is already in use.",
           "targets": [
             "windows-x86_64",
@@ -2587,7 +2587,7 @@
           "name": "AddressUnavailable",
           "value": "22",
           "payload": null,
-          "line": 56,
+          "line": 58,
           "doc": "The address is not one this machine has, or cannot be reached from it.",
           "targets": [
             "windows-x86_64",
@@ -2604,7 +2604,7 @@
           "name": "Unreachable",
           "value": "23",
           "payload": null,
-          "line": 58,
+          "line": 60,
           "doc": "No route leads to the network or host.",
           "targets": [
             "windows-x86_64",
@@ -2621,8 +2621,25 @@
           "name": "BrokenPipe",
           "value": "24",
           "payload": null,
-          "line": 60,
+          "line": 62,
           "doc": "The other end closed the connection, so nothing more can be written to it.",
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "name": "UnexpectedEnd",
+          "value": "25",
+          "payload": null,
+          "line": 64,
+          "doc": "The stream ended partway through something that needed more bytes, such as a buffer `ReadExact` was filling.",
           "targets": [
             "windows-x86_64",
             "windows-aarch64",
@@ -2638,7 +2655,7 @@
           "name": "Other",
           "value": "14",
           "payload": null,
-          "line": 62,
+          "line": 66,
           "doc": "Something the platform reported that has no shared meaning; the raw code is the detail.",
           "targets": [
             "windows-x86_64",
@@ -2656,8 +2673,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 137,
-          "signature": "pub func WriteDisplay(self: &IoErrorKind, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 144,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2710,7 +2727,7 @@
       "displayName": "IoError",
       "module": "IoError",
       "source": "Src/IoError.rux",
-      "line": 69,
+      "line": 73,
       "signature": "pub struct IoError",
       "typeParams": [],
       "doc": {
@@ -2728,7 +2745,7 @@
           "name": "kind",
           "type": "IoErrorKind",
           "public": true,
-          "line": 71,
+          "line": 75,
           "doc": "The meaning every platform shares.",
           "targets": [
             "windows-x86_64",
@@ -2745,7 +2762,7 @@
           "name": "raw",
           "type": "int32",
           "public": true,
-          "line": 73,
+          "line": 77,
           "doc": "The platform's own code, zero where none applies.",
           "targets": [
             "windows-x86_64",
@@ -2765,7 +2782,7 @@
         {
           "kind": "associated",
           "name": "Of",
-          "line": 81,
+          "line": 85,
           "signature": "pub func Of(kind: IoErrorKind) -> IoError",
           "typeParams": [],
           "params": [{ "name": "kind", "type": "IoErrorKind" }],
@@ -2797,8 +2814,8 @@
         {
           "kind": "method",
           "name": "IsEnd",
-          "line": 88,
-          "signature": "pub func IsEnd(self: &IoError) -> bool",
+          "line": 92,
+          "signature": "pub func IsEnd(&self) -> bool",
           "typeParams": [],
           "params": [],
           "receiver": "&IoError",
@@ -2828,9 +2845,9 @@
         },
         {
           "kind": "method",
-          "name": "IsTransient",
-          "line": 95,
-          "signature": "pub func IsTransient(self: &IoError) -> bool",
+          "name": "IsInterrupted",
+          "line": 101,
+          "signature": "pub func IsInterrupted(&self) -> bool",
           "typeParams": [],
           "params": [],
           "receiver": "&IoError",
@@ -2839,12 +2856,12 @@
           "conformance": null,
           "public": true,
           "doc": {
-            "summary": "Whether going again is the right response: an interruption or a would-block.",
-            "markdown": "Whether going again is the right response: an interruption or a would-block.",
+            "summary": "Whether the operation was interrupted, the one report that going again at once answers.",
+            "markdown": "Whether the operation was interrupted, the one report that going again at once answers.\nA would-block is deliberately not included: the stream is not ready, and asking again before it is only\nspins, so it is returned to whoever can wait for readiness, such as a `Net` poller.",
             "typeParams": [],
             "params": [],
-            "returns": "whether trying again could succeed",
-            "see": ["https://rux-lang.dev/docs/api/io/io-error#is-transient"],
+            "returns": "whether retrying the operation immediately is the right response",
+            "see": ["https://rux-lang.dev/docs/api/io/io-error#is-interrupted"],
             "deprecated": null
           },
           "targets": [
@@ -2861,8 +2878,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 151,
-          "signature": "pub func WriteDisplay(self: &IoError, writer: &var TextWriter, spec: FormatSpec) -> ! FormatError",
+          "line": 158,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2968,10 +2985,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "associated",
-          "name": "New",
+          "kind": "constructor",
+          "name": "ByteReader",
           "line": 22,
-          "signature": "pub func New(bytes: char8[..]) -> ByteReader",
+          "signature": "pub func ByteReader(bytes: char8[..]) -> ByteReader",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": null,
@@ -3003,7 +3020,7 @@
           "kind": "method",
           "name": "Position",
           "line": 29,
-          "signature": "pub func Position(self: &ByteReader) -> uint",
+          "signature": "pub func Position(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&ByteReader",
@@ -3035,7 +3052,7 @@
           "kind": "method",
           "name": "Remaining",
           "line": 36,
-          "signature": "pub func Remaining(self: &ByteReader) -> char8[..]",
+          "signature": "pub func Remaining(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&ByteReader",
@@ -3067,7 +3084,7 @@
           "kind": "method",
           "name": "Read",
           "line": 46,
-          "signature": "pub func Read(self: &var ByteReader, into: var char8[..]) -> uint ! IoError",
+          "signature": "pub func Read(&var self, into: var char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var ByteReader",
@@ -3098,8 +3115,8 @@
         {
           "kind": "method",
           "name": "Seek",
-          "line": 77,
-          "signature": "pub func Seek(self: &var ByteReader, origin: SeekFrom, offset: int64) -> uint64 ! IoError",
+          "line": 79,
+          "signature": "pub func Seek(&var self, origin: SeekFrom, offset: int64) -> uint64 throws IoError",
           "typeParams": [],
           "params": [
             { "name": "origin", "type": "SeekFrom" },
@@ -3152,7 +3169,7 @@
       "displayName": "ByteWriter",
       "module": "MemoryStream",
       "source": "Src/MemoryStream.rux",
-      "line": 88,
+      "line": 90,
       "signature": "pub struct ByteWriter",
       "typeParams": [],
       "doc": {
@@ -3170,7 +3187,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 89,
+          "line": 91,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3187,7 +3204,7 @@
           "name": "data",
           "type": "*var char8",
           "public": false,
-          "line": 90,
+          "line": 92,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3204,7 +3221,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 91,
+          "line": 93,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3221,7 +3238,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 92,
+          "line": 94,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3238,7 +3255,7 @@
           "name": "position",
           "type": "uint",
           "public": false,
-          "line": 93,
+          "line": 95,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3256,10 +3273,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "associated",
-          "name": "New",
+          "kind": "constructor",
+          "name": "ByteWriter",
           "line": 103,
-          "signature": "pub func New(allocator: Allocator) -> ByteWriter",
+          "signature": "pub func ByteWriter(allocator: Allocator) -> ByteWriter",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -3291,7 +3308,7 @@
           "kind": "method",
           "name": "Bytes",
           "line": 110,
-          "signature": "pub func Bytes(self: &ByteWriter) -> char8[..]",
+          "signature": "pub func Bytes(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&ByteWriter",
@@ -3322,8 +3339,8 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 118,
-          "signature": "pub func Length(self: &ByteWriter) -> uint",
+          "line": 119,
+          "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&ByteWriter",
@@ -3354,8 +3371,8 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 124,
-          "signature": "pub func Clear(self: &var ByteWriter)",
+          "line": 125,
+          "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var ByteWriter",
@@ -3386,8 +3403,8 @@
         {
           "kind": "method",
           "name": "Release",
-          "line": 131,
-          "signature": "pub func Release(self: &var ByteWriter)",
+          "line": 132,
+          "signature": "pub func Release(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var ByteWriter",
@@ -3418,8 +3435,8 @@
         {
           "kind": "destructor",
           "name": "~ByteWriter",
-          "line": 166,
-          "signature": "func ~ByteWriter(self: &var ByteWriter)",
+          "line": 169,
+          "signature": "func ~ByteWriter(&var self)",
           "typeParams": [],
           "params": [],
           "receiver": "&var ByteWriter",
@@ -3450,8 +3467,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 176,
-          "signature": "pub func Write(self: &var ByteWriter, bytes: char8[..]) -> uint ! IoError",
+          "line": 179,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var ByteWriter",
@@ -3482,8 +3499,8 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 189,
-          "signature": "pub func Flush(self: &var ByteWriter) -> ! IoError",
+          "line": 202,
+          "signature": "pub func Flush(&var self) throws IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var ByteWriter",
@@ -3514,8 +3531,8 @@
         {
           "kind": "method",
           "name": "Seek",
-          "line": 198,
-          "signature": "pub func Seek(self: &var ByteWriter, origin: SeekFrom, offset: int64) -> uint64 ! IoError",
+          "line": 211,
+          "signature": "pub func Seek(&var self, origin: SeekFrom, offset: int64) -> uint64 throws IoError",
           "typeParams": [],
           "params": [
             { "name": "origin", "type": "SeekFrom" },
@@ -3568,7 +3585,7 @@
       "displayName": "PrintValue",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 47,
+      "line": 45,
       "signature": "pub func PrintValue(value: Display) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3603,7 +3620,7 @@
       "displayName": "PrintValueLine",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 59,
+      "line": 57,
       "signature": "pub func PrintValueLine(value: Display) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3638,12 +3655,12 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 74,
-      "signature": "pub func Print(value: String) -> IoError?",
+      "line": 73,
+      "signature": "pub func Print(value: &String) -> IoError?",
       "typeParams": [],
       "doc": {
         "summary": "Writes a value's text to standard output.",
-        "markdown": "Writes a value's text to standard output.\nA `String`, a `StringView` or a `char8[..]` is written as the UTF-8 bytes it holds, unchanged: nothing is\nsubstituted and no brace is special, so `Print(\"{{}}\")` writes `{{}}`. Each primitive overload writes its value as\n`PrintValue` does, through the type's `Display` conformance, and any other value goes through `PrintValue` itself.\nGiven arguments after it, the first text is a pattern instead: each `{}` or `{:spec}` takes the next argument in\norder, and `{{` and `}}` write a literal brace.\nEvery overload returns the failure its write met as an `IoError`, or `none`. A program logging to a terminal loses\nnothing by ignoring it; one whose output feeds a pipe that may close has something to look at.",
+        "markdown": "Writes a value's text to standard output.\nA `String`, a `StringView` or a `char8[..]` is written as the UTF-8 bytes it holds, unchanged: nothing is\nsubstituted and no brace is special, so `Print(\"{{}}\")` writes `{{}}`. A `String` is borrowed, so printing one\nneither copies nor consumes it. Each primitive overload writes its value as\n`PrintValue` does, through the type's `Display` conformance, and any other value goes through `PrintValue` itself.\nGiven arguments after it, the first text is a pattern instead: each `{}` or `{:spec}` takes the next argument in\norder, and `{{` and `}}` write a literal brace.\nEvery overload returns the failure its write met as an `IoError`, or `none`. A program logging to a terminal loses\nnothing by ignoring it; one whose output feeds a pipe that may close has something to look at.",
         "typeParams": [],
         "params": [{ "name": "value", "markdown": "the value to write" }],
         "returns": "the failure, or `none` when the whole value was written",
@@ -3673,7 +3690,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 82,
+      "line": 81,
       "signature": "pub func Print(value: StringView) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3708,7 +3725,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 90,
+      "line": 89,
       "signature": "pub func Print(value: char8[..]) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3743,12 +3760,12 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 103,
-      "signature": "pub func Print(#Format() format: char8[..], ...) -> IoError?",
+      "line": 102,
+      "signature": "pub func Print(#Format format: char8[..], ...) -> IoError?",
       "typeParams": [],
       "doc": {
         "summary": "Writes `format` to standard output with each `{}` replaced by the next argument.",
-        "markdown": "Writes `format` to standard output with each `{}` replaced by the next argument.\nA placeholder is `{}` or `{:spec}`, and `{{` and `}}` write a literal brace. `format` is marked `#Format()`, so a\nstring literal passed for it has its placeholders counted against the arguments while compiling, and a mismatch is\na compile error; a pattern only known at run time that does not match reports through the returned failure and\nprints nothing. Allocates nothing: the arguments write themselves to the stream as they are reached. Failures\nreport as `PrintValue`'s do.",
+        "markdown": "Writes `format` to standard output with each `{}` replaced by the next argument.\nA placeholder is `{}` or `{:spec}`, and `{{` and `}}` write a literal brace. `format` is marked `#Format`, so a\nstring literal passed for it has its placeholders counted against the arguments while compiling, and a mismatch is\na compile error; a pattern only known at run time that does not match reports through the returned failure and\nprints nothing. Allocates nothing: the arguments write themselves to the stream as they are reached. Failures\nreport as `PrintValue`'s do.",
         "typeParams": [],
         "params": [{ "name": "format", "markdown": "the format string, with a placeholder for each argument" }],
         "returns": "the failure, or `none` when the whole value was written",
@@ -3778,7 +3795,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 115,
+      "line": 114,
       "signature": "pub func Print(value: bool8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3813,7 +3830,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 123,
+      "line": 122,
       "signature": "pub func Print(value: bool16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3848,7 +3865,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 131,
+      "line": 130,
       "signature": "pub func Print(value: bool32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3883,7 +3900,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 139,
+      "line": 138,
       "signature": "pub func Print(value: bool64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3918,7 +3935,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 147,
+      "line": 146,
       "signature": "pub func Print(value: bool128) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3953,7 +3970,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 155,
+      "line": 154,
       "signature": "pub func Print(value: bool256) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -3988,7 +4005,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 163,
+      "line": 162,
       "signature": "pub func Print(value: bool512) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4023,7 +4040,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 171,
+      "line": 170,
       "signature": "pub func Print(value: char8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4058,7 +4075,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 179,
+      "line": 178,
       "signature": "pub func Print(value: char16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4093,7 +4110,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 187,
+      "line": 186,
       "signature": "pub func Print(value: char32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4128,7 +4145,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 195,
+      "line": 194,
       "signature": "pub func Print(value: char64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4163,7 +4180,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 203,
+      "line": 202,
       "signature": "pub func Print(value: char128) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4198,7 +4215,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 211,
+      "line": 210,
       "signature": "pub func Print(value: char256) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4233,7 +4250,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 219,
+      "line": 218,
       "signature": "pub func Print(value: char512) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4268,7 +4285,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 227,
+      "line": 226,
       "signature": "pub func Print(value: int8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4303,7 +4320,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 235,
+      "line": 234,
       "signature": "pub func Print(value: int16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4338,7 +4355,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 243,
+      "line": 242,
       "signature": "pub func Print(value: int32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4373,7 +4390,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 251,
+      "line": 250,
       "signature": "pub func Print(value: int64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4408,7 +4425,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 259,
+      "line": 258,
       "signature": "pub func Print(value: uint8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4443,7 +4460,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 267,
+      "line": 266,
       "signature": "pub func Print(value: uint16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4478,7 +4495,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 275,
+      "line": 274,
       "signature": "pub func Print(value: uint32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4513,7 +4530,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 283,
+      "line": 282,
       "signature": "pub func Print(value: uint64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4548,7 +4565,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 291,
+      "line": 290,
       "signature": "pub func Print(value: int) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4583,7 +4600,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 299,
+      "line": 298,
       "signature": "pub func Print(value: uint) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4618,7 +4635,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 307,
+      "line": 306,
       "signature": "pub func Print(value: float8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4653,7 +4670,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 315,
+      "line": 314,
       "signature": "pub func Print(value: float16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4688,7 +4705,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 323,
+      "line": 322,
       "signature": "pub func Print(value: float32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4723,7 +4740,7 @@
       "displayName": "Print",
       "module": "Print",
       "source": "Src/Print.rux",
-      "line": 331,
+      "line": 330,
       "signature": "pub func Print(value: float64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4758,7 +4775,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 16,
+      "line": 15,
       "signature": "pub func PrintLine() -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4793,8 +4810,8 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 36,
-      "signature": "pub func PrintLine(value: String) -> IoError?",
+      "line": 35,
+      "signature": "pub func PrintLine(value: &String) -> IoError?",
       "typeParams": [],
       "doc": {
         "summary": "Writes a value's text to standard output, then a newline.",
@@ -4828,7 +4845,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 47,
+      "line": 46,
       "signature": "pub func PrintLine(value: char8[..]) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4863,7 +4880,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 55,
+      "line": 54,
       "signature": "pub func PrintLine(value: StringView) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4898,12 +4915,12 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 66,
-      "signature": "pub func PrintLine(#Format() format: char8[..], ...) -> IoError?",
+      "line": 65,
+      "signature": "pub func PrintLine(#Format format: char8[..], ...) -> IoError?",
       "typeParams": [],
       "doc": {
         "summary": "Writes `format` with each placeholder replaced by the next argument, then a newline.",
-        "markdown": "Writes `format` with each placeholder replaced by the next argument, then a newline.\nA placeholder is `{}` or `{:spec}`, and `{{` and `}}` write a literal brace. `format` is marked `#Format()`, so a\nstring literal passed for it has its placeholders counted against the arguments while compiling, and a mismatch is\na compile error. The newline is written only when the whole pattern was.",
+        "markdown": "Writes `format` with each placeholder replaced by the next argument, then a newline.\nA placeholder is `{}` or `{:spec}`, and `{{` and `}}` write a literal brace. `format` is marked `#Format`, so a\nstring literal passed for it has its placeholders counted against the arguments while compiling, and a mismatch is\na compile error. The newline is written only when the whole pattern was.",
         "typeParams": [],
         "params": [{ "name": "format", "markdown": "the format string, with a placeholder for each argument" }],
         "returns": "the failure, or `none` when the whole line was written",
@@ -4933,7 +4950,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 74,
+      "line": 73,
       "signature": "pub func PrintLine(value: bool8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -4968,7 +4985,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 82,
+      "line": 81,
       "signature": "pub func PrintLine(value: bool16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5003,7 +5020,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 90,
+      "line": 89,
       "signature": "pub func PrintLine(value: bool32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5038,7 +5055,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 98,
+      "line": 97,
       "signature": "pub func PrintLine(value: bool64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5073,7 +5090,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 106,
+      "line": 105,
       "signature": "pub func PrintLine(value: bool128) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5108,7 +5125,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 114,
+      "line": 113,
       "signature": "pub func PrintLine(value: bool256) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5143,7 +5160,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 122,
+      "line": 121,
       "signature": "pub func PrintLine(value: bool512) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5178,7 +5195,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 130,
+      "line": 129,
       "signature": "pub func PrintLine(value: char8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5213,7 +5230,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 138,
+      "line": 137,
       "signature": "pub func PrintLine(value: char16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5248,7 +5265,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 146,
+      "line": 145,
       "signature": "pub func PrintLine(value: char32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5283,7 +5300,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 154,
+      "line": 153,
       "signature": "pub func PrintLine(value: char64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5318,7 +5335,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 162,
+      "line": 161,
       "signature": "pub func PrintLine(value: char128) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5353,7 +5370,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 170,
+      "line": 169,
       "signature": "pub func PrintLine(value: char256) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5388,7 +5405,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 178,
+      "line": 177,
       "signature": "pub func PrintLine(value: char512) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5423,7 +5440,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 186,
+      "line": 185,
       "signature": "pub func PrintLine(value: int8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5458,7 +5475,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 194,
+      "line": 193,
       "signature": "pub func PrintLine(value: int16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5493,7 +5510,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 202,
+      "line": 201,
       "signature": "pub func PrintLine(value: int32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5528,7 +5545,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 210,
+      "line": 209,
       "signature": "pub func PrintLine(value: int64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5563,7 +5580,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 218,
+      "line": 217,
       "signature": "pub func PrintLine(value: uint8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5598,7 +5615,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 226,
+      "line": 225,
       "signature": "pub func PrintLine(value: uint16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5633,7 +5650,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 234,
+      "line": 233,
       "signature": "pub func PrintLine(value: uint32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5668,7 +5685,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 242,
+      "line": 241,
       "signature": "pub func PrintLine(value: uint64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5703,7 +5720,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 250,
+      "line": 249,
       "signature": "pub func PrintLine(value: int) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5738,7 +5755,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 258,
+      "line": 257,
       "signature": "pub func PrintLine(value: uint) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5773,7 +5790,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 266,
+      "line": 265,
       "signature": "pub func PrintLine(value: float8) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5808,7 +5825,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 274,
+      "line": 273,
       "signature": "pub func PrintLine(value: float16) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5843,7 +5860,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 282,
+      "line": 281,
       "signature": "pub func PrintLine(value: float32) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5878,7 +5895,7 @@
       "displayName": "PrintLine",
       "module": "PrintLine",
       "source": "Src/PrintLine.rux",
-      "line": 290,
+      "line": 289,
       "signature": "pub func PrintLine(value: float64) -> IoError?",
       "typeParams": [],
       "doc": {
@@ -5914,7 +5931,7 @@
       "module": "ReadLine",
       "source": "Src/ReadLine.rux",
       "line": 21,
-      "signature": "pub func ReadLine(builder: &var StringBuilder) -> ! IoError",
+      "signature": "pub func ReadLine(builder: &var StringBuilder) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Appends the next line of standard input to `builder`, without its ending.",
@@ -5948,12 +5965,12 @@
       "displayName": "ReadLineFrom",
       "module": "ReadLine",
       "source": "Src/ReadLine.rux",
-      "line": 38,
-      "signature": "pub func ReadLineFrom(reader: &var Reader, builder: &var StringBuilder) -> ! IoError",
+      "line": 39,
+      "signature": "pub func ReadLineFrom(reader: &var Reader, builder: &var StringBuilder) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Appends the next line of `reader` to `builder`, without its ending, reading one byte at a time.",
-        "markdown": "Appends the next line of `reader` to `builder`, without its ending, reading one byte at a time.\nThis is `ReadLine` over any source: a line feed ends the line, a carriage return immediately before it belongs\nto the ending, and `EndOfStream` is reported only when the source ends with nothing before it. A stream failure\nis returned as itself, with whatever was read so far left in the builder. The line must be UTF-8: a byte that\ndoes not belong to a well-formed character, or a character cut short by the end of the source, is\n`InvalidText`, reported once the rest of the line has been read through its ending; the text before the fault\nstays in the builder. No byte past the line's ending is read, which is what makes it safe on a shared stream;\na source that is not shared reads faster through `ReadTextLine` over a `BufferedReader`.",
+        "markdown": "Appends the next line of `reader` to `builder`, without its ending, reading one byte at a time.\nThis is `ReadLine` over any source: a line feed ends the line, a carriage return immediately before it belongs\nto the ending, and `EndOfStream` is reported only when the source ends with nothing before it. Interruptions are\nretried; any other stream failure, `WouldBlock` included, is returned as itself, with whatever was read so far\nleft in the builder. The line must be UTF-8: a byte that\ndoes not belong to a well-formed character, or a character cut short by the end of the source, is\n`InvalidText`, reported once the rest of the line has been read through its ending; the text before the fault\nstays in the builder. No byte past the line's ending is read, which is what makes it safe on a shared stream;\na source that is not shared reads faster through `ReadTextLine` over a `BufferedReader`.",
         "typeParams": [],
         "params": [
           { "name": "reader", "markdown": "where the bytes come from, borrowed for the call" },
@@ -5986,7 +6003,7 @@
       "displayName": "StandardIn",
       "module": "Standard",
       "source": "Src/Standard.rux",
-      "line": 120,
+      "line": 135,
       "signature": "pub struct StandardIn",
       "typeParams": [],
       "doc": {
@@ -6004,7 +6021,7 @@
           "name": "handle",
           "type": "RawStream",
           "public": false,
-          "line": 122,
+          "line": 137,
           "doc": "The platform's handle for the stream.",
           "targets": [
             "windows-x86_64",
@@ -6021,7 +6038,7 @@
           "name": "console",
           "type": "bool",
           "public": false,
-          "line": 124,
+          "line": 139,
           "doc": "Whether the stream is a console, decided once.",
           "targets": [
             "windows-x86_64",
@@ -6038,7 +6055,7 @@
           "name": "pending",
           "type": "uint64",
           "public": false,
-          "line": 126,
+          "line": 141,
           "doc": "Converted bytes that did not fit the last read, least significant byte first in stream order.",
           "targets": [
             "windows-x86_64",
@@ -6055,7 +6072,7 @@
           "name": "pendingCount",
           "type": "uint",
           "public": true,
-          "line": 128,
+          "line": 143,
           "doc": "How many of them there are.",
           "targets": [
             "windows-x86_64",
@@ -6072,7 +6089,7 @@
           "name": "heldUnit",
           "type": "uint16",
           "public": false,
-          "line": 130,
+          "line": 145,
           "doc": "A high surrogate whose partner has not arrived yet.",
           "targets": [
             "windows-x86_64",
@@ -6089,7 +6106,7 @@
           "name": "hasHeldUnit",
           "type": "bool",
           "public": false,
-          "line": 132,
+          "line": 147,
           "doc": "Whether one is waiting.",
           "targets": [
             "windows-x86_64",
@@ -6109,7 +6126,7 @@
         {
           "kind": "associated",
           "name": "Acquire",
-          "line": 140,
+          "line": 155,
           "signature": "pub func Acquire() -> StandardIn",
           "typeParams": [],
           "params": [],
@@ -6141,8 +6158,8 @@
         {
           "kind": "method",
           "name": "Read",
-          "line": 162,
-          "signature": "pub func Read(self: &var StandardIn, into: var char8[..]) -> uint ! IoError",
+          "line": 179,
+          "signature": "pub func Read(&var self, into: var char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var StandardIn",
@@ -6189,7 +6206,7 @@
       "displayName": "StandardOut",
       "module": "Standard",
       "source": "Src/Standard.rux",
-      "line": 269,
+      "line": 301,
       "signature": "pub struct StandardOut",
       "typeParams": [],
       "doc": {
@@ -6207,7 +6224,7 @@
           "name": "handle",
           "type": "RawStream",
           "public": false,
-          "line": 271,
+          "line": 303,
           "doc": "The platform's handle for the stream.",
           "targets": [
             "windows-x86_64",
@@ -6224,7 +6241,7 @@
           "name": "console",
           "type": "bool",
           "public": false,
-          "line": 273,
+          "line": 305,
           "doc": "Whether the stream is a console, decided once.",
           "targets": [
             "windows-x86_64",
@@ -6244,7 +6261,7 @@
         {
           "kind": "associated",
           "name": "Acquire",
-          "line": 280,
+          "line": 312,
           "signature": "pub func Acquire() -> StandardOut",
           "typeParams": [],
           "params": [],
@@ -6276,8 +6293,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 298,
-          "signature": "pub func Write(self: &var StandardOut, bytes: char8[..]) -> uint ! IoError",
+          "line": 332,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var StandardOut",
@@ -6308,8 +6325,8 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 305,
-          "signature": "pub func Flush(self: &var StandardOut) -> ! IoError",
+          "line": 339,
+          "signature": "pub func Flush(&var self) throws IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var StandardOut",
@@ -6356,7 +6373,7 @@
       "displayName": "StandardError",
       "module": "Standard",
       "source": "Src/Standard.rux",
-      "line": 311,
+      "line": 345,
       "signature": "pub struct StandardError",
       "typeParams": [],
       "doc": {
@@ -6374,7 +6391,7 @@
           "name": "handle",
           "type": "RawStream",
           "public": false,
-          "line": 313,
+          "line": 347,
           "doc": "The platform's handle for the stream.",
           "targets": [
             "windows-x86_64",
@@ -6391,7 +6408,7 @@
           "name": "console",
           "type": "bool",
           "public": false,
-          "line": 315,
+          "line": 349,
           "doc": "Whether the stream is a console, decided once.",
           "targets": [
             "windows-x86_64",
@@ -6411,7 +6428,7 @@
         {
           "kind": "associated",
           "name": "Acquire",
-          "line": 322,
+          "line": 356,
           "signature": "pub func Acquire() -> StandardError",
           "typeParams": [],
           "params": [],
@@ -6443,8 +6460,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 340,
-          "signature": "pub func Write(self: &var StandardError, bytes: char8[..]) -> uint ! IoError",
+          "line": 376,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var StandardError",
@@ -6475,8 +6492,8 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 347,
-          "signature": "pub func Flush(self: &var StandardError) -> ! IoError",
+          "line": 383,
+          "signature": "pub func Flush(&var self) throws IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var StandardError",
@@ -6543,8 +6560,8 @@
         {
           "kind": "requirement",
           "name": "Read",
-          "line": 22,
-          "signature": "func Read(self: &var Self, into: var char8[..]) -> uint ! IoError",
+          "line": 23,
+          "signature": "func Read(&var self, into: var char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var Self",
@@ -6554,7 +6571,7 @@
           "public": true,
           "doc": {
             "summary": "Fills what it can of `into` and succeeds with how much.",
-            "markdown": "Fills what it can of `into` and succeeds with how much.\nA success of zero does not happen for a non-empty buffer: the end of the stream is the `EndOfStream` failure,\nso a caller never mistakes silence for data.",
+            "markdown": "Fills what it can of `into` and succeeds with how much.\nAn implementation reports the end of the stream as the `EndOfStream` failure. Every reading helper in this\npackage also takes a success of zero for a non-empty buffer as the end, never as a reason to ask again, so a\nreader that ends that way is not looped on. A non-blocking stream with nothing ready fails with `WouldBlock`.",
             "typeParams": [],
             "params": [{ "name": "into", "markdown": "receives the bytes" }],
             "returns": "how many bytes were read, which may be fewer than `into` holds; `IsEnd` at the end of the stream",
@@ -6591,7 +6608,7 @@
       "displayName": "Writer",
       "module": "Stream",
       "source": "Src/Stream.rux",
-      "line": 27,
+      "line": 28,
       "signature": "pub interface Writer",
       "typeParams": [],
       "doc": {
@@ -6611,8 +6628,8 @@
         {
           "kind": "requirement",
           "name": "Write",
-          "line": 32,
-          "signature": "func Write(self: &var Self, bytes: char8[..]) -> uint ! IoError",
+          "line": 33,
+          "signature": "func Write(&var self, bytes: char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Self",
@@ -6643,8 +6660,8 @@
         {
           "kind": "requirement",
           "name": "Flush",
-          "line": 37,
-          "signature": "func Flush(self: &var Self) -> ! IoError",
+          "line": 38,
+          "signature": "func Flush(&var self) throws IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var Self",
@@ -6691,7 +6708,7 @@
       "displayName": "SeekFrom",
       "module": "Stream",
       "source": "Src/Stream.rux",
-      "line": 42,
+      "line": 43,
       "signature": "pub enum SeekFrom",
       "typeParams": [],
       "doc": {
@@ -6711,7 +6728,7 @@
           "name": "Start",
           "value": "0",
           "payload": null,
-          "line": 44,
+          "line": 45,
           "doc": "The start of the stream; the offset must not be negative.",
           "targets": [
             "windows-x86_64",
@@ -6728,7 +6745,7 @@
           "name": "Current",
           "value": "1",
           "payload": null,
-          "line": 46,
+          "line": 47,
           "doc": "The current position.",
           "targets": [
             "windows-x86_64",
@@ -6745,7 +6762,7 @@
           "name": "End",
           "value": "2",
           "payload": null,
-          "line": 48,
+          "line": 49,
           "doc": "The end of the stream.",
           "targets": [
             "windows-x86_64",
@@ -6778,7 +6795,7 @@
       "displayName": "Seeker",
       "module": "Stream",
       "source": "Src/Stream.rux",
-      "line": 53,
+      "line": 54,
       "signature": "pub interface Seeker",
       "typeParams": [],
       "doc": {
@@ -6798,8 +6815,8 @@
         {
           "kind": "requirement",
           "name": "Seek",
-          "line": 59,
-          "signature": "func Seek(self: &var Self, origin: SeekFrom, offset: int64) -> uint64 ! IoError",
+          "line": 60,
+          "signature": "func Seek(&var self, origin: SeekFrom, offset: int64) -> uint64 throws IoError",
           "typeParams": [],
           "params": [
             { "name": "origin", "type": "SeekFrom" },
@@ -6852,12 +6869,12 @@
       "displayName": "ZeroProgressLimit",
       "module": "Stream",
       "source": "Src/Stream.rux",
-      "line": 66,
+      "line": 67,
       "signature": "pub const ZeroProgressLimit: uint",
       "typeParams": [],
       "doc": {
-        "summary": "How many consecutive zero-progress rounds the looping helpers tolerate before refusing.",
-        "markdown": "How many consecutive zero-progress rounds the looping helpers tolerate before refusing.\nA transient report is retried without counting; this counts only rounds where the stream reported success and\nmoved nothing, which is a stream that will never finish the job.",
+        "summary": "How many consecutive zero-progress rounds `WriteAll` tolerates before refusing.",
+        "markdown": "How many consecutive zero-progress rounds `WriteAll` tolerates before refusing.\nAn interruption is retried without counting; this counts only rounds where the stream reported success and\nmoved nothing, which is a stream that will never finish the job.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -6887,18 +6904,18 @@
       "displayName": "ReadExact",
       "module": "Stream",
       "source": "Src/Stream.rux",
-      "line": 75,
-      "signature": "pub func ReadExact(reader: &var Reader, into: var char8[..]) -> ! IoError",
+      "line": 79,
+      "signature": "pub func ReadExact(reader: &var Reader, into: var char8[..]) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Fills all of `into`, looping over partial reads, or says why it could not.",
-        "markdown": "Fills all of `into`, looping over partial reads, or says why it could not.\nTransient reports are retried; the end of the stream before the buffer fills is `EndOfStream` with the buffer\npartly written — how much is not reported, because a caller who needs the count reads incrementally.",
+        "markdown": "Fills all of `into`, looping over partial reads, or says why it could not.\nInterruptions are retried at once. The end of the stream, reported as `EndOfStream` or as a read of zero bytes,\nis `EndOfStream` when it comes before the first byte, so a caller reading records stops cleanly between them,\nand `UnexpectedEnd` once part of `into` has been written. Any other failure, `WouldBlock` included, is returned\nas itself. After a failure `into` may be partly written and how much is not reported: a caller who needs the\ncount, as one reading a non-blocking stream does, reads incrementally with `Read`.",
         "typeParams": [],
         "params": [
           { "name": "reader", "markdown": "where the bytes come from" },
           { "name": "into", "markdown": "receives the bytes" }
         ],
-        "returns": "success only when `into` was filled completely; `IsEnd` when the stream ran out first",
+        "returns": "success only when `into` was filled; `IsEnd` if the stream ended first, `UnexpectedEnd` if partway",
         "see": ["https://rux-lang.dev/docs/api/io/reader#read-exact"],
         "deprecated": null
       },
@@ -6925,12 +6942,12 @@
       "displayName": "WriteAll",
       "module": "Stream",
       "source": "Src/Stream.rux",
-      "line": 98,
-      "signature": "pub func WriteAll(writer: &var Writer, bytes: char8[..]) -> ! IoError",
+      "line": 107,
+      "signature": "pub func WriteAll(writer: &var Writer, bytes: char8[..]) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Writes all of `bytes`, looping over partial writes, or says why it could not.",
-        "markdown": "Writes all of `bytes`, looping over partial writes, or says why it could not.\nA writer that accepts nothing while reporting success is refused with `WriteZero` after a few rounds: a loop\nthat spins on it would hang the caller on a stream that will never take the rest.",
+        "markdown": "Writes all of `bytes`, looping over partial writes, or says why it could not.\nInterruptions are retried at once. A writer that accepts nothing while reporting success is refused with\n`WriteZero` after `ZeroProgressLimit` rounds: a loop that spins on it would hang the caller on a stream that will\nnever take the rest. Any other failure, `WouldBlock` included, is returned as itself, with some of `bytes`\npossibly written and how much not reported: a caller writing to a non-blocking stream writes incrementally with\n`Write`.",
         "typeParams": [],
         "params": [
           { "name": "writer", "markdown": "the destination" },
@@ -6963,15 +6980,15 @@
       "displayName": "FromIoError",
       "module": "TextBoundary",
       "source": "Src/TextBoundary.rux",
-      "line": 36,
-      "signature": "pub func FromIoError(outcome: ! IoError) -> ! FormatError",
+      "line": 37,
+      "signature": "pub func FromIoError(error: IoError) -> FormatError",
       "typeParams": [],
       "doc": {
-        "summary": "Turns what a stream reported into what a formatter understands.",
-        "markdown": "Turns what a stream reported into what a formatter understands.\nSuccess becomes the formatter's success value; every failure becomes `WriterFailure`, which is the only thing\n`FormatError` can say about a destination. The details do not travel this way — an adapter records the original\n`IoError` where its caller can read it, which is what keeps the loss from being a loss.\nThe end of a stream is a failure here. Nothing is being read, so a write that reports it is a destination that\ncannot take the bytes, whatever it calls that.",
+        "summary": "Turns an error a stream threw into what a formatter understands.",
+        "markdown": "Turns an error a stream threw into what a formatter understands.\nEvery failure becomes `WriterFailure`, which is the only thing `FormatError` can say about a destination, so a\nformatter passes a stream's error on with `try Write(...) catch { error => throw FromIoError(error) }`. The\ndetails do not travel this way — an adapter records the original `IoError` where its caller can read it, which is\nwhat keeps the loss from being a loss.\nThe end of a stream is a failure here. Nothing is being read, so a write that reports it is a destination that\ncannot take the bytes, whatever it calls that.",
         "typeParams": [],
-        "params": [{ "name": "outcome", "markdown": "what the stream reported" }],
-        "returns": "success for a success, and `WriterFailure` for any failure",
+        "params": [{ "name": "error", "markdown": "what the stream threw" }],
+        "returns": "`WriterFailure`, whatever the stream's error was",
         "see": ["https://rux-lang.dev/docs/api/io/io-error#from-io-error"],
         "deprecated": null
       },
@@ -6998,7 +7015,7 @@
       "displayName": "ToIoError",
       "module": "TextBoundary",
       "source": "Src/TextBoundary.rux",
-      "line": 50,
+      "line": 51,
       "signature": "pub func ToIoError(error: &FormatError) -> IoError",
       "typeParams": [],
       "doc": {
@@ -7033,7 +7050,7 @@
       "displayName": "ConsoleWriter",
       "module": "TextBoundary",
       "source": "Src/TextBoundary.rux",
-      "line": 80,
+      "line": 81,
       "signature": "pub struct ConsoleWriter",
       "typeParams": [],
       "doc": {
@@ -7051,7 +7068,7 @@
           "name": "failure",
           "type": "*var IoError?",
           "public": false,
-          "line": 82,
+          "line": 83,
           "doc": "Where the first stream failure is recorded.",
           "targets": [
             "windows-x86_64",
@@ -7071,7 +7088,7 @@
         {
           "kind": "constructor",
           "name": "ConsoleWriter",
-          "line": 92,
+          "line": 93,
           "signature": "pub func ConsoleWriter(failure: *var IoError?) -> ConsoleWriter",
           "typeParams": [],
           "params": [{ "name": "failure", "type": "*var IoError?" }],
@@ -7105,8 +7122,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 107,
-          "signature": "pub func Write(self: &var ConsoleWriter, bytes: char8[..]) -> ! FormatError",
+          "line": 108,
+          "signature": "pub func Write(&var self, bytes: char8[..]) throws FormatError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var ConsoleWriter",
@@ -7153,7 +7170,7 @@
       "displayName": "StreamWriter",
       "module": "TextBoundary",
       "source": "Src/TextBoundary.rux",
-      "line": 127,
+      "line": 131,
       "signature": "pub struct StreamWriter",
       "typeParams": [],
       "doc": {
@@ -7171,7 +7188,7 @@
           "name": "sink",
           "type": "Writer",
           "public": false,
-          "line": 129,
+          "line": 133,
           "doc": "Where the bytes go.",
           "targets": [
             "windows-x86_64",
@@ -7188,7 +7205,7 @@
           "name": "failure",
           "type": "*var IoError?",
           "public": false,
-          "line": 131,
+          "line": 135,
           "doc": "Where the first stream failure is recorded.",
           "targets": [
             "windows-x86_64",
@@ -7208,7 +7225,7 @@
         {
           "kind": "constructor",
           "name": "StreamWriter",
-          "line": 142,
+          "line": 146,
           "signature": "pub func StreamWriter(sink: Writer, failure: *var IoError?) -> StreamWriter",
           "typeParams": [],
           "params": [
@@ -7246,8 +7263,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 155,
-          "signature": "pub func Write(self: &var StreamWriter, bytes: char8[..]) -> ! FormatError",
+          "line": 159,
+          "signature": "pub func Write(&var self, bytes: char8[..]) throws FormatError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var StreamWriter",
@@ -7294,8 +7311,8 @@
       "displayName": "WriteValueLine<T>",
       "module": "TextBoundary",
       "source": "Src/TextBoundary.rux",
-      "line": 183,
-      "signature": "pub func WriteValueLine<T: Display>(writer: &var TextWriter, value: &T) -> ! FormatError",
+      "line": 190,
+      "signature": "pub func WriteValueLine<T: Display>(writer: &var TextWriter, value: &T) throws FormatError",
       "typeParams": [{ "name": "T", "bounds": ["Display"] }],
       "doc": {
         "summary": "Writes a value's text, then a newline, and writes the newline only if the value went out whole.",
@@ -7332,12 +7349,12 @@
       "displayName": "WriteFormatLine",
       "module": "TextBoundary",
       "source": "Src/TextBoundary.rux",
-      "line": 200,
-      "signature": "pub func WriteFormatLine(writer: &var TextWriter, #Format() format: char8[..], ...) -> ! FormatError",
+      "line": 207,
+      "signature": "pub func WriteFormatLine(writer: &var TextWriter, #Format format: char8[..], ...) throws FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `format` with each `{}` replaced by the next argument, then a newline, on the same rule.",
-        "markdown": "Writes `format` with each `{}` replaced by the next argument, then a newline, on the same rule.\nThe newline goes out only if the whole pattern did, so a pattern that does not parse, an argument count that\ndoes not match and a destination that refused all leave no terminator behind. Nothing is allocated: the\narguments write themselves as they are reached. They arrive as interface values, which is what a variadic can\ncarry, so a move-only argument goes through `WriteValueLine` instead of through a placeholder.\nA literal `format` has its placeholders counted against the arguments while compiling, since it is marked\n`#Format()`. Reports the formatting failure when there is one, without attempting the newline. Otherwise reports\nwhatever the newline's write reported.",
+        "markdown": "Writes `format` with each `{}` replaced by the next argument, then a newline, on the same rule.\nThe newline goes out only if the whole pattern did, so a pattern that does not parse, an argument count that\ndoes not match and a destination that refused all leave no terminator behind. Nothing is allocated: the\narguments write themselves as they are reached. They arrive as interface values, which is what a variadic can\ncarry, so a move-only argument goes through `WriteValueLine` instead of through a placeholder.\nA literal `format` has its placeholders counted against the arguments while compiling, since it is marked\n`#Format`. Reports the formatting failure when there is one, without attempting the newline. Otherwise reports\nwhatever the newline's write reported.",
         "typeParams": [],
         "params": [
           { "name": "writer", "markdown": "the destination" },
@@ -7373,8 +7390,8 @@
       "displayName": "ReadTextLine",
       "module": "TextRead",
       "source": "Src/TextRead.rux",
-      "line": 27,
-      "signature": "pub func ReadTextLine(reader: &var BufferedReader, builder: &var StringBuilder, limit: uint) -> ! IoError",
+      "line": 26,
+      "signature": "pub func ReadTextLine(reader: &var BufferedReader, builder: &var StringBuilder, limit: uint) throws IoError",
       "typeParams": [],
       "doc": {
         "summary": "Appends the next line of `reader` to `builder`, without its ending.",

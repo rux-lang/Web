@@ -49,7 +49,7 @@ An MD5 state.
 <h3 id="update"><code>Update</code></h3>
 
 ```rux
-pub func Update(self: &var LegacyMd5, bytes: char8[..])
+pub func Update(&var self, bytes: char8[..])
 ```
 
 Adds `bytes` to the message.
@@ -58,12 +58,12 @@ Adds `bytes` to the message.
 | ------- | ----------- | ------------------- |
 | `bytes` | `char8[..]` | the bytes to absorb |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L142)
 
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var LegacyMd5, into: var char8[..])
+pub func Finish(&var self, into: var char8[..])
 ```
 
 Writes the sixteen-byte digest into `into`.
@@ -73,7 +73,7 @@ The length is appended little-endian, unlike the SHA family's big-endian count.
 | ------ | --------------- | ------------------- |
 | `into` | `var char8[..]` | receives the output |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L161)
 
 ## Related
 
@@ -85,7 +85,7 @@ pub func LegacyMd5Of(bytes: char8[..], into: var char8[..])
 
 The MD5 digest of `bytes`. **Broken; see the note at the top of this file.**
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L196)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Legacy.rux#L200)
 
 **Parameters**
 

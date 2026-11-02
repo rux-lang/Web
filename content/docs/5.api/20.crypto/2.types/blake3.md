@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Blake3.rux
-  line: 249
+  line: 258
 seo:
   title: "Blake3 — Crypto API"
   description: An incremental BLAKE3 hash.
@@ -41,7 +41,7 @@ An unkeyed BLAKE3 hash.
 
 **Returns**: a hasher with nothing absorbed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L282)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L291)
 
 ## Associated functions
 
@@ -64,7 +64,7 @@ from the key is a sound MAC on its own.
 
 **Returns**: a hasher keyed with those thirty-two bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L47)
 
 <h3 id="new-derive-key"><code>NewDeriveKey</code></h3>
 
@@ -84,7 +84,7 @@ must not be a variable, since two callers who accidentally share one lose the se
 
 **Returns**: a hasher in key-derivation mode for that context
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L62)
 
 ## Implements Digest
 
@@ -93,7 +93,7 @@ must not be a variable, since two callers who accidentally share one lose the se
 <h3 id="update"><code>Update</code></h3>
 
 ```rux
-pub func Update(self: &var Blake3, bytes: char8[..])
+pub func Update(&var self, bytes: char8[..])
 ```
 
 Adds `bytes` to the message.
@@ -102,12 +102,12 @@ Adds `bytes` to the message.
 | ------- | ----------- | ------------------- |
 | `bytes` | `char8[..]` | the bytes to absorb |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L334)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L345)
 
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var Blake3, into: var char8[..])
+pub func Finish(&var self, into: var char8[..])
 ```
 
 Writes the root output into `into`, which may be any length.
@@ -118,38 +118,38 @@ produce as many bytes as asked. Thirty-two is the usual choice and is what [`Dig
 | ------ | --------------- | ------------------- |
 | `into` | `var char8[..]` | receives the output |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L355)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L370)
 
 <h3 id="digest-length"><code>DigestLength</code></h3>
 
 ```rux
-pub func DigestLength(self: &Blake3) -> uint
+pub func DigestLength(&self) -> uint
 ```
 
 Thirty-two bytes, the conventional length; [`Finish`](/docs/api/crypto/blake3#finish) writes any length asked of it.
 
 **Returns**: how many bytes a digest occupies
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L439)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L461)
 
 <h3 id="block-length"><code>BlockLength</code></h3>
 
 ```rux
-pub func BlockLength(self: &Blake3) -> uint
+pub func BlockLength(&self) -> uint
 ```
 
 Sixty-four bytes.
 
 **Returns**: how many bytes the compression function consumes at a time
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L446)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L468)
 
 ## Related
 
 <h3 id="blake3-compress"><code>Blake3Compress</code></h3>
 
 ```rux
-pub func Blake3Compress(
+pub unsafe func Blake3Compress(
     chaining: *uint32,
     message: *uint32,
     counter: uint64,
@@ -161,8 +161,10 @@ pub func Blake3Compress(
 
 The compression function: sixteen words of state over seven rounds, producing sixteen words of output.
 The first eight output words are the chaining value; all sixteen are used when the output is being extended.
+Safety: `chaining` must address eight readable words, `message` sixteen readable words, and `into` sixteen
+writable words.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L80)
 
 **Parameters**
 
@@ -186,17 +188,14 @@ pub struct Blake3Chunk {
 The state of one chunk being filled.
 Structural `Copy`; used as an independent snapshot within the enclosing hasher.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L135)
 
 **Methods**
 
 <h4 id="blake3-chunk-update"><code>Update</code></h4>
 
 ```rux
-pub func Update(
-    self: &var Blake3Chunk,
-    bytes: char8[..]
-) -> uint
+pub func Update(&var self, bytes: char8[..]) -> uint
 ```
 
 Adds bytes to the chunk, compressing whole blocks as they complete.
@@ -210,13 +209,13 @@ growing. Compressing eagerly is the classic way to get the flags wrong.
 
 **Returns**: how many bytes were absorbed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L197)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L202)
 
 <h4 id="blake3-chunk-output"><code>Output</code></h4>
 
 ```rux
-pub func Output(
-    self: &Blake3Chunk,
+pub unsafe func Output(
+    &self,
     extraFlags: uint32,
     into: *var uint32
 )
@@ -224,13 +223,14 @@ pub func Output(
 
 The chunk's chaining value, with the end flag applied to its final block.
 `extraFlags` carries the root flag when this chunk is the whole message.
+Safety: `into` must address sixteen writable words.
 
 | Name         | Type          | Description                             |
 | ------------ | ------------- | --------------------------------------- |
 | `extraFlags` | `uint32`      | the domain flags to add for this output |
 | `into`       | `*var uint32` | receives the output                     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L226)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L235)
 
 <h3 id="blake3-of"><code>Blake3Of</code></h3>
 
@@ -240,7 +240,7 @@ pub func Blake3Of(bytes: char8[..], into: var char8[..])
 
 The BLAKE3 hash of `bytes`, at whatever length `into` asks for.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L455)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3.rux#L477)
 
 **Parameters**
 
@@ -261,7 +261,7 @@ pub func Blake3KeyedOf(
 
 The keyed BLAKE3 hash of `bytes` under `key`, in one call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3Modes.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3Modes.rux#L80)
 
 **Parameters**
 
@@ -283,7 +283,7 @@ pub func Blake3DeriveKey(
 
 A key derived from `material` under `context`, at whatever length `into` asks for.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3Modes.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Blake3Modes.rux#L91)
 
 **Parameters**
 

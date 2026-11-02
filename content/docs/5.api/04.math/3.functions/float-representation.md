@@ -281,7 +281,7 @@ exactly. An infinity puts itself in `integral` and returns a zero of the same si
 | `pub func SplitIntegral(value: float64, integral: *var float64) -> float64` | Splits `value` into its integral and fractional parts, both carrying its sign. |
 | `pub func SplitIntegral(value: float32, integral: *var float32) -> float32` | Splits `value` into integral and fractional `float32` parts.                   |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L406)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L410)
 
 **Parameters**
 
@@ -320,7 +320,7 @@ which no real distance can reach.
 | `pub func UlpDistance(left: float64, right: float64) -> uint64` | How many representable values lie between `left` and `right`.         |
 | `pub func UlpDistance(left: float32, right: float32) -> uint64` | Counts the representable `float32` values between `left` and `right`. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L445)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L448)
 
 **Parameters**
 

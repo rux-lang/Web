@@ -28,7 +28,7 @@ pub func WriteUsage(
     spec: &CommandSpec,
     writer: &var TextWriter,
     parent: char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the usage line, such as `Usage: tool [options] <input> [output]`.
@@ -54,7 +54,7 @@ pub func WriteHelp(
     spec: &CommandSpec,
     writer: &var TextWriter,
     parent: char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the full help text: the summary, the usage line, and the arguments, options and subcommands with their
@@ -79,7 +79,7 @@ Reports whatever the writer reported. Allocates nothing.
 pub func WriteVersion(
     spec: &CommandSpec,
     writer: &var TextWriter
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the version line, such as `tool 1.4.2`.

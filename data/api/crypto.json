@@ -71,12 +71,12 @@
       "displayName": "Blake3Compress",
       "module": "Blake3",
       "source": "Src/Blake3.rux",
-      "line": 76,
-      "signature": "pub func Blake3Compress(chaining: *uint32, message: *uint32, counter: uint64, blockLength: uint32, flags: uint32, into: *var uint32)",
+      "line": 80,
+      "signature": "pub unsafe func Blake3Compress(chaining: *uint32, message: *uint32, counter: uint64, blockLength: uint32, flags: uint32, into: *var uint32)",
       "typeParams": [],
       "doc": {
         "summary": "The compression function: sixteen words of state over seven rounds, producing sixteen words of output.",
-        "markdown": "The compression function: sixteen words of state over seven rounds, producing sixteen words of output.\nThe first eight output words are the chaining value; all sixteen are used when the output is being extended.",
+        "markdown": "The compression function: sixteen words of state over seven rounds, producing sixteen words of output.\nThe first eight output words are the chaining value; all sixteen are used when the output is being extended.\nSafety: `chaining` must address eight readable words, `message` sixteen readable words, and `into` sixteen\nwritable words.",
         "typeParams": [],
         "params": [
           { "name": "chaining", "markdown": "the chaining value going in" },
@@ -113,7 +113,7 @@
       "displayName": "Blake3Chunk",
       "module": "Blake3",
       "source": "Src/Blake3.rux",
-      "line": 131,
+      "line": 135,
       "signature": "pub struct Blake3Chunk",
       "typeParams": [],
       "doc": {
@@ -131,7 +131,7 @@
           "name": "chaining",
           "type": "uint32[N]",
           "public": false,
-          "line": 133,
+          "line": 137,
           "doc": "The chaining value carried between the chunk's blocks.",
           "targets": [
             "windows-x86_64",
@@ -148,7 +148,7 @@
           "name": "counter",
           "type": "uint64",
           "public": false,
-          "line": 135,
+          "line": 139,
           "doc": "Which chunk this is, which the compression mixes in so no chunk can stand in for another.",
           "targets": [
             "windows-x86_64",
@@ -165,7 +165,7 @@
           "name": "block",
           "type": "char8[N]",
           "public": false,
-          "line": 137,
+          "line": 141,
           "doc": "The block being filled.",
           "targets": [
             "windows-x86_64",
@@ -182,7 +182,7 @@
           "name": "blockLength",
           "type": "uint",
           "public": false,
-          "line": 139,
+          "line": 143,
           "doc": "How much of it is filled.",
           "targets": [
             "windows-x86_64",
@@ -199,7 +199,7 @@
           "name": "blocksCompressed",
           "type": "uint",
           "public": false,
-          "line": 141,
+          "line": 145,
           "doc": "How many blocks have been compressed, which decides whether the start flag still applies.",
           "targets": [
             "windows-x86_64",
@@ -216,7 +216,7 @@
           "name": "flags",
           "type": "uint32",
           "public": false,
-          "line": 143,
+          "line": 147,
           "doc": "Flags every compression in this chunk carries.",
           "targets": [
             "windows-x86_64",
@@ -236,8 +236,8 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 197,
-          "signature": "pub func Update(self: &var Blake3Chunk, bytes: char8[..]) -> uint",
+          "line": 202,
+          "signature": "pub func Update(&var self, bytes: char8[..]) -> uint",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Blake3Chunk",
@@ -268,8 +268,8 @@
         {
           "kind": "method",
           "name": "Output",
-          "line": 226,
-          "signature": "pub func Output(self: &Blake3Chunk, extraFlags: uint32, into: *var uint32)",
+          "line": 235,
+          "signature": "pub unsafe func Output(&self, extraFlags: uint32, into: *var uint32)",
           "typeParams": [],
           "params": [
             { "name": "extraFlags", "type": "uint32" },
@@ -282,7 +282,7 @@
           "public": true,
           "doc": {
             "summary": "The chunk's chaining value, with the end flag applied to its final block.",
-            "markdown": "The chunk's chaining value, with the end flag applied to its final block.\n`extraFlags` carries the root flag when this chunk is the whole message.",
+            "markdown": "The chunk's chaining value, with the end flag applied to its final block.\n`extraFlags` carries the root flag when this chunk is the whole message.\nSafety: `into` must address sixteen writable words.",
             "typeParams": [],
             "params": [
               { "name": "extraFlags", "markdown": "the domain flags to add for this output" },
@@ -322,7 +322,7 @@
       "displayName": "Blake3",
       "module": "Blake3",
       "source": "Src/Blake3.rux",
-      "line": 249,
+      "line": 258,
       "signature": "pub struct Blake3",
       "typeParams": [],
       "doc": {
@@ -340,7 +340,7 @@
           "name": "chunk",
           "type": "Blake3Chunk",
           "public": false,
-          "line": 251,
+          "line": 260,
           "doc": "The chunk currently being filled.",
           "targets": [
             "windows-x86_64",
@@ -357,7 +357,7 @@
           "name": "stack",
           "type": "uint32[N]",
           "public": false,
-          "line": 253,
+          "line": 262,
           "doc": "The stack of completed subtree chaining values, deepest last.",
           "targets": [
             "windows-x86_64",
@@ -374,7 +374,7 @@
           "name": "stackDepth",
           "type": "uint",
           "public": false,
-          "line": 255,
+          "line": 264,
           "doc": "How many subtrees the stack holds.",
           "targets": [
             "windows-x86_64",
@@ -391,7 +391,7 @@
           "name": "key",
           "type": "uint32[N]",
           "public": false,
-          "line": 257,
+          "line": 266,
           "doc": "The key, which is the initial value for an unkeyed hash.",
           "targets": [
             "windows-x86_64",
@@ -408,7 +408,7 @@
           "name": "flags",
           "type": "uint32",
           "public": false,
-          "line": 259,
+          "line": 268,
           "doc": "Flags every compression carries: none for an unkeyed hash.",
           "targets": [
             "windows-x86_64",
@@ -428,7 +428,7 @@
         {
           "kind": "constructor",
           "name": "Blake3",
-          "line": 282,
+          "line": 291,
           "signature": "pub func Blake3() -> Blake3",
           "typeParams": [],
           "params": [],
@@ -460,8 +460,8 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 334,
-          "signature": "pub func Update(self: &var Blake3, bytes: char8[..])",
+          "line": 345,
+          "signature": "pub func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Blake3",
@@ -492,8 +492,8 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 355,
-          "signature": "pub func Finish(self: &var Blake3, into: var char8[..])",
+          "line": 370,
+          "signature": "pub func Finish(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var Blake3",
@@ -524,8 +524,8 @@
         {
           "kind": "method",
           "name": "DigestLength",
-          "line": 439,
-          "signature": "pub func DigestLength(self: &Blake3) -> uint",
+          "line": 461,
+          "signature": "pub func DigestLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Blake3",
@@ -556,8 +556,8 @@
         {
           "kind": "method",
           "name": "BlockLength",
-          "line": 446,
-          "signature": "pub func BlockLength(self: &Blake3) -> uint",
+          "line": 468,
+          "signature": "pub func BlockLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Blake3",
@@ -588,7 +588,7 @@
         {
           "kind": "associated",
           "name": "NewKeyed",
-          "line": 46,
+          "line": 47,
           "signature": "pub func NewKeyed(key: char8[..]) -> Blake3",
           "typeParams": [],
           "params": [{ "name": "key", "type": "char8[..]" }],
@@ -620,7 +620,7 @@
         {
           "kind": "associated",
           "name": "NewDeriveKey",
-          "line": 60,
+          "line": 62,
           "signature": "pub func NewDeriveKey(context: char8[..]) -> Blake3",
           "typeParams": [],
           "params": [{ "name": "context", "type": "char8[..]" }],
@@ -670,7 +670,7 @@
       "displayName": "Blake3Of",
       "module": "Blake3",
       "source": "Src/Blake3.rux",
-      "line": 455,
+      "line": 477,
       "signature": "pub func Blake3Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -708,7 +708,7 @@
       "displayName": "Blake3KeyedOf",
       "module": "Blake3Modes",
       "source": "Src/Blake3Modes.rux",
-      "line": 77,
+      "line": 80,
       "signature": "pub func Blake3KeyedOf(key: char8[..], bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -747,7 +747,7 @@
       "displayName": "Blake3DeriveKey",
       "module": "Blake3Modes",
       "source": "Src/Blake3Modes.rux",
-      "line": 88,
+      "line": 91,
       "signature": "pub func Blake3DeriveKey(context: char8[..], material: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -807,7 +807,7 @@
           "kind": "requirement",
           "name": "Update",
           "line": 31,
-          "signature": "func Update(self: &var Self, bytes: char8[..])",
+          "signature": "func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Self",
@@ -839,7 +839,7 @@
           "kind": "requirement",
           "name": "Finish",
           "line": 39,
-          "signature": "func Finish(self: &var Self, into: var char8[..])",
+          "signature": "func Finish(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var Self",
@@ -871,7 +871,7 @@
           "kind": "requirement",
           "name": "DigestLength",
           "line": 44,
-          "signature": "func DigestLength(self: &Self) -> uint",
+          "signature": "func DigestLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Self",
@@ -903,7 +903,7 @@
           "kind": "requirement",
           "name": "BlockLength",
           "line": 51,
-          "signature": "func BlockLength(self: &Self) -> uint",
+          "signature": "func BlockLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Self",
@@ -1324,8 +1324,8 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 100,
-          "signature": "pub func Update<D: Digest>(self: &var Hmac<D>, bytes: char8[..])",
+          "line": 101,
+          "signature": "pub func Update<D: Digest>(&var self, bytes: char8[..])",
           "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Hmac<D>",
@@ -1356,8 +1356,8 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 108,
-          "signature": "pub func Finish<D: Digest>(self: &var Hmac<D>, into: var char8[..])",
+          "line": 109,
+          "signature": "pub func Finish<D: Digest>(&var self, into: var char8[..])",
           "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var Hmac<D>",
@@ -1388,8 +1388,8 @@
         {
           "kind": "method",
           "name": "TagLength",
-          "line": 119,
-          "signature": "pub func TagLength<D: Digest>(self: &Hmac<D>) -> uint",
+          "line": 120,
+          "signature": "pub func TagLength<D: Digest>(&self) -> uint",
           "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
           "params": [],
           "receiver": "&Hmac<D>",
@@ -1436,7 +1436,7 @@
       "displayName": "HmacOf<D>",
       "module": "Hmac",
       "source": "Src/Hmac.rux",
-      "line": 131,
+      "line": 132,
       "signature": "pub func HmacOf<D: Digest>(prototype: D, key: char8[..], message: char8[..], into: var char8[..])",
       "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
       "doc": {
@@ -1476,12 +1476,12 @@
       "displayName": "KeccakPermute",
       "module": "Keccak",
       "source": "Src/Keccak.rux",
-      "line": 46,
-      "signature": "pub func KeccakPermute(lanes: *var uint64)",
+      "line": 47,
+      "signature": "pub unsafe func KeccakPermute(lanes: *var uint64)",
       "typeParams": [],
       "doc": {
         "summary": "The Keccak-f[1600] permutation, applied in place to twenty-five lanes.",
-        "markdown": "The Keccak-f[1600] permutation, applied in place to twenty-five lanes.\nTwenty-four rounds of five steps: theta mixes each column into its neighbours, rho rotates each lane by its\nown offset, pi moves the lanes around, chi is the only non-linear step, and iota breaks the symmetry that\nwould otherwise make every round identical.",
+        "markdown": "The Keccak-f[1600] permutation, applied in place to twenty-five lanes.\nTwenty-four rounds of five steps: theta mixes each column into its neighbours, rho rotates each lane by its\nown offset, pi moves the lanes around, chi is the only non-linear step, and iota breaks the symmetry that\nwould otherwise make every round identical.\nSafety: `lanes` must address twenty-five readable and writable lanes.",
         "typeParams": [],
         "params": [{ "name": "lanes", "markdown": "the state's twenty-five lanes, permuted in place" }],
         "returns": null,
@@ -1511,7 +1511,7 @@
       "displayName": "Sha3",
       "module": "Keccak",
       "source": "Src/Keccak.rux",
-      "line": 105,
+      "line": 106,
       "signature": "pub struct Sha3",
       "typeParams": [],
       "doc": {
@@ -1529,7 +1529,7 @@
           "name": "lanes",
           "type": "uint64[N]",
           "public": false,
-          "line": 107,
+          "line": 108,
           "doc": "The state, as twenty-five sixty-four bit lanes.",
           "targets": [
             "windows-x86_64",
@@ -1546,7 +1546,7 @@
           "name": "rate",
           "type": "uint",
           "public": false,
-          "line": 109,
+          "line": 110,
           "doc": "How many bytes of the state the message is absorbed into before the permutation runs.",
           "targets": [
             "windows-x86_64",
@@ -1563,7 +1563,7 @@
           "name": "absorbed",
           "type": "uint",
           "public": false,
-          "line": 111,
+          "line": 112,
           "doc": "How far into the current rate the absorption has reached.",
           "targets": [
             "windows-x86_64",
@@ -1580,7 +1580,7 @@
           "name": "outputLength",
           "type": "uint",
           "public": false,
-          "line": 113,
+          "line": 114,
           "doc": "How many bytes `Finish` writes.",
           "targets": [
             "windows-x86_64",
@@ -1597,7 +1597,7 @@
           "name": "domain",
           "type": "uint8",
           "public": false,
-          "line": 115,
+          "line": 116,
           "doc": "The byte appended to the message before the padding, which separates SHA-3 from SHAKE.",
           "targets": [
             "windows-x86_64",
@@ -1617,7 +1617,7 @@
         {
           "kind": "associated",
           "name": "New224",
-          "line": 138,
+          "line": 139,
           "signature": "pub func New224() -> Sha3",
           "typeParams": [],
           "params": [],
@@ -1649,7 +1649,7 @@
         {
           "kind": "associated",
           "name": "New256",
-          "line": 145,
+          "line": 146,
           "signature": "pub func New256() -> Sha3",
           "typeParams": [],
           "params": [],
@@ -1681,7 +1681,7 @@
         {
           "kind": "associated",
           "name": "New384",
-          "line": 152,
+          "line": 153,
           "signature": "pub func New384() -> Sha3",
           "typeParams": [],
           "params": [],
@@ -1713,7 +1713,7 @@
         {
           "kind": "associated",
           "name": "New512",
-          "line": 159,
+          "line": 160,
           "signature": "pub func New512() -> Sha3",
           "typeParams": [],
           "params": [],
@@ -1745,8 +1745,8 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 176,
-          "signature": "pub func Update(self: &var Sha3, bytes: char8[..])",
+          "line": 177,
+          "signature": "pub func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Sha3",
@@ -1777,8 +1777,8 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 195,
-          "signature": "pub func Finish(self: &var Sha3, into: var char8[..])",
+          "line": 197,
+          "signature": "pub func Finish(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var Sha3",
@@ -1809,8 +1809,8 @@
         {
           "kind": "method",
           "name": "DigestLength",
-          "line": 221,
-          "signature": "pub func DigestLength(self: &Sha3) -> uint",
+          "line": 225,
+          "signature": "pub func DigestLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Sha3",
@@ -1841,8 +1841,8 @@
         {
           "kind": "method",
           "name": "BlockLength",
-          "line": 228,
-          "signature": "pub func BlockLength(self: &Sha3) -> uint",
+          "line": 232,
+          "signature": "pub func BlockLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Sha3",
@@ -1889,7 +1889,7 @@
       "displayName": "Sha3Of224",
       "module": "Keccak",
       "source": "Src/Keccak.rux",
-      "line": 237,
+      "line": 241,
       "signature": "pub func Sha3Of224(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -1927,7 +1927,7 @@
       "displayName": "Sha3Of256",
       "module": "Keccak",
       "source": "Src/Keccak.rux",
-      "line": 247,
+      "line": 251,
       "signature": "pub func Sha3Of256(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -1965,7 +1965,7 @@
       "displayName": "Sha3Of384",
       "module": "Keccak",
       "source": "Src/Keccak.rux",
-      "line": 257,
+      "line": 261,
       "signature": "pub func Sha3Of384(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -2003,7 +2003,7 @@
       "displayName": "Sha3Of512",
       "module": "Keccak",
       "source": "Src/Keccak.rux",
-      "line": 267,
+      "line": 271,
       "signature": "pub func Sha3Of512(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -2162,8 +2162,8 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 141,
-          "signature": "pub func Update(self: &var LegacyMd5, bytes: char8[..])",
+          "line": 142,
+          "signature": "pub func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var LegacyMd5",
@@ -2194,8 +2194,8 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 159,
-          "signature": "pub func Finish(self: &var LegacyMd5, into: var char8[..])",
+          "line": 161,
+          "signature": "pub func Finish(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var LegacyMd5",
@@ -2242,7 +2242,7 @@
       "displayName": "LegacyMd5Of",
       "module": "Legacy",
       "source": "Src/Legacy.rux",
-      "line": 196,
+      "line": 200,
       "signature": "pub func LegacyMd5Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -2280,7 +2280,7 @@
       "displayName": "LegacySha1",
       "module": "Legacy",
       "source": "Src/Legacy.rux",
-      "line": 205,
+      "line": 209,
       "signature": "pub struct LegacySha1",
       "typeParams": [],
       "doc": {
@@ -2298,7 +2298,7 @@
           "name": "state",
           "type": "uint32[N]",
           "public": false,
-          "line": 207,
+          "line": 211,
           "doc": "The five working words.",
           "targets": [
             "windows-x86_64",
@@ -2315,7 +2315,7 @@
           "name": "buffer",
           "type": "char8[N]",
           "public": false,
-          "line": 209,
+          "line": 213,
           "doc": "Bytes not yet part of a full block.",
           "targets": [
             "windows-x86_64",
@@ -2332,7 +2332,7 @@
           "name": "buffered",
           "type": "uint",
           "public": false,
-          "line": 211,
+          "line": 215,
           "doc": "How many of them there are.",
           "targets": [
             "windows-x86_64",
@@ -2349,7 +2349,7 @@
           "name": "length",
           "type": "uint64",
           "public": false,
-          "line": 213,
+          "line": 217,
           "doc": "The message length in bytes.",
           "targets": [
             "windows-x86_64",
@@ -2369,7 +2369,7 @@
         {
           "kind": "constructor",
           "name": "LegacySha1",
-          "line": 220,
+          "line": 224,
           "signature": "pub func LegacySha1() -> LegacySha1",
           "typeParams": [],
           "params": [],
@@ -2401,8 +2401,8 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 297,
-          "signature": "pub func Update(self: &var LegacySha1, bytes: char8[..])",
+          "line": 302,
+          "signature": "pub func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var LegacySha1",
@@ -2433,8 +2433,8 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 314,
-          "signature": "pub func Finish(self: &var LegacySha1, into: var char8[..])",
+          "line": 320,
+          "signature": "pub func Finish(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var LegacySha1",
@@ -2481,7 +2481,7 @@
       "displayName": "LegacySha1Of",
       "module": "Legacy",
       "source": "Src/Legacy.rux",
-      "line": 352,
+      "line": 360,
       "signature": "pub func LegacySha1Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -2689,8 +2689,8 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 149,
-          "signature": "pub func Update(self: &var Sha256, bytes: char8[..])",
+          "line": 150,
+          "signature": "pub func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Sha256",
@@ -2721,8 +2721,8 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 182,
-          "signature": "pub func Finish(self: &var Sha256, into: var char8[..])",
+          "line": 185,
+          "signature": "pub func Finish(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var Sha256",
@@ -2753,8 +2753,8 @@
         {
           "kind": "method",
           "name": "DigestLength",
-          "line": 220,
-          "signature": "pub func DigestLength(self: &Sha256) -> uint",
+          "line": 225,
+          "signature": "pub func DigestLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Sha256",
@@ -2785,8 +2785,8 @@
         {
           "kind": "method",
           "name": "BlockLength",
-          "line": 227,
-          "signature": "pub func BlockLength(self: &Sha256) -> uint",
+          "line": 232,
+          "signature": "pub func BlockLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Sha256",
@@ -2833,7 +2833,7 @@
       "displayName": "Sha256Of",
       "module": "Sha256",
       "source": "Src/Sha256.rux",
-      "line": 236,
+      "line": 241,
       "signature": "pub func Sha256Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -2871,7 +2871,7 @@
       "displayName": "Sha224Of",
       "module": "Sha256",
       "source": "Src/Sha256.rux",
-      "line": 246,
+      "line": 251,
       "signature": "pub func Sha224Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -3143,8 +3143,8 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 190,
-          "signature": "pub func Update(self: &var Sha512, bytes: char8[..])",
+          "line": 191,
+          "signature": "pub func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Sha512",
@@ -3175,8 +3175,8 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 220,
-          "signature": "pub func Finish(self: &var Sha512, into: var char8[..])",
+          "line": 223,
+          "signature": "pub func Finish(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var Sha512",
@@ -3207,8 +3207,8 @@
         {
           "kind": "method",
           "name": "DigestLength",
-          "line": 265,
-          "signature": "pub func DigestLength(self: &Sha512) -> uint",
+          "line": 270,
+          "signature": "pub func DigestLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Sha512",
@@ -3239,8 +3239,8 @@
         {
           "kind": "method",
           "name": "BlockLength",
-          "line": 272,
-          "signature": "pub func BlockLength(self: &Sha512) -> uint",
+          "line": 277,
+          "signature": "pub func BlockLength(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Sha512",
@@ -3287,7 +3287,7 @@
       "displayName": "Sha512Of",
       "module": "Sha512",
       "source": "Src/Sha512.rux",
-      "line": 281,
+      "line": 286,
       "signature": "pub func Sha512Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -3325,7 +3325,7 @@
       "displayName": "Sha384Of",
       "module": "Sha512",
       "source": "Src/Sha512.rux",
-      "line": 291,
+      "line": 296,
       "signature": "pub func Sha384Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -3363,7 +3363,7 @@
       "displayName": "Sha512Trunc224Of",
       "module": "Sha512",
       "source": "Src/Sha512.rux",
-      "line": 301,
+      "line": 306,
       "signature": "pub func Sha512Trunc224Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -3401,7 +3401,7 @@
       "displayName": "Sha512Trunc256Of",
       "module": "Sha512",
       "source": "Src/Sha512.rux",
-      "line": 311,
+      "line": 316,
       "signature": "pub func Sha512Trunc256Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -3593,7 +3593,7 @@
           "kind": "method",
           "name": "Update",
           "line": 64,
-          "signature": "pub func Update(self: &var Shake, bytes: char8[..])",
+          "signature": "pub func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Shake",
@@ -3624,8 +3624,8 @@
         {
           "kind": "method",
           "name": "Read",
-          "line": 100,
-          "signature": "pub func Read(self: &var Shake, into: var char8[..])",
+          "line": 102,
+          "signature": "pub func Read(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var Shake",
@@ -3656,8 +3656,8 @@
         {
           "kind": "method",
           "name": "Rate",
-          "line": 122,
-          "signature": "pub func Rate(self: &Shake) -> uint",
+          "line": 125,
+          "signature": "pub func Rate(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Shake",
@@ -3704,7 +3704,7 @@
       "displayName": "Shake128Of",
       "module": "Shake",
       "source": "Src/Shake.rux",
-      "line": 131,
+      "line": 134,
       "signature": "pub func Shake128Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -3742,7 +3742,7 @@
       "displayName": "Shake256Of",
       "module": "Shake",
       "source": "Src/Shake.rux",
-      "line": 141,
+      "line": 144,
       "signature": "pub func Shake256Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {

@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Value.rux
-  line: 40
+  line: 105
 seo:
   title: "JsonNumber — Json API"
   description: "A JSON number, held as the text it was written with."
@@ -31,121 +31,104 @@ JSON does not say what precision a number has, so nothing here decides on the ca
 shape wanted — [`AsInt64`](/docs/api/json/json-number#as-int64), [`AsUint64`](/docs/api/json/json-number#as-uint64), [`AsFloat64`](/docs/api/json/json-number#as-float64) — and each reports whether the value fits. Keeping the
 text is also what lets a document round-trip exactly, which a parser converting to a double cannot do.
 
-## Associated functions
+## Constructors
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="constructor"><code>JsonNumber</code></h3>
 
 ```rux
-pub func New(
+pub func JsonNumber(
     allocator: Allocator,
     text: char8[..]
-) -> JsonNumber ! TextError
+) -> JsonNumber throws JsonError
 ```
 
-A number from its text, which is copied.
+A number from its text, which is checked against JSON's number grammar and copied.
+The text must be the whole number as RFC 8259 spells it: an optional minus, an integer part with no leading
+zero, and an optional fraction and exponent, each with at least one digit. Anything else, such as `01`, `+1`,
+`.5`, `5.`, `1e`, `NaN` or an empty text, is refused with `MalformedNumber` before anything is allocated, so a
+number that exists is one every JSON reader accepts. Terminates the program when the copy cannot be made.
 
-| Name        | Type        | Description                  |
-| ----------- | ----------- | ---------------------------- |
-| `allocator` | `Allocator` | where the storage comes from |
-| `text`      | `char8[..]` | the text to act on           |
+| Name        | Type        | Description                              |
+| ----------- | ----------- | ---------------------------------------- |
+| `allocator` | `Allocator` | where the storage comes from             |
+| `text`      | `char8[..]` | the number's text, borrowed for the call |
 
-**Returns**: the number, holding the text it was given
+**Returns**: the number, holding a copy of the text; `MalformedNumber` when the text is not a JSON number
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L120)
 
 ## Methods
 
 <h3 id="text"><code>Text</code></h3>
 
 ```rux
-pub func Text(self: &JsonNumber) -> StringView
+pub func Text(&self) -> StringView
 ```
 
 The number exactly as written.
 
 **Returns**: the number's text, exactly as the input spelled it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L134)
 
 <h3 id="as-int64"><code>AsInt64</code></h3>
 
 ```rux
-pub func AsInt64(
-    self: &JsonNumber,
-    result: *var int64
-) -> bool
+pub func AsInt64(&self) -> int64?
 ```
 
-The value as a signed integer, or `false` if it does not fit one.
+The value as a signed integer, or `none` if it does not fit one.
 A number with a fraction or an exponent does not fit, even when its value happens to be whole: `1.0` is
 not an integer in JSON's grammar and pretending otherwise loses the distinction a document was making.
 
-| Name     | Type         | Description                               |
-| -------- | ------------ | ----------------------------------------- |
-| `result` | `*var int64` | receives the value when this reports true |
+**Returns**: the value, or `none` when the text is not an integer that fits
 
-**Returns**: whether the text is an integer that fits
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L143)
 
 <h3 id="as-uint64"><code>AsUint64</code></h3>
 
 ```rux
-pub func AsUint64(
-    self: &JsonNumber,
-    result: *var uint64
-) -> bool
+pub func AsUint64(&self) -> uint64?
 ```
 
-The value as an unsigned integer, or `false` if it does not fit one.
+The value as an unsigned integer, or `none` if it does not fit one.
 
-| Name     | Type          | Description                               |
-| -------- | ------------- | ----------------------------------------- |
-| `result` | `*var uint64` | receives the value when this reports true |
+**Returns**: the value, or `none` when the text is not a non-negative integer that fits
 
-**Returns**: whether the text is a non-negative integer that fits
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L150)
 
 <h3 id="as-float64"><code>AsFloat64</code></h3>
 
 ```rux
-pub func AsFloat64(
-    self: &JsonNumber,
-    result: *var float64
-) -> bool
+pub func AsFloat64(&self) -> float64?
 ```
 
-The value as a float, or `false` if the text is not a number at all.
+The value as a float, or `none` if the text is not a number at all.
 Succeeds for values a float cannot hold exactly, since that is what a float is for; a caller who needs
 exactness should ask for an integer or read the text.
 
-| Name     | Type           | Description                               |
-| -------- | -------------- | ----------------------------------------- |
-| `result` | `*var float64` | receives the value when this reports true |
+**Returns**: the nearest representable value, or `none` when the text did not convert
 
-**Returns**: whether the text converted; the value is the nearest representable one
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L159)
 
 <h3 id="is-integral"><code>IsIntegral</code></h3>
 
 ```rux
-pub func IsIntegral(self: &JsonNumber) -> bool
+pub func IsIntegral(&self) -> bool
 ```
 
 Whether the text has no fraction and no exponent, so it denotes an integer.
 
 **Returns**: whether the text has no fraction and no exponent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L166)
 
 <h3 id="release"><code>Release</code></h3>
 
 ```rux
-pub func Release(self: &var JsonNumber)
+pub func Release(&var self)
 ```
 
 Gives the text back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Value.rux#L180)

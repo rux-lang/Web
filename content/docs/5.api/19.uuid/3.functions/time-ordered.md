@@ -22,7 +22,7 @@ seo:
 A version 7 UUID: the current time in its leading bits, entropy in the rest.
 
 ```rux
-pub func TimeOrdered() -> Uuid ! EntropyError
+pub func TimeOrdered() -> Uuid throws EntropyError
 ```
 
 Fails with why entropy was unavailable rather than producing a timestamp-shaped value with no randomness — which
@@ -35,7 +35,7 @@ would be guessable and would look fine.
 <h3 id="time-ordered-at"><code>TimeOrderedAt</code></h3>
 
 ```rux
-pub func TimeOrderedAt(milliseconds: uint64) -> Uuid ! EntropyError
+pub func TimeOrderedAt(milliseconds: uint64) -> Uuid throws EntropyError
 ```
 
 A version 7 UUID for a given millisecond, with entropy in the rest.
@@ -60,7 +60,7 @@ pub func MillisecondOf(value: &Uuid) -> uint64
 The millisecond a version 7 UUID carries.
 Meaningless for any other version, which is why the version should be checked first.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/TimeOrdered.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/TimeOrdered.rux#L54)
 
 **Parameters**
 

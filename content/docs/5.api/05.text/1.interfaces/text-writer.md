@@ -24,9 +24,9 @@ Somewhere formatted text can be written.
 ```rux
 pub interface TextWriter {
     func Write(
-        self: &var Self,
+        &var self,
         bytes: char8[..]
-    ) -> ! FormatError;
+    ) throws FormatError;
 }
 ```
 
@@ -38,10 +38,7 @@ view, which refers to the caller's own writer rather than a copy that would lose
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-func Write(
-    self: &var Self,
-    bytes: char8[..]
-) -> ! FormatError
+func Write(&var self, bytes: char8[..]) throws FormatError
 ```
 
 Writes `bytes`, which must be well-formed UTF-8 and must not end part-way through a character.
@@ -76,7 +73,7 @@ already have emitted a prefix.
 pub func WriteBytes(
     writer: &var TextWriter,
     bytes: char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `bytes` to `writer`.
@@ -100,7 +97,7 @@ without inspecting the bytes, which is what keeps the writer's permitted failure
 pub func WriteAscii(
     writer: &var TextWriter,
     byte: char8
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes one ASCII byte.
@@ -125,7 +122,7 @@ reports whatever the writer reported.
 pub func WriteScalar(
     writer: &var TextWriter,
     scalar: char32
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes one character, encoded as UTF-8.

@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Parser.rux
-  line: 213
+  line: 201
 seo:
   title: "JsonParser — Json API"
   description: A parser over a document.
@@ -49,7 +49,7 @@ A parser over `input` under `limits`, rejecting duplicate names.
 
 **Returns**: a parser ready to read the input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L242)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L230)
 
 ## Methods
 
@@ -57,7 +57,7 @@ A parser over `input` under `limits`, rejecting duplicate names.
 
 ```rux
 pub func SetDuplicatePolicy(
-    self: &var JsonParser,
+    &var self,
     policy: DuplicateKeyPolicy
 )
 ```
@@ -68,12 +68,12 @@ Chooses what to do about duplicate object names.
 | -------- | -------------------- | ------------------------------------ |
 | `policy` | `DuplicateKeyPolicy` | what to do when a name appears twice |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L259)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L247)
 
 <h3 id="failure"><code>Failure</code></h3>
 
 ```rux
-pub func Failure(self: &JsonParser) -> JsonParseError?
+pub func Failure(&self) -> JsonParseError?
 ```
 
 Whether parsing stopped, and why.
@@ -82,12 +82,12 @@ A caller using [`Parse`](/docs/api/json/json-parser#parse) never needs this: the
 
 **Returns**: the failure, positioned, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L268)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L256)
 
 <h3 id="parse"><code>Parse</code></h3>
 
 ```rux
-pub func Parse(self: &var JsonParser) -> JsonValue ! JsonParseError
+pub func Parse(&var self) -> JsonValue throws JsonParseError
 ```
 
 Parses the whole document and returns its top-level value, or why it could not.
@@ -100,4 +100,4 @@ Fails with any case of [`JsonParseError`](/docs/api/json/json-parse-error), posi
 
 **Returns**: the document, or the failure that stopped it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L551)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L567)

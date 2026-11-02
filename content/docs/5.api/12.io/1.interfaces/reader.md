@@ -24,9 +24,9 @@ Somewhere bytes come from.
 ```rux
 pub interface Reader {
     func Read(
-        self: &var Self,
+        &var self,
         into: var char8[..]
-    ) -> uint ! IoError;
+    ) -> uint throws IoError;
 }
 ```
 
@@ -36,14 +36,15 @@ pub interface Reader {
 
 ```rux
 func Read(
-    self: &var Self,
+    &var self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Fills what it can of `into` and succeeds with how much.
-A success of zero does not happen for a non-empty buffer: the end of the stream is the `EndOfStream` failure,
-so a caller never mistakes silence for data.
+An implementation reports the end of the stream as the `EndOfStream` failure. Every reading helper in this
+package also takes a success of zero for a non-empty buffer as the end, never as a reason to ask again, so a
+reader that ends that way is not looped on. A non-blocking stream with nothing ready fails with `WouldBlock`.
 
 | Name   | Type            | Description        |
 | ------ | --------------- | ------------------ |
@@ -51,7 +52,7 @@ so a caller never mistakes silence for data.
 
 **Returns**: how many bytes were read, which may be fewer than `into` holds; [`IsEnd`](/docs/api/io/io-error#is-end) at the end of the stream
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L23)
 
 ## Implementations
 
@@ -68,11 +69,11 @@ so a caller never mistakes silence for data.
 pub const ZeroProgressLimit: uint = 3;
 ```
 
-How many consecutive zero-progress rounds the looping helpers tolerate before refusing.
-A transient report is retried without counting; this counts only rounds where the stream reported success and
+How many consecutive zero-progress rounds [`WriteAll`](/docs/api/io/writer#write-all) tolerates before refusing.
+An interruption is retried without counting; this counts only rounds where the stream reported success and
 moved nothing, which is a stream that will never finish the job.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L67)
 
 <h3 id="read-exact"><code>ReadExact</code></h3>
 
@@ -80,14 +81,17 @@ moved nothing, which is a stream that will never finish the job.
 pub func ReadExact(
     reader: &var Reader,
     into: var char8[..]
-) -> ! IoError
+) throws IoError
 ```
 
 Fills all of `into`, looping over partial reads, or says why it could not.
-Transient reports are retried; the end of the stream before the buffer fills is `EndOfStream` with the buffer
-partly written — how much is not reported, because a caller who needs the count reads incrementally.
+Interruptions are retried at once. The end of the stream, reported as `EndOfStream` or as a read of zero bytes,
+is `EndOfStream` when it comes before the first byte, so a caller reading records stops cleanly between them,
+and `UnexpectedEnd` once part of `into` has been written. Any other failure, `WouldBlock` included, is returned
+as itself. After a failure `into` may be partly written and how much is not reported: a caller who needs the
+count, as one reading a non-blocking stream does, reads incrementally with `Read`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L79)
 
 **Parameters**
 
@@ -96,4 +100,4 @@ partly written — how much is not reported, because a caller who needs the coun
 | `reader` | `&var Reader`   | where the bytes come from |
 | `into`   | `var char8[..]` | receives the bytes        |
 
-**Returns**: success only when `into` was filled completely; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ran out first
+**Returns**: success only when `into` was filled; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream ended first, `UnexpectedEnd` if partway

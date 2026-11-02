@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Parser.rux
-  line: 65
+  line: 62
 seo:
   title: "TomlParseFailure — Toml API"
   description: "Why a document was refused, and where in it."
@@ -49,7 +49,7 @@ slices the input with, and `line` and `column` are what a person is shown. They 
 <h3 id="offset"><code>Offset</code></h3>
 
 ```rux
-pub func Offset(self: &TomlParseFailure) -> uint
+pub func Offset(&self) -> uint
 ```
 
 Where in the document parsing stopped.
@@ -57,7 +57,7 @@ Borrows the failure and leaves it untouched. Cannot fail; runs in constant time 
 
 **Returns**: the zero-based byte offset into the document
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L78)
 
 ## Implements Display
 
@@ -67,10 +67,10 @@ Borrows the failure and leaves it untouched. Cannot fail; runs in constant time 
 
 ```rux
 pub func WriteDisplay(
-    self: &TomlParseFailure,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the description of why parsing stopped, without the position.
@@ -85,7 +85,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L107)
 
 ## Implements Debug
 
@@ -95,10 +95,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 ```rux
 pub func WriteDebug(
-    self: &TomlParseFailure,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Names the case and where it happened: `TomlParseError::DuplicateKey at 2:1`.
@@ -113,7 +113,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L186)
 
 ## Related
 
@@ -132,8 +132,7 @@ pub variant TomlParseError {
     NotATableArray,
     BadValue(TomlScalarError),
     BadText,
-    TooDeep,
-    OutOfMemory
+    TooDeep
 }
 ```
 
@@ -145,7 +144,7 @@ a key was defined twice would have to work out which rule they had met.
 The two cases that have something more to say carry it rather than reporting it beside themselves, so a caller
 holding the failure cannot be holding half of one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Parser.rux#L30)
 
 **Cases**
 
@@ -163,4 +162,3 @@ holding the failure cannot be holding half of one.
 | `BadValue(TomlScalarError)` | A scalar whose text is not the number or date TOML's grammar defines, for the reason carried. The scalar failure's own offset is into the scalar's text; the failure around it is positioned in the document. |
 | `BadText`                   | A string whose escapes name no scalar value.                                                                                                                                                                  |
 | `TooDeep`                   | Values nested deeper than the limit allowed.                                                                                                                                                                  |
-| `OutOfMemory`               | The allocator refused.                                                                                                                                                                                        |

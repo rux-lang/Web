@@ -57,26 +57,26 @@ A new lock guarding `value`. Running out of memory for it is a program error.
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L41)
 
 **Methods**
 
 <h3 id="clone"><code>Clone</code></h3>
 
 ```rux
-pub func Clone(self: &Mutex<T>) -> Mutex<T>
+pub func Clone(&self) -> Mutex<T>
 ```
 
 Another handle to the same value.
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L48)
 
 <h3 id="lock"><code>Lock</code></h3>
 
 ```rux
-pub func Lock(self: &Mutex<T>) -> MutexGuard<T>
+pub func Lock(&self) -> MutexGuard<T>
 ```
 
 Takes the lock, waiting while another thread holds it, and returns the guard that holds it.
@@ -89,24 +89,24 @@ Not reentrant: locking again on the thread that holds the lock waits forever.
 <h3 id="try-lock"><code>TryLock</code></h3>
 
 ```rux
-pub func TryLock(self: &Mutex<T>) -> MutexGuard<T>?
+pub func TryLock(&self) -> MutexGuard<T>?
 ```
 
 Takes the lock if nobody holds it, without waiting.
 
 **Returns**: the guard, or none when another thread holds the lock
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L72)
 
 **Destructor**
 
 <h3 id="mutex-destructor"><code>~Mutex</code></h3>
 
 ```rux
-func ~Mutex(self: &var Mutex<T>)
+func ~Mutex(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L82)
 
 <h2 id="mutex-guard"><code>MutexGuard&lt;T&gt;</code></h2>
 
@@ -132,47 +132,62 @@ Dropping the guard, or calling [`Unlock`](/docs/api/sync/mutex#unlock), releases
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &MutexGuard<T>) -> *var T
+pub func Get(&self) -> &T
 ```
 
-The guarded value, which this thread alone may read and write while the guard holds the lock.
-The address is valid for as long as the guard holds the lock; keeping it longer is a program error.
+The guarded value, borrowed for reading while the guard holds the lock.
+The guard stays borrowed while the reference is in use, so it cannot be unlocked or dropped under it. Calling
+this on a guard that was unlocked is a program error.
 
-**Returns**: the value's address
+**Returns**: a reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L99)
+
+<h3 id="get-mutable"><code>GetMutable</code></h3>
+
+```rux
+pub func GetMutable(&var self) -> &var T
+```
+
+The guarded value, borrowed for writing, which this thread alone may do while the guard holds the lock.
+The guard stays borrowed exclusively while the reference is in use. Calling this on a guard that was unlocked
+is a program error.
+
+**Returns**: a writable reference to the value
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L111)
 
 <h3 id="is-locked"><code>IsLocked</code></h3>
 
 ```rux
-pub func IsLocked(self: &MutexGuard<T>) -> bool
+pub func IsLocked(&self) -> bool
 ```
 
 Whether the guard still holds the lock.
 
 **Returns**: false once [`Unlock`](/docs/api/sync/mutex#unlock) was called
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L121)
 
 <h3 id="unlock"><code>Unlock</code></h3>
 
 ```rux
-pub func Unlock(self: &var MutexGuard<T>)
+pub func Unlock(&var self)
 ```
 
 Releases the lock before the guard is dropped. Unlocking a guard twice does nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L127)
 
 **Destructor**
 
 <h3 id="mutex-guard-destructor"><code>~MutexGuard</code></h3>
 
 ```rux
-func ~MutexGuard(self: &var MutexGuard<T>)
+func ~MutexGuard(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L141)
 
 <h2 id="condition"><code>Condition</code></h2>
 
@@ -187,7 +202,7 @@ A wait releases the lock while it sleeps and takes it again before it returns, s
 condition under the lock. A wait may also return when nothing notified it, which is why it is always called in a
 loop that checks the condition. [`Clone`](/docs/api/sync/mutex#clone-condition) gives another handle to the same condition. A handle is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L156)
 
 **Constructors**
 
@@ -201,29 +216,26 @@ A new condition. Running out of memory for it is a program error.
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L164)
 
 **Methods**
 
 <h3 id="clone-condition"><code>Clone</code></h3>
 
 ```rux
-pub func Clone(self: &Condition) -> Condition
+pub func Clone(&self) -> Condition
 ```
 
 Another handle to the same condition.
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L143)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L171)
 
 <h3 id="wait"><code>Wait</code></h3>
 
 ```rux
-pub func Wait<T>(
-    self: &Condition,
-    guard: &var MutexGuard<T>
-)
+pub func Wait<T>(&self, guard: &var MutexGuard<T>)
 ```
 
 Releases the guard's lock, sleeps until notified, and takes the lock again.
@@ -236,13 +248,13 @@ Releases the guard's lock, sleeps until notified, and takes the lock again.
 | ------- | -------------------- | --------------------------- |
 | `guard` | `&var MutexGuard<T>` | a guard that holds its lock |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L182)
 
 <h3 id="wait-for"><code>WaitFor</code></h3>
 
 ```rux
 pub func WaitFor<T>(
-    self: &Condition,
+    &self,
     guard: &var MutexGuard<T>,
     timeout: Duration
 ) -> bool
@@ -261,34 +273,34 @@ Releases the guard's lock, sleeps until notified or until `timeout` has passed, 
 
 **Returns**: false when the time ran out without a notification
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L192)
 
 <h3 id="notify-one"><code>NotifyOne</code></h3>
 
 ```rux
-pub func NotifyOne(self: &Condition)
+pub func NotifyOne(&self)
 ```
 
 Wakes one thread waiting on the condition, if any.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L200)
 
 <h3 id="notify-all"><code>NotifyAll</code></h3>
 
 ```rux
-pub func NotifyAll(self: &Condition)
+pub func NotifyAll(&self)
 ```
 
 Wakes every thread waiting on the condition.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L177)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L211)
 
 **Destructor**
 
 <h3 id="condition-destructor"><code>~Condition</code></h3>
 
 ```rux
-func ~Condition(self: &var Condition)
+func ~Condition(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L194)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L239)

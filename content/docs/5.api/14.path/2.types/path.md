@@ -72,7 +72,7 @@ A path over `view`'s units as they stand.
 <h3 id="parent"><code>Parent</code></h3>
 
 ```rux
-pub func Parent(self: &Path) -> Path?
+pub func Parent(&self) -> Path?
 ```
 
 This path without its last component, or `none` where nothing is left to remove.
@@ -86,7 +86,7 @@ a bare segment is the empty path, which is what lets a loop walk parents to a fi
 <h3 id="file-name"><code>FileName</code></h3>
 
 ```rux
-pub func FileName(self: &Path) -> OsStringView?
+pub func FileName(&self) -> OsStringView?
 ```
 
 The last component's name, or `none` for the empty path and the root.
@@ -95,12 +95,12 @@ libraries has always meant by it.
 
 **Returns**: the last component, or `none` for a root or a path ending in a separator
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L45)
 
 <h3 id="stem"><code>Stem</code></h3>
 
 ```rux
-pub func Stem(self: &Path) -> OsStringView?
+pub func Stem(&self) -> OsStringView?
 ```
 
 The file name before its extension, or `none` where there is no file name.
@@ -109,12 +109,12 @@ A leading dot is part of the name, not an extension marker: the stem of `.bashrc
 
 **Returns**: the file name without its extension, or `none` when there is no file name
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L68)
 
 <h3 id="extension"><code>Extension</code></h3>
 
 ```rux
-pub func Extension(self: &Path) -> OsStringView?
+pub func Extension(&self) -> OsStringView?
 ```
 
 The extension after the last dot, without the dot, or `none` where there is none.
@@ -122,12 +122,12 @@ The extension after the last dot, without the dot, or `none` where there is none
 
 **Returns**: the file name's extension without the dot, or `none` when it has none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L83)
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &Path) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many native units the path spans.
@@ -139,7 +139,7 @@ How many native units the path spans.
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &Path) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the path is empty, which names nothing at all.
@@ -151,7 +151,7 @@ Whether the path is empty, which names nothing at all.
 <h3 id="as-view"><code>AsView</code></h3>
 
 ```rux
-pub func AsView(self: &Path) -> OsStringView
+pub func AsView(&self) -> OsStringView
 ```
 
 The name under the structure.
@@ -163,7 +163,7 @@ The name under the structure.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &Path, other: Path) -> bool
+pub func Equals(&self, other: Path) -> bool
 ```
 
 Whether two paths are the same units.
@@ -181,7 +181,7 @@ is normalization's job, asked for by name.
 <h3 id="components"><code>Components</code></h3>
 
 ```rux
-pub func Components(self: &Path) -> ComponentIterator
+pub func Components(&self) -> ComponentIterator
 ```
 
 A walk over the path's components, first to last.
@@ -198,10 +198,10 @@ A walk over the path's components, first to last.
 
 ```rux
 pub func WriteDisplay(
-    self: &Path,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The lossy rendering of the path's units.
@@ -216,7 +216,7 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 
 **Returns**: success when the whole path was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L267)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L279)
 
 ## Implements Debug
 
@@ -226,10 +226,10 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 
 ```rux
 pub func WriteDebug(
-    self: &Path,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The exact, quoted rendering of the path's units.
@@ -242,7 +242,7 @@ The failures [`OsStringView::WriteDebug`](/docs/api/path/os-string-view#write-de
 
 **Returns**: success when the whole path was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L280)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L292)
 
 ## Related
 
@@ -266,7 +266,7 @@ so that an absolute path is distinguishable from a relative one holding the same
 <h4 id="component-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var ComponentIterator) -> OsStringView?
+pub func Next(&var self) -> OsStringView?
 ```
 
 The next component, or `none` when the walk is done.

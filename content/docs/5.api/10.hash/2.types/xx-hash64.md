@@ -71,7 +71,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var XxHash64)
+pub func Reset(&var self)
 ```
 
 Puts the hasher back to where it started, keeping its seed.
@@ -87,11 +87,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    self: &var XxHash64,
-    bytes: *byte,
-    length: uint
-)
+pub func Write(&var self, bytes: *byte, length: uint)
 ```
 
 Adds `length` bytes at `bytes` to the hash.
@@ -106,12 +102,12 @@ Runs in time proportional to `length` and allocates nothing.
 | `bytes`  | `*byte` | the bytes to absorb                  |
 | `length` | `uint`  | how many bytes; zero absorbs nothing |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L206)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L207)
 
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var XxHash64) -> uint64
+pub func Finish(&var self) -> uint64
 ```
 
 The hash of everything written so far.
@@ -121,7 +117,7 @@ Cannot fail. Runs in time proportional to what is held pending, which is under o
 
 **Returns**: the hash of everything written since the last reset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L255)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L265)
 
 ## Related
 
@@ -190,7 +186,7 @@ different-looking code for the same algorithm.
 <h3 id="read-little-endian64"><code>ReadLittleEndian64</code></h3>
 
 ```rux
-pub func ReadLittleEndian64(bytes: *byte) -> uint64
+pub unsafe func ReadLittleEndian64(bytes: *byte) -> uint64
 ```
 
 The eight bytes at `bytes` as a 64-bit value, least significant byte first.
@@ -198,7 +194,7 @@ The eight bytes at `bytes` as a 64-bit value, least significant byte first.
 any address on any machine — xxHash is defined on a little-endian byte stream, not on whatever the machine
 happens to hold.
 Cannot fail. Runs in constant time and allocates nothing.
-`bytes` must be readable for eight bytes.
+Safety: `bytes` must be readable for eight bytes.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L55)
 
@@ -213,13 +209,13 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="read-little-endian32"><code>ReadLittleEndian32</code></h3>
 
 ```rux
-pub func ReadLittleEndian32(bytes: *byte) -> uint32
+pub unsafe func ReadLittleEndian32(bytes: *byte) -> uint32
 ```
 
 The four bytes at `bytes` as a 32-bit value, least significant byte first.
 `bytes` is borrowed and read. Assembled a byte at a time, for the same reason as [`ReadLittleEndian64`](/docs/api/hash/xx-hash64#read-little-endian64).
 Cannot fail. Runs in constant time and allocates nothing.
-`bytes` must be readable for four bytes.
+Safety: `bytes` must be readable for four bytes.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L72)
 
@@ -305,7 +301,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="xx-hash64-seeded-of"><code>XxHash64SeededOf</code></h3>
 
 ```rux
-pub func XxHash64SeededOf(
+pub unsafe func XxHash64SeededOf(
     bytes: *byte,
     length: uint,
     seed: uint64
@@ -316,9 +312,9 @@ The xxHash64 of `length` bytes at `bytes`, using `seed`.
 `bytes` is borrowed and read; `length` and `seed` are read by value. A zero length gives the hash of the empty
 input for that seed, and is the one case in which `bytes` may be null.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`bytes` must be readable for `length` bytes.
+Safety: `bytes` must be readable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L304)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L316)
 
 **Parameters**
 
@@ -333,16 +329,19 @@ Cannot fail. Runs in time proportional to `length` and allocates nothing.
 <h3 id="xx-hash64-of"><code>XxHash64Of</code></h3>
 
 ```rux
-pub func XxHash64Of(bytes: *byte, length: uint) -> uint64
+pub unsafe func XxHash64Of(
+    bytes: *byte,
+    length: uint
+) -> uint64
 ```
 
 The xxHash64 of `length` bytes at `bytes`, seeded with zero.
 `bytes` is borrowed and read; `length` is read by value. This is what every published xxHash64 test vector means
 by "the hash of" an input.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`bytes` must be readable for `length` bytes.
+Safety: `bytes` must be readable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L319)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/XxHash.rux#L331)
 
 **Parameters**
 

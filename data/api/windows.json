@@ -39,6 +39,11 @@
       "header": "The Unicode file and device interface.\nEvery entry point here is the `W` form, which takes UTF-16. The `A` forms in `Kernel` convert through the process\ncode page, which is lossy for any name the page cannot express and differs between machines — so a path that\nworks on one system fails on another for reasons the program cannot see. A path is not text the program chose; it\nis text a user or a file system chose, and the `W` forms are the only ones that carry all of it.\nA failing call here reports `InvalidHandleValue` where it returns a handle and zero where it returns a `Bool`,\nwith the reason in `GetLastError`."
     },
     {
+      "name": "Gdi",
+      "source": "Src/Gdi.rux",
+      "header": "The Gdi32 entry points for drawing text in a window: making a font, choosing it and the text colors for a device\ncontext, and writing a run of UTF-16 text.\nA font is a GDI object the program owns until it passes it to `DeleteObject`, and it must not be deleted while a\ndevice context still has it selected. A device context comes from `BeginPaint` and is lent for one paint only."
+    },
+    {
       "name": "Kernel",
       "source": "Src/Kernel.rux",
       "header": "The Kernel32 entry points this package binds, under the exact symbols the library exports.\nA call reports failure the way Win32 does: a `Bool` of zero, a null pointer, or `InvalidHandleValue`,\ndepending on what it returns. The reason is then in `GetLastError`, which is per thread and is not cleared by\na successful call — so it means something only immediately after a failure."
@@ -54,6 +59,11 @@
       "header": "Starting another program, waiting for it, and stopping it, and the pipes and handles a child is given.\nA child inherits the handles the parent marks inheritable and names in its startup information, so the parent makes\neach pipe end it hands over inheritable and keeps its own ends private."
     },
     {
+      "name": "Registry",
+      "source": "Src/Registry.rux",
+      "header": "The Advapi32 entry point for reading one value out of the registry, and the keys and type flags it takes.\nA registry call reports failure differently from the rest of Win32: it returns the error code itself, as an\n`LSTATUS`, and leaves `GetLastError` as it was. Zero is `ERROR_SUCCESS`, and a missing key or value is\n`ERROR_FILE_NOT_FOUND`, the same code a missing file gives."
+    },
+    {
       "name": "Shell",
       "source": "Src/Shell.rux",
       "header": "The Shell32 entry point this package binds: splitting a command line into arguments.\nWindows hands a program its command line as one string and leaves splitting it to the program. Shell32's splitter\napplies the rules the C runtime uses for `argv`, so a program that splits with it sees the arguments every other\nWindows program would."
@@ -64,6 +74,11 @@
       "header": "Waiting on a value in memory until another thread changes it, which is what every lock is built on.\n`WaitOnAddress` puts the calling thread to sleep only if the value still matches the caller's copy, so a wake that\nlands between the caller's check and its sleep is never lost. The entry points live in the synchronization API set\nrather than in Kernel32 by name; the loader resolves the set to the system DLL that implements it."
     },
     {
+      "name": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "header": "What the machine is made of: its memory, its processor cores, and the architecture it really is.\nTwo numbers for memory are not the same. `GetPhysicallyInstalledSystemMemory` reports what the firmware says is\nfitted, and `GlobalMemoryStatusEx` what the system can use, which is less by whatever the firmware and devices\nreserve. A 64-bit process on an emulating system sees its own architecture through `GetSystemInfo`, and the\nmachine's through `GetNativeSystemInfo`."
+    },
+    {
       "name": "TimeZone",
       "source": "Src/TimeZone.rux",
       "header": "The system's time zone: its offset from UTC and the rules for its daylight time."
@@ -72,6 +87,16 @@
       "name": "Types",
       "source": "Src/Types.rux",
       "header": "The Win32 ABI's fundamental types, handles and structures.\nEvery name here is Win32's own, because that is what a reader porting code or reading Microsoft's documentation\nwill look for. A `HANDLE` is an opaque pointer-sized value the kernel owns; nothing here interprets one, and the\nonly thing a caller may do with it is pass it back or close it.\nThe two invalid values are not the same. A handle-returning call reports failure as `InvalidHandleValue`, which is\n`-1` cast to a pointer, while an allocation-returning one reports it as null. Testing the wrong one is the classic\nWin32 mistake, so each declaration says which it uses."
+    },
+    {
+      "name": "Version",
+      "source": "Src/Version.rux",
+      "header": "The version of Windows the program runs on, read from ntdll, which every process has loaded.\n`GetVersionExW` is not bound here, on purpose: since Windows 8.1 it reports the version the program's manifest\ndeclares support for, and a program with no manifest is told 6.2, Windows 8, on every later release.\n`RtlGetVersion` reports the true version whatever the manifest says. Windows 11 still reports major version 10;\nit is told apart from Windows 10 by its build number, which starts at 22000."
+    },
+    {
+      "name": "Window",
+      "source": "Src/Window.rux",
+      "header": "The User32 entry points a desktop program needs to open a window: registering a class, creating the window,\nrunning its message loop and answering what the system sends it, plus the per-monitor DPI calls that keep it sharp.\nA window belongs to the thread that created it, and every message for it is delivered to that thread's loop, so the\nwindow procedure runs on the creating thread and nowhere else. A creating call reports failure as null or zero with\nthe reason in `GetLastError`; a message call reports nothing, and its result means what the message says it does."
     },
     {
       "name": "Winsock",
@@ -1927,11 +1952,63 @@
     },
     {
       "kind": "constant",
+      "name": "ERROR_INSUFFICIENT_BUFFER",
+      "displayName": "ERROR_INSUFFICIENT_BUFFER",
+      "module": "Errors",
+      "source": "Src/Errors.rux",
+      "line": 72,
+      "signature": "pub const ERROR_INSUFFICIENT_BUFFER: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`ERROR_INSUFFICIENT_BUFFER`: the buffer was too small; the call set its length argument to the bytes needed.",
+        "markdown": "`ERROR_INSUFFICIENT_BUFFER`: the buffer was too small; the call set its length argument to the bytes needed.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/errors#error-insufficient-buffer"],
+        "deprecated": null
+      },
+      "value": "122",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "ERROR_MORE_DATA",
+      "displayName": "ERROR_MORE_DATA",
+      "module": "Errors",
+      "source": "Src/Errors.rux",
+      "line": 77,
+      "signature": "pub const ERROR_MORE_DATA: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`ERROR_MORE_DATA`: the buffer was too small for the value; a registry call reports this one instead.",
+        "markdown": "`ERROR_MORE_DATA`: the buffer was too small for the value; a registry call reports this one instead.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/errors#error-more-data"],
+        "deprecated": null
+      },
+      "value": "234",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
       "name": "ERROR_PRIVILEGE_NOT_HELD",
       "displayName": "ERROR_PRIVILEGE_NOT_HELD",
       "module": "Errors",
       "source": "Src/Errors.rux",
-      "line": 74,
+      "line": 84,
       "signature": "pub const ERROR_PRIVILEGE_NOT_HELD: uint32",
       "typeParams": [],
       "doc": {
@@ -1957,7 +2034,7 @@
       "displayName": "ERROR_NO_MORE_FILES",
       "module": "Errors",
       "source": "Src/Errors.rux",
-      "line": 81,
+      "line": 91,
       "signature": "pub const ERROR_NO_MORE_FILES: uint32",
       "typeParams": [],
       "doc": {
@@ -1983,7 +2060,7 @@
       "displayName": "ERROR_ALREADY_EXISTS",
       "module": "Errors",
       "source": "Src/Errors.rux",
-      "line": 88,
+      "line": 98,
       "signature": "pub const ERROR_ALREADY_EXISTS: uint32",
       "typeParams": [],
       "doc": {
@@ -2009,7 +2086,7 @@
       "displayName": "ERROR_INVALID_ADDRESS",
       "module": "Errors",
       "source": "Src/Errors.rux",
-      "line": 93,
+      "line": 103,
       "signature": "pub const ERROR_INVALID_ADDRESS: uint32",
       "typeParams": [],
       "doc": {
@@ -2035,7 +2112,7 @@
       "displayName": "ERROR_COMMITMENT_LIMIT",
       "module": "Errors",
       "source": "Src/Errors.rux",
-      "line": 99,
+      "line": 109,
       "signature": "pub const ERROR_COMMITMENT_LIMIT: uint32",
       "typeParams": [],
       "doc": {
@@ -3255,6 +3332,473 @@
       "targets": ["windows-x86_64", "windows-aarch64"]
     },
     {
+      "kind": "constant",
+      "name": "FW_NORMAL",
+      "displayName": "FW_NORMAL",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 9,
+      "signature": "pub const FW_NORMAL: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`FW_NORMAL`: the regular weight of a font.",
+        "markdown": "`FW_NORMAL`: the regular weight of a font.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#fw-normal"],
+        "deprecated": null
+      },
+      "value": "400",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "FW_SEMIBOLD",
+      "displayName": "FW_SEMIBOLD",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 14,
+      "signature": "pub const FW_SEMIBOLD: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`FW_SEMIBOLD`: the weight between regular and bold, which Windows uses for headings.",
+        "markdown": "`FW_SEMIBOLD`: the weight between regular and bold, which Windows uses for headings.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#fw-semibold"],
+        "deprecated": null
+      },
+      "value": "600",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "FW_BOLD",
+      "displayName": "FW_BOLD",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 19,
+      "signature": "pub const FW_BOLD: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`FW_BOLD`: the bold weight of a font.",
+        "markdown": "`FW_BOLD`: the bold weight of a font.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#fw-bold"],
+        "deprecated": null
+      },
+      "value": "700",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "DEFAULT_CHARSET",
+      "displayName": "DEFAULT_CHARSET",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 24,
+      "signature": "pub const DEFAULT_CHARSET: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`DEFAULT_CHARSET`: let the font mapper choose the character set from the face name.",
+        "markdown": "`DEFAULT_CHARSET`: let the font mapper choose the character set from the face name.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#default-charset"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "OUT_DEFAULT_PRECIS",
+      "displayName": "OUT_DEFAULT_PRECIS",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 29,
+      "signature": "pub const OUT_DEFAULT_PRECIS: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`OUT_DEFAULT_PRECIS`: let the font mapper decide how closely the font must match.",
+        "markdown": "`OUT_DEFAULT_PRECIS`: let the font mapper decide how closely the font must match.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#out-default-precis"],
+        "deprecated": null
+      },
+      "value": "0",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "CLIP_DEFAULT_PRECIS",
+      "displayName": "CLIP_DEFAULT_PRECIS",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 34,
+      "signature": "pub const CLIP_DEFAULT_PRECIS: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`CLIP_DEFAULT_PRECIS`: clip characters the default way.",
+        "markdown": "`CLIP_DEFAULT_PRECIS`: clip characters the default way.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#clip-default-precis"],
+        "deprecated": null
+      },
+      "value": "0",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "CLEARTYPE_QUALITY",
+      "displayName": "CLEARTYPE_QUALITY",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 39,
+      "signature": "pub const CLEARTYPE_QUALITY: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`CLEARTYPE_QUALITY`: draw the font with ClearType smoothing.",
+        "markdown": "`CLEARTYPE_QUALITY`: draw the font with ClearType smoothing.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#cleartype-quality"],
+        "deprecated": null
+      },
+      "value": "5",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "DEFAULT_PITCH",
+      "displayName": "DEFAULT_PITCH",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 44,
+      "signature": "pub const DEFAULT_PITCH: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`DEFAULT_PITCH`: let the font mapper choose fixed or variable pitch.",
+        "markdown": "`DEFAULT_PITCH`: let the font mapper choose fixed or variable pitch.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#default-pitch"],
+        "deprecated": null
+      },
+      "value": "0",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "TRANSPARENT",
+      "displayName": "TRANSPARENT",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 49,
+      "signature": "pub const TRANSPARENT: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`TRANSPARENT`: text is drawn without filling the cell behind it.",
+        "markdown": "`TRANSPARENT`: text is drawn without filling the cell behind it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#transparent"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "OPAQUE",
+      "displayName": "OPAQUE",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 54,
+      "signature": "pub const OPAQUE: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`OPAQUE`: text is drawn on a cell filled with the background color.",
+        "markdown": "`OPAQUE`: text is drawn on a cell filled with the background color.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/gdi#opaque"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "CreateFontW",
+      "displayName": "CreateFontW",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 78,
+      "signature": "pub extern func CreateFontW(height: int32, width: int32, escapement: int32, orientation: int32, weight: int32, italic: uint32, underline: uint32, strikeOut: uint32, charSet: uint32, outPrecision: uint32, clipPrecision: uint32, quality: uint32, pitchAndFamily: uint32, faceName: *char16) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Creates a logical font, which the mapper matches to the closest installed font when it is selected.",
+        "markdown": "Creates a logical font, which the mapper matches to the closest installed font when it is selected.\nA negative height asks for that many pixels of character height without the internal leading, which is how a\npoint size is given: `-(points * dpi / 72)`.",
+        "typeParams": [],
+        "params": [
+          {
+            "name": "height",
+            "markdown": "the character height in pixels, negative for the character height without the leading"
+          },
+          { "name": "width", "markdown": "the average character width, or zero to derive it from the height" },
+          { "name": "escapement", "markdown": "the angle of the text line, in tenths of a degree" },
+          { "name": "orientation", "markdown": "the angle of each character, in tenths of a degree" },
+          { "name": "weight", "markdown": "the weight, such as `FW_NORMAL`" },
+          { "name": "italic", "markdown": "non-zero for italic" },
+          { "name": "underline", "markdown": "non-zero for underlined" },
+          { "name": "strikeOut", "markdown": "non-zero for struck out" },
+          { "name": "charSet", "markdown": "the character set, usually `DEFAULT_CHARSET`" },
+          { "name": "outPrecision", "markdown": "how closely the font must match, usually `OUT_DEFAULT_PRECIS`" },
+          { "name": "clipPrecision", "markdown": "how characters are clipped, usually `CLIP_DEFAULT_PRECIS`" },
+          { "name": "quality", "markdown": "how it is smoothed, such as `CLEARTYPE_QUALITY`" },
+          { "name": "pitchAndFamily", "markdown": "the pitch and family, usually `DEFAULT_PITCH`" },
+          { "name": "faceName", "markdown": "the NUL-terminated UTF-16 face name, such as `Segoe UI`" }
+        ],
+        "returns": "the font, which the caller deletes with `DeleteObject`, or null on failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/gdi#create-font-w",
+          "https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-createfontw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "DeleteObject",
+      "displayName": "DeleteObject",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 101,
+      "signature": "pub extern func DeleteObject(object: *var opaque) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Deletes a GDI object such as a font, giving back what the system holds for it.",
+        "markdown": "Deletes a GDI object such as a font, giving back what the system holds for it.\nAn object still selected into a device context is not deleted, and the call fails.",
+        "typeParams": [],
+        "params": [{ "name": "object", "markdown": "the object to delete" }],
+        "returns": "non-zero on success, and zero when the handle is not valid or the object is still selected",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/gdi#delete-object",
+          "https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-deleteobject"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "SelectObject",
+      "displayName": "SelectObject",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 110,
+      "signature": "pub extern func SelectObject(deviceContext: *var opaque, object: *var opaque) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Selects a font or another GDI object into a device context, replacing the one of the same kind.",
+        "markdown": "Selects a font or another GDI object into a device context, replacing the one of the same kind.\nThe object replaced is returned so it can be selected back before the context is given up.",
+        "typeParams": [],
+        "params": [
+          { "name": "deviceContext", "markdown": "the device context" },
+          { "name": "object", "markdown": "the object to select" }
+        ],
+        "returns": "the object it replaced, or null on failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/gdi#select-object",
+          "https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-selectobject"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "SetBkMode",
+      "displayName": "SetBkMode",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 118,
+      "signature": "pub extern func SetBkMode(deviceContext: *var opaque, mode: int32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets whether text is drawn on a filled cell or straight onto what is already there.",
+        "markdown": "Sets whether text is drawn on a filled cell or straight onto what is already there.",
+        "typeParams": [],
+        "params": [
+          { "name": "deviceContext", "markdown": "the device context" },
+          { "name": "mode", "markdown": "`TRANSPARENT` or `OPAQUE`" }
+        ],
+        "returns": "the mode before the call, or zero on failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/gdi#set-bk-mode",
+          "https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-setbkmode"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "SetTextColor",
+      "displayName": "SetTextColor",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 126,
+      "signature": "pub extern func SetTextColor(deviceContext: *var opaque, color: uint32) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets the color text is drawn in.",
+        "markdown": "Sets the color text is drawn in.",
+        "typeParams": [],
+        "params": [
+          { "name": "deviceContext", "markdown": "the device context" },
+          { "name": "color", "markdown": "the color as `0x00BBGGRR`, such as one from `GetSysColor`" }
+        ],
+        "returns": "the color before the call, or `CLR_INVALID` (`0xFFFFFFFF`) on failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/gdi#set-text-color",
+          "https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-settextcolor"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "TextOutW",
+      "displayName": "TextOutW",
+      "module": "Gdi",
+      "source": "Src/Gdi.rux",
+      "line": 138,
+      "signature": "pub extern func TextOutW(deviceContext: *var opaque, x: int32, y: int32, text: *char16, count: int32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Draws a run of UTF-16 text with its top-left corner at a point, in the selected font and text color.",
+        "markdown": "Draws a run of UTF-16 text with its top-left corner at a point, in the selected font and text color.\nThe run is counted rather than NUL-terminated, and is not wrapped or clipped to the window.",
+        "typeParams": [],
+        "params": [
+          { "name": "deviceContext", "markdown": "the device context" },
+          { "name": "x", "markdown": "the left edge, in pixels" },
+          { "name": "y", "markdown": "the top edge, in pixels" },
+          { "name": "text", "markdown": "the UTF-16 units to draw" },
+          { "name": "count", "markdown": "how many units to draw" }
+        ],
+        "returns": "non-zero on success, and zero on failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/gdi#text-out-w",
+          "https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-textoutw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
       "kind": "extern",
       "name": "AllocConsole",
       "displayName": "AllocConsole",
@@ -3636,11 +4180,40 @@
     },
     {
       "kind": "extern",
+      "name": "FreeConsole",
+      "displayName": "FreeConsole",
+      "module": "Kernel",
+      "source": "Src/Kernel.rux",
+      "line": 144,
+      "signature": "pub extern func FreeConsole() -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Detaches the calling process from its console, closing the console when no other process is attached to it.",
+        "markdown": "Detaches the calling process from its console, closing the console when no other process is attached to it.\nA window program built as a console program calls it first, so the console that started with it goes away.\nThe standard handles still name the old console afterwards, and writing to them fails.",
+        "typeParams": [],
+        "params": [],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/console#free-console",
+          "https://learn.microsoft.com/en-us/windows/console/freeconsole"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
       "name": "FreeLibrary",
       "displayName": "FreeLibrary",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 145,
+      "line": 153,
       "signature": "pub extern func FreeLibrary(libModule: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -3669,7 +4242,7 @@
       "displayName": "GetConsoleMode",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 153,
+      "line": 161,
       "signature": "pub extern func GetConsoleMode(consoleHandle: *opaque, mode: *uint32) -> bool32",
       "typeParams": [],
       "doc": {
@@ -3701,7 +4274,7 @@
       "displayName": "GetCommandLineW",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 161,
+      "line": 169,
       "signature": "pub extern func GetCommandLineW() -> *uint16",
       "typeParams": [],
       "doc": {
@@ -3730,7 +4303,7 @@
       "displayName": "GetModuleFileNameW",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 173,
+      "line": 181,
       "signature": "pub extern func GetModuleFileNameW(moduleHandle: *opaque, buffer: *var uint16, size: uint32) -> uint32",
       "typeParams": [],
       "doc": {
@@ -3759,11 +4332,42 @@
     },
     {
       "kind": "extern",
+      "name": "GetModuleHandleW",
+      "displayName": "GetModuleHandleW",
+      "module": "Kernel",
+      "source": "Src/Kernel.rux",
+      "line": 190,
+      "signature": "pub extern func GetModuleHandleW(moduleName: *char16) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Retrieves the handle of a module the process has loaded; a null name is the process's executable.",
+        "markdown": "Retrieves the handle of a module the process has loaded; a null name is the process's executable.\nThe handle is not counted, so it is not passed to `FreeLibrary`. It is what a window class names as its\ninstance, and what `CreateWindowExW` is given with it.",
+        "typeParams": [],
+        "params": [
+          { "name": "moduleName", "markdown": "the NUL-terminated UTF-16 module name, or null for the executable" }
+        ],
+        "returns": "the module, or null on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/process#get-module-handle-w",
+          "https://learn.microsoft.com/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandlew"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
       "name": "GetCurrentDirectoryA",
       "displayName": "GetCurrentDirectoryA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 181,
+      "line": 198,
       "signature": "pub extern func GetCurrentDirectoryA(bufferLength: uint32, buffer: *char8) -> uint32",
       "typeParams": [],
       "doc": {
@@ -3795,7 +4399,7 @@
       "displayName": "GetEnvironmentStringsW",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 190,
+      "line": 207,
       "signature": "pub extern func GetEnvironmentStringsW() -> *uint16",
       "typeParams": [],
       "doc": {
@@ -3824,7 +4428,7 @@
       "displayName": "GetCurrentProcessId",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 196,
+      "line": 213,
       "signature": "pub extern func GetCurrentProcessId() -> uint32",
       "typeParams": [],
       "doc": {
@@ -3853,7 +4457,7 @@
       "displayName": "GetActiveProcessorCount",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 203,
+      "line": 220,
       "signature": "pub extern func GetActiveProcessorCount(groupNumber: uint16) -> uint32",
       "typeParams": [],
       "doc": {
@@ -3884,7 +4488,7 @@
       "displayName": "GetCurrentThreadId",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 209,
+      "line": 226,
       "signature": "pub extern func GetCurrentThreadId() -> uint32",
       "typeParams": [],
       "doc": {
@@ -3913,7 +4517,7 @@
       "displayName": "GetFileAttributesA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 216,
+      "line": 233,
       "signature": "pub extern func GetFileAttributesA(fileName: *char8) -> uint32",
       "typeParams": [],
       "doc": {
@@ -3942,7 +4546,7 @@
       "displayName": "GetFileSizeEx",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 224,
+      "line": 241,
       "signature": "pub extern func GetFileSizeEx(file: *opaque, size: *int64) -> bool32",
       "typeParams": [],
       "doc": {
@@ -3974,7 +4578,7 @@
       "displayName": "GetSystemInfo",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 231,
+      "line": 248,
       "signature": "pub extern func GetSystemInfo(info: *var SystemInfo)",
       "typeParams": [],
       "doc": {
@@ -4003,7 +4607,7 @@
       "displayName": "GetLastError",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 237,
+      "line": 254,
       "signature": "pub extern func GetLastError() -> uint32",
       "typeParams": [],
       "doc": {
@@ -4032,7 +4636,7 @@
       "displayName": "GetLocalTime",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 243,
+      "line": 260,
       "signature": "pub extern func GetLocalTime(time: *SystemTime)",
       "typeParams": [],
       "doc": {
@@ -4061,7 +4665,7 @@
       "displayName": "GetProcAddress",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 251,
+      "line": 268,
       "signature": "pub extern func GetProcAddress(libModule: *opaque, procName: *char8) -> *opaque",
       "typeParams": [],
       "doc": {
@@ -4093,7 +4697,7 @@
       "displayName": "GetProcessHeap",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 257,
+      "line": 274,
       "signature": "pub extern func GetProcessHeap() -> *opaque",
       "typeParams": [],
       "doc": {
@@ -4122,7 +4726,7 @@
       "displayName": "GetStdHandle",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 264,
+      "line": 281,
       "signature": "pub extern func GetStdHandle(stdHandle: uint32) -> *opaque",
       "typeParams": [],
       "doc": {
@@ -4153,7 +4757,7 @@
       "displayName": "GetSystemTime",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 270,
+      "line": 287,
       "signature": "pub extern func GetSystemTime(time: *SystemTime)",
       "typeParams": [],
       "doc": {
@@ -4182,7 +4786,7 @@
       "displayName": "GetTickCount64",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 276,
+      "line": 293,
       "signature": "pub extern func GetTickCount64() -> uint64",
       "typeParams": [],
       "doc": {
@@ -4211,7 +4815,7 @@
       "displayName": "HeapAlloc",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 285,
+      "line": 302,
       "signature": "pub extern func HeapAlloc(heap: *opaque, flags: uint32, bytes: uint) -> *var opaque",
       "typeParams": [],
       "doc": {
@@ -4244,7 +4848,7 @@
       "displayName": "HeapFree",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 294,
+      "line": 311,
       "signature": "pub extern func HeapFree(heap: *opaque, flags: uint32, mem: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4277,7 +4881,7 @@
       "displayName": "HeapReAlloc",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 304,
+      "line": 321,
       "signature": "pub extern func HeapReAlloc(heap: *opaque, flags: uint32, mem: *opaque, bytes: uint) -> *var opaque",
       "typeParams": [],
       "doc": {
@@ -4311,7 +4915,7 @@
       "displayName": "LoadLibraryA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 311,
+      "line": 328,
       "signature": "pub extern func LoadLibraryA(libFileName: *char8) -> *opaque",
       "typeParams": [],
       "doc": {
@@ -4340,7 +4944,7 @@
       "displayName": "MoveFileA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 319,
+      "line": 336,
       "signature": "pub extern func MoveFileA(existingFileName: *char8, newFileName: *char8) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4372,7 +4976,7 @@
       "displayName": "MultiByteToWideChar",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 331,
+      "line": 348,
       "signature": "pub extern func MultiByteToWideChar(codePage: CodePage, flags: uint32, multiByteStr: *char8, multiByte: int32, wideCharStr: *char16, wideChar: int32) -> int32",
       "typeParams": [],
       "doc": {
@@ -4408,7 +5012,7 @@
       "displayName": "MultiByteToWideChar",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 350,
+      "line": 367,
       "signature": "pub extern func MultiByteToWideChar(codePage: uint32, flags: uint32, multiByteStr: *char8, multiByte: int32, wideCharStr: *char16, wideChar: int32) -> int32",
       "typeParams": [],
       "doc": {
@@ -4444,7 +5048,7 @@
       "displayName": "ReadConsoleA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 368,
+      "line": 385,
       "signature": "pub extern func ReadConsoleA(consoleInput: *opaque, buffer: *opaque, numberOfCharsToRead: uint32, numberOfCharsRead: *uint32, inputControl: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4479,7 +5083,7 @@
       "displayName": "ReadFile",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 385,
+      "line": 402,
       "signature": "pub extern func ReadFile(file: *opaque, buffer: *opaque, numberOfBytesToRead: uint32, numberOfBytesRead: *uint32, overlapped: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4514,7 +5118,7 @@
       "displayName": "RemoveDirectoryA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 398,
+      "line": 415,
       "signature": "pub extern func RemoveDirectoryA(pathName: *char8) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4543,7 +5147,7 @@
       "displayName": "RtlCompareMemory",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 407,
+      "line": 424,
       "signature": "pub extern func RtlCompareMemory(source1: *opaque, source2: *opaque, length: uint) -> uint",
       "typeParams": [],
       "doc": {
@@ -4576,7 +5180,7 @@
       "displayName": "RtlCopyMemory",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 415,
+      "line": 432,
       "signature": "pub extern func RtlCopyMemory(destination: *var opaque, source: *opaque, length: uint)",
       "typeParams": [],
       "doc": {
@@ -4609,7 +5213,7 @@
       "displayName": "RtlFillMemory",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 423,
+      "line": 440,
       "signature": "pub extern func RtlFillMemory(destination: *opaque, length: uint, fill: int32)",
       "typeParams": [],
       "doc": {
@@ -4642,7 +5246,7 @@
       "displayName": "RtlZeroMemory",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 430,
+      "line": 447,
       "signature": "pub extern func RtlZeroMemory(destination: *opaque, length: uint)",
       "typeParams": [],
       "doc": {
@@ -4674,7 +5278,7 @@
       "displayName": "SetCurrentDirectoryA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 437,
+      "line": 454,
       "signature": "pub extern func SetCurrentDirectoryA(pathName: *char8) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4703,7 +5307,7 @@
       "displayName": "SetFileAttributesA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 445,
+      "line": 462,
       "signature": "pub extern func SetFileAttributesA(fileName: *char8, fileAttributes: uint32) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4735,7 +5339,7 @@
       "displayName": "SetFilePointerEx",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 455,
+      "line": 472,
       "signature": "pub extern func SetFilePointerEx(file: *opaque, distanceToMov: int64, newFilePointer: *int64, moveMethod: uint32) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4769,7 +5373,7 @@
       "displayName": "CreateThread",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 472,
+      "line": 489,
       "signature": "pub extern func CreateThread(securityAttributes: *opaque, stackSize: uint64, startAddress: *opaque, parameter: *opaque, creationFlags: uint32, threadId: *uint32) -> *opaque",
       "typeParams": [],
       "doc": {
@@ -4805,7 +5409,7 @@
       "displayName": "GetCurrentThreadId",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 485,
+      "line": 502,
       "signature": "pub extern func GetCurrentThreadId() -> uint32",
       "typeParams": [],
       "doc": {
@@ -4834,7 +5438,7 @@
       "displayName": "Sleep",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 491,
+      "line": 508,
       "signature": "pub extern func Sleep(milliseconds: uint32)",
       "typeParams": [],
       "doc": {
@@ -4863,7 +5467,7 @@
       "displayName": "SwitchToThread",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 497,
+      "line": 514,
       "signature": "pub extern func SwitchToThread() -> bool32",
       "typeParams": [],
       "doc": {
@@ -4892,7 +5496,7 @@
       "displayName": "WaitForSingleObject",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 505,
+      "line": 522,
       "signature": "pub extern func WaitForSingleObject(handle: *opaque, milliseconds: uint32) -> uint32",
       "typeParams": [],
       "doc": {
@@ -4924,7 +5528,7 @@
       "displayName": "WideCharToMultiByte",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 519,
+      "line": 536,
       "signature": "pub extern func WideCharToMultiByte(codePage: uint32, flags: uint32, wideCharStr: *char16, wideChar: int32, multiByteStr: *char8, multiByte: int32, defaultChar: *char8, usedDefaultChar: *bool32) -> int32",
       "typeParams": [],
       "doc": {
@@ -4962,7 +5566,7 @@
       "displayName": "WriteConsoleA",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 539,
+      "line": 556,
       "signature": "pub extern func WriteConsoleA(consoleOutput: *opaque, buffer: *char8, numberOfCharsToWrite: uint32, numberOfCharsWritten: *uint32, reserved: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -4997,7 +5601,7 @@
       "displayName": "WriteConsoleW",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 556,
+      "line": 573,
       "signature": "pub extern func WriteConsoleW(consoleOutput: *opaque, buffer: *char16, numberOfCharsToWrite: uint32, numberOfCharsWritten: *uint32, reserved: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -5032,7 +5636,7 @@
       "displayName": "WriteFile",
       "module": "Kernel",
       "source": "Src/Kernel.rux",
-      "line": 573,
+      "line": 590,
       "signature": "pub extern func WriteFile(file: *opaque, buffer: *opaque, bytesToWrite: uint32, bytesWritten: *uint32, overlapped: *opaque) -> bool32",
       "typeParams": [],
       "doc": {
@@ -6248,6 +6852,179 @@
       "targets": ["windows-x86_64", "windows-aarch64"]
     },
     {
+      "kind": "constant",
+      "name": "HKEY_LOCAL_MACHINE",
+      "displayName": "HKEY_LOCAL_MACHINE",
+      "module": "Registry",
+      "source": "Src/Registry.rux",
+      "line": 11,
+      "signature": "pub const HKEY_LOCAL_MACHINE: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "`HKEY_LOCAL_MACHINE`: the predefined key holding the machine's own settings, readable by every user.",
+        "markdown": "`HKEY_LOCAL_MACHINE`: the predefined key holding the machine's own settings, readable by every user.\nThe predefined keys are 32-bit values sign-extended to a pointer, so on a 64-bit system this one is\n`0xFFFFFFFF80000002`, not `0x80000002`; it is cast at the call: `HKEY_LOCAL_MACHINE as *var opaque`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/registry#hkey-local-machine"],
+        "deprecated": null
+      },
+      "value": "0xFFFFFFFF80000002",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "HKEY_CURRENT_USER",
+      "displayName": "HKEY_CURRENT_USER",
+      "module": "Registry",
+      "source": "Src/Registry.rux",
+      "line": 16,
+      "signature": "pub const HKEY_CURRENT_USER: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "`HKEY_CURRENT_USER`: the predefined key holding the settings of the user the program runs as.",
+        "markdown": "`HKEY_CURRENT_USER`: the predefined key holding the settings of the user the program runs as.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/registry#hkey-current-user"],
+        "deprecated": null
+      },
+      "value": "0xFFFFFFFF80000001",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "RRF_RT_REG_SZ",
+      "displayName": "RRF_RT_REG_SZ",
+      "module": "Registry",
+      "source": "Src/Registry.rux",
+      "line": 21,
+      "signature": "pub const RRF_RT_REG_SZ: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`RRF_RT_REG_SZ`: accept a string value, which the call returns NUL-terminated.",
+        "markdown": "`RRF_RT_REG_SZ`: accept a string value, which the call returns NUL-terminated.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/registry#rrf-rt-reg-sz"],
+        "deprecated": null
+      },
+      "value": "0x00000002",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "RRF_RT_REG_DWORD",
+      "displayName": "RRF_RT_REG_DWORD",
+      "module": "Registry",
+      "source": "Src/Registry.rux",
+      "line": 26,
+      "signature": "pub const RRF_RT_REG_DWORD: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`RRF_RT_REG_DWORD`: accept a 32-bit number value.",
+        "markdown": "`RRF_RT_REG_DWORD`: accept a 32-bit number value.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/registry#rrf-rt-reg-dword"],
+        "deprecated": null
+      },
+      "value": "0x00000010",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "RRF_RT_REG_QWORD",
+      "displayName": "RRF_RT_REG_QWORD",
+      "module": "Registry",
+      "source": "Src/Registry.rux",
+      "line": 31,
+      "signature": "pub const RRF_RT_REG_QWORD: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`RRF_RT_REG_QWORD`: accept a 64-bit number value.",
+        "markdown": "`RRF_RT_REG_QWORD`: accept a 64-bit number value.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/registry#rrf-rt-reg-qword"],
+        "deprecated": null
+      },
+      "value": "0x00000040",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "RegGetValueW",
+      "displayName": "RegGetValueW",
+      "module": "Registry",
+      "source": "Src/Registry.rux",
+      "line": 49,
+      "signature": "pub extern func RegGetValueW(key: *var opaque, subKey: *char16, value: *char16, flags: uint32, valueType: *var uint32, data: *var opaque, size: *var uint32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads one value of a registry key, checking its type and terminating a string value.",
+        "markdown": "Reads one value of a registry key, checking its type and terminating a string value.\nUnlike `RegQueryValueExW`, a string is always NUL-terminated in the buffer, and a value of a type the flags\ndo not accept is refused with `ERROR_UNSUPPORTED_TYPE` rather than returned as bytes. The size is in bytes,\nnot UTF-16 units, on the way in and on the way out. The error is the result itself; `GetLastError` is not set.",
+        "typeParams": [],
+        "params": [
+          {
+            "name": "key",
+            "markdown": "an open key or a predefined one such as `HKEY_LOCAL_MACHINE`, cast to a pointer"
+          },
+          { "name": "subKey", "markdown": "the NUL-terminated UTF-16 path below `key`, or null for `key` itself" },
+          { "name": "value", "markdown": "the NUL-terminated UTF-16 value name, or null for the key's default value" },
+          { "name": "flags", "markdown": "the `RRF_RT_` types to accept, combined with `|`" },
+          { "name": "valueType", "markdown": "receives the value's type, or null" },
+          { "name": "data", "markdown": "receives the value, or null to ask only for its size" },
+          {
+            "name": "size",
+            "markdown": "how many bytes `data` holds on entry, and how many were written or are needed on return"
+          }
+        ],
+        "returns": "zero on success, `ERROR_MORE_DATA` when `data` is too small, or another Win32 error code",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/registry#reg-get-value-w",
+          "https://learn.microsoft.com/windows/win32/api/winreg/nf-winreg-reggetvaluew"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
       "kind": "extern",
       "name": "CommandLineToArgvW",
       "displayName": "CommandLineToArgvW",
@@ -6366,6 +7143,406 @@
         "see": [
           "https://rux-lang.dev/docs/api/windows/synch#wake-by-address-all",
           "https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-wakebyaddressall"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "MemoryStatusEx",
+      "displayName": "MemoryStatusEx",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 9,
+      "signature": "pub struct MemoryStatusEx",
+      "typeParams": [],
+      "doc": {
+        "summary": "The `MEMORYSTATUSEX` that `GlobalMemoryStatusEx` fills in, with every size in bytes.",
+        "markdown": "The `MEMORYSTATUSEX` that `GlobalMemoryStatusEx` fills in, with every size in bytes.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/system-information#memory-status-ex"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "length",
+          "type": "uint32",
+          "public": true,
+          "line": 11,
+          "doc": "The structure's size in bytes, `sizeof(MemoryStatusEx)`, which the caller sets before the call.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "memoryLoad",
+          "type": "uint32",
+          "public": true,
+          "line": 13,
+          "doc": "How much of the physical memory is in use, as a percentage from 0 to 100.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "totalPhysical",
+          "type": "uint64",
+          "public": true,
+          "line": 15,
+          "doc": "The physical memory the system can use.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "availablePhysical",
+          "type": "uint64",
+          "public": true,
+          "line": 17,
+          "doc": "The physical memory that is free or can be freed at once.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "totalPageFile",
+          "type": "uint64",
+          "public": true,
+          "line": 19,
+          "doc": "The memory the system can commit, physical memory and page file together.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "availablePageFile",
+          "type": "uint64",
+          "public": true,
+          "line": 21,
+          "doc": "The part of that commit limit the calling process can still commit.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "totalVirtual",
+          "type": "uint64",
+          "public": true,
+          "line": 23,
+          "doc": "The user-mode address space of the calling process.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "availableVirtual",
+          "type": "uint64",
+          "public": true,
+          "line": 25,
+          "doc": "The part of that address space neither reserved nor committed.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "availableExtendedVirtual",
+          "type": "uint64",
+          "public": true,
+          "line": 27,
+          "doc": "Reserved; always zero.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "ProcessorRelationshipHeader",
+      "displayName": "ProcessorRelationshipHeader",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 34,
+      "signature": "pub struct ProcessorRelationshipHeader",
+      "typeParams": [],
+      "doc": {
+        "summary": "The header that begins every record `GetLogicalProcessorInformationEx` writes.",
+        "markdown": "The header that begins every record `GetLogicalProcessorInformationEx` writes.\nThe records differ in size, so the buffer is walked by adding each record's `size` to reach the next one; the\nrest of a record depends on its relationship and is not described here.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/system-information#processor-relationship-header"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "relationship",
+          "type": "uint32",
+          "public": true,
+          "line": 36,
+          "doc": "What the record describes, such as `RelationProcessorCore`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "size",
+          "type": "uint32",
+          "public": true,
+          "line": 38,
+          "doc": "The record's size in bytes, header included.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "RelationProcessorCore",
+      "displayName": "RelationProcessorCore",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 43,
+      "signature": "pub const RelationProcessorCore: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`RelationProcessorCore`: a record per physical core, however many logical processors it runs.",
+        "markdown": "`RelationProcessorCore`: a record per physical core, however many logical processors it runs.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/system-information#relation-processor-core"],
+        "deprecated": null
+      },
+      "value": "0",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "RelationProcessorPackage",
+      "displayName": "RelationProcessorPackage",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 47,
+      "signature": "pub const RelationProcessorPackage: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`RelationProcessorPackage`: a record per physical processor package, the chip in a socket.",
+        "markdown": "`RelationProcessorPackage`: a record per physical processor package, the chip in a socket.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/system-information#relation-processor-package"],
+        "deprecated": null
+      },
+      "value": "3",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "PROCESSOR_ARCHITECTURE_INTEL",
+      "displayName": "PROCESSOR_ARCHITECTURE_INTEL",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 52,
+      "signature": "pub const PROCESSOR_ARCHITECTURE_INTEL: uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`PROCESSOR_ARCHITECTURE_INTEL`: 32-bit x86.",
+        "markdown": "`PROCESSOR_ARCHITECTURE_INTEL`: 32-bit x86.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/system-information#processor-architecture-intel"],
+        "deprecated": null
+      },
+      "value": "0",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "PROCESSOR_ARCHITECTURE_ARM64",
+      "displayName": "PROCESSOR_ARCHITECTURE_ARM64",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 57,
+      "signature": "pub const PROCESSOR_ARCHITECTURE_ARM64: uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`PROCESSOR_ARCHITECTURE_ARM64`: 64-bit Arm.",
+        "markdown": "`PROCESSOR_ARCHITECTURE_ARM64`: 64-bit Arm.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/system-information#processor-architecture-arm64"],
+        "deprecated": null
+      },
+      "value": "12",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "PROCESSOR_ARCHITECTURE_AMD64",
+      "displayName": "PROCESSOR_ARCHITECTURE_AMD64",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 62,
+      "signature": "pub const PROCESSOR_ARCHITECTURE_AMD64: uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "`PROCESSOR_ARCHITECTURE_AMD64`: x86-64, from AMD or Intel.",
+        "markdown": "`PROCESSOR_ARCHITECTURE_AMD64`: x86-64, from AMD or Intel.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/system-information#processor-architecture-amd64"],
+        "deprecated": null
+      },
+      "value": "9",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GlobalMemoryStatusEx",
+      "displayName": "GlobalMemoryStatusEx",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 71,
+      "signature": "pub extern func GlobalMemoryStatusEx(status: *var MemoryStatusEx) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reports the machine's physical memory and how much of it, and of the commit limit, is in use.",
+        "markdown": "Reports the machine's physical memory and how much of it, and of the commit limit, is in use.",
+        "typeParams": [],
+        "params": [
+          { "name": "status", "markdown": "the structure to fill, with `length` set to `sizeof(MemoryStatusEx)`" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/system-information#global-memory-status-ex",
+          "https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-globalmemorystatusex"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetLogicalProcessorInformationEx",
+      "displayName": "GetLogicalProcessorInformationEx",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 82,
+      "signature": "pub extern func GetLogicalProcessorInformationEx(relationship: uint32, buffer: *var opaque, length: *var uint32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads the processor relationships of one kind, such as one record per core, into a caller's buffer.",
+        "markdown": "Reads the processor relationships of one kind, such as one record per core, into a caller's buffer.\nAsked with too small a buffer, or none, the call fails with `ERROR_INSUFFICIENT_BUFFER` and sets `length` to\nthe bytes needed, so it is called once to measure and once to fill.",
+        "typeParams": [],
+        "params": [
+          { "name": "relationship", "markdown": "which records to write, such as `RelationProcessorCore`" },
+          {
+            "name": "buffer",
+            "markdown": "receives the records, each beginning with a `ProcessorRelationshipHeader`, or null to measure"
+          },
+          {
+            "name": "length",
+            "markdown": "how many bytes `buffer` holds on entry, and how many were written or are needed on return"
+          }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/system-information#get-logical-processor-information-ex",
+          "https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformationex"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetNativeSystemInfo",
+      "displayName": "GetNativeSystemInfo",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 90,
+      "signature": "pub extern func GetNativeSystemInfo(info: *var SystemInfo)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads what `GetSystemInfo` does, but for the machine rather than for the calling process.",
+        "markdown": "Reads what `GetSystemInfo` does, but for the machine rather than for the calling process.\nThe two differ only under emulation, where an x86-64 program on an Arm machine is told it runs on x86-64 by\n`GetSystemInfo` and on Arm by this call. It cannot fail, and the structure is always filled.",
+        "typeParams": [],
+        "params": [{ "name": "info", "markdown": "receives the system information" }],
+        "returns": null,
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/system-information#get-native-system-info",
+          "https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getnativesysteminfo"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetPhysicallyInstalledSystemMemory",
+      "displayName": "GetPhysicallyInstalledSystemMemory",
+      "module": "SystemInformation",
+      "source": "Src/SystemInformation.rux",
+      "line": 99,
+      "signature": "pub extern func GetPhysicallyInstalledSystemMemory(kilobytes: *var uint64) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reports the physical memory the firmware says is fitted, in kibibytes.",
+        "markdown": "Reports the physical memory the firmware says is fitted, in kibibytes.\nThis is more than `GlobalMemoryStatusEx` reports as total, by what the firmware and devices reserve. It fails\nwith `ERROR_INVALID_DATA` when the firmware's memory tables are missing or malformed.",
+        "typeParams": [],
+        "params": [{ "name": "kilobytes", "markdown": "receives the fitted memory in kibibytes" }],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/system-information#get-physically-installed-system-memory",
+          "https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getphysicallyinstalledsystemmemory"
         ],
         "deprecated": null
       },
@@ -7119,84 +8296,2340 @@
         {
           "name": "processorArchitecture",
           "type": "uint32",
-          "public": false,
-          "line": 122,
-          "doc": "The processor architecture, or a union member on the oldest releases; not read by this package.",
+          "public": true,
+          "line": 124,
+          "doc": "The processor architecture, such as `PROCESSOR_ARCHITECTURE_AMD64`, in the low 16 bits.\nThe field is a union in C whose upper 16 bits are reserved, so the architecture is\n`(processorArchitecture & 0xFFFF) as uint16`.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         },
         {
           "name": "pageSize",
           "type": "uint32",
           "public": true,
-          "line": 124,
+          "line": 126,
           "doc": "The size of a page, which is what memory protection is applied at.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         },
         {
           "name": "minimumApplicationAddress",
           "type": "*var opaque",
-          "public": false,
-          "line": 126,
+          "public": true,
+          "line": 128,
           "doc": "The lowest address an application may have.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         },
         {
           "name": "maximumApplicationAddress",
           "type": "*var opaque",
-          "public": false,
-          "line": 128,
+          "public": true,
+          "line": 130,
           "doc": "The highest address an application may have.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         },
         {
           "name": "activeProcessorMask",
           "type": "uint64",
-          "public": false,
-          "line": 130,
+          "public": true,
+          "line": 132,
           "doc": "A mask of the processors this process may run on.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         },
         {
           "name": "numberOfProcessors",
           "type": "uint32",
-          "public": false,
-          "line": 132,
-          "doc": "How many logical processors the machine has.",
+          "public": true,
+          "line": 134,
+          "doc": "How many logical processors the machine has in the calling process's processor group.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         },
         {
           "name": "processorType",
           "type": "uint32",
-          "public": false,
-          "line": 134,
-          "doc": "The processor type, obsolete and not read by this package.",
+          "public": true,
+          "line": 136,
+          "doc": "The processor type, obsolete; read `processorArchitecture` instead.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         },
         {
           "name": "allocationGranularity",
           "type": "uint32",
-          "public": false,
-          "line": 136,
+          "public": true,
+          "line": 138,
           "doc": "The granularity a reservation's base address is rounded to, which is not the page size.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         },
         {
           "name": "processorLevel",
           "type": "uint16",
-          "public": false,
-          "line": 138,
-          "doc": "The processor revision level.",
+          "public": true,
+          "line": 140,
+          "doc": "The processor level, which depends on the architecture: the family on x86-64.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         },
         {
           "name": "processorRevision",
           "type": "uint16",
-          "public": false,
-          "line": 140,
-          "doc": "The processor revision.",
+          "public": true,
+          "line": 142,
+          "doc": "The processor revision, which depends on the architecture: the model and stepping on x86-64.",
           "targets": ["windows-x86_64", "windows-aarch64"]
         }
       ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "OsVersionInfoEx",
+      "displayName": "OsVersionInfoEx",
+      "module": "Version",
+      "source": "Src/Version.rux",
+      "line": 9,
+      "signature": "pub struct OsVersionInfoEx",
+      "typeParams": [],
+      "doc": {
+        "summary": "The `RTL_OSVERSIONINFOEXW` that `RtlGetVersion` fills in.",
+        "markdown": "The `RTL_OSVERSIONINFOEXW` that `RtlGetVersion` fills in.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/version#os-version-info-ex"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "size",
+          "type": "uint32",
+          "public": true,
+          "line": 11,
+          "doc": "The structure's size in bytes, `sizeof(OsVersionInfoEx)`, which the caller sets before the call.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "majorVersion",
+          "type": "uint32",
+          "public": true,
+          "line": 13,
+          "doc": "The major version: 10 for both Windows 10 and Windows 11.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "minorVersion",
+          "type": "uint32",
+          "public": true,
+          "line": 15,
+          "doc": "The minor version: 0 for both Windows 10 and Windows 11.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "buildNumber",
+          "type": "uint32",
+          "public": true,
+          "line": 17,
+          "doc": "The build number, such as 26100, which tells the releases apart.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "platformId",
+          "type": "uint32",
+          "public": true,
+          "line": 19,
+          "doc": "The platform: 2, `VER_PLATFORM_WIN32_NT`, on every supported release.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "csdVersion",
+          "type": "char16[N]",
+          "public": true,
+          "line": 21,
+          "doc": "The NUL-terminated UTF-16 name of the latest service pack, empty on current releases.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "servicePackMajor",
+          "type": "uint16",
+          "public": true,
+          "line": 23,
+          "doc": "The major version of the latest service pack.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "servicePackMinor",
+          "type": "uint16",
+          "public": true,
+          "line": 25,
+          "doc": "The minor version of the latest service pack.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "suiteMask",
+          "type": "uint16",
+          "public": true,
+          "line": 27,
+          "doc": "The `VER_SUITE_` bits saying which product suites are installed.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "productType",
+          "type": "uint8",
+          "public": true,
+          "line": 29,
+          "doc": "Whether this is a workstation, `VER_NT_WORKSTATION`, a domain controller or a server.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "reserved",
+          "type": "uint8",
+          "public": true,
+          "line": 31,
+          "doc": "Reserved.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "VER_NT_WORKSTATION",
+      "displayName": "VER_NT_WORKSTATION",
+      "module": "Version",
+      "source": "Src/Version.rux",
+      "line": 37,
+      "signature": "pub const VER_NT_WORKSTATION: uint8",
+      "typeParams": [],
+      "doc": {
+        "summary": "`VER_NT_WORKSTATION`: the product type of a desktop edition, as opposed to a server.",
+        "markdown": "`VER_NT_WORKSTATION`: the product type of a desktop edition, as opposed to a server.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/version#ver-nt-workstation"],
+        "deprecated": null
+      },
+      "value": "1",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "VER_PLATFORM_WIN32_NT",
+      "displayName": "VER_PLATFORM_WIN32_NT",
+      "module": "Version",
+      "source": "Src/Version.rux",
+      "line": 42,
+      "signature": "pub const VER_PLATFORM_WIN32_NT: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`VER_PLATFORM_WIN32_NT`: the platform of every supported Windows release.",
+        "markdown": "`VER_PLATFORM_WIN32_NT`: the platform of every supported Windows release.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/version#ver-platform-win32-nt"],
+        "deprecated": null
+      },
+      "value": "2",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "RtlGetVersion",
+      "displayName": "RtlGetVersion",
+      "module": "Version",
+      "source": "Src/Version.rux",
+      "line": 54,
+      "signature": "pub extern func RtlGetVersion(info: *var OsVersionInfoEx) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Reads the true version of the running system, whatever the program's manifest declares.",
+        "markdown": "Reads the true version of the running system, whatever the program's manifest declares.\nThe caller sets `size` first; the call fills in every other field, `csdVersion` and the fields after it\nincluded, because the size says the structure is the extended one. It returns an `NTSTATUS` rather than a\n`Bool`, and sets nothing `GetLastError` reports.",
+        "typeParams": [],
+        "params": [
+          { "name": "info", "markdown": "the structure to fill, with `size` set to `sizeof(OsVersionInfoEx)`" }
+        ],
+        "returns": "zero, `STATUS_SUCCESS`, which is the only status the call returns",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/version#rtl-get-version",
+          "https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlgetversion"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "type",
+      "name": "WindowProcedure",
+      "displayName": "WindowProcedure",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 12,
+      "signature": "pub type WindowProcedure = func(*var opaque, uint32, uint, int) -> int",
+      "typeParams": [],
+      "doc": {
+        "summary": "A window procedure: the function the system calls with each message for a window of a class.",
+        "markdown": "A window procedure: the function the system calls with each message for a window of a class.\nIts arguments are the window, the message number and the two message parameters, and its result is the message's\nanswer, which `DefWindowProcW` supplies for every message the procedure does not handle itself. A Rux function of\nthis type is passed directly; it is called with the platform's C convention on the thread that owns the window.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#window-procedure"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "Point",
+      "displayName": "Point",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 16,
+      "signature": "pub struct Point",
+      "typeParams": [],
+      "doc": {
+        "summary": "A point in pixels, the `POINT` most window calls take.",
+        "markdown": "A point in pixels, the `POINT` most window calls take.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#point"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "x",
+          "type": "int32",
+          "public": true,
+          "line": 18,
+          "doc": "The horizontal coordinate, growing to the right.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "y",
+          "type": "int32",
+          "public": true,
+          "line": 20,
+          "doc": "The vertical coordinate, growing downward.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "Rect",
+      "displayName": "Rect",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 26,
+      "signature": "pub struct Rect",
+      "typeParams": [],
+      "doc": {
+        "summary": "A rectangle in pixels, the `RECT` that window sizes and paint regions are given as.",
+        "markdown": "A rectangle in pixels, the `RECT` that window sizes and paint regions are given as.\nThe right and bottom edges are exclusive, so the width is `right - left` and the height `bottom - top`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#rect"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "left",
+          "type": "int32",
+          "public": true,
+          "line": 28,
+          "doc": "The left edge.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "top",
+          "type": "int32",
+          "public": true,
+          "line": 30,
+          "doc": "The top edge.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "right",
+          "type": "int32",
+          "public": true,
+          "line": 32,
+          "doc": "The right edge, one past the last column.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "bottom",
+          "type": "int32",
+          "public": true,
+          "line": 34,
+          "doc": "The bottom edge, one past the last row.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "Message",
+      "displayName": "Message",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 39,
+      "signature": "pub struct Message",
+      "typeParams": [],
+      "doc": {
+        "summary": "The `MSG` that `GetMessageW` fills in: one message taken from the calling thread's queue.",
+        "markdown": "The `MSG` that `GetMessageW` fills in: one message taken from the calling thread's queue.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#message"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "window",
+          "type": "*var opaque",
+          "public": true,
+          "line": 41,
+          "doc": "The window the message is for, or null for a message to the thread itself.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "message",
+          "type": "uint32",
+          "public": true,
+          "line": 43,
+          "doc": "The message number, such as `WM_DESTROY`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "wParam",
+          "type": "uint",
+          "public": true,
+          "line": 45,
+          "doc": "The first message parameter, whose meaning depends on the message.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "lParam",
+          "type": "int",
+          "public": true,
+          "line": 47,
+          "doc": "The second message parameter, whose meaning depends on the message.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "time",
+          "type": "uint32",
+          "public": true,
+          "line": 49,
+          "doc": "When the message was posted, in milliseconds since the system started.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "point",
+          "type": "Point",
+          "public": true,
+          "line": 51,
+          "doc": "Where the cursor was when the message was posted, in screen coordinates.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "privateData",
+          "type": "uint32",
+          "public": true,
+          "line": 53,
+          "doc": "Reserved for the system.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "WindowClassEx",
+      "displayName": "WindowClassEx",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 59,
+      "signature": "pub struct WindowClassEx",
+      "typeParams": [],
+      "doc": {
+        "summary": "The `WNDCLASSEXW` that `RegisterClassExW` reads: what every window of a class shares.",
+        "markdown": "The `WNDCLASSEXW` that `RegisterClassExW` reads: what every window of a class shares.\nThe class name and menu name are read during registration only; the system keeps its own copies.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#window-class-ex"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "size",
+          "type": "uint32",
+          "public": true,
+          "line": 61,
+          "doc": "The structure's size in bytes, `sizeof(WindowClassEx)`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "style",
+          "type": "uint32",
+          "public": true,
+          "line": 63,
+          "doc": "The class style bits, such as `CS_HREDRAW`, combined with `|`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "windowProcedure",
+          "type": "WindowProcedure",
+          "public": true,
+          "line": 65,
+          "doc": "The function that answers the messages for every window of the class.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "classExtra",
+          "type": "int32",
+          "public": true,
+          "line": 67,
+          "doc": "Extra bytes the system keeps per class, usually zero.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "windowExtra",
+          "type": "int32",
+          "public": true,
+          "line": 69,
+          "doc": "Extra bytes the system keeps per window, usually zero.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "instance",
+          "type": "*var opaque",
+          "public": true,
+          "line": 71,
+          "doc": "The module the procedure is in, from `GetModuleHandleW(null)` for the program itself.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "icon",
+          "type": "*var opaque",
+          "public": true,
+          "line": 73,
+          "doc": "The large icon, or null for the default.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "cursor",
+          "type": "*var opaque",
+          "public": true,
+          "line": 75,
+          "doc": "The cursor shown over the window, or null to leave it to the procedure.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "background",
+          "type": "*var opaque",
+          "public": true,
+          "line": 77,
+          "doc": "The brush the background is erased with, or a `COLOR_` index plus one cast to a pointer, or null.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "menuName",
+          "type": "*char16",
+          "public": true,
+          "line": 79,
+          "doc": "The NUL-terminated UTF-16 menu resource name, or null for no menu.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "className",
+          "type": "*char16",
+          "public": true,
+          "line": 81,
+          "doc": "The NUL-terminated UTF-16 class name that `CreateWindowExW` names the class by.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "smallIcon",
+          "type": "*var opaque",
+          "public": true,
+          "line": 83,
+          "doc": "The small icon, or null to derive it from the large one.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "struct",
+      "name": "PaintStruct",
+      "displayName": "PaintStruct",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 88,
+      "signature": "pub struct PaintStruct",
+      "typeParams": [],
+      "doc": {
+        "summary": "The `PAINTSTRUCT` that `BeginPaint` fills in and `EndPaint` reads back.",
+        "markdown": "The `PAINTSTRUCT` that `BeginPaint` fills in and `EndPaint` reads back.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#paint-struct"],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [
+        {
+          "name": "deviceContext",
+          "type": "*var opaque",
+          "public": true,
+          "line": 90,
+          "doc": "The device context to draw with until `EndPaint`.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "erase",
+          "type": "bool32",
+          "public": true,
+          "line": 92,
+          "doc": "Non-zero when the background still has to be erased.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "paint",
+          "type": "Rect",
+          "public": true,
+          "line": 94,
+          "doc": "The part of the window that needs painting, in client coordinates.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "restore",
+          "type": "bool32",
+          "public": true,
+          "line": 96,
+          "doc": "Reserved for the system.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "includeUpdate",
+          "type": "bool32",
+          "public": true,
+          "line": 98,
+          "doc": "Reserved for the system.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        },
+        {
+          "name": "reserved",
+          "type": "uint8[N]",
+          "public": true,
+          "line": 100,
+          "doc": "Reserved for the system.",
+          "targets": ["windows-x86_64", "windows-aarch64"]
+        }
+      ],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "CS_HREDRAW",
+      "displayName": "CS_HREDRAW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 106,
+      "signature": "pub const CS_HREDRAW: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`CS_HREDRAW`: repaint the whole window when its width changes.",
+        "markdown": "`CS_HREDRAW`: repaint the whole window when its width changes.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#cs-hredraw"],
+        "deprecated": null
+      },
+      "value": "0x0002",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "CS_VREDRAW",
+      "displayName": "CS_VREDRAW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 111,
+      "signature": "pub const CS_VREDRAW: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`CS_VREDRAW`: repaint the whole window when its height changes.",
+        "markdown": "`CS_VREDRAW`: repaint the whole window when its height changes.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#cs-vredraw"],
+        "deprecated": null
+      },
+      "value": "0x0001",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WS_OVERLAPPED",
+      "displayName": "WS_OVERLAPPED",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 116,
+      "signature": "pub const WS_OVERLAPPED: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WS_OVERLAPPED`: a top-level window with a title bar and a border.",
+        "markdown": "`WS_OVERLAPPED`: a top-level window with a title bar and a border.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#ws-overlapped"],
+        "deprecated": null
+      },
+      "value": "0x00000000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WS_CAPTION",
+      "displayName": "WS_CAPTION",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 121,
+      "signature": "pub const WS_CAPTION: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WS_CAPTION`: the window has a title bar.",
+        "markdown": "`WS_CAPTION`: the window has a title bar.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#ws-caption"],
+        "deprecated": null
+      },
+      "value": "0x00C00000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WS_SYSMENU",
+      "displayName": "WS_SYSMENU",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 126,
+      "signature": "pub const WS_SYSMENU: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WS_SYSMENU`: the title bar has the window menu and the close button.",
+        "markdown": "`WS_SYSMENU`: the title bar has the window menu and the close button.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#ws-sysmenu"],
+        "deprecated": null
+      },
+      "value": "0x00080000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WS_THICKFRAME",
+      "displayName": "WS_THICKFRAME",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 131,
+      "signature": "pub const WS_THICKFRAME: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WS_THICKFRAME`: the window has a sizing border.",
+        "markdown": "`WS_THICKFRAME`: the window has a sizing border.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#ws-thickframe"],
+        "deprecated": null
+      },
+      "value": "0x00040000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WS_MINIMIZEBOX",
+      "displayName": "WS_MINIMIZEBOX",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 136,
+      "signature": "pub const WS_MINIMIZEBOX: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WS_MINIMIZEBOX`: the title bar has a minimize button.",
+        "markdown": "`WS_MINIMIZEBOX`: the title bar has a minimize button.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#ws-minimizebox"],
+        "deprecated": null
+      },
+      "value": "0x00020000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WS_MAXIMIZEBOX",
+      "displayName": "WS_MAXIMIZEBOX",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 141,
+      "signature": "pub const WS_MAXIMIZEBOX: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WS_MAXIMIZEBOX`: the title bar has a maximize button.",
+        "markdown": "`WS_MAXIMIZEBOX`: the title bar has a maximize button.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#ws-maximizebox"],
+        "deprecated": null
+      },
+      "value": "0x00010000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WS_CHILD",
+      "displayName": "WS_CHILD",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 146,
+      "signature": "pub const WS_CHILD: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WS_CHILD`: the window lives inside its parent's client area.",
+        "markdown": "`WS_CHILD`: the window lives inside its parent's client area.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#ws-child"],
+        "deprecated": null
+      },
+      "value": "0x40000000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WS_VISIBLE",
+      "displayName": "WS_VISIBLE",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 151,
+      "signature": "pub const WS_VISIBLE: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WS_VISIBLE`: the window is shown as soon as it is created.",
+        "markdown": "`WS_VISIBLE`: the window is shown as soon as it is created.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#ws-visible"],
+        "deprecated": null
+      },
+      "value": "0x10000000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "CW_USEDEFAULT",
+      "displayName": "CW_USEDEFAULT",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 156,
+      "signature": "pub const CW_USEDEFAULT: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`CW_USEDEFAULT`: let the system choose the position or size.",
+        "markdown": "`CW_USEDEFAULT`: let the system choose the position or size.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#cw-usedefault"],
+        "deprecated": null
+      },
+      "value": "-2147483648",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SW_SHOW",
+      "displayName": "SW_SHOW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 161,
+      "signature": "pub const SW_SHOW: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SW_SHOW`: show the window at its current size and position and activate it.",
+        "markdown": "`SW_SHOW`: show the window at its current size and position and activate it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#sw-show"],
+        "deprecated": null
+      },
+      "value": "5",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WM_CREATE",
+      "displayName": "WM_CREATE",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 166,
+      "signature": "pub const WM_CREATE: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WM_CREATE`: the window has been created and is not yet shown; answer zero to keep it.",
+        "markdown": "`WM_CREATE`: the window has been created and is not yet shown; answer zero to keep it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#wm-create"],
+        "deprecated": null
+      },
+      "value": "0x0001",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WM_DESTROY",
+      "displayName": "WM_DESTROY",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 171,
+      "signature": "pub const WM_DESTROY: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WM_DESTROY`: the window is being destroyed; a main window posts the quit message here.",
+        "markdown": "`WM_DESTROY`: the window is being destroyed; a main window posts the quit message here.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#wm-destroy"],
+        "deprecated": null
+      },
+      "value": "0x0002",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WM_PAINT",
+      "displayName": "WM_PAINT",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 176,
+      "signature": "pub const WM_PAINT: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WM_PAINT`: part of the window needs drawing, between `BeginPaint` and `EndPaint`.",
+        "markdown": "`WM_PAINT`: part of the window needs drawing, between `BeginPaint` and `EndPaint`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#wm-paint"],
+        "deprecated": null
+      },
+      "value": "0x000F",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WM_CLOSE",
+      "displayName": "WM_CLOSE",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 181,
+      "signature": "pub const WM_CLOSE: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WM_CLOSE`: the user asked to close the window; the default answer destroys it.",
+        "markdown": "`WM_CLOSE`: the user asked to close the window; the default answer destroys it.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#wm-close"],
+        "deprecated": null
+      },
+      "value": "0x0010",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WM_SETFONT",
+      "displayName": "WM_SETFONT",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 186,
+      "signature": "pub const WM_SETFONT: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WM_SETFONT`: a control should draw with the font handle in `wParam`.",
+        "markdown": "`WM_SETFONT`: a control should draw with the font handle in `wParam`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#wm-setfont"],
+        "deprecated": null
+      },
+      "value": "0x0030",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WM_USER",
+      "displayName": "WM_USER",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 191,
+      "signature": "pub const WM_USER: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WM_USER`: the first message number a program may give its own messages within one window class.",
+        "markdown": "`WM_USER`: the first message number a program may give its own messages within one window class.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#wm-user"],
+        "deprecated": null
+      },
+      "value": "0x0400",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "WM_DPICHANGED",
+      "displayName": "WM_DPICHANGED",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 197,
+      "signature": "pub const WM_DPICHANGED: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`WM_DPICHANGED`: the window moved to a monitor with another scale.",
+        "markdown": "`WM_DPICHANGED`: the window moved to a monitor with another scale.\nThe new DPI is in both halves of `wParam`, and `lParam` points to the `Rect` the system suggests for the window.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#wm-dpichanged"],
+        "deprecated": null
+      },
+      "value": "0x02E0",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "COLOR_WINDOW",
+      "displayName": "COLOR_WINDOW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 202,
+      "signature": "pub const COLOR_WINDOW: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`COLOR_WINDOW`: the system color of a window's background, for `GetSysColor` and `GetSysColorBrush`.",
+        "markdown": "`COLOR_WINDOW`: the system color of a window's background, for `GetSysColor` and `GetSysColorBrush`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#color-window"],
+        "deprecated": null
+      },
+      "value": "5",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "COLOR_WINDOWTEXT",
+      "displayName": "COLOR_WINDOWTEXT",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 207,
+      "signature": "pub const COLOR_WINDOWTEXT: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`COLOR_WINDOWTEXT`: the system color of text in a window.",
+        "markdown": "`COLOR_WINDOWTEXT`: the system color of text in a window.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#color-windowtext"],
+        "deprecated": null
+      },
+      "value": "8",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "COLOR_GRAYTEXT",
+      "displayName": "COLOR_GRAYTEXT",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 212,
+      "signature": "pub const COLOR_GRAYTEXT: int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`COLOR_GRAYTEXT`: the system color of text that is shown but not active.",
+        "markdown": "`COLOR_GRAYTEXT`: the system color of text that is shown but not active.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#color-graytext"],
+        "deprecated": null
+      },
+      "value": "17",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "MB_OK",
+      "displayName": "MB_OK",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 217,
+      "signature": "pub const MB_OK: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`MB_OK`: the message box has one OK button.",
+        "markdown": "`MB_OK`: the message box has one OK button.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#mb-ok"],
+        "deprecated": null
+      },
+      "value": "0x00000000",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "MB_ICONERROR",
+      "displayName": "MB_ICONERROR",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 222,
+      "signature": "pub const MB_ICONERROR: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`MB_ICONERROR`: the message box shows the error icon.",
+        "markdown": "`MB_ICONERROR`: the message box shows the error icon.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#mb-iconerror"],
+        "deprecated": null
+      },
+      "value": "0x00000010",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SWP_NOMOVE",
+      "displayName": "SWP_NOMOVE",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 227,
+      "signature": "pub const SWP_NOMOVE: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SWP_NOMOVE`: `SetWindowPos` keeps the window where it is and ignores `x` and `y`.",
+        "markdown": "`SWP_NOMOVE`: `SetWindowPos` keeps the window where it is and ignores `x` and `y`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#swp-nomove"],
+        "deprecated": null
+      },
+      "value": "0x0002",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SWP_NOZORDER",
+      "displayName": "SWP_NOZORDER",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 232,
+      "signature": "pub const SWP_NOZORDER: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SWP_NOZORDER`: `SetWindowPos` keeps the window's place in the stacking order and ignores `insertAfter`.",
+        "markdown": "`SWP_NOZORDER`: `SetWindowPos` keeps the window's place in the stacking order and ignores `insertAfter`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#swp-nozorder"],
+        "deprecated": null
+      },
+      "value": "0x0004",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "SWP_NOACTIVATE",
+      "displayName": "SWP_NOACTIVATE",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 237,
+      "signature": "pub const SWP_NOACTIVATE: uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "`SWP_NOACTIVATE`: `SetWindowPos` does not activate the window.",
+        "markdown": "`SWP_NOACTIVATE`: `SetWindowPos` does not activate the window.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#swp-noactivate"],
+        "deprecated": null
+      },
+      "value": "0x0010",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IDC_ARROW",
+      "displayName": "IDC_ARROW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 243,
+      "signature": "pub const IDC_ARROW: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IDC_ARROW`: the standard arrow cursor, as the resource number `LoadCursorW` takes in place of a name.",
+        "markdown": "`IDC_ARROW`: the standard arrow cursor, as the resource number `LoadCursorW` takes in place of a name.\nIt is a number, not a string, so it is cast to the name pointer: `IDC_ARROW as *char16`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#idc-arrow"],
+        "deprecated": null
+      },
+      "value": "32512",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "IDI_APPLICATION",
+      "displayName": "IDI_APPLICATION",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 248,
+      "signature": "pub const IDI_APPLICATION: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "`IDI_APPLICATION`: the default application icon, as the resource number `LoadIconW` takes in place of a name.",
+        "markdown": "`IDI_APPLICATION`: the default application icon, as the resource number `LoadIconW` takes in place of a name.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#idi-application"],
+        "deprecated": null
+      },
+      "value": "32512",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "HWND_MESSAGE",
+      "displayName": "HWND_MESSAGE",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 254,
+      "signature": "pub const HWND_MESSAGE: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "`HWND_MESSAGE`: the parent that makes a window message-only, never shown and never enumerated.",
+        "markdown": "`HWND_MESSAGE`: the parent that makes a window message-only, never shown and never enumerated.\nIt is `-3` as a pointer, so it is cast at the call: `HWND_MESSAGE as *var opaque`.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#hwnd-message"],
+        "deprecated": null
+      },
+      "value": "0xFFFFFFFFFFFFFFFD",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "constant",
+      "name": "DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2",
+      "displayName": "DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 261,
+      "signature": "pub const DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2: uint64",
+      "typeParams": [],
+      "doc": {
+        "summary": "`DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2`: the process draws for each monitor's own scale.",
+        "markdown": "`DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2`: the process draws for each monitor's own scale.\nIt is `-4` as a pointer, so it is cast at the call. Without it the system stretches the window's pixels on any\nmonitor scaled above 100%, which is what makes an old program's text blurry.",
+        "typeParams": [],
+        "params": [],
+        "returns": null,
+        "see": ["https://rux-lang.dev/docs/api/windows/window#dpi-awareness-context-per-monitor-aware-v2"],
+        "deprecated": null
+      },
+      "value": "0xFFFFFFFFFFFFFFFC",
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "AdjustWindowRectExForDpi",
+      "displayName": "AdjustWindowRectExForDpi",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 275,
+      "signature": "pub extern func AdjustWindowRectExForDpi(rect: *var Rect, style: uint32, menu: bool32, exStyle: uint32, dpi: uint32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Grows a client rectangle to the window rectangle that holds it, at a given DPI.",
+        "markdown": "Grows a client rectangle to the window rectangle that holds it, at a given DPI.\nThe result includes the title bar and borders the style adds, measured for that DPI rather than the system's.",
+        "typeParams": [],
+        "params": [
+          { "name": "rect", "markdown": "the client rectangle on entry, and the window rectangle on return" },
+          { "name": "style", "markdown": "the window's `WS_` style" },
+          { "name": "menu", "markdown": "non-zero when the window has a menu bar" },
+          { "name": "exStyle", "markdown": "the window's extended style" },
+          { "name": "dpi", "markdown": "the DPI to measure the frame at, usually from `GetDpiForWindow`" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#adjust-window-rect-ex-for-dpi",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-adjustwindowrectexfordpi"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "BeginPaint",
+      "displayName": "BeginPaint",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 284,
+      "signature": "pub extern func BeginPaint(window: *var opaque, paint: *var PaintStruct) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Prepares a window for painting and fills in what needs painting.",
+        "markdown": "Prepares a window for painting and fills in what needs painting.\nCalled only in answer to `WM_PAINT`, and always paired with `EndPaint`, which validates the region.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the window being painted" },
+          { "name": "paint", "markdown": "receives the device context and the region to paint" }
+        ],
+        "returns": "the device context to draw with, or null when none is available",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#begin-paint",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-beginpaint"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "CreateWindowExW",
+      "displayName": "CreateWindowExW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 303,
+      "signature": "pub extern func CreateWindowExW(exStyle: uint32, className: *char16, windowName: *char16, style: uint32, x: int32, y: int32, width: int32, height: int32, parent: *var opaque, menu: *var opaque, instance: *var opaque, parameter: *var opaque) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Creates a window of a registered class.",
+        "markdown": "Creates a window of a registered class.\nThe procedure receives `WM_CREATE` before this call returns, so the window is already set up when it does.",
+        "typeParams": [],
+        "params": [
+          { "name": "exStyle", "markdown": "the extended style bits, usually zero" },
+          { "name": "className", "markdown": "the NUL-terminated UTF-16 name of a registered class" },
+          { "name": "windowName", "markdown": "the NUL-terminated UTF-16 title, or null" },
+          { "name": "style", "markdown": "the `WS_` style bits, combined with `|`" },
+          { "name": "x", "markdown": "the left edge, or `CW_USEDEFAULT`" },
+          { "name": "y", "markdown": "the top edge, or `CW_USEDEFAULT`" },
+          { "name": "width", "markdown": "the width, or `CW_USEDEFAULT`" },
+          { "name": "height", "markdown": "the height, or `CW_USEDEFAULT`" },
+          {
+            "name": "parent",
+            "markdown": "the parent or owner window, `HWND_MESSAGE` for a message-only window, or null"
+          },
+          { "name": "menu", "markdown": "the menu, or for a child window its identifier, or null" },
+          { "name": "instance", "markdown": "the module the class was registered by" },
+          { "name": "parameter", "markdown": "a value passed through to `WM_CREATE`, or null" }
+        ],
+        "returns": "the new window, or null on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#create-window-ex-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-createwindowexw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "DefWindowProcW",
+      "displayName": "DefWindowProcW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 327,
+      "signature": "pub extern func DefWindowProcW(window: *var opaque, message: uint32, wParam: uint, lParam: int) -> int",
+      "typeParams": [],
+      "doc": {
+        "summary": "Answers a message the way the system does when a window procedure does not handle it.",
+        "markdown": "Answers a message the way the system does when a window procedure does not handle it.\nA procedure passes every message it does not answer itself on to this call, unchanged, and returns its result.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the window the message is for" },
+          { "name": "message", "markdown": "the message number" },
+          { "name": "wParam", "markdown": "the first message parameter" },
+          { "name": "lParam", "markdown": "the second message parameter" }
+        ],
+        "returns": "the message's default answer",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#def-window-proc-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-defwindowprocw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "DestroyWindow",
+      "displayName": "DestroyWindow",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 335,
+      "signature": "pub extern func DestroyWindow(window: *var opaque) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Destroys a window and its children, sending them `WM_DESTROY`.",
+        "markdown": "Destroys a window and its children, sending them `WM_DESTROY`.\nOnly the thread that created the window may destroy it.",
+        "typeParams": [],
+        "params": [{ "name": "window", "markdown": "the window to destroy" }],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#destroy-window",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-destroywindow"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "DispatchMessageW",
+      "displayName": "DispatchMessageW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 342,
+      "signature": "pub extern func DispatchMessageW(message: *Message) -> int",
+      "typeParams": [],
+      "doc": {
+        "summary": "Hands a message to the window procedure of the window it is for.",
+        "markdown": "Hands a message to the window procedure of the window it is for.",
+        "typeParams": [],
+        "params": [{ "name": "message", "markdown": "a message from `GetMessageW`" }],
+        "returns": "what the window procedure returned",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#dispatch-message-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-dispatchmessagew"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "EndPaint",
+      "displayName": "EndPaint",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 350,
+      "signature": "pub extern func EndPaint(window: *var opaque, paint: *PaintStruct) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Ends the painting `BeginPaint` began and marks the region painted.",
+        "markdown": "Ends the painting `BeginPaint` began and marks the region painted.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the window being painted" },
+          { "name": "paint", "markdown": "the structure `BeginPaint` filled in" }
+        ],
+        "returns": "non-zero, always",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#end-paint",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-endpaint"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetClientRect",
+      "displayName": "GetClientRect",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 358,
+      "signature": "pub extern func GetClientRect(window: *var opaque, rect: *var Rect) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Retrieves the window's client area, whose top-left corner is always zero.",
+        "markdown": "Retrieves the window's client area, whose top-left corner is always zero.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the window" },
+          { "name": "rect", "markdown": "receives the client area" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#get-client-rect",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getclientrect"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetDpiForWindow",
+      "displayName": "GetDpiForWindow",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 366,
+      "signature": "pub extern func GetDpiForWindow(window: *var opaque) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Retrieves the DPI of the monitor the window is on, which is 96 at 100% scaling.",
+        "markdown": "Retrieves the DPI of the monitor the window is on, which is 96 at 100% scaling.\nA process that is not DPI aware always receives 96.",
+        "typeParams": [],
+        "params": [{ "name": "window", "markdown": "the window" }],
+        "returns": "the window's DPI, or zero when `window` is not a window",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#get-dpi-for-window",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getdpiforwindow"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetMessageW",
+      "displayName": "GetMessageW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 378,
+      "signature": "pub extern func GetMessageW(message: *var Message, window: *var opaque, filterMin: uint32, filterMax: uint32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Waits for the next message of the calling thread and takes it from the queue.",
+        "markdown": "Waits for the next message of the calling thread and takes it from the queue.\nThe result has three meanings, not two: positive for a message, zero for `WM_QUIT`, which ends the loop, and\n-1 for an error with the reason in `GetLastError`, which a loop testing only for non-zero would spin on.",
+        "typeParams": [],
+        "params": [
+          { "name": "message", "markdown": "receives the message" },
+          { "name": "window", "markdown": "the window to take messages for, or null for every window of the thread" },
+          { "name": "filterMin", "markdown": "the lowest message number to take, or zero for no filter" },
+          { "name": "filterMax", "markdown": "the highest message number to take, or zero for no filter" }
+        ],
+        "returns": "positive for a message, zero for `WM_QUIT`, or -1 on failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#get-message-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getmessagew"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetSysColor",
+      "displayName": "GetSysColor",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 385,
+      "signature": "pub extern func GetSysColor(index: int32) -> uint32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Retrieves one of the system colors, as `0x00BBGGRR`.",
+        "markdown": "Retrieves one of the system colors, as `0x00BBGGRR`.",
+        "typeParams": [],
+        "params": [{ "name": "index", "markdown": "a `COLOR_` value" }],
+        "returns": "the color, or zero for an index the system does not know",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#get-sys-color",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsyscolor"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "GetSysColorBrush",
+      "displayName": "GetSysColorBrush",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 392,
+      "signature": "pub extern func GetSysColorBrush(index: int32) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Retrieves the brush of one of the system colors, which the system owns and must not be deleted.",
+        "markdown": "Retrieves the brush of one of the system colors, which the system owns and must not be deleted.",
+        "typeParams": [],
+        "params": [{ "name": "index", "markdown": "a `COLOR_` value" }],
+        "returns": "the brush, or null for an index the system does not know",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#get-sys-color-brush",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsyscolorbrush"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "InvalidateRect",
+      "displayName": "InvalidateRect",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 401,
+      "signature": "pub extern func InvalidateRect(window: *var opaque, rect: *Rect, erase: bool32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Marks part of the window as needing paint, so the next pass of the loop sends `WM_PAINT`.",
+        "markdown": "Marks part of the window as needing paint, so the next pass of the loop sends `WM_PAINT`.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the window" },
+          { "name": "rect", "markdown": "the part to mark, or null for the whole client area" },
+          { "name": "erase", "markdown": "non-zero to erase the background before painting" }
+        ],
+        "returns": "non-zero on success, and zero on failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#invalidate-rect",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-invalidaterect"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "LoadCursorW",
+      "displayName": "LoadCursorW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 410,
+      "signature": "pub extern func LoadCursorW(instance: *var opaque, name: *char16) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Loads a cursor; with a null instance and a resource number such as `IDC_ARROW`, one of the system's.",
+        "markdown": "Loads a cursor; with a null instance and a resource number such as `IDC_ARROW`, one of the system's.\nA system cursor is shared and must not be destroyed.",
+        "typeParams": [],
+        "params": [
+          { "name": "instance", "markdown": "the module holding the cursor, or null for a system cursor" },
+          {
+            "name": "name",
+            "markdown": "the NUL-terminated UTF-16 resource name, or a resource number cast to a pointer"
+          }
+        ],
+        "returns": "the cursor, or null on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#load-cursor-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-loadcursorw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "LoadIconW",
+      "displayName": "LoadIconW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 419,
+      "signature": "pub extern func LoadIconW(instance: *var opaque, name: *char16) -> *var opaque",
+      "typeParams": [],
+      "doc": {
+        "summary": "Loads an icon; with a null instance and a resource number such as `IDI_APPLICATION`, one of the system's.",
+        "markdown": "Loads an icon; with a null instance and a resource number such as `IDI_APPLICATION`, one of the system's.\nA system icon is shared and must not be destroyed.",
+        "typeParams": [],
+        "params": [
+          { "name": "instance", "markdown": "the module holding the icon, or null for a system icon" },
+          {
+            "name": "name",
+            "markdown": "the NUL-terminated UTF-16 resource name, or a resource number cast to a pointer"
+          }
+        ],
+        "returns": "the icon, or null on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#load-icon-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-loadiconw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "MessageBoxW",
+      "displayName": "MessageBoxW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 429,
+      "signature": "pub extern func MessageBoxW(window: *var opaque, text: *char16, caption: *char16, style: uint32) -> int32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Shows a modal message box and waits for the user to close it.",
+        "markdown": "Shows a modal message box and waits for the user to close it.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the owner window, or null" },
+          { "name": "text", "markdown": "the NUL-terminated UTF-16 message" },
+          { "name": "caption", "markdown": "the NUL-terminated UTF-16 title, or null for \"Error\"" },
+          { "name": "style", "markdown": "the `MB_` bits choosing the buttons and the icon" }
+        ],
+        "returns": "the button the user chose, such as `IDOK`, or zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#message-box-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-messageboxw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "PostQuitMessage",
+      "displayName": "PostQuitMessage",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 436,
+      "signature": "pub extern func PostQuitMessage(exitCode: int32)",
+      "typeParams": [],
+      "doc": {
+        "summary": "Posts `WM_QUIT` to the calling thread, which makes its `GetMessageW` return zero.",
+        "markdown": "Posts `WM_QUIT` to the calling thread, which makes its `GetMessageW` return zero.\nA main window calls it from `WM_DESTROY`, so closing the window ends the loop.",
+        "typeParams": [],
+        "params": [{ "name": "exitCode", "markdown": "the code the quit message carries in `wParam`" }],
+        "returns": null,
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#post-quit-message",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-postquitmessage"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "RegisterClassExW",
+      "displayName": "RegisterClassExW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 444,
+      "signature": "pub extern func RegisterClassExW(windowClass: *WindowClassEx) -> uint16",
+      "typeParams": [],
+      "doc": {
+        "summary": "Registers a window class that `CreateWindowExW` can then create windows of.",
+        "markdown": "Registers a window class that `CreateWindowExW` can then create windows of.\nA class name is per module: registering one twice fails with `ERROR_CLASS_ALREADY_EXISTS`.",
+        "typeParams": [],
+        "params": [
+          {
+            "name": "windowClass",
+            "markdown": "what the class's windows share, with `size` set to `sizeof(WindowClassEx)`"
+          }
+        ],
+        "returns": "the class atom, or zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#register-class-ex-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-registerclassexw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "SendMessageW",
+      "displayName": "SendMessageW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 456,
+      "signature": "pub extern func SendMessageW(window: *var opaque, message: uint32, wParam: uint, lParam: int) -> int",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sends a message to a window and waits for its procedure to answer.",
+        "markdown": "Sends a message to a window and waits for its procedure to answer.\nOn the window's own thread this is a direct call of the procedure; from another thread it waits for the\nowner's loop to deliver it.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the window" },
+          { "name": "message", "markdown": "the message number" },
+          { "name": "wParam", "markdown": "the first message parameter" },
+          { "name": "lParam", "markdown": "the second message parameter" }
+        ],
+        "returns": "the procedure's answer",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#send-message-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-sendmessagew"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "SetProcessDpiAwarenessContext",
+      "displayName": "SetProcessDpiAwarenessContext",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 464,
+      "signature": "pub extern func SetProcessDpiAwarenessContext(context: *var opaque) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Sets how the process is told about display scale, which only takes effect before its first window exists.",
+        "markdown": "Sets how the process is told about display scale, which only takes effect before its first window exists.\nFails with `ERROR_ACCESS_DENIED` when the awareness is already set, by an earlier call or a manifest.",
+        "typeParams": [],
+        "params": [{ "name": "context", "markdown": "a `DPI_AWARENESS_CONTEXT_` value cast to a pointer" }],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#set-process-dpi-awareness-context",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setprocessdpiawarenesscontext"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "SetWindowPos",
+      "displayName": "SetWindowPos",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 477,
+      "signature": "pub extern func SetWindowPos(window: *var opaque, insertAfter: *var opaque, x: int32, y: int32, width: int32, height: int32, flags: uint32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Changes the window's size, position or stacking order with one call.",
+        "markdown": "Changes the window's size, position or stacking order with one call.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the window" },
+          { "name": "insertAfter", "markdown": "the window to place it after, ignored with `SWP_NOZORDER`" },
+          { "name": "x", "markdown": "the new left edge" },
+          { "name": "y", "markdown": "the new top edge" },
+          { "name": "width", "markdown": "the new width" },
+          { "name": "height", "markdown": "the new height" },
+          { "name": "flags", "markdown": "`SWP_` bits saying which of the values to apply" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#set-window-pos",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setwindowpos"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "SetWindowTextW",
+      "displayName": "SetWindowTextW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 493,
+      "signature": "pub extern func SetWindowTextW(window: *var opaque, text: *char16) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Changes the window's title, or a control's text.",
+        "markdown": "Changes the window's title, or a control's text.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the window" },
+          { "name": "text", "markdown": "the NUL-terminated UTF-16 text" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#set-window-text-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setwindowtextw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "ShowWindow",
+      "displayName": "ShowWindow",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 501,
+      "signature": "pub extern func ShowWindow(window: *var opaque, command: int32) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Shows, hides, minimizes or restores a window.",
+        "markdown": "Shows, hides, minimizes or restores a window.",
+        "typeParams": [],
+        "params": [
+          { "name": "window", "markdown": "the window" },
+          { "name": "command", "markdown": "an `SW_` value, such as `SW_SHOW`" }
+        ],
+        "returns": "non-zero when the window was visible before, and zero when it was hidden; it reports no failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#show-window",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-showwindow"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "TranslateMessage",
+      "displayName": "TranslateMessage",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 508,
+      "signature": "pub extern func TranslateMessage(message: *Message) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Translates key presses into character messages, posted to the same queue.",
+        "markdown": "Translates key presses into character messages, posted to the same queue.",
+        "typeParams": [],
+        "params": [{ "name": "message", "markdown": "a message from `GetMessageW`" }],
+        "returns": "non-zero when a character message was posted",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#translate-message",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-translatemessage"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "UnregisterClassW",
+      "displayName": "UnregisterClassW",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 516,
+      "signature": "pub extern func UnregisterClassW(className: *char16, instance: *var opaque) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Removes a window class once no window of it remains.",
+        "markdown": "Removes a window class once no window of it remains.",
+        "typeParams": [],
+        "params": [
+          { "name": "className", "markdown": "the NUL-terminated UTF-16 class name" },
+          { "name": "instance", "markdown": "the module that registered it" }
+        ],
+        "returns": "non-zero on success, and zero on failure with the reason in `GetLastError`",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#unregister-class-w",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-unregisterclassw"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
+      "baseType": null,
+      "cases": [],
+      "members": [],
+      "implements": [],
+      "targets": ["windows-x86_64", "windows-aarch64"]
+    },
+    {
+      "kind": "extern",
+      "name": "UpdateWindow",
+      "displayName": "UpdateWindow",
+      "module": "Window",
+      "source": "Src/Window.rux",
+      "line": 523,
+      "signature": "pub extern func UpdateWindow(window: *var opaque) -> bool32",
+      "typeParams": [],
+      "doc": {
+        "summary": "Paints any part of the window that needs it now, rather than when the loop is next idle.",
+        "markdown": "Paints any part of the window that needs it now, rather than when the loop is next idle.",
+        "typeParams": [],
+        "params": [{ "name": "window", "markdown": "the window" }],
+        "returns": "non-zero on success, and zero on failure",
+        "see": [
+          "https://rux-lang.dev/docs/api/windows/window#update-window",
+          "https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-updatewindow"
+        ],
+        "deprecated": null
+      },
+      "value": null,
+      "fields": [],
       "baseType": null,
       "cases": [],
       "members": [],

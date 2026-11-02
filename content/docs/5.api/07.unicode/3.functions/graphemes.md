@@ -55,7 +55,7 @@ pub func CountGraphemes(text: char32[..]) -> uint
 
 How many grapheme clusters `text` holds.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Graphemes.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Graphemes.rux#L178)
 
 **Parameters**
 

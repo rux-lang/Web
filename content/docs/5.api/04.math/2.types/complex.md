@@ -41,12 +41,15 @@ A complex number `real + imaginary·i` over `float64`. `Copy`.
 | `real`      | `float64` | The real part.      |
 | `imaginary` | `float64` | The imaginary part. |
 
-**Associated functions**
+**Constructors**
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>Complex</code></h3>
 
 ```rux
-pub func New(real: float64, imaginary: float64) -> Complex
+pub func Complex(
+    real: float64,
+    imaginary: float64
+) -> Complex
 ```
 
 The number `real + imaginary·i`.
@@ -59,6 +62,8 @@ The number `real + imaginary·i`.
 **Returns**: the number
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Complex.rux#L26)
+
+**Associated functions**
 
 <h3 id="from-polar"><code>FromPolar</code></h3>
 
@@ -85,7 +90,7 @@ The number with magnitude `magnitude` at `angle` radians from the positive real 
 <h3 id="abs"><code>Abs</code></h3>
 
 ```rux
-pub func Abs(self: &Complex) -> float64
+pub func Abs(&self) -> float64
 ```
 
 The distance from zero, computed without overflow or underflow on the way.
@@ -97,7 +102,7 @@ The distance from zero, computed without overflow or underflow on the way.
 <h3 id="arg"><code>Arg</code></h3>
 
 ```rux
-pub func Arg(self: &Complex) -> float64
+pub func Arg(&self) -> float64
 ```
 
 The angle from the positive real axis, in (-π, π].
@@ -109,7 +114,7 @@ The angle from the positive real axis, in (-π, π].
 <h3 id="norm"><code>Norm</code></h3>
 
 ```rux
-pub func Norm(self: &Complex) -> float64
+pub func Norm(&self) -> float64
 ```
 
 The square of the magnitude, which needs no square root.
@@ -121,7 +126,7 @@ The square of the magnitude, which needs no square root.
 <h3 id="conjugate"><code>Conjugate</code></h3>
 
 ```rux
-pub func Conjugate(self: &Complex) -> Complex
+pub func Conjugate(&self) -> Complex
 ```
 
 The number reflected across the real axis.
@@ -133,7 +138,7 @@ The number reflected across the real axis.
 <h3 id="negate"><code>Negate</code></h3>
 
 ```rux
-pub func Negate(self: &Complex) -> Complex
+pub func Negate(&self) -> Complex
 ```
 
 The number with both parts negated.
@@ -145,7 +150,7 @@ The number with both parts negated.
 <h3 id="scale"><code>Scale</code></h3>
 
 ```rux
-pub func Scale(self: &Complex, factor: float64) -> Complex
+pub func Scale(&self, factor: float64) -> Complex
 ```
 
 The number with both parts multiplied by `factor`.
@@ -161,7 +166,7 @@ The number with both parts multiplied by `factor`.
 <h3 id="exp"><code>Exp</code></h3>
 
 ```rux
-pub func Exp(self: &Complex) -> Complex
+pub func Exp(&self) -> Complex
 ```
 
 e raised to this number.
@@ -173,7 +178,7 @@ e raised to this number.
 <h3 id="log"><code>Log</code></h3>
 
 ```rux
-pub func Log(self: &Complex) -> Complex
+pub func Log(&self) -> Complex
 ```
 
 The natural logarithm on the principal branch: the logarithm of the magnitude, and the argument.
@@ -185,7 +190,7 @@ The natural logarithm on the principal branch: the logarithm of the magnitude, a
 <h3 id="sqrt"><code>Sqrt</code></h3>
 
 ```rux
-pub func Sqrt(self: &Complex) -> Complex
+pub func Sqrt(&self) -> Complex
 ```
 
 The principal square root, whose real part is never negative.
@@ -197,7 +202,7 @@ The principal square root, whose real part is never negative.
 <h3 id="pow"><code>Pow</code></h3>
 
 ```rux
-pub func Pow(self: &Complex, exponent: Complex) -> Complex
+pub func Pow(&self, exponent: Complex) -> Complex
 ```
 
 This number raised to `exponent`, as e raised to `exponent` times the logarithm, so on the principal branch.
@@ -216,7 +221,7 @@ Zero raised to anything is zero.
 <h3 id="add"><code>+</code></h3>
 
 ```rux
-pub func +(self: &Complex, other: Complex) -> Complex
+pub func +(&self, other: Complex) -> Complex
 ```
 
 The sum.
@@ -232,7 +237,7 @@ The sum.
 <h3 id="subtract"><code>-</code></h3>
 
 ```rux
-pub func -(self: &Complex, other: Complex) -> Complex
+pub func -(&self, other: Complex) -> Complex
 ```
 
 The difference.
@@ -248,7 +253,7 @@ The difference.
 <h3 id="multiply"><code>*</code></h3>
 
 ```rux
-pub func *(self: &Complex, other: Complex) -> Complex
+pub func *(&self, other: Complex) -> Complex
 ```
 
 The product.
@@ -264,7 +269,7 @@ The product.
 <h3 id="divide"><code>/</code></h3>
 
 ```rux
-pub func /(self: &Complex, other: Complex) -> Complex
+pub func /(&self, other: Complex) -> Complex
 ```
 
 The quotient, by Smith's method, so that a divisor with very large or very small parts keeps its precision.
@@ -298,12 +303,15 @@ A complex number `real + imaginary·i` over `float32`. `Copy`.
 | `real`      | `float32` | The real part.      |
 | `imaginary` | `float32` | The imaginary part. |
 
-**Associated functions**
+**Constructors**
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="complex32-constructor"><code>Complex32</code></h3>
 
 ```rux
-pub func New(real: float32, imaginary: float32) -> Complex32
+pub func Complex32(
+    real: float32,
+    imaginary: float32
+) -> Complex32
 ```
 
 The number `real + imaginary·i`.
@@ -316,6 +324,8 @@ The number `real + imaginary·i`.
 **Returns**: the number
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Complex.rux#L184)
+
+**Associated functions**
 
 <h3 id="from-polar"><code>FromPolar</code></h3>
 
@@ -342,7 +352,7 @@ The number with magnitude `magnitude` at `angle` radians from the positive real 
 <h3 id="abs"><code>Abs</code></h3>
 
 ```rux
-pub func Abs(self: &Complex32) -> float32
+pub func Abs(&self) -> float32
 ```
 
 The distance from zero, computed without overflow or underflow on the way.
@@ -354,7 +364,7 @@ The distance from zero, computed without overflow or underflow on the way.
 <h3 id="arg"><code>Arg</code></h3>
 
 ```rux
-pub func Arg(self: &Complex32) -> float32
+pub func Arg(&self) -> float32
 ```
 
 The angle from the positive real axis, in (-π, π].
@@ -366,7 +376,7 @@ The angle from the positive real axis, in (-π, π].
 <h3 id="norm"><code>Norm</code></h3>
 
 ```rux
-pub func Norm(self: &Complex32) -> float32
+pub func Norm(&self) -> float32
 ```
 
 The square of the magnitude, which needs no square root.
@@ -378,7 +388,7 @@ The square of the magnitude, which needs no square root.
 <h3 id="conjugate"><code>Conjugate</code></h3>
 
 ```rux
-pub func Conjugate(self: &Complex32) -> Complex32
+pub func Conjugate(&self) -> Complex32
 ```
 
 The number reflected across the real axis.
@@ -390,7 +400,7 @@ The number reflected across the real axis.
 <h3 id="negate"><code>Negate</code></h3>
 
 ```rux
-pub func Negate(self: &Complex32) -> Complex32
+pub func Negate(&self) -> Complex32
 ```
 
 The number with both parts negated.
@@ -402,10 +412,7 @@ The number with both parts negated.
 <h3 id="scale"><code>Scale</code></h3>
 
 ```rux
-pub func Scale(
-    self: &Complex32,
-    factor: float32
-) -> Complex32
+pub func Scale(&self, factor: float32) -> Complex32
 ```
 
 The number with both parts multiplied by `factor`.
@@ -421,7 +428,7 @@ The number with both parts multiplied by `factor`.
 <h3 id="exp"><code>Exp</code></h3>
 
 ```rux
-pub func Exp(self: &Complex32) -> Complex32
+pub func Exp(&self) -> Complex32
 ```
 
 e raised to this number.
@@ -433,7 +440,7 @@ e raised to this number.
 <h3 id="log"><code>Log</code></h3>
 
 ```rux
-pub func Log(self: &Complex32) -> Complex32
+pub func Log(&self) -> Complex32
 ```
 
 The natural logarithm on the principal branch: the logarithm of the magnitude, and the argument.
@@ -445,7 +452,7 @@ The natural logarithm on the principal branch: the logarithm of the magnitude, a
 <h3 id="sqrt"><code>Sqrt</code></h3>
 
 ```rux
-pub func Sqrt(self: &Complex32) -> Complex32
+pub func Sqrt(&self) -> Complex32
 ```
 
 The principal square root, whose real part is never negative.
@@ -457,10 +464,7 @@ The principal square root, whose real part is never negative.
 <h3 id="pow"><code>Pow</code></h3>
 
 ```rux
-pub func Pow(
-    self: &Complex32,
-    exponent: Complex32
-) -> Complex32
+pub func Pow(&self, exponent: Complex32) -> Complex32
 ```
 
 This number raised to `exponent`, as e raised to `exponent` times the logarithm, so on the principal branch.
@@ -479,7 +483,7 @@ Zero raised to anything is zero.
 <h3 id="add"><code>+</code></h3>
 
 ```rux
-pub func +(self: &Complex32, other: Complex32) -> Complex32
+pub func +(&self, other: Complex32) -> Complex32
 ```
 
 The sum.
@@ -495,7 +499,7 @@ The sum.
 <h3 id="subtract"><code>-</code></h3>
 
 ```rux
-pub func -(self: &Complex32, other: Complex32) -> Complex32
+pub func -(&self, other: Complex32) -> Complex32
 ```
 
 The difference.
@@ -511,7 +515,7 @@ The difference.
 <h3 id="multiply"><code>*</code></h3>
 
 ```rux
-pub func *(self: &Complex32, other: Complex32) -> Complex32
+pub func *(&self, other: Complex32) -> Complex32
 ```
 
 The product.
@@ -527,7 +531,7 @@ The product.
 <h3 id="divide"><code>/</code></h3>
 
 ```rux
-pub func /(self: &Complex32, other: Complex32) -> Complex32
+pub func /(&self, other: Complex32) -> Complex32
 ```
 
 The quotient, by Smith's method, so that a divisor with very large or very small parts keeps its precision.

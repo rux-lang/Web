@@ -33,7 +33,7 @@ below. [`#config`](/docs/api/core/config#config-constant) is the only instance.
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &Config, name: char8[..]) -> char8[..]
+pub func Get(&self, name: char8[..]) -> char8[..]
 ```
 
 The value defined for `name`, or an empty slice when none was.
@@ -53,7 +53,7 @@ Cannot fail. Costs nothing in the built program.
 <h3 id="has"><code>Has</code></h3>
 
 ```rux
-pub func Has(self: &Config, name: char8[..]) -> bool
+pub func Has(&self, name: char8[..]) -> bool
 ```
 
 Whether `name` was defined at all, whatever its value.

@@ -80,7 +80,7 @@ finite first. A zero comes back with a zero significand, which the caller writes
 anything.
 Cannot fail; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L81)
 
 **Parameters**
 
@@ -100,7 +100,7 @@ Takes a `float32` apart into the significand and exponent its digits are generat
 The same decomposition at the narrower width, so both widths reach one generator. Cannot fail; runs in constant
 time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L107)
 
 **Parameters**
 
@@ -122,7 +122,7 @@ measures against are this width's own, so the digits that come back are the shor
 `float16`, not as the `float32` or `float64` the value would widen to. Cannot fail; runs in constant time and
 allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L131)
 
 **Parameters**
 
@@ -143,7 +143,7 @@ The E4M3 layout with IEEE-style specials: four bits of significand, an exponent 
 all-ones exponent kept for the infinities and NaNs, so the largest finite value is 240. As with the other
 widths, the neighbours are this width's own. Cannot fail; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L154)
 
 **Parameters**
 
@@ -169,7 +169,7 @@ The sign is written from `parts`, so a negative zero keeps its sign even though 
 Answers false when the exact arithmetic could not run in the fixed workspace, which Docs/NarrowFloat.md proves
 the narrow widths do not reach. A caller that sees it has a defect in the bound rather than a value to handle.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L180)
 
 **Parameters**
 
@@ -193,7 +193,7 @@ its exact decimal has 1,074 fractional digits, the largest finite value has 309 
 has anything to say past that. A request beyond this is refused rather than clamped, because a caller asking
 for five thousand digits has miscalculated something and answering with 3,900 zeros would hide it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L25)
 
 <h2 id="maximum-fixed-length"><code>MaximumFixedLength</code></h2>
 
@@ -203,7 +203,7 @@ pub const MaximumFixedLength: uint = 1424;
 
 The longest a fixed rendering can be: sign, integer digits, point and fraction.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L29)
 
 <h2 id="precision-digits"><code>PrecisionDigits</code></h2>
 
@@ -227,8 +227,9 @@ as a zero and a tail of zeros.
 Answers false when `precision` is past [`MaximumPrecision`](/docs/api/format/float-text#maximum-precision), when `into` is too short for the digits the value
 needs, or when the exact arithmetic could not run in the fixed workspace — which Docs/NarrowFloat.md proves the
 narrow widths do not reach.
+`count` and `power` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L102)
 
 **Parameters**
 
@@ -260,7 +261,7 @@ was asked for, and why the precision is bounded rather than the output.
 Answers false when the precision is past [`MaximumPrecision`](/docs/api/format/float-text#maximum-precision), or when the exact arithmetic could not run in the
 fixed workspace. There is no fallback to another rendering: a refused request is refused.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L183)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L199)
 
 **Parameters**
 
@@ -279,7 +280,7 @@ pub func WritePrecision(
     writer: &var TextWriter,
     spec: FormatSpec,
     parts: FloatParts
-) -> ! FormatError
+) throws FormatError
 ```
 
 Renders `parts` under a specification that carries a precision, and applies the specification's sign, width,
@@ -289,7 +290,7 @@ placeholder with no precision never pays for it.
 Reports `UnsupportedRequest` for a precision past [`MaximumPrecision`](/docs/api/format/float-text#maximum-precision), and whatever the writer reported
 otherwise. There is no fallback: a refused precision produces no output.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L250)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/PrecisionDigits.rux#L266)
 
 **Parameters**
 
@@ -309,7 +310,7 @@ pub func WriteScientificNotation(
     spec: FormatSpec,
     parts: FloatParts,
     mark: char8
-) -> ! FormatError
+) throws FormatError
 ```
 
 Renders a finite float in scientific notation under `spec`, and applies the specification's sign, width, fill and
@@ -322,7 +323,7 @@ zero.
 Reports `UnsupportedRequest` for a precision past [`MaximumPrecision`](/docs/api/format/float-text#maximum-precision), and whatever the writer reported otherwise.
 There is no fallback: a refused precision produces no output.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Scientific.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Scientific.rux#L176)
 
 **Parameters**
 
@@ -371,8 +372,9 @@ biased exponent is above one.
 Answers false when `into` is shorter than [`MaximumShortestDigits`](/docs/api/format/float-text#maximum-shortest-digits), or when the workspace could not hold the
 arithmetic — which Docs/NarrowFloat.md proves the narrow widths do not reach, so a false from that cause is a
 defect in the bound rather than an input to handle. Nothing partial is reported: `count` is zero on failure.
+`count` and `exponent10` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ShortestDigits.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ShortestDigits.rux#L147)
 
 **Parameters**
 

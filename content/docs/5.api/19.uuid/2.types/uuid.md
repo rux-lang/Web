@@ -84,7 +84,7 @@ variant fields are whatever the bytes say, which is what lets this read a UUID f
 <h3 id="bytes"><code>Bytes</code></h3>
 
 ```rux
-pub func Bytes(self: &Uuid) -> byte[..]
+pub func Bytes(&self) -> byte[..]
 ```
 
 The sixteen bytes, in the standard's order.
@@ -96,7 +96,7 @@ The sixteen bytes, in the standard's order.
 <h3 id="is-nil"><code>IsNil</code></h3>
 
 ```rux
-pub func IsNil(self: &Uuid) -> bool
+pub func IsNil(&self) -> bool
 ```
 
 Whether this is the nil UUID.
@@ -108,7 +108,7 @@ Whether this is the nil UUID.
 <h3 id="is-max"><code>IsMax</code></h3>
 
 ```rux
-pub func IsMax(self: &Uuid) -> bool
+pub func IsMax(&self) -> bool
 ```
 
 Whether this is the max UUID.
@@ -120,7 +120,7 @@ Whether this is the max UUID.
 <h3 id="version"><code>Version</code></h3>
 
 ```rux
-pub func Version(self: &Uuid) -> uint8
+pub func Version(&self) -> uint8
 ```
 
 The version, from the high nibble of the seventh byte.
@@ -134,7 +134,7 @@ is why [`Variant`](/docs/api/uuid/uuid#variant) should be consulted first.
 <h3 id="variant"><code>Variant</code></h3>
 
 ```rux
-pub func Variant(self: &Uuid) -> UuidVariant
+pub func Variant(&self) -> UuidVariant
 ```
 
 The variant, from the high bits of the ninth byte.
@@ -148,7 +148,7 @@ the standard one, `110` Microsoft's, and `111` the reserved future.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &Uuid, other: &Uuid) -> bool
+pub func Equals(&self, other: &Uuid) -> bool
 ```
 
 Whether two UUIDs are the same.
@@ -164,7 +164,7 @@ Whether two UUIDs are the same.
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(self: &Uuid, other: &Uuid) -> Ordering
+pub func Compare(&self, other: &Uuid) -> Ordering
 ```
 
 Orders two UUIDs by their bytes, most significant first.
@@ -183,7 +183,7 @@ is why the byte order is fixed rather than negotiable.
 <h3 id="hash"><code>Hash</code></h3>
 
 ```rux
-pub func Hash(self: &Uuid) -> uint64
+pub func Hash(&self) -> uint64
 ```
 
 A hash of the sixteen bytes, for use as a table key.
@@ -202,10 +202,10 @@ or of an entropy source, so what a table wants here is speed and an even spread 
 
 ```rux
 pub func WriteDisplay(
-    self: &Uuid,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the canonical lower-case form, or the URN form under the `urn` style.
@@ -223,7 +223,7 @@ a value of exactly one length has nothing to apply.
 
 **Returns**: success when the whole form was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Uuid.rux#L266)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Uuid.rux#L265)
 
 ## Implements Debug
 
@@ -233,10 +233,10 @@ a value of exactly one length has nothing to apply.
 
 ```rux
 pub func WriteDebug(
-    self: &Uuid,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`: an identifier has one reading, and quoting it would say nothing extra.
@@ -249,7 +249,7 @@ The failures [`WriteDisplay`](/docs/api/uuid/uuid#write-display) reports.
 
 **Returns**: success when the whole form was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Uuid.rux#L283)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Uuid.rux#L282)
 
 ## Related
 
@@ -265,7 +265,7 @@ Windows API expects, and GUID bytes read from one become the UUID they represent
 deliberately — applying it by accident, or failing to apply it when crossing the boundary, both produce a
 well-formed identifier that refers to something else entirely.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Random.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Random.rux#L53)
 
 **Parameters**
 

@@ -52,10 +52,7 @@ The defaults: the system's own stack size.
 <h3 id="with-stack-size"><code>WithStackSize</code></h3>
 
 ```rux
-pub func WithStackSize(
-    self: &ThreadOptions,
-    size: uint
-) -> ThreadOptions
+pub func WithStackSize(&self, size: uint) -> ThreadOptions
 ```
 
 These options with a stack of `size` bytes. Zero asks for the system's default.
@@ -72,7 +69,7 @@ The system rounds the size up to its page size, and refuses one below its minimu
 <h3 id="stack-size"><code>StackSize</code></h3>
 
 ```rux
-pub func StackSize(self: &ThreadOptions) -> uint
+pub func StackSize(&self) -> uint
 ```
 
 The stack size these options ask for, or zero for the system's default.
@@ -106,7 +103,7 @@ the thread run on and clean up after itself; nothing can then wait for it. A han
 <h3 id="join"><code>Join</code></h3>
 
 ```rux
-pub func Join(self: &var JoinHandle<R>) -> R
+pub func Join(&var self) -> R
 ```
 
 Waits for the thread to finish and returns what its function returned.
@@ -114,40 +111,40 @@ Joining a handle that was already joined or detached is a program error and pani
 
 **Returns**: the thread's result
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L76)
 
 <h3 id="detach"><code>Detach</code></h3>
 
 ```rux
-pub func Detach(self: &var JoinHandle<R>)
+pub func Detach(&var self)
 ```
 
 Lets the thread run on without anyone waiting for it. It releases itself, and its result, when it finishes.
 Detaching a handle that was already joined or detached does nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L98)
 
 <h3 id="is-joinable"><code>IsJoinable</code></h3>
 
 ```rux
-pub func IsJoinable(self: &JoinHandle<R>) -> bool
+pub func IsJoinable(&self) -> bool
 ```
 
 Whether the handle can still be joined.
 
 **Returns**: false once it was joined or detached
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L120)
 
 **Destructor**
 
 <h3 id="join-handle-destructor"><code>~JoinHandle</code></h3>
 
 ```rux
-func ~JoinHandle(self: &var JoinHandle<R>)
+func ~JoinHandle(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L124)
 
 <h2 id="spawn"><code>Spawn&lt;T, R&gt;</code></h2>
 
@@ -155,14 +152,14 @@ func ~JoinHandle(self: &var JoinHandle<R>)
 pub func Spawn<T: Sendable, R: Sendable>(
     entry: func(T) -> R,
     context: T
-) -> JoinHandle<R> ! ThreadError
+) -> JoinHandle<R> throws ThreadError
 ```
 
 Starts a thread running `entry(context)` with the system's default stack size.
 The context moves to the new thread. Whatever `entry` returns waits in the handle until it is joined.
 A panic on any thread ends the whole process, as it does on the main one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L138)
 
 **Type parameters**
 
@@ -187,12 +184,12 @@ pub func SpawnWith<T: Sendable, R: Sendable>(
     options: ThreadOptions,
     entry: func(T) -> R,
     context: T
-) -> JoinHandle<R> ! ThreadError
+) -> JoinHandle<R> throws ThreadError
 ```
 
 Starts a thread running `entry(context)` as `options` say.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L138)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Thread/Src/Spawn.rux#L150)
 
 **Type parameters**
 

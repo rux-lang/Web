@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Transform.rux
-  line: 21
+  line: 22
 seo:
   title: "Transforming text — Text API"
   description: "New strings made from old: concatenation, repetition, replacement and ASCII case."
@@ -28,13 +28,13 @@ pub func Join(
     allocator: Allocator,
     parts: StringView[..],
     separator: StringView
-) -> String ! TextError
+) -> String
 ```
 
 The text of every part of `parts` in order, with `separator` between each two.
 No parts give empty text and one part gives that part, so the separator count is always one less than the parts.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L22)
 
 **Parameters**
 
@@ -44,7 +44,7 @@ No parts give empty text and one part gives that part, so the separator count is
 | `parts`     | `StringView[..]` | the pieces to join           |
 | `separator` | `StringView`     | what goes between them       |
 
-**Returns**: the joined text, or why it could not be made
+**Returns**: the joined text
 
 <h2 id="to-upper"><code>ToUpper</code></h2>
 
@@ -52,13 +52,13 @@ No parts give empty text and one part gives that part, so the separator count is
 pub func ToUpper(
     allocator: Allocator,
     view: StringView
-) -> String ! TextError
+) -> String throws TextError
 ```
 
 The text of `view` in upper case by Unicode's full, unconditional mappings, so `ß` becomes `SS` and `ŉ` becomes
 `ʼN`. The length may change.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L78)
 
 **Parameters**
 
@@ -75,13 +75,13 @@ The text of `view` in upper case by Unicode's full, unconditional mappings, so `
 pub func ToLower(
     allocator: Allocator,
     view: StringView
-) -> String ! TextError
+) -> String throws TextError
 ```
 
 The text of `view` in lower case by Unicode's full, unconditional mappings. A capital sigma always becomes `σ`,
 never the final `ς`, since which one is right depends on the letters around it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L88)
 
 **Parameters**
 
@@ -98,13 +98,13 @@ never the final `ς`, since which one is right depends on the letters around it.
 pub func FoldCase(
     allocator: Allocator,
     view: StringView
-) -> String ! TextError
+) -> String throws TextError
 ```
 
 The text of `view` case-folded by Unicode's full folding, the form for comparing text without regard to case:
 two texts that differ only in case fold to the same bytes, `Straße` and `STRASSE` included.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L98)
 
 **Parameters**
 
@@ -122,11 +122,10 @@ pub func Concat(
     allocator: Allocator,
     left: StringView,
     right: StringView
-) -> String ! TextError
+) -> String
 ```
 
 The text of `left` followed by the text of `right`.
-Fails with what went wrong; no partial text comes back.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L108)
 
@@ -138,7 +137,7 @@ Fails with what went wrong; no partial text comes back.
 | `left`      | `StringView` | the first piece              |
 | `right`     | `StringView` | the second                   |
 
-**Returns**: the two joined, or why they could not be
+**Returns**: the two joined
 
 <h2 id="repeat"><code>Repeat</code></h2>
 
@@ -147,7 +146,7 @@ pub func Repeat(
     allocator: Allocator,
     view: StringView,
     count: uint
-) -> String ! TextError
+) -> String
 ```
 
 The text of `view` written `count` times.
@@ -164,7 +163,7 @@ same as joining a thing to itself.
 | `view`      | `StringView` | the borrowed text to act on  |
 | `count`     | `uint`       | how many times               |
 
-**Returns**: the text repeated that many times, or why it could not be
+**Returns**: the text repeated that many times
 
 <h2 id="replace"><code>Replace</code></h2>
 
@@ -174,7 +173,7 @@ pub func Replace(
     view: StringView,
     needle: StringView,
     replacement: StringView
-) -> String ! TextError
+) -> String
 ```
 
 The text of `view` with every occurrence of `needle` replaced by `replacement`.
@@ -193,7 +192,7 @@ alternative is a replacement between every pair of characters and before and aft
 | `needle`      | `StringView` | the text to look for         |
 | `replacement` | `StringView` | the text to put in its place |
 
-**Returns**: the text with every occurrence replaced, or why it could not be
+**Returns**: the text with every occurrence replaced
 
 <h2 id="is-ascii-letter"><code>IsAsciiLetter</code></h2>
 
@@ -219,7 +218,7 @@ Whether `byte` is an ASCII letter.
 pub func ToAsciiUpper(
     allocator: Allocator,
     view: StringView
-) -> String ! TextError
+) -> String
 ```
 
 The text of `view` with every ASCII lower-case letter raised, and everything else left alone.
@@ -243,7 +242,7 @@ cannot produce anything that is not UTF-8.
 pub func ToAsciiLower(
     allocator: Allocator,
     view: StringView
-) -> String ! TextError
+) -> String
 ```
 
 The text of `view` with every ASCII upper-case letter lowered.

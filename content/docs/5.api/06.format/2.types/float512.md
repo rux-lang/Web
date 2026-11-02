@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/WideFloatValue.rux
-  line: 342
+  line: 351
 seo:
   title: "Float512 — Format API"
   description: "An IEEE binary512 value, held as its bits."
@@ -43,7 +43,7 @@ The value these bits encode.
 
 **Returns**: the value that bit pattern stands for
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L352)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L361)
 
 <h3 id="from-value"><code>FromValue</code></h3>
 
@@ -61,7 +61,7 @@ number, and what is wanted is its representation.
 
 **Returns**: the value with that primitive's bit pattern
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L362)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L371)
 
 <h3 id="layout"><code>Layout</code></h3>
 
@@ -73,14 +73,14 @@ The format these bits are read under.
 
 **Returns**: which format the bits are in
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L388)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L399)
 
 ## Methods
 
 <h3 id="value"><code>Value</code></h3>
 
 ```rux
-pub func Value(self: &Float512) -> float512
+pub func Value(&self) -> float512
 ```
 
 The `float512` these bits encode, for arithmetic on a value that was read or built here.
@@ -88,84 +88,84 @@ Writes the bits into the primitive's storage through a raw pointer.
 
 **Returns**: the primitive with this value's bit pattern
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L371)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L381)
 
 <h3 id="bits"><code>Bits</code></h3>
 
 ```rux
-pub func Bits(self: &Float512) -> uint512
+pub func Bits(&self) -> uint512
 ```
 
 The bits.
 
 **Returns**: the value's bit pattern
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L381)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L392)
 
 <h3 id="is-nan"><code>IsNan</code></h3>
 
 ```rux
-pub func IsNan(self: &Float512) -> bool
+pub func IsNan(&self) -> bool
 ```
 
 Whether this is not a number.
 
 **Returns**: whether the value is a NaN
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L400)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L411)
 
 <h3 id="is-infinite"><code>IsInfinite</code></h3>
 
 ```rux
-pub func IsInfinite(self: &Float512) -> bool
+pub func IsInfinite(&self) -> bool
 ```
 
 Whether this is an infinity of either sign.
 
 **Returns**: whether the value is either infinity
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L407)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L418)
 
 <h3 id="is-finite"><code>IsFinite</code></h3>
 
 ```rux
-pub func IsFinite(self: &Float512) -> bool
+pub func IsFinite(&self) -> bool
 ```
 
 Whether this is an ordinary value: neither a NaN nor an infinity.
 
 **Returns**: whether the value is neither infinite nor a NaN
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L414)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L425)
 
 <h3 id="is-negative"><code>IsNegative</code></h3>
 
 ```rux
-pub func IsNegative(self: &Float512) -> bool
+pub func IsNegative(&self) -> bool
 ```
 
 Whether the sign bit is set, which a negative zero answers yes to.
 
 **Returns**: whether the sign bit is set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L422)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L433)
 
 <h3 id="format-with"><code>FormatWith</code></h3>
 
 ```rux
 pub func FormatWith(
-    self: &Float512,
+    &self,
     allocator: Allocator,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes this value's text under `spec`, taking the working storage from `allocator`.
 The shortest decimal that reads back as the same bits, or the digits a precision asks for. This is the only
 way to render one of these: they implement neither `Display` nor `Debug`, because the exact arithmetic
 their text needs allocates and those protocols offer nowhere to say from where.
-Reports whatever the writer reported, `UnsupportedRequest` for any style, and `TextFailure(OutOfMemory)`
+Reports whatever the writer reported and `UnsupportedRequest` for any style, and terminates the program
 where `allocator` could not supply the working storage.
 
 | Name        | Type              | Description                          |
@@ -176,4 +176,4 @@ where `allocator` could not supply the working storage.
 
 **Returns**: success when the complete rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L438)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatValue.rux#L449)

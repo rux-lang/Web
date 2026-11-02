@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/IoError.rux
-  line: 69
+  line: 73
 seo:
   title: "IoError — Io API"
   description: "A structured I/O failure: the shared meaning, and the platform's own code beside it."
@@ -54,33 +54,35 @@ A failure of `kind` with no platform code.
 
 **Returns**: an error of that kind, carrying no platform value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L85)
 
 ## Methods
 
 <h3 id="is-end"><code>IsEnd</code></h3>
 
 ```rux
-pub func IsEnd(self: &IoError) -> bool
+pub func IsEnd(&self) -> bool
 ```
 
 Whether the stream ended, which is the one report that is not a failure.
 
 **Returns**: whether the stream ended, which is not a failure
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L92)
 
-<h3 id="is-transient"><code>IsTransient</code></h3>
+<h3 id="is-interrupted"><code>IsInterrupted</code></h3>
 
 ```rux
-pub func IsTransient(self: &IoError) -> bool
+pub func IsInterrupted(&self) -> bool
 ```
 
-Whether going again is the right response: an interruption or a would-block.
+Whether the operation was interrupted, the one report that going again at once answers.
+A would-block is deliberately not included: the stream is not ready, and asking again before it is only
+spins, so it is returned to whoever can wait for readiness, such as a `Net` poller.
 
-**Returns**: whether trying again could succeed
+**Returns**: whether retrying the operation immediately is the right response
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L101)
 
 ## Implements Display
 
@@ -90,10 +92,10 @@ Whether going again is the right response: an interruption or a would-block.
 
 ```rux
 pub func WriteDisplay(
-    self: &IoError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the kind as lower-case words, and the platform's code after them when there is one, as
@@ -107,7 +109,7 @@ whatever the writer reported, and `UnsupportedRequest` for a style.
 
 **Returns**: success when the whole text was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L158)
 
 ## Related
 
@@ -138,42 +140,44 @@ pub enum IoErrorKind: int32 {
     AddressUnavailable = 22,
     Unreachable = 23,
     BrokenPipe = 24,
+    UnexpectedEnd = 25,
     Other = 14
 }
 ```
 
 What an I/O operation reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L16)
 
 **Cases**
 
-| Name                 | Value | Description                                                                             |
-| -------------------- | ----- | --------------------------------------------------------------------------------------- |
-| `EndOfStream`        | `1`   | The stream ended: not a failure, but it arrives where failures do.                      |
-| `NotFound`           | `2`   | The named thing does not exist.                                                         |
-| `PermissionDenied`   | `3`   | The system refused on rights.                                                           |
-| `AlreadyExists`      | `4`   | The named thing exists where something new was to be made.                              |
-| `IsDirectory`        | `5`   | A directory stood where a file was expected.                                            |
-| `NotDirectory`       | `6`   | A file stood where a directory was expected.                                            |
-| `StorageFull`        | `7`   | The device has no room left.                                                            |
-| `Interrupted`        | `8`   | The operation was interrupted and may simply be retried.                                |
-| `WouldBlock`         | `9`   | The operation would block a stream opened not to.                                       |
-| `InvalidHandle`      | `10`  | A handle that is not open, or not open for this.                                        |
-| `InvalidInput`       | `11`  | An argument the system rejected.                                                        |
-| `TimedOut`           | `12`  | The operation ran out of time.                                                          |
-| `WriteZero`          | `13`  | A write reported fewer bytes than asked and cannot continue.                            |
-| `InvalidText`        | `15`  | Bytes that were required to be UTF-8 text and are not.                                  |
-| `LimitExceeded`      | `16`  | A bounded operation met its bound before its end.                                       |
-| `ConnectionRefused`  | `17`  | The other end refused the connection: nothing listens there.                            |
-| `ConnectionReset`    | `18`  | The other end reset the connection.                                                     |
-| `ConnectionAborted`  | `19`  | The connection was aborted on this side.                                                |
-| `NotConnected`       | `20`  | The socket is not connected.                                                            |
-| `AddressInUse`       | `21`  | The local address is already in use.                                                    |
-| `AddressUnavailable` | `22`  | The address is not one this machine has, or cannot be reached from it.                  |
-| `Unreachable`        | `23`  | No route leads to the network or host.                                                  |
-| `BrokenPipe`         | `24`  | The other end closed the connection, so nothing more can be written to it.              |
-| `Other`              | `14`  | Something the platform reported that has no shared meaning; the raw code is the detail. |
+| Name                 | Value | Description                                                                                                                                    |
+| -------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `EndOfStream`        | `1`   | The stream ended: not a failure, but it arrives where failures do.                                                                             |
+| `NotFound`           | `2`   | The named thing does not exist.                                                                                                                |
+| `PermissionDenied`   | `3`   | The system refused on rights.                                                                                                                  |
+| `AlreadyExists`      | `4`   | The named thing exists where something new was to be made.                                                                                     |
+| `IsDirectory`        | `5`   | A directory stood where a file was expected.                                                                                                   |
+| `NotDirectory`       | `6`   | A file stood where a directory was expected.                                                                                                   |
+| `StorageFull`        | `7`   | The device has no room left.                                                                                                                   |
+| `Interrupted`        | `8`   | The operation was interrupted before doing anything and may simply be retried at once.                                                         |
+| `WouldBlock`         | `9`   | The operation would block a stream opened not to; retry once the stream is ready, not at once.                                                 |
+| `InvalidHandle`      | `10`  | A handle that is not open, or not open for this.                                                                                               |
+| `InvalidInput`       | `11`  | An argument the system rejected.                                                                                                               |
+| `TimedOut`           | `12`  | The operation ran out of time.                                                                                                                 |
+| `WriteZero`          | `13`  | A write reported fewer bytes than asked and cannot continue.                                                                                   |
+| `InvalidText`        | `15`  | Bytes that were required to be UTF-8 text and are not.                                                                                         |
+| `LimitExceeded`      | `16`  | A bounded operation met its bound before its end.                                                                                              |
+| `ConnectionRefused`  | `17`  | The other end refused the connection: nothing listens there.                                                                                   |
+| `ConnectionReset`    | `18`  | The other end reset the connection.                                                                                                            |
+| `ConnectionAborted`  | `19`  | The connection was aborted on this side.                                                                                                       |
+| `NotConnected`       | `20`  | The socket is not connected.                                                                                                                   |
+| `AddressInUse`       | `21`  | The local address is already in use.                                                                                                           |
+| `AddressUnavailable` | `22`  | The address is not one this machine has, or cannot be reached from it.                                                                         |
+| `Unreachable`        | `23`  | No route leads to the network or host.                                                                                                         |
+| `BrokenPipe`         | `24`  | The other end closed the connection, so nothing more can be written to it.                                                                     |
+| `UnexpectedEnd`      | `25`  | The stream ended partway through something that needed more bytes, such as a buffer [`ReadExact`](/docs/api/io/reader#read-exact) was filling. |
+| `Other`              | `14`  | Something the platform reported that has no shared meaning; the raw code is the detail.                                                        |
 
 **Implements Display**
 
@@ -183,10 +187,10 @@ What an I/O operation reported.
 
 ```rux
 pub func WriteDisplay(
-    self: &IoErrorKind,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the kind as lower-case words, such as `not found`, under the placeholder's width, fill and alignment.
@@ -199,30 +203,31 @@ No style is understood. Reports whatever the writer reported, and `UnsupportedRe
 
 **Returns**: success when the whole text was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L144)
 
 <h3 id="from-io-error"><code>FromIoError</code></h3>
 
 ```rux
-pub func FromIoError(outcome: ! IoError) -> ! FormatError
+pub func FromIoError(error: IoError) -> FormatError
 ```
 
-Turns what a stream reported into what a formatter understands.
-Success becomes the formatter's success value; every failure becomes `WriterFailure`, which is the only thing
-`FormatError` can say about a destination. The details do not travel this way — an adapter records the original
-[`IoError`](/docs/api/io/io-error) where its caller can read it, which is what keeps the loss from being a loss.
+Turns an error a stream threw into what a formatter understands.
+Every failure becomes `WriterFailure`, which is the only thing `FormatError` can say about a destination, so a
+formatter passes a stream's error on with `try Write(...) catch { error => throw FromIoError(error) }`. The
+details do not travel this way — an adapter records the original [`IoError`](/docs/api/io/io-error) where its caller can read it, which is
+what keeps the loss from being a loss.
 The end of a stream is a failure here. Nothing is being read, so a write that reports it is a destination that
 cannot take the bytes, whatever it calls that.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L37)
 
 **Parameters**
 
-| Name      | Type        | Description              |
-| --------- | ----------- | ------------------------ |
-| `outcome` | `! IoError` | what the stream reported |
+| Name    | Type      | Description           |
+| ------- | --------- | --------------------- |
+| `error` | `IoError` | what the stream threw |
 
-**Returns**: success for a success, and `WriterFailure` for any failure
+**Returns**: `WriterFailure`, whatever the stream's error was
 
 <h3 id="to-io-error"><code>ToIoError</code></h3>
 
@@ -238,7 +243,7 @@ here. Bytes that were not text are `InvalidText`; a bounded destination that fil
 instead. It maps to `Other` rather than being ignored, so an adapter that forgets to keep the original is
 visibly wrong rather than quietly reporting success.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L51)
 
 **Parameters**
 

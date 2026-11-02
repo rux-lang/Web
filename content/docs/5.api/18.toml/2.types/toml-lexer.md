@@ -57,22 +57,19 @@ A lexer over `input`.
 <h3 id="next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var TomlLexer) -> TomlToken
+pub func Next(&var self) -> TomlToken
 ```
 
 The next token, or `End` at the end of the input.
 
 **Returns**: the next token, or the end-of-input token
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Lexer.rux#L422)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Lexer.rux#L451)
 
 <h3 id="text-of"><code>TextOf</code></h3>
 
 ```rux
-pub func TextOf(
-    self: &TomlLexer,
-    token: &TomlToken
-) -> char8[..]
+pub func TextOf(&self, token: &TomlToken) -> char8[..]
 ```
 
 The bytes a token spans, which for a text token excludes the quotes and is still escaped.
@@ -83,7 +80,7 @@ The bytes a token spans, which for a text token excludes the quotes and is still
 
 **Returns**: the token's text, borrowed from the input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Lexer.rux#L494)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Lexer.rux#L525)
 
 ## Related
 
@@ -235,7 +232,7 @@ pub func TomlDecodeText(
     span: char8[..],
     form: TomlTextForm,
     bad: *var bool
-) -> String ! TextError
+) -> String throws TextError
 ```
 
 Decodes a text token's span into an owned string, honouring the escapes its form allows.
@@ -243,7 +240,7 @@ A literal string is copied unchanged — that is what makes it the right form fo
 basic string has its escapes resolved, including the line-ending backslash that lets a multi-line string be
 wrapped in the source without the wrapping appearing in the value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Lexer.rux#L509)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Lexer.rux#L540)
 
 **Parameters**
 

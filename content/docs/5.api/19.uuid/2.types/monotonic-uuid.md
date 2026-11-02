@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/TimeOrdered.rux
-  line: 71
+  line: 72
 seo:
   title: "MonotonicUuid — Uuid API"
   description: "A generator of version 7 UUIDs that are strictly increasing, even within one millisecond."
@@ -46,14 +46,14 @@ A generator that has produced nothing yet.
 
 **Returns**: the generator, which has produced nothing yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/TimeOrdered.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/TimeOrdered.rux#L83)
 
 ## Methods
 
 <h3 id="next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var MonotonicUuid) -> Uuid ! EntropyError
+pub func Next(&var self) -> Uuid throws EntropyError
 ```
 
 The next identifier, strictly greater than the one before it.
@@ -61,4 +61,4 @@ The next identifier, strictly greater than the one before it.
 **Returns**: the next value, which sorts after every value this generator has produced, or why entropy was
 unavailable
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/TimeOrdered.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/TimeOrdered.rux#L91)

@@ -98,8 +98,8 @@
         {
           "kind": "method",
           "name": "Load",
-          "line": 43,
-          "signature": "pub func Load(self: &Atomic<T>) -> T",
+          "line": 46,
+          "signature": "pub func Load(&self) -> T",
           "typeParams": [],
           "params": [],
           "receiver": "&Atomic<T>",
@@ -130,8 +130,8 @@
         {
           "kind": "method",
           "name": "LoadWith",
-          "line": 53,
-          "signature": "pub func LoadWith(self: &Atomic<T>, order: MemoryOrder) -> T",
+          "line": 58,
+          "signature": "pub func LoadWith(&self, order: MemoryOrder) -> T",
           "typeParams": [],
           "params": [{ "name": "order", "type": "MemoryOrder" }],
           "receiver": "&Atomic<T>",
@@ -162,8 +162,8 @@
         {
           "kind": "method",
           "name": "Store",
-          "line": 65,
-          "signature": "pub func Store(self: &Atomic<T>, value: T)",
+          "line": 74,
+          "signature": "pub func Store(&self, value: T)",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&Atomic<T>",
@@ -194,8 +194,8 @@
         {
           "kind": "method",
           "name": "StoreWith",
-          "line": 75,
-          "signature": "pub func StoreWith(self: &Atomic<T>, value: T, order: MemoryOrder)",
+          "line": 86,
+          "signature": "pub func StoreWith(&self, value: T, order: MemoryOrder)",
           "typeParams": [],
           "params": [
             { "name": "value", "type": "T" },
@@ -232,8 +232,8 @@
         {
           "kind": "method",
           "name": "Exchange",
-          "line": 88,
-          "signature": "pub func Exchange(self: &Atomic<T>, value: T) -> T",
+          "line": 103,
+          "signature": "pub func Exchange(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&Atomic<T>",
@@ -264,8 +264,8 @@
         {
           "kind": "method",
           "name": "CompareExchange",
-          "line": 99,
-          "signature": "pub func CompareExchange(self: &Atomic<T>, expected: T, desired: T) -> T ! T",
+          "line": 116,
+          "signature": "pub func CompareExchange(&self, expected: T, desired: T) -> T throws T",
           "typeParams": [],
           "params": [
             { "name": "expected", "type": "T" },
@@ -302,8 +302,8 @@
         {
           "kind": "method",
           "name": "CompareExchangeWith",
-          "line": 117,
-          "signature": "pub func CompareExchangeWith(self: &Atomic<T>, expected: T, desired: T, success: MemoryOrder, failure: MemoryOrder) -> T ! T",
+          "line": 138,
+          "signature": "pub func CompareExchangeWith(&self, expected: T, desired: T, success: MemoryOrder, failure: MemoryOrder) -> T throws T",
           "typeParams": [],
           "params": [
             { "name": "expected", "type": "T" },
@@ -344,8 +344,8 @@
         {
           "kind": "method",
           "name": "FetchAdd",
-          "line": 146,
-          "signature": "pub func FetchAdd(self: &Atomic<T>, value: T) -> T",
+          "line": 177,
+          "signature": "pub func FetchAdd(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&Atomic<T>",
@@ -376,8 +376,8 @@
         {
           "kind": "method",
           "name": "FetchSub",
-          "line": 156,
-          "signature": "pub func FetchSub(self: &Atomic<T>, value: T) -> T",
+          "line": 189,
+          "signature": "pub func FetchSub(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&Atomic<T>",
@@ -408,8 +408,8 @@
         {
           "kind": "method",
           "name": "FetchAddWith",
-          "line": 166,
-          "signature": "pub func FetchAddWith(self: &Atomic<T>, value: T, order: MemoryOrder) -> T",
+          "line": 201,
+          "signature": "pub func FetchAddWith(&self, value: T, order: MemoryOrder) -> T",
           "typeParams": [],
           "params": [
             { "name": "value", "type": "T" },
@@ -446,8 +446,8 @@
         {
           "kind": "method",
           "name": "FetchSubWith",
-          "line": 183,
-          "signature": "pub func FetchSubWith(self: &Atomic<T>, value: T, order: MemoryOrder) -> T",
+          "line": 222,
+          "signature": "pub func FetchSubWith(&self, value: T, order: MemoryOrder) -> T",
           "typeParams": [],
           "params": [
             { "name": "value", "type": "T" },
@@ -484,8 +484,8 @@
         {
           "kind": "method",
           "name": "FetchAnd",
-          "line": 198,
-          "signature": "pub func FetchAnd(self: &Atomic<T>, value: T) -> T",
+          "line": 241,
+          "signature": "pub func FetchAnd(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&Atomic<T>",
@@ -516,8 +516,8 @@
         {
           "kind": "method",
           "name": "FetchOr",
-          "line": 207,
-          "signature": "pub func FetchOr(self: &Atomic<T>, value: T) -> T",
+          "line": 252,
+          "signature": "pub func FetchOr(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&Atomic<T>",
@@ -548,8 +548,8 @@
         {
           "kind": "method",
           "name": "FetchXor",
-          "line": 217,
-          "signature": "pub func FetchXor(self: &Atomic<T>, value: T) -> T",
+          "line": 264,
+          "signature": "pub func FetchXor(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&Atomic<T>",
@@ -580,13 +580,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 230,
+          "line": 279,
           "signature": "pub const Zero: Atomic<int8>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<int8> { value: 0i8 }",
+          "value": "Self { value: 0i8 }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -612,13 +612,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 237,
+          "line": 286,
           "signature": "pub const Zero: Atomic<int16>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<int16> { value: 0i16 }",
+          "value": "Self { value: 0i16 }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -644,13 +644,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 244,
+          "line": 293,
           "signature": "pub const Zero: Atomic<int32>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<int32> { value: 0i32 }",
+          "value": "Self { value: 0i32 }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -676,13 +676,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 251,
+          "line": 300,
           "signature": "pub const Zero: Atomic<int64>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<int64> { value: 0i64 }",
+          "value": "Self { value: 0i64 }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -708,13 +708,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 258,
+          "line": 307,
           "signature": "pub const Zero: Atomic<int>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<int> { value: 0 }",
+          "value": "Self { value: 0 }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -740,13 +740,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 265,
+          "line": 314,
           "signature": "pub const Zero: Atomic<uint8>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<uint8> { value: 0u8 }",
+          "value": "Self { value: 0u8 }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -772,13 +772,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 272,
+          "line": 321,
           "signature": "pub const Zero: Atomic<uint16>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<uint16> { value: 0u16 }",
+          "value": "Self { value: 0u16 }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -804,13 +804,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 279,
+          "line": 328,
           "signature": "pub const Zero: Atomic<uint32>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<uint32> { value: 0u32 }",
+          "value": "Self { value: 0u32 }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -836,13 +836,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 286,
+          "line": 335,
           "signature": "pub const Zero: Atomic<uint64>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<uint64> { value: 0u64 }",
+          "value": "Self { value: 0u64 }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -868,13 +868,13 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 293,
+          "line": 342,
           "signature": "pub const Zero: Atomic<uint>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<uint> { value: 0u }",
+          "value": "Self { value: 0u }",
           "conformance": null,
           "public": true,
           "doc": {
@@ -900,13 +900,13 @@
         {
           "kind": "constant",
           "name": "False",
-          "line": 300,
+          "line": 349,
           "signature": "pub const False: Atomic<bool>",
           "typeParams": [],
           "params": [],
           "receiver": null,
           "returnType": null,
-          "value": "Atomic<bool> { value: false }",
+          "value": "Self { value: false }",
           "conformance": null,
           "public": true,
           "doc": {

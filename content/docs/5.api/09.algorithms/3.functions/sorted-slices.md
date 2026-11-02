@@ -92,7 +92,7 @@ than everything gives the length.
 Requires `<` on the element type, and requires `items` to be sorted by that order.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L64)
 
 **Type parameters**
 
@@ -121,7 +121,7 @@ The last position where `value` could be inserted without breaking the order.
 Requires `<` on the element type, and requires `items` to be sorted by that order.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L90)
 
 **Type parameters**
 
@@ -153,7 +153,7 @@ ordering rather than by `==`: two elements neither of which is less than the oth
 would say about them.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L119)
 
 **Type parameters**
 
@@ -183,7 +183,7 @@ answer a caller inserting into a sorted sequence wants.
 Requires `<` on the element type, and requires `items` to be sorted by that order.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L137)
 
 **Type parameters**
 
@@ -214,7 +214,7 @@ Whether `items` is in non-decreasing order under `compare`.
 slice and a single element are sorted, and equal neighbours are in order.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L150)
 
 **Type parameters**
 
@@ -245,7 +245,7 @@ How far `items` is in non-decreasing order under `compare`.
 [`IsSortedUntil`](/docs/api/algorithms/sorted-slices#is-sorted-until) does for the element type's own order.
 Cannot fail. Runs in time proportional to the answer and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L163)
 
 **Type parameters**
 
@@ -277,7 +277,7 @@ The first position where `value` could be inserted into `items` under `compare` 
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L185)
 
 **Type parameters**
 
@@ -310,7 +310,7 @@ The last position where `value` could be inserted into `items` under `compare` w
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L203)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L211)
 
 **Type parameters**
 
@@ -344,7 +344,7 @@ them when several are. `compare` must be the order `items` was sorted by.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L229)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L238)
 
 **Type parameters**
 
@@ -378,7 +378,7 @@ position the value would be inserted. `compare` must be the order `items` was so
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L246)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L256)
 
 **Type parameters**
 

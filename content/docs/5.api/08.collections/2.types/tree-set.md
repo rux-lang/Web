@@ -58,38 +58,38 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: an empty collection that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L42)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &TreeSet<T>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many elements the set holds.
 
 **Returns**: how many elements it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L49)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &TreeSet<T>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the set holds no elements.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L56)
 
 <h3 id="contains"><code>Contains</code></h3>
 
 ```rux
-pub func Contains(self: &TreeSet<T>, value: T) -> bool
+pub func Contains(&self, value: T) -> bool
 ```
 
 Whether `value` is in the set.
@@ -101,22 +101,19 @@ Runs in time proportional to the height, which is at most twice the logarithm of
 
 **Returns**: whether the value is present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L65)
 
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(
-    self: &var TreeSet<T>,
-    value: T
-) -> bool ! CollectionError
+pub func Insert(&var self, value: T) -> bool
 ```
 
 Puts `value` into the set, and reports whether it was not already there.
 Takes ownership. An element equal to one already present is destroyed rather than stored, since the one in
 the set is equal to it and is what everything is already ordered against — so a set never grows past the
 number of distinct elements put into it.
-Reports `OutOfMemory` when the node cannot be allocated, having changed nothing.
+Terminates the program when the node cannot be allocated.
 
 | Name    | Type | Description         |
 | ------- | ---- | ------------------- |
@@ -124,12 +121,12 @@ Reports `OutOfMemory` when the node cannot be allocated, having changed nothing.
 
 **Returns**: whether the value was new rather than already present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L77)
 
 <h3 id="remove"><code>Remove</code></h3>
 
 ```rux
-pub func Remove(self: &var TreeSet<T>, value: T) -> bool
+pub func Remove(&var self, value: T) -> bool
 ```
 
 Takes `value` out of the set, reporting whether it was there.
@@ -141,22 +138,22 @@ Cannot fail. Runs in time proportional to the height and allocates nothing.
 
 **Returns**: whether the value was there to remove
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L87)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var TreeSet<T>)
+pub func Clear(&var self)
 ```
 
 Destroys every element, leaving an empty set that is still usable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L97)
 
 <h3 id="first"><code>First</code></h3>
 
 ```rux
-pub func First(self: &TreeSet<T>) -> T?
+pub func First(&self) -> T?
 ```
 
 The smallest element, or `none` for an empty set.
@@ -164,24 +161,24 @@ Runs in time proportional to the height and allocates nothing.
 
 **Returns**: the smallest element, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L105)
 
 <h3 id="last"><code>Last</code></h3>
 
 ```rux
-pub func Last(self: &TreeSet<T>) -> T?
+pub func Last(&self) -> T?
 ```
 
 The largest element, or `none` for an empty set.
 
 **Returns**: the largest element, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L113)
 
 <h3 id="floor"><code>Floor</code></h3>
 
 ```rux
-pub func Floor(self: &TreeSet<T>, value: T) -> T?
+pub func Floor(&self, value: T) -> T?
 ```
 
 The largest element at or below `value`, or `none` when every element is above it.
@@ -197,7 +194,7 @@ The largest element at or below `value`, or `none` when every element is above i
 <h3 id="ceiling"><code>Ceiling</code></h3>
 
 ```rux
-pub func Ceiling(self: &TreeSet<T>, value: T) -> T?
+pub func Ceiling(&self, value: T) -> T?
 ```
 
 The smallest element at or above `value`, or `none` when every element is below it.
@@ -208,12 +205,12 @@ The smallest element at or above `value`, or `none` when every element is below 
 
 **Returns**: the smallest element at or above `value`, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L134)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &TreeSet<T>) -> TreeSetIterator<T>
+pub func Iterate(&self) -> TreeSetIterator<T>
 ```
 
 A walk over this set, smallest element first, leaving it untouched.
@@ -221,13 +218,13 @@ A walk over this set, smallest element first, leaving it untouched.
 
 **Returns**: a cursor over the elements in order
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L148)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L153)
 
 <h3 id="range"><code>Range</code></h3>
 
 ```rux
 pub func Range(
-    self: &TreeSet<T>,
+    &self,
     start: T,
     end: T
 ) -> TreeSetRangeIterator<T>
@@ -236,6 +233,7 @@ pub func Range(
 A walk over the elements at or above `start` and below `end`.
 Half-open, so `Range(a, b)` and `Range(b, c)` together give exactly `Range(a, c)` with nothing repeated and
 nothing missed. A range whose `end` is not above its `start` hands back nothing.
+`self` is borrowed and must outlive the walk, which must not run across an insertion or a removal.
 
 | Name    | Type | Description                              |
 | ------- | ---- | ---------------------------------------- |
@@ -244,12 +242,12 @@ nothing missed. A range whose `end` is not above its `start` hands back nothing.
 
 **Returns**: a cursor over the elements that fall in `[start, end)`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L166)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
 ```rux
-pub func IntoIterator(self: TreeSet<T>) -> TreeSetIntoIterator<T>
+pub func IntoIterator(self) -> TreeSetIntoIterator<T>
 ```
 
 A walk that consumes this set, smallest element first.
@@ -257,15 +255,12 @@ Takes ownership; the set is gone afterwards.
 
 **Returns**: a cursor that consumes the set as it goes, in order
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L171)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L178)
 
 <h3 id="is-subset-of"><code>IsSubsetOf</code></h3>
 
 ```rux
-pub func IsSubsetOf(
-    self: &TreeSet<T>,
-    other: &TreeSet<T>
-) -> bool
+pub func IsSubsetOf(&self, other: &TreeSet<T>) -> bool
 ```
 
 Whether every element of this set is in `other`.
@@ -278,15 +273,12 @@ Runs in time proportional to this set's length times the logarithm of `other`'s.
 
 **Returns**: whether every element of this set is in `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L190)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L197)
 
 <h3 id="is-superset-of"><code>IsSupersetOf</code></h3>
 
 ```rux
-pub func IsSupersetOf(
-    self: &TreeSet<T>,
-    other: &TreeSet<T>
-) -> bool
+pub func IsSupersetOf(&self, other: &TreeSet<T>) -> bool
 ```
 
 Whether every element of `other` is in this set.
@@ -297,15 +289,12 @@ Whether every element of `other` is in this set.
 
 **Returns**: whether every element of `other` is in this set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L211)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L218)
 
 <h3 id="is-disjoint-from"><code>IsDisjointFrom</code></h3>
 
 ```rux
-pub func IsDisjointFrom(
-    self: &TreeSet<T>,
-    other: &TreeSet<T>
-) -> bool
+pub func IsDisjointFrom(&self, other: &TreeSet<T>) -> bool
 ```
 
 Whether the two sets share no element.
@@ -318,15 +307,12 @@ walk gives the same answer and one of them is shorter.
 
 **Returns**: whether the two share no element
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L221)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L228)
 
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(
-    self: &TreeSet<T>,
-    other: &TreeSet<T>
-) -> bool
+pub func Equals(&self, other: &TreeSet<T>) -> bool
 ```
 
 Whether the two sets hold exactly the same elements.
@@ -339,39 +325,28 @@ makes the lengths enough to reject most pairs before looking at an element.
 
 **Returns**: whether both hold exactly the same elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L244)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L251)
 
 <h3 id="union-with"><code>UnionWith</code></h3>
 
 ```rux
-pub func UnionWith(
-    self: &var TreeSet<T>,
-    other: &TreeSet<T>
-) -> ! CollectionError
+pub func UnionWith(&var self, other: &TreeSet<T>)
 ```
 
 Adds every element of `other` that is not already here.
-Reports `OutOfMemory` if a node cannot be allocated, having added what it managed to before that — unlike
-the hash set's, which reserves the worst case first and is all-or-nothing. A tree has no capacity to reserve:
-every element is a separate allocation, so there is no point at which the whole operation can be paid for in
-advance. What it gives back instead is that a partial union is still a set with every invariant intact, and
-running the same call again finishes it.
+A tree has no capacity to reserve: every element is a separate allocation, so the program terminates at the
+first node that cannot be allocated.
 
 | Name    | Type          | Description                               |
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&TreeSet<T>` | the collection to compare or combine with |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L257)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L260)
 
 <h3 id="intersect-with"><code>IntersectWith</code></h3>
 
 ```rux
-pub func IntersectWith(
-    self: &var TreeSet<T>,
-    other: &TreeSet<T>
-)
+pub func IntersectWith(&var self, other: &TreeSet<T>)
 ```
 
 Keeps only the elements that are also in `other`.
@@ -385,12 +360,12 @@ than an edge.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&TreeSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L281)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L284)
 
 <h3 id="subtract"><code>Subtract</code></h3>
 
 ```rux
-pub func Subtract(self: &var TreeSet<T>, other: &TreeSet<T>)
+pub func Subtract(&var self, other: &TreeSet<T>)
 ```
 
 Removes every element that is also in `other`.
@@ -400,19 +375,19 @@ Allocates nothing and cannot fail, and walks the same way [`IntersectWith`](/doc
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&TreeSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L296)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L303)
 
 <h3 id="symmetric-difference-with"><code>SymmetricDifferenceWith</code></h3>
 
 ```rux
 pub func SymmetricDifferenceWith(
-    self: &var TreeSet<T>,
+    &var self,
     other: &TreeSet<T>
-) -> ! CollectionError
+)
 ```
 
 Keeps the elements that are in exactly one of the two sets.
-Reports `OutOfMemory` if a node cannot be allocated, having done what it managed to first.
+Terminates the program when a node cannot be allocated.
 The removals and the additions cannot be interleaved: an element removed from this set would then look
 absent when `other`'s copy of it arrived, and be added straight back. So what is shared is taken out first,
 and only then is what is left of `other` put in.
@@ -421,22 +396,22 @@ and only then is what is left of `other` put in.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&TreeSet<T>` | the collection to compare or combine with |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L316)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L326)
 
 <h3 id="clone"><code>Clone</code></h3>
 
 ```rux
-pub func Clone(self: &TreeSet<T>) -> TreeSet<T> ! CollectionError
+pub func Clone(&self) -> TreeSet<T>
 ```
 
 A set holding what this one holds, ordered the same way and allocating from the same allocator.
-A failed clone hands back nothing rather than half of a set.
+Terminates the program when a node cannot be allocated.
+Elements are copied with `=`, so the element type must be plain data that `Core::Copyable` describes; an
+owning element type is rejected while compiling, at the copy.
 
 **Returns**: an independent copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L355)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L367)
 
 ## Related
 
@@ -447,7 +422,7 @@ pub func WriteTreeSetDebug<T: Debug>(
     writer: &var TextWriter,
     value: &TreeSet<T>,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a borrowed ordered set as `{first, second, third}`, in order.
@@ -456,7 +431,7 @@ elements and between runs, unlike a hash set's.
 Every element is shown through a borrow of the node holding it, and `spec` is handed to each unchanged.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L220)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L229)
 
 **Type parameters**
 
@@ -484,7 +459,7 @@ pub struct TreeSetIterator<T> {
 
 A walk over a borrowed set, smallest element first.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L365)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L377)
 
 **Type parameters**
 
@@ -499,7 +474,7 @@ A walk over a borrowed set, smallest element first.
 <h4 id="tree-set-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var TreeSetIterator<T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next element in order, or `none` when there are no more.
@@ -507,7 +482,7 @@ Runs in constant amortized time: a whole walk crosses every edge of the tree exa
 
 **Returns**: the next element in order, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L375)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L387)
 
 <h3 id="tree-set-range-iterator"><code>TreeSetRangeIterator&lt;T&gt;</code></h3>
 
@@ -519,7 +494,7 @@ pub struct TreeSetRangeIterator<T> {
 
 A walk over a borrowed set that stops at a bound.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L386)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L402)
 
 **Type parameters**
 
@@ -534,14 +509,14 @@ A walk over a borrowed set that stops at a bound.
 <h4 id="tree-set-range-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var TreeSetRangeIterator<T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next element below the bound, or `none` once the walk reaches it.
 
 **Returns**: the next element in order, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L399)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L415)
 
 <h3 id="tree-set-into-iterator"><code>TreeSetIntoIterator&lt;T&gt;</code></h3>
 
@@ -555,7 +530,7 @@ A walk that consumes the set, smallest element first.
 Owns the nodes, and destroys whatever is left in them when it dies — so a walk stopped part-way destroys the
 rest exactly once, and nothing already handed out is destroyed twice.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L416)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L437)
 
 **Type parameters**
 
@@ -570,7 +545,7 @@ rest exactly once, and nothing already handed out is destroyed twice.
 <h4 id="tree-set-into-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var TreeSetIntoIterator<T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next element in order, or `none` when there are no more.
@@ -578,4 +553,4 @@ Takes the smallest element out of the tree rather than reading past it, which is
 
 **Returns**: the next element in order, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L431)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L450)

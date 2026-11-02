@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Record.rux
-  line: 13
+  line: 14
 seo:
   title: "Records — Log API"
   description: "The formats a log record is written in: text or JSON lines."
@@ -32,7 +32,7 @@ pub enum LogFormat: uint8 {
 
 How records are written. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Record.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Record.rux#L14)
 
 **Cases**
 

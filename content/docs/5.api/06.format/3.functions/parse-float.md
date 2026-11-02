@@ -49,8 +49,9 @@ pub func ExactFloat64(
 
 Reads the decimal `digits * 10^exponent` into the nearest `float64`, with ties to even.
 Answers false for a value past the format's range or a workspace failure, with `overflowed` saying which.
+`value` and `overflowed` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L276)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L301)
 
 **Parameters**
 
@@ -83,8 +84,9 @@ Read at this width's own precision rather than at a `float64`'s and narrowed: na
 and a value that lands on a `float32` boundary can round the wrong way when it has already been rounded to
 fifty-three bits on the way.
 Answers false for a value past the format's range or a workspace failure, with `overflowed` saying which.
+`value` and `overflowed` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L300)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L327)
 
 **Parameters**
 
@@ -115,7 +117,7 @@ pub struct DecimalReading {
 What a decimal spells, before any format decides what to do with it.
 Copy, holding the retained digits and the two flags the rounding needs.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L50)
 
 **Fields**
 
@@ -134,7 +136,7 @@ Copy, holding the retained digits and the two flags the rounding needs.
 pub func ScanDecimal(
     str: char8[..],
     reading: *var DecimalReading
-) -> ! ParseError
+) throws ParseError
 ```
 
 Reads the decimal grammar out of `str`, without deciding what float it names.
@@ -142,10 +144,10 @@ One scanner for both narrow widths, so what one reads the other reads: the gramm
 `[+-]?(digits[.digits?]?|.digits)([eE][+-]?digits)?`, plus the two special spellings `NaN` and `Inf` exactly as
 formatting writes them. The digits are kept exactly up to [`RetainedDecimalDigits`](/docs/api/format/parse-float#retained-decimal-digits), past which a nonzero one
 sets `truncated` and moves the exponent instead.
-Reports `Empty` for no bytes, `InvalidCharacter` at the byte where the shape stopped matching, and
-`OutOfMemory` where the retained digits would not fit the workspace.
+Reports `Empty` for no bytes and `InvalidCharacter` at the byte where the shape stopped matching.
+`reading` must be non-null and writable; after a failure it holds an empty reading.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L76)
 
 **Parameters**
 
@@ -159,25 +161,25 @@ Reports `Empty` for no bytes, `InvalidCharacter` at the byte where the shape sto
 <h2 id="parse-float64"><code>ParseFloat64</code></h2>
 
 ```rux
-pub func ParseFloat64(str: char8[..]) -> float64 ! ParseError
-pub func ParseFloat64(str: StringView) -> float64 ! ParseError
+pub func ParseFloat64(str: char8[..]) -> float64 throws ParseError
+pub func ParseFloat64(str: StringView) -> float64 throws ParseError
 ```
 
 Reads `str` as the `float64` nearest what it spells, rounding to nearest with ties to even.
 Exact: the value is formed as a ratio of integers and the quotient is taken with a sticky bit, so what comes
 back is the nearest `float64` and never one step off it. `NaN`, `Inf` and `-Inf` are read exactly as formatting
 writes them.
-Reports `Empty`, `InvalidCharacter` and `OutOfMemory` as [`ScanDecimal`](/docs/api/format/parse-float#scan-decimal) does, and `Overflow` at the text's
+Reports `Empty` and `InvalidCharacter` as [`ScanDecimal`](/docs/api/format/parse-float#scan-decimal) does, and `Overflow` at the text's
 length for a value past the largest finite `float64` — refused rather than rounded to an infinity, since that
 would turn a number the caller wrote into one they did not. A value below the smallest subnormal is the signed
 zero it rounds to.
 
-| Overload                                                         | Summary                                                                                     |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `pub func ParseFloat64(str: char8[..]) -> float64 ! ParseError`  | Reads `str` as the `float64` nearest what it spells, rounding to nearest with ties to even. |
-| `pub func ParseFloat64(str: StringView) -> float64 ! ParseError` | Provides the public `ParseFloat64` operation.                                               |
+| Overload                                                              | Summary                                                                                     |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `pub func ParseFloat64(str: char8[..]) -> float64 throws ParseError`  | Reads `str` as the `float64` nearest what it spells, rounding to nearest with ties to even. |
+| `pub func ParseFloat64(str: StringView) -> float64 throws ParseError` | Provides the public `ParseFloat64` operation.                                               |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L197)
 
 **Parameters**
 
@@ -190,8 +192,8 @@ zero it rounds to.
 <h2 id="parse-float32"><code>ParseFloat32</code></h2>
 
 ```rux
-pub func ParseFloat32(str: char8[..]) -> float32 ! ParseError
-pub func ParseFloat32(str: StringView) -> float32 ! ParseError
+pub func ParseFloat32(str: char8[..]) -> float32 throws ParseError
+pub func ParseFloat32(str: StringView) -> float32 throws ParseError
 ```
 
 Reads `str` as the `float32` nearest what it spells, rounding to nearest with ties to even.
@@ -201,12 +203,12 @@ fifty-three bits on the way there.
 The failures [`ParseFloat64`](/docs/api/format/parse-float#parse-float64) reports, at this width's range: `Overflow` for a value past the largest finite
 `float32`, and the signed zero for one below the smallest subnormal.
 
-| Overload                                                         | Summary                                                                                     |
-| ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `pub func ParseFloat32(str: char8[..]) -> float32 ! ParseError`  | Reads `str` as the `float32` nearest what it spells, rounding to nearest with ties to even. |
-| `pub func ParseFloat32(str: StringView) -> float32 ! ParseError` | The same grammar for a view.                                                                |
+| Overload                                                              | Summary                                                                                     |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `pub func ParseFloat32(str: char8[..]) -> float32 throws ParseError`  | Reads `str` as the `float32` nearest what it spells, rounding to nearest with ties to even. |
+| `pub func ParseFloat32(str: StringView) -> float32 throws ParseError` | The same grammar for a view.                                                                |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L245)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L251)
 
 **Parameters**
 
@@ -223,7 +225,7 @@ pub func ParseWideFloat(
     allocator: Allocator,
     str: char8[..],
     layout: &FloatLayout
-) -> uint512 ! ParseError
+) -> uint512 throws ParseError
 ```
 
 Reads `str` as a value under `layout`, rounding to nearest with ties to even, and reports the bits.
@@ -248,7 +250,7 @@ format becomes the signed zero. `NaN`, `Inf` and `-Inf` are read exactly as form
 pub func ParseFloat80(
     allocator: Allocator,
     str: char8[..]
-) -> Float80 ! ParseError
+) -> Float80 throws ParseError
 ```
 
 Reads `str` as an x87 extended value.
@@ -270,7 +272,7 @@ Reads `str` as an x87 extended value.
 pub func ParseFloat128(
     allocator: Allocator,
     str: char8[..]
-) -> Float128 ! ParseError
+) -> Float128 throws ParseError
 ```
 
 Reads `str` as a binary128 value.
@@ -292,7 +294,7 @@ Reads `str` as a binary128 value.
 pub func ParseFloat256(
     allocator: Allocator,
     str: char8[..]
-) -> Float256 ! ParseError
+) -> Float256 throws ParseError
 ```
 
 Reads `str` as a binary256 value.
@@ -314,7 +316,7 @@ Reads `str` as a binary256 value.
 pub func ParseFloat512(
     allocator: Allocator,
     str: char8[..]
-) -> Float512 ! ParseError
+) -> Float512 throws ParseError
 ```
 
 Reads `str` as a binary512 value.

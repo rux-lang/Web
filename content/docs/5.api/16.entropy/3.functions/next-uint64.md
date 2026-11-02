@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Fill.rux
-  line: 151
+  line: 153
 seo:
   title: "NextUint64 — Entropy API"
   description: "An unpredictable 64-bit value, which is what a generator wants for a seed."
@@ -22,7 +22,7 @@ seo:
 An unpredictable 64-bit value, which is what a generator wants for a seed.
 
 ```rux
-pub func NextUint64() -> uint64 ! EntropyError
+pub func NextUint64() -> uint64 throws EntropyError
 ```
 
 A failed draw scrubs its local copy before failing, so nothing of a partial draw is left behind on the stack.

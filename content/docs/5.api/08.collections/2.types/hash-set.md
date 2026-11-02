@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/HashSet.rux
-  line: 15
+  line: 17
 seo:
   title: "HashSet<T> — Collections API"
   description: A hash table of distinct values.
@@ -57,7 +57,7 @@ An empty set that has not allocated anything, with a seed drawn from the operati
 
 **Returns**: an empty collection that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L33)
 
 ## Associated functions
 
@@ -83,7 +83,7 @@ An empty set that has not allocated anything, hashing with `seed`.
 
 **Returns**: an empty set keyed with that seed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L45)
 
 <h3 id="with-capacity"><code>WithCapacity</code></h3>
 
@@ -93,7 +93,7 @@ pub func WithCapacity(
     capacity: uint,
     hash: func(T, uint64, uint64) -> uint64,
     equals: func(T, T) -> bool
-) -> HashSet<T> ! CollectionError
+) -> HashSet<T>
 ```
 
 An empty set with room for `capacity` elements already taken.
@@ -107,50 +107,50 @@ An empty set with room for `capacity` elements already taken.
 
 **Returns**: an empty set with room for that many elements already taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L57)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &HashSet<T>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many elements the set holds.
 
 **Returns**: how many elements it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L67)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
 ```rux
-pub func Capacity(self: &HashSet<T>) -> uint
+pub func Capacity(&self) -> uint
 ```
 
 How many slots the table has.
 
 **Returns**: how many elements fit before the next growth
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L74)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &HashSet<T>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the set holds no elements.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L81)
 
 <h3 id="contains"><code>Contains</code></h3>
 
 ```rux
-pub func Contains(self: &HashSet<T>, value: T) -> bool
+pub func Contains(&self, value: T) -> bool
 ```
 
 Whether `value` is in the set.
@@ -163,21 +163,18 @@ Runs in constant expected time and allocates nothing.
 
 **Returns**: whether the value is present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L91)
 
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(
-    self: &var HashSet<T>,
-    value: T
-) -> bool ! CollectionError
+pub func Insert(&var self, value: T) -> bool
 ```
 
 Adds `value` to the set, reporting whether it was not already there.
 `self` is borrowed mutably; `value` is moved in when it is added and destroyed when it was already present --
 a set holds one of each, and the one it already had is the one it keeps.
-A failure leaves the set exactly as it was.
+Terminates the program when the table cannot grow.
 
 | Name    | Type | Description         |
 | ------- | ---- | ------------------- |
@@ -185,12 +182,12 @@ A failure leaves the set exactly as it was.
 
 **Returns**: whether the value was new rather than already present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L102)
 
 <h3 id="remove"><code>Remove</code></h3>
 
 ```rux
-pub func Remove(self: &var HashSet<T>, value: T) -> T?
+pub func Remove(&var self, value: T) -> T?
 ```
 
 Takes `value` out of the set and hands it back.
@@ -203,76 +200,66 @@ intact. Reports `none` when the set did not have it.
 
 **Returns**: the value that was stored, or `none` when it was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L122)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(
-    self: &var HashSet<T>,
-    additional: uint
-) -> ! CollectionError
+pub func Reserve(&var self, additional: uint)
 ```
 
 Makes room for `additional` more elements on top of those already present.
+Terminates the program when the storage cannot be had.
 
 | Name         | Type   | Description                             |
 | ------------ | ------ | --------------------------------------- |
 | `additional` | `uint` | how many more elements to make room for |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L137)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
 ```rux
-pub func ShrinkToFit(self: &var HashSet<T>) -> ! CollectionError
+pub func ShrinkToFit(&var self)
 ```
 
 Releases the capacity the element count does not need.
+Terminates the program when the allocator refuses the smaller table.
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L144)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var HashSet<T>)
+pub func Clear(&var self)
 ```
 
 Destroys every element, keeping the storage.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L150)
 
-<h3 id="try-next"><code>TryNext</code></h3>
+<h3 id="next-element"><code>NextElement</code></h3>
 
 ```rux
-pub func TryNext(
-    self: &HashSet<T>,
-    cursor: *var uint,
-    value: *var T
-) -> bool
+pub func NextElement(&self, cursor: &var uint) -> T?
 ```
 
-Walks to the next occupied slot at or after `cursor`, reporting the element it holds.
-`self` is borrowed; `cursor` is read and advanced past whatever is reported. The order is the table's, which
-is the seed's and not the insertion's, and nothing may be inserted or removed while a walk is in progress.
+The element in the next occupied slot at or after `cursor`, by copy, or `none` at the end.
+`self` is borrowed; `cursor` is advanced past whatever is reported. The order is the table's, which is the
+seed's and not the insertion's, and nothing may be inserted or removed while a walk is in progress.
 
 | Name     | Type        | Description                                              |
 | -------- | ----------- | -------------------------------------------------------- |
-| `cursor` | `*var uint` | the position to resume from, advanced past what was read |
-| `value`  | `*var T`    | receives the element                                     |
+| `cursor` | `&var uint` | the position to resume from, advanced past what was read |
 
-**Returns**: whether an element was read; false at the end
+**Returns**: the next element, or `none` once every slot has been looked at
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L153)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L160)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &HashSet<T>) -> HashSetIterator<T>
+pub func Iterate(&self) -> HashSetIterator<T>
 ```
 
 An iterator over the elements, by copy.
@@ -282,12 +269,12 @@ Nothing may be inserted or removed while the iterator is alive.
 
 **Returns**: a cursor over the elements, in an order the seed decides
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L175)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L180)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
 ```rux
-pub func IntoIterator(self: HashSet<T>) -> HashSetIntoIterator<T>
+pub func IntoIterator(self) -> HashSetIntoIterator<T>
 ```
 
 Takes the set apart into an iterator over its elements.
@@ -296,15 +283,12 @@ destroyed when the iterator's life ends.
 
 **Returns**: a cursor that consumes the set as it goes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L194)
 
 <h3 id="is-subset-of"><code>IsSubsetOf</code></h3>
 
 ```rux
-pub func IsSubsetOf(
-    self: &HashSet<T>,
-    other: &HashSet<T>
-) -> bool
+pub func IsSubsetOf(&self, other: &HashSet<T>) -> bool
 ```
 
 Whether every element of this set is also in `other`.
@@ -320,15 +304,12 @@ Allocates nothing. Runs in time proportional to this set's size.
 
 **Returns**: whether every element of this set is in `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L222)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L227)
 
 <h3 id="is-superset-of"><code>IsSupersetOf</code></h3>
 
 ```rux
-pub func IsSupersetOf(
-    self: &HashSet<T>,
-    other: &HashSet<T>
-) -> bool
+pub func IsSupersetOf(&self, other: &HashSet<T>) -> bool
 ```
 
 Whether every element of `other` is also in this set.
@@ -340,15 +321,12 @@ Both are borrowed. The mirror of [`IsSubsetOf`](/docs/api/collections/hash-set#i
 
 **Returns**: whether every element of `other` is in this set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L244)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L249)
 
 <h3 id="is-disjoint-from"><code>IsDisjointFrom</code></h3>
 
 ```rux
-pub func IsDisjointFrom(
-    self: &HashSet<T>,
-    other: &HashSet<T>
-) -> bool
+pub func IsDisjointFrom(&self, other: &HashSet<T>) -> bool
 ```
 
 Whether the two sets have no element in common.
@@ -363,15 +341,12 @@ Allocates nothing.
 
 **Returns**: whether the two share no element
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L256)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L261)
 
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(
-    self: &HashSet<T>,
-    other: &HashSet<T>
-) -> bool
+pub func Equals(&self, other: &HashSet<T>) -> bool
 ```
 
 Whether the two sets hold exactly the same elements.
@@ -383,40 +358,32 @@ Both are borrowed. Equal sizes and one containment, which together are containme
 
 **Returns**: whether both hold exactly the same elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L279)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L284)
 
 <h3 id="union-with"><code>UnionWith</code></h3>
 
 ```rux
-pub func UnionWith(
-    self: &var HashSet<T>,
-    other: &HashSet<T>
-) -> ! CollectionError
+pub func UnionWith(&var self, other: &HashSet<T>)
 ```
 
 Adds every element of `other` that this set does not already have.
 `self` is borrowed mutably; `other` is borrowed and left alone. Elements are copied out of `other`, which is
 what makes this usable only where copying an element means what it says.
-Room for the worst case is taken first, so this either adds every element or none: a failure part-way would
-leave a set that is neither what it was nor the union, and there is nothing useful a caller could do with
-that. Reserving more than it needs is the price, and it is given back by [`ShrinkToFit`](/docs/api/collections/hash-set#shrink-to-fit).
+Room for the worst case is taken first, so the elements are added without growing part-way. Reserving more
+than it needs is the price, and it is given back by [`ShrinkToFit`](/docs/api/collections/hash-set#shrink-to-fit). Terminates the program when that room
+cannot be had.
 Runs in time proportional to `other`.
 
 | Name    | Type          | Description                               |
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L293)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L297)
 
 <h3 id="intersect-with"><code>IntersectWith</code></h3>
 
 ```rux
-pub func IntersectWith(
-    self: &var HashSet<T>,
-    other: &HashSet<T>
-)
+pub func IntersectWith(&var self, other: &HashSet<T>)
 ```
 
 Removes every element this set has that `other` does not.
@@ -428,12 +395,12 @@ Allocates nothing, so it cannot fail: a set only ever gets smaller here.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L318)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L322)
 
 <h3 id="subtract"><code>Subtract</code></h3>
 
 ```rux
-pub func Subtract(self: &var HashSet<T>, other: &HashSet<T>)
+pub func Subtract(&var self, other: &HashSet<T>)
 ```
 
 Removes every element this set has that `other` also has.
@@ -444,44 +411,45 @@ Allocates nothing, so it cannot fail.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L347)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L356)
 
 <h3 id="symmetric-difference-with"><code>SymmetricDifferenceWith</code></h3>
 
 ```rux
 pub func SymmetricDifferenceWith(
-    self: &var HashSet<T>,
+    &var self,
     other: &HashSet<T>
-) -> ! CollectionError
+)
 ```
 
 Keeps the elements that are in exactly one of the two sets.
 `self` is borrowed mutably; `other` is borrowed and left alone. Elements shared by both leave and are
 destroyed; elements only `other` has are copied in.
-Room for the worst case is taken first, for the same reason [`UnionWith`](/docs/api/collections/hash-set#union-with) takes it: a failure part-way would
-leave a set that is neither operand nor the answer.
+Room for the worst case is taken first, as [`UnionWith`](/docs/api/collections/hash-set#union-with) takes it, and the program terminates when that room
+cannot be had.
 
 | Name    | Type          | Description                               |
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L375)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L388)
 
 <h3 id="clone"><code>Clone</code></h3>
 
 ```rux
-pub func Clone(self: &HashSet<T>) -> HashSet<T> ! CollectionError
+pub func Clone(&self) -> HashSet<T>
 ```
 
 An independent set holding a copy of every element of this one.
 `self` is borrowed and left alone. The copy has its own storage from the same allocator and the same seed, so
 the two lay their elements out alike.
+Elements are copied with `=`, so the element type must be plain data that `Core::Copyable` describes; an
+owning element type is rejected while compiling, at the copy. Terminates the program when the storage cannot
+be had.
 
 **Returns**: an independent copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L408)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L428)
 
 ## Related
 
@@ -496,7 +464,7 @@ pub struct HashSetIterator<T> {
 An iterator over the elements of a set, by copy.
 Borrows the set, so the set must outlive it and must not be inserted into or removed from while it is alive.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L431)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L451)
 
 **Type parameters**
 
@@ -511,16 +479,16 @@ Borrows the set, so the set must outlive it and must not be inserted into or rem
 <h4 id="hash-set-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var HashSetIterator<T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next element, or `none` once every slot has been looked at.
 `self` is borrowed mutably and advanced. The element is a copy; a set of things that own something is walked
-with [`TryNext`](/docs/api/collections/hash-set#try-next) instead.
+with [`NextElement`](/docs/api/collections/hash-set#next-element) instead.
 
 **Returns**: the next element, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L446)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L466)
 
 <h3 id="hash-set-into-iterator"><code>HashSetIntoIterator&lt;T&gt;</code></h3>
 
@@ -533,7 +501,7 @@ pub struct HashSetIntoIterator<T> {
 An iterator that takes a set apart, yielding each element by value.
 Move-only: it owns the storage the set owned. Whatever is left when its life ends is destroyed with it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L464)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L487)
 
 **Type parameters**
 
@@ -548,7 +516,7 @@ Move-only: it owns the storage the set owned. Whatever is left when its life end
 <h4 id="hash-set-into-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var HashSetIntoIterator<T>) -> T?
+pub func Next(&var self) -> T?
 ```
 
 The next element, moved out, or `none` once every slot has been looked at.
@@ -557,7 +525,7 @@ destructor is exactly what nobody took.
 
 **Returns**: the next element, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L482)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L503)
 
 <h3 id="write-hash-set-debug"><code>WriteHashSetDebug&lt;T&gt;</code></h3>
 
@@ -566,7 +534,7 @@ pub func WriteHashSetDebug<T: Debug>(
     writer: &var TextWriter,
     value: &HashSet<T>,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a borrowed hash set as `{first, second, third}`.
@@ -576,7 +544,7 @@ seed and from what the set has been through, so it is not the insertion order an
 Every element is shown through a borrow of it, and `spec` is handed to each unchanged.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L161)
 
 **Type parameters**
 

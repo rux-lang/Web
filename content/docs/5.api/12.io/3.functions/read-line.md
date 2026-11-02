@@ -22,7 +22,7 @@ seo:
 Appends the next line of standard input to `builder`, without its ending.
 
 ```rux
-pub func ReadLine(builder: &var StringBuilder) -> ! IoError
+pub func ReadLine(builder: &var StringBuilder) throws IoError
 ```
 
 `EndOfStream` is reported only when the input ends with nothing before it; a stream failure is returned as
@@ -48,19 +48,20 @@ whatever runs next, and a buffer here would take bytes that were never this line
 pub func ReadLineFrom(
     reader: &var Reader,
     builder: &var StringBuilder
-) -> ! IoError
+) throws IoError
 ```
 
 Appends the next line of `reader` to `builder`, without its ending, reading one byte at a time.
 This is [`ReadLine`](/docs/api/io/read-line) over any source: a line feed ends the line, a carriage return immediately before it belongs
-to the ending, and `EndOfStream` is reported only when the source ends with nothing before it. A stream failure
-is returned as itself, with whatever was read so far left in the builder. The line must be UTF-8: a byte that
+to the ending, and `EndOfStream` is reported only when the source ends with nothing before it. Interruptions are
+retried; any other stream failure, `WouldBlock` included, is returned as itself, with whatever was read so far
+left in the builder. The line must be UTF-8: a byte that
 does not belong to a well-formed character, or a character cut short by the end of the source, is
 `InvalidText`, reported once the rest of the line has been read through its ending; the text before the fault
 stays in the builder. No byte past the line's ending is read, which is what makes it safe on a shared stream;
 a source that is not shared reads faster through [`ReadTextLine`](/docs/api/io/read-line#read-text-line) over a [`BufferedReader`](/docs/api/io/buffered-reader).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/ReadLine.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/ReadLine.rux#L39)
 
 **Parameters**
 
@@ -78,7 +79,7 @@ pub func ReadTextLine(
     reader: &var BufferedReader,
     builder: &var StringBuilder,
     limit: uint
-) -> ! IoError
+) throws IoError
 ```
 
 Appends the next line of `reader` to `builder`, without its ending.
@@ -91,7 +92,7 @@ either failure it is cleared and the offending line consumed through its ending,
 line and read on. A scalar value split across the buffer's edge is completed from the next refill, not
 condemned: where the buffer happens to end is not a property of the text.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextRead.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextRead.rux#L26)
 
 **Parameters**
 

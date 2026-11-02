@@ -50,30 +50,30 @@ arena that is never used costs nothing.
 
 **Returns**: the arena, holding no block yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L67)
 
 ## Methods
 
 <h3 id="handle"><code>Handle</code></h3>
 
 ```rux
-pub func Handle(self: *var Arena) -> ArenaHandle
+pub unsafe func Handle(*var self) -> ArenaHandle
 ```
 
 A copyable interface adapter pointing at this arena.
 `self` stays the caller's. Allocations through the handle update this arena rather than copied state.
 Cannot fail. Runs in constant time and allocates nothing.
-The handle borrows the arena and must not outlive it, nor survive the arena being moved. Nothing here tracks
-that: a handle held past its arena's life points at released storage.
+Safety: the handle borrows the arena and must not outlive it, nor survive the arena being moved. Nothing here
+tracks that: a handle held past its arena's life points at released storage.
 
 **Returns**: a copyable adapter pointing at this arena
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L85)
 
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var Arena)
+pub func Reset(&var self)
 ```
 
 Rewinds every allocation, keeping the largest block for the next round of work.
@@ -84,12 +84,12 @@ The kept block is the current one, which is the largest, so a second round of th
 asking the system for anything. Runs in time proportional to the number of blocks.
 Nothing may be read from or written to any earlier allocation afterwards.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L100)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L97)
 
 <h3 id="bytes-used"><code>BytesUsed</code></h3>
 
 ```rux
-pub func BytesUsed(self: &Arena) -> uint
+pub func BytesUsed(&self) -> uint
 ```
 
 How many payload bytes the arena has handed out, summed over every block it holds.
@@ -100,12 +100,12 @@ nothing.
 
 **Returns**: how many payload bytes the arena's blocks have handed out
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L123)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L128)
 
 <h3 id="block-count"><code>BlockCount</code></h3>
 
 ```rux
-pub func BlockCount(self: &Arena) -> uint
+pub func BlockCount(&self) -> uint
 ```
 
 How many blocks the arena holds.
@@ -113,18 +113,18 @@ How many blocks the arena holds.
 
 **Returns**: how many blocks the arena holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L146)
 
 ## Destructor
 
 ```rux
-func ~Arena(self: &var Arena)
+func ~Arena(&var self)
 ```
 
 Gives every block back to the backing allocator.
 Runs when the arena's life ends. Every pointer the arena handed out becomes invalid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L190)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L202)
 
 ## Related
 
@@ -175,7 +175,7 @@ pub struct ArenaHandle {
 A copyable interface adapter pointing at an arena.
 A handle is cheap to copy and may be stored wherever an allocator is wanted, but it does not own the arena.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L208)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L222)
 
 **Implements Allocator**
 
@@ -185,9 +185,9 @@ A handle is cheap to copy and may be stored wherever an allocator is wanted, but
 
 ```rux
 pub func Allocate(
-    self: &ArenaHandle,
+    &self,
     layout: Layout
-) -> (*var opaque) ! AllocError
+) -> *var opaque throws AllocError
 ```
 
 Takes storage matching `layout` by advancing the arena's pointer.
@@ -202,16 +202,16 @@ The storage lives until the arena is reset or destroyed, whichever comes first, 
 
 **Returns**: the address of the storage, or why none was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L222)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L236)
 
 <h4 id="arena-handle-deallocate"><code>Deallocate</code></h4>
 
 ```rux
 pub func Deallocate(
-    self: &ArenaHandle,
+    &self,
     block: *var opaque,
     layout: Layout
-) -> ! AllocError
+) throws AllocError
 ```
 
 Accepts a release and reclaims only what it can.
@@ -228,17 +228,17 @@ that releases what it takes.
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L247)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L266)
 
 <h4 id="arena-handle-reallocate"><code>Reallocate</code></h4>
 
 ```rux
 pub func Reallocate(
-    self: &ArenaHandle,
+    &self,
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
-) -> (*var opaque) ! AllocError
+) -> *var opaque throws AllocError
 ```
 
 Grows or shrinks a block, extending the most recent allocation in place where it can.
@@ -256,4 +256,4 @@ it rewound off of, so the result is releasable with the layout it was asked for.
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L272)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L296)

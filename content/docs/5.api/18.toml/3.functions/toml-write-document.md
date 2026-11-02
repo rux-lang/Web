@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Writer.rux
-  line: 395
+  line: 416
 seo:
   title: "TomlWriteDocument — Toml API"
   description: Writes table as a TOML document.
@@ -25,7 +25,7 @@ Writes `table` as a TOML document.
 pub func TomlWriteDocument(
     writer: &var TextWriter,
     table: &TomlValue
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same tree always produces the same bytes, and a document written, read and written again produces the
@@ -61,4 +61,4 @@ A header is written as text, so the path is assembled into a fixed buffer rather
 is that buffer. It is far past any path a person writes: reaching it takes a nesting of tables whose names add
 up to a kilobyte, which a document built in memory can do and one that was parsed effectively cannot.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Writer.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Writer.rux#L32)

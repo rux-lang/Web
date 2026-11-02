@@ -60,7 +60,7 @@ A reservoir that will fill `room`.
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &Reservoir<T>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many items the reservoir currently holds, which is the smaller of the sample size and the number
@@ -73,7 +73,7 @@ offered.
 <h3 id="seen"><code>Seen</code></h3>
 
 ```rux
-pub func Seen(self: &Reservoir<T>) -> uint
+pub func Seen(&self) -> uint
 ```
 
 How many items have been offered.

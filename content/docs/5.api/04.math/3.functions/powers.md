@@ -125,7 +125,7 @@ intermediates as large as possible and loses the least.
 | `pub func PowInteger(base: float64, exponent: int64) -> float64` | `base` raised to the integer power `exponent`.                        |
 | `pub func PowInteger(base: float32, exponent: int64) -> float32` | Raises `base` to the integer power `exponent` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/PowInteger.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/PowInteger.rux#L19)
 
 **Parameters**
 
@@ -151,7 +151,7 @@ A signed zero, positive infinity, or NaN passes through; a negative finite value
 | `pub func Sqrt(x: float32) -> float32` | Computes the correctly rounded square root of `x` at `float32` precision. |
 | `pub func Sqrt(x: float64) -> float64` | Computes the correctly rounded square root of `x`.                        |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Sqrt.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Sqrt.rux#L44)
 
 **Parameters**
 

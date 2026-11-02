@@ -67,7 +67,7 @@ What a measurement found: how many iterations its final run made and how long th
 <h3 id="benchmark-result-nanoseconds-per-iteration"><code>NanosecondsPerIteration</code></h3>
 
 ```rux
-pub func NanosecondsPerIteration(self: &BenchmarkResult) -> float64
+pub func NanosecondsPerIteration(&self) -> float64
 ```
 
 The average time one iteration took, in nanoseconds.
@@ -151,7 +151,7 @@ Runs `run` with a growing iteration count until one run lasts at least `options.
 Each next count aims a little past the minimum from the rate measured so far, growing at least twofold and at
 most a hundredfold, so a measurement makes few runs whatever the work costs.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L89)
 
 **Parameters**
 
@@ -174,7 +174,7 @@ pub func RunBenchmarksWith(
 Measures the benchmarks that `options` choose, in order, and reports each as its time per iteration and the
 iterations it was measured over, then how many were measured.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L130)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L138)
 
 **Parameters**
 
@@ -195,7 +195,7 @@ Measures the benchmarks the process's arguments choose. A plain argument is a fi
 its name holds any of them; `--quick` measures each for 10 milliseconds rather than 200, for checking that
 benchmarks still run.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Benchmark.rux#L158)
 
 **Parameters**
 

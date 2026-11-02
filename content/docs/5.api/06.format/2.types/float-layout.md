@@ -89,7 +89,7 @@ IEEE binary512: four hundred and eighty-nine bits of precision.
 <h3 id="significand-field-bits"><code>SignificandFieldBits</code></h3>
 
 ```rux
-pub func SignificandFieldBits(self: &FloatLayout) -> uint
+pub func SignificandFieldBits(&self) -> uint
 ```
 
 How many bits the stored significand field has: the precision, less the leading bit unless it is written.
@@ -101,7 +101,7 @@ How many bits the stored significand field has: the precision, less the leading 
 <h3 id="minimum-exponent"><code>MinimumExponent</code></h3>
 
 ```rux
-pub func MinimumExponent(self: &FloatLayout) -> int
+pub func MinimumExponent(&self) -> int
 ```
 
 The smallest exponent a normal value has, as the power of two its integer significand is scaled by.
@@ -113,7 +113,7 @@ The smallest exponent a normal value has, as the power of two its integer signif
 <h3 id="maximum-exponent"><code>MaximumExponent</code></h3>
 
 ```rux
-pub func MaximumExponent(self: &FloatLayout) -> int
+pub func MaximumExponent(&self) -> int
 ```
 
 The largest exponent a finite value has, on the same scale.
@@ -125,7 +125,7 @@ The largest exponent a finite value has, on the same scale.
 <h3 id="decimal-digits"><code>DecimalDigits</code></h3>
 
 ```rux
-pub func DecimalDigits(self: &FloatLayout) -> uint
+pub func DecimalDigits(&self) -> uint
 ```
 
 How many decimal digits the shortest exact rendering can need: one more than the precision is worth.
@@ -278,7 +278,7 @@ pub func WriteWideFloat(
     spec: FormatSpec,
     bits: uint512,
     layout: &FloatLayout
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `bits`, read under `layout`, as text under `spec`.

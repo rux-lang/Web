@@ -34,8 +34,8 @@ pub variant CommandLineError {
 }
 ```
 
-Failure-only: a parse is the success channel of `Parsed ! CommandLineError`. Copy; every view and name it carries
-borrows the arguments or the specification, which must outlive it.
+Failure-only: a parse that succeeds returns [`Parsed`](/docs/api/commandline/parsed), and this is what it throws. Copy; every view and name it
+carries borrows the arguments or the specification, which must outlive it.
 
 ## Cases
 
@@ -58,10 +58,10 @@ borrows the arguments or the specification, which must outlive it.
 
 ```rux
 pub func WriteDisplay(
-    self: &CommandLineError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes what went wrong, naming the argument, option or positional involved.
@@ -86,10 +86,10 @@ The text is lower case without a final full stop, such as `unknown option '--fro
 
 ```rux
 pub func WriteDebug(
-    self: &CommandLineError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`: the description already names everything involved.

@@ -23,7 +23,7 @@ A source of uniformly distributed 64-bit words.
 
 ```rux
 pub interface RandomGenerator {
-    func NextUint64(self: &var Self) -> uint64;
+    func NextUint64(&var self) -> uint64;
 }
 ```
 
@@ -36,7 +36,7 @@ advances.
 <h3 id="next-uint64"><code>NextUint64</code></h3>
 
 ```rux
-func NextUint64(self: &var Self) -> uint64
+func NextUint64(&var self) -> uint64
 ```
 
 The next 64-bit word, and the state advanced past it.

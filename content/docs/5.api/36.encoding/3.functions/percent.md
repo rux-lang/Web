@@ -87,13 +87,13 @@ pub func PercentEncode(
     bytes: byte[..],
     into: var char8[..],
     set: PercentSet
-) -> uint ! FormatError
+) -> uint throws FormatError
 
 pub func PercentEncode(
     text: char8[..],
     into: var char8[..],
     set: PercentSet
-) -> uint ! FormatError
+) -> uint throws FormatError
 ```
 
 Writes the bytes of `text` percent-encoded for `set` into `into`.
@@ -101,10 +101,10 @@ The byte form, reached without the caller reinterpreting the text first: each UT
 character outside ASCII becomes one escape per byte of its UTF-8 form, as URIs require.
 The failure the byte form reports, with the same guarantee.
 
-| Overload                                                                                              | Summary                                                           |
-| ----------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| `pub func PercentEncode(bytes: byte[..], into: var char8[..], set: PercentSet) -> uint ! FormatError` | Writes `bytes` percent-encoded for `set` into `into`.             |
-| `pub func PercentEncode(text: char8[..], into: var char8[..], set: PercentSet) -> uint ! FormatError` | Writes the bytes of `text` percent-encoded for `set` into `into`. |
+| Overload                                                                                                   | Summary                                                           |
+| ---------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `pub func PercentEncode(bytes: byte[..], into: var char8[..], set: PercentSet) -> uint throws FormatError` | Writes `bytes` percent-encoded for `set` into `into`.             |
+| `pub func PercentEncode(text: char8[..], into: var char8[..], set: PercentSet) -> uint throws FormatError` | Writes the bytes of `text` percent-encoded for `set` into `into`. |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Percent.rux#L89)
 
@@ -122,7 +122,7 @@ The failure the byte form reports, with the same guarantee.
 <h2 id="percent-decoded-length"><code>PercentDecodedLength</code></h2>
 
 ```rux
-pub func PercentDecodedLength(text: char8[..]) -> uint ! DecodeError
+pub func PercentDecodedLength(text: char8[..]) -> uint throws DecodeError
 ```
 
 How many bytes percent-encoded text decodes to, after checking that every escape is well formed.
@@ -147,7 +147,7 @@ pub func PercentDecode(
     text: char8[..],
     into: var byte[..],
     set: PercentSet
-) -> uint ! DecodeError
+) -> uint throws DecodeError
 ```
 
 Reads percent-encoded text into `into`, turning each escape back into its byte.

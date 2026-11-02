@@ -22,14 +22,14 @@ seo:
 Fills `length` bytes of `buffer` with unpredictable bytes.
 
 ```rux
-pub func GetRandom(buffer: *var opaque, length: uint)
+pub unsafe func GetRandom(buffer: *var opaque, length: uint)
 ```
 
 `buffer` is borrowed and written; `length` is read by value. Returns nothing, because this cannot fail: the
 generator is seeded before any user code runs and never blocks.
 Suitable for a key, a token, or anything an adversary would like to guess.
 Runs in time proportional to `length` and allocates nothing.
-`buffer` must be writable for `length` bytes.
+Safety: `buffer` must be writable for `length` bytes.
 
 ## Parameters
 

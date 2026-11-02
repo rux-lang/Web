@@ -195,7 +195,7 @@ than throwing one away. The radial draw is taken on `1 - u` for the same reason 
 logarithm of an exact zero is an infinity, and the generator will produce an exact zero eventually.
 The polar form of the transform avoids the trigonometric functions at the cost of rejecting about a fifth of
 its draws; this uses the direct form, which consumes a fixed two words and is therefore reproducible in a way
-a rejection loop is not.
+a rejection loop is not. `first` and `second` must be non-null and writable.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L62)
 
@@ -223,7 +223,7 @@ A single standard normal value: mean zero, standard deviation one.
 Discards the second value of the pair. A caller drawing many should use [`NormalPair`](/docs/api/random/distributions#normal-pair) and keep both, which
 halves the work.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L80)
 
 **Type parameters**
 
@@ -253,7 +253,7 @@ A normal value with the given mean and standard deviation.
 A negative standard deviation is reflected rather than refused, since the distribution it describes is the
 same one; a zero gives the mean exactly.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L96)
 
 **Type parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Poll.rux
-  line: 15
+  line: 16
 seo:
   title: "Polling — FreeBSD API"
   description: Descriptor flags and the kqueue filters a poller waits with.
@@ -29,7 +29,7 @@ pub const F_GETFL: int32 = 3;
 
 [`F_SETFD`](/docs/api/freebsd/spawn#f-setfd)'s companion `F_GETFL`: the [`fcntl`](/docs/api/freebsd/spawn#fcntl) command that reads a descriptor's status flags.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L16)
 
 <h2 id="f-setfl"><code>F_SETFL</code></h2>
 
@@ -39,7 +39,7 @@ pub const F_SETFL: int32 = 4;
 
 `F_SETFL`: the [`fcntl`](/docs/api/freebsd/spawn#fcntl) command that sets a descriptor's status flags.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L21)
 
 <h2 id="o-nonblock"><code>O_NONBLOCK</code></h2>
 
@@ -49,7 +49,7 @@ pub const O_NONBLOCK: int32 = 0x4;
 
 `O_NONBLOCK`: the status flag that makes a call fail with [`EAGAIN`](/docs/api/freebsd/errors#eagain) rather than wait.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L26)
 
 <h2 id="evfilt-read"><code>EVFILT_READ</code></h2>
 
@@ -59,7 +59,7 @@ pub const EVFILT_READ: int16 = -1;
 
 `EVFILT_READ`: the filter that reports a descriptor with something to read, or a connection to accept.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L31)
 
 <h2 id="evfilt-write"><code>EVFILT_WRITE</code></h2>
 
@@ -69,7 +69,7 @@ pub const EVFILT_WRITE: int16 = -2;
 
 `EVFILT_WRITE`: the filter that reports a descriptor a write would not wait on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L36)
 
 <h2 id="ev-add"><code>EV_ADD</code></h2>
 
@@ -79,7 +79,7 @@ pub const EV_ADD: uint16 = 0x1;
 
 `EV_ADD`: add the change's filter, or update it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L41)
 
 <h2 id="ev-delete"><code>EV_DELETE</code></h2>
 
@@ -89,7 +89,7 @@ pub const EV_DELETE: uint16 = 0x2;
 
 `EV_DELETE`: remove the change's filter.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L46)
 
 <h2 id="ev-receipt"><code>EV_RECEIPT</code></h2>
 
@@ -99,7 +99,7 @@ pub const EV_RECEIPT: uint16 = 0x40;
 
 `EV_RECEIPT`: report each change as an event, with its outcome in `data`, rather than waiting.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L51)
 
 <h2 id="ev-error"><code>EV_ERROR</code></h2>
 
@@ -109,7 +109,7 @@ pub const EV_ERROR: uint16 = 0x4000;
 
 `EV_ERROR`: set on an event that reports a failed change, with the error number in `data`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L56)
 
 <h2 id="ev-eof"><code>EV_EOF</code></h2>
 
@@ -119,7 +119,7 @@ pub const EV_EOF: uint16 = 0x8000;
 
 `EV_EOF`: the peer has closed its side.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L61)
 
 <h2 id="kevent"><code>Kevent</code></h2>
 
@@ -137,7 +137,7 @@ pub struct Kevent {
 
 One `struct kevent` as FreeBSD 12 and later lay it out: a change to register or an event to report.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L65)
 
 **Fields**
 
@@ -175,12 +175,12 @@ A change or an empty event: `filter` on `ident` with `flags`, reporting `userDat
 
 **Returns**: the kevent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L89)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L90)
 
 <h2 id="fcntl-int"><code>FcntlInt</code></h2>
 
 ```rux
-pub func FcntlInt(
+pub unsafe func FcntlInt(
     fd: FileDescriptor,
     command: int32,
     argument: int64
@@ -188,10 +188,12 @@ pub func FcntlInt(
 ```
 
 Performs `command` on a descriptor with an integer argument.
+Safety: `command` must take an integer argument, such as [`F_GETFL`](/docs/api/freebsd/poll#f-getfl) or [`F_SETFL`](/docs/api/freebsd/poll#f-setfl); for a command whose argument is a
+pointer, the kernel would use `argument` as an address.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=fcntl&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=fcntl&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L105)
 
 **Parameters**
 
@@ -213,14 +215,14 @@ Opens a kqueue.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=kqueue&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L113)
 
 **Returns**: the kqueue's descriptor, or a negative error number
 
 <h2 id="kevent-call"><code>KeventCall</code></h2>
 
 ```rux
-pub func KeventCall(
+pub unsafe func KeventCall(
     queue: FileDescriptor,
     changes: *Kevent,
     changeCount: int32,
@@ -231,10 +233,12 @@ pub func KeventCall(
 ```
 
 Applies `changeCount` changes, then waits until an event is ready or `timeout` passes, filling `events`.
+Safety: a non-null `changes` must be readable for `changeCount` events, a non-null `events` writable for
+`eventCount` events, and a non-null `timeout` readable.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=kevent&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=kevent&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Poll.rux#L130)
 
 **Parameters**
 

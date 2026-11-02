@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Access.rux
-  line: 227
+  line: 230
 seo:
   title: "Block operations — Memory API"
   description: "Copying, filling, clearing, comparing and searching blocks of bytes."
@@ -24,7 +24,10 @@ Copying, filling, clearing, comparing and searching blocks of bytes.
 <h2 id="zeroize-block"><code>ZeroizeBlock</code></h2>
 
 ```rux
-pub func ZeroizeBlock(buffer: *var opaque, length: uint)
+pub unsafe func ZeroizeBlock(
+    buffer: *var opaque,
+    length: uint
+)
 ```
 
 Clears `length` bytes at `buffer`, and is not removed however unread those bytes are afterwards.
@@ -35,12 +38,12 @@ library one.
 The guarantee is `Core::Zeroize`'s; this adds the empty-case contract the rest of this module has and takes the
 `*var opaque` and `uint` every other block operation here takes.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`buffer` must be writable for `length` bytes.
+Safety: `buffer` must be writable for `length` bytes.
 It clears the storage it is given and nothing else. A copy the caller made beforehand, a value the compiler
 spilled to the stack, or bytes a reallocation left behind are all still there — so a secret has to be kept in
 one place from the start for this to be the whole of its erasure.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L227)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L230)
 
 **Parameters**
 
@@ -52,7 +55,7 @@ one place from the start for this to be the whole of its erasure.
 <h2 id="copy"><code>Copy</code></h2>
 
 ```rux
-pub func Copy(
+pub unsafe func Copy(
     destination: *var opaque,
     source: *opaque,
     length: uint
@@ -63,8 +66,8 @@ Copies `length` bytes from `source` to `destination`, which must not overlap.
 `source` is borrowed and read; `destination` is borrowed and written. Nothing is returned and nothing takes
 ownership. A `length` of zero copies nothing and accepts null for either pointer.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`destination` must be writable for `length` bytes and `source` readable for `length`, and the two ranges must not
-overlap. Use [`Move`](/docs/api/memory/blocks#move) when they might: this one is free to copy in whichever order suits the machine.
+Safety: `destination` must be writable for `length` bytes and `source` readable for `length`, and the two ranges
+must not overlap. Use [`Move`](/docs/api/memory/blocks#move) when they might: this one is free to copy in whichever order suits the machine.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Block.rux#L30)
 
@@ -79,7 +82,7 @@ overlap. Use [`Move`](/docs/api/memory/blocks#move) when they might: this one is
 <h2 id="move"><code>Move</code></h2>
 
 ```rux
-pub func Move(
+pub unsafe func Move(
     destination: *var opaque,
     source: *opaque,
     length: uint
@@ -94,8 +97,8 @@ before the move began. Sliding a run forward within one buffer therefore works, 
 the middle of an array needs.
 Cannot fail. Runs in time proportional to `length` and allocates nothing — the temporary is notional, and the
 direction of the copy is what actually makes it right.
-`destination` must be writable for `length` bytes and `source` readable for `length`. They may overlap in any
-way, including exactly.
+Safety: `destination` must be writable for `length` bytes and `source` readable for `length`. They may overlap in
+any way, including exactly.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Block.rux#L59)
 
@@ -110,7 +113,7 @@ way, including exactly.
 <h2 id="set"><code>Set</code></h2>
 
 ```rux
-pub func Set(
+pub unsafe func Set(
     destination: *var opaque,
     value: byte,
     length: uint
@@ -120,8 +123,8 @@ pub func Set(
 Writes `value` to each of `length` bytes at `destination`.
 `destination` is borrowed and written. A `length` of zero writes nothing and accepts a null pointer.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`destination` must be writable for `length` bytes. This is not the call for clearing a secret: a write nothing
-reads back may be deleted, and `Core::Zeroize` is the one that may not be.
+Safety: `destination` must be writable for `length` bytes. This is not the call for clearing a secret: a write
+nothing reads back may be deleted, and `Core::Zeroize` is the one that may not be.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Block.rux#L92)
 
@@ -136,14 +139,14 @@ reads back may be deleted, and `Core::Zeroize` is the one that may not be.
 <h2 id="zero"><code>Zero</code></h2>
 
 ```rux
-pub func Zero(destination: *var opaque, length: uint)
+pub unsafe func Zero(destination: *var opaque, length: uint)
 ```
 
 Writes zero to each of `length` bytes at `destination`.
 `destination` is borrowed and written. A `length` of zero writes nothing and accepts a null pointer.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`destination` must be writable for `length` bytes. For a secret, use `Core::Zeroize`, which the compiler may not
-delete however unread the bytes are afterwards.
+Safety: `destination` must be writable for `length` bytes. For a secret, use `Core::Zeroize`, which the compiler may
+not delete however unread the bytes are afterwards.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Block.rux#L114)
 
@@ -157,7 +160,7 @@ delete however unread the bytes are afterwards.
 <h2 id="mismatch-offset"><code>MismatchOffset</code></h2>
 
 ```rux
-pub func MismatchOffset(
+pub unsafe func MismatchOffset(
     left: *opaque,
     right: *opaque,
     length: uint
@@ -170,8 +173,8 @@ is the same answer two equal empty blocks give.
 The answer is a position rather than an ordering, so it says where the blocks diverge and not which one sorts
 first. [`Compare`](/docs/api/memory/blocks#compare) answers that.
 Cannot fail. Runs in time proportional to the shared prefix and allocates nothing.
-Both pointers must be readable for `length` bytes. Not constant-time: it stops at the first difference, so it
-must not be used on a secret.
+Safety: both pointers must be readable for `length` bytes. Not constant-time: it stops at the first difference, so
+it must not be used on a secret.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Block.rux#L136)
 
@@ -188,7 +191,7 @@ must not be used on a secret.
 <h2 id="compare"><code>Compare</code></h2>
 
 ```rux
-pub func Compare(
+pub unsafe func Compare(
     left: *opaque,
     right: *opaque,
     length: uint
@@ -202,7 +205,7 @@ pointer.
 Bytes are compared as unsigned, so the answer does not depend on whether the platform's plain `char` is signed,
 and it matches the order the bytes would sort in as a string.
 Cannot fail. Runs in time proportional to the shared prefix and allocates nothing.
-Both pointers must be readable for `length` bytes. Not constant-time: it stops at the first difference, so a
+Safety: both pointers must be readable for `length` bytes. Not constant-time: it stops at the first difference, so a
 secret compared this way leaks where it differs. `Rux/Crypto` is where a constant-time comparison belongs.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Block.rux#L166)
@@ -220,7 +223,7 @@ secret compared this way leaks where it differs. `Rux/Crypto` is where a constan
 <h2 id="equal"><code>Equal</code></h2>
 
 ```rux
-pub func Equal(
+pub unsafe func Equal(
     left: *opaque,
     right: *opaque,
     length: uint
@@ -231,7 +234,7 @@ Whether two blocks hold the same bytes.
 Both pointers are borrowed and read. A `length` of zero reports true and accepts null for either pointer: two
 empty blocks are equal.
 Cannot fail. Runs in time proportional to the shared prefix and allocates nothing.
-Both pointers must be readable for `length` bytes. Not constant-time.
+Safety: both pointers must be readable for `length` bytes. Not constant-time.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Block.rux#L184)
 
@@ -248,7 +251,7 @@ Both pointers must be readable for `length` bytes. Not constant-time.
 <h2 id="find"><code>Find</code></h2>
 
 ```rux
-pub func Find(
+pub unsafe func Find(
     haystack: *opaque,
     length: uint,
     value: byte
@@ -259,7 +262,7 @@ The offset of the first byte equal to `value`, or `length` when there is none.
 `haystack` is borrowed and read. A `length` of zero reports zero and accepts a null pointer, which is also what a
 search that found nothing reports — an empty block contains nothing to find either way.
 Cannot fail. Runs in time proportional to the offset returned and allocates nothing.
-`haystack` must be readable for `length` bytes.
+Safety: `haystack` must be readable for `length` bytes.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Block.rux#L198)
 

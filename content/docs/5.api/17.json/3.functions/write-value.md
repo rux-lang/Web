@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Writer.rux
-  line: 184
+  line: 175
 seo:
   title: "WriteValue — Json API"
   description: Writes value to writer in the given style.
@@ -26,7 +26,7 @@ pub func WriteValue(
     writer: &var TextWriter,
     value: &JsonValue,
     style: JsonStyle
-) -> ! FormatError
+) throws FormatError
 ```
 
 The value is borrowed and nothing is allocated: the document writes itself into the destination as it is
@@ -106,7 +106,7 @@ The readable style: two spaces per level.
 pub func WriteEscaped(
     writer: &var TextWriter,
     text: char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the escaped form of `text`, including its surrounding quotes.

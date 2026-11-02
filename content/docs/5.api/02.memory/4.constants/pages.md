@@ -83,7 +83,7 @@ Why a page operation did not do what was asked. [`Copy`](/docs/api/memory/blocks
 One set of reasons across four systems that report failure three different ways: an errno, a `GetLastError` code,
 and a sentinel address. A reason the mapping does not cover arrives as `Failed`, which is not a promise that
 nothing went wrong — only that this module could not name it. Every case is a failure: a call that succeeds
-reports its success channel instead.
+returns its result instead.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Pages.rux#L60)
 
@@ -118,7 +118,7 @@ granularity asks [`PageSize`](/docs/api/memory/pages#page-size) once and keeps t
 <h2 id="page-size"><code>PageSize</code></h2>
 
 ```rux
-pub func PageSize() -> uint ! PageError
+pub func PageSize() -> uint throws PageError
 ```
 
 Asks the system how large a page actually is, in bytes.
@@ -146,7 +146,7 @@ caller that needs the size more than once should keep it.
 pub func PageAllocate(
     length: uint,
     protection: uint32
-) -> (*var opaque) ! PageError
+) -> *var opaque throws PageError
 ```
 
 Takes `length` bytes of address space with the given protection, and reports where it landed.
@@ -160,7 +160,7 @@ what it is asked for.
 The pages are the caller's until [`PageRelease`](/docs/api/memory/pages#page-release) takes exactly this length back. Releasing a different length, or
 an address this did not return, is undefined on Windows and silently partial elsewhere.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Pages.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Pages.rux#L135)
 
 **Parameters**
 
@@ -174,22 +174,22 @@ an address this did not return, is undefined on Windows and silently partial els
 <h2 id="page-release"><code>PageRelease</code></h2>
 
 ```rux
-pub func PageRelease(
+pub unsafe func PageRelease(
     address: *var opaque,
     length: uint
-) -> ! PageError
+) throws PageError
 ```
 
 Gives back `length` bytes of address space at `address`.
-`address` must be a base address [`PageAllocate`](/docs/api/memory/pages#page-allocate) returned, and `length` the length it was given. Succeeds when the
-system accepted the release.
+Safety: `address` must be a base address [`PageAllocate`](/docs/api/memory/pages#page-allocate) returned, and `length` the length it was given. Succeeds
+when the system accepted the release.
 A `length` of zero is refused with `InvalidLength`, and a null `address` with `InvalidAddress`, rather than either
 being quietly ignored: both are arithmetic errors at the caller far more often than intentions.
 Every pointer into the range becomes invalid, and the address space may be handed to the next allocation at once.
 Windows requires the exact base address and ignores the length entirely; the other systems accept a sub-range and
 release only that, so a wrong length there silently releases the wrong amount.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Pages.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Pages.rux#L166)
 
 **Parameters**
 
@@ -203,22 +203,22 @@ release only that, so a wrong length there silently releases the wrong amount.
 <h2 id="page-protect"><code>PageProtect</code></h2>
 
 ```rux
-pub func PageProtect(
+pub unsafe func PageProtect(
     address: *var opaque,
     length: uint,
     protection: uint32
-) -> ! PageError
+) throws PageError
 ```
 
 Changes what may be done with `length` bytes at `address`.
-`address` must be page-aligned and `length` is rounded up to whole pages. Succeeds when the system accepted the
-change.
+Safety: `address` must be page-aligned and `length` is rounded up to whole pages. Succeeds when the system accepted
+the change.
 The change takes effect at once, so a thread touching the range concurrently faults rather than finishing what it
 started.
 Nothing here checks that the range was ever allocated. Asking for write and execute together is refused on Apple
 Silicon without an entitlement and by policy on hardened systems elsewhere, which arrives as `PermissionDenied`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Pages.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Pages.rux#L193)
 
 **Parameters**
 
@@ -248,7 +248,7 @@ Returns the rounded length, or `length` itself when rounding would pass the end 
 sizing an allocation should notice, since the system will refuse such a length anyway.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Pages.rux#L219)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Pages.rux#L223)
 
 **Parameters**
 

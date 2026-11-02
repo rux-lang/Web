@@ -22,11 +22,11 @@ seo:
 Overwrites a byte range with zeros, and is never removed however unread those bytes are afterwards.
 
 ```rux
-pub func Zeroize(memory: *var uint8, length: uint64)
+pub unsafe func Zeroize(memory: *var uint8, length: uint64)
 ```
 
-`memory` is borrowed for the call and must address at least `length` writable bytes; passing fewer, or a null
-pointer with a non-zero length, is undefined. `length` of zero writes nothing. Nothing is returned.
+Safety: `memory` is borrowed for the call and must address at least `length` writable bytes; passing fewer, or a
+null pointer with a non-zero length, is undefined. `length` of zero writes nothing. Nothing is returned.
 Clearing a secret is a write nothing reads back, which is exactly what dead-store elimination is entitled to delete.
 Ordinary source cannot say "and mean it", so this is a compiler guarantee rather than a library one: every write the
 call lowers to is marked as one that must happen.

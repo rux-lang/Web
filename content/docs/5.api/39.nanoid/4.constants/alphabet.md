@@ -47,7 +47,7 @@ twenty-one characters where the UUID takes thirty-six.
 <h2 id="validate-alphabet"><code>ValidateAlphabet</code></h2>
 
 ```rux
-pub func ValidateAlphabet(alphabet: char8[..]) -> ! NanoIdError
+pub func ValidateAlphabet(alphabet: char8[..]) throws NanoIdError
 ```
 
 Checks that `alphabet` can be drawn from without bias.

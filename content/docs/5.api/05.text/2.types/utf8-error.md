@@ -31,8 +31,8 @@ pub enum Utf8Error: int32 {
 
 The cases are distinguished because they mean different things about where the bytes came from. `Truncated` is
 what a buffer boundary looks like and may just mean read more; the rest mean the bytes are not UTF-8 and no
-amount of reading will change that. Every case is a failure: the functions here report success through the other
-channel of the native fallible they return.
+amount of reading will change that. Every case is a failure: the functions here report success through what they
+return, and throw this.
 
 ## Cases
 
@@ -50,10 +50,10 @@ channel of the native fallible they return.
 
 ```rux
 pub func WriteDisplay(
-    self: &Utf8Error,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the description of what is wrong with a byte sequence, or `well-formed UTF-8` for success.
@@ -66,7 +66,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L212)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L204)
 
 ## Implements Debug
 
@@ -76,10 +76,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 ```rux
 pub func WriteDebug(
-    self: &Utf8Error,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Names the case, qualified by its type: `Utf8Error::Truncated`.
@@ -92,4 +92,4 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L229)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L221)

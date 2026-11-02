@@ -55,7 +55,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="with-key-bytes"><code>WithKeyBytes</code></h3>
 
 ```rux
-pub func WithKeyBytes(key: *byte) -> SipHash24
+pub unsafe func WithKeyBytes(key: *byte) -> SipHash24
 ```
 
 A hasher keyed with the sixteen bytes at `key`, least significant byte of each half first.
@@ -63,7 +63,7 @@ A hasher keyed with the sixteen bytes at `key`, least significant byte of each h
 it is what to reach for when checking against one; [`WithKey`](/docs/api/hash/sip-hash24#with-key) is what to reach for when the key came from
 `Rux/Entropy` as two words.
 Cannot fail. Runs in constant time and allocates nothing.
-`key` must be readable for sixteen bytes.
+Safety: `key` must be readable for sixteen bytes.
 
 | Name  | Type    | Description                                        |
 | ----- | ------- | -------------------------------------------------- |
@@ -78,7 +78,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var SipHash24)
+pub func Reset(&var self)
 ```
 
 Puts the hasher back to where it started, keeping its key.
@@ -94,11 +94,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    self: &var SipHash24,
-    bytes: *byte,
-    length: uint
-)
+pub func Write(&var self, bytes: *byte, length: uint)
 ```
 
 Adds `length` bytes at `bytes` to the hash.
@@ -118,7 +114,7 @@ Runs in time proportional to `length` and allocates nothing.
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var SipHash24) -> uint64
+pub func Finish(&var self) -> uint64
 ```
 
 The hash of everything written so far.
@@ -128,7 +124,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the hash of everything written since the last reset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L251)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L260)
 
 ## Related
 
@@ -234,7 +230,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h4 id="sip-state-round"><code>Round</code></h4>
 
 ```rux
-pub func Round(self: &var SipState, count: uint)
+pub func Round(&var self, count: uint)
 ```
 
 Runs `count` SipHash rounds over the state.
@@ -251,16 +247,16 @@ Cannot fail. Runs in time proportional to `count` and allocates nothing.
 <h3 id="sip-word"><code>SipWord</code></h3>
 
 ```rux
-pub func SipWord(bytes: *byte) -> uint64
+pub unsafe func SipWord(bytes: *byte) -> uint64
 ```
 
 The eight bytes at `bytes` as a 64-bit word, least significant byte first.
 `bytes` is borrowed and read. Assembled a byte at a time, so the answer is the same at any address on any
 machine: SipHash is defined on a little-endian byte stream rather than on the machine's own order.
 Cannot fail. Runs in constant time and allocates nothing.
-`bytes` must be readable for eight bytes.
+Safety: `bytes` must be readable for eight bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L277)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L286)
 
 **Parameters**
 
@@ -287,7 +283,7 @@ that key, and is the one case in which `bytes` may be null.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
 `bytes` must be readable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L298)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/SipHash.rux#L307)
 
 **Parameters**
 

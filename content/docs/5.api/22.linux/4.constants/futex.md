@@ -44,7 +44,7 @@ pub const FutexWakePrivate: int32 = 129;
 <h2 id="futex-wait"><code>FutexWait</code></h2>
 
 ```rux
-pub func FutexWait(
+pub unsafe func FutexWait(
     address: *uint32,
     expected: uint32,
     timeout: *Timespec
@@ -53,10 +53,11 @@ pub func FutexWait(
 
 Sleeps while `*address` equals `expected`, until a wake, a signal or the timeout.
 Returns at once with `-EAGAIN` when the word already differs, which is how a caller learns it changed.
+Safety: `address` must point at a live, four-byte aligned word, and a non-null `timeout` must be readable.
 
 **See also**: [https://man7.org/linux/man-pages/man2/futex.2.html](https://man7.org/linux/man-pages/man2/futex.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L36)
 
 **Parameters**
 
@@ -71,14 +72,18 @@ Returns at once with `-EAGAIN` when the word already differs, which is how a cal
 <h2 id="futex-wake"><code>FutexWake</code></h2>
 
 ```rux
-pub func FutexWake(address: *uint32, count: int32) -> int64
+pub unsafe func FutexWake(
+    address: *uint32,
+    count: int32
+) -> int64
 ```
 
 Wakes up to `count` threads sleeping on `address`.
+Safety: `address` must point at a live, four-byte aligned word.
 
 **See also**: [https://man7.org/linux/man-pages/man2/futex.2.html](https://man7.org/linux/man-pages/man2/futex.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L48)
 
 **Parameters**
 

@@ -72,7 +72,7 @@ A view over `units` as they stand: no validation, because there is nothing to va
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &OsStringView) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many native units the view spans — bytes or code units, not characters.
@@ -84,7 +84,7 @@ How many native units the view spans — bytes or code units, not characters.
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &OsStringView) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the view spans nothing.
@@ -96,7 +96,7 @@ Whether the view spans nothing.
 <h3 id="units"><code>Units</code></h3>
 
 ```rux
-pub func Units(self: &OsStringView) -> OsUnit[..]
+pub func Units(&self) -> OsUnit[..]
 ```
 
 The units themselves.
@@ -108,10 +108,7 @@ The units themselves.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(
-    self: &OsStringView,
-    other: &OsStringView
-) -> bool
+pub func Equals(&self, other: &OsStringView) -> bool
 ```
 
 Whether two views hold the same units.
@@ -130,9 +127,9 @@ one are still two names here, because which names those are is the filesystem's 
 
 ```rux
 pub func ToText(
-    self: &OsStringView,
+    &self,
     allocator: Allocator
-) -> String ! TextError
+) -> String throws TextError
 ```
 
 This native text as UTF-8, or nothing where it is not text.
@@ -147,7 +144,7 @@ program that must show it anyway shows it lossily by its own policy, knowingly.
 
 **Returns**: the units converted to text, or a failure when they are not valid in it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L96)
 
 ## Implements Display
 
@@ -157,10 +154,10 @@ program that must show it anyway shows it lossily by its own policy, knowingly.
 
 ```rux
 pub func WriteDisplay(
-    self: &OsStringView,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the name as text, with every native unit that is not text replaced by U+FFFD.
@@ -178,7 +175,7 @@ refused rather than applied because a truncated path is a different path, and ma
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L208)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L220)
 
 ## Implements Debug
 
@@ -188,10 +185,10 @@ refused rather than applied because a truncated path is a different path, and ma
 
 ```rux
 pub func WriteDebug(
-    self: &OsStringView,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the name exactly, quoted, with every unit that is not text spelled as an escape.
@@ -208,4 +205,4 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L226)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L238)

@@ -78,7 +78,7 @@ first argument, as every system expects. Its streams start as `Stdio::Inherit`.
 
 **Returns**: the command
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L82)
 
 **Associated functions**
 
@@ -100,7 +100,7 @@ A command to start `program` given in native form, such as this process's own fi
 
 **Returns**: the command
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L100)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L98)
 
 **Methods**
 
@@ -108,9 +108,9 @@ A command to start `program` given in native form, such as this process's own fi
 
 ```rux
 pub func Capture(
-    self: &Command,
+    &self,
     allocator: Allocator
-) -> CapturedOutput ! IoError
+) -> CapturedOutput throws IoError
 ```
 
 Starts the program with its output and error piped, keeps everything it writes, and waits for it to finish.
@@ -122,12 +122,12 @@ Its input is what the command says, which is this process's own unless changed.
 
 **Returns**: the output, the error and how the program finished
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L79)
 
 <h3 id="argument"><code>Argument</code></h3>
 
 ```rux
-pub func Argument(self: &var Command, value: char8[..])
+pub func Argument(&var self, value: char8[..])
 ```
 
 Adds an argument, as UTF-8 text.
@@ -136,15 +136,12 @@ Adds an argument, as UTF-8 text.
 | ------- | ----------- | ------------ |
 | `value` | `char8[..]` | the argument |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L110)
 
 <h3 id="native-argument"><code>NativeArgument</code></h3>
 
 ```rux
-pub func NativeArgument(
-    self: &var Command,
-    value: OsStringView
-)
+pub func NativeArgument(&var self, value: OsStringView)
 ```
 
 Adds an argument already in native form, such as one of this process's own arguments.
@@ -153,12 +150,12 @@ Adds an argument already in native form, such as one of this process's own argum
 | ------- | -------------- | ------------ |
 | `value` | `OsStringView` | the argument |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L119)
 
 <h3 id="directory"><code>Directory</code></h3>
 
 ```rux
-pub func Directory(self: &var Command, path: char8[..])
+pub func Directory(&var self, path: char8[..])
 ```
 
 Starts the child in `path` rather than in this process's working directory.
@@ -167,13 +164,13 @@ Starts the child in `path` rather than in this process's working directory.
 | ------ | ----------- | ---------------------------- |
 | `path` | `char8[..]` | the directory, as UTF-8 text |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L130)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L128)
 
 <h3 id="set-variable"><code>SetVariable</code></h3>
 
 ```rux
 pub func SetVariable(
-    self: &var Command,
+    &var self,
     name: char8[..],
     value: char8[..]
 )
@@ -186,12 +183,12 @@ Gives the child the variable `name` set to `value`, whatever this process's envi
 | `name`  | `char8[..]` | the variable's name, which may not be empty or contain `=` |
 | `value` | `char8[..]` | its value                                                  |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L138)
 
 <h3 id="remove-variable"><code>RemoveVariable</code></h3>
 
 ```rux
-pub func RemoveVariable(self: &var Command, name: char8[..])
+pub func RemoveVariable(&var self, name: char8[..])
 ```
 
 Leaves the variable `name` out of the child's environment.
@@ -200,22 +197,22 @@ Leaves the variable `name` out of the child's environment.
 | ------ | ----------- | ------------------- |
 | `name` | `char8[..]` | the variable's name |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L150)
 
 <h3 id="clear-environment"><code>ClearEnvironment</code></h3>
 
 ```rux
-pub func ClearEnvironment(self: &var Command)
+pub func ClearEnvironment(&var self)
 ```
 
 Starts the child with no variables but those set on the command.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L159)
 
 <h3 id="standard-input"><code>StandardInput</code></h3>
 
 ```rux
-pub func StandardInput(self: &var Command, stdio: Stdio)
+pub func StandardInput(&var self, stdio: Stdio)
 ```
 
 Connects the child's standard input.
@@ -224,12 +221,12 @@ Connects the child's standard input.
 | ------- | ------- | ------------------ |
 | `stdio` | `Stdio` | what it reads from |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L169)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L167)
 
 <h3 id="standard-output"><code>StandardOutput</code></h3>
 
 ```rux
-pub func StandardOutput(self: &var Command, stdio: Stdio)
+pub func StandardOutput(&var self, stdio: Stdio)
 ```
 
 Connects the child's standard output.
@@ -238,12 +235,12 @@ Connects the child's standard output.
 | ------- | ------- | ----------------- |
 | `stdio` | `Stdio` | what it writes to |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L174)
 
 <h3 id="standard-error"><code>StandardError</code></h3>
 
 ```rux
-pub func StandardError(self: &var Command, stdio: Stdio)
+pub func StandardError(&var self, stdio: Stdio)
 ```
 
 Connects the child's standard error.
@@ -252,12 +249,12 @@ Connects the child's standard error.
 | ------- | ------- | ----------------- |
 | `stdio` | `Stdio` | what it writes to |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L183)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L181)
 
 <h3 id="spawn"><code>Spawn</code></h3>
 
 ```rux
-pub func Spawn(self: &Command) -> Child ! IoError
+pub func Spawn(&self) -> Child throws IoError
 ```
 
 Starts the program as a child process.
@@ -265,16 +262,16 @@ Starts the program as a child process.
 **Returns**: the child, or fails: with a part of the command the system could not take, with `NotFound` for a
 program that is not there, or with the system's reason
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L189)
 
 <h3 id="run"><code>Run</code></h3>
 
 ```rux
-pub func Run(self: &Command) -> ExitStatus ! IoError
+pub func Run(&self) -> ExitStatus throws IoError
 ```
 
 Starts the program and waits for it to finish.
 
 **Returns**: how it finished
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L199)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Command.rux#L197)

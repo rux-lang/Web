@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/StringBuilder.rux
-  line: 23
+  line: 29
 seo:
   title: "StringBuilder — Text API"
   description: A growable buffer of text.
@@ -28,6 +28,9 @@ pub struct StringBuilder {
 ```
 
 Move-only: it explicitly prohibits copying and owns its block. Holds well-formed UTF-8 at every moment.
+Storage invariant, which every operation keeps and every `unsafe` block here relies on: `length <= capacity`;
+`data` is null exactly when `capacity` is zero, and otherwise addresses a block of `capacity` bytes from
+`allocator` whose first `length` bytes are initialized, well-formed UTF-8.
 
 ## Constructors
 
@@ -47,7 +50,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: an empty builder that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L47)
 
 ## Associated functions
 
@@ -57,12 +60,12 @@ Cannot fail. Runs in constant time and allocates nothing.
 pub func WithCapacity(
     allocator: Allocator,
     capacity: uint
-) -> StringBuilder ! TextError
+) -> StringBuilder
 ```
 
 A builder with room for `capacity` bytes already taken.
 Worth using when the size is known or can be guessed well: appends that stay within the room never
-reallocate. Fails with `OutOfMemory` when the room cannot be had.
+reallocate. Terminates the program when the room cannot be had.
 
 | Name        | Type        | Description                        |
 | ----------- | ----------- | ---------------------------------- |
@@ -71,62 +74,62 @@ reallocate. Fails with `OutOfMemory` when the room cannot be had.
 
 **Returns**: an empty builder with room for that many bytes already taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L58)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &StringBuilder) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many bytes are in use.
 
 **Returns**: how many bytes have been appended
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L67)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
 ```rux
-pub func Capacity(self: &StringBuilder) -> uint
+pub func Capacity(&self) -> uint
 ```
 
 How many bytes the block holds.
 
 **Returns**: how many bytes fit before the next growth
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L74)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &StringBuilder) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether nothing has been appended.
 
 **Returns**: whether nothing has been appended
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L81)
 
 <h3 id="bytes"><code>Bytes</code></h3>
 
 ```rux
-pub func Bytes(self: &StringBuilder) -> char8[..]
+pub func Bytes(&self) -> char8[..]
 ```
 
 The bytes in use, borrowed.
 
 **Returns**: the appended bytes, borrowed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L88)
 
 <h3 id="view"><code>View</code></h3>
 
 ```rux
-pub func View(self: &StringBuilder) -> StringView
+pub func View(&self) -> StringView
 ```
 
 A view over what has been appended so far.
@@ -135,88 +138,92 @@ well-formed at every moment rather than only once it is finished.
 
 **Returns**: a borrowed view of what has been appended
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L99)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(
-    self: &var StringBuilder,
-    additional: uint
-) -> ! TextError
+pub func Reserve(&var self, additional: uint)
 ```
 
 Makes sure there is room for `additional` more bytes.
-Reports `OutOfMemory` when the room cannot be had and `LengthOverflow` when the size needed cannot be
-expressed, having in both cases changed nothing: a builder that fails to grow still holds what it held.
+Terminates the program when the room cannot be had or the size needed cannot be expressed; [`TryReserve`](/docs/api/text/string-builder#try-reserve)
+reports both instead.
 
 | Name         | Type   | Description                          |
 | ------------ | ------ | ------------------------------------ |
 | `additional` | `uint` | how many more bytes to make room for |
 
-**Returns**: nothing when the room is available, or why not
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L108)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L104)
+<h3 id="try-reserve"><code>TryReserve</code></h3>
+
+```rux
+pub func TryReserve(
+    &var self,
+    additional: uint
+) throws AllocError
+```
+
+Makes sure there is room for `additional` more bytes, or throws why there is none.
+Throws `Unsupported` when the size needed cannot be expressed, and otherwise whatever the allocator refused
+with, having in both cases changed nothing: a builder that fails to grow still holds what it held.
+
+| Name         | Type   | Description                          |
+| ------------ | ------ | ------------------------------------ |
+| `additional` | `uint` | how many more bytes to make room for |
+
+**Returns**: nothing, or throws the allocator's refusal
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L119)
 
 <h3 id="append-validated"><code>AppendValidated</code></h3>
 
 ```rux
-pub func AppendValidated(
-    self: &var StringBuilder,
-    bytes: char8[..]
-) -> ! TextError
+pub func AppendValidated(&var self, bytes: char8[..])
 ```
 
 Appends bytes the caller vouches are UTF-8.
 The bytes must be well-formed UTF-8 and must not end part-way through a character. The builder's promise
 that it holds text at every moment rests on this, and everything reading from it relies on that promise.
+Terminates the program when the builder cannot grow.
 
-| Name    | Type        | Description         |
-| ------- | ----------- | ------------------- |
-| `bytes` | `char8[..]` | the bytes to act on |
+| Name    | Type        | Description                                          |
+| ------- | ----------- | ---------------------------------------------------- |
+| `bytes` | `char8[..]` | the bytes to act on, taken as valid without checking |
 
-**Returns**: nothing when the bytes were appended, taken as valid without checking, or why not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L130)
 
 <h3 id="append"><code>Append</code></h3>
 
 ```rux
-pub func Append(
-    self: &var StringBuilder,
-    view: StringView
-) -> ! TextError
-
-pub func Append(
-    self: &var StringBuilder,
-    text: char8[..]
-) -> ! TextError
+pub func Append(&var self, view: StringView)
+pub func Append(&var self, text: char8[..])
 ```
 
-Appends `text`.
-Text was checked before it existed, so nothing is checked again and nothing can fail but the storage.
+Appends what `view` spans.
+The view was checked when it was made, so nothing is checked again. Terminates the program when the builder
+cannot grow.
 
-| Overload                                                                     | Summary                    |
-| ---------------------------------------------------------------------------- | -------------------------- |
-| `pub func Append(self: &var StringBuilder, view: StringView) -> ! TextError` | Appends what `view` spans. |
-| `pub func Append(self: &var StringBuilder, text: char8[..]) -> ! TextError`  | Appends `text`.            |
+| Overload                                       | Summary                    |
+| ---------------------------------------------- | -------------------------- |
+| `pub func Append(&var self, view: StringView)` | Appends what `view` spans. |
+| `pub func Append(&var self, text: char8[..])`  | Appends `text`.            |
 
 | Name   | Type         | Description                 |
 | ------ | ------------ | --------------------------- |
 | `view` | `StringView` | the borrowed text to act on |
 | `text` | `char8[..]`  | the text to act on          |
 
-**Returns**: nothing when the text was appended, or why not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L123)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L141)
 
 <h3 id="append-bytes"><code>AppendBytes</code></h3>
 
 ```rux
 pub func AppendBytes(
-    self: &var StringBuilder,
+    &var self,
     bytes: char8[..]
-) -> ! TextError
+) throws TextError
 ```
 
 Appends `bytes` when they are UTF-8, and reports `InvalidUtf8` when they are not.
@@ -228,15 +235,15 @@ Costs a pass over the bytes. [`Append`](/docs/api/text/string-builder#append) of
 
 **Returns**: nothing when the bytes were appended, after checking they are valid UTF-8, or why not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L159)
 
 <h3 id="append-scalar"><code>AppendScalar</code></h3>
 
 ```rux
 pub func AppendScalar(
-    self: &var StringBuilder,
+    &var self,
     scalar: char32
-) -> ! TextError
+) throws TextError
 ```
 
 Appends one character.
@@ -249,15 +256,15 @@ which is what keeps a builder from holding something that is not text.
 
 **Returns**: nothing when the scalar's encoding was appended, or why not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L170)
 
 <h3 id="append-ascii"><code>AppendAscii</code></h3>
 
 ```rux
 pub func AppendAscii(
-    self: &var StringBuilder,
+    &var self,
     byte: char8
-) -> ! TextError
+) throws TextError
 ```
 
 Appends one ASCII byte.
@@ -270,47 +277,48 @@ Reports `InvalidUtf8` for a byte above 0x7F, since a single byte above that is n
 
 **Returns**: nothing when the byte was appended, or why not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L184)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var StringBuilder)
+pub func Clear(&var self)
 ```
 
 Forgets everything appended, keeping the room.
 The block is kept, so a builder used in a loop allocates once rather than once per pass.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L194)
 
 <h3 id="release"><code>Release</code></h3>
 
 ```rux
-pub func Release(self: &var StringBuilder)
+pub func Release(&var self)
 ```
 
 Gives the block back and leaves a builder that owns nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L182)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L200)
 
 <h3 id="to-string"><code>ToString</code></h3>
 
 ```rux
-pub func ToString(self: &StringBuilder) -> String ! TextError
+pub func ToString(&self) -> String
 ```
 
 A copy of what has been appended, as a string of its own.
-The builder is untouched and may be appended to again. [`IntoString`](/docs/api/text/string-builder#into-string) is what hands the block over instead of
-copying it, and is what to use when the builder is finished with.
+The builder is untouched and may be appended to again. [`TakeString`](/docs/api/text/string-builder#into-string) is what hands the block over instead of
+copying it, and is what to use when the builder is finished with. Terminates the program when the copy cannot
+be made.
 
 **Returns**: a copy of what has been appended, leaving the builder as it was
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L199)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L218)
 
-<h3 id="into-string"><code>IntoString</code></h3>
+<h3 id="into-string"><code>TakeString</code></h3>
 
 ```rux
-pub func IntoString(self: &var StringBuilder) -> String
+pub func TakeString(&var self) -> String
 ```
 
 Hands the block over as a string, leaving the builder owning nothing.
@@ -321,7 +329,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: what has been appended, taking the builder's storage rather than copying
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L229)
 
 ## Implements TextWriter
 
@@ -331,9 +339,9 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 ```rux
 pub func Write(
-    self: &var StringBuilder,
+    &var self,
     bytes: char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Appends `bytes` to the builder.
@@ -341,11 +349,11 @@ The bytes are validated here, which [`AppendValidated`](/docs/api/text/string-bu
 checked and takes their validity as a precondition. A writer cannot, because what reaches it came from a
 value that may have produced anything, and the builder's promise to hold text at every moment is what
 everything reading from it relies on.
-Reports `TextFailure(InvalidUtf8)` for bytes that are not well-formed UTF-8, and
-`TextFailure(OutOfMemory)` when the builder cannot make room. In both cases nothing was appended: validity
-is decided before any byte moves, so the builder is exactly as it was and a caller may retry elsewhere
-without first undoing a partial write. A `WriterFailure` is impossible here, since there is no destination
-beyond the allocator, and `InsufficientCapacity` cannot arise because a builder grows.
+Reports `TextFailure(InvalidUtf8)` for bytes that are not well-formed UTF-8, and then nothing was appended:
+validity is decided before any byte moves, so the builder is exactly as it was and a caller may retry
+elsewhere without first undoing a partial write. Terminates the program when the builder cannot make room. A
+`WriterFailure` is impossible here, since there is no destination beyond the allocator, and
+`InsufficientCapacity` cannot arise because a builder grows.
 
 | Name    | Type        | Description                    |
 | ------- | ----------- | ------------------------------ |
@@ -358,14 +366,14 @@ beyond the allocator, and `InsufficientCapacity` cannot arise because a builder 
 ## Destructor
 
 ```rux
-func ~StringBuilder(self: &var StringBuilder)
+func ~StringBuilder(&var self)
 ```
 
 Gives the block back.
-Runs when the builder dies. A builder whose block was handed over by [`IntoString`](/docs/api/text/string-builder#into-string) owns nothing, so this is
+Runs when the builder dies. A builder whose block was handed over by [`TakeString`](/docs/api/text/string-builder#into-string) owns nothing, so this is
 then a no-op rather than a second release.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L227)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L246)
 
 ## Related
 
@@ -378,4 +386,4 @@ pub const MinimumBuilderCapacity: uint = 16;
 The room a builder takes when it first needs any.
 Small enough that a builder for a short string wastes little, large enough that short strings never grow twice.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L21)

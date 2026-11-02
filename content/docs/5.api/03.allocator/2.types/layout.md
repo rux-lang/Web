@@ -28,7 +28,7 @@ pub struct Layout {
 }
 ```
 
-Copy and owns nothing. Every instance is valid, because [`New`](/docs/api/allocator/layout#new) refuses to build an invalid one: the alignment is a
+Copy and owns nothing. Every instance is valid, because [`Of`](/docs/api/allocator/layout#new) refuses to build an invalid one: the alignment is a
 power of two, and the size rounded up to that alignment does not pass the end of the address space.
 A size of zero is valid and is not an allocation of nothing — see `Allocate` for what an allocator does with it.
 
@@ -80,10 +80,10 @@ Runs in constant time and allocates nothing.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Layout.rux#L42)
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>Of</code></h3>
 
 ```rux
-pub func New(size: uint, alignment: uint) -> Layout?
+pub func Of(size: uint, alignment: uint) -> Layout?
 ```
 
 A layout for `size` bytes at `alignment`, or nothing when the pair cannot be one.
@@ -128,12 +128,12 @@ Runs in constant time and allocates nothing.
 <h3 id="padded-size"><code>PaddedSize</code></h3>
 
 ```rux
-pub func PaddedSize(self: &Layout) -> uint
+pub func PaddedSize(&self) -> uint
 ```
 
 The size this layout occupies once rounded up to its own alignment.
 `self` is borrowed. This is the stride between two of these laid out one after another, and is what an arena
-advances by. Cannot overflow, because [`New`](/docs/api/allocator/layout#new) refused every size for which it would.
+advances by. Cannot overflow, because [`Of`](/docs/api/allocator/layout#new) refused every size for which it would.
 Runs in constant time and allocates nothing.
 
 **Returns**: the size rounded up to a whole number of alignments
@@ -143,7 +143,7 @@ Runs in constant time and allocates nothing.
 <h3 id="is-satisfied-by"><code>IsSatisfiedBy</code></h3>
 
 ```rux
-pub func IsSatisfiedBy(self: &Layout, address: uint) -> bool
+pub func IsSatisfiedBy(&self, address: uint) -> bool
 ```
 
 Whether `address` satisfies this layout's alignment.
@@ -163,7 +163,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="equals"><code>==</code></h3>
 
 ```rux
-pub func ==(self: &Layout, other: Layout) -> bool
+pub func ==(&self, other: Layout) -> bool
 ```
 
 Whether two layouts ask for the same thing.
@@ -180,7 +180,7 @@ Whether two layouts ask for the same thing.
 <h3 id="not-equals"><code>!=</code></h3>
 
 ```rux
-pub func !=(self: &Layout, other: Layout) -> bool
+pub func !=(&self, other: Layout) -> bool
 ```
 
 Whether two layouts ask for different things.

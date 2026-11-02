@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Stream.rux
-  line: 53
+  line: 54
 seo:
   title: "Seeker — Io API"
   description: A stream whose position can be moved.
@@ -24,10 +24,10 @@ A stream whose position can be moved.
 ```rux
 pub interface Seeker {
     func Seek(
-        self: &var Self,
+        &var self,
         origin: SeekFrom,
         offset: int64
-    ) -> uint64 ! IoError;
+    ) -> uint64 throws IoError;
 }
 ```
 
@@ -37,10 +37,10 @@ pub interface Seeker {
 
 ```rux
 func Seek(
-    self: &var Self,
+    &var self,
     origin: SeekFrom,
     offset: int64
-) -> uint64 ! IoError
+) -> uint64 throws IoError
 ```
 
 Moves the position `offset` bytes from `origin` and succeeds with where it landed.
@@ -52,7 +52,7 @@ Moves the position `offset` bytes from `origin` and succeeds with where it lande
 
 **Returns**: the resulting offset from the start
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L60)
 
 ## Implementations
 
@@ -75,7 +75,7 @@ pub enum SeekFrom: int32 {
 
 Where a seek starts counting from.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Stream.rux#L43)
 
 **Cases**
 

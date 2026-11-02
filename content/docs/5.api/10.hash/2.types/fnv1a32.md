@@ -49,7 +49,7 @@ Constructs a hasher with nothing written into it yet.
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var Fnv1a32)
+pub func Reset(&var self)
 ```
 
 Puts the hasher back to where [`Fnv1a32()`](/docs/api/hash/fnv1a32) leaves one.
@@ -61,7 +61,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="value"><code>Value</code></h3>
 
 ```rux
-pub func Value(self: &Fnv1a32) -> uint32
+pub func Value(&self) -> uint32
 ```
 
 The 32-bit hash of everything written so far.
@@ -80,11 +80,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    self: &var Fnv1a32,
-    bytes: *byte,
-    length: uint
-)
+pub func Write(&var self, bytes: *byte, length: uint)
 ```
 
 Adds `length` bytes at `bytes` to the hash.
@@ -104,7 +100,7 @@ Runs in time proportional to `length` and allocates nothing.
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var Fnv1a32) -> uint64
+pub func Finish(&var self) -> uint64
 ```
 
 The hash of everything written so far, widened to 64 bits.
@@ -115,7 +111,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the hash of everything written since the last reset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L99)
 
 ## Related
 
@@ -142,7 +138,10 @@ The 32-bit FNV prime.
 <h3 id="fnv1a32-of"><code>Fnv1a32Of</code></h3>
 
 ```rux
-pub func Fnv1a32Of(bytes: *byte, length: uint) -> uint32
+pub unsafe func Fnv1a32Of(
+    bytes: *byte,
+    length: uint
+) -> uint32
 ```
 
 The 32-bit FNV-1a hash of `length` bytes at `bytes`.
@@ -150,9 +149,9 @@ The 32-bit FNV-1a hash of `length` bytes at `bytes`.
 case in which `bytes` may be null.
 The one-shot form of making a hasher, writing once and finishing. Identical in result and cost.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`bytes` must be readable for `length` bytes.
+Safety: `bytes` must be readable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L169)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L173)
 
 **Parameters**
 

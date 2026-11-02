@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Fnv.rux
-  line: 107
+  line: 109
 seo:
   title: "Fnv1a64 — Hash API"
   description: "FNV-1a over 64 bits, computed one byte at a time."
@@ -43,21 +43,21 @@ Constructs a hasher with nothing written into it yet.
 
 **Returns**: a hasher seeded with the 64-bit offset basis
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L118)
 
 ## Methods
 
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var Fnv1a64)
+pub func Reset(&var self)
 ```
 
 Puts the hasher back to where [`Fnv1a64()`](/docs/api/hash/fnv1a64) leaves one.
 `self` is borrowed mutably. Everything written so far is forgotten.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L126)
 
 ## Implements Hasher
 
@@ -66,11 +66,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    self: &var Fnv1a64,
-    bytes: *byte,
-    length: uint
-)
+pub func Write(&var self, bytes: *byte, length: uint)
 ```
 
 Adds `length` bytes at `bytes` to the hash.
@@ -84,12 +80,12 @@ Runs in time proportional to `length` and allocates nothing.
 | `bytes`  | `*byte` | the bytes to absorb                  |
 | `length` | `uint`  | how many bytes; zero absorbs nothing |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L138)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L140)
 
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(self: &var Fnv1a64) -> uint64
+pub func Finish(&var self) -> uint64
 ```
 
 The hash of everything written so far.
@@ -99,7 +95,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the hash of everything written since the last reset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L154)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L158)
 
 ## Related
 
@@ -126,16 +122,19 @@ The 64-bit FNV prime.
 <h3 id="fnv1a64-of"><code>Fnv1a64Of</code></h3>
 
 ```rux
-pub func Fnv1a64Of(bytes: *byte, length: uint) -> uint64
+pub unsafe func Fnv1a64Of(
+    bytes: *byte,
+    length: uint
+) -> uint64
 ```
 
 The 64-bit FNV-1a hash of `length` bytes at `bytes`.
 `bytes` is borrowed and read; `length` is read by value. A zero length gives the offset basis, and is the one
 case in which `bytes` may be null.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
-`bytes` must be readable for `length` bytes.
+Safety: `bytes` must be readable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L184)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L188)
 
 **Parameters**
 

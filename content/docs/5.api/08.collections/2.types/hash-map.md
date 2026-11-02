@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/HashMap.rux
-  line: 23
+  line: 26
 seo:
   title: "HashMap<K, V> — Collections API"
   description: A hash table from keys to values.
@@ -99,12 +99,12 @@ pub func WithCapacity(
     capacity: uint,
     hash: func(K, uint64, uint64) -> uint64,
     equals: func(K, K) -> bool
-) -> HashMap<K, V> ! CollectionError
+) -> HashMap<K, V>
 ```
 
 An empty map with room for `capacity` entries already taken.
 The capacity actually taken is rounded up to a power of two above the load factor, so it is larger than asked
-for.
+for. Terminates the program when the storage cannot be had.
 
 | Name        | Type                                | Description                                                |
 | ----------- | ----------------------------------- | ---------------------------------------------------------- |
@@ -122,7 +122,7 @@ for.
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &HashMap<K, V>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many entries the map holds.
@@ -134,7 +134,7 @@ How many entries the map holds.
 <h3 id="capacity"><code>Capacity</code></h3>
 
 ```rux
-pub func Capacity(self: &HashMap<K, V>) -> uint
+pub func Capacity(&self) -> uint
 ```
 
 How many slots the table has.
@@ -148,7 +148,7 @@ displacing entries rather than storing them.
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &HashMap<K, V>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the map holds no entries.
@@ -160,7 +160,7 @@ Whether the map holds no entries.
 <h3 id="contains-key"><code>ContainsKey</code></h3>
 
 ```rux
-pub func ContainsKey(self: &HashMap<K, V>, key: K) -> bool
+pub func ContainsKey(&self, key: K) -> bool
 ```
 
 Whether the map has an entry for `key`.
@@ -178,7 +178,7 @@ Runs in constant expected time and allocates nothing.
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &HashMap<K, V>, key: K) -> V?
+pub func Get(&self, key: K) -> V?
 ```
 
 The value stored under `key`, or `none` when there is no such entry.
@@ -192,65 +192,52 @@ The value stored under `key`, or `none` when there is no such entry.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L118)
 
-<h3 id="reference"><code>Reference</code></h3>
+<h3 id="find"><code>Find</code></h3>
 
 ```rux
-pub func Reference(self: &HashMap<K, V>, key: K) -> (*V)?
+pub func Find(&self, key: K) -> &V?
 ```
 
-A pointer to the value stored under `key`, or `none` when there is no such entry.
-`self` is borrowed; the pointer borrows the value where it sits, which is how one that owns something is read
-without being taken.
-The pointer is valid until the map grows, shrinks, or has anything inserted or removed.
+The value stored under `key`, borrowed where it sits, or `none` when there is no such entry.
+`self` stays borrowed while the reference is in use, which is how a value that owns something is read without
+being taken, and nothing can be inserted or removed under it.
 
 | Name  | Type | Description        |
 | ----- | ---- | ------------------ |
 | `key` | `K`  | the key to look up |
 
-**Returns**: the address of the value, or `none` when the key is absent
+**Returns**: a reference to the value, or `none` when the key is absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L130)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L131)
 
-<h3 id="try-reference-mutable"><code>TryReferenceMutable</code></h3>
+<h3 id="find-mutable"><code>FindMutable</code></h3>
 
 ```rux
-pub func TryReferenceMutable(
-    self: &var HashMap<K, V>,
-    key: K,
-    value: *var *var V
-) -> bool
+pub func FindMutable(&var self, key: K) -> &var V?
 ```
 
-Points `value` at the stored value for `key`, so it can be changed in place.
-`self` is borrowed mutably; `value` receives the pointer and is left alone when there is no such entry.
-Reports whether there was one.
-An out-parameter rather than an `(*var V)?`, which does not survive lowering inside a generic today.
-The pointer is valid until the map grows, shrinks, or has anything inserted or removed. Overwriting through
-it replaces the value without destroying what was there.
+The value stored under `key`, borrowed to be changed in place, or `none` when there is no such entry.
+`self` stays borrowed exclusively while the reference is in use. Assigning through it replaces the value and
+destroys the one that was there.
 
-| Name    | Type          | Description                              |
-| ------- | ------------- | ---------------------------------------- |
-| `key`   | `K`           | the key to look up                       |
-| `value` | `*var *var V` | receives the address of the stored value |
+| Name  | Type | Description        |
+| ----- | ---- | ------------------ |
+| `key` | `K`  | the key to look up |
 
-**Returns**: whether the key was present
+**Returns**: a writable reference to the value, or `none` when the key is absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L144)
 
 <h3 id="insert"><code>Insert</code></h3>
 
 ```rux
-pub func Insert(
-    self: &var HashMap<K, V>,
-    key: K,
-    value: V
-) -> ! CollectionError
+pub func Insert(&var self, key: K, value: V)
 ```
 
 Stores `value` under `key`, replacing whatever was there.
 `self` is borrowed mutably; both are moved in. A key already present keeps its stored key and takes the new
 value, and the value it had is destroyed — use [`Remove`](/docs/api/collections/hash-map#remove) first where the old one is wanted.
-A failure leaves the map exactly as it was and both arguments with the caller.
+Terminates the program when the table cannot grow; [`TryInsert`](/docs/api/collections/hash-map#try-insert) reports that instead.
 Runs in constant expected time.
 
 | Name    | Type | Description         |
@@ -258,14 +245,36 @@ Runs in constant expected time.
 | `key`   | `K`  | the key to look up  |
 | `value` | `V`  | the value to act on |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L159)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L160)
+<h3 id="try-insert"><code>TryInsert</code></h3>
+
+```rux
+pub func TryInsert(
+    &var self,
+    key: K,
+    value: V
+) throws AllocError
+```
+
+Stores `value` under `key`, replacing whatever was there, or throws why the table could not grow.
+`self` is borrowed mutably; both are moved in, and stored exactly as [`Insert`](/docs/api/collections/hash-map#insert) stores them. A failure leaves
+the map exactly as it was, and both arguments are then destroyed here.
+Runs in constant expected time.
+
+| Name    | Type | Description         |
+| ------- | ---- | ------------------- |
+| `key`   | `K`  | the key to look up  |
+| `value` | `V`  | the value to act on |
+
+**Returns**: nothing, or throws the allocator's refusal
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L171)
 
 <h3 id="remove"><code>Remove</code></h3>
 
 ```rux
-pub func Remove(self: &var HashMap<K, V>, key: K) -> V?
+pub func Remove(&var self, key: K) -> V?
 ```
 
 Takes the entry for `key` out and hands back its value.
@@ -280,127 +289,125 @@ Runs in constant expected time.
 
 **Returns**: the value that was stored, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L190)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L208)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
 ```rux
-pub func Reserve(
-    self: &var HashMap<K, V>,
-    additional: uint
-) -> ! CollectionError
+pub func Reserve(&var self, additional: uint)
 ```
 
 Makes room for `additional` more entries on top of those already present.
+`self` is borrowed mutably; the length does not change. Terminates the program when the storage cannot be
+had; [`TryReserve`](/docs/api/collections/hash-map#try-reserve) reports that instead.
+
+| Name         | Type   | Description                             |
+| ------------ | ------ | --------------------------------------- |
+| `additional` | `uint` | how many more elements to make room for |
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L225)
+
+<h3 id="try-reserve"><code>TryReserve</code></h3>
+
+```rux
+pub func TryReserve(
+    &var self,
+    additional: uint
+) throws AllocError
+```
+
+Makes room for `additional` more entries on top of those already present, or throws why it could not.
 `self` is borrowed mutably; the length does not change. A failure leaves the map exactly as it was.
 
 | Name         | Type   | Description                             |
 | ------------ | ------ | --------------------------------------- |
 | `additional` | `uint` | how many more elements to make room for |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+**Returns**: nothing, or throws the allocator's refusal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L203)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L234)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
 ```rux
-pub func ShrinkToFit(self: &var HashMap<K, V>) -> ! CollectionError
+pub func ShrinkToFit(&var self)
 ```
 
 Releases the capacity the entry count does not need.
-`self` is borrowed mutably. An empty map gives up its storage entirely.
+`self` is borrowed mutably. An empty map gives up its storage entirely. Terminates the program when the
+allocator refuses the smaller table.
 
-**Returns**: nothing when the operation succeeded, or why it did not
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L211)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L242)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var HashMap<K, V>)
+pub func Clear(&var self)
 ```
 
 Destroys every entry, keeping the storage.
 `self` is borrowed mutably. Runs in time proportional to the capacity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L218)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L249)
 
-<h3 id="try-next-entry"><code>TryNextEntry</code></h3>
+<h3 id="next-entry"><code>NextEntry</code></h3>
 
 ```rux
-pub func TryNextEntry(
-    self: &HashMap<K, V>,
-    cursor: *var uint,
-    key: *var K,
-    value: *var V
-) -> bool
+pub func NextEntry(
+    &self,
+    cursor: &var uint
+) -> KeyValue<K, V>?
 ```
 
-Walks to the next occupied slot at or after `cursor`, reporting the entry it holds.
-`self` is borrowed; `cursor` is read and advanced past whatever is reported, so a caller starts it at zero
-and keeps calling. `key` and `value` receive copies and are left alone when this reports false.
-The order is the table's, which is the seed's and not the insertion's. Nothing may be inserted or removed
-while a walk is in progress: either moves entries between slots, and a cursor is a slot.
+The entry in the next occupied slot at or after `cursor`, or `none` at the end.
+`self` is borrowed; `cursor` is advanced past whatever is reported, so a caller starts it at zero and keeps
+calling. The key and value are copies. The order is the table's, which is the seed's and not the insertion's.
+Nothing may be inserted or removed while a walk is in progress: either moves entries between slots, and a
+cursor is a slot.
 
 | Name     | Type        | Description                                              |
 | -------- | ----------- | -------------------------------------------------------- |
-| `cursor` | `*var uint` | the position to resume from, advanced past what was read |
-| `key`    | `*var K`    | receives the key                                         |
-| `value`  | `*var V`    | receives the value                                       |
+| `cursor` | `&var uint` | the position to resume from, advanced past what was read |
 
-**Returns**: whether an entry was read; false at the end
+**Returns**: the next entry, or `none` once every slot has been looked at
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L261)
 
 <h3 id="get-or-insert"><code>GetOrInsert</code></h3>
 
 ```rux
-pub func GetOrInsert(
-    self: &var HashMap<K, V>,
-    key: K,
-    value: V,
-    existing: *var *var V,
-    inserted: *var bool
-) -> ! CollectionError
+pub func GetOrInsert(&var self, key: K, value: V) -> &var V
 ```
 
-Points `existing` at the value stored under `key`, inserting `value` first when there is none.
-`self` is borrowed mutably; `key` and `value` are moved in only when there was no entry, and destroyed
-otherwise — the map keeps what it already had. `existing` receives a pointer to the stored value either way,
-and `inserted` receives whether the map grew; both may be null.
+The value stored under `key`, inserting `value` first when there is none.
+`self` is borrowed mutably and stays borrowed while the reference is in use; `key` and `value` are moved in
+only when there was no entry, and destroyed otherwise — the map keeps what it already had. A caller that needs
+to know whether the map grew compares [`Length`](/docs/api/collections/hash-map#length) before and after.
 This is what an entry API is for, without pretending Rux has closures: a caller that wants to read a value or
 put one there gets one operation instead of a lookup followed by an insertion, and does not have to name the
 key twice.
-A failure leaves the map exactly as it was.
-The pointer is valid until the map grows, shrinks, or has anything inserted or removed.
+Terminates the program when the table cannot grow.
 
-| Name       | Type          | Description                                         |
-| ---------- | ------------- | --------------------------------------------------- |
-| `key`      | `K`           | the key to look up                                  |
-| `value`    | `V`           | the value to act on                                 |
-| `existing` | `*var *var V` | receives the value already stored under that key    |
-| `inserted` | `*var bool`   | receives whether the value given was the one stored |
+| Name    | Type | Description                             |
+| ------- | ---- | --------------------------------------- |
+| `key`   | `K`  | the key to look up                      |
+| `value` | `V`  | the value stored when the key is absent |
 
-**Returns**: nothing when the operation succeeded, or why it did not
+**Returns**: the value stored under `key`, borrowed for writing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L266)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L287)
 
 <h3 id="replace"><code>Replace</code></h3>
 
 ```rux
-pub func Replace(
-    self: &var HashMap<K, V>,
-    key: K,
-    value: V
-) -> V? ! CollectionError
+pub func Replace(&var self, key: K, value: V) -> V?
 ```
 
 Stores `value` under `key` and hands back the value that was there.
 `self` is borrowed mutably; both are moved in. The old value is moved out rather than destroyed, which is the
 difference between this and [`Insert`](/docs/api/collections/hash-map#insert): one hands the previous value back and the other throws it away.
 Reports `none` when there was no entry, having inserted this one.
-A failure leaves the map exactly as it was, and is reported apart from the absence.
+Terminates the program when the table cannot grow.
 
 | Name    | Type | Description         |
 | ------- | ---- | ------------------- |
@@ -409,15 +416,12 @@ A failure leaves the map exactly as it was, and is reported apart from the absen
 
 **Returns**: the value that was there, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L302)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L311)
 
 <h3 id="remove-entry"><code>RemoveEntry</code></h3>
 
 ```rux
-pub func RemoveEntry(
-    self: &var HashMap<K, V>,
-    key: K
-) -> KeyValue<K, V>?
+pub func RemoveEntry(&var self, key: K) -> KeyValue<K, V>?
 ```
 
 Takes the entry for `key` out and hands back both halves of it.
@@ -433,12 +437,12 @@ carrying anything the equality ignores makes them different values, and the map'
 
 **Returns**: the whole entry, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L329)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L339)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
 ```rux
-pub func Iterate(self: &HashMap<K, V>) -> HashMapIterator<K, V>
+pub func Iterate(&self) -> HashMapIterator<K, V>
 ```
 
 An iterator over the entries, by copy.
@@ -448,12 +452,12 @@ Nothing may be inserted or removed while the iterator is alive.
 
 **Returns**: a cursor over the entries, in an order the seed decides
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L343)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L357)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
 ```rux
-pub func IntoIterator(self: HashMap<K, V>) -> HashMapIntoIterator<K, V>
+pub func IntoIterator(self) -> HashMapIntoIterator<K, V>
 ```
 
 Takes the map apart into an iterator over its entries.
@@ -464,7 +468,7 @@ Whatever is not taken is destroyed when the iterator's life ends.
 
 **Returns**: a cursor that consumes the map as it goes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L360)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L374)
 
 ## Related
 
@@ -480,7 +484,7 @@ An iterator over the entries of a map, by copy.
 Borrows the map, so the map must outlive it and must not be inserted into or removed from while it is alive:
 either moves entries between slots, and this walks slots.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L407)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L421)
 
 **Type parameters**
 
@@ -496,16 +500,15 @@ either moves entries between slots, and this walks slots.
 <h4 id="hash-map-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var HashMapIterator<K, V>) -> KeyValue<K, V>?
+pub func Next(&var self) -> KeyValue<K, V>?
 ```
 
 The next entry, or `none` once every slot has been looked at.
-`self` is borrowed mutably and advanced. The key and value are copies; a map of things that own something is
-walked with [`TryNextEntry`](/docs/api/collections/hash-map#try-next-entry) and a pointer instead.
+`self` is borrowed mutably and advanced. The key and value are copies.
 
 **Returns**: the next entry, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L423)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L436)
 
 <h3 id="hash-map-into-iterator"><code>HashMapIntoIterator&lt;K, V&gt;</code></h3>
 
@@ -519,7 +522,7 @@ An iterator that takes a map apart, yielding each entry by value.
 Move-only: it owns the storage the map owned. Whatever is left when its life ends is destroyed with it, which is
 what makes stopping part-way safe.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L444)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L460)
 
 **Type parameters**
 
@@ -535,7 +538,7 @@ what makes stopping part-way safe.
 <h4 id="hash-map-into-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var HashMapIntoIterator<K, V>) -> KeyValue<K, V>?
+pub func Next(&var self) -> KeyValue<K, V>?
 ```
 
 The next entry, moved out, or `none` once every slot has been looked at.
@@ -544,7 +547,7 @@ destructor is exactly what nobody took.
 
 **Returns**: the next entry, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L462)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L476)
 
 <h3 id="write-hash-map-debug"><code>WriteHashMapDebug&lt;K, V&gt;</code></h3>
 
@@ -553,7 +556,7 @@ pub func WriteHashMapDebug<K: Debug, V: Debug>(
     writer: &var TextWriter,
     value: &HashMap<K, V>,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a borrowed hash map as `{key: value, key: value}`.
@@ -567,7 +570,7 @@ Every key and value is shown through a borrow of it, so a map of move-only entri
 out. `spec` is handed to each of them unchanged.
 Reports whatever the writer or an entry's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L126)
 
 **Type parameters**
 

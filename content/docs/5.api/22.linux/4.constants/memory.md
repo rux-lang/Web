@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Memory.rux
-  line: 11
+  line: 12
 seo:
   title: "Memory — Linux API"
   description: "Mapping, protecting and advising on pages of memory."
@@ -29,7 +29,7 @@ pub const ProtectionNone: int32 = 0;
 
 `PROT_NONE`: the pages may not be touched at all.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L12)
 
 <h2 id="protection-read"><code>ProtectionRead</code></h2>
 
@@ -39,7 +39,7 @@ pub const ProtectionRead: int32 = 1;
 
 `PROT_READ`: the pages may be read.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L16)
 
 <h2 id="protection-write"><code>ProtectionWrite</code></h2>
 
@@ -49,7 +49,7 @@ pub const ProtectionWrite: int32 = 2;
 
 `PROT_WRITE`: the pages may be written.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L20)
 
 <h2 id="protection-execute"><code>ProtectionExecute</code></h2>
 
@@ -59,7 +59,7 @@ pub const ProtectionExecute: int32 = 4;
 
 `PROT_EXEC`: the pages may be executed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L24)
 
 <h2 id="map-shared"><code>MapShared</code></h2>
 
@@ -69,7 +69,7 @@ pub const MapShared: int32 = 1;
 
 `MAP_SHARED`: writes are visible to other mappings of the same object and reach it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L28)
 
 <h2 id="map-private"><code>MapPrivate</code></h2>
 
@@ -79,7 +79,7 @@ pub const MapPrivate: int32 = 2;
 
 `MAP_PRIVATE`: writes are private to this mapping and never reach the object.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L32)
 
 <h2 id="map-fixed"><code>MapFixed</code></h2>
 
@@ -90,7 +90,7 @@ pub const MapFixed: int32 = 16;
 `MAP_FIXED`: place the mapping exactly at the requested address, replacing whatever was there.
 Dangerous by design: it silently unmaps anything already at the address, which may be someone else's mapping.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L37)
 
 <h2 id="map-anonymous"><code>MapAnonymous</code></h2>
 
@@ -101,12 +101,12 @@ pub const MapAnonymous: int32 = 32;
 `MAP_ANONYMOUS`: the mapping is backed by zeroed pages rather than by a file.
 The descriptor argument is then unused and is conventionally `-1`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L42)
 
 <h2 id="mmap"><code>Mmap</code></h2>
 
 ```rux
-pub func Mmap(
+pub unsafe func Mmap(
     address: *opaque,
     length: uint,
     protection: int32,
@@ -122,9 +122,10 @@ whole number of pages. `fd` is the object to map, or `-1` with [`MapAnonymous`](
 Returns the mapping's address as an integer. Testing it needs `Errors::IsError` rather than a sign test: a valid
 address may have its top bit set, and only the kernel's reserved `-4095` through `-1` range is a failure.
 The mapping outlives nothing on its own — it stays until [`Munmap`](/docs/api/linux/memory#munmap) releases it or the process ends.
-[`MapFixed`](/docs/api/linux/memory#map-fixed) replaces whatever occupies the address, including a mapping this program depends on.
+Safety: with [`MapFixed`](/docs/api/linux/memory#map-fixed), the range at `address` must hold nothing the program still uses, since the mapping replaces
+whatever occupies it, including a mapping this program depends on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L60)
 
 **Parameters**
 
@@ -142,16 +143,20 @@ The mapping outlives nothing on its own — it stays until [`Munmap`](/docs/api/
 <h2 id="munmap"><code>Munmap</code></h2>
 
 ```rux
-pub func Munmap(address: *opaque, length: uint) -> int64
+pub unsafe func Munmap(
+    address: *opaque,
+    length: uint
+) -> int64
 ```
 
 Releases the mapping that begins at `address` and spans `length` bytes.
 `address` must be page-aligned; `length` is rounded up to whole pages. Returns zero, or a negative error number.
 Releasing a range that was never mapped succeeds and does nothing, so this cannot be used to discover whether a
 range was mapped.
-Every pointer into the range becomes invalid, and the address space may be handed to a later mapping at once.
+Safety: the range must be one the caller mapped and no longer uses. Every pointer into it becomes invalid, and the
+address space may be handed to a later mapping at once.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L83)
 
 **Parameters**
 
@@ -165,7 +170,7 @@ Every pointer into the range becomes invalid, and the address space may be hande
 <h2 id="brk"><code>Brk</code></h2>
 
 ```rux
-pub func Brk(address: *opaque) -> int64
+pub unsafe func Brk(address: *opaque) -> int64
 ```
 
 Sets the program break and returns where it ended up.
@@ -173,8 +178,9 @@ Sets the program break and returns where it ended up.
 one when the request could not be met — this call reports failure by not moving rather than by an error number.
 The break is a single process-wide value. Anything else in the process that uses it, including a C runtime that
 was linked in, is using the same one.
+Safety: a non-null `address` must not lower the break below memory anything in the process still uses.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L96)
 
 **Parameters**
 
@@ -194,7 +200,7 @@ pub const AdviseDontNeed: int32 = 4;
 An anonymous page discarded this way reads back as zero next time, which is how a range is released without
 giving up the address space.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L104)
 
 <h2 id="advise-will-need"><code>AdviseWillNeed</code></h2>
 
@@ -204,7 +210,7 @@ pub const AdviseWillNeed: int32 = 3;
 
 `MADV_WILLNEED`: the pages will be read soon, so reading them ahead is worthwhile.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L108)
 
 <h2 id="advise-random"><code>AdviseRandom</code></h2>
 
@@ -214,7 +220,7 @@ pub const AdviseRandom: int32 = 1;
 
 `MADV_RANDOM`: the pages will be touched in no useful order, so reading ahead is not.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L112)
 
 <h2 id="advise-sequential"><code>AdviseSequential</code></h2>
 
@@ -224,12 +230,12 @@ pub const AdviseSequential: int32 = 2;
 
 `MADV_SEQUENTIAL`: the pages will be touched in order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L116)
 
 <h2 id="mprotect"><code>Mprotect</code></h2>
 
 ```rux
-pub func Mprotect(
+pub unsafe func Mprotect(
     address: *opaque,
     length: uint,
     protection: int32
@@ -243,8 +249,9 @@ Removing a permission takes effect at once, so a thread touching the range concu
 finishing what it started.
 Nothing here checks that the range was ever mapped, and marking executable memory writable at the same time is
 what a hardened system refuses.
+Safety: the range must be one the caller mapped, and nothing may still need an access `protection` removes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L131)
 
 **Parameters**
 
@@ -259,7 +266,7 @@ what a hardened system refuses.
 <h2 id="madvise"><code>Madvise</code></h2>
 
 ```rux
-pub func Madvise(
+pub unsafe func Madvise(
     address: *opaque,
     length: uint,
     advice: int32
@@ -269,10 +276,11 @@ pub func Madvise(
 Tells the kernel how the pages covering a range are about to be used.
 `address` must be page-aligned. Returns zero, or a negative error number. Advice is advice: the kernel is free to
 ignore all of it, with the exception of [`AdviseDontNeed`](/docs/api/linux/memory#advise-dont-need), which actually discards.
-[`AdviseDontNeed`](/docs/api/linux/memory#advise-dont-need) loses whatever the range held. On anonymous memory that is a zeroing; on a private file mapping
-it discards the modifications rather than writing them back.
+Safety: the range must be one the caller mapped, and with [`AdviseDontNeed`](/docs/api/linux/memory#advise-dont-need) it must hold nothing still needed, since
+that advice loses whatever the range held. On anonymous memory that is a zeroing; on a private file mapping it
+discards the modifications rather than writing them back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L139)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L146)
 
 **Parameters**
 
@@ -292,7 +300,7 @@ pub const AuxPageSize: uint64 = 6;
 
 `AT_PAGESZ`: the auxiliary-vector entry holding the page size, in bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L151)
 
 <h2 id="aux-null"><code>AuxNull</code></h2>
 
@@ -302,7 +310,7 @@ pub const AuxNull: uint64 = 0;
 
 `AT_NULL`: the entry that ends the auxiliary vector.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L148)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L155)
 
 <h2 id="query-page-size"><code>QueryPageSize</code></h2>
 
@@ -322,6 +330,6 @@ Reports the open's or the read's own error number when `/proc` is not mounted or
 ordinary in a container built without it. Reports `-ENOENT` when the vector was readable but held no
 [`AuxPageSize`](/docs/api/linux/memory#aux-page-size) entry, and `-EINVAL` when it held one that is not a size the address space could have.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Memory.rux#L170)
 
 **Returns**: the page size in bytes, or a negative error number

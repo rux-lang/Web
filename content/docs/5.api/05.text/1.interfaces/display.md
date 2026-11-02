@@ -26,7 +26,7 @@ pub interface Display {
     func WriteDisplay(
         writer: &var TextWriter,
         spec: FormatSpec
-    ) -> ! FormatError;
+    ) throws FormatError;
 }
 ```
 
@@ -42,7 +42,7 @@ instead of implementing this.
 func WriteDisplay(
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes this value's text under `spec`.
@@ -80,7 +80,7 @@ pub func WriteValue(
     writer: &var TextWriter,
     value: Display,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `value` under `spec` through its [`Display`](/docs/api/text/display) implementation.

@@ -153,7 +153,7 @@ pub const AdviseWillNeed: int32 = 3;
 <h2 id="mmap"><code>Mmap</code></h2>
 
 ```rux
-pub func Mmap(
+pub unsafe func Mmap(
     address: *opaque,
     length: uint,
     protection: int32,
@@ -168,9 +168,10 @@ Creates a mapping and returns its address, or a negative error number.
 libSystem reports failure here as `MAP_FAILED`, which is `-1` cast to a pointer rather than a small negative
 number, so the failure is folded into the same normalized form every other wrapper uses. Test the result with
 [`IsError`](/docs/api/macos/errors#is-error), not for a sign: a valid address may have its top bit set.
-[`MapFixed`](/docs/api/macos/memory#map-fixed) replaces whatever occupies the address, including a mapping this program depends on.
+Safety: with [`MapFixed`](/docs/api/macos/memory#map-fixed), the range at `address` must hold nothing the program still uses, since the mapping replaces
+whatever occupies it, including a mapping this program depends on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L69)
 
 **Parameters**
 
@@ -188,14 +189,17 @@ number, so the failure is folded into the same normalized form every other wrapp
 <h2 id="munmap"><code>Munmap</code></h2>
 
 ```rux
-pub func Munmap(address: *opaque, length: uint) -> int64
+pub unsafe func Munmap(
+    address: *opaque,
+    length: uint
+) -> int64
 ```
 
 Releases the mapping that begins at `address` and spans `length` bytes.
 Returns zero, or a negative error number.
-Every pointer into the range becomes invalid.
+Safety: the range must be one the caller mapped and no longer uses. Every pointer into it becomes invalid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L82)
 
 **Parameters**
 
@@ -209,7 +213,7 @@ Every pointer into the range becomes invalid.
 <h2 id="mprotect"><code>Mprotect</code></h2>
 
 ```rux
-pub func Mprotect(
+pub unsafe func Mprotect(
     address: *opaque,
     length: uint,
     protection: int32
@@ -219,8 +223,9 @@ pub func Mprotect(
 Changes what may be done with the pages covering a range.
 `address` must be page-aligned. Returns zero, or a negative error number.
 Apple Silicon refuses to make a range writable and executable at once without the JIT entitlement.
+Safety: the range must be one the caller mapped, and nothing may still need an access `protection` removes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L95)
 
 **Parameters**
 
@@ -235,7 +240,7 @@ Apple Silicon refuses to make a range writable and executable at once without th
 <h2 id="madvise"><code>Madvise</code></h2>
 
 ```rux
-pub func Madvise(
+pub unsafe func Madvise(
     address: *opaque,
     length: uint,
     advice: int32
@@ -244,9 +249,10 @@ pub func Madvise(
 
 Tells the kernel how the pages covering a range are about to be used.
 Advice is advice, with the exception of [`AdviseFree`](/docs/api/macos/memory#advise-free), which actually releases.
-[`AdviseFree`](/docs/api/macos/memory#advise-free) loses whatever the range held.
+Safety: the range must be one the caller mapped, and with [`AdviseFree`](/docs/api/macos/memory#advise-free) it must hold nothing still needed, since that
+advice loses whatever the range held.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L108)
 
 **Parameters**
 
@@ -270,6 +276,6 @@ is asked rather than assumed. The underlying call cannot fail, which is why this
 negative-error return exists so that one call shape reaches all three POSIX systems, not because Darwin has a
 failure to report.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L118)
 
 **Returns**: the page size in bytes, always positive on this system

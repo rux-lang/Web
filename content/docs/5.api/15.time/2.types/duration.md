@@ -152,7 +152,7 @@ Exactly `nanoseconds` nanoseconds.
 <h3 id="is-zero"><code>IsZero</code></h3>
 
 ```rux
-pub func IsZero(self: &Duration) -> bool
+pub func IsZero(&self) -> bool
 ```
 
 Whether this span is exactly nothing.
@@ -164,7 +164,7 @@ Whether this span is exactly nothing.
 <h3 id="is-negative"><code>IsNegative</code></h3>
 
 ```rux
-pub func IsNegative(self: &Duration) -> bool
+pub func IsNegative(&self) -> bool
 ```
 
 Whether this span is negative.
@@ -177,7 +177,7 @@ The sign lives in the seconds alone, which the normalization guarantees.
 <h3 id="whole-seconds"><code>WholeSeconds</code></h3>
 
 ```rux
-pub func WholeSeconds(self: &Duration) -> int64
+pub func WholeSeconds(&self) -> int64
 ```
 
 The whole seconds, rounded toward negative infinity.
@@ -189,7 +189,7 @@ The whole seconds, rounded toward negative infinity.
 <h3 id="subsecond-nanoseconds"><code>SubsecondNanoseconds</code></h3>
 
 ```rux
-pub func SubsecondNanoseconds(self: &Duration) -> uint32
+pub func SubsecondNanoseconds(&self) -> uint32
 ```
 
 The fraction beyond the whole seconds, in nanoseconds, always in [0, 1e9).
@@ -201,7 +201,7 @@ The fraction beyond the whole seconds, in nanoseconds, always in [0, 1e9).
 <h3 id="total-milliseconds"><code>TotalMilliseconds</code></h3>
 
 ```rux
-pub func TotalMilliseconds(self: &Duration) -> int64?
+pub func TotalMilliseconds(&self) -> int64?
 ```
 
 This span as milliseconds, truncated toward zero, or `None` where an `int64` of them cannot hold it.
@@ -213,7 +213,7 @@ This span as milliseconds, truncated toward zero, or `None` where an `int64` of 
 <h3 id="total-microseconds"><code>TotalMicroseconds</code></h3>
 
 ```rux
-pub func TotalMicroseconds(self: &Duration) -> int64?
+pub func TotalMicroseconds(&self) -> int64?
 ```
 
 This span as microseconds, truncated toward zero.
@@ -225,7 +225,7 @@ This span as microseconds, truncated toward zero.
 <h3 id="total-nanoseconds"><code>TotalNanoseconds</code></h3>
 
 ```rux
-pub func TotalNanoseconds(self: &Duration) -> int64?
+pub func TotalNanoseconds(&self) -> int64?
 ```
 
 This span as nanoseconds, or `None` where an `int64` of them cannot hold it — about 292 years.
@@ -237,7 +237,7 @@ This span as nanoseconds, or `None` where an `int64` of them cannot hold it — 
 <h3 id="plus"><code>Plus</code></h3>
 
 ```rux
-pub func Plus(self: &Duration, other: Duration) -> Duration?
+pub func Plus(&self, other: Duration) -> Duration?
 ```
 
 The sum of two spans, or `None` past the range.
@@ -253,10 +253,7 @@ The sum of two spans, or `None` past the range.
 <h3 id="minus"><code>Minus</code></h3>
 
 ```rux
-pub func Minus(
-    self: &Duration,
-    other: Duration
-) -> Duration?
+pub func Minus(&self, other: Duration) -> Duration?
 ```
 
 The difference of two spans, or `None` past the range.
@@ -272,7 +269,7 @@ The difference of two spans, or `None` past the range.
 <h3 id="negated"><code>Negated</code></h3>
 
 ```rux
-pub func Negated(self: &Duration) -> Duration?
+pub func Negated(&self) -> Duration?
 ```
 
 This span negated, or `None` for the one value whose negation does not fit.
@@ -284,7 +281,7 @@ This span negated, or `None` for the one value whose negation does not fit.
 <h3 id="times"><code>Times</code></h3>
 
 ```rux
-pub func Times(self: &Duration, factor: int64) -> Duration?
+pub func Times(&self, factor: int64) -> Duration?
 ```
 
 This span scaled by a whole factor, or `None` past the range.
@@ -300,7 +297,7 @@ This span scaled by a whole factor, or `None` past the range.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &Duration, other: Duration) -> bool
+pub func Equals(&self, other: Duration) -> bool
 ```
 
 Whether two spans are the same time.
@@ -316,10 +313,7 @@ Whether two spans are the same time.
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(
-    self: &Duration,
-    other: Duration
-) -> Ordering
+pub func Compare(&self, other: Duration) -> Ordering
 ```
 
 How this span orders against `other`.
@@ -341,10 +335,10 @@ Two comparisons, which the normalization pays for: the seconds decide, and the f
 
 ```rux
 pub func WriteDisplay(
-    self: &Duration,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the span as signed decimal seconds followed by `s`.
@@ -364,7 +358,7 @@ precision past nine.
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L120)
 
 ## Implements Debug
 
@@ -374,10 +368,10 @@ precision past nine.
 
 ```rux
 pub func WriteDebug(
-    self: &Duration,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`: a span has one reading.
@@ -390,7 +384,7 @@ The failures [`WriteDisplay`](/docs/api/time/duration#write-display) reports.
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L140)
 
 ## Related
 
@@ -407,7 +401,7 @@ How many nanoseconds one second holds.
 <h3 id="parse-duration"><code>ParseDuration</code></h3>
 
 ```rux
-pub func ParseDuration(text: char8[..]) -> Duration ! TimeParseError
+pub func ParseDuration(text: char8[..]) -> Duration throws TimeParseError
 ```
 
 Reads a span written as signed decimal seconds followed by `s`.
@@ -417,7 +411,7 @@ Reports `InvalidSyntax` with the byte offset where the shape stopped matching, a
 first digit that a nanosecond cannot hold. A magnitude too large for the representation is `InvalidSyntax` at
 the digit that overflowed, since the text is well formed and the value simply is not one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/DurationText.rux#L143)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/DurationText.rux#L154)
 
 **Parameters**
 

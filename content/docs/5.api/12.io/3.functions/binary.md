@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Binary.rux
-  line: 16
+  line: 17
 seo:
   title: "Binary encoding — Io API"
   description: Fixed-width integers and floats read from a reader and written to a writer in a chosen byte order.
@@ -32,7 +32,7 @@ pub enum Endian: int32 {
 
 A byte order: which end of a multi-byte value comes first.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L17)
 
 **Cases**
 
@@ -48,14 +48,14 @@ pub func ReadWord(
     reader: &var Reader,
     endian: Endian,
     width: uint
-) -> uint512 ! IoError
+) -> uint512 throws IoError
 ```
 
 Reads a `width`-byte unsigned word in the given order, into the low bytes of the result.
 The word functions are the one implementation the typed surface below stands on; call those unless the width
 itself is a runtime quantity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L32)
 
 **Parameters**
 
@@ -65,7 +65,7 @@ itself is a runtime quantity.
 | `endian` | `Endian`      | which byte order the value is stored in |
 | `width`  | `uint`        | how many bytes the value occupies       |
 
-**Returns**: the value read, in the low bytes; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read, in the low bytes; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-word"><code>WriteWord</code></h2>
 
@@ -75,12 +75,12 @@ pub func WriteWord(
     endian: Endian,
     width: uint,
     value: uint512
-) -> ! IoError
+) throws IoError
 ```
 
 Writes the low `width` bytes of `value` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L54)
 
 **Parameters**
 
@@ -99,12 +99,12 @@ Writes the low `width` bytes of `value` in the given order.
 pub func ReadUint8(
     reader: &var Reader,
     endian: Endian
-) -> uint8 ! IoError
+) -> uint8 throws IoError
 ```
 
 Reads a `uint8` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L73)
 
 **Parameters**
 
@@ -113,7 +113,7 @@ Reads a `uint8` in the given order.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-uint8"><code>WriteUint8</code></h2>
 
@@ -122,12 +122,12 @@ pub func WriteUint8(
     writer: &var Writer,
     endian: Endian,
     value: uint8
-) -> ! IoError
+) throws IoError
 ```
 
 Writes a `uint8` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L84)
 
 **Parameters**
 
@@ -145,12 +145,12 @@ Writes a `uint8` in the given order.
 pub func ReadInt8(
     reader: &var Reader,
     endian: Endian
-) -> int8 ! IoError
+) -> int8 throws IoError
 ```
 
 Reads an `int8`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L93)
 
 **Parameters**
 
@@ -159,7 +159,7 @@ Reads an `int8`: the unsigned bytes, reinterpreted in two's complement.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-int8"><code>WriteInt8</code></h2>
 
@@ -168,12 +168,12 @@ pub func WriteInt8(
     writer: &var Writer,
     endian: Endian,
     value: int8
-) -> ! IoError
+) throws IoError
 ```
 
 Writes an `int8`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L104)
 
 **Parameters**
 
@@ -191,12 +191,12 @@ Writes an `int8`: its two's-complement bytes, unchanged.
 pub func ReadUint16(
     reader: &var Reader,
     endian: Endian
-) -> uint16 ! IoError
+) -> uint16 throws IoError
 ```
 
 Reads a `uint16` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L113)
 
 **Parameters**
 
@@ -205,7 +205,7 @@ Reads a `uint16` in the given order.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-uint16"><code>WriteUint16</code></h2>
 
@@ -214,12 +214,12 @@ pub func WriteUint16(
     writer: &var Writer,
     endian: Endian,
     value: uint16
-) -> ! IoError
+) throws IoError
 ```
 
 Writes a `uint16` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L123)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L124)
 
 **Parameters**
 
@@ -237,12 +237,12 @@ Writes a `uint16` in the given order.
 pub func ReadInt16(
     reader: &var Reader,
     endian: Endian
-) -> int16 ! IoError
+) -> int16 throws IoError
 ```
 
 Reads an `int16`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L133)
 
 **Parameters**
 
@@ -251,7 +251,7 @@ Reads an `int16`: the unsigned bytes, reinterpreted in two's complement.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-int16"><code>WriteInt16</code></h2>
 
@@ -260,12 +260,12 @@ pub func WriteInt16(
     writer: &var Writer,
     endian: Endian,
     value: int16
-) -> ! IoError
+) throws IoError
 ```
 
 Writes an `int16`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L143)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L144)
 
 **Parameters**
 
@@ -283,12 +283,12 @@ Writes an `int16`: its two's-complement bytes, unchanged.
 pub func ReadUint32(
     reader: &var Reader,
     endian: Endian
-) -> uint32 ! IoError
+) -> uint32 throws IoError
 ```
 
 Reads a `uint32` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L153)
 
 **Parameters**
 
@@ -297,7 +297,7 @@ Reads a `uint32` in the given order.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-uint32"><code>WriteUint32</code></h2>
 
@@ -306,12 +306,12 @@ pub func WriteUint32(
     writer: &var Writer,
     endian: Endian,
     value: uint32
-) -> ! IoError
+) throws IoError
 ```
 
 Writes a `uint32` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L164)
 
 **Parameters**
 
@@ -329,12 +329,12 @@ Writes a `uint32` in the given order.
 pub func ReadInt32(
     reader: &var Reader,
     endian: Endian
-) -> int32 ! IoError
+) -> int32 throws IoError
 ```
 
 Reads an `int32`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L172)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L173)
 
 **Parameters**
 
@@ -343,7 +343,7 @@ Reads an `int32`: the unsigned bytes, reinterpreted in two's complement.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-int32"><code>WriteInt32</code></h2>
 
@@ -352,12 +352,12 @@ pub func WriteInt32(
     writer: &var Writer,
     endian: Endian,
     value: int32
-) -> ! IoError
+) throws IoError
 ```
 
 Writes an `int32`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L183)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L184)
 
 **Parameters**
 
@@ -375,12 +375,12 @@ Writes an `int32`: its two's-complement bytes, unchanged.
 pub func ReadUint64(
     reader: &var Reader,
     endian: Endian
-) -> uint64 ! IoError
+) -> uint64 throws IoError
 ```
 
 Reads a `uint64` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L192)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L193)
 
 **Parameters**
 
@@ -389,7 +389,7 @@ Reads a `uint64` in the given order.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-uint64"><code>WriteUint64</code></h2>
 
@@ -398,12 +398,12 @@ pub func WriteUint64(
     writer: &var Writer,
     endian: Endian,
     value: uint64
-) -> ! IoError
+) throws IoError
 ```
 
 Writes a `uint64` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L203)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L204)
 
 **Parameters**
 
@@ -421,12 +421,12 @@ Writes a `uint64` in the given order.
 pub func ReadInt64(
     reader: &var Reader,
     endian: Endian
-) -> int64 ! IoError
+) -> int64 throws IoError
 ```
 
 Reads an `int64`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L212)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L213)
 
 **Parameters**
 
@@ -435,7 +435,7 @@ Reads an `int64`: the unsigned bytes, reinterpreted in two's complement.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-int64"><code>WriteInt64</code></h2>
 
@@ -444,12 +444,12 @@ pub func WriteInt64(
     writer: &var Writer,
     endian: Endian,
     value: int64
-) -> ! IoError
+) throws IoError
 ```
 
 Writes an `int64`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L223)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L224)
 
 **Parameters**
 
@@ -467,12 +467,12 @@ Writes an `int64`: its two's-complement bytes, unchanged.
 pub func ReadUint128(
     reader: &var Reader,
     endian: Endian
-) -> uint128 ! IoError
+) -> uint128 throws IoError
 ```
 
 Reads a `uint128` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L233)
 
 **Parameters**
 
@@ -481,7 +481,7 @@ Reads a `uint128` in the given order.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-uint128"><code>WriteUint128</code></h2>
 
@@ -490,12 +490,12 @@ pub func WriteUint128(
     writer: &var Writer,
     endian: Endian,
     value: uint128
-) -> ! IoError
+) throws IoError
 ```
 
 Writes a `uint128` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L243)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L244)
 
 **Parameters**
 
@@ -513,12 +513,12 @@ Writes a `uint128` in the given order.
 pub func ReadInt128(
     reader: &var Reader,
     endian: Endian
-) -> int128 ! IoError
+) -> int128 throws IoError
 ```
 
 Reads an `int128`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L253)
 
 **Parameters**
 
@@ -527,7 +527,7 @@ Reads an `int128`: the unsigned bytes, reinterpreted in two's complement.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-int128"><code>WriteInt128</code></h2>
 
@@ -536,12 +536,12 @@ pub func WriteInt128(
     writer: &var Writer,
     endian: Endian,
     value: int128
-) -> ! IoError
+) throws IoError
 ```
 
 Writes an `int128`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L263)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L264)
 
 **Parameters**
 
@@ -559,12 +559,12 @@ Writes an `int128`: its two's-complement bytes, unchanged.
 pub func ReadUint256(
     reader: &var Reader,
     endian: Endian
-) -> uint256 ! IoError
+) -> uint256 throws IoError
 ```
 
 Reads a `uint256` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L272)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L273)
 
 **Parameters**
 
@@ -573,7 +573,7 @@ Reads a `uint256` in the given order.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-uint256"><code>WriteUint256</code></h2>
 
@@ -582,12 +582,12 @@ pub func WriteUint256(
     writer: &var Writer,
     endian: Endian,
     value: uint256
-) -> ! IoError
+) throws IoError
 ```
 
 Writes a `uint256` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L283)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L284)
 
 **Parameters**
 
@@ -605,12 +605,12 @@ Writes a `uint256` in the given order.
 pub func ReadInt256(
     reader: &var Reader,
     endian: Endian
-) -> int256 ! IoError
+) -> int256 throws IoError
 ```
 
 Reads an `int256`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L292)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L293)
 
 **Parameters**
 
@@ -619,7 +619,7 @@ Reads an `int256`: the unsigned bytes, reinterpreted in two's complement.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-int256"><code>WriteInt256</code></h2>
 
@@ -628,12 +628,12 @@ pub func WriteInt256(
     writer: &var Writer,
     endian: Endian,
     value: int256
-) -> ! IoError
+) throws IoError
 ```
 
 Writes an `int256`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L303)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L304)
 
 **Parameters**
 
@@ -651,12 +651,12 @@ Writes an `int256`: its two's-complement bytes, unchanged.
 pub func ReadUint512(
     reader: &var Reader,
     endian: Endian
-) -> uint512 ! IoError
+) -> uint512 throws IoError
 ```
 
 Reads a `uint512` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L312)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L313)
 
 **Parameters**
 
@@ -665,7 +665,7 @@ Reads a `uint512` in the given order.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-uint512"><code>WriteUint512</code></h2>
 
@@ -674,12 +674,12 @@ pub func WriteUint512(
     writer: &var Writer,
     endian: Endian,
     value: uint512
-) -> ! IoError
+) throws IoError
 ```
 
 Writes a `uint512` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L323)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L324)
 
 **Parameters**
 
@@ -697,12 +697,12 @@ Writes a `uint512` in the given order.
 pub func ReadInt512(
     reader: &var Reader,
     endian: Endian
-) -> int512 ! IoError
+) -> int512 throws IoError
 ```
 
 Reads an `int512`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L332)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L333)
 
 **Parameters**
 
@@ -711,7 +711,7 @@ Reads an `int512`: the unsigned bytes, reinterpreted in two's complement.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-int512"><code>WriteInt512</code></h2>
 
@@ -720,12 +720,12 @@ pub func WriteInt512(
     writer: &var Writer,
     endian: Endian,
     value: int512
-) -> ! IoError
+) throws IoError
 ```
 
 Writes an `int512`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L343)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L344)
 
 **Parameters**
 
@@ -743,12 +743,12 @@ Writes an `int512`: its two's-complement bytes, unchanged.
 pub func ReadFloat32(
     reader: &var Reader,
     endian: Endian
-) -> float32 ! IoError
+) -> float32 throws IoError
 ```
 
 Reads a `float32` as the IEEE 754 bit pattern of its width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L352)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L353)
 
 **Parameters**
 
@@ -757,7 +757,7 @@ Reads a `float32` as the IEEE 754 bit pattern of its width.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-float32"><code>WriteFloat32</code></h2>
 
@@ -766,12 +766,12 @@ pub func WriteFloat32(
     writer: &var Writer,
     endian: Endian,
     value: float32
-) -> ! IoError
+) throws IoError
 ```
 
 Writes a `float32` as the IEEE 754 bit pattern of its width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L365)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L367)
 
 **Parameters**
 
@@ -789,12 +789,12 @@ Writes a `float32` as the IEEE 754 bit pattern of its width.
 pub func ReadFloat64(
     reader: &var Reader,
     endian: Endian
-) -> float64 ! IoError
+) -> float64 throws IoError
 ```
 
 Reads a `float64` as the IEEE 754 bit pattern of its width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L377)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L380)
 
 **Parameters**
 
@@ -803,7 +803,7 @@ Reads a `float64` as the IEEE 754 bit pattern of its width.
 | `reader` | `&var Reader` | where the bytes come from               |
 | `endian` | `Endian`      | which byte order the value is stored in |
 
-**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) when the stream ended first
+**Returns**: the value read; [`IsEnd`](/docs/api/io/io-error#is-end) if the stream had ended, `UnexpectedEnd` if it ended partway
 
 <h2 id="write-float64"><code>WriteFloat64</code></h2>
 
@@ -812,12 +812,12 @@ pub func WriteFloat64(
     writer: &var Writer,
     endian: Endian,
     value: float64
-) -> ! IoError
+) throws IoError
 ```
 
 Writes a `float64` as the IEEE 754 bit pattern of its width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L390)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L394)
 
 **Parameters**
 

@@ -48,12 +48,12 @@ after it is released is invalid.
 <h2 id="free"><code>Free</code></h2>
 
 ```rux
-pub func Free(ptr: *opaque)
+pub unsafe func Free(ptr: *opaque)
 ```
 
 Releases an allocation. A null pointer is accepted and does nothing.
-A non-null `ptr` must be the live base address returned by [`Alloc`](/docs/api/memory/allocation#alloc) or [`Realloc`](/docs/api/memory/allocation#realloc). Every pointer into the block
-becomes invalid immediately; releasing an interior, foreign, or already released address is invalid.
+Safety: a non-null `ptr` must be the live base address returned by [`Alloc`](/docs/api/memory/allocation#alloc) or [`Realloc`](/docs/api/memory/allocation#realloc). Every pointer into the
+block becomes invalid immediately; releasing an interior, foreign, or already released address is invalid.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Free.rux#L20)
 
@@ -66,15 +66,18 @@ becomes invalid immediately; releasing an interior, foreign, or already released
 <h2 id="realloc"><code>Realloc</code></h2>
 
 ```rux
-pub func Realloc(ptr: *opaque, size: uint) -> *var opaque
+pub unsafe func Realloc(
+    ptr: *opaque,
+    size: uint
+) -> *var opaque
 ```
 
 Resizes an allocation to `size` bytes, preserving the bytes that still fit.
 A null `ptr` behaves as `Alloc(size)`. A zero size releases a non-null allocation and returns null. On failure,
 returns null and leaves the original allocation valid; on success, the original address is invalid even when the
 returned address has the same numeric value.
-A non-null `ptr` must be the live base address returned by [`Alloc`](/docs/api/memory/allocation#alloc) or an earlier `Realloc`. Interior, released,
-or foreign addresses are invalid. Bytes added beyond the old size are uninitialized.
+Safety: a non-null `ptr` must be the live base address returned by [`Alloc`](/docs/api/memory/allocation#alloc) or an earlier `Realloc`. Interior,
+released, or foreign addresses are invalid. Bytes added beyond the old size are uninitialized.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Realloc.rux#L23)
 

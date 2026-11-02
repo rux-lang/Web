@@ -60,7 +60,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="written"><code>Written</code></h3>
 
 ```rux
-pub func Written(self: &BufferWriter) -> char8[..]
+pub func Written(&self) -> char8[..]
 ```
 
 The text written so far.
@@ -75,7 +75,7 @@ Borrows the writer. Cannot fail; runs in constant time and allocates nothing.
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &BufferWriter) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many bytes of text the writer holds.
@@ -83,12 +83,12 @@ Borrows the writer. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the byte count, which is not a character count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L56)
 
 <h3 id="remaining"><code>Remaining</code></h3>
 
 ```rux
-pub func Remaining(self: &BufferWriter) -> uint
+pub func Remaining(&self) -> uint
 ```
 
 How many more bytes will fit.
@@ -98,12 +98,12 @@ Borrows the writer. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the remaining capacity in bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L66)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var BufferWriter)
+pub func Clear(&var self)
 ```
 
 Discards the text written so far, keeping the room.
@@ -112,7 +112,7 @@ nothing can reach them: [`Written`](/docs/api/text/buffer-writer#written) stops 
 `Rux/Memory` on the room itself.
 Borrows the writer exclusively. Cannot fail; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L76)
 
 ## Implements TextWriter
 
@@ -122,9 +122,9 @@ Borrows the writer exclusively. Cannot fail; runs in constant time and allocates
 
 ```rux
 pub func Write(
-    self: &var BufferWriter,
+    &var self,
     bytes: char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Appends `bytes`, whole or not at all.
@@ -142,4 +142,4 @@ arithmetic, neither of which a fixed buffer performs.
 
 **Returns**: success when the complete run was appended
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L93)

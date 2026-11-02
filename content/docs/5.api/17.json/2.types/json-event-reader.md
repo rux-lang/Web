@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Events.rux
-  line: 48
+  line: 73
 seo:
   title: "JsonEventReader — Json API"
   description: "Reads a document as events, pulling bytes as it needs them."
@@ -27,19 +27,20 @@ pub struct JsonEventReader {
 }
 ```
 
-## Associated functions
+## Constructors
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="constructor"><code>JsonEventReader</code></h3>
 
 ```rux
-pub func New(
+pub func JsonEventReader(
     allocator: Allocator,
     source: Reader,
     limits: JsonLimits
-) -> JsonEventReader ! IoError
+) -> JsonEventReader
 ```
 
 A reader over `source` under `limits`.
+Terminates the program when its first buffer cannot be allocated, as every owning buffer does.
 
 | Name        | Type         | Description                            |
 | ----------- | ------------ | -------------------------------------- |
@@ -47,114 +48,86 @@ A reader over `source` under `limits`.
 | `source`    | `Reader`     | the text to read                       |
 | `limits`    | `JsonLimits` | the bounds the parse refuses to exceed |
 
-**Returns**: a reader positioned before the first event; `Other` when its buffer could not be allocated
+**Returns**: a reader positioned before the first event
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L125)
 
 ## Methods
-
-<h3 id="failure"><code>Failure</code></h3>
-
-```rux
-pub func Failure(self: &JsonEventReader) -> JsonParseError?
-```
-
-Why reading stopped, positioned, or `none` while nothing has gone wrong.
-This is what a caller asks after [`Next`](/docs/api/json/json-event-reader#next) reports `Error`. A lexical refusal carries the lexer's own reason
-inside it rather than in a second call, so a caller holding the failure is holding all of it. The offset
-counts bytes from the start of the document, however many times the buffer has been refilled. A source that
-failed is reported as `Source`, and what it reported is on [`SourceError`](/docs/api/json/json-event-reader#source-error).
-
-**Returns**: the failure, positioned at the byte of the document the reader stopped on, or `none`
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L124)
-
-<h3 id="source-error"><code>SourceError</code></h3>
-
-```rux
-pub func SourceError(self: &JsonEventReader) -> IoError?
-```
-
-What the source reported when reading it failed, or `none` when it has not failed.
-The end of the stream is not a failure and is never reported here; any other `IoError` from the source's
-`Read` stops the reader, makes [`Next`](/docs/api/json/json-event-reader#next) report `Error` and [`Failure`](/docs/api/json/json-event-reader#failure) report `Source`, and is kept here
-unchanged, so a caller can tell a document that is malformed from a stream that broke.
-
-**Returns**: the source's failure, or `none`
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L134)
 
 <h3 id="text"><code>Text</code></h3>
 
 ```rux
-pub func Text(self: &JsonEventReader) -> char8[..]
+pub func Text(&self) -> char8[..]
 ```
 
-The text of the event just reported, valid until the next one.
-For a name, a string or a number. Escapes are left as written — resolving them would mean allocating,
-and a caller skipping past a field should not pay for its contents.
+The text of the event just reported, valid until the next call to [`Next`](/docs/api/json/json-event-reader#next).
+For a name, a string or a number. The view points into the reader's buffer, which the next call may refill
+or grow, so a caller that keeps the text copies it first. Escapes are left as written — resolving them would
+mean allocating, and a caller skipping past a field should not pay for its contents.
 
-**Returns**: the current event's text, borrowed from the input
+**Returns**: the current event's text, borrowed from the reader until its next event
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L143)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L163)
 
 <h3 id="text-is-escaped"><code>TextIsEscaped</code></h3>
 
 ```rux
-pub func TextIsEscaped(self: &JsonEventReader) -> bool
+pub func TextIsEscaped(&self) -> bool
 ```
 
 Whether that text holds escapes a caller must resolve.
 
 **Returns**: whether the text still holds escape sequences a caller must decode
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L172)
 
 <h3 id="depth"><code>Depth</code></h3>
 
 ```rux
-pub func Depth(self: &JsonEventReader) -> uint
+pub func Depth(&self) -> uint
 ```
 
 How deeply nested the reader currently is.
 
 **Returns**: how many arrays and objects are currently open
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L179)
 
 <h3 id="release"><code>Release</code></h3>
 
 ```rux
-pub func Release(self: &var JsonEventReader)
+pub func Release(&var self)
 ```
 
 Gives the buffer back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L219)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L243)
 
 <h3 id="next"><code>Next</code></h3>
 
 ```rux
-pub func Next(self: &var JsonEventReader) -> JsonEvent
+pub func Next(&var self) -> JsonEvent? throws JsonReadError
 ```
 
-The next event.
-Separators are consumed silently: a caller sees values and structure, not commas and colons, which is
-the level a streaming reader is useful at.
+The next event, or `none` at the end of the document.
+Separators are checked and consumed: a caller sees values and structure, not commas and colons, which is the
+level a streaming reader is useful at. A document that is not JSON throws `Malformed` with the case and offset
+the tree parser would report, and a source that fails throws `Source` with the source's own error; after
+either, every later call throws the same error again.
 
-**Returns**: the next event, or the end-of-input event
+**Returns**: the next event, or `none` once the top-level value and any whitespace after it have been read
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L359)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L412)
 
 ## Destructor
 
 ```rux
-func ~JsonEventReader(self: &var JsonEventReader)
+func ~JsonEventReader(&var self)
 ```
 
 Releases the buffer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L230)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L254)
 
 ## Related
 
@@ -162,7 +135,6 @@ Releases the buffer.
 
 ```rux
 pub enum JsonEvent: int32 {
-    End = 0,
     ObjectStart = 1,
     ObjectEnd = 2,
     ArrayStart = 3,
@@ -172,20 +144,18 @@ pub enum JsonEvent: int32 {
     Number = 7,
     True = 8,
     False = 9,
-    Null = 10,
-    Error = 11
+    Null = 10
 }
 ```
 
-What just happened in the document.
+What just happened in the document. The end of the document is `none` from `Next`, and a failure is thrown.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L20)
 
 **Cases**
 
 | Name          | Value | Description                                                 |
 | ------------- | ----- | ----------------------------------------------------------- |
-| `End`         | `0`   | The document is finished.                                   |
 | `ObjectStart` | `1`   | An object opened.                                           |
 | `ObjectEnd`   | `2`   | An object closed.                                           |
 | `ArrayStart`  | `3`   | An array opened.                                            |
@@ -196,4 +166,23 @@ What just happened in the document.
 | `True`        | `8`   | `true`.                                                     |
 | `False`       | `9`   | `false`.                                                    |
 | `Null`        | `10`  | `null`.                                                     |
-| `Error`       | `11`  | Something went wrong; the reason is on the reader.          |
+
+<h3 id="json-read-error"><code>JsonReadError</code></h3>
+
+```rux
+pub variant JsonReadError {
+    Malformed(JsonParseError),
+    Source(IoError, uint)
+}
+```
+
+Why a [`JsonEventReader`](/docs/api/json/json-event-reader) stopped before the end of the document.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L45)
+
+**Cases**
+
+| Name                        | Description                                                                                                                                                                       |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Malformed(JsonParseError)` | The document is not JSON. The failure is positioned at the byte of the document the reader stopped on, with the same cases and offsets the tree parser reports for the same text. |
+| `Source(IoError, uint)`     | The source failed with something other than its end, after this many bytes of the document were read.                                                                             |

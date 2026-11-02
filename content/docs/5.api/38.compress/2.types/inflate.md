@@ -36,16 +36,16 @@ data one after another. Not copied.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Inflate.rux#L30)
 
-**Associated functions**
+**Constructors**
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>DecompressReader</code></h3>
 
 ```rux
-pub func New(
+pub func DecompressReader(
     allocator: Allocator,
     source: Reader,
     format: Format
-) -> DecompressReader ! IoError
+) -> DecompressReader throws IoError
 ```
 
 A reader of the data `source` holds compressed in `format`.
@@ -58,7 +58,7 @@ A reader of the data `source` holds compressed in `format`.
 
 **Returns**: the reader, or fails when the allocator refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Inflate.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Inflate.rux#L65)
 
 **Implements Reader**
 
@@ -68,9 +68,9 @@ A reader of the data `source` holds compressed in `format`.
 
 ```rux
 pub func Read(
-    self: &var DecompressReader,
+    &var self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Decompresses into `into` until it is full or the data ends.
@@ -82,14 +82,14 @@ Decompresses into `into` until it is full or the data ends.
 **Returns**: how many bytes were produced, or fails with `EndOfStream` after the last, or with `InvalidInput` for
 damaged or truncated input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Inflate.rux#L404)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Inflate.rux#L438)
 
 **Destructor**
 
 <h3 id="decompress-reader-destructor"><code>~DecompressReader</code></h3>
 
 ```rux
-func ~DecompressReader(self: &var DecompressReader)
+func ~DecompressReader(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Inflate.rux#L385)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Inflate.rux#L419)

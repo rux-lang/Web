@@ -30,7 +30,7 @@
     {
       "name": "Expect",
       "source": "Src/Expect.rux",
-      "header": "Checks that fail a test with a message saying what was expected and what was found.\nEach check returns `! TestFailure`, so a test passes it on with `?` and stops at the first check that does not hold."
+      "header": "Checks that fail a test with a message saying what was expected and what was found.\nEach check declares `throws TestFailure`, so a test marks it with `try` and stops at the first check that does not\nhold."
     },
     {
       "name": "Failure",
@@ -176,7 +176,7 @@
           "kind": "method",
           "name": "NanosecondsPerIteration",
           "line": 37,
-          "signature": "pub func NanosecondsPerIteration(self: &BenchmarkResult) -> float64",
+          "signature": "pub func NanosecondsPerIteration(&self) -> float64",
           "typeParams": [],
           "params": [],
           "receiver": "&BenchmarkResult",
@@ -395,7 +395,7 @@
       "displayName": "Measure",
       "module": "Benchmark",
       "source": "Src/Benchmark.rux",
-      "line": 87,
+      "line": 89,
       "signature": "pub func Measure(run: func(uint64), options: BenchmarkOptions) -> BenchmarkResult",
       "typeParams": [],
       "doc": {
@@ -433,7 +433,7 @@
       "displayName": "RunBenchmarksWith",
       "module": "Benchmark",
       "source": "Src/Benchmark.rux",
-      "line": 130,
+      "line": 138,
       "signature": "pub func RunBenchmarksWith(benchmarks: BenchmarkCase[..], options: BenchmarkOptions) -> int",
       "typeParams": [],
       "doc": {
@@ -471,7 +471,7 @@
       "displayName": "RunBenchmarks",
       "module": "Benchmark",
       "source": "Src/Benchmark.rux",
-      "line": 150,
+      "line": 158,
       "signature": "pub func RunBenchmarks(benchmarks: BenchmarkCase[..]) -> int",
       "typeParams": [],
       "doc": {
@@ -506,8 +506,8 @@
       "displayName": "Expect",
       "module": "Expect",
       "source": "Src/Expect.rux",
-      "line": 13,
-      "signature": "pub func Expect(condition: bool, message: char8[..]) -> ! TestFailure",
+      "line": 15,
+      "signature": "pub func Expect(condition: bool, message: char8[..]) throws TestFailure",
       "typeParams": [],
       "doc": {
         "summary": "Fails unless `condition` holds.",
@@ -544,8 +544,8 @@
       "displayName": "ExpectEqual<T>",
       "module": "Expect",
       "source": "Src/Expect.rux",
-      "line": 23,
-      "signature": "pub func ExpectEqual<T: Display>(actual: T, expected: T) -> ! TestFailure",
+      "line": 25,
+      "signature": "pub func ExpectEqual<T: Display>(actual: T, expected: T) throws TestFailure",
       "typeParams": [{ "name": "T", "bounds": ["Display"] }],
       "doc": {
         "summary": "Fails unless `actual` equals `expected`, saying both.",
@@ -582,8 +582,8 @@
       "displayName": "ExpectNotEqual<T>",
       "module": "Expect",
       "source": "Src/Expect.rux",
-      "line": 38,
-      "signature": "pub func ExpectNotEqual<T: Display>(actual: T, unexpected: T) -> ! TestFailure",
+      "line": 40,
+      "signature": "pub func ExpectNotEqual<T: Display>(actual: T, unexpected: T) throws TestFailure",
       "typeParams": [{ "name": "T", "bounds": ["Display"] }],
       "doc": {
         "summary": "Fails if `actual` equals `unexpected`.",
@@ -620,8 +620,8 @@
       "displayName": "ExpectNear",
       "module": "Expect",
       "source": "Src/Expect.rux",
-      "line": 53,
-      "signature": "pub func ExpectNear(actual: float64, expected: float64, tolerance: float64) -> ! TestFailure",
+      "line": 55,
+      "signature": "pub func ExpectNear(actual: float64, expected: float64, tolerance: float64) throws TestFailure",
       "typeParams": [],
       "doc": {
         "summary": "Fails unless `actual` is within `tolerance` of `expected`.",
@@ -659,8 +659,8 @@
       "displayName": "ExpectText",
       "module": "Expect",
       "source": "Src/Expect.rux",
-      "line": 88,
-      "signature": "pub func ExpectText(actual: char8[..], expected: char8[..]) -> ! TestFailure",
+      "line": 90,
+      "signature": "pub func ExpectText(actual: char8[..], expected: char8[..]) throws TestFailure",
       "typeParams": [],
       "doc": {
         "summary": "Fails unless `actual` is the same text as `expected`, saying at which byte they part and showing each around it.",
@@ -697,8 +697,8 @@
       "displayName": "ExpectSome<T>",
       "module": "Expect",
       "source": "Src/Expect.rux",
-      "line": 110,
-      "signature": "pub func ExpectSome<T>(value: T?, message: char8[..]) -> T ! TestFailure",
+      "line": 112,
+      "signature": "pub func ExpectSome<T>(value: T?, message: char8[..]) -> T throws TestFailure",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "The value of `value`, failing when there is none.",
@@ -735,8 +735,8 @@
       "displayName": "ExpectNone<T>",
       "module": "Expect",
       "source": "Src/Expect.rux",
-      "line": 123,
-      "signature": "pub func ExpectNone<T>(value: T?, message: char8[..]) -> ! TestFailure",
+      "line": 125,
+      "signature": "pub func ExpectNone<T>(value: T?, message: char8[..]) throws TestFailure",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "Fails when `value` is present.",
@@ -773,21 +773,21 @@
       "displayName": "ExpectSuccess<T, E>",
       "module": "Expect",
       "source": "Src/Expect.rux",
-      "line": 137,
-      "signature": "pub func ExpectSuccess<T, E>(outcome: T ! E, message: char8[..]) -> T ! TestFailure",
+      "line": 139,
+      "signature": "pub func ExpectSuccess<T, E>(outcome: Result<T, E>, message: char8[..]) -> T throws TestFailure",
       "typeParams": [
         { "name": "T", "bounds": [] },
         { "name": "E", "bounds": [] }
       ],
       "doc": {
-        "summary": "The success of `outcome`, failing when it failed.",
-        "markdown": "The success of `outcome`, failing when it failed.",
+        "summary": "The success an outcome holds, failing when it holds a failure.",
+        "markdown": "The success an outcome holds, failing when it holds a failure.",
         "typeParams": [
           { "name": "T", "markdown": "the success's type" },
           { "name": "E", "markdown": "the failure's type" }
         ],
         "params": [
-          { "name": "outcome", "markdown": "what the code gave" },
+          { "name": "outcome", "markdown": "what the code gave, kept as a `Result`" },
           { "name": "message", "markdown": "what its failure means, for the test's failure" }
         ],
         "returns": "the success, or the failure",
@@ -817,21 +817,21 @@
       "displayName": "ExpectFailure<T, E>",
       "module": "Expect",
       "source": "Src/Expect.rux",
-      "line": 151,
-      "signature": "pub func ExpectFailure<T, E>(outcome: T ! E, message: char8[..]) -> E ! TestFailure",
+      "line": 153,
+      "signature": "pub func ExpectFailure<T, E>(outcome: Result<T, E>, message: char8[..]) -> E throws TestFailure",
       "typeParams": [
         { "name": "T", "bounds": [] },
         { "name": "E", "bounds": [] }
       ],
       "doc": {
-        "summary": "The failure of `outcome`, failing the test when it succeeded.",
-        "markdown": "The failure of `outcome`, failing the test when it succeeded.",
+        "summary": "The failure an outcome holds, failing the test when it holds a success.",
+        "markdown": "The failure an outcome holds, failing the test when it holds a success.",
         "typeParams": [
           { "name": "T", "markdown": "the success's type" },
           { "name": "E", "markdown": "the failure's type" }
         ],
         "params": [
-          { "name": "outcome", "markdown": "what the code gave" },
+          { "name": "outcome", "markdown": "what the code gave, kept as a `Result`" },
           { "name": "message", "markdown": "what its success means, for the test's failure" }
         ],
         "returns": "the failure the code gave, or the test's failure",
@@ -866,7 +866,7 @@
       "typeParams": [],
       "doc": {
         "summary": "Why a test did not pass.",
-        "markdown": "Why a test did not pass. `Copy`.\nA test fails with it through `fail` or `?`, and is counted as skipped rather than failed when it was made with\n`Skip`.",
+        "markdown": "Why a test did not pass. `Copy`.\nA test fails with it through `throw` or a check marked with `try`, and is counted as skipped rather than failed\nwhen it was made with `Skip`.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -998,7 +998,7 @@
           "kind": "method",
           "name": "Message",
           "line": 44,
-          "signature": "pub func Message(self: &TestFailure) -> char8[..]",
+          "signature": "pub func Message(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&TestFailure",
@@ -1030,7 +1030,7 @@
           "kind": "method",
           "name": "IsSkip",
           "line": 51,
-          "signature": "pub func IsSkip(self: &TestFailure) -> bool",
+          "signature": "pub func IsSkip(&self) -> bool",
           "typeParams": [],
           "params": [],
           "receiver": "&TestFailure",
@@ -1110,7 +1110,7 @@
         },
         {
           "name": "run",
-          "type": "func() -> ! TestFailure",
+          "type": "func() throws TestFailure",
           "public": true,
           "line": 19,
           "doc": "What runs it.",
@@ -1356,7 +1356,7 @@
       "displayName": "RunTests",
       "module": "Runner",
       "source": "Src/Runner.rux",
-      "line": 167,
+      "line": 170,
       "signature": "pub func RunTests(tests: TestCase[..]) -> int",
       "typeParams": [],
       "doc": {

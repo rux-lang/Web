@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Digits.rux
-  line: 9
+  line: 11
 seo:
   title: "Writing integers — Format API"
   description: "Spelling an integer as text: sign, base prefix, zero padding and digits."
@@ -29,7 +29,7 @@ pub const MaxDecimalDigits: uint = 20;
 
 The most digits a `uint64` ever needs, for 18446744073709551615.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Digits.rux#L9)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Digits.rux#L11)
 
 <h2 id="write-uint"><code>WriteUint</code></h2>
 
@@ -40,7 +40,7 @@ pub func WriteUint(cursor: &var ByteCursor, value: uint64)
 Writes the decimal digits of an unsigned value.
 A division loop produces them least significant first, so they land in a small buffer and go back reversed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Digits.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Digits.rux#L18)
 
 **Parameters**
 
@@ -60,7 +60,7 @@ The magnitude is taken in `uint64` rather than by negating within `int64`, becau
 no positive counterpart there: negating it overflows straight back to itself. Two's complement gives the right
 answer for that value and for every other one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Digits.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Digits.rux#L47)
 
 **Parameters**
 
@@ -78,7 +78,7 @@ pub func WriteIntegerDigits(
     digits: char8[..],
     count: uint,
     negative: bool
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes an integer whose digits are already produced, applying sign, prefix, zero-padding and alignment.
@@ -109,7 +109,7 @@ pub func WriteIntegerSpec(
     spec: FormatSpec,
     magnitude: uint64,
     negative: bool
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes an integer under the whole of `spec`: base, sign, alternate prefix, zero-padding and alignment.
@@ -117,7 +117,7 @@ Writes an integer under the whole of `spec`: base, sign, alternate prefix, zero-
 signed width has no positive counterpart to negate into.
 Reports whatever the writer reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/IntegerText.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/IntegerText.rux#L85)
 
 **Parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Parser.rux
-  line: 626
+  line: 641
 seo:
   title: "Parse — Json API"
   description: "Parses input into a value, rejecting duplicate names."
@@ -25,7 +25,7 @@ Parses `input` into a value, rejecting duplicate names.
 pub func Parse(
     allocator: Allocator,
     input: char8[..]
-) -> JsonValue ! JsonParseError
+) -> JsonValue throws JsonParseError
 ```
 
 The default limits apply. A failure gives back the reason and its position and no value at all, so a document
@@ -76,7 +76,7 @@ pub func ParseWith(
     input: char8[..],
     limits: JsonLimits,
     duplicates: DuplicateKeyPolicy
-) -> JsonValue ! JsonParseError
+) -> JsonValue throws JsonParseError
 ```
 
 Parses `input` under chosen limits and a chosen duplicate-name policy.
@@ -87,7 +87,7 @@ Fails with any case of [`JsonParseError`](/docs/api/json/json-parse-error), posi
 exceeds arrives as `TooDeep` or `TooManyEntries` from the parser, or nested inside `Lexical` when it was the
 lexer that measured it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L644)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L659)
 
 **Parameters**
 

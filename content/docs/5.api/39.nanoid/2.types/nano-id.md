@@ -34,7 +34,7 @@ Copy, holding its text inline and owning nothing. Equality and ordering compare 
 <h3 id="generate"><code>Generate</code></h3>
 
 ```rux
-pub func Generate() -> NanoId ! EntropyError
+pub func Generate() -> NanoId throws EntropyError
 ```
 
 A new identifier from the operating system's generator.
@@ -48,7 +48,7 @@ supply random bytes, and produces no identifier in that case.
 <h3 id="parse"><code>Parse</code></h3>
 
 ```rux
-pub func Parse(text: char8[..]) -> NanoId ! NanoIdParseError
+pub func Parse(text: char8[..]) -> NanoId throws NanoIdParseError
 ```
 
 Reads a standard identifier from its text.
@@ -69,7 +69,7 @@ right length and allocates nothing.
 <h3 id="text"><code>Text</code></h3>
 
 ```rux
-pub func Text(self: &NanoId) -> char8[..]
+pub func Text(&self) -> char8[..]
 ```
 
 The identifier's twenty-one characters.
@@ -83,7 +83,7 @@ allocates nothing.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &NanoId, other: &NanoId) -> bool
+pub func Equals(&self, other: &NanoId) -> bool
 ```
 
 Whether two identifiers are the same.
@@ -101,7 +101,7 @@ right. Cannot fail and allocates nothing.
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(self: &NanoId, other: &NanoId) -> Ordering
+pub func Compare(&self, other: &NanoId) -> Ordering
 ```
 
 The order of two identifiers' texts, byte by byte.
@@ -124,10 +124,10 @@ container needs. Cannot fail and allocates nothing.
 
 ```rux
 pub func WriteDisplay(
-    self: &NanoId,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the identifier's twenty-one characters.
@@ -150,10 +150,10 @@ No style is understood. Reports whatever the writer reported, and `UnsupportedRe
 
 ```rux
 pub func WriteDebug(
-    self: &NanoId,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`: an identifier has one reading.
@@ -198,7 +198,7 @@ Failure-only, carrying the zero-based byte offset where the problem was found. C
 <h4 id="nano-id-parse-error-offset"><code>Offset</code></h4>
 
 ```rux
-pub func Offset(self: &NanoIdParseError) -> uint
+pub func Offset(&self) -> uint
 ```
 
 Where in the input the failure was found.

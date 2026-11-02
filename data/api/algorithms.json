@@ -142,7 +142,7 @@
       "displayName": "IndexOf<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 56,
+      "line": 57,
       "signature": "pub func IndexOf<T>(items: T[..], value: T) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -180,7 +180,7 @@
       "displayName": "LastIndexOf<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 74,
+      "line": 76,
       "signature": "pub func LastIndexOf<T>(items: T[..], value: T) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -218,7 +218,7 @@
       "displayName": "IndexWhere<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 92,
+      "line": 95,
       "signature": "pub func IndexWhere<T>(items: T[..], predicate: func(T) -> bool) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -256,7 +256,7 @@
       "displayName": "LastIndexWhere<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 110,
+      "line": 114,
       "signature": "pub func LastIndexWhere<T>(items: T[..], predicate: func(T) -> bool) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -294,7 +294,7 @@
       "displayName": "CountWhere<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 127,
+      "line": 132,
       "signature": "pub func CountWhere<T>(items: T[..], predicate: func(T) -> bool) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -332,7 +332,7 @@
       "displayName": "AllOf<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 149,
+      "line": 155,
       "signature": "pub func AllOf<T>(items: T[..], predicate: func(T) -> bool) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -370,7 +370,7 @@
       "displayName": "AnyOf<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 167,
+      "line": 174,
       "signature": "pub func AnyOf<T>(items: T[..], predicate: func(T) -> bool) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -408,7 +408,7 @@
       "displayName": "NoneOf<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 180,
+      "line": 187,
       "signature": "pub func NoneOf<T>(items: T[..], predicate: func(T) -> bool) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -446,7 +446,7 @@
       "displayName": "Mismatch<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 194,
+      "line": 201,
       "signature": "pub func Mismatch<T>(left: T[..], right: T[..]) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -484,7 +484,7 @@
       "displayName": "SequenceEqual<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 214,
+      "line": 222,
       "signature": "pub func SequenceEqual<T>(left: T[..], right: T[..]) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -522,7 +522,7 @@
       "displayName": "Compare<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 231,
+      "line": 239,
       "signature": "pub func Compare<T>(left: T[..], right: T[..]) -> Ordering",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -560,7 +560,7 @@
       "displayName": "CompareBy<T>",
       "module": "Find",
       "source": "Src/Find.rux",
-      "line": 255,
+      "line": 265,
       "signature": "pub func CompareBy<T>(left: T[..], right: T[..], compare: func(T, T) -> Ordering) -> Ordering",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -644,7 +644,7 @@
       "displayName": "FoldRight<T, A>",
       "module": "Fold",
       "source": "Src/Fold.rux",
-      "line": 51,
+      "line": 52,
       "signature": "pub func FoldRight<T, A>(items: T[..], initial: A, combine: func(A, T) -> A) -> A",
       "typeParams": [
         { "name": "T", "bounds": [] },
@@ -689,7 +689,7 @@
       "displayName": "Sum<T>",
       "module": "Fold",
       "source": "Src/Fold.rux",
-      "line": 72,
+      "line": 74,
       "signature": "pub func Sum<T>(items: T[..], initial: T) -> T",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -727,7 +727,7 @@
       "displayName": "Product<T>",
       "module": "Fold",
       "source": "Src/Fold.rux",
-      "line": 92,
+      "line": 95,
       "signature": "pub func Product<T>(items: T[..], initial: T) -> T",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -765,7 +765,7 @@
       "displayName": "Transform<T, U>",
       "module": "Fold",
       "source": "Src/Fold.rux",
-      "line": 115,
+      "line": 119,
       "signature": "pub func Transform<T, U>(destination: var U[..], source: T[..], transform: func(T) -> U) -> bool",
       "typeParams": [
         { "name": "T", "bounds": [] },
@@ -845,7 +845,7 @@
       "displayName": "PushHeap<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 42,
+      "line": 43,
       "signature": "pub func PushHeap<T>(items: var T[..])",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -880,7 +880,7 @@
       "displayName": "PopHeap<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 56,
+      "line": 58,
       "signature": "pub func PopHeap<T>(items: var T[..])",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -915,7 +915,7 @@
       "displayName": "SortHeap<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 74,
+      "line": 80,
       "signature": "pub func SortHeap<T>(items: var T[..])",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -950,7 +950,7 @@
       "displayName": "IsHeap<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 91,
+      "line": 97,
       "signature": "pub func IsHeap<T>(items: T[..]) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -985,7 +985,7 @@
       "displayName": "IsHeapUntil<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 104,
+      "line": 110,
       "signature": "pub func IsHeapUntil<T>(items: T[..]) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1020,7 +1020,7 @@
       "displayName": "MakeHeapBy<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 153,
+      "line": 162,
       "signature": "pub func MakeHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1058,7 +1058,7 @@
       "displayName": "PushHeapBy<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 170,
+      "line": 180,
       "signature": "pub func PushHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1096,7 +1096,7 @@
       "displayName": "PopHeapBy<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 183,
+      "line": 194,
       "signature": "pub func PopHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1134,7 +1134,7 @@
       "displayName": "SortHeapBy<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 200,
+      "line": 215,
       "signature": "pub func SortHeapBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1172,7 +1172,7 @@
       "displayName": "IsHeapBy<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 216,
+      "line": 231,
       "signature": "pub func IsHeapBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1210,7 +1210,7 @@
       "displayName": "IsHeapUntilBy<T>",
       "module": "Heap",
       "source": "Src/Heap.rux",
-      "line": 229,
+      "line": 244,
       "signature": "pub func IsHeapUntilBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1283,7 +1283,7 @@
       "displayName": "MaxIndex<T>",
       "module": "MinMax",
       "source": "Src/MinMax.rux",
-      "line": 44,
+      "line": 45,
       "signature": "pub func MaxIndex<T>(items: T[..]) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1318,7 +1318,7 @@
       "displayName": "MinIndexBy<T>",
       "module": "MinMax",
       "source": "Src/MinMax.rux",
-      "line": 66,
+      "line": 68,
       "signature": "pub func MinIndexBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1356,7 +1356,7 @@
       "displayName": "MaxIndexBy<T>",
       "module": "MinMax",
       "source": "Src/MinMax.rux",
-      "line": 88,
+      "line": 91,
       "signature": "pub func MaxIndexBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1394,7 +1394,7 @@
       "displayName": "MinMaxIndex<T>",
       "module": "MinMax",
       "source": "Src/MinMax.rux",
-      "line": 116,
+      "line": 120,
       "signature": "pub func MinMaxIndex<T>(items: T[..], smallest: *var uint, largest: *var uint) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1433,7 +1433,7 @@
       "displayName": "MinMaxIndexBy<T>",
       "module": "MinMax",
       "source": "Src/MinMax.rux",
-      "line": 147,
+      "line": 157,
       "signature": "pub func MinMaxIndexBy<T>(items: T[..], compare: func(T, T) -> Ordering, smallest: *var uint, largest: *var uint) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1473,7 +1473,7 @@
       "displayName": "Min<T>",
       "module": "MinMax",
       "source": "Src/MinMax.rux",
-      "line": 175,
+      "line": 191,
       "signature": "pub func Min<T>(left: T, right: T) -> T",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1511,7 +1511,7 @@
       "displayName": "Max<T>",
       "module": "MinMax",
       "source": "Src/MinMax.rux",
-      "line": 188,
+      "line": 204,
       "signature": "pub func Max<T>(left: T, right: T) -> T",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1549,7 +1549,7 @@
       "displayName": "Clamp<T>",
       "module": "MinMax",
       "source": "Src/MinMax.rux",
-      "line": 204,
+      "line": 220,
       "signature": "pub func Clamp<T>(value: T, low: T, high: T) -> T",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1588,7 +1588,7 @@
       "displayName": "ClampBy<T>",
       "module": "MinMax",
       "source": "Src/MinMax.rux",
-      "line": 222,
+      "line": 238,
       "signature": "pub func ClampBy<T>(value: T, low: T, high: T, compare: func(T, T) -> Ordering) -> T",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1629,11 +1629,11 @@
       "module": "Modify",
       "source": "Src/Modify.rux",
       "line": 20,
-      "signature": "pub func Swap<T>(left: *var T, right: *var T)",
+      "signature": "pub unsafe func Swap<T>(left: *var T, right: *var T)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "Exchanges the values at two locations.",
-        "markdown": "Exchanges the values at two locations.\nBoth are borrowed mutably and both are written. Passing the same location twice is legal and leaves it alone.\nCannot fail. Runs in constant time and allocates nothing.\nBoth pointers must be non-null and writable.",
+        "markdown": "Exchanges the values at two locations.\nBoth are borrowed mutably and both are written. Passing the same location twice is legal and leaves it alone.\nCannot fail. Runs in constant time and allocates nothing.\nSafety: both pointers must be non-null and writable.",
         "typeParams": [{ "name": "T", "markdown": "the element type" }],
         "params": [
           { "name": "left", "markdown": "one of the two elements" },
@@ -1701,7 +1701,7 @@
       "displayName": "Rotate<T>",
       "module": "Modify",
       "source": "Src/Modify.rux",
-      "line": 56,
+      "line": 57,
       "signature": "pub func Rotate<T>(items: var T[..], middle: uint) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1739,7 +1739,7 @@
       "displayName": "Fill<T>",
       "module": "Modify",
       "source": "Src/Modify.rux",
-      "line": 73,
+      "line": 74,
       "signature": "pub func Fill<T>(items: var T[..], value: T)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1777,7 +1777,7 @@
       "displayName": "CopyTo<T>",
       "module": "Modify",
       "source": "Src/Modify.rux",
-      "line": 93,
+      "line": 94,
       "signature": "pub func CopyTo<T>(destination: var T[..], source: T[..]) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1815,7 +1815,7 @@
       "displayName": "MoveTo<T>",
       "module": "Modify",
       "source": "Src/Modify.rux",
-      "line": 114,
+      "line": 115,
       "signature": "pub func MoveTo<T>(destination: var T[..], source: T[..]) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1853,7 +1853,7 @@
       "displayName": "Unique<T>",
       "module": "Modify",
       "source": "Src/Modify.rux",
-      "line": 137,
+      "line": 138,
       "signature": "pub func Unique<T>(items: var T[..]) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1888,7 +1888,7 @@
       "displayName": "RemoveValue<T>",
       "module": "Modify",
       "source": "Src/Modify.rux",
-      "line": 161,
+      "line": 162,
       "signature": "pub func RemoveValue<T>(items: var T[..], value: T) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1926,7 +1926,7 @@
       "displayName": "RemoveWhere<T>",
       "module": "Modify",
       "source": "Src/Modify.rux",
-      "line": 183,
+      "line": 184,
       "signature": "pub func RemoveWhere<T>(items: var T[..], predicate: func(T) -> bool) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1964,7 +1964,7 @@
       "displayName": "Partition<T>",
       "module": "Modify",
       "source": "Src/Modify.rux",
-      "line": 208,
+      "line": 209,
       "signature": "pub func Partition<T>(items: var T[..], predicate: func(T) -> bool) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2002,7 +2002,7 @@
       "displayName": "PartitionPoint<T>",
       "module": "Modify",
       "source": "Src/Modify.rux",
-      "line": 235,
+      "line": 237,
       "signature": "pub func PartitionPoint<T>(items: T[..], predicate: func(T) -> bool) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2040,7 +2040,7 @@
       "displayName": "PartialSum<T>",
       "module": "Numeric",
       "source": "Src/Numeric.rux",
-      "line": 17,
+      "line": 19,
       "signature": "pub func PartialSum<T>(items: T[..], into: var T[..]) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2078,7 +2078,7 @@
       "displayName": "InclusiveScan<T>",
       "module": "Numeric",
       "source": "Src/Numeric.rux",
-      "line": 41,
+      "line": 48,
       "signature": "pub func InclusiveScan<T>(items: T[..], into: var T[..], combine: func(T, T) -> T) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2117,7 +2117,7 @@
       "displayName": "ExclusiveScan<T>",
       "module": "Numeric",
       "source": "Src/Numeric.rux",
-      "line": 67,
+      "line": 79,
       "signature": "pub func ExclusiveScan<T>(items: T[..], into: var T[..], initial: T, combine: func(T, T) -> T) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2157,7 +2157,7 @@
       "displayName": "Iota<T>",
       "module": "Numeric",
       "source": "Src/Numeric.rux",
-      "line": 88,
+      "line": 102,
       "signature": "pub func Iota<T>(into: var T[..], start: T, step: T)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2196,7 +2196,7 @@
       "displayName": "Midpoint",
       "module": "Numeric",
       "source": "Src/Numeric.rux",
-      "line": 103,
+      "line": 118,
       "signature": "pub func Midpoint(a: int64, b: int64) -> int64",
       "typeParams": [],
       "doc": {
@@ -2234,7 +2234,7 @@
       "displayName": "Midpoint",
       "module": "Numeric",
       "source": "Src/Numeric.rux",
-      "line": 113,
+      "line": 128,
       "signature": "pub func Midpoint(a: int32, b: int32) -> int32",
       "typeParams": [],
       "doc": {
@@ -2272,7 +2272,7 @@
       "displayName": "Midpoint",
       "module": "Numeric",
       "source": "Src/Numeric.rux",
-      "line": 123,
+      "line": 138,
       "signature": "pub func Midpoint(a: uint64, b: uint64) -> uint64",
       "typeParams": [],
       "doc": {
@@ -2310,7 +2310,7 @@
       "displayName": "Midpoint",
       "module": "Numeric",
       "source": "Src/Numeric.rux",
-      "line": 133,
+      "line": 148,
       "signature": "pub func Midpoint(a: uint32, b: uint32) -> uint32",
       "typeParams": [],
       "doc": {
@@ -2348,7 +2348,7 @@
       "displayName": "Midpoint",
       "module": "Numeric",
       "source": "Src/Numeric.rux",
-      "line": 143,
+      "line": 158,
       "signature": "pub func Midpoint(a: float64, b: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -2456,7 +2456,7 @@
       "displayName": "LowerBound<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 62,
+      "line": 64,
       "signature": "pub func LowerBound<T>(items: T[..], value: T) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2494,7 +2494,7 @@
       "displayName": "UpperBound<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 87,
+      "line": 90,
       "signature": "pub func UpperBound<T>(items: T[..], value: T) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2532,7 +2532,7 @@
       "displayName": "BinarySearch<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 115,
+      "line": 119,
       "signature": "pub func BinarySearch<T>(items: T[..], value: T) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2570,7 +2570,7 @@
       "displayName": "EqualRange<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 132,
+      "line": 137,
       "signature": "pub func EqualRange<T>(items: T[..], value: T) -> uint..uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2608,7 +2608,7 @@
       "displayName": "IsSortedBy<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 145,
+      "line": 150,
       "signature": "pub func IsSortedBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2646,7 +2646,7 @@
       "displayName": "IsSortedUntilBy<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 158,
+      "line": 163,
       "signature": "pub func IsSortedUntilBy<T>(items: T[..], compare: func(T, T) -> Ordering) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2684,7 +2684,7 @@
       "displayName": "LowerBoundBy<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 178,
+      "line": 185,
       "signature": "pub func LowerBoundBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2723,7 +2723,7 @@
       "displayName": "UpperBoundBy<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 203,
+      "line": 211,
       "signature": "pub func UpperBoundBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2762,7 +2762,7 @@
       "displayName": "BinarySearchBy<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 229,
+      "line": 238,
       "signature": "pub func BinarySearchBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint?",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2801,7 +2801,7 @@
       "displayName": "EqualRangeBy<T>",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 246,
+      "line": 256,
       "signature": "pub func EqualRangeBy<T>(items: T[..], value: T, compare: func(T, T) -> Ordering) -> uint..uint",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2875,7 +2875,7 @@
       "displayName": "SortDescending<T>",
       "module": "Sort",
       "source": "Src/Sort.rux",
-      "line": 69,
+      "line": 70,
       "signature": "pub func SortDescending<T>(items: var T[..])",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2910,7 +2910,7 @@
       "displayName": "NthElement<T>",
       "module": "Sort",
       "source": "Src/Sort.rux",
-      "line": 89,
+      "line": 90,
       "signature": "pub func NthElement<T>(items: var T[..], n: uint) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2948,7 +2948,7 @@
       "displayName": "PartialSort<T>",
       "module": "Sort",
       "source": "Src/Sort.rux",
-      "line": 149,
+      "line": 155,
       "signature": "pub func PartialSort<T>(items: var T[..], count: uint) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -2986,12 +2986,12 @@
       "displayName": "InsertionSortRange<T>",
       "module": "Sort",
       "source": "Src/Sort.rux",
-      "line": 260,
-      "signature": "pub func InsertionSortRange<T>(data: *var T, low: uint, high: uint)",
+      "line": 277,
+      "signature": "pub unsafe func InsertionSortRange<T>(data: *var T, low: uint, high: uint)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "Provides the public `InsertionSortRange` operation.",
-        "markdown": "Provides the public `InsertionSortRange` operation.",
+        "markdown": "Provides the public `InsertionSortRange` operation.\nSafety: `data` must address the elements from `low` up to `high`, all live and writable.",
         "typeParams": [{ "name": "T", "markdown": "the element type" }],
         "params": [
           { "name": "data", "markdown": "the sequence to work on" },
@@ -3025,12 +3025,12 @@
       "displayName": "HeapSortRange<T>",
       "module": "Sort",
       "source": "Src/Sort.rux",
-      "line": 313,
-      "signature": "pub func HeapSortRange<T>(data: *var T, low: uint, high: uint)",
+      "line": 332,
+      "signature": "pub unsafe func HeapSortRange<T>(data: *var T, low: uint, high: uint)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "Provides the public `HeapSortRange` operation.",
-        "markdown": "Provides the public `HeapSortRange` operation.",
+        "markdown": "Provides the public `HeapSortRange` operation.\nSafety: `data` must address the elements from `low` up to `high`, all live and writable.",
         "typeParams": [{ "name": "T", "markdown": "the element type" }],
         "params": [
           { "name": "data", "markdown": "the sequence to work on" },
@@ -3064,7 +3064,7 @@
       "displayName": "SortBy<T>",
       "module": "Sort",
       "source": "Src/Sort.rux",
-      "line": 391,
+      "line": 411,
       "signature": "pub func SortBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -3102,7 +3102,7 @@
       "displayName": "SortDescendingBy<T>",
       "module": "Sort",
       "source": "Src/Sort.rux",
-      "line": 412,
+      "line": 433,
       "signature": "pub func SortDescendingBy<T>(items: var T[..], compare: func(T, T) -> Ordering)",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -3140,7 +3140,7 @@
       "displayName": "NthElementBy<T>",
       "module": "Sort",
       "source": "Src/Sort.rux",
-      "line": 428,
+      "line": 449,
       "signature": "pub func NthElementBy<T>(items: var T[..], n: uint, compare: func(T, T) -> Ordering) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -3179,7 +3179,7 @@
       "displayName": "PartialSortBy<T>",
       "module": "Sort",
       "source": "Src/Sort.rux",
-      "line": 481,
+      "line": 507,
       "signature": "pub func PartialSortBy<T>(items: var T[..], count: uint, compare: func(T, T) -> Ordering) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -3291,7 +3291,7 @@
       "displayName": "StableSortBy<T>",
       "module": "Stable",
       "source": "Src/Stable.rux",
-      "line": 104,
+      "line": 109,
       "signature": "pub func StableSortBy<T>(items: var T[..], scratch: var T[..], compare: func(T, T) -> Ordering) -> bool",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {

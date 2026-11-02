@@ -77,13 +77,13 @@ pub func Base64Encode(
     bytes: byte[..],
     into: var char8[..],
     form: Base64Variant
-) -> uint ! FormatError
+) -> uint throws FormatError
 
 pub func Base64Encode(
     text: char8[..],
     into: var char8[..],
     form: Base64Variant
-) -> uint ! FormatError
+) -> uint throws FormatError
 ```
 
 Writes `bytes` as Base64 into `into`.
@@ -91,10 +91,10 @@ Runs in time that depends only on the length of `bytes`. Reports `InsufficientCa
 than `Base64EncodedLength(bytes.length, form)`, leaving it exactly as it was; room past the encoded form is
 not touched.
 
-| Overload                                                                                                 | Summary                                           |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `pub func Base64Encode(bytes: byte[..], into: var char8[..], form: Base64Variant) -> uint ! FormatError` | Writes `bytes` as Base64 into `into`.             |
-| `pub func Base64Encode(text: char8[..], into: var char8[..], form: Base64Variant) -> uint ! FormatError` | Writes the bytes of `text` as Base64 into `into`. |
+| Overload                                                                                                      | Summary                                           |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `pub func Base64Encode(bytes: byte[..], into: var char8[..], form: Base64Variant) -> uint throws FormatError` | Writes `bytes` as Base64 into `into`.             |
+| `pub func Base64Encode(text: char8[..], into: var char8[..], form: Base64Variant) -> uint throws FormatError` | Writes the bytes of `text` as Base64 into `into`. |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L63)
 
@@ -115,7 +115,7 @@ not touched.
 pub func Base64DecodedLength(
     text: char8[..],
     form: Base64Variant
-) -> uint ! DecodeError
+) -> uint throws DecodeError
 ```
 
 How many bytes the Base64 text decodes to, after checking its length and the placement of its padding.
@@ -142,7 +142,7 @@ pub func Base64Decode(
     text: char8[..],
     into: var byte[..],
     form: Base64Variant
-) -> uint ! DecodeError
+) -> uint throws DecodeError
 ```
 
 Reads Base64 text in `form` into `into`.
@@ -152,7 +152,7 @@ character outside the variant's alphabet, `NonCanonical` at a last character who
 `InsufficientCapacity` with the length needed when `into` is too short. Every refusal leaves `into` untouched,
 because the whole text is checked before anything is written.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L171)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L172)
 
 **Parameters**
 
@@ -176,7 +176,7 @@ A borrowed byte sequence that renders as Base64 under a format placeholder.
 Lets a caller write `Render("{}", ViewBase64(key))` instead of sizing a buffer first. The view borrows the bytes
 and must not outlive them. Copy, owning nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L234)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L235)
 
 **Implements Display**
 
@@ -186,10 +186,10 @@ and must not outlive them. Copy, owning nothing.
 
 ```rux
 pub func WriteDisplay(
-    self: &Base64View,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the bytes as Base64, padded to the placeholder's width.
@@ -203,7 +203,7 @@ writer reported, and `UnsupportedRequest` for a precision or a style.
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L257)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L258)
 
 <h2 id="view-base64"><code>ViewBase64</code></h2>
 
@@ -217,7 +217,7 @@ pub func ViewBase64(
 Borrows `bytes` for rendering as Base64.
 Cannot fail and allocates nothing; the view reads `bytes` each time it is rendered, so it must not outlive them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L245)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L246)
 
 **Parameters**
 

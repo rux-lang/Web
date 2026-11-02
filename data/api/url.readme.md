@@ -10,11 +10,11 @@ rux add Rux/Url
 
 ## What it provides
 
-| Module  | Covers                                                                                                      |
-| ------- | ----------------------------------------------------------------------------------------------------------- |
-| `Url`   | `Url` with `Parse`, `Resolve`, component accessors, `SetPath`, `SetQuery` and `SetFragment`, and `HostKind` |
-| `Query` | `Pairs` for walking a query's `QueryPair`s, `Decode` for turning a component into text, and `QueryBuilder`  |
-| `Error` | `UrlError`, why text is not a URL                                                                           |
+| Module  | Covers                                                                                                               |
+| ------- | -------------------------------------------------------------------------------------------------------------------- |
+| `Url`   | `Url` with `Parse`, `Resolve`, component accessors, `SetPath`, `SetQuery`, `SetFragment` and `Clone`, and `HostKind` |
+| `Query` | `Pairs` for walking a query's `QueryPair`s, `Decode` for turning a component into text, and `QueryBuilder`           |
+| `Error` | `UrlError`, why text is not a URL                                                                                    |
 
 The module names describe where each declaration comes from; they are not part of an import path.
 
@@ -24,9 +24,9 @@ The module names describe where each declaration comes from; they are not part o
 import Allocator::SystemAllocator;
 import Url::{ Pairs, Url, UrlError };
 
-func SearchTerm(link: char8[..]) -> bool ! UrlError {
-    let page = Url::Parse(SystemAllocator(), "https://example.com/docs/index.html")?;
-    let target = page.Resolve(link)?;
+func SearchTerm(link: char8[..]) -> bool throws UrlError {
+    let page = try Url::Parse(SystemAllocator(), "https://example.com/docs/index.html");
+    let target = try page.Resolve(link);
     for pair in Pairs(target.Query() ?? "") {
         if pair.name.length == 1 && pair.name[0] == 'q' { return true; }
     }

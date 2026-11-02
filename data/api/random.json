@@ -273,7 +273,7 @@
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
         "summary": "A pair of independent standard normal values.",
-        "markdown": "A pair of independent standard normal values.\nThe Box-Muller transform, which produces two at a time from two uniform draws — so this returns both rather\nthan throwing one away. The radial draw is taken on `1 - u` for the same reason as the exponential: the\nlogarithm of an exact zero is an infinity, and the generator will produce an exact zero eventually.\nThe polar form of the transform avoids the trigonometric functions at the cost of rejecting about a fifth of\nits draws; this uses the direct form, which consumes a fixed two words and is therefore reproducible in a way\na rejection loop is not.",
+        "markdown": "A pair of independent standard normal values.\nThe Box-Muller transform, which produces two at a time from two uniform draws — so this returns both rather\nthan throwing one away. The radial draw is taken on `1 - u` for the same reason as the exponential: the\nlogarithm of an exact zero is an infinity, and the generator will produce an exact zero eventually.\nThe polar form of the transform avoids the trigonometric functions at the cost of rejecting about a fifth of\nits draws; this uses the direct form, which consumes a fixed two words and is therefore reproducible in a way\na rejection loop is not. `first` and `second` must be non-null and writable.",
         "typeParams": [{ "name": "G", "markdown": "the generator's type" }],
         "params": [
           { "name": "generator", "markdown": "where the bits come from" },
@@ -307,7 +307,7 @@
       "displayName": "Normal<G>",
       "module": "Distribution",
       "source": "Src/Distribution.rux",
-      "line": 76,
+      "line": 80,
       "signature": "pub func Normal<G: RandomGenerator>(generator: &var G) -> float64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -342,7 +342,7 @@
       "displayName": "NormalWith<G>",
       "module": "Distribution",
       "source": "Src/Distribution.rux",
-      "line": 92,
+      "line": 96,
       "signature": "pub func NormalWith<G: RandomGenerator>(generator: &var G, mean: float64, deviation: float64) -> float64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -801,7 +801,7 @@
           "kind": "requirement",
           "name": "NextUint64",
           "line": 22,
-          "signature": "func NextUint64(self: &var Self) -> uint64",
+          "signature": "func NextUint64(&var self) -> uint64",
           "typeParams": [],
           "params": [],
           "receiver": "&var Self",
@@ -919,7 +919,7 @@
           "kind": "method",
           "name": "NextUint64",
           "line": 54,
-          "signature": "pub func NextUint64(self: &var SplitMix64) -> uint64",
+          "signature": "pub func NextUint64(&var self) -> uint64",
           "typeParams": [],
           "params": [],
           "receiver": "&var SplitMix64",
@@ -966,7 +966,7 @@
       "displayName": "PcgMultiplier",
       "module": "Pcg64",
       "source": "Src/Pcg64.rux",
-      "line": 16,
+      "line": 18,
       "signature": "pub const PcgMultiplier: uint64",
       "typeParams": [],
       "doc": {
@@ -1001,7 +1001,7 @@
       "displayName": "Pcg64Dxsm",
       "module": "Pcg64",
       "source": "Src/Pcg64.rux",
-      "line": 20,
+      "line": 22,
       "signature": "pub struct Pcg64Dxsm",
       "typeParams": [],
       "doc": {
@@ -1019,7 +1019,7 @@
           "name": "state",
           "type": "uint128",
           "public": false,
-          "line": 22,
+          "line": 24,
           "doc": "The 128-bit linear congruential state.",
           "targets": [
             "windows-x86_64",
@@ -1036,7 +1036,7 @@
           "name": "increment",
           "type": "uint128",
           "public": false,
-          "line": 24,
+          "line": 26,
           "doc": "The stream selector, always odd.",
           "targets": [
             "windows-x86_64",
@@ -1056,7 +1056,7 @@
         {
           "kind": "constructor",
           "name": "Pcg64Dxsm",
-          "line": 32,
+          "line": 34,
           "signature": "pub func Pcg64Dxsm(seed: uint64) -> Pcg64Dxsm",
           "typeParams": [],
           "params": [{ "name": "seed", "type": "uint64" }],
@@ -1088,7 +1088,7 @@
         {
           "kind": "associated",
           "name": "WithStream",
-          "line": 44,
+          "line": 46,
           "signature": "pub func WithStream(seed: uint64, stream: uint64) -> Pcg64Dxsm",
           "typeParams": [],
           "params": [
@@ -1126,8 +1126,8 @@
         {
           "kind": "method",
           "name": "NextUint64",
-          "line": 78,
-          "signature": "pub func NextUint64(self: &var Pcg64Dxsm) -> uint64",
+          "line": 80,
+          "signature": "pub func NextUint64(&var self) -> uint64",
           "typeParams": [],
           "params": [],
           "receiver": "&var Pcg64Dxsm",
@@ -1262,7 +1262,7 @@
           "kind": "method",
           "name": "Length",
           "line": 33,
-          "signature": "pub func Length(self: &Reservoir<T>) -> uint",
+          "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Reservoir<T>",
@@ -1294,7 +1294,7 @@
           "kind": "method",
           "name": "Seen",
           "line": 40,
-          "signature": "pub func Seen(self: &Reservoir<T>) -> uint",
+          "signature": "pub func Seen(&self) -> uint",
           "typeParams": [],
           "params": [],
           "receiver": "&Reservoir<T>",
@@ -1507,11 +1507,11 @@
       "module": "Seeding",
       "source": "Src/Seeding.rux",
       "line": 18,
-      "signature": "pub func XoshiroFromEntropy() -> Xoshiro256 ! EntropyError",
+      "signature": "pub func XoshiroFromEntropy() -> Xoshiro256 throws EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "A `Xoshiro256` seeded from the operating system's entropy.",
-        "markdown": "A `Xoshiro256` seeded from the operating system's entropy.\nFails with why the entropy could not be obtained. A caller that is content with a predictable generator when\nthe system has no entropy recovers explicitly, as in `XoshiroFromEntropy() catch { else => Xoshiro256(0u64) }`.",
+        "markdown": "A `Xoshiro256` seeded from the operating system's entropy.\nFails with why the entropy could not be obtained. A caller that is content with a predictable generator when\nthe system has no entropy recovers explicitly, as in `try XoshiroFromEntropy() catch { _ => Xoshiro256(0u64) }`.",
         "typeParams": [],
         "params": [],
         "returns": "a generator seeded from the system, or why it could not be seeded",
@@ -1542,7 +1542,7 @@
       "module": "Seeding",
       "source": "Src/Seeding.rux",
       "line": 26,
-      "signature": "pub func PcgFromEntropy() -> Pcg64Dxsm ! EntropyError",
+      "signature": "pub func PcgFromEntropy() -> Pcg64Dxsm throws EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "A `Pcg64Dxsm` seeded from the operating system's entropy, on the default stream.",
@@ -1577,7 +1577,7 @@
       "module": "Seeding",
       "source": "Src/Seeding.rux",
       "line": 36,
-      "signature": "pub func PcgFromEntropyWithStream(stream: uint64) -> Pcg64Dxsm ! EntropyError",
+      "signature": "pub func PcgFromEntropyWithStream(stream: uint64) -> Pcg64Dxsm throws EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "A `Pcg64Dxsm` seeded from entropy on the stream `stream` selects.",
@@ -1611,7 +1611,7 @@
       "displayName": "UniformBelow<G>",
       "module": "Uniform",
       "source": "Src/Uniform.rux",
-      "line": 22,
+      "line": 23,
       "signature": "pub func UniformBelow<G: RandomGenerator>(generator: &var G, bound: uint64) -> uint64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -1649,7 +1649,7 @@
       "displayName": "UniformInRange<G>",
       "module": "Uniform",
       "source": "Src/Uniform.rux",
-      "line": 49,
+      "line": 50,
       "signature": "pub func UniformInRange<G: RandomGenerator>(generator: &var G, low: uint64, high: uint64) -> uint64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -1688,7 +1688,7 @@
       "displayName": "UniformInSignedRange<G>",
       "module": "Uniform",
       "source": "Src/Uniform.rux",
-      "line": 68,
+      "line": 69,
       "signature": "pub func UniformInSignedRange<G: RandomGenerator>(generator: &var G, low: int64, high: int64) -> int64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -1727,7 +1727,7 @@
       "displayName": "UniformFloatInRange<G>",
       "module": "Uniform",
       "source": "Src/Uniform.rux",
-      "line": 84,
+      "line": 85,
       "signature": "pub func UniformFloatInRange<G: RandomGenerator>(generator: &var G, low: float64, high: float64) -> float64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -1869,7 +1869,7 @@
           "kind": "method",
           "name": "NextUint64",
           "line": 60,
-          "signature": "pub func NextUint64(self: &var Xoshiro256) -> uint64",
+          "signature": "pub func NextUint64(&var self) -> uint64",
           "typeParams": [],
           "params": [],
           "receiver": "&var Xoshiro256",

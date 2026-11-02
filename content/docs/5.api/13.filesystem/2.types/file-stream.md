@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/FileStream.rux
-  line: 220
+  line: 254
 seo:
   title: "FileStream — FileSystem API"
   description: A stored borrow of an open file that speaks the stream interfaces.
@@ -56,9 +56,9 @@ operation refuses with `InvalidHandle`, because the file itself checks.
 
 ```rux
 pub func Read(
-    self: &var FileStream,
+    &var self,
     into: var char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Reads through the borrowed file.
@@ -69,7 +69,7 @@ Reads through the borrowed file.
 
 **Returns**: how many bytes were read; `IsEnd` at the end of the file
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/FileStream.rux#L230)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/FileStream.rux#L264)
 
 ## Implements Writer
 
@@ -79,9 +79,9 @@ Reads through the borrowed file.
 
 ```rux
 pub func Write(
-    self: &var FileStream,
+    &var self,
     bytes: char8[..]
-) -> uint ! IoError
+) -> uint throws IoError
 ```
 
 Writes through the borrowed file.
@@ -92,19 +92,19 @@ Writes through the borrowed file.
 
 **Returns**: how many bytes were taken, which may be fewer than offered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/FileStream.rux#L240)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/FileStream.rux#L276)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(self: &var FileStream) -> ! IoError
+pub func Flush(&var self) throws IoError
 ```
 
 Flushes the borrowed file, which holds nothing back.
 
 **Returns**: success when everything written reached the system
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/FileStream.rux#L247)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/FileStream.rux#L285)
 
 ## Implements Seeker
 
@@ -114,10 +114,10 @@ Flushes the borrowed file, which holds nothing back.
 
 ```rux
 pub func Seek(
-    self: &var FileStream,
+    &var self,
     origin: SeekFrom,
     offset: int64
-) -> uint64 ! IoError
+) -> uint64 throws IoError
 ```
 
 Seeks the borrowed file.
@@ -129,4 +129,4 @@ Seeks the borrowed file.
 
 **Returns**: the resulting offset from the start
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/FileStream.rux#L258)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/FileStream.rux#L298)

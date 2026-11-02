@@ -70,7 +70,7 @@ The script of points the database assigns to none.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &Script, other: Script) -> bool
+pub func Equals(&self, other: Script) -> bool
 ```
 
 Whether `other` is the same script.
@@ -86,7 +86,7 @@ Whether `other` is the same script.
 <h3 id="number"><code>Number</code></h3>
 
 ```rux
-pub func Number(self: &Script) -> uint32
+pub func Number(&self) -> uint32
 ```
 
 The script's number: a stable small integer, less than [`ScriptCount()`](/docs/api/unicode/scripts#script-count), in the order of the scripts' names.
@@ -98,10 +98,7 @@ The script's number: a stable small integer, less than [`ScriptCount()`](/docs/a
 <h3 id="write-name"><code>WriteName</code></h3>
 
 ```rux
-pub func WriteName(
-    self: &Script,
-    into: var char8[..]
-) -> uint
+pub func WriteName(&self, into: var char8[..]) -> uint
 ```
 
 Writes the script's long name, such as `Old_Italic`, into `into`.

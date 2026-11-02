@@ -29,7 +29,7 @@ pub struct Date {
 }
 ```
 
-`Copy`. Only constructible through the fallible [`New`](/docs/api/time/date#new) factory, which lets everything downstream assume validity.
+`Copy`. Only constructible through the fallible `New` factory, which lets everything downstream assume validity.
 
 ## Fields
 
@@ -41,10 +41,14 @@ pub struct Date {
 
 ## Associated functions
 
-<h3 id="new"><code>New</code></h3>
+<h3 id="new"><code>FromParts</code></h3>
 
 ```rux
-pub func New(year: int32, month: uint8, day: uint8) -> Date?
+pub func FromParts(
+    year: int32,
+    month: uint8,
+    day: uint8
+) -> Date?
 ```
 
 The date, when it exists.
@@ -81,7 +85,7 @@ The inverse of [`DaysFromEpoch`](/docs/api/time/date#days-from-epoch), exactly: 
 <h3 id="days-from-epoch"><code>DaysFromEpoch</code></h3>
 
 ```rux
-pub func DaysFromEpoch(self: &Date) -> int64
+pub func DaysFromEpoch(&self) -> int64
 ```
 
 Days since 1970-01-01, negative before it.
@@ -95,7 +99,7 @@ it cannot disturb the month arithmetic.
 <h3 id="day-of-week"><code>DayOfWeek</code></h3>
 
 ```rux
-pub func DayOfWeek(self: &Date) -> uint8
+pub func DayOfWeek(&self) -> uint8
 ```
 
 The day of the week, 0 for Sunday through 6 for Saturday.
@@ -107,7 +111,7 @@ The day of the week, 0 for Sunday through 6 for Saturday.
 <h3 id="day-of-year"><code>DayOfYear</code></h3>
 
 ```rux
-pub func DayOfYear(self: &Date) -> uint16
+pub func DayOfYear(&self) -> uint16
 ```
 
 The day of the year, 1 through 365 or 366.
@@ -119,7 +123,7 @@ The day of the year, 1 through 365 or 366.
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &Date, other: Date) -> bool
+pub func Equals(&self, other: Date) -> bool
 ```
 
 Whether two dates are the same day.
@@ -135,7 +139,7 @@ Whether two dates are the same day.
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(self: &Date, other: Date) -> Ordering
+pub func Compare(&self, other: Date) -> Ordering
 ```
 
 How this date orders against `other`.
@@ -151,7 +155,7 @@ How this date orders against `other`.
 <h3 id="plus-days"><code>PlusDays</code></h3>
 
 ```rux
-pub func PlusDays(self: &Date, days: int64) -> Date?
+pub func PlusDays(&self, days: int64) -> Date?
 ```
 
 The date `days` later, negative for earlier, or `None` outside the years the calendar spells.
@@ -168,7 +172,7 @@ Exact: a day is a day, and the round trip through the epoch count neither loses 
 <h3 id="plus-months"><code>PlusMonths</code></h3>
 
 ```rux
-pub func PlusMonths(self: &Date, months: int64) -> Date?
+pub func PlusMonths(&self, months: int64) -> Date?
 ```
 
 The date `months` later, clamped to the month's end where the day is missing.
@@ -185,7 +189,7 @@ January 31st plus one month is the last day of February; the clamp is the policy
 <h3 id="plus-years"><code>PlusYears</code></h3>
 
 ```rux
-pub func PlusYears(self: &Date, years: int64) -> Date?
+pub func PlusYears(&self, years: int64) -> Date?
 ```
 
 The date `years` later, with February 29th clamping to the 28th where the year is not leap.
@@ -201,7 +205,7 @@ The date `years` later, with February 29th clamping to the 28th where the year i
 <h3 id="days-since"><code>DaysSince</code></h3>
 
 ```rux
-pub func DaysSince(self: &Date, earlier: Date) -> int64
+pub func DaysSince(&self, earlier: Date) -> int64
 ```
 
 The whole days from `earlier` to this date, negative when it is the later one.
@@ -222,10 +226,10 @@ The whole days from `earlier` to this date, negative when it is the later one.
 
 ```rux
 pub func WriteDisplay(
-    self: &Date,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the date as `YYYY-MM-DD`.
@@ -241,7 +245,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style other
 
 **Returns**: success when the whole date was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L158)
 
 ## Implements Debug
 
@@ -251,10 +255,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for a style other
 
 ```rux
 pub func WriteDebug(
-    self: &Date,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`: a date has one reading, and quoting it would say nothing extra.
@@ -267,7 +271,7 @@ The failures [`WriteDisplay`](/docs/api/time/date#write-display) reports.
 
 **Returns**: success when the whole date was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L177)
 
 ## Related
 
@@ -296,7 +300,7 @@ pub func DaysInMonth(year: int32, month: uint8) -> uint8
 ```
 
 How many days `month` holds in `year`.
-Zero for a month that does not exist, which is what lets [`Date::New`](/docs/api/time/date#new) use it as the validator.
+Zero for a month that does not exist, which is what lets [`Date::FromParts`](/docs/api/time/date#new) use it as the validator.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L39)
 
@@ -312,7 +316,7 @@ Zero for a month that does not exist, which is what lets [`Date::New`](/docs/api
 <h3 id="parse-date"><code>ParseDate</code></h3>
 
 ```rux
-pub func ParseDate(text: char8[..]) -> Date ! TimeParseError
+pub func ParseDate(text: char8[..]) -> Date throws TimeParseError
 ```
 
 Reads `YYYY-MM-DD`.
@@ -320,7 +324,7 @@ Strict: four year digits, two month digits, two day digits, dashes between, and 
 Reports `InvalidSyntax` for a shape that does not match, `InvalidMonth` for a month outside 1 through 12, and
 `NonexistentDay` for a day the month does not have. Each carries the byte offset where it was found.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L233)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L241)
 
 **Parameters**
 

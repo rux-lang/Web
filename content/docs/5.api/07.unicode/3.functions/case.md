@@ -111,7 +111,7 @@ Up to three values, so a buffer of three always suffices; reports `false` withou
 short. Falls back to the simple mapping for the points that need no expansion, which is nearly all of them.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L104)
 
 **Parameters**
 
@@ -136,7 +136,7 @@ pub func ToLowerFull(
 Writes the full lowercase of `scalar` into `into`.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L115)
 
 **Parameters**
 
@@ -164,7 +164,7 @@ whatever its case. It is built from the C and F entries alone, which is what mak
 locale. A point with no entry folds to itself.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L129)
 
 **Parameters**
 

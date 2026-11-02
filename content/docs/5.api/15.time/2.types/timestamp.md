@@ -78,41 +78,38 @@ A moment from a plain second count, the shape most protocols carry.
 
 **Returns**: that many seconds after the epoch
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L71)
 
 ## Methods
 
 <h3 id="unix-seconds"><code>UnixSeconds</code></h3>
 
 ```rux
-pub func UnixSeconds(self: &Timestamp) -> int64
+pub func UnixSeconds(&self) -> int64
 ```
 
 The whole seconds since the epoch, rounded toward negative infinity.
 
 **Returns**: whole seconds since the epoch, negative before it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L78)
 
 <h3 id="subsecond-nanoseconds"><code>SubsecondNanoseconds</code></h3>
 
 ```rux
-pub func SubsecondNanoseconds(self: &Timestamp) -> uint32
+pub func SubsecondNanoseconds(&self) -> uint32
 ```
 
 The fraction beyond the whole seconds, in nanoseconds.
 
 **Returns**: the nanoseconds within the second, in `[0, 999999999]`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L85)
 
 <h3 id="since"><code>Since</code></h3>
 
 ```rux
-pub func Since(
-    self: &Timestamp,
-    earlier: Timestamp
-) -> Duration?
+pub func Since(&self, earlier: Timestamp) -> Duration?
 ```
 
 The span from `earlier` to this moment, or `None` past a duration's range.
@@ -125,15 +122,12 @@ reversed. That is information, not an error, which is the difference from [`Inst
 
 **Returns**: the time between the two moments, or `None` when `earlier` is not earlier
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L95)
 
 <h3 id="plus"><code>Plus</code></h3>
 
 ```rux
-pub func Plus(
-    self: &Timestamp,
-    span: Duration
-) -> Timestamp?
+pub func Plus(&self, span: Duration) -> Timestamp?
 ```
 
 This moment shifted by `span`, or `None` past the range.
@@ -144,12 +138,12 @@ This moment shifted by `span`, or `None` past the range.
 
 **Returns**: the moment that far later, or `None` when it does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L104)
 
 <h3 id="equals"><code>Equals</code></h3>
 
 ```rux
-pub func Equals(self: &Timestamp, other: Timestamp) -> bool
+pub func Equals(&self, other: Timestamp) -> bool
 ```
 
 Whether two timestamps name the same moment.
@@ -160,15 +154,12 @@ Whether two timestamps name the same moment.
 
 **Returns**: whether the two name the same moment
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L116)
 
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(
-    self: &Timestamp,
-    other: Timestamp
-) -> Ordering
+pub func Compare(&self, other: Timestamp) -> Ordering
 ```
 
 How this moment orders against `other`.
@@ -179,12 +170,12 @@ How this moment orders against `other`.
 
 **Returns**: how this moment orders against `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L124)
 
 <h3 id="is-in-calendar-range"><code>IsInCalendarRange</code></h3>
 
 ```rux
-pub func IsInCalendarRange(self: &Timestamp) -> bool
+pub func IsInCalendarRange(&self) -> bool
 ```
 
 Whether this moment falls inside the years the calendar spells, and so has an RFC 3339 text.
@@ -205,10 +196,10 @@ Borrows the moment and leaves it untouched. Cannot fail; runs in constant time a
 
 ```rux
 pub func WriteDisplay(
-    self: &Timestamp,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the moment as RFC 3339 in UTC, or as the Unix second count under the `unix` style.
@@ -239,10 +230,10 @@ leaves the destination as it was.
 
 ```rux
 pub func WriteDebug(
-    self: &Timestamp,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`: a moment has one reading, and the style chooses between the two forms here too.

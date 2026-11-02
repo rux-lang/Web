@@ -50,7 +50,7 @@ A cursor over `room`, filling from its start.
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(self: &var ByteCursor, byte: char8)
+pub func Push(&var self, byte: char8)
 ```
 
 Appends one byte, or records an overrun when there is no room.
@@ -64,7 +64,7 @@ Appends one byte, or records an overrun when there is no room.
 <h3 id="push-bytes"><code>PushBytes</code></h3>
 
 ```rux
-pub func PushBytes(self: &var ByteCursor, bytes: char8[..])
+pub func PushBytes(&var self, bytes: char8[..])
 ```
 
 Appends every byte of `bytes`, or records an overrun when they do not all fit.
@@ -78,26 +78,26 @@ Appends every byte of `bytes`, or records an overrun when they do not all fit.
 <h3 id="written"><code>Written</code></h3>
 
 ```rux
-pub func Written(self: &ByteCursor) -> char8[..]
+pub func Written(&self) -> char8[..]
 ```
 
 What has been written.
 
 **Returns**: the bytes written so far, borrowed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L61)
 
 <h3 id="overran"><code>Overran</code></h3>
 
 ```rux
-pub func Overran(self: &ByteCursor) -> bool
+pub func Overran(&self) -> bool
 ```
 
 Whether a write was refused for want of room.
 
 **Returns**: whether more was pushed than the buffer holds, which silently dropped the excess
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L68)
 
 ## Implements TextWriter
 
@@ -107,9 +107,9 @@ Whether a write was refused for want of room.
 
 ```rux
 pub func Write(
-    self: &var ByteCursor,
+    &var self,
     bytes: char8[..]
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes `bytes` into the buffer.
@@ -125,4 +125,4 @@ buffer is the caller's, the partial content is visible through [`Written`](/docs
 
 **Returns**: success when every byte fitted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L83)

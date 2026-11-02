@@ -72,10 +72,7 @@ Cannot fail: every triple of components is a version. Runs in constant time and 
 <h3 id="compare"><code>Compare</code></h3>
 
 ```rux
-pub func Compare(
-    self: &SemanticVersion,
-    other: SemanticVersion
-) -> int
+pub func Compare(&self, other: SemanticVersion) -> int
 ```
 
 Compares precedence with `other`.
@@ -95,10 +92,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="is-equal-to"><code>IsEqualTo</code></h3>
 
 ```rux
-pub func IsEqualTo(
-    self: &SemanticVersion,
-    other: SemanticVersion
-) -> bool
+pub func IsEqualTo(&self, other: SemanticVersion) -> bool
 ```
 
 Whether the two versions have the same precedence.
@@ -115,10 +109,7 @@ Whether the two versions have the same precedence.
 <h3 id="is-less-than"><code>IsLessThan</code></h3>
 
 ```rux
-pub func IsLessThan(
-    self: &SemanticVersion,
-    other: SemanticVersion
-) -> bool
+pub func IsLessThan(&self, other: SemanticVersion) -> bool
 ```
 
 Whether this version precedes `other`.
@@ -135,10 +126,7 @@ Whether this version precedes `other`.
 <h3 id="is-at-most"><code>IsAtMost</code></h3>
 
 ```rux
-pub func IsAtMost(
-    self: &SemanticVersion,
-    other: SemanticVersion
-) -> bool
+pub func IsAtMost(&self, other: SemanticVersion) -> bool
 ```
 
 Whether this version precedes `other` or matches it.
@@ -156,7 +144,7 @@ Whether this version precedes `other` or matches it.
 
 ```rux
 pub func IsGreaterThan(
-    self: &SemanticVersion,
+    &self,
     other: SemanticVersion
 ) -> bool
 ```
@@ -175,10 +163,7 @@ Whether this version follows `other`.
 <h3 id="is-at-least"><code>IsAtLeast</code></h3>
 
 ```rux
-pub func IsAtLeast(
-    self: &SemanticVersion,
-    other: SemanticVersion
-) -> bool
+pub func IsAtLeast(&self, other: SemanticVersion) -> bool
 ```
 
 Whether this version follows `other` or matches it, which is how a minimum requirement is written.
@@ -197,10 +182,7 @@ Whether this version follows `other` or matches it, which is how a minimum requi
 <h3 id="equals"><code>==</code></h3>
 
 ```rux
-pub func ==(
-    self: &SemanticVersion,
-    other: SemanticVersion
-) -> bool
+pub func ==(&self, other: SemanticVersion) -> bool
 ```
 
 Equality by precedence, the operator spelling of [`IsEqualTo`](/docs/api/core/semantic-version#is-equal-to).
@@ -217,10 +199,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="not-equals"><code>!=</code></h3>
 
 ```rux
-pub func !=(
-    self: &SemanticVersion,
-    other: SemanticVersion
-) -> bool
+pub func !=(&self, other: SemanticVersion) -> bool
 ```
 
 Inequality by precedence.
@@ -237,7 +216,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="less"><code>&lt;</code></h3>
 
 ```rux
-pub func <(self: &SemanticVersion, other: SemanticVersion) -> bool
+pub func <(&self, other: SemanticVersion) -> bool
 ```
 
 Precedence ordering, the operator spelling of [`IsLessThan`](/docs/api/core/semantic-version#is-less-than).
@@ -254,7 +233,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="less-or-equal"><code>&lt;=</code></h3>
 
 ```rux
-pub func <=(self: &SemanticVersion, other: SemanticVersion) -> bool
+pub func <=(&self, other: SemanticVersion) -> bool
 ```
 
 Precedence ordering, the operator spelling of [`IsAtMost`](/docs/api/core/semantic-version#is-at-most).
@@ -271,7 +250,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="greater"><code>&gt;</code></h3>
 
 ```rux
-pub func >(self: &SemanticVersion, other: SemanticVersion) -> bool
+pub func >(&self, other: SemanticVersion) -> bool
 ```
 
 Precedence ordering, the operator spelling of [`IsGreaterThan`](/docs/api/core/semantic-version#is-greater-than).
@@ -288,7 +267,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="greater-or-equal"><code>&gt;=</code></h3>
 
 ```rux
-pub func >=(self: &SemanticVersion, other: SemanticVersion) -> bool
+pub func >=(&self, other: SemanticVersion) -> bool
 ```
 
 Precedence ordering, the operator spelling of [`IsAtLeast`](/docs/api/core/semantic-version#is-at-least).

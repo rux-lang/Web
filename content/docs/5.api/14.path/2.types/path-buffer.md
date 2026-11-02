@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/PathBuffer.rux
-  line: 13
+  line: 15
 seo:
   title: "PathBuffer — Path API"
   description: "An owning, growable path."
@@ -23,22 +23,21 @@ An owning, growable path.
 
 ```rux
 pub struct PathBuffer {
-    pub data: *var OsUnit;
-    pub length: uint;
     pub allocator: Allocator;
     // private fields
 }
 ```
 
 Move-only: it prohibits copying and gives its block back with [`~PathBuffer`](/docs/api/path/path-buffer#destructor).
+Storage invariant, which every `unsafe` block here relies on: `length <= capacity`; `data` is null exactly when
+`capacity` is zero, and otherwise addresses a block of `capacity` units from `allocator` whose first `length` are
+initialized.
 
 ## Fields
 
-| Name        | Type          | Description                                           |
-| ----------- | ------------- | ----------------------------------------------------- |
-| `data`      | `*var OsUnit` | The units, or null before the first push.             |
-| `length`    | `uint`        | How many units are in use.                            |
-| `allocator` | `Allocator`   | Where the block came from, and where it goes back to. |
+| Name        | Type        | Description                                           |
+| ----------- | ----------- | ----------------------------------------------------- |
+| `allocator` | `Allocator` | Where the block came from, and where it goes back to. |
 
 ## Constructors
 
@@ -56,7 +55,7 @@ An empty buffer that has allocated nothing.
 
 **Returns**: an empty buffer that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L31)
 
 ## Associated functions
 
@@ -66,7 +65,7 @@ An empty buffer that has allocated nothing.
 pub func FromPath(
     allocator: Allocator,
     path: Path
-) -> PathBuffer ! TextError
+) -> PathBuffer
 ```
 
 A buffer opening with `path`'s units.
@@ -76,40 +75,40 @@ A buffer opening with `path`'s units.
 | `allocator` | `Allocator` | where the storage comes from |
 | `path`      | `Path`      | the path to act on           |
 
-**Returns**: a copy of `path` this buffer owns, or an empty one when the allocator refused
+**Returns**: a copy of `path` this buffer owns
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L40)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &PathBuffer) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many units the buffer holds.
 
 **Returns**: how many units the buffer holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L49)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &PathBuffer) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether the buffer holds nothing.
 
 **Returns**: whether the buffer holds no units
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L56)
 
 <h3 id="as-path"><code>AsPath</code></h3>
 
 ```rux
-pub func AsPath(self: &PathBuffer) -> Path
+pub func AsPath(&self) -> Path
 ```
 
 The buffer as a borrowed path, which is what every reading operation takes.
@@ -117,15 +116,12 @@ The path borrows the buffer and must not outlive it or survive a push.
 
 **Returns**: a borrowed path over the buffer's units
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L64)
 
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(
-    self: &var PathBuffer,
-    segment: OsStringView
-) -> ! TextError
+pub func Push(&var self, segment: OsStringView)
 ```
 
 Appends `segment` as one more component, supplying the separator where one is missing.
@@ -136,19 +132,28 @@ it, which is what joining means everywhere paths are joined: `join(a, /b)` is `/
 | --------- | -------------- | ----------------------- |
 | `segment` | `OsStringView` | the component to append |
 
-**Returns**: nothing when the component was appended, or why not
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L116)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L112)
+<h3 id="pop"><code>Pop</code></h3>
+
+```rux
+pub func Pop(&var self)
+```
+
+Drops the last component, leaving a root separator in place.
+`Pop` on `/usr/bin` leaves `/usr`, on `/usr` leaves `/`, and on `/` leaves `/`. Nothing is allocated.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L138)
 
 <h3 id="release"><code>Release</code></h3>
 
 ```rux
-pub func Release(self: &var PathBuffer)
+pub func Release(&var self)
 ```
 
 Gives the block back and leaves an empty buffer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L155)
 
 ## Implements Display
 
@@ -158,10 +163,10 @@ Gives the block back and leaves an empty buffer.
 
 ```rux
 pub func WriteDisplay(
-    self: &PathBuffer,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The lossy rendering of the units the buffer owns.
@@ -174,7 +179,7 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 
 **Returns**: success when the whole path was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L293)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L305)
 
 ## Implements Debug
 
@@ -184,10 +189,10 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 
 ```rux
 pub func WriteDebug(
-    self: &PathBuffer,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The exact, quoted rendering of the units the buffer owns.
@@ -200,17 +205,17 @@ The failures [`OsStringView::WriteDebug`](/docs/api/path/os-string-view#write-de
 
 **Returns**: success when the whole path was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L306)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L318)
 
 ## Destructor
 
 ```rux
-func ~PathBuffer(self: &var PathBuffer)
+func ~PathBuffer(&var self)
 ```
 
 Gives the block back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L170)
 
 ## Related
 
@@ -221,14 +226,14 @@ pub func Join(
     allocator: Allocator,
     base: Path,
     segment: OsStringView
-) -> PathBuffer ! TextError
+) -> PathBuffer
 ```
 
 A fresh buffer holding `base` with `segment` pushed onto it.
 The join every path library means: a separator supplied where one is missing, and an absolute `segment`
 replacing `base` entirely.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L183)
 
 **Parameters**
 
@@ -238,7 +243,7 @@ replacing `base` entirely.
 | `base`      | `Path`         | the path to extend           |
 | `segment`   | `OsStringView` | the component to append      |
 
-**Returns**: `base` with `segment` appended, or why it could not be
+**Returns**: `base` with `segment` appended
 
 <h3 id="normalize"><code>Normalize</code></h3>
 
@@ -246,7 +251,7 @@ replacing `base` entirely.
 pub func Normalize(
     allocator: Allocator,
     path: Path
-) -> PathBuffer ! TextError
+) -> PathBuffer
 ```
 
 A fresh buffer holding `path` lexically simplified: separator runs collapsed to the preferred separator, `.`
@@ -256,7 +261,7 @@ links — `a/link/..` need not be `a` when `link` points elsewhere — so this i
 deduplication, and the filesystem-true answer is canonicalization, which asks the system. A `..` with nothing
 before it survives in a relative path and vanishes at the root, where there is nowhere further up.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L199)
 
 **Parameters**
 
@@ -265,4 +270,4 @@ before it survives in a relative path and vanishes at the root, where there is n
 | `allocator` | `Allocator` | where the storage comes from |
 | `path`      | `Path`      | the path to act on           |
 
-**Returns**: the path with its redundant components resolved, or why it could not be
+**Returns**: the path with its redundant components resolved

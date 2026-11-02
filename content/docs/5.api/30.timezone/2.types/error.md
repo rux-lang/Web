@@ -29,8 +29,7 @@ pub enum TimeZoneError: uint8 {
     InvalidName = 2,
     InvalidData = 3,
     InvalidRule = 4,
-    Unreadable = 5,
-    OutOfMemory = 6
+    Unreadable = 5
 }
 ```
 
@@ -47,4 +46,3 @@ Why a time zone could not be loaded or built. `Copy`.
 | `InvalidData` | `3`   | The zone's data is not a well-formed TZif file.                                                    |
 | `InvalidRule` | `4`   | A POSIX `TZ` rule is malformed.                                                                    |
 | `Unreadable`  | `5`   | The zone's file could not be read for a reason other than its absence.                             |
-| `OutOfMemory` | `6`   | The allocator could not supply the storage.                                                        |

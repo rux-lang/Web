@@ -35,9 +35,9 @@ pub struct Parsed {
 
 ```rux
 pub func WriteHelp(
-    self: &Parsed,
+    &self,
     writer: &var TextWriter
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the help text of the command this parse is for, naming its parent in the usage line when it is a
@@ -55,7 +55,7 @@ Reports whatever the writer reported.
 <h3 id="help-requested"><code>HelpRequested</code></h3>
 
 ```rux
-pub func HelpRequested(self: &Parsed) -> bool
+pub func HelpRequested(&self) -> bool
 ```
 
 Whether `--help` or `-h` was given.
@@ -63,12 +63,12 @@ A program usually writes the help text and exits successfully when this is true.
 
 **Returns**: whether help was asked for
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L193)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L204)
 
 <h3 id="version-requested"><code>VersionRequested</code></h3>
 
 ```rux
-pub func VersionRequested(self: &Parsed) -> bool
+pub func VersionRequested(&self) -> bool
 ```
 
 Whether `--version` or `-V` was given, which a command only understands when it has a version.
@@ -76,12 +76,12 @@ Cannot fail.
 
 **Returns**: whether the version was asked for
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L201)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L212)
 
 <h3 id="count"><code>Count</code></h3>
 
 ```rux
-pub func Count(self: &Parsed, name: char8[..]) -> uint
+pub func Count(&self, name: char8[..]) -> uint
 ```
 
 How many times the option with long name `name` was given.
@@ -94,12 +94,12 @@ Runs in time linear in the number of arguments and allocates nothing.
 
 **Returns**: the number of times it was given
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L211)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L222)
 
 <h3 id="has"><code>Has</code></h3>
 
 ```rux
-pub func Has(self: &Parsed, name: char8[..]) -> bool
+pub func Has(&self, name: char8[..]) -> bool
 ```
 
 Whether the option with long name `name` was given at least once.
@@ -110,15 +110,12 @@ Whether the option with long name `name` was given at least once.
 
 **Returns**: whether it was given
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L226)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L238)
 
 <h3 id="value"><code>Value</code></h3>
 
 ```rux
-pub func Value(
-    self: &Parsed,
-    name: char8[..]
-) -> OsStringView?
+pub func Value(&self, name: char8[..]) -> OsStringView?
 ```
 
 The value of the option with long name `name`, the last one given when it was given more than once.
@@ -131,15 +128,12 @@ line expects. Runs in time linear in the number of arguments and allocates nothi
 
 **Returns**: the value as typed, or none when the option was not given or takes no value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L236)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L248)
 
 <h3 id="values"><code>Values</code></h3>
 
 ```rux
-pub func Values(
-    self: &Parsed,
-    name: char8[..]
-) -> ValueIterator
+pub func Values(&self, name: char8[..]) -> ValueIterator
 ```
 
 Every value the option with long name `name` was given, in order.
@@ -150,15 +144,12 @@ Every value the option with long name `name` was given, in order.
 
 **Returns**: a walk over the values, empty when the option was not given
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L265)
 
 <h3 id="positional"><code>Positional</code></h3>
 
 ```rux
-pub func Positional(
-    self: &Parsed,
-    name: char8[..]
-) -> OsStringView?
+pub func Positional(&self, name: char8[..]) -> OsStringView?
 ```
 
 The positional argument named `name`, the first one when it takes the remaining arguments.
@@ -169,13 +160,13 @@ The positional argument named `name`, the first one when it takes the remaining 
 
 **Returns**: the argument as typed, or none when it was not given
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L265)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L279)
 
 <h3 id="positionals"><code>Positionals</code></h3>
 
 ```rux
 pub func Positionals(
-    self: &Parsed,
+    &self,
     name: char8[..]
 ) -> ValueIterator
 ```
@@ -189,24 +180,24 @@ positional.
 
 **Returns**: a walk over the arguments, empty when none was given
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L275)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L289)
 
 <h3 id="command-name"><code>CommandName</code></h3>
 
 ```rux
-pub func CommandName(self: &Parsed) -> char8[..]?
+pub func CommandName(&self) -> char8[..]?
 ```
 
 The name of the subcommand that was given, for a command that has subcommands.
 
 **Returns**: the subcommand's name as its specification spells it, or none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L287)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L302)
 
 <h3 id="subcommand"><code>Subcommand</code></h3>
 
 ```rux
-pub func Subcommand(self: &Parsed) -> Parsed?
+pub func Subcommand(&self) -> Parsed?
 ```
 
 The parse of the subcommand's own arguments, everything after its name.
@@ -214,15 +205,15 @@ Those arguments were validated with this parse, so this cannot fail.
 
 **Returns**: the subcommand's parse, or none when no subcommand was given
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L296)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L311)
 
 <h3 id="integer"><code>Integer</code></h3>
 
 ```rux
 pub func Integer(
-    self: &Parsed,
+    &self,
     name: char8[..]
-) -> int64? ! CommandLineError
+) -> int64? throws CommandLineError
 ```
 
 The value of the option or positional named `name` read as a decimal integer, or none when it was not given.
@@ -235,7 +226,7 @@ An optional leading `-` or `+` is accepted, then one or more decimal digits and 
 
 **Returns**: the number, none when the value was not given, or why it is not a number
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L310)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L324)
 
 ## Related
 
@@ -245,7 +236,7 @@ An optional leading `-` or `+` is accepted, then one or more decimal digits and 
 pub func Parse(
     spec: *CommandSpec,
     arguments: OsStringView[..]
-) -> Parsed ! CommandLineError
+) -> Parsed throws CommandLineError
 ```
 
 Checks `arguments` against `spec`.
@@ -255,7 +246,7 @@ or an argument beyond what the command accepts. Asking for `--help` or `--versio
 missing, and [`HelpRequested`](/docs/api/commandline/parsed#help-requested) or [`VersionRequested`](/docs/api/commandline/parsed#version-requested) then says so. Allocates nothing; both `spec` and `arguments`
 must outlive the result.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L95)
 
 **Parameters**
 
@@ -269,14 +260,14 @@ must outlive the result.
 <h3 id="parse-process"><code>ParseProcess</code></h3>
 
 ```rux
-pub func ParseProcess(spec: *CommandSpec) -> Parsed ! CommandLineError
+pub func ParseProcess(spec: *CommandSpec) -> Parsed throws CommandLineError
 ```
 
 Checks the process's own arguments against `spec`.
 The same checks as [`Parse`](/docs/api/commandline/parsed#parse), over every argument after the program's name. The arguments last as long as the
 process; `spec` must outlive the result.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L105)
 
 **Parameters**
 
@@ -297,21 +288,21 @@ pub struct ValueIterator {
 A walk over the values one option or positional was given, in the order they were given.
 `Copy`, holding a position in the arguments and nothing else.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L146)
 
 **Methods**
 
 <h4 id="value-iterator-iterate"><code>Iterate</code></h4>
 
 ```rux
-pub func Iterate(self: &ValueIterator) -> ValueIterator
+pub func Iterate(&self) -> ValueIterator
 ```
 
 The walk itself, so that a `for` loop reads every value.
 
 **Returns**: a copy of this walk from its current position
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L153)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L157)
 
 **Implements Iterator**
 
@@ -320,14 +311,14 @@ The walk itself, so that a `for` loop reads every value.
 <h4 id="value-iterator-next"><code>Next</code></h4>
 
 ```rux
-pub func Next(self: &var ValueIterator) -> OsStringView?
+pub func Next(&var self) -> OsStringView?
 ```
 
 The next value, or none after the last.
 
 **Returns**: the value as typed, borrowing the arguments
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L166)
 
 <h3 id="argument-source"><code>ArgumentSource</code></h3>
 
@@ -356,7 +347,7 @@ the process.
 <h4 id="argument-source-count"><code>Count</code></h4>
 
 ```rux
-pub func Count(self: &ArgumentSource) -> uint
+pub func Count(&self) -> uint
 ```
 
 How many arguments there are.
@@ -368,10 +359,7 @@ How many arguments there are.
 <h4 id="argument-source-at"><code>At</code></h4>
 
 ```rux
-pub func At(
-    self: &ArgumentSource,
-    index: uint
-) -> OsStringView
+pub func At(&self, index: uint) -> OsStringView
 ```
 
 The argument at `index`, counting from zero after the program's name.

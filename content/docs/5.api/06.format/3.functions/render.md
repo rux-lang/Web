@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Format.rux
-  line: 184
+  line: 181
 seo:
   title: "Render — Format API"
   description: "The text format becomes with its placeholders filled, as a string of its own."
@@ -24,9 +24,9 @@ The text `format` becomes with its placeholders filled, as a string of its own.
 ```rux
 pub func Render(
     allocator: Allocator,
-    #Format() format: char8[..],
+    #Format format: char8[..],
     ...
-) -> String ! FormatError
+) -> String throws FormatError
 ```
 
 This is the allocating entry point, and the only one: every other way of rendering writes into a destination the
@@ -34,16 +34,16 @@ caller already has. Reserving up front is a guess at the result's size — the l
 argument — so a short call fills in without a reallocation and a long one grows through the builder as usual.
 It is named for what it does rather than for the package, because `Format(allocator, ...)` read as a noun and a
 namespace at once and said nothing about producing a value.
-Reports `TextFailure(OutOfMemory)` when the initial reservation fails, and otherwise whatever [`WriteFormat`](/docs/api/format/write-format)
-reported. On failure the partially built string is released rather than returned, so a caller never receives
+Reports whatever [`WriteFormat`](/docs/api/format/write-format) reported, and terminates the program when the string cannot get its storage. On
+failure the partially built string is released rather than returned, so a caller never receives
 half a rendering that looks whole and the allocator gets its block back either way.
 
 ## Parameters
 
-| Name               | Type        | Description                                                            |
-| ------------------ | ----------- | ---------------------------------------------------------------------- |
-| `allocator`        | `Allocator` | what the returned string is built with and will give its block back to |
-| `#Format() format` | `char8[..]` |                                                                        |
-| `...`              |             |                                                                        |
+| Name             | Type        | Description                                                            |
+| ---------------- | ----------- | ---------------------------------------------------------------------- |
+| `allocator`      | `Allocator` | what the returned string is built with and will give its block back to |
+| `#Format format` | `char8[..]` |                                                                        |
+| `...`            |             |                                                                        |
 
 **Returns**: the rendered string, or why it could not be produced

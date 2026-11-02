@@ -31,8 +31,8 @@ pub variant NanoIdError {
 }
 ```
 
-Failure-only: a filled destination is the success channel of `! NanoIdError`. Copy, owning nothing. The alphabet
-cases are found before any random bytes are requested, so they never consume entropy.
+Failure-only: a call that succeeds fills its destination, and one that fails throws this. Copy, owning nothing.
+The alphabet cases are found before any random bytes are requested, so they never consume entropy.
 
 ## Cases
 

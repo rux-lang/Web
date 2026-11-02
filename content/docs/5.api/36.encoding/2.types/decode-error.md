@@ -32,7 +32,7 @@ pub variant DecodeError {
 }
 ```
 
-Failure-only: success is the other channel of `uint ! DecodeError`, so no case means that nothing went wrong.
+Failure-only: a decode that succeeds returns its count, so no case means that nothing went wrong.
 Copy, carrying one count and owning nothing. A decoder that reports any case except `InsufficientCapacity` has
 left its destination exactly as it was; see each decoder for what a capacity refusal leaves.
 
@@ -52,7 +52,7 @@ left its destination exactly as it was; see each decoder for what a capacity ref
 <h3 id="offset"><code>Offset</code></h3>
 
 ```rux
-pub func Offset(self: &DecodeError) -> uint?
+pub func Offset(&self) -> uint?
 ```
 
 Where in the text the failure was found, or none for a destination that was too short.
@@ -70,10 +70,10 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 
 ```rux
 pub func WriteDisplay(
-    self: &DecodeError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes a short lower-case description, followed by the offset or the length needed.
@@ -98,10 +98,10 @@ a style.
 
 ```rux
 pub func WriteDebug(
-    self: &DecodeError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 The same text as `Display`: the description already names the case and its count.

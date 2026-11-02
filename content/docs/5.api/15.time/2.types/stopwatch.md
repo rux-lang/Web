@@ -65,7 +65,7 @@ Reads the clock once. Cannot fail.
 <h3 id="start"><code>Start</code></h3>
 
 ```rux
-pub func Start(self: &var Stopwatch)
+pub func Start(&var self)
 ```
 
 Starts the stopwatch, or resumes it from the total it already holds.
@@ -76,7 +76,7 @@ Does nothing when it is already running, so a second start does not restart the 
 <h3 id="stop"><code>Stop</code></h3>
 
 ```rux
-pub func Stop(self: &var Stopwatch)
+pub func Stop(&var self)
 ```
 
 Stops the stopwatch, adding the current stretch to its total.
@@ -88,7 +88,7 @@ Cannot fail.
 <h3 id="reset"><code>Reset</code></h3>
 
 ```rux
-pub func Reset(self: &var Stopwatch)
+pub func Reset(&var self)
 ```
 
 Stops the stopwatch and sets it back to zero, clearing the laps.
@@ -99,7 +99,7 @@ Cannot fail and does not read the clock.
 <h3 id="restart"><code>Restart</code></h3>
 
 ```rux
-pub func Restart(self: &var Stopwatch)
+pub func Restart(&var self)
 ```
 
 Sets the stopwatch back to zero, clearing the laps, and starts it.
@@ -110,7 +110,7 @@ The same as [`Reset`](/docs/api/time/stopwatch#reset) followed by [`Start`](/doc
 <h3 id="is-running"><code>IsRunning</code></h3>
 
 ```rux
-pub func IsRunning(self: &Stopwatch) -> bool
+pub func IsRunning(&self) -> bool
 ```
 
 Whether the stopwatch is running.
@@ -123,7 +123,7 @@ Cannot fail and does not read the clock.
 <h3 id="elapsed"><code>Elapsed</code></h3>
 
 ```rux
-pub func Elapsed(self: &Stopwatch) -> Duration
+pub func Elapsed(&self) -> Duration
 ```
 
 The total elapsed time: every finished stretch, plus the current one while running.
@@ -137,7 +137,7 @@ readings of a stopped stopwatch are equal. Cannot fail.
 <h3 id="lap"><code>Lap</code></h3>
 
 ```rux
-pub func Lap(self: &var Stopwatch) -> Duration
+pub func Lap(&var self) -> Duration
 ```
 
 Ends the current lap and returns its length: the elapsed time since the previous lap ended, or since zero.

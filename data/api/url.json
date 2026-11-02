@@ -18,7 +18,11 @@
     ]
   },
   "modules": [
-    { "name": "Error", "source": "Src/Error.rux", "header": "Why text is not a URL, or why a URL could not be built." },
+    {
+      "name": "Error",
+      "source": "Src/Error.rux",
+      "header": "Why text is not a URL, or why a URL could not be built.\nRunning out of memory is not one of the reasons: a URL whose text cannot be stored terminates the program."
+    },
     {
       "name": "Normalize",
       "source": "Src/Normalize.rux",
@@ -47,7 +51,7 @@
       "displayName": "UrlError",
       "module": "Error",
       "source": "Src/Error.rux",
-      "line": 5,
+      "line": 6,
       "signature": "pub enum UrlError",
       "typeParams": [],
       "doc": {
@@ -67,7 +71,7 @@
           "name": "MissingScheme",
           "value": "1",
           "payload": null,
-          "line": 7,
+          "line": 8,
           "doc": "The text has no scheme, so it is a relative reference that needs a base to resolve against.",
           "targets": [
             "windows-x86_64",
@@ -84,7 +88,7 @@
           "name": "InvalidScheme",
           "value": "2",
           "payload": null,
-          "line": 9,
+          "line": 10,
           "doc": "The scheme does not start with a letter or holds a character a scheme cannot.",
           "targets": [
             "windows-x86_64",
@@ -101,7 +105,7 @@
           "name": "InvalidHost",
           "value": "3",
           "payload": null,
-          "line": 11,
+          "line": 12,
           "doc": "The host is empty where one is required, holds a character a host cannot, or is a malformed IPv6 address.",
           "targets": [
             "windows-x86_64",
@@ -118,7 +122,7 @@
           "name": "InvalidPort",
           "value": "4",
           "payload": null,
-          "line": 13,
+          "line": 14,
           "doc": "The port is not a number from 0 to 65535.",
           "targets": [
             "windows-x86_64",
@@ -135,25 +139,8 @@
           "name": "InvalidPercentEncoding",
           "value": "5",
           "payload": null,
-          "line": 15,
+          "line": 16,
           "doc": "A `%` is not followed by two hexadecimal digits.",
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "name": "OutOfMemory",
-          "value": "6",
-          "payload": null,
-          "line": 17,
-          "doc": "The allocator could not supply the storage.",
           "targets": [
             "windows-x86_64",
             "windows-aarch64",
@@ -169,7 +156,7 @@
           "name": "InvalidText",
           "value": "7",
           "payload": null,
-          "line": 19,
+          "line": 18,
           "doc": "Decoded bytes are not UTF-8 text.",
           "targets": [
             "windows-x86_64",
@@ -311,7 +298,7 @@
           "kind": "method",
           "name": "Iterate",
           "line": 37,
-          "signature": "pub func Iterate(self: &QueryPairs) -> QueryPairs",
+          "signature": "pub func Iterate(&self) -> QueryPairs",
           "typeParams": [],
           "params": [],
           "receiver": "&QueryPairs",
@@ -343,7 +330,7 @@
           "kind": "method",
           "name": "Next",
           "line": 46,
-          "signature": "pub func Next(self: &var QueryPairs) -> QueryPair?",
+          "signature": "pub func Next(&var self) -> QueryPair?",
           "typeParams": [],
           "params": [],
           "receiver": "&var QueryPairs",
@@ -426,7 +413,7 @@
       "module": "Query",
       "source": "Src/Query.rux",
       "line": 68,
-      "signature": "pub func Decode(allocator: Allocator, encoded: char8[..], form: bool) -> String ! UrlError",
+      "signature": "pub func Decode(allocator: Allocator, encoded: char8[..], form: bool) -> String throws UrlError",
       "typeParams": [],
       "doc": {
         "summary": "Decodes a percent-encoded component into text.",
@@ -534,15 +521,15 @@
         {
           "kind": "method",
           "name": "Append",
-          "line": 109,
-          "signature": "pub func Append(self: &var QueryBuilder, name: char8[..], value: char8[..]) -> ! UrlError",
+          "line": 108,
+          "signature": "pub func Append(&var self, name: char8[..], value: char8[..])",
           "typeParams": [],
           "params": [
             { "name": "name", "type": "char8[..]" },
             { "name": "value", "type": "char8[..]" }
           ],
           "receiver": "&var QueryBuilder",
-          "returnType": "! UrlError",
+          "returnType": null,
           "value": null,
           "conformance": null,
           "public": true,
@@ -554,7 +541,7 @@
               { "name": "name", "markdown": "the name, as text" },
               { "name": "value", "markdown": "the value, as text" }
             ],
-            "returns": "nothing, or fails when the allocator refused",
+            "returns": null,
             "see": ["https://rux-lang.dev/docs/api/url/query#append"],
             "deprecated": null
           },
@@ -572,8 +559,8 @@
         {
           "kind": "method",
           "name": "Text",
-          "line": 119,
-          "signature": "pub func Text(self: &QueryBuilder) -> char8[..]",
+          "line": 118,
+          "signature": "pub func Text(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&QueryBuilder",
@@ -724,12 +711,12 @@
       "displayName": "Url",
       "module": "Url",
       "source": "Src/Url.rux",
-      "line": 32,
+      "line": 33,
       "signature": "pub struct Url",
       "typeParams": [],
       "doc": {
         "summary": "An absolute URL in normalized form.",
-        "markdown": "An absolute URL in normalized form.\nRead it with `Parse` and resolve references against it with `Resolve`. Every component is a view of the URL's own\ntext, still percent-encoded; `Decode` turns one into text. Copying a URL copies its text.",
+        "markdown": "An absolute URL in normalized form.\nRead it with `Parse` and resolve references against it with `Resolve`. Every component is a view of the URL's own\ntext, still percent-encoded; `Decode` turns one into text.\nA URL owns its text, so it is move-only, and `Clone` makes an independent copy.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -742,7 +729,7 @@
           "name": "text",
           "type": "String",
           "public": false,
-          "line": 33,
+          "line": 34,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -759,7 +746,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 34,
+          "line": 35,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -776,7 +763,7 @@
           "name": "schemeEnd",
           "type": "uint",
           "public": false,
-          "line": 35,
+          "line": 36,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -793,7 +780,7 @@
           "name": "hasAuthority",
           "type": "bool",
           "public": false,
-          "line": 36,
+          "line": 37,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -810,7 +797,7 @@
           "name": "hasUserinfo",
           "type": "bool",
           "public": false,
-          "line": 37,
+          "line": 38,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -827,7 +814,7 @@
           "name": "userinfoStart",
           "type": "uint",
           "public": false,
-          "line": 38,
+          "line": 39,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -844,7 +831,7 @@
           "name": "usernameEnd",
           "type": "uint",
           "public": false,
-          "line": 39,
+          "line": 40,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -861,7 +848,7 @@
           "name": "userinfoEnd",
           "type": "uint",
           "public": false,
-          "line": 40,
+          "line": 41,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -878,7 +865,7 @@
           "name": "hostStart",
           "type": "uint",
           "public": false,
-          "line": 41,
+          "line": 42,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -895,7 +882,7 @@
           "name": "hostEnd",
           "type": "uint",
           "public": false,
-          "line": 42,
+          "line": 43,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -912,7 +899,7 @@
           "name": "hostKind",
           "type": "HostKind",
           "public": false,
-          "line": 43,
+          "line": 44,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -929,7 +916,7 @@
           "name": "hasPort",
           "type": "bool",
           "public": false,
-          "line": 44,
+          "line": 45,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -946,7 +933,7 @@
           "name": "portStart",
           "type": "uint",
           "public": false,
-          "line": 45,
+          "line": 46,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -963,7 +950,7 @@
           "name": "portEnd",
           "type": "uint",
           "public": false,
-          "line": 46,
+          "line": 47,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -980,7 +967,7 @@
           "name": "port",
           "type": "uint16",
           "public": false,
-          "line": 47,
+          "line": 48,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -997,7 +984,7 @@
           "name": "pathStart",
           "type": "uint",
           "public": false,
-          "line": 48,
+          "line": 49,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1014,7 +1001,7 @@
           "name": "pathEnd",
           "type": "uint",
           "public": false,
-          "line": 49,
+          "line": 50,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1031,7 +1018,7 @@
           "name": "hasQuery",
           "type": "bool",
           "public": false,
-          "line": 50,
+          "line": 51,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1048,7 +1035,7 @@
           "name": "queryStart",
           "type": "uint",
           "public": false,
-          "line": 51,
+          "line": 52,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1065,7 +1052,7 @@
           "name": "queryEnd",
           "type": "uint",
           "public": false,
-          "line": 52,
+          "line": 53,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1082,7 +1069,7 @@
           "name": "hasFragment",
           "type": "bool",
           "public": false,
-          "line": 53,
+          "line": 54,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1099,7 +1086,7 @@
           "name": "fragmentStart",
           "type": "uint",
           "public": false,
-          "line": 54,
+          "line": 55,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1119,8 +1106,8 @@
         {
           "kind": "associated",
           "name": "Parse",
-          "line": 218,
-          "signature": "pub func Parse(allocator: Allocator, text: char8[..]) -> Url ! UrlError",
+          "line": 223,
+          "signature": "pub func Parse(allocator: Allocator, text: char8[..]) -> Url throws UrlError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -1157,8 +1144,8 @@
         {
           "kind": "method",
           "name": "Resolve",
-          "line": 229,
-          "signature": "pub func Resolve(self: &Url, reference: char8[..]) -> Url ! UrlError",
+          "line": 234,
+          "signature": "pub func Resolve(&self, reference: char8[..]) -> Url throws UrlError",
           "typeParams": [],
           "params": [{ "name": "reference", "type": "char8[..]" }],
           "receiver": "&Url",
@@ -1189,8 +1176,8 @@
         {
           "kind": "method",
           "name": "Text",
-          "line": 260,
-          "signature": "pub func Text(self: &Url) -> char8[..]",
+          "line": 265,
+          "signature": "pub func Text(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1221,8 +1208,8 @@
         {
           "kind": "method",
           "name": "Scheme",
-          "line": 267,
-          "signature": "pub func Scheme(self: &Url) -> char8[..]",
+          "line": 272,
+          "signature": "pub func Scheme(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1253,8 +1240,8 @@
         {
           "kind": "method",
           "name": "HasAuthority",
-          "line": 274,
-          "signature": "pub func HasAuthority(self: &Url) -> bool",
+          "line": 279,
+          "signature": "pub func HasAuthority(&self) -> bool",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1285,8 +1272,8 @@
         {
           "kind": "method",
           "name": "Username",
-          "line": 281,
-          "signature": "pub func Username(self: &Url) -> char8[..]",
+          "line": 286,
+          "signature": "pub func Username(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1317,8 +1304,8 @@
         {
           "kind": "method",
           "name": "Password",
-          "line": 289,
-          "signature": "pub func Password(self: &Url) -> char8[..]?",
+          "line": 294,
+          "signature": "pub func Password(&self) -> char8[..]?",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1349,8 +1336,8 @@
         {
           "kind": "method",
           "name": "Host",
-          "line": 298,
-          "signature": "pub func Host(self: &Url) -> char8[..]?",
+          "line": 303,
+          "signature": "pub func Host(&self) -> char8[..]?",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1381,8 +1368,8 @@
         {
           "kind": "method",
           "name": "HostKind",
-          "line": 306,
-          "signature": "pub func HostKind(self: &Url) -> HostKind",
+          "line": 311,
+          "signature": "pub func HostKind(&self) -> HostKind",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1413,8 +1400,8 @@
         {
           "kind": "method",
           "name": "Port",
-          "line": 314,
-          "signature": "pub func Port(self: &Url) -> uint16?",
+          "line": 319,
+          "signature": "pub func Port(&self) -> uint16?",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1445,8 +1432,8 @@
         {
           "kind": "method",
           "name": "PortOrDefault",
-          "line": 322,
-          "signature": "pub func PortOrDefault(self: &Url) -> uint16?",
+          "line": 327,
+          "signature": "pub func PortOrDefault(&self) -> uint16?",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1477,8 +1464,8 @@
         {
           "kind": "method",
           "name": "Path",
-          "line": 330,
-          "signature": "pub func Path(self: &Url) -> char8[..]",
+          "line": 335,
+          "signature": "pub func Path(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1509,8 +1496,8 @@
         {
           "kind": "method",
           "name": "PathSegments",
-          "line": 337,
-          "signature": "pub func PathSegments(self: &Url) -> SegmentIterator",
+          "line": 342,
+          "signature": "pub func PathSegments(&self) -> SegmentIterator",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1541,8 +1528,8 @@
         {
           "kind": "method",
           "name": "Query",
-          "line": 346,
-          "signature": "pub func Query(self: &Url) -> char8[..]?",
+          "line": 351,
+          "signature": "pub func Query(&self) -> char8[..]?",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1573,8 +1560,8 @@
         {
           "kind": "method",
           "name": "Fragment",
-          "line": 354,
-          "signature": "pub func Fragment(self: &Url) -> char8[..]?",
+          "line": 359,
+          "signature": "pub func Fragment(&self) -> char8[..]?",
           "typeParams": [],
           "params": [],
           "receiver": "&Url",
@@ -1605,8 +1592,8 @@
         {
           "kind": "method",
           "name": "SetPath",
-          "line": 363,
-          "signature": "pub func SetPath(self: &var Url, path: char8[..]) -> ! UrlError",
+          "line": 368,
+          "signature": "pub func SetPath(&var self, path: char8[..]) throws UrlError",
           "typeParams": [],
           "params": [{ "name": "path", "type": "char8[..]" }],
           "receiver": "&var Url",
@@ -1637,8 +1624,8 @@
         {
           "kind": "method",
           "name": "SetQuery",
-          "line": 376,
-          "signature": "pub func SetQuery(self: &var Url, query: char8[..]?) -> ! UrlError",
+          "line": 381,
+          "signature": "pub func SetQuery(&var self, query: char8[..]?) throws UrlError",
           "typeParams": [],
           "params": [{ "name": "query", "type": "char8[..]?" }],
           "receiver": "&var Url",
@@ -1669,8 +1656,8 @@
         {
           "kind": "method",
           "name": "SetFragment",
-          "line": 386,
-          "signature": "pub func SetFragment(self: &var Url, fragment: char8[..]?) -> ! UrlError",
+          "line": 391,
+          "signature": "pub func SetFragment(&var self, fragment: char8[..]?) throws UrlError",
           "typeParams": [],
           "params": [{ "name": "fragment", "type": "char8[..]?" }],
           "receiver": "&var Url",
@@ -1701,8 +1688,8 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 396,
-          "signature": "pub func Equals(self: &Url, other: &Url) -> bool",
+          "line": 401,
+          "signature": "pub func Equals(&self, other: &Url) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&Url" }],
           "receiver": "&Url",
@@ -1717,6 +1704,38 @@
             "params": [{ "name": "other", "markdown": "the URL to compare with" }],
             "returns": "true when they are equal",
             "see": ["https://rux-lang.dev/docs/api/url/url#equals"],
+            "deprecated": null
+          },
+          "targets": [
+            "windows-x86_64",
+            "windows-aarch64",
+            "linux-x86_64",
+            "linux-aarch64",
+            "macos-x86_64",
+            "macos-aarch64",
+            "freebsd-x86_64",
+            "freebsd-aarch64"
+          ]
+        },
+        {
+          "kind": "method",
+          "name": "Clone",
+          "line": 411,
+          "signature": "pub func Clone(&self) -> Url",
+          "typeParams": [],
+          "params": [],
+          "receiver": "&Url",
+          "returnType": "Url",
+          "value": null,
+          "conformance": null,
+          "public": true,
+          "doc": {
+            "summary": "An independent copy, with text of its own from the same allocator.",
+            "markdown": "An independent copy, with text of its own from the same allocator.\nA URL owns its text, so `=` cannot copy it; this is how to keep two. The copy is equal to this URL and\nchanging either leaves the other as it was.\nTerminates the program when its text cannot be stored.",
+            "typeParams": [],
+            "params": [],
+            "returns": "the copy",
+            "see": ["https://rux-lang.dev/docs/api/url/url#clone"],
             "deprecated": null
           },
           "targets": [
@@ -1749,7 +1768,7 @@
       "displayName": "SegmentIterator",
       "module": "Url",
       "source": "Src/Url.rux",
-      "line": 424,
+      "line": 473,
       "signature": "pub struct SegmentIterator",
       "typeParams": [],
       "doc": {
@@ -1767,7 +1786,7 @@
           "name": "rest",
           "type": "char8[..]",
           "public": false,
-          "line": 425,
+          "line": 474,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1784,7 +1803,7 @@
           "name": "done",
           "type": "bool",
           "public": false,
-          "line": 426,
+          "line": 475,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1804,8 +1823,8 @@
         {
           "kind": "method",
           "name": "Iterate",
-          "line": 433,
-          "signature": "pub func Iterate(self: &SegmentIterator) -> SegmentIterator",
+          "line": 482,
+          "signature": "pub func Iterate(&self) -> SegmentIterator",
           "typeParams": [],
           "params": [],
           "receiver": "&SegmentIterator",
@@ -1836,8 +1855,8 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 442,
-          "signature": "pub func Next(self: &var SegmentIterator) -> char8[..]?",
+          "line": 491,
+          "signature": "pub func Next(&var self) -> char8[..]?",
           "typeParams": [],
           "params": [],
           "receiver": "&var SegmentIterator",

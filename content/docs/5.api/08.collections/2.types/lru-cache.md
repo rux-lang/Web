@@ -60,38 +60,38 @@ An empty cache that holds at most `capacity` entries, at least one.
 
 **Returns**: the cache
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L40)
 
 ## Methods
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &LruCache<K, V>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many entries it holds.
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L54)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
 ```rux
-pub func Capacity(self: &LruCache<K, V>) -> uint
+pub func Capacity(&self) -> uint
 ```
 
 How many entries it keeps before evicting.
 
 **Returns**: the capacity
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L61)
 
 <h3 id="contains"><code>Contains</code></h3>
 
 ```rux
-pub func Contains(self: &LruCache<K, V>, key: K) -> bool
+pub func Contains(&self, key: K) -> bool
 ```
 
 Whether `key` has an entry, without counting as a use.
@@ -102,12 +102,12 @@ Whether `key` has an entry, without counting as a use.
 
 **Returns**: whether it is cached
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L69)
 
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &var LruCache<K, V>, key: K) -> V?
+pub func Get(&var self, key: K) -> V?
 ```
 
 A copy of the value for `key`, which becomes the most recently used.
@@ -118,12 +118,12 @@ A copy of the value for `key`, which becomes the most recently used.
 
 **Returns**: the value, or `none` when it is not cached
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L96)
 
 <h3 id="peek"><code>Peek</code></h3>
 
 ```rux
-pub func Peek(self: &LruCache<K, V>, key: K) -> V?
+pub func Peek(&self, key: K) -> V?
 ```
 
 A copy of the value for `key`, without counting as a use.
@@ -134,34 +134,32 @@ A copy of the value for `key`, without counting as a use.
 
 **Returns**: the value, or `none` when it is not cached
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L109)
 
 <h3 id="put"><code>Put</code></h3>
 
 ```rux
-pub func Put(
-    self: &var LruCache<K, V>,
-    key: K,
-    value: V
-) -> K? ! CollectionError
+pub func Put(&var self, key: K, value: V) -> K?
 ```
 
 Caches `value` for `key` as the most recently used, replacing its value if it has one, and evicting the least
 recently used entry when the cache is full.
+`value` is moved in. A value it replaces, and the value of an evicted entry, are destroyed once the new one is
+in place. Terminates the program when the storage for a new entry cannot be had.
 
 | Name    | Type | Description |
 | ------- | ---- | ----------- |
 | `key`   | `K`  | the key     |
 | `value` | `V`  | the value   |
 
-**Returns**: the key that was evicted, if one was, or why there was no room
+**Returns**: the key that was evicted, if one was
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L122)
 
 <h3 id="remove"><code>Remove</code></h3>
 
 ```rux
-pub func Remove(self: &var LruCache<K, V>, key: K) -> V?
+pub func Remove(&var self, key: K) -> V?
 ```
 
 Takes the entry for `key` out of the cache.
@@ -172,25 +170,22 @@ Takes the entry for `key` out of the cache.
 
 **Returns**: its value, or `none` when it was not cached
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L170)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var LruCache<K, V>)
+pub func Clear(&var self)
 ```
 
 Forgets every entry, keeping the storage.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L183)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L191)
 
 <h3 id="keys-by-recency"><code>KeysByRecency</code></h3>
 
 ```rux
-pub func KeysByRecency(
-    self: &LruCache<K, V>,
-    into: var K[..]
-) -> uint
+pub func KeysByRecency(&self, into: var K[..]) -> uint
 ```
 
 The keys from the most to the least recently used.
@@ -201,4 +196,4 @@ The keys from the most to the least recently used.
 
 **Returns**: how many were written
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L194)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/LruCache.rux#L202)

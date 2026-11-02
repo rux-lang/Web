@@ -24,13 +24,13 @@ Rearranging a slice in place, removing elements, and moving elements between sli
 <h2 id="swap"><code>Swap&lt;T&gt;</code></h2>
 
 ```rux
-pub func Swap<T>(left: *var T, right: *var T)
+pub unsafe func Swap<T>(left: *var T, right: *var T)
 ```
 
 Exchanges the values at two locations.
 Both are borrowed mutably and both are written. Passing the same location twice is legal and leaves it alone.
 Cannot fail. Runs in constant time and allocates nothing.
-Both pointers must be non-null and writable.
+Safety: both pointers must be non-null and writable.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L20)
 
@@ -86,7 +86,7 @@ every element at most twice.
 Reports false only for a `middle` past the length.
 Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L57)
 
 **Type parameters**
 
@@ -114,7 +114,7 @@ Writes `value` into every position of `items`.
 writes nothing.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L74)
 
 **Type parameters**
 
@@ -146,7 +146,7 @@ The two must not overlap, unless `destination` begins at or before `source`. Use
 Runs in time proportional to the length and allocates nothing.
 Overlapping the wrong way silently copies elements that were already overwritten.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L94)
 
 **Type parameters**
 
@@ -179,7 +179,7 @@ Copies back to front when `destination` starts after `source`, and front to back
 shifting a run of elements along its own storage safe in either direction.
 Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L115)
 
 **Type parameters**
 
@@ -211,7 +211,7 @@ unspecified.
 Requires `==` on the element type.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L138)
 
 **Type parameters**
 
@@ -239,7 +239,7 @@ their original order, nothing is resized, and what lies past the reported length
 Requires `==` on the element type.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L162)
 
 **Type parameters**
 
@@ -270,7 +270,7 @@ Removes every element of `items` that `predicate` accepts, and reports how many 
 the front in their original order, nothing is resized, and what lies past the reported length is unspecified.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L183)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L184)
 
 **Type parameters**
 
@@ -304,7 +304,7 @@ to one pass and no scratch storage. A caller that needs the original order withi
 partition, which needs somewhere to put things.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L208)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L209)
 
 **Type parameters**
 
@@ -338,7 +338,7 @@ A slice that is not partitioned this way does not fail; it answers, and the answ
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L235)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L237)
 
 **Type parameters**
 

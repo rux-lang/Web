@@ -163,7 +163,7 @@ Whether `byte` is a continuation byte, the `10xxxxxx` shape every byte after a l
 pub func Encode(
     scalar: char32,
     into: var char8[..]
-) -> uint ! Utf8Error
+) -> uint throws Utf8Error
 ```
 
 Writes `scalar` into `into` as UTF-8 and reports how many bytes it took.
@@ -189,7 +189,7 @@ Cannot allocate. Runs in constant time.
 pub func DecodeAt(
     bytes: char8[..],
     index: uint
-) -> DecodedScalar ! Utf8Error
+) -> DecodedScalar throws Utf8Error
 ```
 
 Decodes the scalar value starting at `index`, reporting it and how many bytes it occupied.
@@ -197,7 +197,7 @@ Decodes the scalar value starting at `index`, reporting it and how many bytes it
 advances one byte and carries on, and one rejecting it stops.
 Cannot allocate. Runs in constant time.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L190)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L196)
 
 **Parameters**
 
@@ -211,14 +211,14 @@ Cannot allocate. Runs in constant time.
 <h2 id="validate"><code>Validate</code></h2>
 
 ```rux
-pub func Validate(bytes: char8[..]) -> ! Utf8Failure
+pub func Validate(bytes: char8[..]) throws Utf8Failure
 ```
 
 Whether `bytes` is well-formed UTF-8 from end to end, reporting where it first is not.
 `bytes` is borrowed. A failure carries the index of the byte that starts the offending sequence.
 Cannot allocate. Runs in time proportional to the length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L227)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L237)
 
 **Parameters**
 
@@ -238,7 +238,7 @@ Whether `index` is where a scalar value starts, and so a place a string may be c
 The length counts as a boundary, so the end of a string is always a legal cut. An index past the length is not.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L242)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L252)
 
 **Parameters**
 
@@ -260,7 +260,7 @@ Counts leading bytes, which is one per scalar value in well-formed UTF-8. Bytes 
 count that means nothing; [`Validate`](/docs/api/text/utf8#validate) is what answers whether they are.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L255)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L266)
 
 **Parameters**
 
@@ -283,7 +283,7 @@ The index of the scalar boundary at or below `index`.
 An index inside a sequence is walked back to the start of that sequence, which is what a caller cutting at an
 arbitrary byte offset needs. An index at or past the length gives the length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L274)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L286)
 
 **Parameters**
 

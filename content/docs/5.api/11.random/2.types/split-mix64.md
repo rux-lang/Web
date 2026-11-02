@@ -58,7 +58,7 @@ A mixer starting from `seed`. Every seed is acceptable, including zero.
 <h3 id="next-uint64"><code>NextUint64</code></h3>
 
 ```rux
-pub func NextUint64(self: &var SplitMix64) -> uint64
+pub func NextUint64(&var self) -> uint64
 ```
 
 The next word: the state advanced by an odd constant, then avalanched.

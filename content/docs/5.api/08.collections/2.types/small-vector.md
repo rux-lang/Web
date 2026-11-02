@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/SmallVector.rux
-  line: 17
+  line: 21
 seo:
   title: "SmallVector<T> — Collections API"
   description: A growable sequence that holds up to 64 bytes of elements without allocating.
@@ -51,14 +51,14 @@ An empty vector, holding its first elements inline.
 
 **Returns**: the vector
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L39)
 
 ## Methods
 
 <h3 id="inline-capacity"><code>InlineCapacity</code></h3>
 
 ```rux
-pub func InlineCapacity(self: &SmallVector<T>) -> uint
+pub func InlineCapacity(&self) -> uint
 ```
 
 How many elements fit inline: 64 bytes' worth, or none for an element larger than that or aligned to more
@@ -66,98 +66,87 @@ than eight.
 
 **Returns**: the inline capacity
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L53)
 
 <h3 id="is-inline"><code>IsInline</code></h3>
 
 ```rux
-pub func IsInline(self: &SmallVector<T>) -> bool
+pub func IsInline(&self) -> bool
 ```
 
 Whether the elements are still inline, with nothing allocated.
 
 **Returns**: whether it is inline
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L62)
 
 <h3 id="length"><code>Length</code></h3>
 
 ```rux
-pub func Length(self: &SmallVector<T>) -> uint
+pub func Length(&self) -> uint
 ```
 
 How many elements it holds.
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L69)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
 ```rux
-pub func IsEmpty(self: &SmallVector<T>) -> bool
+pub func IsEmpty(&self) -> bool
 ```
 
 Whether it holds nothing.
 
 **Returns**: whether it is empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L76)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
 ```rux
-pub func Capacity(self: &SmallVector<T>) -> uint
+pub func Capacity(&self) -> uint
 ```
 
 How many elements fit before the next allocation.
 
 **Returns**: the capacity
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L83)
 
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(
-    self: &var SmallVector<T>,
-    value: T
-) -> ! CollectionError
+pub func Push(&var self, value: T)
 ```
 
-Appends `value`, moving it in, and allocating only once the inline room is full.
+Appends `value`, moving it in, and allocating only once the inline room is full. Terminates the program when
+the storage cannot grow.
 
 | Name    | Type | Description |
 | ------- | ---- | ----------- |
 | `value` | `T`  | the element |
 
-**Returns**: nothing, or why there was no room; the vector is unchanged on failure
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L129)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L115)
-
-<h3 id="try-pop"><code>TryPop</code></h3>
+<h3 id="pop"><code>Pop</code></h3>
 
 ```rux
-pub func TryPop(
-    self: &var SmallVector<T>,
-    value: *var T
-) -> bool
+pub func Pop(&var self) -> T?
 ```
 
-Takes the last element out.
+Takes the last element out, moving it rather than copying it.
 
-| Name    | Type     | Description          |
-| ------- | -------- | -------------------- |
-| `value` | `*var T` | receives the element |
+**Returns**: the element, or `none` when the vector is empty
 
-**Returns**: whether there was one
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L143)
 
 <h3 id="get"><code>Get</code></h3>
 
 ```rux
-pub func Get(self: &SmallVector<T>, index: uint) -> T?
+pub func Get(&self, index: uint) -> T?
 ```
 
 A copy of the element at `index`.
@@ -168,36 +157,36 @@ A copy of the element at `index`.
 
 **Returns**: the element, or `none` past the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L138)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L157)
 
 <h3 id="as-slice"><code>AsSlice</code></h3>
 
 ```rux
-pub func AsSlice(self: &SmallVector<T>) -> T[..]
+pub func AsSlice(&self) -> T[..]
 ```
 
 The elements, valid until the vector next changes or moves.
 
 **Returns**: a view of them
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L167)
 
 <h3 id="as-mutable-slice"><code>AsMutableSlice</code></h3>
 
 ```rux
-pub func AsMutableSlice(self: &var SmallVector<T>) -> var T[..]
+pub func AsMutableSlice(&var self) -> var T[..]
 ```
 
 The elements, writable, valid until the vector next changes or moves.
 
 **Returns**: a view of them
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L176)
 
 <h3 id="truncate"><code>Truncate</code></h3>
 
 ```rux
-pub func Truncate(self: &var SmallVector<T>, length: uint)
+pub func Truncate(&var self, length: uint)
 ```
 
 Destroys the elements past `length`, keeping the storage.
@@ -206,22 +195,22 @@ Destroys the elements past `length`, keeping the storage.
 | -------- | ------ | ---------------- |
 | `length` | `uint` | how many to keep |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L185)
 
 <h3 id="clear"><code>Clear</code></h3>
 
 ```rux
-pub func Clear(self: &var SmallVector<T>)
+pub func Clear(&var self)
 ```
 
 Destroys every element, keeping the storage.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L200)
 
 ## Destructor
 
 ```rux
-func ~SmallVector(self: &var SmallVector<T>)
+func ~SmallVector(&var self)
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L180)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L204)

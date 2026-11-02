@@ -30,9 +30,7 @@ pub variant JsonParseError {
     DuplicateName(uint),
     TooDeep(uint),
     TooManyEntries(uint),
-    OutOfMemory(uint),
-    BadSurrogate(uint),
-    Source(uint)
+    BadSurrogate(uint)
 }
 ```
 
@@ -43,18 +41,16 @@ had to remember to read.
 
 ## Cases
 
-| Name                          | Description                                                                                                                                                                                                                                                                                              |
-| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Lexical(JsonLexError, uint)` | The lexer refused the input, for the reason carried. Nested rather than reported beside this, so a caller holding the failure cannot be holding half of it.                                                                                                                                              |
-| `Unexpected(uint)`            | A token that cannot appear where it did.                                                                                                                                                                                                                                                                 |
-| `Truncated(uint)`             | The document ended in the middle of a value.                                                                                                                                                                                                                                                             |
-| `TrailingContent(uint)`       | Text after the end of the top-level value. The offset is where that text begins.                                                                                                                                                                                                                         |
-| `DuplicateName(uint)`         | An object contained the same name twice, under the rejecting policy. The offset is the second occurrence.                                                                                                                                                                                                |
-| `TooDeep(uint)`               | Containers nested deeper than the limit allowed.                                                                                                                                                                                                                                                         |
-| `TooManyEntries(uint)`        | A container held more entries than the limit allowed.                                                                                                                                                                                                                                                    |
-| `OutOfMemory(uint)`           | The allocator refused.                                                                                                                                                                                                                                                                                   |
-| `BadSurrogate(uint)`          | A `\u` escape naming half of a surrogate pair with no valid partner. JSON's escapes are UTF-16, and a lone surrogate is not a character; the offset is the escape that has no partner.                                                                                                                   |
-| `Source(uint)`                | The stream a [`JsonEventReader`](/docs/api/json/json-event-reader) reads from failed with something other than its end. Only a streaming reader reports this; the source's own `IoError` is kept on the reader, through [`JsonEventReader::SourceError`](/docs/api/json/json-event-reader#source-error). |
+| Name                          | Description                                                                                                                                                                            |
+| ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Lexical(JsonLexError, uint)` | The lexer refused the input, for the reason carried. Nested rather than reported beside this, so a caller holding the failure cannot be holding half of it.                            |
+| `Unexpected(uint)`            | A token that cannot appear where it did.                                                                                                                                               |
+| `Truncated(uint)`             | The document ended in the middle of a value.                                                                                                                                           |
+| `TrailingContent(uint)`       | Text after the end of the top-level value. The offset is where that text begins.                                                                                                       |
+| `DuplicateName(uint)`         | An object contained the same name twice, under the rejecting policy. The offset is the second occurrence.                                                                              |
+| `TooDeep(uint)`               | Containers nested deeper than the limit allowed.                                                                                                                                       |
+| `TooManyEntries(uint)`        | A container held more entries than the limit allowed.                                                                                                                                  |
+| `BadSurrogate(uint)`          | A `\u` escape naming half of a surrogate pair with no valid partner. JSON's escapes are UTF-16, and a lone surrogate is not a character; the offset is the escape that has no partner. |
 
 ## Implements ParseFailure
 
@@ -63,7 +59,7 @@ had to remember to read.
 <h3 id="offset"><code>Offset</code></h3>
 
 ```rux
-pub func Offset(self: &JsonParseError) -> uint
+pub func Offset(&self) -> uint
 ```
 
 Where in the input parsing stopped.
@@ -71,7 +67,7 @@ Borrows the failure and leaves it untouched. Cannot fail; runs in constant time 
 
 **Returns**: the zero-based byte offset into the document
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L62)
 
 ## Implements Display
 
@@ -81,10 +77,10 @@ Borrows the failure and leaves it untouched. Cannot fail; runs in constant time 
 
 ```rux
 pub func WriteDisplay(
-    self: &JsonParseError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Writes the description of why parsing stopped, without the position.
@@ -99,7 +95,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L103)
 
 ## Implements Debug
 
@@ -109,10 +105,10 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 ```rux
 pub func WriteDebug(
-    self: &JsonParseError,
+    &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) -> ! FormatError
+) throws FormatError
 ```
 
 Names the case and its position: `JsonParseError::Unexpected(12)`.
@@ -127,4 +123,4 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L157)

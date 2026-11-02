@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Process.rux
-  line: 17
+  line: 18
 seo:
   title: "Process — Linux API"
   description: Ending the process and asking its identifier.
@@ -35,7 +35,7 @@ descriptors, and anything the program was holding elsewhere is simply gone.
 This ends the whole process rather than one thread: it is `exit_group`, not `exit`, which on Linux stops only the
 calling thread and would leave the others running.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Process.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Process.rux#L18)
 
 **Parameters**
 
@@ -54,6 +54,6 @@ Takes nothing and returns the identifier by copy. Cannot fail: every process has
 be given a bad argument.
 Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Process.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Process.rux#L29)
 
 **Returns**: the calling process's identifier

@@ -54,7 +54,7 @@ The descriptor a process writes its diagnostics to, which is separate so it surv
 <h2 id="read"><code>Read</code></h2>
 
 ```rux
-pub func Read(
+pub unsafe func Read(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint
@@ -66,7 +66,7 @@ Reads up to `count` bytes from `fd` into `buffer`.
 zero at end of file, or a negative error number.
 A count smaller than `count` is ordinary and is not an end of file: a pipe, a terminal, or a signal can each cut a
 read short. Only zero means the source has ended.
-`buffer` must be writable for `count` bytes. The kernel checks the address and reports [`EFAULT`](/docs/api/linux/errors#efault) rather than
+Safety: `buffer` must be writable for `count` bytes. The kernel checks the address and reports [`EFAULT`](/docs/api/linux/errors#efault) rather than
 faulting, but it does not check the length against anything the caller knows.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L36)
@@ -84,7 +84,7 @@ faulting, but it does not check the length against anything the caller knows.
 <h2 id="write"><code>Write</code></h2>
 
 ```rux
-pub func Write(
+pub unsafe func Write(
     fd: FileDescriptor,
     buffer: *opaque,
     count: uint
@@ -96,7 +96,7 @@ Writes up to `count` bytes from `buffer` to `fd`.
 or a negative error number.
 A count smaller than `count` is ordinary, and the rest has to be written by calling again from where this
 stopped. Writing to a pipe whose reader has closed raises `SIGPIPE` before this can report [`EPIPE`](/docs/api/linux/errors#epipe).
-`buffer` must be readable for `count` bytes.
+Safety: `buffer` must be readable for `count` bytes.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L51)
 
@@ -141,7 +141,7 @@ pub const AtFdCwd: int32 = -100;
 The value every `*at` call takes when the caller means an ordinary path. It is `-100` rather than `-1` so that a
 stray `-1` from a failed open cannot be mistaken for it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L71)
 
 <h2 id="open-read-only"><code>OpenReadOnly</code></h2>
 
@@ -151,7 +151,7 @@ pub const OpenReadOnly: int32 = 0;
 
 `O_RDONLY`: open for reading only.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L75)
 
 <h2 id="open-write-only"><code>OpenWriteOnly</code></h2>
 
@@ -161,7 +161,7 @@ pub const OpenWriteOnly: int32 = 1;
 
 `O_WRONLY`: open for writing only.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L79)
 
 <h2 id="open-read-write"><code>OpenReadWrite</code></h2>
 
@@ -171,7 +171,7 @@ pub const OpenReadWrite: int32 = 2;
 
 `O_RDWR`: open for both reading and writing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L83)
 
 <h2 id="open-create"><code>OpenCreate</code></h2>
 
@@ -181,7 +181,7 @@ pub const OpenCreate: int32 = 64;
 
 `O_CREAT`: create the file when it does not exist, which is when the mode argument is read.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L86)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L87)
 
 <h2 id="open-exclusive"><code>OpenExclusive</code></h2>
 
@@ -192,7 +192,7 @@ pub const OpenExclusive: int32 = 128;
 `O_EXCL`: with [`OpenCreate`](/docs/api/linux/files#open-create), fail rather than open a file that already exists.
 The pair is what makes creating a file an atomic claim on the name.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L92)
 
 <h2 id="open-truncate"><code>OpenTruncate</code></h2>
 
@@ -202,7 +202,7 @@ pub const OpenTruncate: int32 = 512;
 
 `O_TRUNC`: truncate the file to nothing when opening it for writing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L96)
 
 <h2 id="open-append"><code>OpenAppend</code></h2>
 
@@ -212,7 +212,7 @@ pub const OpenAppend: int32 = 1024;
 
 `O_APPEND`: every write goes to the end, atomically with respect to other appenders.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L100)
 
 <h2 id="open-non-blocking"><code>OpenNonBlocking</code></h2>
 
@@ -222,7 +222,7 @@ pub const OpenNonBlocking: int32 = 2048;
 
 [`O_NONBLOCK`](/docs/api/linux/poll#o-nonblock): reads and writes report [`EAGAIN`](/docs/api/linux/errors#eagain) rather than waiting.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L104)
 
 <h2 id="open-close-on-exec"><code>OpenCloseOnExec</code></h2>
 
@@ -234,7 +234,7 @@ pub const OpenCloseOnExec: int32 = 524288;
 Worth setting on nearly everything: without it a descriptor leaks into every child, which is both a resource and
 a confidentiality problem.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L110)
 
 <h2 id="open-directory"><code>OpenDirectory</code></h2>
 
@@ -250,7 +250,7 @@ pub const OpenDirectory: int32 = 16384;
 x86-64 kept the number it had before the generic table was drawn up. On AArch64 this same bit means
 `O_DIRECT` instead, so a directory opened with the wrong number fails with [`EINVAL`](/docs/api/linux/errors#einval) rather than opening.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L120)
 
 <h2 id="seek-set"><code>SeekSet</code></h2>
 
@@ -260,7 +260,7 @@ pub const SeekSet: int32 = 0;
 
 `SEEK_SET`: measure the new offset from the start of the file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L133)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L134)
 
 <h2 id="seek-current"><code>SeekCurrent</code></h2>
 
@@ -270,7 +270,7 @@ pub const SeekCurrent: int32 = 1;
 
 `SEEK_CUR`: measure the new offset from the current one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L138)
 
 <h2 id="seek-end"><code>SeekEnd</code></h2>
 
@@ -280,12 +280,12 @@ pub const SeekEnd: int32 = 2;
 
 `SEEK_END`: measure the new offset from the end of the file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L142)
 
 <h2 id="open-at"><code>OpenAt</code></h2>
 
 ```rux
-pub func OpenAt(
+pub unsafe func OpenAt(
     directoryFd: FileDescriptor,
     path: *char8,
     flags: int32,
@@ -299,9 +299,9 @@ one; an absolute path ignores it. `path` is borrowed and must be null-terminated
 access modes combined with whatever else applies. `mode` is the permission bits a newly created file gets, and is
 read only when [`OpenCreate`](/docs/api/linux/files#open-create) is set.
 This is the only open the package offers, because it is the only one AArch64 has.
-`path` must be non-null and terminated. The mode is masked by the process umask, which this cannot see.
+Safety: `path` must be non-null and terminated. The mode is masked by the process umask, which this cannot see.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L156)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L157)
 
 **Parameters**
 
@@ -329,7 +329,7 @@ Moves the file offset of `fd` and returns where it ended up, or a negative error
 Seeking past the end is allowed and creates a hole when something is later written there. A pipe or socket has no
 offset to move and reports [`ESPIPE`](/docs/api/linux/errors#espipe).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L171)
 
 **Parameters**
 
@@ -344,7 +344,7 @@ offset to move and reports [`ESPIPE`](/docs/api/linux/errors#espipe).
 <h2 id="fstat-at"><code>FstatAt</code></h2>
 
 ```rux
-pub func FstatAt(
+pub unsafe func FstatAt(
     directoryFd: FileDescriptor,
     path: *char8,
     statBuffer: *var opaque,
@@ -355,10 +355,11 @@ pub func FstatAt(
 Fills `statBuffer` with what the kernel knows about the file `path` names.
 The kernel's own name for this call is `newfstatat`, which `SysNewFstatAt` keeps; the wrapper is spelled the way
 macOS and FreeBSD spell theirs, so one name reaches the call on all three systems.
-`statBuffer` must be writable for the whole of the architecture's `struct stat`, whose layout this package
-does not model: 144 bytes on x86-64 and 128 on AArch64, with the fields at different offsets in each.
+Safety: `path` must be non-null and NUL-terminated, and `statBuffer` must be writable for the whole of the
+architecture's `struct stat`, whose layout this package does not model: 144 bytes on x86-64 and 128 on AArch64, with
+the fields at different offsets in each.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L235)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L241)
 
 **Parameters**
 
@@ -374,7 +375,7 @@ does not model: 144 bytes on x86-64 and 128 on AArch64, with the fields at diffe
 <h2 id="fchmod-at"><code>FchmodAt</code></h2>
 
 ```rux
-pub func FchmodAt(
+pub unsafe func FchmodAt(
     directoryFd: FileDescriptor,
     path: *char8,
     mode: FileMode,
@@ -385,8 +386,9 @@ pub func FchmodAt(
 Sets the permission bits of the file `path` names.
 `directoryFd` is [`AtFdCwd`](/docs/api/linux/files#at-fd-cwd) for an ordinary path. Returns zero, or a negative error number. Linux does not
 support [`SymlinkNoFollow`](/docs/api/linux/directories#symlink-no-follow) here and reports `EOPNOTSUPP` for it: a symbolic link's own bits mean nothing.
+Safety: `path` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L249)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L256)
 
 **Parameters**
 
@@ -402,7 +404,7 @@ support [`SymlinkNoFollow`](/docs/api/linux/directories#symlink-no-follow) here 
 <h2 id="utimens-at"><code>UtimensAt</code></h2>
 
 ```rux
-pub func UtimensAt(
+pub unsafe func UtimensAt(
     directoryFd: FileDescriptor,
     path: *char8,
     times: *opaque,
@@ -414,8 +416,10 @@ Sets the access and modification times of the file `path` names.
 `times` is borrowed and holds two `timespec` values — access first, then modification — each a whole-second
 count and a nanosecond fraction, both 8 bytes. A null `times` sets both to now. `flags` may carry
 [`SymlinkNoFollow`](/docs/api/linux/directories#symlink-no-follow). Returns zero, or a negative error number.
+Safety: `path` must be non-null and NUL-terminated, and a non-null `times` must be readable for two `timespec`
+values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L264)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L273)
 
 **Parameters**
 
@@ -438,7 +442,7 @@ Flushes everything written to `fd` through to the storage device.
 Returns zero, or a negative error number. Returning only once the device has acknowledged the write is the whole
 point: without it, data a successful [`Write`](/docs/api/linux/files#write) reported may still be lost to a power failure.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L311)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L322)
 
 **Parameters**
 
@@ -461,7 +465,7 @@ Sets the length of the file behind `fd` to `length`.
 Returns zero, or a negative error number. Growing a file this way creates a hole rather than allocating, so a
 later write into it can still fail with [`ENOSPC`](/docs/api/linux/errors#enospc). Shrinking discards what was past the new end.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L322)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L334)
 
 **Parameters**
 
@@ -475,7 +479,7 @@ later write into it can still fail with [`ENOSPC`](/docs/api/linux/errors#enospc
 <h2 id="fstat"><code>Fstat</code></h2>
 
 ```rux
-pub func Fstat(
+pub unsafe func Fstat(
     fd: FileDescriptor,
     statBuffer: *var opaque
 ) -> int64
@@ -485,10 +489,10 @@ Fills `statBuffer` with what the kernel knows about the file behind `fd`.
 `statBuffer` is borrowed and written with the kernel's `struct stat`, whose layout this package does not model:
 it differs by architecture, and reading it needs a declaration that says which. Returns zero, or a negative error
 number.
-`statBuffer` must be writable for the whole of the architecture's `struct stat`, which is 144 bytes on x86-64 and
-128 on AArch64. Nothing here checks that.
+Safety: `statBuffer` must be writable for the whole of the architecture's `struct stat`, which is 144 bytes on
+x86-64 and 128 on AArch64. Nothing here checks that.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L384)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L397)
 
 **Parameters**
 
@@ -515,7 +519,7 @@ leaves a window in which another thread can execute a new program and leak the d
 negative error number.
 Duplicating a descriptor onto itself reports [`EINVAL`](/docs/api/linux/errors#einval) here, where `dup2` returned it unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L398)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L411)
 
 **Parameters**
 
@@ -530,7 +534,7 @@ Duplicating a descriptor onto itself reports [`EINVAL`](/docs/api/linux/errors#e
 <h2 id="pipe2"><code>Pipe2</code></h2>
 
 ```rux
-pub func Pipe2(
+pub unsafe func Pipe2(
     descriptors: *var int32,
     flags: int32
 ) -> int64
@@ -539,9 +543,9 @@ pub func Pipe2(
 Creates a pipe and writes its two descriptors into `descriptors`.
 `descriptors` is borrowed and receives the reading end at index zero and the writing end at index one. `flags`
 may carry [`OpenCloseOnExec`](/docs/api/linux/files#open-close-on-exec) and [`OpenNonBlocking`](/docs/api/linux/files#open-non-blocking). Returns zero, or a negative error number.
-`descriptors` must be writable for two `int32` values.
+Safety: `descriptors` must be writable for two `int32` values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L410)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L424)
 
 **Parameters**
 

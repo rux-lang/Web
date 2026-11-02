@@ -5648,7 +5648,7 @@
       "displayName": "ErrnoFor",
       "module": "Types",
       "source": "Src/Types.rux",
-      "line": 325,
+      "line": 335,
       "signature": "pub func ErrnoFor(area: CRuntimeArea) -> c_int",
       "typeParams": [],
       "doc": {
@@ -5683,7 +5683,7 @@
       "displayName": "ErrnoLocation",
       "module": "Types",
       "source": "Src/Types.rux",
-      "line": 339,
+      "line": 350,
       "signature": "pub func ErrnoLocation() -> *var c_int",
       "typeParams": [],
       "doc": {
@@ -5718,7 +5718,7 @@
       "displayName": "Errno",
       "module": "Types",
       "source": "Src/Types.rux",
-      "line": 355,
+      "line": 366,
       "signature": "pub func Errno() -> c_int",
       "typeParams": [],
       "doc": {
@@ -5753,7 +5753,7 @@
       "displayName": "EDOM",
       "module": "Types",
       "source": "Src/Types.rux",
-      "line": 361,
+      "line": 373,
       "signature": "pub const EDOM: c_int",
       "typeParams": [],
       "doc": {
@@ -5788,7 +5788,7 @@
       "displayName": "ERANGE",
       "module": "Types",
       "source": "Src/Types.rux",
-      "line": 365,
+      "line": 377,
       "signature": "pub const ERANGE: c_int",
       "typeParams": [],
       "doc": {
@@ -5823,7 +5823,7 @@
       "displayName": "EILSEQ",
       "module": "Types",
       "source": "Src/Types.rux",
-      "line": 388,
+      "line": 400,
       "signature": "pub const EILSEQ: c_int",
       "typeParams": [],
       "doc": {
@@ -5849,7 +5849,7 @@
       "displayName": "EILSEQ",
       "module": "Types",
       "source": "Src/Types.rux",
-      "line": 373,
+      "line": 385,
       "signature": "pub const EILSEQ: c_int",
       "typeParams": [],
       "doc": {
@@ -5875,7 +5875,7 @@
       "displayName": "EILSEQ",
       "module": "Types",
       "source": "Src/Types.rux",
-      "line": 383,
+      "line": 395,
       "signature": "pub const EILSEQ: c_int",
       "typeParams": [],
       "doc": {
@@ -5901,7 +5901,7 @@
       "displayName": "EILSEQ",
       "module": "Types",
       "source": "Src/Types.rux",
-      "line": 378,
+      "line": 390,
       "signature": "pub const EILSEQ: c_int",
       "typeParams": [],
       "doc": {
