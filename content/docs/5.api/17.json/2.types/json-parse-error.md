@@ -123,4 +123,4 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L156)

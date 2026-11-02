@@ -132,21 +132,6 @@ grows the file again — the same rule as seeking past the end.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L187)
 
-<h3 id="stream"><code>Stream</code></h3>
-
-```rux
-pub func Stream(*var self) -> FileStream
-```
-
-A stored borrow of this file, for a value that must keep a stream beyond one call.
-For anything that only needs a stream for the duration of a call, borrow the file directly as
-`let sink: &var Writer = file;` instead: that is checked, and this is not.
-The file must outlive the result and must not be moved while it exists. See [`FileStream`](/docs/api/filesystem/file-stream).
-
-**Returns**: a stream over this file, holding its address, which is what makes it storable
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L229)
-
 <h3 id="metadata"><code>Metadata</code></h3>
 
 ```rux

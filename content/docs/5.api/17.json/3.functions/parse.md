@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Parser.rux
-  line: 641
+  line: 639
 seo:
   title: "Parse — Json API"
   description: "Parses input into a value, rejecting duplicate names."
@@ -87,7 +87,7 @@ Fails with any case of [`JsonParseError`](/docs/api/json/json-parse-error), posi
 exceeds arrives as `TooDeep` or `TooManyEntries` from the parser, or nested inside `Lexical` when it was the
 lexer that measured it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L659)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L657)
 
 **Parameters**
 

@@ -179,7 +179,7 @@ and `{:spec}` placeholders take them in order, and `{{` and `}}` write a literal
 <h3 id="print-value-line"><code>PrintValueLine</code></h3>
 
 ```rux
-pub func PrintValueLine(value: Display) -> IoError?
+pub func PrintValueLine(value: &Display) -> IoError?
 ```
 
 Writes a value's text to standard output, then a newline.
@@ -188,9 +188,9 @@ Writes a value's text to standard output, then a newline.
 
 **Parameters**
 
-| Name    | Type      | Description        |
-| ------- | --------- | ------------------ |
-| `value` | `Display` | the value to write |
+| Name    | Type       | Description        |
+| ------- | ---------- | ------------------ |
+| `value` | `&Display` | the value to write |
 
 **Returns**: the failure, or `none` when the whole value was written
 

@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Parser.rux
-  line: 201
+  line: 199
 seo:
   title: "JsonParser — Json API"
   description: A parser over a document.
@@ -49,7 +49,7 @@ A parser over `input` under `limits`, rejecting duplicate names.
 
 **Returns**: a parser ready to read the input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L230)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L228)
 
 ## Methods
 
@@ -68,7 +68,7 @@ Chooses what to do about duplicate object names.
 | -------- | -------------------- | ------------------------------------ |
 | `policy` | `DuplicateKeyPolicy` | what to do when a name appears twice |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L247)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L245)
 
 <h3 id="failure"><code>Failure</code></h3>
 
@@ -82,7 +82,7 @@ A caller using [`Parse`](/docs/api/json/json-parser#parse) never needs this: the
 
 **Returns**: the failure, positioned, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L256)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L254)
 
 <h3 id="parse"><code>Parse</code></h3>
 
@@ -100,4 +100,4 @@ Fails with any case of [`JsonParseError`](/docs/api/json/json-parse-error), posi
 
 **Returns**: the document, or the failure that stopped it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L567)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Parser.rux#L565)

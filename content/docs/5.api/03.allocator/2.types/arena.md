@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Arena.rux
-  line: 44
+  line: 46
 seo:
   title: "Arena — Allocator API"
   description: An allocator that advances a pointer and reclaims everything at once.
@@ -27,8 +27,8 @@ pub struct Arena {
 }
 ```
 
-Move-only, because it owns its blocks and explicitly prohibits copying. Pass its [`Handle`](/docs/api/allocator/arena#handle) where a storable
-[`Allocator`](/docs/api/allocator/allocator) adapter is needed.
+Move-only, because it owns its blocks. Borrow it as `&var Allocator` for a call, and pass its [`Handle`](/docs/api/allocator/arena#handle) where a
+stored [`Allocator`](/docs/api/allocator/allocator) handle is needed.
 
 ## Constructors
 
@@ -50,25 +50,26 @@ arena that is never used costs nothing.
 
 **Returns**: the arena, holding no block yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L69)
 
 ## Methods
 
 <h3 id="handle"><code>Handle</code></h3>
 
 ```rux
-pub unsafe func Handle(*var self) -> ArenaHandle
+pub unsafe func Handle(*var self) -> Allocator
 ```
 
-A copyable interface adapter pointing at this arena.
+An [`Allocator`](/docs/api/allocator/allocator) handle addressing this arena, for a container to keep.
 `self` stays the caller's. Allocations through the handle update this arena rather than copied state.
 Cannot fail. Runs in constant time and allocates nothing.
-Safety: the handle borrows the arena and must not outlive it, nor survive the arena being moved. Nothing here
-tracks that: a handle held past its arena's life points at released storage.
+Safety: the handle addresses the arena and must not outlive it, nor survive the arena being moved, and nothing
+may [`Reset`](/docs/api/allocator/arena#reset) the arena while an allocation made through the handle is still in use. Nothing here tracks that: a
+handle held past its arena's life points at released storage.
 
-**Returns**: a copyable adapter pointing at this arena
+**Returns**: a copyable handle addressing this arena
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L88)
 
 <h3 id="reset"><code>Reset</code></h3>
 
@@ -84,7 +85,7 @@ The kept block is the current one, which is the largest, so a second round of th
 asking the system for anything. Runs in time proportional to the number of blocks.
 Nothing may be read from or written to any earlier allocation afterwards.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L100)
 
 <h3 id="bytes-used"><code>BytesUsed</code></h3>
 
@@ -100,7 +101,7 @@ nothing.
 
 **Returns**: how many payload bytes the arena's blocks have handed out
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L128)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L131)
 
 <h3 id="block-count"><code>BlockCount</code></h3>
 
@@ -113,79 +114,17 @@ How many blocks the arena holds.
 
 **Returns**: how many blocks the arena holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L149)
 
-## Destructor
+## Implements Allocator
 
-```rux
-func ~Arena(&var self)
-```
+`Arena` conforms to [`Allocator`](/docs/api/allocator/allocator).
 
-Gives every block back to the backing allocator.
-Runs when the arena's life ends. Every pointer the arena handed out becomes invalid.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L202)
-
-## Related
-
-<h3 id="default-arena-block-size"><code>DefaultArenaBlockSize</code></h3>
-
-```rux
-pub const DefaultArenaBlockSize: uint = 4096;
-```
-
-The default payload of an arena's first block.
-One page on every supported system. Each later block doubles, so an arena that keeps growing stops asking the
-system after a handful of requests.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L21)
-
-<h3 id="arena-block-alignment"><code>ArenaBlockAlignment</code></h3>
-
-```rux
-pub const ArenaBlockAlignment: uint = 16;
-```
-
-The alignment every arena block is taken at, and so the strictest alignment an arena can serve from one.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L25)
-
-<h3 id="arena-block"><code>ArenaBlock</code></h3>
-
-```rux
-pub struct ArenaBlock {
-    // private fields
-}
-```
-
-One block of arena storage, with the bookkeeping for what has been handed out of it.
-Never constructed by a caller. The payload follows the header immediately, and `capacity` counts only the
-payload.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L31)
-
-<h3 id="arena-handle"><code>ArenaHandle</code></h3>
-
-```rux
-pub struct ArenaHandle {
-    // private fields
-}
-```
-
-A copyable interface adapter pointing at an arena.
-A handle is cheap to copy and may be stored wherever an allocator is wanted, but it does not own the arena.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L222)
-
-**Implements Allocator**
-
-`ArenaHandle` conforms to [`Allocator`](/docs/api/allocator/allocator).
-
-<h4 id="arena-handle-allocate"><code>Allocate</code></h4>
+<h3 id="allocate"><code>Allocate</code></h3>
 
 ```rux
 pub func Allocate(
-    &self,
+    &var self,
     layout: Layout
 ) -> *var opaque throws AllocError
 ```
@@ -202,13 +141,13 @@ The storage lives until the arena is reset or destroyed, whichever comes first, 
 
 **Returns**: the address of the storage, or why none was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L236)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L231)
 
-<h4 id="arena-handle-deallocate"><code>Deallocate</code></h4>
+<h3 id="deallocate"><code>Deallocate</code></h3>
 
 ```rux
 pub func Deallocate(
-    &self,
+    &var self,
     block: *var opaque,
     layout: Layout
 ) throws AllocError
@@ -228,13 +167,13 @@ that releases what it takes.
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L266)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L260)
 
-<h4 id="arena-handle-reallocate"><code>Reallocate</code></h4>
+<h3 id="reallocate"><code>Reallocate</code></h3>
 
 ```rux
 pub func Reallocate(
-    &self,
+    &var self,
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
@@ -256,4 +195,53 @@ it rewound off of, so the result is releasable with the layout it was asked for.
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L296)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L289)
+
+## Destructor
+
+```rux
+func ~Arena(&var self)
+```
+
+Gives every block back to the backing allocator.
+Runs when the arena's life ends. Every pointer the arena handed out becomes invalid.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L205)
+
+## Related
+
+<h3 id="default-arena-block-size"><code>DefaultArenaBlockSize</code></h3>
+
+```rux
+pub const DefaultArenaBlockSize: uint = 4096;
+```
+
+The default payload of an arena's first block.
+One page on every supported system. Each later block doubles, so an arena that keeps growing stops asking the
+system after a handful of requests.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L23)
+
+<h3 id="arena-block-alignment"><code>ArenaBlockAlignment</code></h3>
+
+```rux
+pub const ArenaBlockAlignment: uint = 16;
+```
+
+The alignment every arena block is taken at, and so the strictest alignment an arena can serve from one.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L27)
+
+<h3 id="arena-block"><code>ArenaBlock</code></h3>
+
+```rux
+pub struct ArenaBlock {
+    // private fields
+}
+```
+
+One block of arena storage, with the bookkeeping for what has been handed out of it.
+Never constructed by a caller. The payload follows the header immediately, and `capacity` counts only the
+payload.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Arena.rux#L33)

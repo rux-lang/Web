@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Contract.rux
-  line: 29
+  line: 32
 seo:
   title: "Allocator — Allocator API"
   description: The operations every allocator provides.
@@ -23,12 +23,17 @@ The operations every allocator provides.
 
 ```rux
 pub interface Allocator {
-    func Allocate(layout: Layout) -> *var opaque throws AllocError;
+    func Allocate(
+        &var self,
+        layout: Layout
+    ) -> *var opaque throws AllocError;
     func Deallocate(
+        &var self,
         block: *var opaque,
         layout: Layout
     ) throws AllocError;
     func Reallocate(
+        &var self,
         block: *var opaque,
         oldLayout: Layout,
         newLayout: Layout
@@ -37,16 +42,22 @@ pub interface Allocator {
 ```
 
 Written as an interface so a generic can require it — `func Build<A: Allocator>(allocator: &var A)` borrows the
-caller's allocator and resolves calls at each instantiation with nothing dispatched at run time.
-No operation writes through its receiver: an implementation keeps its state behind a pointer, as the handles do,
-so a copied allocator value draws from the same storage and a read-only view may allocate.
+caller's allocator and resolves calls at each instantiation with nothing dispatched at run time — and so a call
+can borrow any allocator as `&var Allocator`.
+Every operation may write its receiver: an arena advances its pointer and a pool its free lists.
+A container keeps its allocator as an `Allocator` value, which is a copyable handle to the implementation and owns
+nothing. A stateless allocator such as [`SystemAllocator`](/docs/api/allocator/system-allocator) converts to one anywhere and stays valid forever; a
+stateful one gives a handle only through an `unsafe` `Handle`, whose caller promises the allocator outlives it.
 
 ## Requirements
 
 <h3 id="allocate"><code>Allocate</code></h3>
 
 ```rux
-func Allocate(layout: Layout) -> *var opaque throws AllocError
+func Allocate(
+    &var self,
+    layout: Layout
+) -> *var opaque throws AllocError
 ```
 
 Takes storage matching `layout` and reports where it landed.
@@ -60,12 +71,13 @@ The storage is the caller's until [`Deallocate`](/docs/api/allocator/allocator#d
 
 **Returns**: the address of the storage, or why none was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L40)
 
 <h3 id="deallocate"><code>Deallocate</code></h3>
 
 ```rux
 func Deallocate(
+    &var self,
     block: *var opaque,
     layout: Layout
 ) throws AllocError
@@ -83,12 +95,13 @@ Every pointer into the block becomes invalid, and the storage may be handed to t
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L50)
 
 <h3 id="reallocate"><code>Reallocate</code></h3>
 
 ```rux
 func Reallocate(
+    &var self,
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
@@ -114,16 +127,16 @@ The old pointer is invalid once this succeeds, whether or not the address change
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L67)
 
 ## Implementations
 
-| Type                                                                        | Summary                                                                                       |
-| --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| [`ArenaHandle`](/docs/api/allocator/arena#arena-handle)                     | A copyable interface adapter pointing at an arena.                                            |
-| [`FixedBufferHandle`](/docs/api/allocator/fixed-buffer#fixed-buffer-handle) | A copyable interface adapter pointing at a [`FixedBuffer`](/docs/api/allocator/fixed-buffer). |
-| [`PoolHandle`](/docs/api/allocator/pool#pool-handle)                        | A copyable interface adapter pointing at a pool.                                              |
-| [`SystemAllocator`](/docs/api/allocator/system-allocator)                   | An allocator that asks the operating system for pages.                                        |
+| Type                                                      | Summary                                                               |
+| --------------------------------------------------------- | --------------------------------------------------------------------- |
+| [`Arena`](/docs/api/allocator/arena)                      | An allocator that advances a pointer and reclaims everything at once. |
+| [`FixedBuffer`](/docs/api/allocator/fixed-buffer)         | An allocator that advances a pointer through storage it does not own. |
+| [`Pool`](/docs/api/allocator/pool)                        | An allocator that serves small blocks from per-class free lists.      |
+| [`SystemAllocator`](/docs/api/allocator/system-allocator) | An allocator that asks the operating system for pages.                |
 
 ## Related
 
@@ -139,7 +152,7 @@ from or written to it: it is an address that exists rather than storage that doe
 Every allocator in this package returns exactly this for a zero-sized layout, which makes a zero-sized block
 recognizable and its release free.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L77)
 
 <h3 id="empty-block-address"><code>EmptyBlockAddress</code></h3>
 
@@ -151,7 +164,7 @@ The address a zero-sized allocation reports, as a pointer.
 Takes nothing and returns the same value every time.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L84)
 
 **Returns**: the address every zero-sized allocation reports
 
@@ -165,7 +178,7 @@ Whether `block` is the address a zero-sized allocation reports.
 `block` is read by value and never dereferenced.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Contract.rux#L94)
 
 **Parameters**
 

@@ -47,7 +47,7 @@
     {
       "name": "Rotation",
       "source": "Src/Rotation.rux",
-      "header": "A log file that is moved aside for a fresh one before it grows past a size, keeping a few of the older files.\nThe file is a `Writer`, so a `Logger` writes to it like any other destination; `RotatingFile::Stream` is the\nstored form a `Logger` keeps, as `File::Stream` is for a plain file."
+      "header": "A log file that is moved aside for a fresh one before it grows past a size, keeping a few of the older files.\nThe file is a `Writer`, so a `Logger` writes to it like any other destination, through a handle made from its\naddress with `unsafe { @file as Writer }`, as for a plain file."
     }
   ],
   "items": [
@@ -2379,40 +2379,8 @@
         },
         {
           "kind": "method",
-          "name": "Stream",
-          "line": 93,
-          "signature": "pub func Stream(*var self) -> RotatingStream",
-          "typeParams": [],
-          "params": [],
-          "receiver": "*var RotatingFile",
-          "returnType": "RotatingStream",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "A stored borrow of this file for a `Logger`, which keeps its destination.",
-            "markdown": "A stored borrow of this file for a `Logger`, which keeps its destination.\nThe file must outlive the stream and must not be moved while one exists; nothing tracks either.",
-            "typeParams": [],
-            "params": [],
-            "returns": "a stream writing through this file",
-            "see": ["https://rux-lang.dev/docs/api/log/rotating-file#stream"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
           "name": "Write",
-          "line": 104,
+          "line": 96,
           "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
@@ -2444,7 +2412,7 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 116,
+          "line": 108,
           "signature": "pub func Flush(&var self) throws IoError",
           "typeParams": [],
           "params": [],
@@ -2460,124 +2428,6 @@
             "params": [],
             "returns": "success when everything written reached the system",
             "see": ["https://rux-lang.dev/docs/api/log/rotating-file#flush"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        }
-      ],
-      "implements": ["Writer"],
-      "targets": [
-        "windows-x86_64",
-        "windows-aarch64",
-        "linux-x86_64",
-        "linux-aarch64",
-        "macos-x86_64",
-        "macos-aarch64",
-        "freebsd-x86_64",
-        "freebsd-aarch64"
-      ]
-    },
-    {
-      "kind": "struct",
-      "name": "RotatingStream",
-      "displayName": "RotatingStream",
-      "module": "Rotation",
-      "source": "Src/Rotation.rux",
-      "line": 124,
-      "signature": "pub struct RotatingStream",
-      "typeParams": [],
-      "doc": {
-        "summary": "A stored borrow of a `RotatingFile` that speaks `Writer`, for a `Logger` to keep.",
-        "markdown": "A stored borrow of a `RotatingFile` that speaks `Writer`, for a `Logger` to keep.\nThe address is private, and `RotatingFile::Stream` is the only way to obtain one.",
-        "typeParams": [],
-        "params": [],
-        "returns": null,
-        "see": ["https://rux-lang.dev/docs/api/log/rotating-stream"],
-        "deprecated": null
-      },
-      "value": null,
-      "fields": [
-        {
-          "name": "target",
-          "type": "*var RotatingFile",
-          "public": false,
-          "line": 126,
-          "doc": "The file being borrowed.",
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        }
-      ],
-      "baseType": null,
-      "cases": [],
-      "members": [
-        {
-          "kind": "method",
-          "name": "Write",
-          "line": 134,
-          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
-          "typeParams": [],
-          "params": [{ "name": "bytes", "type": "char8[..]" }],
-          "receiver": "&var RotatingStream",
-          "returnType": "uint ! IoError",
-          "value": null,
-          "conformance": "Writer",
-          "public": true,
-          "doc": {
-            "summary": "Writes through the borrowed file, which may move its current file aside first.",
-            "markdown": "Writes through the borrowed file, which may move its current file aside first.",
-            "typeParams": [],
-            "params": [{ "name": "bytes", "markdown": "the bytes to write" }],
-            "returns": "how many bytes were taken",
-            "see": ["https://rux-lang.dev/docs/api/log/rotating-stream#write"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "Flush",
-          "line": 143,
-          "signature": "pub func Flush(&var self) throws IoError",
-          "typeParams": [],
-          "params": [],
-          "receiver": "&var RotatingStream",
-          "returnType": "! IoError",
-          "value": null,
-          "conformance": "Writer",
-          "public": true,
-          "doc": {
-            "summary": "Flushes the borrowed file.",
-            "markdown": "Flushes the borrowed file.",
-            "typeParams": [],
-            "params": [],
-            "returns": "success when everything written reached the system",
-            "see": ["https://rux-lang.dev/docs/api/log/rotating-stream#flush"],
             "deprecated": null
           },
           "targets": [

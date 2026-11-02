@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/FixedBuffer.rux
-  line: 18
+  line: 19
 seo:
   title: "FixedBuffer — Allocator API"
   description: An allocator that advances a pointer through storage it does not own.
@@ -28,7 +28,7 @@ pub struct FixedBuffer {
 ```
 
 Owns no storage and has no destructor, but prohibits copying because duplicated bump state could hand the same
-bytes to two callers. Use [`Handle`](/docs/api/allocator/fixed-buffer#handle) when a storable [`Allocator`](/docs/api/allocator/allocator) adapter is needed.
+bytes to two callers. Use [`Handle`](/docs/api/allocator/fixed-buffer#handle) when a stored [`Allocator`](/docs/api/allocator/allocator) handle is needed.
 
 ## Constructors
 
@@ -56,24 +56,25 @@ to it is used. Nothing here tracks that.
 
 **Returns**: the buffer, having handed out nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L42)
 
 ## Methods
 
 <h3 id="handle"><code>Handle</code></h3>
 
 ```rux
-pub unsafe func Handle(*var self) -> FixedBufferHandle
+pub unsafe func Handle(*var self) -> Allocator
 ```
 
-A copyable interface adapter pointing at this allocator.
-`self` is borrowed mutably and stays the caller's. Everything allocated through the handle advances this
-allocator's state rather than a copy of it, which is the whole reason the handle exists.
-Safety: the handle borrows the allocator and must not outlive it or survive it being moved.
+An [`Allocator`](/docs/api/allocator/allocator) handle addressing this buffer, for a container to keep.
+`self` stays the caller's. Everything allocated through the handle advances this allocator's state rather
+than a copy of it.
+Safety: the handle addresses the buffer and must not outlive it or survive it being moved, and nothing may
+[`Reset`](/docs/api/allocator/fixed-buffer#reset) the buffer while an allocation made through the handle is still in use. Nothing here tracks that.
 
-**Returns**: a copyable adapter pointing at this buffer
+**Returns**: a copyable handle addressing this buffer
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L59)
 
 <h3 id="reset"><code>Reset</code></h3>
 
@@ -86,7 +87,7 @@ Rewinds every allocation, making the whole buffer available again.
 Cannot fail. Runs in constant time and allocates nothing.
 Nothing may be read from or written to any earlier allocation afterwards.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L68)
 
 <h3 id="bytes-used"><code>BytesUsed</code></h3>
 
@@ -99,7 +100,7 @@ How many bytes have been handed out, including alignment padding.
 
 **Returns**: how many bytes have been handed out
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L77)
 
 <h3 id="bytes-remaining"><code>BytesRemaining</code></h3>
 
@@ -112,31 +113,17 @@ How many bytes remain, before any alignment padding the next request needs.
 
 **Returns**: how many bytes are left to hand out
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L85)
 
-## Related
+## Implements Allocator
 
-<h3 id="fixed-buffer-handle"><code>FixedBufferHandle</code></h3>
+`FixedBuffer` conforms to [`Allocator`](/docs/api/allocator/allocator).
 
-```rux
-pub struct FixedBufferHandle {
-    // private fields
-}
-```
-
-A copyable interface adapter pointing at a [`FixedBuffer`](/docs/api/allocator/fixed-buffer).
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L141)
-
-**Implements Allocator**
-
-`FixedBufferHandle` conforms to [`Allocator`](/docs/api/allocator/allocator).
-
-<h4 id="fixed-buffer-handle-allocate"><code>Allocate</code></h4>
+<h3 id="allocate"><code>Allocate</code></h3>
 
 ```rux
 pub func Allocate(
-    &self,
+    &var self,
     layout: Layout
 ) -> *var opaque throws AllocError
 ```
@@ -155,20 +142,20 @@ The storage lives until the allocator is reset, and no longer.
 
 **Returns**: the address of the storage, or why none was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L149)
 
-<h4 id="fixed-buffer-handle-deallocate"><code>Deallocate</code></h4>
+<h3 id="deallocate"><code>Deallocate</code></h3>
 
 ```rux
 pub func Deallocate(
-    &self,
+    &var self,
     block: *var opaque,
     layout: Layout
 ) throws AllocError
 ```
 
 Accepts a release and rewinds only the most recent allocation.
-Everything else is reclaimed by `Reset` rather than one block at a time, so an ordinary release reports
+Everything else is reclaimed by [`Reset`](/docs/api/allocator/fixed-buffer#reset) rather than one block at a time, so an ordinary release reports
 `None` having done nothing. Accepting rather than refusing lets this allocator stand in for any other in
 generic code that releases what it takes.
 
@@ -179,13 +166,13 @@ generic code that releases what it takes.
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L164)
 
-<h4 id="fixed-buffer-handle-reallocate"><code>Reallocate</code></h4>
+<h3 id="reallocate"><code>Reallocate</code></h3>
 
 ```rux
 pub func Reallocate(
-    &self,
+    &var self,
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
@@ -206,4 +193,4 @@ it rewound off of, so the result is releasable with the layout it was asked for.
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L192)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/FixedBuffer.rux#L180)

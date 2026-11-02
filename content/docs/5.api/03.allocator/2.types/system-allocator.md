@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/System.rux
-  line: 45
+  line: 46
 seo:
   title: "SystemAllocator — Allocator API"
   description: An allocator that asks the operating system for pages.
@@ -22,13 +22,12 @@ seo:
 An allocator that asks the operating system for pages.
 
 ```rux
-pub struct SystemAllocator {
-    // private fields
-}
+pub struct SystemAllocator {}
 ```
 
 Carries no state: every instance behaves identically, and one may be created wherever it is needed rather than
-passed around. It is `Copy` for that reason.
+passed around. Being stateless, it converts to an [`Allocator`](/docs/api/allocator/allocator) handle anywhere, and the handle stays valid for the
+whole program.
 Page-granular, so a small allocation costs a whole page. Use it as the backing store for an arena or a pool
 rather than for many small values directly.
 
@@ -41,12 +40,12 @@ pub func SystemAllocator() -> SystemAllocator
 ```
 
 Constructs a stateless system allocator.
-The result is structural and copyable. Borrow it as `&var Allocator` when a temporary interface view is
-sufficient; no adapter or owning conversion is required.
+The result holds nothing and copies freely. It converts to an [`Allocator`](/docs/api/allocator/allocator) handle wherever one is wanted, with
+nothing to keep alive behind it.
 
 **Returns**: the allocator, which holds no state of its own
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L54)
 
 ## Implements Allocator
 
@@ -74,7 +73,7 @@ The storage is the caller's until [`Deallocate`](/docs/api/allocator/system-allo
 
 **Returns**: the address of the storage, or why none was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L70)
 
 <h3 id="deallocate"><code>Deallocate</code></h3>
 
@@ -99,7 +98,7 @@ Every pointer into the block becomes invalid.
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L116)
 
 <h3 id="reallocate"><code>Reallocate</code></h3>
 
@@ -128,7 +127,7 @@ The old pointer is invalid once this succeeds. On failure it is untouched and st
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L149)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L147)
 
 ## Related
 

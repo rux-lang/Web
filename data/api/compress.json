@@ -23,7 +23,7 @@
     {
       "name": "Buffers",
       "source": "Src/Buffers.rux",
-      "header": "Compressing and decompressing whole buffers, for data already in memory.\nBoth run the streaming reader and writer over a source that reads a slice and a sink that appends to storage this\nfunction owns. An interface value holds its own copy of what it was made from, so the sink writes through the\nstorage's address, and the function collects the bytes from there when the stream is done."
+      "header": "Compressing and decompressing whole buffers, for data already in memory.\nBoth run the streaming reader and writer over a source that reads a slice and a sink that appends to storage this\nfunction owns. The streams keep a handle to the source or sink, made from the address of a local that outlives\nthem, and the function collects the bytes from the storage when the stream is done."
     },
     {
       "name": "Deflate",
@@ -93,7 +93,7 @@
       "displayName": "Compress",
       "module": "Buffers",
       "source": "Src/Buffers.rux",
-      "line": 131,
+      "line": 133,
       "signature": "pub func Compress(allocator: Allocator, data: char8[..], format: Format, level: Level) -> Vector<byte> throws IoError",
       "typeParams": [],
       "doc": {
@@ -133,7 +133,7 @@
       "displayName": "Decompress",
       "module": "Buffers",
       "source": "Src/Buffers.rux",
-      "line": 143,
+      "line": 145,
       "signature": "pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> throws IoError",
       "typeParams": [],
       "doc": {
@@ -172,7 +172,7 @@
       "displayName": "Decompress",
       "module": "Buffers",
       "source": "Src/Buffers.rux",
-      "line": 179,
+      "line": 183,
       "signature": "pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> throws IoError",
       "typeParams": [],
       "doc": {

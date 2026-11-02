@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Parser.rux
-  line: 860
+  line: 858
 seo:
   title: "TomlParse — Toml API"
   description: "Reads input into a table, or says why it could not and where."

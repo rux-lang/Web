@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Pool.rux
-  line: 63
+  line: 64
 seo:
   title: "Pool — Allocator API"
   description: An allocator that serves small blocks from per-class free lists.
@@ -27,8 +27,8 @@ pub struct Pool {
 }
 ```
 
-Move-only, because it owns its chunks. Pass it to something expecting an [`Allocator`](/docs/api/allocator/allocator) through [`Handle`](/docs/api/allocator/pool#handle), which
-borrows rather than moves.
+Move-only, because it owns its chunks. Borrow it as `&var Allocator` for a call, and pass its [`Handle`](/docs/api/allocator/pool#handle) where a
+stored [`Allocator`](/docs/api/allocator/allocator) handle is needed.
 
 ## Constructors
 
@@ -53,24 +53,25 @@ arrives, so a pool that is never used costs nothing.
 
 **Returns**: the pool, holding no chunk yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L89)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L90)
 
 ## Methods
 
 <h3 id="handle"><code>Handle</code></h3>
 
 ```rux
-pub unsafe func Handle(*var self) -> PoolHandle
+pub unsafe func Handle(*var self) -> Allocator
 ```
 
-A copyable interface adapter pointing at this pool.
+An [`Allocator`](/docs/api/allocator/allocator) handle addressing this pool, for a container to keep.
 `self` stays the caller's. Allocations through the handle update this pool rather than copied state.
 Cannot fail. Runs in constant time and allocates nothing.
-Safety: the handle borrows the pool and must not outlive it, nor survive the pool being moved.
+Safety: the handle addresses the pool and must not outlive it, nor survive the pool being moved, and nothing
+may [`Reset`](/docs/api/allocator/pool#reset) the pool while a block taken through the handle is still in use. Nothing here tracks that.
 
-**Returns**: a copyable adapter pointing at this pool
+**Returns**: a copyable handle addressing this pool
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L109)
 
 <h3 id="reset"><code>Reset</code></h3>
 
@@ -87,7 +88,7 @@ touched, and are still the caller's to release.
 Runs in time proportional to the number of blocks. Cannot fail.
 Nothing may be read from or written to any pooled allocation afterwards.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L120)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L122)
 
 <h3 id="live-blocks"><code>LiveBlocks</code></h3>
 
@@ -101,7 +102,7 @@ track them.
 
 **Returns**: how many blocks are currently handed out
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L153)
 
 <h3 id="chunk-count"><code>ChunkCount</code></h3>
 
@@ -114,7 +115,7 @@ How many chunks the pool has taken from its backing allocator.
 
 **Returns**: how many chunks the pool holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L161)
 
 <h3 id="class-size"><code>ClassSize</code></h3>
 
@@ -131,111 +132,17 @@ The block size of class `index`, or zero for an index past the last class.
 
 **Returns**: the block size that class serves
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L168)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L170)
 
-## Destructor
+## Implements Allocator
 
-```rux
-func ~Pool(&var self)
-```
+`Pool` conforms to [`Allocator`](/docs/api/allocator/allocator).
 
-Gives every chunk back to the backing allocator.
-Runs when the pool's life ends. Every pooled pointer the pool handed out becomes invalid. Blocks that went to
-the backing allocator directly are not released here and are still the caller's.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L223)
-
-## Related
-
-<h3 id="pool-class-count"><code>PoolClassCount</code></h3>
-
-```rux
-pub const PoolClassCount: uint = 5;
-```
-
-How many size classes a pool serves.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L23)
-
-<h3 id="pool-smallest-class"><code>PoolSmallestClass</code></h3>
-
-```rux
-pub const PoolSmallestClass: uint = 16;
-```
-
-The smallest size class, and so the block a one-byte request occupies.
-Large enough to hold the link a free block stores in its own storage, which is what lets a free list cost nothing
-beyond the blocks already on it.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L29)
-
-<h3 id="pool-largest-class"><code>PoolLargestClass</code></h3>
-
-```rux
-pub const PoolLargestClass: uint = 256;
-```
-
-The largest size class. A request past this goes to the backing allocator instead.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L33)
-
-<h3 id="pool-alignment"><code>PoolAlignment</code></h3>
-
-```rux
-pub const PoolAlignment: uint = 16;
-```
-
-The alignment every chunk is taken at, and so the strictest alignment a pooled block can satisfy.
-Every class is a multiple of this, so every block carved from a chunk is aligned to it as well.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L38)
-
-<h3 id="default-pool-blocks-per-chunk"><code>DefaultPoolBlocksPerChunk</code></h3>
-
-```rux
-pub const DefaultPoolBlocksPerChunk: uint = 32;
-```
-
-How many blocks a chunk holds when the caller does not say.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L42)
-
-<h3 id="pool-chunk"><code>PoolChunk</code></h3>
-
-```rux
-pub struct PoolChunk {
-    // private fields
-}
-```
-
-One chunk of pool storage, carved into blocks of a single class.
-Never constructed by a caller. The blocks follow the header, and the header records what the chunk was taken with
-so that releasing or re-carving it needs nothing else.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L48)
-
-<h3 id="pool-handle"><code>PoolHandle</code></h3>
-
-```rux
-pub struct PoolHandle {
-    // private fields
-}
-```
-
-A copyable interface adapter pointing at a pool.
-A handle is cheap to copy and may be stored wherever an allocator is wanted, but it does not own the pool.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L250)
-
-**Implements Allocator**
-
-`PoolHandle` conforms to [`Allocator`](/docs/api/allocator/allocator).
-
-<h4 id="pool-handle-allocate"><code>Allocate</code></h4>
+<h3 id="allocate"><code>Allocate</code></h3>
 
 ```rux
 pub func Allocate(
-    &self,
+    &var self,
     layout: Layout
 ) -> *var opaque throws AllocError
 ```
@@ -254,13 +161,13 @@ The block lives until it is released, the pool is reset, or the pool is destroye
 
 **Returns**: the address of the storage, or why none was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L266)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L260)
 
-<h4 id="pool-handle-deallocate"><code>Deallocate</code></h4>
+<h3 id="deallocate"><code>Deallocate</code></h3>
 
 ```rux
 pub func Deallocate(
-    &self,
+    &var self,
     block: *var opaque,
     layout: Layout
 ) throws AllocError
@@ -279,13 +186,13 @@ The block may be handed to the next allocation of its class at once.
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L308)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L294)
 
-<h4 id="pool-handle-reallocate"><code>Reallocate</code></h4>
+<h3 id="reallocate"><code>Reallocate</code></h3>
 
 ```rux
 pub func Reallocate(
-    &self,
+    &var self,
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
@@ -305,7 +212,88 @@ copies, and releases the old one.
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L342)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L322)
+
+## Destructor
+
+```rux
+func ~Pool(&var self)
+```
+
+Gives every chunk back to the backing allocator.
+Runs when the pool's life ends. Every pooled pointer the pool handed out becomes invalid. Blocks that went to
+the backing allocator directly are not released here and are still the caller's.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L225)
+
+## Related
+
+<h3 id="pool-class-count"><code>PoolClassCount</code></h3>
+
+```rux
+pub const PoolClassCount: uint = 5;
+```
+
+How many size classes a pool serves.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L24)
+
+<h3 id="pool-smallest-class"><code>PoolSmallestClass</code></h3>
+
+```rux
+pub const PoolSmallestClass: uint = 16;
+```
+
+The smallest size class, and so the block a one-byte request occupies.
+Large enough to hold the link a free block stores in its own storage, which is what lets a free list cost nothing
+beyond the blocks already on it.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L30)
+
+<h3 id="pool-largest-class"><code>PoolLargestClass</code></h3>
+
+```rux
+pub const PoolLargestClass: uint = 256;
+```
+
+The largest size class. A request past this goes to the backing allocator instead.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L34)
+
+<h3 id="pool-alignment"><code>PoolAlignment</code></h3>
+
+```rux
+pub const PoolAlignment: uint = 16;
+```
+
+The alignment every chunk is taken at, and so the strictest alignment a pooled block can satisfy.
+Every class is a multiple of this, so every block carved from a chunk is aligned to it as well.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L39)
+
+<h3 id="default-pool-blocks-per-chunk"><code>DefaultPoolBlocksPerChunk</code></h3>
+
+```rux
+pub const DefaultPoolBlocksPerChunk: uint = 32;
+```
+
+How many blocks a chunk holds when the caller does not say.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L43)
+
+<h3 id="pool-chunk"><code>PoolChunk</code></h3>
+
+```rux
+pub struct PoolChunk {
+    // private fields
+}
+```
+
+One chunk of pool storage, carved into blocks of a single class.
+Never constructed by a caller. The blocks follow the header, and the header records what the chunk was taken with
+so that releasing or re-carving it needs nothing else.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L49)
 
 <h3 id="class-index-for"><code>ClassIndexFor</code></h3>
 
@@ -320,7 +308,7 @@ The answer depends only on the layout, which is what lets a release reach the sa
 it matches without the pool recording anything per block.
 Cannot fail. Runs in time proportional to the number of classes and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L381)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L359)
 
 **Parameters**
 

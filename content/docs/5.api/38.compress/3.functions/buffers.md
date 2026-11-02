@@ -83,7 +83,7 @@ Decompresses `data`, a whole stream in `format` held as `char8` units, such as b
 | `pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> throws IoError`  | Decompresses `data`, a whole stream in `format`.                                                             |
 | `pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> throws IoError` | Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Buffers.rux#L143)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Buffers.rux#L145)
 
 **Parameters**
 

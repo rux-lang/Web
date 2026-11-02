@@ -78,7 +78,7 @@ refused something.
 ```rux
 pub func WriteValue(
     writer: &var TextWriter,
-    value: Display,
+    value: &Display,
     spec: FormatSpec
 ) throws FormatError
 ```
@@ -94,7 +94,7 @@ to put them together.
 | Name     | Type              | Description                                |
 | -------- | ----------------- | ------------------------------------------ |
 | `writer` | `&var TextWriter` | the destination                            |
-| `value`  | `Display`         | the value to render, borrowed for the call |
+| `value`  | `&Display`        | the value to render, borrowed for the call |
 | `spec`   | `FormatSpec`      | what to render it under                    |
 
 **Returns**: whatever the value's implementation reported

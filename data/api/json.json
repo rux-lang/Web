@@ -2212,7 +2212,7 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 157,
+          "line": 156,
           "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
           "typeParams": [],
           "params": [
@@ -2266,7 +2266,7 @@
       "displayName": "JsonParser",
       "module": "Parser",
       "source": "Src/Parser.rux",
-      "line": 201,
+      "line": 199,
       "signature": "pub struct JsonParser",
       "typeParams": [],
       "doc": {
@@ -2284,7 +2284,7 @@
           "name": "lexer",
           "type": "JsonLexer",
           "public": false,
-          "line": 203,
+          "line": 201,
           "doc": "Where tokens come from.",
           "targets": [
             "windows-x86_64",
@@ -2301,7 +2301,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 205,
+          "line": 203,
           "doc": "Where values are built.",
           "targets": [
             "windows-x86_64",
@@ -2318,7 +2318,7 @@
           "name": "limits",
           "type": "JsonLimits",
           "public": false,
-          "line": 207,
+          "line": 205,
           "doc": "What to accept.",
           "targets": [
             "windows-x86_64",
@@ -2335,7 +2335,7 @@
           "name": "duplicates",
           "type": "DuplicateKeyPolicy",
           "public": false,
-          "line": 209,
+          "line": 207,
           "doc": "What to do about duplicate names.",
           "targets": [
             "windows-x86_64",
@@ -2352,7 +2352,7 @@
           "name": "input",
           "type": "char8[..]",
           "public": false,
-          "line": 211,
+          "line": 209,
           "doc": "The whole document, which string spans point into.",
           "targets": [
             "windows-x86_64",
@@ -2369,7 +2369,7 @@
           "name": "depth",
           "type": "uint",
           "public": false,
-          "line": 213,
+          "line": 211,
           "doc": "How deep the current value is nested.",
           "targets": [
             "windows-x86_64",
@@ -2386,7 +2386,7 @@
           "name": "stop",
           "type": "JsonStop",
           "public": false,
-          "line": 216,
+          "line": 214,
           "doc": "Why parsing stopped, or `None`. Kept as its parts rather than as the public failure, so nothing inside has\nto carry a payload around; the failure is built from them once, where the parse ends.",
           "targets": [
             "windows-x86_64",
@@ -2403,7 +2403,7 @@
           "name": "lexical",
           "type": "JsonLexError",
           "public": false,
-          "line": 218,
+          "line": 216,
           "doc": "The lexer's reason, when `stop` is `Lexical`.",
           "targets": [
             "windows-x86_64",
@@ -2420,7 +2420,7 @@
           "name": "position",
           "type": "uint",
           "public": false,
-          "line": 220,
+          "line": 218,
           "doc": "Where in the input it stopped.",
           "targets": [
             "windows-x86_64",
@@ -2440,7 +2440,7 @@
         {
           "kind": "constructor",
           "name": "JsonParser",
-          "line": 230,
+          "line": 228,
           "signature": "pub func JsonParser(allocator: Allocator, input: char8[..], limits: JsonLimits) -> JsonParser",
           "typeParams": [],
           "params": [
@@ -2480,7 +2480,7 @@
         {
           "kind": "method",
           "name": "SetDuplicatePolicy",
-          "line": 247,
+          "line": 245,
           "signature": "pub func SetDuplicatePolicy(&var self, policy: DuplicateKeyPolicy)",
           "typeParams": [],
           "params": [{ "name": "policy", "type": "DuplicateKeyPolicy" }],
@@ -2512,7 +2512,7 @@
         {
           "kind": "method",
           "name": "Failure",
-          "line": 256,
+          "line": 254,
           "signature": "pub func Failure(&self) -> JsonParseError?",
           "typeParams": [],
           "params": [],
@@ -2544,7 +2544,7 @@
         {
           "kind": "method",
           "name": "Parse",
-          "line": 567,
+          "line": 565,
           "signature": "pub func Parse(&var self) -> JsonValue throws JsonParseError",
           "typeParams": [],
           "params": [],
@@ -2592,7 +2592,7 @@
       "displayName": "Parse",
       "module": "Parser",
       "source": "Src/Parser.rux",
-      "line": 641,
+      "line": 639,
       "signature": "pub func Parse(allocator: Allocator, input: char8[..]) -> JsonValue throws JsonParseError",
       "typeParams": [],
       "doc": {
@@ -2630,7 +2630,7 @@
       "displayName": "ParseWith",
       "module": "Parser",
       "source": "Src/Parser.rux",
-      "line": 659,
+      "line": 657,
       "signature": "pub func ParseWith(allocator: Allocator, input: char8[..], limits: JsonLimits, duplicates: DuplicateKeyPolicy) -> JsonValue throws JsonParseError",
       "typeParams": [],
       "doc": {

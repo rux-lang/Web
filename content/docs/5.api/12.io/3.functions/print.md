@@ -145,7 +145,7 @@ nothing by ignoring it; one whose output feeds a pipe that may close has somethi
 <h3 id="print-value"><code>PrintValue</code></h3>
 
 ```rux
-pub func PrintValue(value: Display) -> IoError?
+pub func PrintValue(value: &Display) -> IoError?
 ```
 
 Writes a value's text to standard output.
@@ -162,8 +162,8 @@ room for one; a caller who needs it builds a [`ConsoleWriter`](/docs/api/io/cons
 
 **Parameters**
 
-| Name    | Type      | Description        |
-| ------- | --------- | ------------------ |
-| `value` | `Display` | the value to write |
+| Name    | Type       | Description        |
+| ------- | ---------- | ------------------ |
+| `value` | `&Display` | the value to write |
 
 **Returns**: what the stream reported, or the translated formatting failure on a healthy stream, or `none`

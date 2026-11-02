@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Scalar.rux
-  line: 170
+  line: 169
 seo:
   title: "Scalars — Toml API"
   description: "Reading TOML integers, floats and date-times from their source text."
@@ -35,7 +35,7 @@ reason — the grammar does not offer one, so accepting it would be inventing a 
 `OutOfRange` at the start when the digits are a number `int64` cannot hold. Every offset is into `text` as
 written, underscores included.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L169)
 
 **Parameters**
 
@@ -58,7 +58,7 @@ accept and some do not, so a document containing one means different things in d
 `OutOfRange` at the start when the digits are a number `float64` cannot hold. Every offset is into `text` as
 written, underscores included.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L255)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L254)
 
 **Parameters**
 
@@ -83,7 +83,7 @@ Which of the four date-time shapes a token turned out to be.
 There is no case for "not a date-time": text that is none of the four is a failure with a position, not a
 fifth shape a caller has to remember to check for before reading the fields beside it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L381)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L380)
 
 **Cases**
 
@@ -110,7 +110,7 @@ The parts that the shape does not carry are present and meaningless — a `DateO
 because the fields have to hold something — so `shape` is what decides which of them to read. That is why the
 shape travels with the value rather than being returned beside it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L397)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L396)
 
 **Fields**
 
@@ -136,7 +136,7 @@ did not.
 field the calendar rejects, or the end of the text when it stops early. The calendar's own refusals arrive
 here too: the thirty-first of February is four correct digit pairs and not a date.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L419)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L418)
 
 **Parameters**
 

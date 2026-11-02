@@ -1046,7 +1046,7 @@
       "module": "Display",
       "source": "Src/Display.rux",
       "line": 57,
-      "signature": "pub func WriteValue(writer: &var TextWriter, value: Display, spec: FormatSpec) throws FormatError",
+      "signature": "pub func WriteValue(writer: &var TextWriter, value: &Display, spec: FormatSpec) throws FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `value` under `spec` through its `Display` implementation.",
@@ -1085,7 +1085,7 @@
       "module": "Display",
       "source": "Src/Display.rux",
       "line": 67,
-      "signature": "pub func WriteDebugValue(writer: &var TextWriter, value: Debug, spec: FormatSpec) throws FormatError",
+      "signature": "pub func WriteDebugValue(writer: &var TextWriter, value: &Debug, spec: FormatSpec) throws FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `value` under `spec` through its `Debug` implementation.",

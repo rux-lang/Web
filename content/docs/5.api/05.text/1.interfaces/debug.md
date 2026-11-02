@@ -74,7 +74,7 @@ The same failures `WriteDisplay` may report, for the same reasons.
 ```rux
 pub func WriteDebugValue(
     writer: &var TextWriter,
-    value: Debug,
+    value: &Debug,
     spec: FormatSpec
 ) throws FormatError
 ```
@@ -88,7 +88,7 @@ Writes `value` under `spec` through its [`Debug`](/docs/api/text/debug) implemen
 | Name     | Type              | Description                                |
 | -------- | ----------------- | ------------------------------------------ |
 | `writer` | `&var TextWriter` | the destination                            |
-| `value`  | `Debug`           | the value to render, borrowed for the call |
+| `value`  | `&Debug`          | the value to render, borrowed for the call |
 | `spec`   | `FormatSpec`      | what to render it under                    |
 
 **Returns**: whatever the value's implementation reported

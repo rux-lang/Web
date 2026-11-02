@@ -57,21 +57,6 @@ target need not exist; if it does, it is untouched until [`Commit`](/docs/api/fi
 
 ## Methods
 
-<h3 id="stream"><code>Stream</code></h3>
-
-```rux
-pub func Stream(&var self) -> FileStream
-```
-
-A stored writer over the partial file.
-Only for a value that must keep the stream, such as a buffered writer. Writing to the replacement for the
-duration of a call borrows the [`AtomicWrite`](/docs/api/filesystem/atomic-write) itself, which is a `Writer`.
-The [`AtomicWrite`](/docs/api/filesystem/atomic-write) must outlive the result and must not be moved while it exists. See [`FileStream`](/docs/api/filesystem/file-stream).
-
-**Returns**: a stream over the partial file, held by address
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L71)
-
 <h3 id="target"><code>Target</code></h3>
 
 ```rux
@@ -82,7 +67,7 @@ The name the finished file will take.
 
 **Returns**: the path the contents will take when committed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L68)
 
 <h3 id="commit"><code>Commit</code></h3>
 
@@ -107,7 +92,7 @@ rather than being durable on some and pretending on the rest.
 
 **Returns**: success when the target now holds the contents; on failure it still holds the old ones
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L82)
 
 <h3 id="abandon"><code>Abandon</code></h3>
 
@@ -126,7 +111,7 @@ Throws the partial file away and leaves the target as it was.
 
 **Returns**: success when the temporary file was removed and the target left alone
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L99)
 
 <h3 id="release"><code>Release</code></h3>
 
@@ -136,7 +121,7 @@ pub func Release(&var self)
 
 Gives the buffers back. The temporary's own destructor removes any partial file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L107)
 
 ## Implements Writer
 
@@ -163,7 +148,7 @@ One attempt, partial on purpose, exactly as the underlying file's is; `WriteAll`
 
 **Returns**: how much of it the file took
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L130)
 
 <h3 id="flush"><code>Flush</code></h3>
 
@@ -176,7 +161,7 @@ Flushes the partial file, which holds nothing back.
 
 **Returns**: what the file reported
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L148)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L138)
 
 ## Destructor
 
@@ -188,7 +173,7 @@ Discards an uncommitted replacement, leaving the target untouched.
 This is the property that makes the type worth using: an early return or a failure part-way through
 writing leaves the old contents exactly where they were, with no partial file left behind.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L115)
 
 ## Related
 
@@ -205,7 +190,7 @@ pub func WriteAtomically(
 Replaces `target` with `contents`, atomically.
 The one-shot form of the type above, for the common case where the whole file is already in hand.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L160)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Atomic.rux#L150)
 
 **Parameters**
 

@@ -100,19 +100,6 @@ Closes the current file, reporting what closing it said.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L85)
 
-<h3 id="stream"><code>Stream</code></h3>
-
-```rux
-pub func Stream(*var self) -> RotatingStream
-```
-
-A stored borrow of this file for a [`Logger`](/docs/api/log/logger#logger), which keeps its destination.
-The file must outlive the stream and must not be moved while one exists; nothing tracks either.
-
-**Returns**: a stream writing through this file
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L93)
-
 ## Implements Writer
 
 `RotatingFile` conforms to `Writer`.
@@ -135,7 +122,7 @@ An empty current file is never moved aside, so a write larger than the limit lan
 
 **Returns**: how many bytes were taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L96)
 
 <h3 id="flush"><code>Flush</code></h3>
 
@@ -147,4 +134,4 @@ Flushes the current file, which holds nothing back.
 
 **Returns**: success when everything written reached the system
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Rotation.rux#L108)

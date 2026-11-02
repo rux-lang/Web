@@ -3586,7 +3586,7 @@
       "module": "Print",
       "source": "Src/Print.rux",
       "line": 45,
-      "signature": "pub func PrintValue(value: Display) -> IoError?",
+      "signature": "pub func PrintValue(value: &Display) -> IoError?",
       "typeParams": [],
       "doc": {
         "summary": "Writes a value's text to standard output.",
@@ -3621,7 +3621,7 @@
       "module": "Print",
       "source": "Src/Print.rux",
       "line": 57,
-      "signature": "pub func PrintValueLine(value: Display) -> IoError?",
+      "signature": "pub func PrintValueLine(value: &Display) -> IoError?",
       "typeParams": [],
       "doc": {
         "summary": "Writes a value's text to standard output, then a newline.",

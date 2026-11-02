@@ -2280,7 +2280,7 @@
       "displayName": "TomlLimits",
       "module": "Parser",
       "source": "Src/Parser.rux",
-      "line": 221,
+      "line": 219,
       "signature": "pub struct TomlLimits",
       "typeParams": [],
       "doc": {
@@ -2298,7 +2298,7 @@
           "name": "maximumDepth",
           "type": "uint",
           "public": false,
-          "line": 223,
+          "line": 221,
           "doc": "How deeply arrays and inline tables may nest.",
           "targets": [
             "windows-x86_64",
@@ -2318,7 +2318,7 @@
         {
           "kind": "associated",
           "name": "Default",
-          "line": 231,
+          "line": 229,
           "signature": "pub func Default() -> TomlLimits",
           "typeParams": [],
           "params": [],
@@ -2350,7 +2350,7 @@
         {
           "kind": "associated",
           "name": "Unlimited",
-          "line": 238,
+          "line": 236,
           "signature": "pub func Unlimited() -> TomlLimits",
           "typeParams": [],
           "params": [],
@@ -2398,7 +2398,7 @@
       "displayName": "TomlParser",
       "module": "Parser",
       "source": "Src/Parser.rux",
-      "line": 279,
+      "line": 277,
       "signature": "pub struct TomlParser",
       "typeParams": [],
       "doc": {
@@ -2416,7 +2416,7 @@
           "name": "lexer",
           "type": "TomlLexer",
           "public": false,
-          "line": 281,
+          "line": 279,
           "doc": "Where tokens come from.",
           "targets": [
             "windows-x86_64",
@@ -2433,7 +2433,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 283,
+          "line": 281,
           "doc": "Where values are built.",
           "targets": [
             "windows-x86_64",
@@ -2450,7 +2450,7 @@
           "name": "limits",
           "type": "TomlLimits",
           "public": false,
-          "line": 285,
+          "line": 283,
           "doc": "What to accept.",
           "targets": [
             "windows-x86_64",
@@ -2467,7 +2467,7 @@
           "name": "input",
           "type": "char8[..]",
           "public": false,
-          "line": 287,
+          "line": 285,
           "doc": "The whole document, which token spans point into.",
           "targets": [
             "windows-x86_64",
@@ -2484,7 +2484,7 @@
           "name": "ahead",
           "type": "TomlToken",
           "public": false,
-          "line": 289,
+          "line": 287,
           "doc": "The token about to be read.",
           "targets": [
             "windows-x86_64",
@@ -2501,7 +2501,7 @@
           "name": "depth",
           "type": "uint",
           "public": false,
-          "line": 291,
+          "line": 289,
           "doc": "How deep the current value is nested.",
           "targets": [
             "windows-x86_64",
@@ -2518,7 +2518,7 @@
           "name": "outcome",
           "type": "TomlStopped",
           "public": false,
-          "line": 293,
+          "line": 291,
           "doc": "Why parsing stopped.",
           "targets": [
             "windows-x86_64",
@@ -2538,7 +2538,7 @@
         {
           "kind": "constructor",
           "name": "TomlParser",
-          "line": 303,
+          "line": 301,
           "signature": "pub func TomlParser(allocator: Allocator, input: char8[..], limits: TomlLimits) -> TomlParser",
           "typeParams": [],
           "params": [
@@ -2578,7 +2578,7 @@
         {
           "kind": "method",
           "name": "Failure",
-          "line": 328,
+          "line": 326,
           "signature": "pub func Failure(&self) -> TomlParseFailure?",
           "typeParams": [],
           "params": [],
@@ -2610,7 +2610,7 @@
         {
           "kind": "method",
           "name": "Failed",
-          "line": 336,
+          "line": 334,
           "signature": "pub func Failed(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -2642,7 +2642,7 @@
         {
           "kind": "method",
           "name": "Parse",
-          "line": 812,
+          "line": 810,
           "signature": "pub func Parse(&var self) -> TomlValue throws TomlParseFailure",
           "typeParams": [],
           "params": [],
@@ -2690,7 +2690,7 @@
       "displayName": "TomlParse",
       "module": "Parser",
       "source": "Src/Parser.rux",
-      "line": 860,
+      "line": 858,
       "signature": "pub func TomlParse(allocator: Allocator, input: char8[..]) -> TomlValue throws TomlParseFailure",
       "typeParams": [],
       "doc": {
@@ -2924,7 +2924,7 @@
       "displayName": "TomlParseInteger",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 170,
+      "line": 169,
       "signature": "pub func TomlParseInteger(text: char8[..]) -> int64 throws TomlScalarError",
       "typeParams": [],
       "doc": {
@@ -2959,7 +2959,7 @@
       "displayName": "TomlParseFloat",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 255,
+      "line": 254,
       "signature": "pub func TomlParseFloat(text: char8[..]) -> float64 throws TomlScalarError",
       "typeParams": [],
       "doc": {
@@ -2994,7 +2994,7 @@
       "displayName": "TomlDateTimeShape",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 381,
+      "line": 380,
       "signature": "pub enum TomlDateTimeShape",
       "typeParams": [],
       "doc": {
@@ -3014,7 +3014,7 @@
           "name": "Offset",
           "value": "1",
           "payload": null,
-          "line": 383,
+          "line": 382,
           "doc": "A date and a time with an offset, which names a moment.",
           "targets": [
             "windows-x86_64",
@@ -3031,7 +3031,7 @@
           "name": "Local",
           "value": "2",
           "payload": null,
-          "line": 385,
+          "line": 384,
           "doc": "A date and a time with no offset, which names a wall clock reading.",
           "targets": [
             "windows-x86_64",
@@ -3048,7 +3048,7 @@
           "name": "DateOnly",
           "value": "3",
           "payload": null,
-          "line": 387,
+          "line": 386,
           "doc": "A date alone.",
           "targets": [
             "windows-x86_64",
@@ -3065,7 +3065,7 @@
           "name": "TimeOnly",
           "value": "4",
           "payload": null,
-          "line": 389,
+          "line": 388,
           "doc": "A time alone.",
           "targets": [
             "windows-x86_64",
@@ -3098,7 +3098,7 @@
       "displayName": "TomlDateTime",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 397,
+      "line": 396,
       "signature": "pub struct TomlDateTime",
       "typeParams": [],
       "doc": {
@@ -3116,7 +3116,7 @@
           "name": "shape",
           "type": "TomlDateTimeShape",
           "public": true,
-          "line": 399,
+          "line": 398,
           "doc": "Which of the four forms the text was.",
           "targets": [
             "windows-x86_64",
@@ -3133,7 +3133,7 @@
           "name": "date",
           "type": "Date",
           "public": true,
-          "line": 401,
+          "line": 400,
           "doc": "The date, for every shape but `TimeOnly`.",
           "targets": [
             "windows-x86_64",
@@ -3150,7 +3150,7 @@
           "name": "time",
           "type": "TimeOfDay",
           "public": true,
-          "line": 403,
+          "line": 402,
           "doc": "The time, for every shape but `DateOnly`.",
           "targets": [
             "windows-x86_64",
@@ -3167,7 +3167,7 @@
           "name": "offset",
           "type": "UtcOffset",
           "public": true,
-          "line": 405,
+          "line": 404,
           "doc": "The offset, for `Offset` alone. UTC otherwise, which means nothing there.",
           "targets": [
             "windows-x86_64",
@@ -3202,7 +3202,7 @@
       "displayName": "TomlParseDateTime",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 419,
+      "line": 418,
       "signature": "pub func TomlParseDateTime(text: char8[..]) -> TomlDateTime throws TomlScalarError",
       "typeParams": [],
       "doc": {
