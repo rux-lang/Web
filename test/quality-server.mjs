@@ -15,10 +15,12 @@ const catalogPackages = [
     namespace: "Rux",
     package: "Json",
     version: "1.1.0",
-    package_type: "library",
+    package_type: "source_library",
     description: "Fast JSON parsing with streaming support.",
     published_at: "2026-03-10T12:00:00Z",
     yanked: false,
+    downloads_total: 98450,
+    downloads_30d: 12540,
     package_url: "/v1/packages/rux/json",
     version_url: "/v1/packages/rux/json/1.1.0",
   },
@@ -26,10 +28,12 @@ const catalogPackages = [
     namespace: "CommunityTools",
     package: "HttpClient",
     version: "1.0.0",
-    package_type: "source",
+    package_type: "static_library",
     description: "HTTP client with streaming bodies and JSON helpers.",
     published_at: "2026-04-01T08:00:00Z",
     yanked: false,
+    downloads_total: 41200,
+    downloads_30d: 8290,
     package_url: "/v1/packages/communitytools/httpclient",
     version_url: "/v1/packages/communitytools/httpclient/1.0.0",
   },
@@ -37,10 +41,12 @@ const catalogPackages = [
     namespace: "Acme",
     package: "RegistryCli",
     version: "2.0.0+portable",
-    package_type: "program",
+    package_type: "executable",
     description: "Portable command-line tools for exploring a Rux registry.",
     published_at: "2026-05-01T15:05:00Z",
     yanked: false,
+    downloads_total: 1730,
+    downloads_30d: 410,
     package_url: "/v1/packages/acme/registrycli",
     version_url: "/v1/packages/acme/registrycli/2.0.0%2Bportable",
   },
@@ -59,7 +65,7 @@ const release = {
   version: "1.1.0",
   manifest_schema_version: 1,
   min_rux: "0.4.0",
-  package_type: "library",
+  package_type: "source_library",
   description: "Fast JSON parsing with streaming support.",
   authors: ["Rux Contributors"],
   keywords: ["Json", "Serialization", "Streaming"],
@@ -125,7 +131,7 @@ const versions = [
   {
     version: "1.1.0",
     min_rux: "0.4.0",
-    package_type: "library",
+    package_type: "source_library",
     published_at: "2026-03-10T12:00:00Z",
     yanked: false,
     canonical_url: "https://rux-lang.dev/packages/rux/json?version=1.1.0",
@@ -134,7 +140,7 @@ const versions = [
   {
     version: "1.1.0-beta.1",
     min_rux: "0.4.0",
-    package_type: "library",
+    package_type: "source_library",
     published_at: "2026-02-20T12:00:00Z",
     yanked: false,
     canonical_url: "https://rux-lang.dev/packages/rux/json?version=1.1.0-beta.1",
@@ -143,7 +149,7 @@ const versions = [
   {
     version: "1.0.0",
     min_rux: "0.4.0",
-    package_type: "library",
+    package_type: "source_library",
     published_at: "2026-01-15T12:00:00Z",
     yanked: true,
     canonical_url: "https://rux-lang.dev/packages/rux/json?version=1.0.0",
@@ -151,12 +157,10 @@ const versions = [
   },
 ];
 
-const dependents = [
-  {
-    ...catalogPackages[1],
-    requirements: [{ alias: "Json", version_range: "^1.1" }],
-  },
-];
+const dependent = { ...catalogPackages[1], requirements: [{ alias: "Json", version_range: "^1.1" }] };
+delete dependent.downloads_total;
+delete dependent.downloads_30d;
+const dependents = [dependent];
 
 const dashboard = {
   counts: { namespaces: 2, packages: 3, invitations: 1 },
@@ -232,6 +236,7 @@ const mimeTypes = new Map([
   [".map", "application/json; charset=utf-8"],
   [".svg", "image/svg+xml"],
   [".txt", "text/plain; charset=utf-8"],
+  [".wasm", "application/wasm"],
   [".webmanifest", "application/manifest+json"],
   [".woff", "font/woff"],
   [".woff2", "font/woff2"],
@@ -271,6 +276,7 @@ function apiResponse(url) {
     const highlight = (value, downloads) => {
       const item = { ...value, downloads_30d: downloads };
       delete item.yanked;
+      delete item.downloads_total;
       return item;
     };
     return {
@@ -284,12 +290,35 @@ function apiResponse(url) {
   if (url.pathname === "/v1/search") {
     const namespace = url.searchParams.get("namespace")?.toLowerCase();
     const query = url.searchParams.get("q")?.toLowerCase();
+    const packageType = url.searchParams.get("package_type");
+    const sort = url.searchParams.get("sort") ?? (query ? "relevance" : "name");
+    const order = url.searchParams.get("order") ?? (sort === "name" ? "asc" : "desc");
+    const page = Math.max(1, Number.parseInt(url.searchParams.get("page") ?? "1", 10) || 1);
+    const perPage = Math.max(1, Number.parseInt(url.searchParams.get("per_page") ?? "15", 10) || 15);
     const items = catalogPackages.filter(
       (item) =>
         (!namespace || item.namespace.toLowerCase().replaceAll("_", "-") === namespace) &&
+        (!packageType || item.package_type === packageType) &&
         (!query || `${item.namespace} ${item.package} ${item.description}`.toLowerCase().includes(query)),
     );
-    return { data: items, meta: { next_cursor: null } };
+    // Relevance keeps fixture order; the other orderings sort on the field the
+    // catalog's Sort by menu names.
+    const sortKeys = {
+      name: (item) => `${item.namespace}/${item.package}`.toLowerCase(),
+      downloads: (item) => item.downloads_total,
+      recent_downloads: (item) => item.downloads_30d,
+      updated: (item) => item.published_at,
+      created: (item) => item.published_at,
+    };
+    const key = sortKeys[sort];
+    if (key) {
+      items.sort((left, right) => (key(left) < key(right) ? -1 : key(left) > key(right) ? 1 : 0));
+      if (order === "desc") items.reverse();
+    }
+    return {
+      data: items.slice((page - 1) * perPage, page * perPage),
+      meta: { total: items.length, page, per_page: perPage },
+    };
   }
   if (url.pathname === "/v1/packages/rux/json") return { data: summary };
   if (url.pathname === "/v1/packages/rux/json/downloads") return { data: downloadStatistics };
@@ -314,6 +343,11 @@ function safeStaticPath(pathname) {
   const requested = resolve(outputDirectory, `.${decoded}`);
   const relativePath = relative(outputDirectory, requested);
   if (relativePath.startsWith(`..${sep}`) || relativePath === "..") return null;
+
+  // Mirrors `/packages/*  /200  200` in public/_redirects, which production
+  // follows even where a prerendered file exists. Serving those files instead
+  // would hydrate state baked at generate time, such as a failed session probe.
+  if (decoded.startsWith("/packages/")) return resolve(outputDirectory, "200.html");
 
   if (existsSync(requested)) {
     const details = statSync(requested);
@@ -407,7 +441,9 @@ const server = createSecureServer(
                 display_name: "The Octocat",
                 avatar_url: null,
               },
-              expires_at: "2026-08-20T12:00:00Z",
+              // Relative to now: a fixed date eventually passes, and the app
+              // treats an expired session as signed out.
+              expires_at: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(),
               csrf_token: "quality-csrf",
             },
           });

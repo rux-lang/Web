@@ -1,6 +1,9 @@
 const expectedContent = new Map([
+  // The home page has no ids of its own; a card linking to the mocked package
+  // only renders once HomePackages has populated from /v1/highlights.
+  ["/", 'a[href="/packages/rux/json"]'],
   ["/packages", "#catalog-results-heading"],
-  ["/packages/rux/json", "#readme-heading"],
+  ["/packages/rux/json", "#package-documents-heading"],
   ["/packages/-/dashboard", "#dashboard-content"],
 ]);
 
