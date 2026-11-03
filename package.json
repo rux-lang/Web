@@ -43,7 +43,7 @@
     "@iconify-json/lucide": "^1.2.150",
     "@iconify-json/simple-icons": "^1.2.101",
     "@iconify-json/vscode-icons": "^1.2.95",
-    "@lhci/cli": "^0.15.1",
+    "@lhci/cli": "^0.16.0",
     "@nuxt/eslint": "^1.17.0",
     "@nuxt/test-utils": "^4.3.4",
     "@types/node": "26.6.6",
@@ -87,11 +87,6 @@
     "vue-demi": true
   },
   "overrides": {
-    "tmp": "0.2.7",
-    "@puppeteer/browsers": "^3.2.6",
-    "basic-ftp": "^6.2.5",
-    "@lhci/cli": {
-      "uuid": "^11.1.1"
-    }
+    "basic-ftp": "^6.2.5"
   }
 }
