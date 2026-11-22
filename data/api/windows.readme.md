@@ -14,6 +14,7 @@ rux add Rux/Windows
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Types`             | `Handle`, `ModuleHandle`, `Bool`, `Dword`, `WideChar`, `NtStatus`, `FileTime`, `SystemTime`, and `InvalidHandleValue`                                                                                                             |
 | `Constants`         | the code pages and the file-creation dispositions                                                                                                                                                                                 |
+| `Errors`            | the error codes `GetLastError` reports, and the three ways Win32 reports a failure                                                                                                                                                |
 | `Kernel`            | the Kernel32 entry points, including the `A` forms kept for compatibility                                                                                                                                                         |
 | `File`              | the Unicode `W` file, directory and console entry points, with the access, share and move flags                                                                                                                                   |
 | `Memory`            | `VirtualAlloc`, `VirtualFree`, `VirtualProtect`, `VirtualLock`, and the state and protection flags                                                                                                                                |
@@ -30,7 +31,7 @@ rux add Rux/Windows
 | `Version`           | `RtlGetVersion` and `OsVersionInfoEx`, the true version of the running system                                                                                                                                                     |
 | `SystemInformation` | `GlobalMemoryStatusEx` with `MemoryStatusEx`, `GetPhysicallyInstalledSystemMemory`, `GetNativeSystemInfo`, and `GetLogicalProcessorInformationEx` for counting cores                                                              |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+Every declaration lives in the module of its row, and the module is part of the import path: `import Windows::Kernel::{ CloseHandle, GetLastError };`.
 
 **Prefer the `W` entry points.** The `A` forms convert through the process code page, which cannot express every name a file system can hold and differs between machines — so a path that works on one system fails on another for reasons the program cannot see. A path is text a user or a file system chose, not text the program chose. The `A` forms stay declared because existing callers use them, and each is now marked.
 
@@ -58,17 +59,18 @@ Unlike the three POSIX packages, all of this runs where it is developed, so ever
 
 Win32 records such as `FileTime` and `SystemTime` are structural values and copy by value. Package-owned inspection helpers borrow them, so call `FileTimeTicks(stamp)` with the value itself. Imported Win32 declarations retain raw pointers for handles, optional arguments, buffers, and OS-owned addresses because null and sentinel values are part of those contracts. A raw handle or pointer never transfers ownership automatically; close or release it with the matching Win32 function.
 
-Every Win32 function here is declared `extern`, so a call needs an `unsafe` block, conventionally under a `// Safety:` comment saying why that call's requirements hold. `GetRandom` is the exception: it is an ordinary function that checks the length it is given, but its `buffer` must still be writable for `length` bytes.
+Every Win32 function here is declared `extern`; a call is conventionally written under a `// Safety:` comment saying why that call's requirements hold. `GetRandom` is the exception: it is an ordinary function that checks the length it is given, but its `buffer` must still be writable for `length` bytes.
 
 ## Platform
 
 Windows only. Guard use behind a compile-time check, so a build for another target never resolves these declarations:
 
 ```rux
-import Core::{ #target };
+import Core::Compilation::#target;
 
 when #target.os == .Windows {
-    import Windows::{ GetStdHandle, StdOutputHandle, WriteConsoleA };
+    import Windows::Kernel::{ GetStdHandle, WriteConsoleA };
+    import Windows::Types::StdOutputHandle;
 }
 ```
 

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Types.rux
-  line: 13
+  line: 14
 seo:
   title: "Types — Windows API"
   description: The Win32 scalar and handle types.
@@ -28,10 +28,10 @@ pub type Handle = *var opaque
 ```
 
 An opaque kernel object reference.
-Pointer-sized and owned by the kernel. A handle is valid until [`CloseHandle`](/docs/api/windows/files#close-handle) takes it, after which the number may
-be reused by the next object opened — so a stale handle does not fail, it addresses something else.
+Pointer-sized and owned by the kernel. A handle is valid until [`CloseHandle`](/docs/api/windows/files#close-handle) takes it, after which the number
+may be reused by the next object opened — so a stale handle does not fail, it addresses something else.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L14)
 
 <h2 id="module-handle"><code>ModuleHandle</code></h2>
 
@@ -41,7 +41,7 @@ pub type ModuleHandle = *var opaque
 
 A module reference, as `LoadLibraryW` returns one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L18)
 
 <h2 id="bool"><code>Bool</code></h2>
 
@@ -53,7 +53,7 @@ Win32's `BOOL`: a 32-bit integer where zero is false and anything else is true.
 Not a one-byte boolean, and not `bool`. A call returning one reports failure as zero and success as anything
 else, which is why comparing against `1` is wrong.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L24)
 
 <h2 id="dword"><code>Dword</code></h2>
 
@@ -63,7 +63,7 @@ pub type Dword = uint32
 
 Win32's `DWORD`: a 32-bit unsigned integer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L28)
 
 <h2 id="wide-char"><code>WideChar</code></h2>
 
@@ -74,7 +74,7 @@ pub type WideChar = char16
 A UTF-16 code unit, which is what every `*W` entry point takes.
 Not a character: a scalar outside the basic plane occupies two of these.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L33)
 
 <h2 id="nt-status"><code>NtStatus</code></h2>
 
@@ -86,7 +86,7 @@ An `NTSTATUS`: the status code the native and cryptographic interfaces report wi
 Zero and above is success; below zero is failure. This is a different scheme from [`GetLastError`](/docs/api/windows/errors#get-last-error), and a value of
 one must never be read as the other.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L39)
 
 <h2 id="invalid-handle-value"><code>InvalidHandleValue</code></h2>
 
@@ -98,4 +98,4 @@ The value a handle-returning call reports failure with.
 `-1` cast to a pointer, which is not null. [`CreateFileW`](/docs/api/windows/files#create-file-w) and [`FindFirstFileW`](/docs/api/windows/file-system#find-first-file-w) report failure this way; a
 memory-returning call such as [`VirtualAlloc`](/docs/api/windows/memory#virtual-alloc) reports null instead.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L45)

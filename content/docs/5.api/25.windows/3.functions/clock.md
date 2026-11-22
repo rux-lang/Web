@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Clock.rux
-  line: 34
+  line: 35
 seo:
   title: "Clocks — Windows API"
   description: "Performance counters, system time and tick counts."
@@ -34,7 +34,7 @@ QueryPerformanceFrequency reports and is not seconds.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancecounter](https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancecounter)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L35)
 
 **Parameters**
 
@@ -55,7 +55,7 @@ Fixed while the system runs, so a caller reads it once rather than per measureme
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancefrequency](https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancefrequency)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L43)
 
 **Parameters**
 
@@ -75,9 +75,9 @@ Reads the current wall-clock time at the highest resolution the system offers.
 Writes 100-nanosecond intervals since January 1, 1601 UTC. The plain GetSystemTimeAsFileTime is cheaper and
 coarser, advancing only at the scheduler's tick.
 
-**See also**: [https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimepreciseasfiletime](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimepreciseasfiletime)
+**See also**: [https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimepreciseasfiletime](https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimepreciseasfiletime)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L51)
 
 **Parameters**
 
@@ -95,7 +95,7 @@ Reads the current wall-clock time at the system tick's resolution.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimeasfiletime](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtimeasfiletime)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L57)
 
 **Parameters**
 
@@ -113,7 +113,7 @@ Retrieves the current local date and time.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlocaltime](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlocaltime)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L260)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L263)
 
 **Parameters**
 
@@ -131,7 +131,7 @@ Retrieves the current system date and time in Coordinated Universal Time (UTC) f
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtime](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsystemtime)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L287)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L290)
 
 **Parameters**
 
@@ -149,6 +149,6 @@ Retrieves the number of milliseconds that have elapsed since the system was star
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-gettickcount64](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-gettickcount64)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L293)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L296)
 
 **Returns**: milliseconds since the system started

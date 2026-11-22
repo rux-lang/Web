@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Gdi.rux
-  line: 9
+  line: 10
 seo:
   title: "GDI — Windows API"
   description: Fonts and text drawing through the Graphics Device Interface.
@@ -29,7 +29,7 @@ pub const FW_NORMAL: int32 = 400;
 
 `FW_NORMAL`: the regular weight of a font.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L9)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L10)
 
 <h2 id="fw-semibold"><code>FW_SEMIBOLD</code></h2>
 
@@ -39,7 +39,7 @@ pub const FW_SEMIBOLD: int32 = 600;
 
 `FW_SEMIBOLD`: the weight between regular and bold, which Windows uses for headings.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L15)
 
 <h2 id="fw-bold"><code>FW_BOLD</code></h2>
 
@@ -49,7 +49,7 @@ pub const FW_BOLD: int32 = 700;
 
 `FW_BOLD`: the bold weight of a font.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L20)
 
 <h2 id="default-charset"><code>DEFAULT_CHARSET</code></h2>
 
@@ -59,7 +59,7 @@ pub const DEFAULT_CHARSET: uint32 = 1;
 
 `DEFAULT_CHARSET`: let the font mapper choose the character set from the face name.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L25)
 
 <h2 id="out-default-precis"><code>OUT_DEFAULT_PRECIS</code></h2>
 
@@ -69,7 +69,7 @@ pub const OUT_DEFAULT_PRECIS: uint32 = 0;
 
 `OUT_DEFAULT_PRECIS`: let the font mapper decide how closely the font must match.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L30)
 
 <h2 id="clip-default-precis"><code>CLIP_DEFAULT_PRECIS</code></h2>
 
@@ -79,7 +79,7 @@ pub const CLIP_DEFAULT_PRECIS: uint32 = 0;
 
 `CLIP_DEFAULT_PRECIS`: clip characters the default way.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L35)
 
 <h2 id="cleartype-quality"><code>CLEARTYPE_QUALITY</code></h2>
 
@@ -89,7 +89,7 @@ pub const CLEARTYPE_QUALITY: uint32 = 5;
 
 `CLEARTYPE_QUALITY`: draw the font with ClearType smoothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L40)
 
 <h2 id="default-pitch"><code>DEFAULT_PITCH</code></h2>
 
@@ -99,7 +99,7 @@ pub const DEFAULT_PITCH: uint32 = 0;
 
 `DEFAULT_PITCH`: let the font mapper choose fixed or variable pitch.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L45)
 
 <h2 id="transparent"><code>TRANSPARENT</code></h2>
 
@@ -109,7 +109,7 @@ pub const TRANSPARENT: int32 = 1;
 
 `TRANSPARENT`: text is drawn without filling the cell behind it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L50)
 
 <h2 id="opaque"><code>OPAQUE</code></h2>
 
@@ -119,7 +119,7 @@ pub const OPAQUE: int32 = 2;
 
 `OPAQUE`: text is drawn on a cell filled with the background color.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L55)
 
 <h2 id="create-font-w"><code>CreateFontW</code></h2>
 
@@ -148,7 +148,7 @@ point size is given: `-(points * dpi / 72)`.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-createfontw](https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-createfontw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L79)
 
 **Parameters**
 
@@ -182,7 +182,7 @@ An object still selected into a device context is not deleted, and the call fail
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-deleteobject](https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-deleteobject)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L102)
 
 **Parameters**
 
@@ -206,7 +206,7 @@ The object replaced is returned so it can be selected back before the context is
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-selectobject](https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-selectobject)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L111)
 
 **Parameters**
 
@@ -230,7 +230,7 @@ Sets whether text is drawn on a filled cell or straight onto what is already the
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-setbkmode](https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-setbkmode)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L119)
 
 **Parameters**
 
@@ -254,7 +254,7 @@ Sets the color text is drawn in.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-settextcolor](https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-settextcolor)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L127)
 
 **Parameters**
 
@@ -282,7 +282,7 @@ The run is counted rather than NUL-terminated, and is not wrapped or clipped to 
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-textoutw](https://learn.microsoft.com/windows/win32/api/wingdi/nf-wingdi-textoutw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L138)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Gdi.rux#L139)
 
 **Parameters**
 

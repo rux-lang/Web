@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/SystemInformation.rux
-  line: 9
+  line: 12
 seo:
   title: "System information — Windows API"
   description: "Memory, processor architecture and logical processor information."
@@ -39,7 +39,7 @@ pub struct MemoryStatusEx {
 
 The `MEMORYSTATUSEX` that [`GlobalMemoryStatusEx`](/docs/api/windows/system-information#global-memory-status-ex) fills in, with every size in bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L9)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L12)
 
 **Fields**
 
@@ -68,7 +68,7 @@ The header that begins every record [`GetLogicalProcessorInformationEx`](/docs/a
 The records differ in size, so the buffer is walked by adding each record's `size` to reach the next one; the
 rest of a record depends on its relationship and is not described here.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L37)
 
 **Fields**
 
@@ -85,7 +85,7 @@ pub const RelationProcessorCore: uint32 = 0;
 
 `RelationProcessorCore`: a record per physical core, however many logical processors it runs.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L46)
 
 <h2 id="relation-processor-package"><code>RelationProcessorPackage</code></h2>
 
@@ -95,7 +95,7 @@ pub const RelationProcessorPackage: uint32 = 3;
 
 `RelationProcessorPackage`: a record per physical processor package, the chip in a socket.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L50)
 
 <h2 id="processor-architecture-intel"><code>PROCESSOR_ARCHITECTURE_INTEL</code></h2>
 
@@ -105,7 +105,7 @@ pub const PROCESSOR_ARCHITECTURE_INTEL: uint16 = 0;
 
 `PROCESSOR_ARCHITECTURE_INTEL`: 32-bit x86.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L55)
 
 <h2 id="processor-architecture-arm64"><code>PROCESSOR_ARCHITECTURE_ARM64</code></h2>
 
@@ -115,7 +115,7 @@ pub const PROCESSOR_ARCHITECTURE_ARM64: uint16 = 12;
 
 `PROCESSOR_ARCHITECTURE_ARM64`: 64-bit Arm.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L60)
 
 <h2 id="processor-architecture-amd64"><code>PROCESSOR_ARCHITECTURE_AMD64</code></h2>
 
@@ -125,7 +125,7 @@ pub const PROCESSOR_ARCHITECTURE_AMD64: uint16 = 9;
 
 `PROCESSOR_ARCHITECTURE_AMD64`: x86-64, from AMD or Intel.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L65)
 
 <h2 id="global-memory-status-ex"><code>GlobalMemoryStatusEx</code></h2>
 
@@ -137,7 +137,7 @@ Reports the machine's physical memory and how much of it, and of the commit limi
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-globalmemorystatusex](https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-globalmemorystatusex)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L74)
 
 **Parameters**
 
@@ -163,7 +163,7 @@ the bytes needed, so it is called once to measure and once to fill.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformationex](https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformationex)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L85)
 
 **Parameters**
 
@@ -187,7 +187,7 @@ The two differ only under emulation, where an x86-64 program on an Arm machine i
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getnativesysteminfo](https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getnativesysteminfo)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L93)
 
 **Parameters**
 
@@ -202,12 +202,10 @@ pub extern func GetPhysicallyInstalledSystemMemory(kilobytes: *var uint64) -> bo
 ```
 
 Reports the physical memory the firmware says is fitted, in kibibytes.
-This is more than [`GlobalMemoryStatusEx`](/docs/api/windows/system-information#global-memory-status-ex) reports as total, by what the firmware and devices reserve. It fails
-with `ERROR_INVALID_DATA` when the firmware's memory tables are missing or malformed.
+This is more than [`GlobalMemoryStatusEx`](/docs/api/windows/system-information#global-memory-status-ex) reports as total, by what the firmware and devices reserve. It
+fails with `ERROR_INVALID_DATA` when the firmware's memory tables are missing or malformed.
 
-**See also**: [https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getphysicallyinstalledsystemmemory](https://learn.microsoft.com/windows/win32/api/sysinfoapi/nf-sysinfoapi-getphysicallyinstalledsystemmemory)
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/SystemInformation.rux#L101)
 
 **Parameters**
 

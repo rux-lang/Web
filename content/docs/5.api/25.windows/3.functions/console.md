@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/File.rux
-  line: 324
+  line: 325
 seo:
   title: "Console — Windows API"
   description: "Allocating, reading and writing the console."
@@ -50,7 +50,7 @@ Writes a character string to a console screen buffer beginning at the current cu
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/writeconsole](https://learn.microsoft.com/en-us/windows/console/writeconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L324)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L325)
 
 **Parameters**
 
@@ -80,7 +80,7 @@ Reads UTF-16 from a console input buffer.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/readconsole](https://learn.microsoft.com/en-us/windows/console/readconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L336)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L337)
 
 **Parameters**
 
@@ -104,7 +104,7 @@ Allocates a new console for the calling process.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/allocconsole](https://learn.microsoft.com/en-us/windows/console/allocconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L16)
 
 **Returns**: non-zero on success, and zero on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
 
@@ -121,7 +121,7 @@ Generates simple tones on the speaker.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/utilapiset/nf-utilapiset-beep](https://learn.microsoft.com/en-us/windows/win32/api/utilapiset/nf-utilapiset-beep)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L24)
 
 **Parameters**
 
@@ -144,7 +144,7 @@ The standard handles still name the old console afterwards, and writing to them 
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/freeconsole](https://learn.microsoft.com/en-us/windows/console/freeconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L148)
 
 **Returns**: non-zero on success, and zero on failure with the reason in [`GetLastError`](/docs/api/windows/errors#get-last-error)
 
@@ -161,7 +161,7 @@ Retrieves the current input or output mode of a console screen buffer.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/getconsolemode](https://learn.microsoft.com/en-us/windows/console/getconsolemode)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L165)
 
 **Parameters**
 
@@ -182,7 +182,7 @@ Retrieves a handle to the specified standard device (standard input, standard ou
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/getstdhandle](https://learn.microsoft.com/en-us/windows/console/getstdhandle)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L281)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L284)
 
 **Parameters**
 
@@ -208,7 +208,7 @@ Reads characters from a console input buffer.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/readconsole](https://learn.microsoft.com/en-us/windows/console/readconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L385)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L388)
 
 **Parameters**
 
@@ -238,7 +238,7 @@ Writes a character string to a console screen buffer beginning at the current cu
 
 **See also**: [https://learn.microsoft.com/en-us/windows/console/writeconsole](https://learn.microsoft.com/en-us/windows/console/writeconsole)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L556)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L559)
 
 **Parameters**
 
@@ -260,7 +260,7 @@ pub const StdInputHandle: uint32 = 0xFFFFFFF6;
 
 The public `StdInputHandle` value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L64)
 
 <h2 id="std-output-handle"><code>StdOutputHandle</code></h2>
 
@@ -270,7 +270,7 @@ pub const StdOutputHandle: uint32 = 0xFFFFFFF5;
 
 The public `StdOutputHandle` value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L70)
 
 <h2 id="std-error-handle"><code>StdErrorHandle</code></h2>
 
@@ -280,4 +280,4 @@ pub const StdErrorHandle: uint32 = 0xFFFFFFF4;
 
 The public `StdErrorHandle` value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Types.rux#L76)

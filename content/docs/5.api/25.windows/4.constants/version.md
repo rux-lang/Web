@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Version.rux
-  line: 9
+  line: 10
 seo:
   title: "Version — Windows API"
   description: "The operating system version, read through RtlGetVersion."
@@ -41,7 +41,7 @@ pub struct OsVersionInfoEx {
 
 The `RTL_OSVERSIONINFOEXW` that [`RtlGetVersion`](/docs/api/windows/version#rtl-get-version) fills in.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Version.rux#L9)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Version.rux#L10)
 
 **Fields**
 
@@ -67,7 +67,7 @@ pub const VER_NT_WORKSTATION: uint8 = 1;
 
 `VER_NT_WORKSTATION`: the product type of a desktop edition, as opposed to a server.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Version.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Version.rux#L38)
 
 <h2 id="ver-platform-win32-nt"><code>VER_PLATFORM_WIN32_NT</code></h2>
 
@@ -77,7 +77,7 @@ pub const VER_PLATFORM_WIN32_NT: uint32 = 2;
 
 `VER_PLATFORM_WIN32_NT`: the platform of every supported Windows release.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Version.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Version.rux#L43)
 
 <h2 id="rtl-get-version"><code>RtlGetVersion</code></h2>
 
@@ -92,7 +92,7 @@ included, because the size says the structure is the extended one. It returns an
 
 **See also**: [https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlgetversion](https://learn.microsoft.com/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlgetversion)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Version.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Version.rux#L55)
 
 **Parameters**
 

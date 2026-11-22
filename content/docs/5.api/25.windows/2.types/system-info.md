@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Types.rux
-  line: 120
+  line: 122
 seo:
   title: "SystemInfo — Windows API"
   description: What GetSystemInfo reports about the machine.
@@ -37,8 +37,9 @@ pub struct SystemInfo {
 ```
 
 The two granularities are not the same and the difference matters: `pageSize` is what protection is applied at,
-while `allocationGranularity` is what a reservation's base address is rounded to, and on every Windows release it
-is 64 KiB rather than a page. A reservation therefore wastes address space that a page-granular system would not.
+while `allocationGranularity` is what a reservation's base address is rounded to, and on every Windows release
+it is 64 KiB rather than a page. A reservation therefore wastes address space that a page-granular system would
+not.
 
 ## Fields
 
@@ -68,7 +69,7 @@ Cannot fail and reports nothing: the structure is always filled.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsysteminfo](https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getsysteminfo)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L248)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L251)
 
 **Parameters**
 

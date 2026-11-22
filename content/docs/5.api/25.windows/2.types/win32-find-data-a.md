@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Types.rux
-  line: 102
+  line: 103
 seo:
   title: "Win32FindDataA — Windows API"
   description: "Win32's WIN32_FIND_DATAA: one directory entry, as FindFirstFileA and FindNextFileA fill it."

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/TimeZone.rux
-  line: 9
+  line: 10
 seo:
   title: "Time zone — Windows API"
   description: "The system's time zone rules, read through GetTimeZoneInformation."
@@ -37,13 +37,13 @@ pub struct TimeZoneRuleDate {
 ```
 
 When a time-zone rule takes effect, in the layout of `SYSTEMTIME` but read as a rule, not a date.
-A rule with `year` zero recurs every year: in `month`, on the `day`th occurrence of `dayOfWeek` (Sunday is zero),
-where the fifth occurrence means the last, at `hour`:`minute` local time. A zero `month` means the zone has no
-daylight time.
+A rule with `year` zero recurs every year: in `month`, on the `day`th occurrence of `dayOfWeek` (Sunday is
+zero), where the fifth occurrence means the last, at `hour`:`minute` local time. A zero `month` means the zone
+has no daylight time.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/timezoneapi/ns-timezoneapi-time_zone_information](https://learn.microsoft.com/en-us/windows/win32/api/timezoneapi/ns-timezoneapi-time_zone_information)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/TimeZone.rux#L9)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/TimeZone.rux#L10)
 
 **Fields**
 
@@ -77,7 +77,7 @@ Each bias is minutes to add to local time to get UTC, so a zone east of Greenwic
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/timezoneapi/ns-timezoneapi-time_zone_information](https://learn.microsoft.com/en-us/windows/win32/api/timezoneapi/ns-timezoneapi-time_zone_information)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/TimeZone.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/TimeZone.rux#L33)
 
 **Fields**
 
@@ -101,7 +101,7 @@ Reads the system's current time zone.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/timezoneapi/nf-timezoneapi-gettimezoneinformation](https://learn.microsoft.com/en-us/windows/win32/api/timezoneapi/nf-timezoneapi-gettimezoneinformation)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/TimeZone.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/TimeZone.rux#L57)
 
 **Parameters**
 

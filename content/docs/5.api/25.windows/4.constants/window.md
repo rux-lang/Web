@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Window.rux
-  line: 12
+  line: 14
 seo:
   title: "Windows and messages — Windows API"
   description: "Registering a window class, creating windows, the message loop, painting and DPI."
@@ -29,10 +29,11 @@ pub type WindowProcedure = func(*var opaque, uint32, uint, int) -> int
 
 A window procedure: the function the system calls with each message for a window of a class.
 Its arguments are the window, the message number and the two message parameters, and its result is the message's
-answer, which [`DefWindowProcW`](/docs/api/windows/window#def-window-proc-w) supplies for every message the procedure does not handle itself. A Rux function of
-this type is passed directly; it is called with the platform's C convention on the thread that owns the window.
+answer, which [`DefWindowProcW`](/docs/api/windows/window#def-window-proc-w) supplies for every message the procedure does not handle itself. A Rux function
+of this type is passed directly; it is called with the platform's C convention on the thread that owns the
+window.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L14)
 
 <h2 id="point"><code>Point</code></h2>
 
@@ -45,7 +46,7 @@ pub struct Point {
 
 A point in pixels, the `POINT` most window calls take.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L18)
 
 **Fields**
 
@@ -68,7 +69,7 @@ pub struct Rect {
 A rectangle in pixels, the `RECT` that window sizes and paint regions are given as.
 The right and bottom edges are exclusive, so the width is `right - left` and the height `bottom - top`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L28)
 
 **Fields**
 
@@ -95,7 +96,7 @@ pub struct Message {
 
 The `MSG` that [`GetMessageW`](/docs/api/windows/window#get-message-w) fills in: one message taken from the calling thread's queue.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L41)
 
 **Fields**
 
@@ -131,7 +132,7 @@ pub struct WindowClassEx {
 The `WNDCLASSEXW` that [`RegisterClassExW`](/docs/api/windows/window#register-class-ex-w) reads: what every window of a class shares.
 The class name and menu name are read during registration only; the system keeps its own copies.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L61)
 
 **Fields**
 
@@ -165,7 +166,7 @@ pub struct PaintStruct {
 
 The `PAINTSTRUCT` that [`BeginPaint`](/docs/api/windows/window#begin-paint) fills in and [`EndPaint`](/docs/api/windows/window#end-paint) reads back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L90)
 
 **Fields**
 
@@ -186,7 +187,7 @@ pub const CS_HREDRAW: uint32 = 0x0002;
 
 `CS_HREDRAW`: repaint the whole window when its width changes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L106)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L108)
 
 <h2 id="cs-vredraw"><code>CS_VREDRAW</code></h2>
 
@@ -196,7 +197,7 @@ pub const CS_VREDRAW: uint32 = 0x0001;
 
 `CS_VREDRAW`: repaint the whole window when its height changes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L113)
 
 <h2 id="ws-overlapped"><code>WS_OVERLAPPED</code></h2>
 
@@ -206,7 +207,7 @@ pub const WS_OVERLAPPED: uint32 = 0x00000000;
 
 `WS_OVERLAPPED`: a top-level window with a title bar and a border.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L118)
 
 <h2 id="ws-caption"><code>WS_CAPTION</code></h2>
 
@@ -216,7 +217,7 @@ pub const WS_CAPTION: uint32 = 0x00C00000;
 
 `WS_CAPTION`: the window has a title bar.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L123)
 
 <h2 id="ws-sysmenu"><code>WS_SYSMENU</code></h2>
 
@@ -226,7 +227,7 @@ pub const WS_SYSMENU: uint32 = 0x00080000;
 
 `WS_SYSMENU`: the title bar has the window menu and the close button.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L128)
 
 <h2 id="ws-thickframe"><code>WS_THICKFRAME</code></h2>
 
@@ -236,7 +237,7 @@ pub const WS_THICKFRAME: uint32 = 0x00040000;
 
 `WS_THICKFRAME`: the window has a sizing border.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L133)
 
 <h2 id="ws-minimizebox"><code>WS_MINIMIZEBOX</code></h2>
 
@@ -246,7 +247,7 @@ pub const WS_MINIMIZEBOX: uint32 = 0x00020000;
 
 `WS_MINIMIZEBOX`: the title bar has a minimize button.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L138)
 
 <h2 id="ws-maximizebox"><code>WS_MAXIMIZEBOX</code></h2>
 
@@ -256,7 +257,7 @@ pub const WS_MAXIMIZEBOX: uint32 = 0x00010000;
 
 `WS_MAXIMIZEBOX`: the title bar has a maximize button.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L143)
 
 <h2 id="ws-child"><code>WS_CHILD</code></h2>
 
@@ -266,7 +267,7 @@ pub const WS_CHILD: uint32 = 0x40000000;
 
 `WS_CHILD`: the window lives inside its parent's client area.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L148)
 
 <h2 id="ws-visible"><code>WS_VISIBLE</code></h2>
 
@@ -276,7 +277,7 @@ pub const WS_VISIBLE: uint32 = 0x10000000;
 
 `WS_VISIBLE`: the window is shown as soon as it is created.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L153)
 
 <h2 id="cw-usedefault"><code>CW_USEDEFAULT</code></h2>
 
@@ -286,7 +287,7 @@ pub const CW_USEDEFAULT: int32 = -2147483648;
 
 `CW_USEDEFAULT`: let the system choose the position or size.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L156)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L158)
 
 <h2 id="sw-show"><code>SW_SHOW</code></h2>
 
@@ -296,7 +297,7 @@ pub const SW_SHOW: int32 = 5;
 
 `SW_SHOW`: show the window at its current size and position and activate it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L163)
 
 <h2 id="wm-create"><code>WM_CREATE</code></h2>
 
@@ -306,7 +307,7 @@ pub const WM_CREATE: uint32 = 0x0001;
 
 `WM_CREATE`: the window has been created and is not yet shown; answer zero to keep it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L168)
 
 <h2 id="wm-destroy"><code>WM_DESTROY</code></h2>
 
@@ -316,7 +317,7 @@ pub const WM_DESTROY: uint32 = 0x0002;
 
 `WM_DESTROY`: the window is being destroyed; a main window posts the quit message here.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L171)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L173)
 
 <h2 id="wm-paint"><code>WM_PAINT</code></h2>
 
@@ -326,7 +327,7 @@ pub const WM_PAINT: uint32 = 0x000F;
 
 `WM_PAINT`: part of the window needs drawing, between [`BeginPaint`](/docs/api/windows/window#begin-paint) and [`EndPaint`](/docs/api/windows/window#end-paint).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L178)
 
 <h2 id="wm-close"><code>WM_CLOSE</code></h2>
 
@@ -336,7 +337,7 @@ pub const WM_CLOSE: uint32 = 0x0010;
 
 `WM_CLOSE`: the user asked to close the window; the default answer destroys it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L181)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L183)
 
 <h2 id="wm-setfont"><code>WM_SETFONT</code></h2>
 
@@ -346,7 +347,7 @@ pub const WM_SETFONT: uint32 = 0x0030;
 
 `WM_SETFONT`: a control should draw with the font handle in `wParam`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L186)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L188)
 
 <h2 id="wm-user"><code>WM_USER</code></h2>
 
@@ -356,7 +357,7 @@ pub const WM_USER: uint32 = 0x0400;
 
 `WM_USER`: the first message number a program may give its own messages within one window class.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L193)
 
 <h2 id="wm-dpichanged"><code>WM_DPICHANGED</code></h2>
 
@@ -367,7 +368,7 @@ pub const WM_DPICHANGED: uint32 = 0x02E0;
 `WM_DPICHANGED`: the window moved to a monitor with another scale.
 The new DPI is in both halves of `wParam`, and `lParam` points to the [`Rect`](/docs/api/windows/window#rect) the system suggests for the window.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L197)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L199)
 
 <h2 id="color-window"><code>COLOR_WINDOW</code></h2>
 
@@ -377,7 +378,7 @@ pub const COLOR_WINDOW: int32 = 5;
 
 `COLOR_WINDOW`: the system color of a window's background, for [`GetSysColor`](/docs/api/windows/window#get-sys-color) and [`GetSysColorBrush`](/docs/api/windows/window#get-sys-color-brush).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L204)
 
 <h2 id="color-windowtext"><code>COLOR_WINDOWTEXT</code></h2>
 
@@ -387,7 +388,7 @@ pub const COLOR_WINDOWTEXT: int32 = 8;
 
 `COLOR_WINDOWTEXT`: the system color of text in a window.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L207)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L209)
 
 <h2 id="color-graytext"><code>COLOR_GRAYTEXT</code></h2>
 
@@ -397,7 +398,7 @@ pub const COLOR_GRAYTEXT: int32 = 17;
 
 `COLOR_GRAYTEXT`: the system color of text that is shown but not active.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L212)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L214)
 
 <h2 id="mb-ok"><code>MB_OK</code></h2>
 
@@ -407,7 +408,7 @@ pub const MB_OK: uint32 = 0x00000000;
 
 `MB_OK`: the message box has one OK button.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L219)
 
 <h2 id="mb-iconerror"><code>MB_ICONERROR</code></h2>
 
@@ -417,7 +418,7 @@ pub const MB_ICONERROR: uint32 = 0x00000010;
 
 `MB_ICONERROR`: the message box shows the error icon.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L222)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L224)
 
 <h2 id="swp-nomove"><code>SWP_NOMOVE</code></h2>
 
@@ -427,7 +428,7 @@ pub const SWP_NOMOVE: uint32 = 0x0002;
 
 `SWP_NOMOVE`: [`SetWindowPos`](/docs/api/windows/window#set-window-pos) keeps the window where it is and ignores `x` and `y`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L227)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L229)
 
 <h2 id="swp-nozorder"><code>SWP_NOZORDER</code></h2>
 
@@ -437,7 +438,7 @@ pub const SWP_NOZORDER: uint32 = 0x0004;
 
 `SWP_NOZORDER`: [`SetWindowPos`](/docs/api/windows/window#set-window-pos) keeps the window's place in the stacking order and ignores `insertAfter`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L234)
 
 <h2 id="swp-noactivate"><code>SWP_NOACTIVATE</code></h2>
 
@@ -447,7 +448,7 @@ pub const SWP_NOACTIVATE: uint32 = 0x0010;
 
 `SWP_NOACTIVATE`: [`SetWindowPos`](/docs/api/windows/window#set-window-pos) does not activate the window.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L237)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L239)
 
 <h2 id="idc-arrow"><code>IDC_ARROW</code></h2>
 
@@ -458,7 +459,7 @@ pub const IDC_ARROW: uint64 = 32512;
 `IDC_ARROW`: the standard arrow cursor, as the resource number [`LoadCursorW`](/docs/api/windows/window#load-cursor-w) takes in place of a name.
 It is a number, not a string, so it is cast to the name pointer: `IDC_ARROW as *char16`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L243)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L245)
 
 <h2 id="idi-application"><code>IDI_APPLICATION</code></h2>
 
@@ -468,7 +469,7 @@ pub const IDI_APPLICATION: uint64 = 32512;
 
 `IDI_APPLICATION`: the default application icon, as the resource number [`LoadIconW`](/docs/api/windows/window#load-icon-w) takes in place of a name.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L248)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L250)
 
 <h2 id="hwnd-message"><code>HWND_MESSAGE</code></h2>
 
@@ -479,7 +480,7 @@ pub const HWND_MESSAGE: uint64 = 0xFFFFFFFFFFFFFFFD;
 `HWND_MESSAGE`: the parent that makes a window message-only, never shown and never enumerated.
 It is `-3` as a pointer, so it is cast at the call: `HWND_MESSAGE as *var opaque`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L254)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L256)
 
 <h2 id="dpi-awareness-context-per-monitor-aware-v2"><code>DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2</code></h2>
 
@@ -491,7 +492,7 @@ pub const DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2: uint64 = 0xFFFFFFFFFFFFFFF
 It is `-4` as a pointer, so it is cast at the call. Without it the system stretches the window's pixels on any
 monitor scaled above 100%, which is what makes an old program's text blurry.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L263)
 
 <h2 id="adjust-window-rect-ex-for-dpi"><code>AdjustWindowRectExForDpi</code></h2>
 
@@ -506,11 +507,12 @@ pub extern func AdjustWindowRectExForDpi(
 ```
 
 Grows a client rectangle to the window rectangle that holds it, at a given DPI.
-The result includes the title bar and borders the style adds, measured for that DPI rather than the system's.
+The result includes the title bar and borders the style adds, measured for that DPI rather than the
+system's.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-adjustwindowrectexfordpi](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-adjustwindowrectexfordpi)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L275)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L278)
 
 **Parameters**
 
@@ -538,7 +540,7 @@ Called only in answer to [`WM_PAINT`](/docs/api/windows/window#wm-paint), and al
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-beginpaint](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-beginpaint)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L284)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L287)
 
 **Parameters**
 
@@ -573,7 +575,7 @@ The procedure receives [`WM_CREATE`](/docs/api/windows/window#wm-create) before 
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-createwindowexw](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-createwindowexw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L303)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L306)
 
 **Parameters**
 
@@ -606,11 +608,12 @@ pub extern func DefWindowProcW(
 ```
 
 Answers a message the way the system does when a window procedure does not handle it.
-A procedure passes every message it does not answer itself on to this call, unchanged, and returns its result.
+A procedure passes every message it does not answer itself on to this call, unchanged, and returns its
+result.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-defwindowprocw](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-defwindowprocw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L327)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L331)
 
 **Parameters**
 
@@ -634,7 +637,7 @@ Only the thread that created the window may destroy it.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-destroywindow](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-destroywindow)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L335)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L339)
 
 **Parameters**
 
@@ -654,7 +657,7 @@ Hands a message to the window procedure of the window it is for.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-dispatchmessagew](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-dispatchmessagew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L342)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L346)
 
 **Parameters**
 
@@ -677,7 +680,7 @@ Ends the painting [`BeginPaint`](/docs/api/windows/window#begin-paint) began and
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-endpaint](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-endpaint)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L350)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L354)
 
 **Parameters**
 
@@ -701,7 +704,7 @@ Retrieves the window's client area, whose top-left corner is always zero.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getclientrect](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getclientrect)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L358)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L362)
 
 **Parameters**
 
@@ -723,7 +726,7 @@ A process that is not DPI aware always receives 96.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getdpiforwindow](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getdpiforwindow)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L366)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L370)
 
 **Parameters**
 
@@ -750,7 +753,7 @@ The result has three meanings, not two: positive for a message, zero for `WM_QUI
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getmessagew](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getmessagew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L378)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L382)
 
 **Parameters**
 
@@ -773,7 +776,7 @@ Retrieves one of the system colors, as `0x00BBGGRR`.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsyscolor](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsyscolor)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L385)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L389)
 
 **Parameters**
 
@@ -793,7 +796,7 @@ Retrieves the brush of one of the system colors, which the system owns and must 
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsyscolorbrush](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsyscolorbrush)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L392)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L396)
 
 **Parameters**
 
@@ -817,7 +820,7 @@ Marks part of the window as needing paint, so the next pass of the loop sends [`
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-invalidaterect](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-invalidaterect)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L401)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L405)
 
 **Parameters**
 
@@ -843,7 +846,7 @@ A system cursor is shared and must not be destroyed.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-loadcursorw](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-loadcursorw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L410)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L414)
 
 **Parameters**
 
@@ -868,7 +871,7 @@ A system icon is shared and must not be destroyed.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-loadiconw](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-loadiconw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L419)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L423)
 
 **Parameters**
 
@@ -894,7 +897,7 @@ Shows a modal message box and waits for the user to close it.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-messageboxw](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-messageboxw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L429)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L433)
 
 **Parameters**
 
@@ -918,7 +921,7 @@ A main window calls it from [`WM_DESTROY`](/docs/api/windows/window#wm-destroy),
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-postquitmessage](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-postquitmessage)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L436)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L440)
 
 **Parameters**
 
@@ -937,7 +940,7 @@ A class name is per module: registering one twice fails with `ERROR_CLASS_ALREAD
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-registerclassexw](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-registerclassexw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L444)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L448)
 
 **Parameters**
 
@@ -964,7 +967,7 @@ owner's loop to deliver it.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-sendmessagew](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-sendmessagew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L456)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L460)
 
 **Parameters**
 
@@ -988,7 +991,7 @@ Fails with [`ERROR_ACCESS_DENIED`](/docs/api/windows/errors#error-access-denied)
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setprocessdpiawarenesscontext](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setprocessdpiawarenesscontext)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L464)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L468)
 
 **Parameters**
 
@@ -1016,7 +1019,7 @@ Changes the window's size, position or stacking order with one call.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setwindowpos](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setwindowpos)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L477)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L481)
 
 **Parameters**
 
@@ -1045,7 +1048,7 @@ Changes the window's title, or a control's text.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setwindowtextw](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setwindowtextw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L493)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L497)
 
 **Parameters**
 
@@ -1069,7 +1072,7 @@ Shows, hides, minimizes or restores a window.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-showwindow](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-showwindow)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L501)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L505)
 
 **Parameters**
 
@@ -1090,7 +1093,7 @@ Translates key presses into character messages, posted to the same queue.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-translatemessage](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-translatemessage)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L508)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L512)
 
 **Parameters**
 
@@ -1113,7 +1116,7 @@ Removes a window class once no window of it remains.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-unregisterclassw](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-unregisterclassw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L516)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L520)
 
 **Parameters**
 
@@ -1134,7 +1137,7 @@ Paints any part of the window that needs it now, rather than when the loop is ne
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-updatewindow](https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-updatewindow)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L523)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Window.rux#L527)
 
 **Parameters**
 

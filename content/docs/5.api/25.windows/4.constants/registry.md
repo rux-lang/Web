@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Registry.rux
-  line: 11
+  line: 12
 seo:
   title: "Registry — Windows API"
   description: Reading typed values from the registry with RegGetValueW.
@@ -31,7 +31,7 @@ pub const HKEY_LOCAL_MACHINE: uint64 = 0xFFFFFFFF80000002;
 The predefined keys are 32-bit values sign-extended to a pointer, so on a 64-bit system this one is
 `0xFFFFFFFF80000002`, not `0x80000002`; it is cast at the call: `HKEY_LOCAL_MACHINE as *var opaque`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L12)
 
 <h2 id="hkey-current-user"><code>HKEY_CURRENT_USER</code></h2>
 
@@ -41,7 +41,7 @@ pub const HKEY_CURRENT_USER: uint64 = 0xFFFFFFFF80000001;
 
 `HKEY_CURRENT_USER`: the predefined key holding the settings of the user the program runs as.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L17)
 
 <h2 id="rrf-rt-reg-sz"><code>RRF_RT_REG_SZ</code></h2>
 
@@ -51,7 +51,7 @@ pub const RRF_RT_REG_SZ: uint32 = 0x00000002;
 
 `RRF_RT_REG_SZ`: accept a string value, which the call returns NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L22)
 
 <h2 id="rrf-rt-reg-dword"><code>RRF_RT_REG_DWORD</code></h2>
 
@@ -61,7 +61,7 @@ pub const RRF_RT_REG_DWORD: uint32 = 0x00000010;
 
 `RRF_RT_REG_DWORD`: accept a 32-bit number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L27)
 
 <h2 id="rrf-rt-reg-qword"><code>RRF_RT_REG_QWORD</code></h2>
 
@@ -71,7 +71,7 @@ pub const RRF_RT_REG_QWORD: uint32 = 0x00000040;
 
 `RRF_RT_REG_QWORD`: accept a 64-bit number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L32)
 
 <h2 id="reg-get-value-w"><code>RegGetValueW</code></h2>
 
@@ -90,11 +90,12 @@ pub extern func RegGetValueW(
 Reads one value of a registry key, checking its type and terminating a string value.
 Unlike `RegQueryValueExW`, a string is always NUL-terminated in the buffer, and a value of a type the flags
 do not accept is refused with `ERROR_UNSUPPORTED_TYPE` rather than returned as bytes. The size is in bytes,
-not UTF-16 units, on the way in and on the way out. The error is the result itself; [`GetLastError`](/docs/api/windows/errors#get-last-error) is not set.
+not UTF-16 units, on the way in and on the way out. The error is the result itself; [`GetLastError`](/docs/api/windows/errors#get-last-error) is not
+set.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/winreg/nf-winreg-reggetvaluew](https://learn.microsoft.com/windows/win32/api/winreg/nf-winreg-reggetvaluew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Registry.rux#L51)
 
 **Parameters**
 

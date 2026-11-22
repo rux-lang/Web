@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Winsock.rux
-  line: 7
+  line: 8
 seo:
   title: "Winsock — Windows API"
   description: "Starting Winsock, address families, sockets and their options, and name resolution."
@@ -31,21 +31,21 @@ pub struct WsaData {
 
 Room for a `WSADATA`, which [`WSAStartup`](/docs/api/windows/winsock#wsa-startup) fills and nothing here reads.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L8)
 
 **Constructors**
 
-<h3 id="wsa-data-new"><code>WsaData</code></h3>
+<h3 id="wsa-data-new"><code>New</code></h3>
 
 ```rux
-pub func WsaData() -> WsaData
+pub func New() -> WsaData
 ```
 
 Zeroed storage for [`WSAStartup`](/docs/api/windows/winsock#wsa-startup) to fill.
 
 **Returns**: the storage
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L16)
 
 <h2 id="address-info"><code>AddressInfo</code></h2>
 
@@ -64,7 +64,7 @@ pub struct AddressInfo {
 
 Winsock's `addrinfo`: one result of [`getaddrinfo`](/docs/api/windows/winsock#getaddrinfo), linked to the next.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L23)
 
 **Fields**
 
@@ -87,7 +87,7 @@ pub const AF_INET: int32 = 2;
 
 `AF_INET`: the IPv4 address family.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L45)
 
 <h2 id="af-inet6"><code>AF_INET6</code></h2>
 
@@ -97,7 +97,7 @@ pub const AF_INET6: int32 = 23;
 
 `AF_INET6`: the IPv6 address family.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L50)
 
 <h2 id="sock-stream"><code>SOCK_STREAM</code></h2>
 
@@ -107,7 +107,7 @@ pub const SOCK_STREAM: int32 = 1;
 
 `SOCK_STREAM`: a connected byte stream.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L55)
 
 <h2 id="sock-dgram"><code>SOCK_DGRAM</code></h2>
 
@@ -117,7 +117,7 @@ pub const SOCK_DGRAM: int32 = 2;
 
 `SOCK_DGRAM`: individual datagrams.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L60)
 
 <h2 id="sol-socket"><code>SOL_SOCKET</code></h2>
 
@@ -127,7 +127,7 @@ pub const SOL_SOCKET: int32 = 0xFFFF;
 
 `SOL_SOCKET`: the level of the options every socket has.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L65)
 
 <h2 id="so-rcvtimeo"><code>SO_RCVTIMEO</code></h2>
 
@@ -137,7 +137,7 @@ pub const SO_RCVTIMEO: int32 = 0x1006;
 
 `SO_RCVTIMEO`: how long a receive waits, in milliseconds.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L70)
 
 <h2 id="so-sndtimeo"><code>SO_SNDTIMEO</code></h2>
 
@@ -147,7 +147,7 @@ pub const SO_SNDTIMEO: int32 = 0x1005;
 
 `SO_SNDTIMEO`: how long a send waits, in milliseconds.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L75)
 
 <h2 id="ipproto-tcp"><code>IPPROTO_TCP</code></h2>
 
@@ -157,7 +157,7 @@ pub const IPPROTO_TCP: int32 = 6;
 
 `IPPROTO_TCP`: the level of TCP's options.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L80)
 
 <h2 id="tcp-nodelay"><code>TCP_NODELAY</code></h2>
 
@@ -167,7 +167,7 @@ pub const TCP_NODELAY: int32 = 1;
 
 `TCP_NODELAY`: send small writes at once rather than gathering them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L85)
 
 <h2 id="ipproto-ipv6"><code>IPPROTO_IPV6</code></h2>
 
@@ -177,7 +177,7 @@ pub const IPPROTO_IPV6: int32 = 41;
 
 `IPPROTO_IPV6`: the level of IPv6's options.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L89)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L90)
 
 <h2 id="ipv6-v6only"><code>IPV6_V6ONLY</code></h2>
 
@@ -187,7 +187,7 @@ pub const IPV6_V6ONLY: int32 = 27;
 
 `IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L95)
 
 <h2 id="invalid-socket"><code>INVALID_SOCKET</code></h2>
 
@@ -197,7 +197,7 @@ pub const INVALID_SOCKET: uint64 = 0xFFFFFFFFFFFFFFFF;
 
 `INVALID_SOCKET`: what a call that makes a socket returns on failure.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L100)
 
 <h2 id="fionbio"><code>FIONBIO</code></h2>
 
@@ -207,7 +207,7 @@ pub const FIONBIO: int32 = -2147195266;
 
 `FIONBIO`: the [`ioctlsocket`](/docs/api/windows/winsock#ioctlsocket) command that turns a socket's non-blocking mode on or off.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L105)
 
 <h2 id="pollrdnorm"><code>POLLRDNORM</code></h2>
 
@@ -217,7 +217,7 @@ pub const POLLRDNORM: int16 = 0x100;
 
 `POLLRDNORM`: [`WSAPoll`](/docs/api/windows/winsock#wsa-poll) reports a socket with data to read, or a connection to accept.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L110)
 
 <h2 id="pollwrnorm"><code>POLLWRNORM</code></h2>
 
@@ -227,7 +227,7 @@ pub const POLLWRNORM: int16 = 0x10;
 
 `POLLWRNORM`: [`WSAPoll`](/docs/api/windows/winsock#wsa-poll) reports a socket a write would not wait on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L115)
 
 <h2 id="pollerr"><code>POLLERR</code></h2>
 
@@ -237,7 +237,7 @@ pub const POLLERR: int16 = 0x1;
 
 `POLLERR`: the socket has an error pending; always reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L120)
 
 <h2 id="pollhup"><code>POLLHUP</code></h2>
 
@@ -247,7 +247,7 @@ pub const POLLHUP: int16 = 0x2;
 
 `POLLHUP`: the connection was closed; always reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L125)
 
 <h2 id="pollnval"><code>POLLNVAL</code></h2>
 
@@ -257,7 +257,7 @@ pub const POLLNVAL: int16 = 0x4;
 
 `POLLNVAL`: the socket is not valid; always reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L130)
 
 <h2 id="wsa-poll-fd"><code>WsaPollFd</code></h2>
 
@@ -271,7 +271,7 @@ pub struct WsaPollFd {
 
 `WSAPOLLFD`: one socket [`WSAPoll`](/docs/api/windows/winsock#wsa-poll) watches, the events wanted, and the events it reports.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L133)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L134)
 
 **Fields**
 
@@ -294,7 +294,7 @@ Starts Winsock for this process.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsastartup](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsastartup)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L151)
 
 **Parameters**
 
@@ -315,7 +315,7 @@ The calling thread's last Winsock error.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsagetlasterror](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-wsagetlasterror)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L156)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L157)
 
 **Returns**: the error code
 
@@ -333,7 +333,7 @@ Opens a socket.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-socket](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-socket)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L165)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L166)
 
 **Parameters**
 
@@ -359,7 +359,7 @@ Connects a socket to `address`.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-connect](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-connect)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L175)
 
 **Parameters**
 
@@ -385,7 +385,7 @@ Gives a socket its local address.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-bind](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-bind)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L183)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L184)
 
 **Parameters**
 
@@ -410,7 +410,7 @@ Makes a bound stream socket accept connections.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-listen](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-listen)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L192)
 
 **Parameters**
 
@@ -435,7 +435,7 @@ Accepts a waiting connection.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-accept](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-accept)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L200)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L201)
 
 **Parameters**
 
@@ -464,7 +464,7 @@ Sends bytes on a socket, to `address` when it is not connected.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-sendto](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-sendto)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L212)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L213)
 
 **Parameters**
 
@@ -496,7 +496,7 @@ Receives bytes from a socket, and where they came from.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recvfrom)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L224)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L225)
 
 **Parameters**
 
@@ -521,7 +521,7 @@ Closes a socket.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-closesocket](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-closesocket)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L233)
 
 **Parameters**
 
@@ -544,7 +544,7 @@ Ends one or both directions of a connection.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-shutdown](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-shutdown)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L240)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L241)
 
 **Parameters**
 
@@ -571,7 +571,7 @@ Sets a socket option.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-setsockopt)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L251)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L252)
 
 **Parameters**
 
@@ -599,7 +599,7 @@ Reads a socket's local address.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockname](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockname)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L260)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L261)
 
 **Parameters**
 
@@ -625,7 +625,7 @@ Reads the address of a connected socket's peer.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getpeername](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getpeername)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L269)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L270)
 
 **Parameters**
 
@@ -652,7 +652,7 @@ Looks up the addresses of a host and service.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo](https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-getaddrinfo)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L279)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L280)
 
 **Parameters**
 
@@ -675,7 +675,7 @@ Frees the results of [`getaddrinfo`](/docs/api/windows/winsock#getaddrinfo).
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-freeaddrinfo](https://learn.microsoft.com/en-us/windows/win32/api/ws2tcpip/nf-ws2tcpip-freeaddrinfo)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L285)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L286)
 
 **Parameters**
 
@@ -697,7 +697,7 @@ Sets a socket's mode, such as non-blocking with [`FIONBIO`](/docs/api/windows/wi
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocket](https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-ioctlsocket)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L294)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L295)
 
 **Parameters**
 
@@ -723,7 +723,7 @@ Waits until one of `count` sockets is ready or `timeout` milliseconds pass, fill
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsapoll](https://learn.microsoft.com/en-us/windows/win32/api/winsock2/nf-winsock2-wsapoll)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L303)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Winsock.rux#L304)
 
 **Parameters**
 

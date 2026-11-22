@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Errors.rux
-  line: 14
+  line: 15
 seo:
   title: "Errors — Windows API"
   description: The last Win32 error and the codes it reports.
@@ -29,7 +29,7 @@ pub const ERROR_SUCCESS: uint32 = 0;
 
 `ERROR_SUCCESS`: the operation succeeded, which is the value [`GetLastError`](/docs/api/windows/errors#get-last-error) reports when nothing has failed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L15)
 
 <h2 id="error-file-not-found"><code>ERROR_FILE_NOT_FOUND</code></h2>
 
@@ -39,7 +39,7 @@ pub const ERROR_FILE_NOT_FOUND: uint32 = 2;
 
 `ERROR_FILE_NOT_FOUND`: the named file does not exist.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L20)
 
 <h2 id="error-path-not-found"><code>ERROR_PATH_NOT_FOUND</code></h2>
 
@@ -49,7 +49,7 @@ pub const ERROR_PATH_NOT_FOUND: uint32 = 3;
 
 `ERROR_PATH_NOT_FOUND`: a directory along the path does not exist.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L25)
 
 <h2 id="error-access-denied"><code>ERROR_ACCESS_DENIED</code></h2>
 
@@ -60,7 +60,7 @@ pub const ERROR_ACCESS_DENIED: uint32 = 5;
 `ERROR_ACCESS_DENIED`: the caller does not have the rights the operation needs.
 Also what a sharing violation looks like when the file is already open without the matching share mode.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L31)
 
 <h2 id="error-invalid-handle"><code>ERROR_INVALID_HANDLE</code></h2>
 
@@ -70,7 +70,7 @@ pub const ERROR_INVALID_HANDLE: uint32 = 6;
 
 `ERROR_INVALID_HANDLE`: the handle is not one this operation can use.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L36)
 
 <h2 id="error-not-enough-memory"><code>ERROR_NOT_ENOUGH_MEMORY</code></h2>
 
@@ -82,7 +82,7 @@ pub const ERROR_NOT_ENOUGH_MEMORY: uint32 = 8;
 Distinct from [`ERROR_OUTOFMEMORY`](/docs/api/windows/errors#error-out-of-memory), and which of the two a call reports is the call's own business, so a caller
 checking for exhaustion has to accept either.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L43)
 
 <h2 id="error-out-of-memory"><code>ERROR_OUTOFMEMORY</code></h2>
 
@@ -92,7 +92,7 @@ pub const ERROR_OUTOFMEMORY: uint32 = 14;
 
 `ERROR_OUTOFMEMORY`: not enough storage to complete the operation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L48)
 
 <h2 id="error-not-supported"><code>ERROR_NOT_SUPPORTED</code></h2>
 
@@ -102,7 +102,7 @@ pub const ERROR_NOT_SUPPORTED: uint32 = 50;
 
 `ERROR_NOT_SUPPORTED`: the operation is not supported on this object or this system.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L53)
 
 <h2 id="error-file-exists"><code>ERROR_FILE_EXISTS</code></h2>
 
@@ -112,7 +112,7 @@ pub const ERROR_FILE_EXISTS: uint32 = 80;
 
 `ERROR_FILE_EXISTS`: the file already exists, and the call was told not to replace it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L58)
 
 <h2 id="error-invalid-parameter"><code>ERROR_INVALID_PARAMETER</code></h2>
 
@@ -122,7 +122,7 @@ pub const ERROR_INVALID_PARAMETER: uint32 = 87;
 
 `ERROR_INVALID_PARAMETER`: an argument is not valid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L63)
 
 <h2 id="error-disk-full"><code>ERROR_DISK_FULL</code></h2>
 
@@ -132,7 +132,7 @@ pub const ERROR_DISK_FULL: uint32 = 112;
 
 `ERROR_DISK_FULL`: the volume has no room left.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L68)
 
 <h2 id="error-insufficient-buffer"><code>ERROR_INSUFFICIENT_BUFFER</code></h2>
 
@@ -142,7 +142,7 @@ pub const ERROR_INSUFFICIENT_BUFFER: uint32 = 122;
 
 `ERROR_INSUFFICIENT_BUFFER`: the buffer was too small; the call set its length argument to the bytes needed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L73)
 
 <h2 id="error-more-data"><code>ERROR_MORE_DATA</code></h2>
 
@@ -152,7 +152,7 @@ pub const ERROR_MORE_DATA: uint32 = 234;
 
 `ERROR_MORE_DATA`: the buffer was too small for the value; a registry call reports this one instead.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L78)
 
 <h2 id="error-privilege-not-held"><code>ERROR_PRIVILEGE_NOT_HELD</code></h2>
 
@@ -164,7 +164,7 @@ pub const ERROR_PRIVILEGE_NOT_HELD: uint32 = 1314;
 What refuses [`CreateSymbolicLinkW`](/docs/api/windows/file-system#create-symbolic-link-w) on a machine without Developer Mode, where creating a symbolic link needs
 `SeCreateSymbolicLinkPrivilege` — a restriction no other supported system places on the same operation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L85)
 
 <h2 id="error-no-more-files"><code>ERROR_NO_MORE_FILES</code></h2>
 
@@ -176,7 +176,7 @@ pub const ERROR_NO_MORE_FILES: uint32 = 18;
 Reported by [`FindNextFileW`](/docs/api/windows/file-system#find-next-file-w) at the end of an enumeration, where nothing has gone wrong at all — the caller
 distinguishes it from a real failure by this code.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L92)
 
 <h2 id="error-already-exists"><code>ERROR_ALREADY_EXISTS</code></h2>
 
@@ -188,7 +188,7 @@ pub const ERROR_ALREADY_EXISTS: uint32 = 183;
 Reported by [`CreateDirectoryW`](/docs/api/windows/file-system#create-directory-w) where [`ERROR_FILE_EXISTS`](/docs/api/windows/errors#error-file-exists) is reported by the file calls, which is why a caller
 asking "was it already there" has to accept both.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L99)
 
 <h2 id="error-invalid-address"><code>ERROR_INVALID_ADDRESS</code></h2>
 
@@ -198,7 +198,7 @@ pub const ERROR_INVALID_ADDRESS: uint32 = 487;
 
 `ERROR_INVALID_ADDRESS`: the address is not one the operation can use.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L104)
 
 <h2 id="error-commitment-limit"><code>ERROR_COMMITMENT_LIMIT</code></h2>
 
@@ -209,7 +209,7 @@ pub const ERROR_COMMITMENT_LIMIT: uint32 = 1455;
 `ERROR_COMMITMENT_LIMIT`: the system's commit limit is reached, so nothing more can be backed.
 What a large commit fails with when the page file cannot grow, as distinct from running out of address space.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Errors.rux#L110)
 
 <h2 id="get-last-error"><code>GetLastError</code></h2>
 
@@ -221,6 +221,6 @@ Retrieves the calling thread's last-error code value.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror](https://learn.microsoft.com/en-us/windows/win32/api/errhandlingapi/nf-errhandlingapi-getlasterror)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L254)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L257)
 
 **Returns**: the calling thread's last error code, which only a documented failure sets

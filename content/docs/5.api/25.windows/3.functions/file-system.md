@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/File.rux
-  line: 55
+  line: 56
 seo:
   title: "File system — Windows API"
   description: "Deleting, copying and moving files, directories, attributes, search and links."
@@ -31,7 +31,7 @@ pub const FILE_ATTRIBUTE_READONLY: uint32 = 0x00000001;
 The whole of Windows' permission model as this package uses it: there are ACLs underneath, but nothing in the
 portable surface can express them, and this bit is what `chmod` maps onto.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L56)
 
 <h2 id="file-attribute-directory"><code>FILE_ATTRIBUTE_DIRECTORY</code></h2>
 
@@ -41,7 +41,7 @@ pub const FILE_ATTRIBUTE_DIRECTORY: uint32 = 0x00000010;
 
 `FILE_ATTRIBUTE_DIRECTORY`: the name is a directory.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L61)
 
 <h2 id="file-attribute-reparse-point"><code>FILE_ATTRIBUTE_REPARSE_POINT</code></h2>
 
@@ -51,7 +51,7 @@ pub const FILE_ATTRIBUTE_REPARSE_POINT: uint32 = 0x00000400;
 
 `FILE_ATTRIBUTE_REPARSE_POINT`: the name carries a reparse point, which is what a symbolic link is.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L66)
 
 <h2 id="invalid-file-attributes"><code>INVALID_FILE_ATTRIBUTES</code></h2>
 
@@ -61,7 +61,7 @@ pub const INVALID_FILE_ATTRIBUTES: uint32 = 0xFFFFFFFF;
 
 `INVALID_FILE_ATTRIBUTES`: what [`GetFileAttributesW`](/docs/api/windows/file-system#get-file-attributes-w) returns when it could not answer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L71)
 
 <h2 id="symbolic-link-flag-directory"><code>SYMBOLIC_LINK_FLAG_DIRECTORY</code></h2>
 
@@ -73,7 +73,7 @@ pub const SYMBOLIC_LINK_FLAG_DIRECTORY: uint32 = 0x00000001;
 Windows types its symbolic links: a link made without this flag misbehaves when its target is a directory,
 which no Unix symlink ever asked anyone to know in advance.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L99)
 
 <h2 id="symbolic-link-flag-allow-unprivileged-create"><code>SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE</code></h2>
 
@@ -86,7 +86,7 @@ privilege older systems demand.
 Harmless where the privilege is held; without Developer Mode or the privilege the call still fails with
 [`ERROR_PRIVILEGE_NOT_HELD`](/docs/api/windows/errors#error-privilege-not-held).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L106)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L107)
 
 <h2 id="move-file-replace-existing"><code>MOVEFILE_REPLACE_EXISTING</code></h2>
 
@@ -96,7 +96,7 @@ pub const MOVEFILE_REPLACE_EXISTING: uint32 = 0x00000001;
 
 `MOVEFILE_REPLACE_EXISTING`: let the move overwrite an existing target.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L112)
 
 <h2 id="move-file-write-through"><code>MOVEFILE_WRITE_THROUGH</code></h2>
 
@@ -107,7 +107,7 @@ pub const MOVEFILE_WRITE_THROUGH: uint32 = 0x00000008;
 `MOVEFILE_WRITE_THROUGH`: do not return until the move has reached the disk.
 With [`MOVEFILE_REPLACE_EXISTING`](/docs/api/windows/file-system#move-file-replace-existing), this is what makes publishing a file under its final name durable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L118)
 
 <h2 id="find-first-file-w"><code>FindFirstFileW</code></h2>
 
@@ -125,7 +125,7 @@ UTF-16 name from offset 44. The record is 592 bytes.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilew](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L147)
 
 **Parameters**
 
@@ -149,7 +149,7 @@ Continues a directory enumeration; fails with ERROR_NO_MORE_FILES at its end.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findnextfilew](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findnextfilew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L154)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L155)
 
 **Parameters**
 
@@ -174,7 +174,7 @@ Creates a hard link: a second name for an existing file's contents.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createhardlinkw](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createhardlinkw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L164)
 
 **Parameters**
 
@@ -202,7 +202,7 @@ without either it fails with ERROR_PRIVILEGE_NOT_HELD.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createsymboliclinkw](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createsymboliclinkw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L175)
 
 **Parameters**
 
@@ -230,7 +230,7 @@ Windows directory, so it answers even where none of those are set.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-gettemppathw](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-gettemppathw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L222)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L223)
 
 **Parameters**
 
@@ -251,7 +251,7 @@ Deletes a file, taking a UTF-16 path.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L229)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L230)
 
 **Parameters**
 
@@ -277,7 +277,7 @@ published under its final name. Across volumes it copies and deletes instead, wh
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefileexw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L240)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L241)
 
 **Parameters**
 
@@ -303,7 +303,7 @@ Copies a file, taking UTF-16 paths.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-copyfilew](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-copyfilew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L249)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L250)
 
 **Parameters**
 
@@ -328,7 +328,7 @@ Creates a directory, taking a UTF-16 path.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createdirectoryw](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createdirectoryw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L257)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L258)
 
 **Parameters**
 
@@ -349,7 +349,7 @@ Removes an empty directory, taking a UTF-16 path.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-removedirectoryw](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-removedirectoryw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L264)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L265)
 
 **Parameters**
 
@@ -370,7 +370,7 @@ Returns 0xFFFFFFFF on failure, which is INVALID_FILE_ATTRIBUTES and not an attri
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesw](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L272)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L273)
 
 **Parameters**
 
@@ -393,7 +393,7 @@ Sets a file's attributes, taking a UTF-16 path.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileattributesw](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileattributesw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L280)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L281)
 
 **Parameters**
 
@@ -419,7 +419,7 @@ buffer is not a failure but a request to call again.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getcurrentdirectory](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getcurrentdirectory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L290)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L291)
 
 **Parameters**
 
@@ -440,7 +440,7 @@ Sets the current directory, taking a UTF-16 path.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setcurrentdirectory](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setcurrentdirectory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L297)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L298)
 
 **Parameters**
 
@@ -464,7 +464,7 @@ Copies an existing file to a new file.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-copyfilea](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-copyfilea)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L40)
 
 **Parameters**
 
@@ -489,7 +489,7 @@ Creates a new directory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createdirectorya](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createdirectorya)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L52)
 
 **Parameters**
 
@@ -510,7 +510,7 @@ Deletes an existing file.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilea](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-deletefilea)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L101)
 
 **Parameters**
 
@@ -532,7 +532,7 @@ functions.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findclose](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findclose)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L116)
 
 **Parameters**
 
@@ -556,7 +556,7 @@ if wildcards are used).
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilea](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findfirstfilea)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L125)
 
 **Parameters**
 
@@ -581,7 +581,7 @@ FindFirstFileTransacted functions.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findnextfilea](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-findnextfilea)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L133)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L137)
 
 **Parameters**
 
@@ -605,7 +605,7 @@ Retrieves the current directory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getcurrentdirectory](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getcurrentdirectory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L198)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L202)
 
 **Parameters**
 
@@ -626,7 +626,7 @@ Retrieves file attributes.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesa](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileattributesa)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L233)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L236)
 
 **Parameters**
 
@@ -649,7 +649,7 @@ Moves an existing file or directory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefilea](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-movefilea)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L336)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L339)
 
 **Parameters**
 
@@ -670,7 +670,7 @@ Deletes an existing empty directory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-removedirectorya](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-removedirectorya)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L415)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L418)
 
 **Parameters**
 
@@ -690,7 +690,7 @@ Changes the current directory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setcurrentdirectory](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-setcurrentdirectory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L454)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L457)
 
 **Parameters**
 
@@ -713,7 +713,7 @@ Sets file attributes.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileattributesa](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfileattributesa)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L462)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L465)
 
 **Parameters**
 

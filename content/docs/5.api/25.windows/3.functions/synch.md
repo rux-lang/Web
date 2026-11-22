@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Synch.rux
-  line: 16
+  line: 17
 seo:
   title: "Address waits — Windows API"
   description: WaitOnAddress and the calls that wake its waiters.
@@ -36,7 +36,7 @@ Waits for the value at an address to change.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitonaddress](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitonaddress)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Synch.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Synch.rux#L17)
 
 **Parameters**
 
@@ -59,7 +59,7 @@ Wakes one thread waiting on an address.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-wakebyaddresssingle](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-wakebyaddresssingle)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Synch.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Synch.rux#L23)
 
 **Parameters**
 
@@ -77,7 +77,7 @@ Wakes every thread waiting on an address.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-wakebyaddressall](https://learn.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-wakebyaddressall)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Synch.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Synch.rux#L29)
 
 **Parameters**
 

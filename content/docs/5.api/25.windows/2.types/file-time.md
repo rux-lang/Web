@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Types.rux
-  line: 52
+  line: 53
 seo:
   title: "FileTime — Windows API"
   description: "Win32's FILETIME: a count of 100-nanosecond ticks since the start of 1601, UTC."
@@ -29,8 +29,8 @@ pub struct FileTime {
 ```
 
 Split across two 32-bit halves because the record predates a 64-bit integer being ordinary, and the halves are
-not aligned as one — [`FileTimeTicks`](/docs/api/windows/file-time#file-time-ticks) joins them, and reading the pair as a `uint64` is what a caller must not do.
-The epoch is not the Unix one. [`FileTimeToUnixEpochSeconds`](/docs/api/windows/file-time#file-time-to-unix-epoch-seconds) is the difference.
+not aligned as one — [`FileTimeTicks`](/docs/api/windows/file-time#file-time-ticks) joins them, and reading the pair as a `uint64` is what a caller must not
+do. The epoch is not the Unix one. [`FileTimeToUnixEpochSeconds`](/docs/api/windows/file-time#file-time-to-unix-epoch-seconds) is the difference.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime](https://learn.microsoft.com/windows/win32/api/minwinbase/ns-minwinbase-filetime)
 
@@ -53,7 +53,7 @@ How many [`FileTime`](/docs/api/windows/file-time) ticks make one second.
 A [`FileTime`](/docs/api/windows/file-time) counts 100-nanosecond intervals, so this is ten million. It is the conversion every wall-clock
 reading here needs.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L17)
 
 <h3 id="file-time-to-unix-epoch-seconds"><code>FileTimeToUnixEpochSeconds</code></h3>
 
@@ -65,7 +65,7 @@ Seconds between the [`FileTime`](/docs/api/windows/file-time) epoch of 1601 and 
 Windows counts from a different year than everything else, and this is what converts between them. The gap
 includes the leap days of the intervening centuries, which is why it is not a round number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L23)
 
 <h3 id="file-time-ticks"><code>FileTimeTicks</code></h3>
 
@@ -78,7 +78,7 @@ The whole 64-bit value a [`FileTime`](/docs/api/windows/file-time) splits across
 word because the structure predates 64-bit alignment guarantees; this puts it back together.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Clock.rux#L67)
 
 **Parameters**
 

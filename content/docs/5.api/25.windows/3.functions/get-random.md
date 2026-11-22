@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Entropy.rux
-  line: 47
+  line: 48
 seo:
   title: "GetRandom — Windows API"
   description: Fills length bytes of buffer with unpredictable bytes.
@@ -55,7 +55,7 @@ pub const BCRYPT_USE_SYSTEM_PREFERRED_RNG: uint32 = 0x00000002;
 Passed with a null algorithm handle, which is what makes this a one-call interface: nothing has to be opened,
 configured, or closed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Entropy.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Entropy.rux#L17)
 
 <h3 id="status-success"><code>STATUS_SUCCESS</code></h3>
 
@@ -65,4 +65,4 @@ pub const STATUS_SUCCESS: int32 = 0;
 
 `STATUS_SUCCESS`: the status an [`NtStatus`](/docs/api/windows/types#nt-status)-reporting call gives when it worked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Entropy.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Entropy.rux#L22)

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Kernel.rux
-  line: 274
+  line: 277
 seo:
   title: "Memory — Windows API"
   description: "Heap allocation, virtual memory and raw memory operations."
@@ -31,7 +31,7 @@ Retrieves a handle to the default heap of the calling process.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-getprocessheap](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-getprocessheap)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L274)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L277)
 
 **Returns**: the process heap's handle, which is never released
 
@@ -49,7 +49,7 @@ Allocates a block of memory from a heap. The allocated memory is not movable.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapalloc](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapalloc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L302)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L305)
 
 **Parameters**
 
@@ -75,7 +75,7 @@ Frees a memory block allocated from a heap by the HeapAlloc or HeapReAlloc funct
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapfree](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heapfree)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L311)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L314)
 
 **Parameters**
 
@@ -102,7 +102,7 @@ Reallocates a block of memory from a heap.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heaprealloc](https://learn.microsoft.com/en-us/windows/win32/api/heapapi/nf-heapapi-heaprealloc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L321)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L324)
 
 **Parameters**
 
@@ -129,7 +129,7 @@ Compares two blocks of memory and returns the number of bytes that match until t
 
 **See also**: [https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcomparememory](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlcomparememory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L424)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L427)
 
 **Parameters**
 
@@ -155,7 +155,7 @@ Copies a block of memory from one location to another.
 
 **See also**: [https://learn.microsoft.com/en-us/previous-versions/windows/desktop/legacy/aa366535(v=vs.85)](<https://learn.microsoft.com/en-us/previous-versions/windows/desktop/legacy/aa366535(v=vs.85)>)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L432)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L435)
 
 **Parameters**
 
@@ -179,7 +179,7 @@ Fills a block of memory with the specified fill value.
 
 **See also**: [https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfillmemory](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlfillmemory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L440)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L443)
 
 **Parameters**
 
@@ -202,7 +202,7 @@ Fills a block of memory with zeros, given a pointer to the block and the length 
 
 **See also**: [https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlzeromemory](https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/nf-wdm-rtlzeromemory)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L447)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L450)
 
 **Parameters**
 
@@ -219,7 +219,7 @@ pub const MEM_COMMIT: uint32 = 0x00001000;
 
 `MEM_COMMIT`: back the range with storage.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L14)
 
 <h2 id="mem-reserve"><code>MEM_RESERVE</code></h2>
 
@@ -231,7 +231,7 @@ pub const MEM_RESERVE: uint32 = 0x00002000;
 A reserved page cannot be touched. Touching one faults exactly as an unmapped page does, which is what makes
 reservation a cheap way to hold a range for later.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L21)
 
 <h2 id="mem-reset"><code>MEM_RESET</code></h2>
 
@@ -241,7 +241,7 @@ pub const MEM_RESET: uint32 = 0x00080000;
 
 `MEM_RESET`: the contents are no longer of interest and need not be written to the page file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L26)
 
 <h2 id="mem-release"><code>MEM_RELEASE</code></h2>
 
@@ -251,7 +251,7 @@ pub const MEM_RELEASE: uint32 = 0x00008000;
 
 `MEM_RELEASE`: give back the whole reservation, which [`VirtualFree`](/docs/api/windows/memory#virtual-free) requires a size of zero for.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L31)
 
 <h2 id="mem-decommit"><code>MEM_DECOMMIT</code></h2>
 
@@ -261,7 +261,7 @@ pub const MEM_DECOMMIT: uint32 = 0x00004000;
 
 `MEM_DECOMMIT`: take back the storage but keep the reservation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L36)
 
 <h2 id="page-no-access"><code>PAGE_NOACCESS</code></h2>
 
@@ -271,7 +271,7 @@ pub const PAGE_NOACCESS: uint32 = 0x01;
 
 `PAGE_NOACCESS`: the pages may not be touched at all.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L41)
 
 <h2 id="page-read-only"><code>PAGE_READONLY</code></h2>
 
@@ -281,7 +281,7 @@ pub const PAGE_READONLY: uint32 = 0x02;
 
 `PAGE_READONLY`: the pages may be read.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L46)
 
 <h2 id="page-read-write"><code>PAGE_READWRITE</code></h2>
 
@@ -291,7 +291,7 @@ pub const PAGE_READWRITE: uint32 = 0x04;
 
 `PAGE_READWRITE`: the pages may be read and written.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L51)
 
 <h2 id="page-execute"><code>PAGE_EXECUTE</code></h2>
 
@@ -301,7 +301,7 @@ pub const PAGE_EXECUTE: uint32 = 0x10;
 
 `PAGE_EXECUTE`: the pages may be executed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L56)
 
 <h2 id="page-execute-read"><code>PAGE_EXECUTE_READ</code></h2>
 
@@ -311,7 +311,7 @@ pub const PAGE_EXECUTE_READ: uint32 = 0x20;
 
 `PAGE_EXECUTE_READ`: the pages may be executed and read.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L61)
 
 <h2 id="page-execute-read-write"><code>PAGE_EXECUTE_READWRITE</code></h2>
 
@@ -323,7 +323,7 @@ pub const PAGE_EXECUTE_READWRITE: uint32 = 0x40;
 What a hardened process refuses, and what an exploit needs. Prefer writing through one protection and executing
 through another.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L68)
 
 <h2 id="page-guard"><code>PAGE_GUARD</code></h2>
 
@@ -334,7 +334,7 @@ pub const PAGE_GUARD: uint32 = 0x100;
 `PAGE_GUARD`: the next touch raises a one-shot guard exception and then clears the flag.
 Combined with another protection. This is how a stack grows on Windows.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L74)
 
 <h2 id="virtual-alloc"><code>VirtualAlloc</code></h2>
 
@@ -353,7 +353,7 @@ which it does at 64 KiB granularity rather than page granularity.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc](https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualalloc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L88)
 
 **Parameters**
 
@@ -377,12 +377,12 @@ pub extern func VirtualFree(
 ```
 
 Releases, decommits, or both, a region of pages.
-Returns zero on failure. MEM_RELEASE requires a size of zero and the exact base address VirtualAlloc returned;
-giving it anything else fails rather than releasing part of the region.
+Returns zero on failure. MEM_RELEASE requires a size of zero and the exact base address VirtualAlloc
+returned; giving it anything else fails rather than releasing part of the region.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualfree](https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualfree)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L99)
 
 **Parameters**
 
@@ -410,7 +410,7 @@ Writes the previous protection through oldProtect, which must not be null. Retur
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualprotect](https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualprotect)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L110)
 
 **Parameters**
 
@@ -438,7 +438,7 @@ fails for a large region rather than succeeding slowly.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtuallock](https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtuallock)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L120)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L121)
 
 **Parameters**
 
@@ -462,7 +462,7 @@ Unlocks a region previously locked into physical memory.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualunlock](https://learn.microsoft.com/en-us/windows/win32/api/memoryapi/nf-memoryapi-virtualunlock)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L128)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Memory.rux#L129)
 
 **Parameters**
 

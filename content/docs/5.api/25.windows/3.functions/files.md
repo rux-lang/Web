@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/File.rux
-  line: 14
+  line: 15
 seo:
   title: "Files — Windows API"
   description: "Opening, reading, writing and flushing files through handles."
@@ -29,7 +29,7 @@ pub const GENERIC_READ: uint32 = 0x80000000;
 
 `GENERIC_READ`: the handle may read.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L15)
 
 <h2 id="generic-write"><code>GENERIC_WRITE</code></h2>
 
@@ -39,7 +39,7 @@ pub const GENERIC_WRITE: uint32 = 0x40000000;
 
 `GENERIC_WRITE`: the handle may write.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L20)
 
 <h2 id="file-append-data"><code>FILE_APPEND_DATA</code></h2>
 
@@ -51,7 +51,7 @@ pub const FILE_APPEND_DATA: uint32 = 0x00000004;
 The access right that makes an append-only handle: every write lands at the end whatever the file pointer
 says, which [`GENERIC_WRITE`](/docs/api/windows/files#generic-write) does not promise.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L27)
 
 <h2 id="file-share-read"><code>FILE_SHARE_READ</code></h2>
 
@@ -63,7 +63,7 @@ pub const FILE_SHARE_READ: uint32 = 0x00000001;
 Windows denies sharing by default, which is the opposite of every Unix. A file opened without this cannot be
 opened for reading by anything else, including the same process.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L34)
 
 <h2 id="file-share-write"><code>FILE_SHARE_WRITE</code></h2>
 
@@ -73,7 +73,7 @@ pub const FILE_SHARE_WRITE: uint32 = 0x00000002;
 
 `FILE_SHARE_WRITE`: other openers may write while this handle is open.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L39)
 
 <h2 id="file-share-delete"><code>FILE_SHARE_DELETE</code></h2>
 
@@ -83,7 +83,7 @@ pub const FILE_SHARE_DELETE: uint32 = 0x00000004;
 
 `FILE_SHARE_DELETE`: the file may be renamed or deleted while this handle is open.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L44)
 
 <h2 id="file-attribute-normal"><code>FILE_ATTRIBUTE_NORMAL</code></h2>
 
@@ -93,7 +93,7 @@ pub const FILE_ATTRIBUTE_NORMAL: uint32 = 0x00000080;
 
 `FILE_ATTRIBUTE_NORMAL`: no attributes beyond being an ordinary file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L49)
 
 <h2 id="file-flag-backup-semantics"><code>FILE_FLAG_BACKUP_SEMANTICS</code></h2>
 
@@ -104,7 +104,7 @@ pub const FILE_FLAG_BACKUP_SEMANTICS: uint32 = 0x02000000;
 `FILE_FLAG_BACKUP_SEMANTICS`: let [`CreateFileW`](/docs/api/windows/files#create-file-w) open a directory.
 Without it a directory cannot be opened at all, which makes this the flag every metadata query needs.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L77)
 
 <h2 id="file-flag-open-reparse-point"><code>FILE_FLAG_OPEN_REPARSE_POINT</code></h2>
 
@@ -114,7 +114,7 @@ pub const FILE_FLAG_OPEN_REPARSE_POINT: uint32 = 0x00200000;
 
 `FILE_FLAG_OPEN_REPARSE_POINT`: open the symbolic link itself rather than what it points at.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L82)
 
 <h2 id="file-flag-delete-on-close"><code>FILE_FLAG_DELETE_ON_CLOSE</code></h2>
 
@@ -124,7 +124,7 @@ pub const FILE_FLAG_DELETE_ON_CLOSE: uint32 = 0x04000000;
 
 `FILE_FLAG_DELETE_ON_CLOSE`: remove the file when its last handle closes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L86)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L87)
 
 <h2 id="file-flag-write-through"><code>FILE_FLAG_WRITE_THROUGH</code></h2>
 
@@ -134,7 +134,7 @@ pub const FILE_FLAG_WRITE_THROUGH: uint32 = 0x80000000;
 
 `FILE_FLAG_WRITE_THROUGH`: writes reach the device before the call returns.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L92)
 
 <h2 id="create-file-w"><code>CreateFileW</code></h2>
 
@@ -171,7 +171,7 @@ other opener, which is Windows' behaviour and not most callers' intent.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L135)
 
 **Parameters**
 
@@ -203,7 +203,7 @@ at 32 and 36, the link count at 40, and the file index's halves at 44 and 48.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileinformationbyhandle](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfileinformationbyhandle)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L185)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L186)
 
 **Parameters**
 
@@ -230,7 +230,7 @@ Each pointer may be null to leave that time alone.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfiletime](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfiletime)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L196)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L197)
 
 **Parameters**
 
@@ -261,7 +261,7 @@ or zero on failure. VOLUME_NAME_DOS (0) spells the answer with a drive letter wh
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlew](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfinalpathnamebyhandlew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L211)
 
 **Parameters**
 
@@ -286,7 +286,7 @@ does it on every write instead.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-flushfilebuffers)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L306)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L307)
 
 **Parameters**
 
@@ -306,7 +306,7 @@ Sets the size of a file to the handle's current position.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setendoffile](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setendoffile)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L313)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/File.rux#L314)
 
 **Parameters**
 
@@ -326,7 +326,7 @@ Closes an open object handle.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-closehandle](https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-closehandle)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L31)
 
 **Parameters**
 
@@ -354,7 +354,7 @@ Creates or opens a file or I/O device.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilea)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L65)
 
 **Parameters**
 
@@ -383,7 +383,7 @@ Retrieves the size of the specified file.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfilesizeex](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-getfilesizeex)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L241)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L244)
 
 **Parameters**
 
@@ -410,7 +410,7 @@ Reads data from the specified file or input/output (I/O) device.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-readfile](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-readfile)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L402)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L405)
 
 **Parameters**
 
@@ -439,7 +439,7 @@ Moves the file pointer of the specified file.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfilepointerex](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-setfilepointerex)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L472)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L475)
 
 **Parameters**
 
@@ -468,7 +468,7 @@ Writes data to the specified file or input/output (I/O) device.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-writefile](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-writefile)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L590)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/Kernel.rux#L593)
 
 **Parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/ProcessControl.rux
-  line: 7
+  line: 8
 seo:
   title: "Process control — Windows API"
   description: "Starting processes with CreateProcessW, their startup information, inherited handles and waits."
@@ -33,7 +33,7 @@ pub struct SecurityAttributes {
 
 The `SECURITY_ATTRIBUTES` a pipe or file is created with: here only whether its handle is inheritable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L8)
 
 **Fields**
 
@@ -70,7 +70,7 @@ pub struct StartupInfo {
 
 The `STARTUPINFOW` a new process is started with; this package fills in its standard handles.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L19)
 
 **Fields**
 
@@ -108,7 +108,7 @@ pub struct ProcessInformation {
 
 The `PROCESS_INFORMATION` [`CreateProcessW`](/docs/api/windows/process-control#create-process-w) fills in: the new process and its first thread.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L60)
 
 **Fields**
 
@@ -127,7 +127,7 @@ pub const STARTF_USESTDHANDLES: uint32 = 0x00000100;
 
 `STARTF_USESTDHANDLES`: the standard handles in [`StartupInfo`](/docs/api/windows/process-control#startup-info) are the child's.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L74)
 
 <h2 id="create-unicode-environment"><code>CREATE_UNICODE_ENVIRONMENT</code></h2>
 
@@ -137,7 +137,7 @@ pub const CREATE_UNICODE_ENVIRONMENT: uint32 = 0x00000400;
 
 `CREATE_UNICODE_ENVIRONMENT`: the environment block is UTF-16.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L79)
 
 <h2 id="handle-flag-inherit"><code>HANDLE_FLAG_INHERIT</code></h2>
 
@@ -147,7 +147,7 @@ pub const HANDLE_FLAG_INHERIT: uint32 = 0x00000001;
 
 `HANDLE_FLAG_INHERIT`: the handle is inherited by child processes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L84)
 
 <h2 id="duplicate-same-access"><code>DUPLICATE_SAME_ACCESS</code></h2>
 
@@ -157,7 +157,7 @@ pub const DUPLICATE_SAME_ACCESS: uint32 = 0x00000002;
 
 `DUPLICATE_SAME_ACCESS`: a duplicated handle has the access of the original.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L89)
 
 <h2 id="wait-timeout"><code>WAIT_TIMEOUT</code></h2>
 
@@ -167,7 +167,7 @@ pub const WAIT_TIMEOUT: uint32 = 0x00000102;
 
 `WAIT_TIMEOUT`: a wait ended because its time ran out.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L94)
 
 <h2 id="error-broken-pipe"><code>ERROR_BROKEN_PIPE</code></h2>
 
@@ -177,7 +177,7 @@ pub const ERROR_BROKEN_PIPE: uint32 = 109;
 
 `ERROR_BROKEN_PIPE`: the other end of the pipe was closed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L99)
 
 <h2 id="create-process-w"><code>CreateProcessW</code></h2>
 
@@ -198,9 +198,9 @@ pub extern func CreateProcessW(
 
 Starts a program as a new process.
 
-**See also**: [https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw)
+**See also**: [https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw](https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L117)
 
 **Parameters**
 
@@ -232,7 +232,7 @@ Reads a process's exit code, or `STILL_ACTIVE` while it runs.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getexitcodeprocess](https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getexitcodeprocess)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L128)
 
 **Parameters**
 
@@ -254,9 +254,9 @@ pub extern func TerminateProcess(
 
 Ends a process and all its threads.
 
-**See also**: [https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess)
+**See also**: [https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess](https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-terminateprocess)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L135)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L136)
 
 **Parameters**
 
@@ -282,7 +282,7 @@ Creates an anonymous pipe.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-createpipe](https://learn.microsoft.com/en-us/windows/win32/api/namedpipeapi/nf-namedpipeapi-createpipe)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L146)
 
 **Parameters**
 
@@ -309,7 +309,7 @@ Changes a handle's flags, such as whether it is inherited.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-sethandleinformation](https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-sethandleinformation)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L156)
 
 **Parameters**
 
@@ -339,7 +339,7 @@ Duplicates a handle, here into the same process with different inheritance.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-duplicatehandle](https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-duplicatehandle)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L168)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L169)
 
 **Parameters**
 
@@ -365,7 +365,7 @@ Returns a pseudo-handle for the calling process, which needs no closing.
 
 **See also**: [https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocess](https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocess)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L177)
 
 **Returns**: the pseudo-handle
 
@@ -382,7 +382,7 @@ Sets or removes an environment variable of the calling process.
 
 **See also**: [https://learn.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-setenvironmentvariablew](https://learn.microsoft.com/en-us/windows/win32/api/processenv/nf-processenv-setenvironmentvariablew)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L184)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Windows/Src/ProcessControl.rux#L185)
 
 **Parameters**
 
