@@ -31,7 +31,7 @@ Language features and tooling may still change between releases. See the [releas
 
 ## How do I learn Rux?
 
-Start with [Learn Rux](/docs/learn), a free course of 266 short lessons in 27 parts, from installing the compiler to complete programs. Every lesson is a runnable package in the [Examples repository](https://github.com/rux-lang/Examples). The [Rux Reference](/docs/lang) is the precise description of the language for when you need every rule.
+Start with [Learn Rux](/docs/learn), a free course of 271 short lessons in 27 parts, from installing the compiler to complete programs. Every lesson is a runnable package in the [Examples repository](https://github.com/rux-lang/Examples). The [Rux Reference](/docs/lang) is the precise description of the language for when you need every rule.
 
 You can also try Rux without installing anything in the [Playground](/play), which compiles and runs a program in your browser.
 

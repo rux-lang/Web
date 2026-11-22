@@ -73,7 +73,7 @@ export const PARTS = [
     slug: "errors",
     title: "Errors",
     icon: "i-lucide-triangle-alert",
-    summary: "Operations that can fail: throws, throw and try",
+    summary: "Operations that can fail: -> T ! E, throw, and handling with !, !! and catch",
     checkpoints: [{ slug: "calculator", title: "Calculator" }],
   },
   {
@@ -216,6 +216,8 @@ export const TITLES = {
   ElseIf: "Else if",
   Is: "The is operator",
   NoCopy: "Non-copyable types",
+  ReplaceSwap: "Replace and swap",
+  IfLet: "If let",
   MinMax: "Min and max",
   Utf8: "UTF-8",
   BufferedIo: "Buffered I/O",
