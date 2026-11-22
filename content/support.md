@@ -28,7 +28,7 @@ Donations fund the time that goes into the compiler, the standard library, the t
 Rux is open source under the MIT license — the compiler, the documentation, and this very website.
 
 ::u-page-grid
-:link-card{name="Rux Compiler" handle="rux-lang/Rux" description="The compiler, standard library, and toolchain. Star the repo and dive into the code." icon="i-simple-icons-github" color="text-highlighted" count="489" unit="stars" to="https://github.com/rux-lang/Rux"}
+:link-card{name="Rux Compiler" handle="rux-lang/Rux" description="The compiler, standard library, and toolchain. Star the repo and dive into the code." icon="i-simple-icons-github" color="text-highlighted" count="506" unit="stars" to="https://github.com/rux-lang/Rux"}
 :link-card{name="Issue Tracker" handle="rux-lang/Rux/issues" description="Looking for something to work on? Open issues are the best place to start contributing." icon="i-lucide-list-todo" color="text-rose-500" count="8" unit="issues" to="https://github.com/rux-lang/Rux/issues"}
 :link-card{name="Website & Docs" handle="rux-lang/Web" description="This site and the documentation are open source too — even typo fixes are welcome." icon="i-lucide-globe" color="text-emerald-500" count="12" unit="issues" to="https://github.com/rux-lang/Web"}
 ::
