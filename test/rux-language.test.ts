@@ -140,7 +140,44 @@ describe("Rux stream mode", () => {
     expect(tokenOf("let ok = false;", "false")).toBe("bool");
     expect(tokenOf("var buf: **int64 = null;", "null")).toBe("null");
     expect(tokenOf("func Length(self) -> float64 {", "self")).toBe("self");
-    expect(tokenOf("let where = #line;", "#line")).toBe("macroName");
+    expect(tokenOf("let nothing: int? = none;", "none")).toBe("null");
+    expect(tokenOf("when #target.os == .Linux {", "#")).toBe("punctuation");
+    expect(tokenOf("when #target.os == .Linux {", "target")).toBe("macroName");
+  });
+
+  it("reads an attribute apart from a compile-time value", () => {
+    expect(tokens('#Link("Kernel32.dll")').slice(0, 3)).toEqual([
+      ["#", "punctuation"],
+      ["Link", "attributeName"],
+      ["(", "bracket"],
+    ]);
+    expect(tokenOf("#Test", "Test")).toBe("attributeName");
+  });
+
+  it("knows the error, cleanup and declaration keywords", () => {
+    expect(tokenOf("throw .Blank;", "throw")).toBe("controlKeyword");
+    expect(tokenOf("let v = Parse(s) catch { e => 0 };", "catch")).toBe("controlKeyword");
+    expect(tokenOf("defer Free(values);", "defer")).toBe("controlKeyword");
+    expect(tokenOf("when #target.os == .Linux {", "when")).toBe("controlKeyword");
+    expect(tokenOf("destroy early;", "destroy")).toBe("keyword");
+    expect(tokenOf("destructor {", "destructor")).toBe("keyword");
+    expect(tokenOf("intrinsic interface Copyable;", "intrinsic")).toBe("keyword");
+    expect(tokens("variant DigitError {").slice(0, 2)).toEqual([
+      ["variant", "definitionKeyword"],
+      ["DigitError", "typeName"],
+    ]);
+    expect(tokenOf("func New() -> Self {", "Self")).toBe("self");
+  });
+
+  it("reads the error operators", () => {
+    expect(tokens("let n = Parse(s) !! 0;").map((entry) => entry[0])).toContain("!!");
+    expect(tokenOf("Flush(file) !!;", "!!")).toBe("operator");
+    expect(tokenOf("let port = maybe ?? 8080;", "??")).toBe("operator");
+  });
+
+  it("reads the wide character prefixes on characters only", () => {
+    expect(tokens("let c = c512'a';")[3]).toEqual(["c512'", "string"]);
+    expect(tokenOf('let s = c64"a";', "c64")).toBe("variableName");
   });
 
   it("reads the pointer and address-of punctuation the memory example uses", () => {
@@ -173,7 +210,7 @@ describe("Rux stream mode", () => {
   });
 
   it("treats as and is as operators rather than declarations", () => {
-    expect(tokenOf("import Math as Calc;", "as")).toBe("operatorKeyword");
+    expect(tokenOf("let n = count as int64;", "as")).toBe("operatorKeyword");
     expect(tokenOf("if x is int {", "is")).toBe("operatorKeyword");
   });
 });

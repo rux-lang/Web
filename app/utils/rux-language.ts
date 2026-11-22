@@ -17,7 +17,9 @@ import { tags } from "@lezer/highlight";
 
 const controlKeywords = new Set([
   "break",
+  "catch",
   "continue",
+  "defer",
   "do",
   "else",
   "for",
@@ -26,15 +28,27 @@ const controlKeywords = new Set([
   "loop",
   "match",
   "return",
+  "throw",
+  "when",
   "while",
 ]);
 
 const storageModifiers = new Set(["const", "let", "pub", "var"]);
 
 /** Keywords that introduce a named type, so the name after them is one. */
-const declarationKeywords = new Set(["enum", "interface", "struct", "type", "union"]);
+const declarationKeywords = new Set(["enum", "interface", "struct", "type", "union", "variant"]);
 
-const otherKeywords = new Set(["asm", "async", "export", "extend", "extern", "func", "import", "module"]);
+const otherKeywords = new Set([
+  "asm",
+  "destroy",
+  "destructor",
+  "extend",
+  "extern",
+  "func",
+  "import",
+  "intrinsic",
+  "module",
+]);
 
 const typeOperators = new Set(["as", "is"]);
 
@@ -56,11 +70,14 @@ const binaryLiteral = new RegExp(`^0b[01_]+${numericSuffix}`);
 // The fractional part requires a digit so `2..=n` reads as a range, not `2.` and `=n`.
 const decimalLiteral = new RegExp(`^\\d[\\d_]*(?:\\.[\\d_]+)?(?:[Ee][+-]?[\\d_]+)?${numericSuffix}`);
 
-const intrinsicConstant = /^#(?:module|file|function|line|column|date|time)\b/;
+// `#` before a lower-case name is a compile-time value (`#target`), before a
+// capitalised one an attribute (`#Test`). The name is read as a word after it.
+const hashPrefix = /^#(?=[A-Za-z])/;
 const identifier = /^[A-Za-z_][A-Za-z0-9_]*/;
-const stringOpen = /^(?:c8|c16|c32)?(["'])/;
+// Strings take the three code-unit prefixes; characters also take c64 to c512.
+const stringOpen = /^(?:(?:c8|c16|c32)(?=["'])|(?:c64|c128|c256|c512)(?='))?(["'])/;
 const compoundOperator =
-  /^(?:<<=|>>=|\.\.=|\.\.\.|\.\.|==|!=|<=|>=|=>|->|::|&&|\|\||\+\+|--|\+=|-=|\*=|\/=|%=|&=|\|=|\^=|<<|>>)/;
+  /^(?:<<=|>>=|\.\.=|\.\.\.|\.\.|==|!=|<=|>=|=>|->|::|&&|\|\||!!|\?\?|\+\+|--|\+=|-=|\*=|\/=|%=|&=|\|=|\^=|<<|>>)/;
 const singleOperator = /^[+\-*/%=<>!~^&|@?]/;
 
 export interface RuxTokenizerState {
@@ -120,14 +137,17 @@ function tokenizeWord(stream: StringStream, state: RuxTokenizerState): string {
   const expectedTypeName = state.expectTypeName;
   state.expectTypeName = declarationKeywords.has(word);
 
+  if (stream.string.charAt(stream.start - 1) === "#") {
+    return word.charAt(0) === word.charAt(0).toUpperCase() ? "attributeName" : "macroName";
+  }
   if (controlKeywords.has(word)) return "controlKeyword";
   if (storageModifiers.has(word)) return "modifier";
   if (declarationKeywords.has(word)) return "definitionKeyword";
   if (otherKeywords.has(word)) return "keyword";
   if (typeOperators.has(word)) return "operatorKeyword";
-  if (word === "self" || word === "super") return "self";
+  if (word === "self" || word === "Self") return "self";
   if (word === "true" || word === "false") return "bool";
-  if (word === "null") return "null";
+  if (word === "null" || word === "none") return "null";
   if (primitiveTypes.has(word)) return "typeName";
   if (expectedTypeName) return "typeName";
   if (stream.match(/^\s*\(/, false)) return "variableName.function";
@@ -181,9 +201,9 @@ export const ruxStreamParser: StreamParser<RuxTokenizerState> = {
       if (stream.match(decimalLiteral)) return "number";
     }
 
-    if (stream.match(intrinsicConstant)) {
+    if (stream.match(hashPrefix)) {
       state.expectTypeName = false;
-      return "macroName";
+      return "punctuation";
     }
 
     if (stream.match(identifier)) return tokenizeWord(stream, state);
@@ -304,11 +324,13 @@ function highlightStyle(palette: RuxPalette, themeType: "light" | "dark"): Highl
       { tag: tags.docComment, color: palette.comment, fontStyle: "italic" },
       { tag: tags.controlKeyword, color: palette.control, fontStyle: "italic" },
       { tag: tags.keyword, color: palette.keyword },
-      { tag: [tags.operatorKeyword, tags.null], color: palette.operatorKeyword },
+      { tag: tags.operatorKeyword, color: palette.operatorKeyword },
       { tag: [tags.modifier, tags.definitionKeyword], color: palette.storage },
       { tag: [tags.variableName, tags.self], color: palette.variable },
-      { tag: tags.bool, color: palette.bool },
-      { tag: [tags.number, tags.macroName], color: palette.number },
+      // `null`, `none` and `#target` are `constant.language` in the grammar, as the booleans are.
+      { tag: [tags.bool, tags.null, tags.macroName], color: palette.bool },
+      { tag: tags.number, color: palette.number },
+      { tag: tags.attributeName, color: palette.callee, fontStyle: "italic" },
       { tag: tags.typeName, color: palette.type },
       { tag: [tags.string, tags.character], color: palette.string },
       { tag: tags.escape, color: palette.escape },
