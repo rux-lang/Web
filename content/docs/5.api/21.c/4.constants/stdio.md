@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/StdIo.rux
-  line: 49
+  line: 52
 seo:
   title: "Standard I/O — C API"
   description: "C's <stdio.h>: streams, formatted conversion and the constants that size them."
@@ -31,7 +31,7 @@ Closes the given file stream.
 
 **See also**: [https://en.cppreference.com/c/io/fclose](https://en.cppreference.com/c/io/fclose)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L52)
 
 **Parameters**
 
@@ -51,7 +51,7 @@ Reads the next character from the given stream.
 
 **See also**: [https://en.cppreference.com/c/io/fgetc](https://en.cppreference.com/c/io/fgetc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L77)
 
 **Parameters**
 
@@ -74,7 +74,7 @@ Opens a file indicated by filename with the given mode.
 
 **See also**: [https://en.cppreference.com/c/io/fopen](https://en.cppreference.com/c/io/fopen)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L100)
 
 **Parameters**
 
@@ -99,7 +99,7 @@ Sets the file position indicator for the stream.
 
 **See also**: [https://en.cppreference.com/c/io/fseek](https://en.cppreference.com/c/io/fseek)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L154)
 
 **Parameters**
 
@@ -121,7 +121,7 @@ Returns the current file position of the stream.
 
 **See also**: [https://en.cppreference.com/c/io/ftell](https://en.cppreference.com/c/io/ftell)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L165)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L168)
 
 **Parameters**
 
@@ -146,7 +146,7 @@ Writes count objects of the given size from a buffer to the stream.
 
 **See also**: [https://en.cppreference.com/c/io/fwrite](https://en.cppreference.com/c/io/fwrite)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L175)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L178)
 
 **Parameters**
 
@@ -169,7 +169,7 @@ Writes a character to stdout.
 
 **See also**: [https://en.cppreference.com/c/io/putchar](https://en.cppreference.com/c/io/putchar)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L211)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L214)
 
 **Parameters**
 
@@ -189,7 +189,7 @@ Writes a string followed by a newline to stdout.
 
 **See also**: [https://en.cppreference.com/c/io/puts](https://en.cppreference.com/c/io/puts)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L218)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L221)
 
 **Parameters**
 
@@ -209,7 +209,7 @@ Deletes the file identified by the given path.
 
 **See also**: [https://en.cppreference.com/c/io/remove](https://en.cppreference.com/c/io/remove)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L225)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L228)
 
 **Parameters**
 
@@ -235,7 +235,7 @@ destination that knows its own length.
 
 **See also**: [https://en.cppreference.com/c/io/sprintf](https://en.cppreference.com/c/io/sprintf)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L270)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L273)
 
 **Parameters**
 
@@ -263,7 +263,7 @@ overrun; give every string conversion an explicit width.
 
 **See also**: [https://en.cppreference.com/c/io/sscanf](https://en.cppreference.com/c/io/sscanf)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L280)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L283)
 
 **Parameters**
 
@@ -285,7 +285,7 @@ pub const EOF: int32 = -1;
 Negative, and distinct from every `unsigned char` value, which is why those calls return a [`c_int`](/docs/api/c/types#c-int) rather than a
 character type. It does not say which of the two happened: `feof` and `ferror` do.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L311)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L315)
 
 <h2 id="seek-set"><code>SEEK_SET</code></h2>
 
@@ -295,7 +295,7 @@ pub const SEEK_SET: int32 = 0;
 
 `SEEK_SET`: measure the new stream position from the beginning.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L316)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L320)
 
 <h2 id="seek-cur"><code>SEEK_CUR</code></h2>
 
@@ -305,7 +305,7 @@ pub const SEEK_CUR: int32 = 1;
 
 `SEEK_CUR`: measure the new stream position from the current one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L321)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L325)
 
 <h2 id="seek-end"><code>SEEK_END</code></h2>
 
@@ -315,7 +315,7 @@ pub const SEEK_END: int32 = 2;
 
 `SEEK_END`: measure the new stream position from the end.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L326)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L330)
 
 <h2 id="iofbf"><code>_IOFBF</code></h2>
 
@@ -325,7 +325,7 @@ pub const _IOFBF: int32 = 0;
 
 `_IOFBF`: buffer fully, flushing when the buffer fills.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L335)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L339)
 
 <h2 id="iolbf"><code>_IOLBF</code></h2>
 
@@ -339,7 +339,7 @@ pub const _IOLBF: int32 = 1;
 
 `_IOLBF`: buffer by line.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L340)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L344)
 
 <h2 id="ionbf"><code>_IONBF</code></h2>
 
@@ -353,7 +353,7 @@ pub const _IONBF: int32 = 2;
 
 `_IONBF`: do not buffer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L345)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L349)
 
 <h2 id="bufsiz"><code>BUFSIZ</code></h2>
 
@@ -370,7 +370,7 @@ pub const BUFSIZ: int32 = 1024;
 
 `BUFSIZ`: the buffer size `setbuf` uses.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L350)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L354)
 
 <h2 id="fopen-max"><code>FOPEN_MAX</code></h2>
 
@@ -384,7 +384,7 @@ pub const FOPEN_MAX: int32 = 16;
 
 `FOPEN_MAX`: how many streams the implementation guarantees can be open at once.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L355)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L359)
 
 <h2 id="filename-max"><code>FILENAME_MAX</code></h2>
 
@@ -401,7 +401,7 @@ pub const FILENAME_MAX: int32 = 1024;
 
 `FILENAME_MAX`: the length of the longest file name the implementation guarantees it can open.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L360)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L364)
 
 <h2 id="l-tmpnam"><code>L_tmpnam</code></h2>
 
@@ -418,7 +418,7 @@ pub const L_tmpnam: int32 = 1024;
 
 `L_tmpnam`: the buffer size `tmpnam` needs.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L365)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L369)
 
 <h2 id="tmp-max"><code>TMP_MAX</code></h2>
 
@@ -435,7 +435,7 @@ pub const TMP_MAX: int32 = 308915776;
 
 `TMP_MAX`: how many distinct names `tmpnam` guarantees before it repeats.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L370)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdIo.rux#L374)
 
 <h2 id="file"><code>FILE</code></h2>
 
@@ -444,12 +444,12 @@ pub struct FILE {}
 ```
 
 C's `FILE`: a stream, whose contents belong to the C runtime.
-Declared with no fields on purpose. Its layout differs by platform and by runtime version, and no binding may read
-it; a stream is only ever handled through `*FILE` and the calls that take one. Naming the type rather than using
-`*opaque` is what keeps a stream from being passed where some other handle was meant.
-A `*FILE` is valid only between the call that produced it and the [`fclose`](/docs/api/c/stdio#fclose) that ends it. Nothing here tracks that.
+Declared with no fields on purpose. Its layout differs by platform and by runtime version, and no binding may
+read it; a stream is only ever handled through `*FILE` and the calls that take one. Naming the type rather than
+using `*opaque` is what keeps a stream from being passed where some other handle was meant. A `*FILE` is valid
+only between the call that produced it and the [`fclose`](/docs/api/c/stdio#fclose) that ends it. Nothing here tracks that.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L154)
 
 <h2 id="fpos-t"><code>fpos_t</code></h2>
 
@@ -461,4 +461,4 @@ C's `fpos_t`: an opaque record of a position within a stream.
 Declared with no fields for the same reason [`FILE`](/docs/api/c/stdio#file) is: its contents belong to the C runtime, and it is only ever
 produced by `fgetpos` and consumed by `fsetpos`. It is not a byte offset and must not be arithmetic on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L161)

@@ -22,13 +22,13 @@ rux add Rux/Linux
 | `Entropy` | `GetRandom`, the only source here fit for a key or a token                                                                                                                                                                |
 | `Dynamic` | `dlopen`, `dlsym`, `dlclose`, `dlerror`, and the `RTLD_*` flags                                                                                                                                                           |
 | `Thread`  | `pthread_create`, `pthread_join`, `pthread_detach`, the `pthread_attr_*` stack-size calls, `sched_yield`, `sysconf` and `SC_NPROCESSORS_ONLN`, and `gettid`, linked from libc                                             |
-| `Socket`  | `Socket`, `Connect`, `Bind`, `Listen`, `Accept4`, `SendTo`, `ReceiveFrom`, `Shutdown`, `SetSocketOption`, `GetSocketName` and `GetPeerName` as system calls, with the address families, socket options and `MSG_NOSIGNAL` |
+| `Sockets` | `Socket`, `Connect`, `Bind`, `Listen`, `Accept4`, `SendTo`, `ReceiveFrom`, `Shutdown`, `SetSocketOption`, `GetSocketName` and `GetPeerName` as system calls, with the address families, socket options and `MSG_NOSIGNAL` |
 | `Resolve` | `getaddrinfo`, `freeaddrinfo` and `AddressInfo`, linked from libc                                                                                                                                                         |
 | `Futex`   | `FutexWait` and `FutexWake`, the private `futex(2)` operations every lock in `Rux/Sync` sleeps on                                                                                                                         |
 | `Spawn`   | `posix_spawnp`, the `posix_spawn_file_actions_*` calls, `waitpid`, `kill`, `fcntl` and `__errno_location`, linked from libc                                                                                               |
 | `Poll`    | `EpollCreate1`, `EpollControl` and `EpollWait` as system calls, the `EPOLL*` flags, the per-architecture `epoll_event` layout, and `FcntlInt` with `F_GETFL`, `F_SETFL` and `O_NONBLOCK`                                  |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+Every declaration lives in the module of its row, and the module is part of the import path: `import Linux::File::{ Close, OpenAt };`.
 
 There is no `errno` here. The kernel returns the error in the result register as a small negative number, and libc is what turns that into a positive `errno` and a `-1` return. This package calls the kernel directly, so a caller tests a raw result with `IsError` and reads the number with `Errno`. Only `-4095` through `-1` is an error, which is what makes `Mmap` workable: a mapping address may legitimately have its top bit set.
 
@@ -54,17 +54,17 @@ All of it compiles for both architectures, and none of it has ever run on a host
 
 Kernel records such as `Timespec` are structural values and copy by value. Syscall wrappers deliberately retain raw pointers: the kernel receives untyped integer addresses, buffers carry separate byte counts, and optional outputs may be null. Callers must therefore pass explicit addresses such as `ClockGetTime(ClockMonotonic, @time)` and uphold each function's safety contract. No wrapper owns an address or descriptor; release mappings and close descriptors explicitly, or prefer the higher-level `Rux/Memory` and `Rux/Io` packages.
 
-The wrappers that take a raw pointer the kernel reads or writes — a buffer and its length, a NUL-terminated path, a structure the call fills, an address range to map, unmap, protect or advise, a futex word, a socket address or an epoll event array — are `unsafe func`, and the `Safety:` sentence in each one's documentation states what the caller must uphold. A call to one needs an `unsafe` block, conventionally under a `// Safety:` comment saying why the obligation holds at that call: `unsafe { ClockGetTime(ClockMonotonic, @time) }`. `FcntlInt` is one of them too, because a command whose argument is a pointer would use the integer as an address. Wrappers that take only numbers, such as `Close`, `Lseek`, `Dup3`, `Socket`, `Exit` and `GetPid`, stay safe to call. `Syscall0` through `Syscall6` are `asm func` declarations and always need `unsafe`, and so do the libc declarations in `Dynamic`, `Thread`, `Resolve` and `Spawn`, which are `extern`.
+The wrappers that take a raw pointer the kernel reads or writes — a buffer and its length, a NUL-terminated path, a structure the call fills, an address range to map, unmap, protect or advise, a futex word, a socket address or an epoll event array — put an obligation on their caller, and the `Safety:` sentence in each one's documentation states what it is. A call to one is conventionally written under a `// Safety:` comment saying why the obligation holds at that call: `ClockGetTime(ClockMonotonic, @time)`. `FcntlInt` is one of them too, because a command whose argument is a pointer would use the integer as an address. Wrappers that take only numbers, such as `Close`, `Lseek`, `Dup3`, `Socket`, `Exit` and `GetPid`, put none on theirs. `Syscall0` through `Syscall6` are `asm func` declarations, and the libc declarations in `Dynamic`, `Thread`, `Resolve` and `Spawn` are `extern`.
 
 ## Platform
 
 Linux only. Guard use behind a compile-time check, so a build for another target never resolves these declarations:
 
 ```rux
-import Core::{ #target };
+import Core::Compilation::#target;
 
 when #target.os == .Linux {
-    import Linux::{ StdOut, Write };
+    import Linux::File::{ StdOut, Write };
 }
 ```
 

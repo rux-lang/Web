@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Time.rux
-  line: 18
+  line: 20
 seo:
   title: "Time — C API"
   description: "C's <time.h>: calendar time, processor time and the conversions between them."
@@ -33,7 +33,7 @@ supported target. `Rux/Time`'s `Timestamp` is the one that says so as a contract
 
 **See also**: [https://en.cppreference.com/c/chrono/time_t](https://en.cppreference.com/c/chrono/time_t)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L20)
 
 <h2 id="clock-t"><code>clock_t</code></h2>
 
@@ -50,20 +50,15 @@ pub type clock_t = uint64
 
 C's `clock_t`: processor time as an arithmetic value.
 `long` on every supported target, and `long` is not one width: the Universal CRT makes it 32 bits while
-every
-supported Unix makes it 64, and Darwin spells the same type unsigned. Declaring it as a fixed 64-bit
-integer, as
-this once did, reads four bytes of whatever followed the result on Windows.
-Spelled as the primitive rather than as [`c_long`](/docs/api/c/types#c-long), because a type alias cannot name one declared in another
-file
-of this package. The width is the same thing said twice.
-FreeBSD's definition is the one value here not confirmed against a running system; the eight-target fixture
-gate
-is what checks it.
+every supported Unix makes it 64, and Darwin spells the same type unsigned. Declaring it as a fixed
+64-bit integer, as this once did, reads four bytes of whatever followed the result on Windows. Spelled
+as the primitive rather than as [`c_long`](/docs/api/c/types#c-long), because a type alias cannot name one declared in another file
+of this package. The width is the same thing said twice. FreeBSD's definition is the one value here not
+confirmed against a running system; the eight-target fixture gate is what checks it.
 
 **See also**: [https://en.cppreference.com/c/chrono/clock_t](https://en.cppreference.com/c/chrono/clock_t)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L36)
 
 <h2 id="clock"><code>clock</code></h2>
 
@@ -75,7 +70,7 @@ Returns the approximate processor time used by the program.
 
 **See also**: [https://en.cppreference.com/c/chrono/clock](https://en.cppreference.com/c/chrono/clock)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L198)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L178)
 
 **Returns**: the processor time used, or -1 when it is not available
 
@@ -92,7 +87,7 @@ Computes the difference in seconds between two calendar times.
 
 **See also**: [https://en.cppreference.com/c/chrono/difftime](https://en.cppreference.com/c/chrono/difftime)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L212)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L192)
 
 **Parameters**
 
@@ -113,7 +108,7 @@ Converts a time_t object to calendar time expressed as UTC.
 
 **See also**: [https://en.cppreference.com/c/chrono/gmtime](https://en.cppreference.com/c/chrono/gmtime)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L219)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L199)
 
 **Parameters**
 
@@ -133,7 +128,7 @@ Converts a time_t object to calendar time expressed as local time.
 
 **See also**: [https://en.cppreference.com/c/chrono/localtime](https://en.cppreference.com/c/chrono/localtime)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L226)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L206)
 
 **Parameters**
 
@@ -153,7 +148,7 @@ Converts calendar time to a time_t object, normalizing the tm structure.
 
 **See also**: [https://en.cppreference.com/c/chrono/mktime](https://en.cppreference.com/c/chrono/mktime)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L233)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L213)
 
 **Parameters**
 
@@ -173,7 +168,7 @@ Returns the current calendar time since the epoch.
 
 **See also**: [https://en.cppreference.com/c/chrono/time](https://en.cppreference.com/c/chrono/time)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L249)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L229)
 
 **Parameters**
 
@@ -191,7 +186,7 @@ pub const TIME_UTC: int32 = 1;
 
 `TIME_UTC`: the time base naming seconds since the epoch, the only one C defines.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L288)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L268)
 
 <h2 id="clocks-per-sec"><code>CLOCKS_PER_SEC</code></h2>
 
@@ -205,7 +200,7 @@ pub const CLOCKS_PER_SEC: int64 = 1000000;
 
 `CLOCKS_PER_SEC`: how many [`clock`](/docs/api/c/time#clock) ticks make one second on this target.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L297)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L277)
 
 <h2 id="timespec-get"><code>TimespecGet</code></h2>
 
@@ -221,7 +216,7 @@ Fills `ts` with the current time on the given base.
 only base C defines. Returns `base` on success and zero on failure, which is the one way this reports one.
 Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L315)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Time.rux#L295)
 
 **Parameters**
 

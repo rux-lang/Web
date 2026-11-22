@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Process.rux
-  line: 18
+  line: 19
 seo:
   title: "Process — Linux API"
   description: Ending the process and asking its identifier.
@@ -29,13 +29,12 @@ pub func Exit(code: int32)
 
 Ends the calling thread's process with `code`.
 `code` is read by value; only its low eight bits reach a waiting parent, which is the kernel's rule rather than
-this binding's. Does not return.
-Nothing is flushed, unwound, or destroyed on the way out: the kernel reclaims the address space and the
-descriptors, and anything the program was holding elsewhere is simply gone.
-This ends the whole process rather than one thread: it is `exit_group`, not `exit`, which on Linux stops only the
-calling thread and would leave the others running.
+this binding's. Does not return. Nothing is flushed, unwound, or destroyed on the way out: the kernel reclaims
+the address space and the descriptors, and anything the program was holding elsewhere is simply gone. This ends
+the whole process rather than one thread: it is `exit_group`, not `exit`, which on Linux stops only the calling
+thread and would leave the others running.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Process.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Process.rux#L19)
 
 **Parameters**
 
@@ -54,6 +53,6 @@ Takes nothing and returns the identifier by copy. Cannot fail: every process has
 be given a bad argument.
 Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Process.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Process.rux#L30)
 
 **Returns**: the calling process's identifier

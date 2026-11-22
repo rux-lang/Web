@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Types.rux
-  line: 15
+  line: 16
 seo:
   title: "Types — Linux API"
   description: "Linux's scalar types for process, file and user identifiers."
@@ -30,7 +30,7 @@ pub type FileDescriptor = int32
 A file descriptor, as the kernel numbers one.
 Signed and small. A syscall taking one receives it sign-extended to a full register, which [`SignExtendFd`](/docs/api/linux/syscalls#sign-extend-fd) does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L16)
 
 <h2 id="file-mode"><code>FileMode</code></h2>
 
@@ -40,7 +40,7 @@ pub type FileMode = uint32
 
 A file's type and permission bits, as `open` and `stat` carry them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L24)
 
 <h2 id="file-offset"><code>FileOffset</code></h2>
 
@@ -50,7 +50,7 @@ pub type FileOffset = int64
 
 A byte offset within a file, which the 64-bit ABI makes 64 bits everywhere.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L20)
 
 <h2 id="group-id"><code>GroupId</code></h2>
 
@@ -60,7 +60,7 @@ pub type GroupId = uint32
 
 A group identifier.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L32)
 
 <h2 id="process-id"><code>ProcessId</code></h2>
 
@@ -71,7 +71,7 @@ pub type ProcessId = int32
 A process identifier, as `getpid` and its relatives report one.
 Signed, because several calls overload the negative range to mean a process group.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L11)
 
 <h2 id="user-id"><code>UserId</code></h2>
 
@@ -81,4 +81,4 @@ pub type UserId = uint32
 
 A user identifier.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Types.rux#L28)

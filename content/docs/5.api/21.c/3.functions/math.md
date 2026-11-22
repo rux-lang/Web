@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Math.rux
-  line: 131
+  line: 134
 seo:
   title: "Mathematics — C API"
   description: "C's <math.h>: the elementary functions and the special floating-point values."
@@ -31,7 +31,7 @@ Computes cube root.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/cbrt](https://en.cppreference.com/c/numeric/math/cbrt)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L134)
 
 **Parameters**
 
@@ -51,7 +51,7 @@ Computes smallest integer not less than the given value.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/ceil](https://en.cppreference.com/c/numeric/math/ceil)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L147)
 
 **Parameters**
 
@@ -71,7 +71,7 @@ Copies the sign of a floating-point value.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/copysign](https://en.cppreference.com/c/numeric/math/copysign)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L162)
 
 **Parameters**
 
@@ -92,7 +92,7 @@ Computes cosine.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/cos](https://en.cppreference.com/c/numeric/math/cos)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L172)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L175)
 
 **Parameters**
 
@@ -112,7 +112,7 @@ Computes e raised to the given power.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/exp](https://en.cppreference.com/c/numeric/math/exp)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L221)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L224)
 
 **Parameters**
 
@@ -132,7 +132,7 @@ Computes the absolute value of a floating-point value.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/fabs](https://en.cppreference.com/c/numeric/math/fabs)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L255)
 
 **Parameters**
 
@@ -152,7 +152,7 @@ Computes positive difference of two floating-point values.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/fdim](https://en.cppreference.com/c/numeric/math/fdim)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L267)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L270)
 
 **Parameters**
 
@@ -173,7 +173,7 @@ Computes largest integer not greater than the given value.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/floor](https://en.cppreference.com/c/numeric/math/floor)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L280)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L283)
 
 **Parameters**
 
@@ -193,7 +193,7 @@ Computes larger of two floating-point values.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/fmax](https://en.cppreference.com/c/numeric/math/fmax)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L311)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L314)
 
 **Parameters**
 
@@ -214,7 +214,7 @@ Computes smaller of two floating-point values.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/fmin](https://en.cppreference.com/c/numeric/math/fmin)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L326)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L329)
 
 **Parameters**
 
@@ -235,7 +235,7 @@ Computes remainder of the floating-point division operation.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/fmod](https://en.cppreference.com/c/numeric/math/fmod)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L341)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L344)
 
 **Parameters**
 
@@ -256,7 +256,7 @@ Computes square root of the sum of the squares of two given numbers.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/hypot](https://en.cppreference.com/c/numeric/math/hypot)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L356)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L359)
 
 **Parameters**
 
@@ -277,7 +277,7 @@ Multiplies a number by 2 raised to an integer power.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/ldexp](https://en.cppreference.com/c/numeric/math/ldexp)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L376)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L379)
 
 **Parameters**
 
@@ -298,7 +298,7 @@ Computes natural (base e) logarithm.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/log](https://en.cppreference.com/c/numeric/math/log)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L425)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L428)
 
 **Parameters**
 
@@ -318,7 +318,7 @@ Computes base 2 logarithm.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/log2](https://en.cppreference.com/c/numeric/math/log2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L462)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L465)
 
 **Parameters**
 
@@ -341,7 +341,7 @@ Computes a number raised to the given power.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/pow](https://en.cppreference.com/c/numeric/math/pow)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L565)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L568)
 
 **Parameters**
 
@@ -362,7 +362,7 @@ Rounds to nearest integer, rounding away from zero in halfway cases.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/round](https://en.cppreference.com/c/numeric/math/round)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L620)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L623)
 
 **Parameters**
 
@@ -387,7 +387,7 @@ Multiplies a floating-point value by an integral power of two, with a long expon
 
 **See also**: [https://en.cppreference.com/c/numeric/math/scalbn](https://en.cppreference.com/c/numeric/math/scalbn)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L644)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L647)
 
 **Parameters**
 
@@ -411,7 +411,7 @@ Multiplies a floating-point value by an integral power of two, with a long expon
 
 **See also**: [https://en.cppreference.com/c/numeric/math/scalbn](https://en.cppreference.com/c/numeric/math/scalbn)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L652)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L655)
 
 **Parameters**
 
@@ -432,7 +432,7 @@ Computes sine.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/sin](https://en.cppreference.com/c/numeric/math/sin)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L661)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L664)
 
 **Parameters**
 
@@ -452,7 +452,7 @@ Computes square root.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/sqrt](https://en.cppreference.com/c/numeric/math/sqrt)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L680)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L683)
 
 **Parameters**
 
@@ -472,7 +472,7 @@ Computes square root.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/sqrt](https://en.cppreference.com/c/numeric/math/sqrt)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L687)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L690)
 
 **Parameters**
 
@@ -492,7 +492,7 @@ Computes tangent.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/tan](https://en.cppreference.com/c/numeric/math/tan)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L700)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L703)
 
 **Parameters**
 
@@ -512,7 +512,7 @@ Rounds to nearest integer not greater in magnitude than the given value.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/trunc](https://en.cppreference.com/c/numeric/math/trunc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L737)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L740)
 
 **Parameters**
 
@@ -531,7 +531,7 @@ pub const HUGE_VAL: float64 = float64::Infinity;
 `HUGE_VAL`: what a `double` function returns when the true result is too large to express.
 An infinity on every supported target, which is what the standard permits and what every one of them chooses.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L747)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L750)
 
 <h2 id="huge-valf"><code>HUGE_VALF</code></h2>
 
@@ -541,7 +541,7 @@ pub const HUGE_VALF: float32 = float32::Infinity;
 
 `HUGE_VALF`: the `float` form of [`HUGE_VAL`](/docs/api/c/math#huge-val).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L752)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L755)
 
 <h2 id="infinity"><code>INFINITY</code></h2>
 
@@ -550,10 +550,10 @@ pub const INFINITY: float32 = float32::Infinity;
 ```
 
 `INFINITY`: a positive infinity, for building a value rather than for testing one.
-Comparing against it is not how a caller asks whether a result overflowed; `Core::IsInfinite` answers that without
-naming a width.
+Comparing against it is not how a caller asks whether a result overflowed; `Core::IsInfinite` answers that
+without naming a width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L759)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L762)
 
 <h2 id="nan"><code>NAN</code></h2>
 
@@ -565,4 +565,4 @@ pub const NAN: float32 = float32::NaN;
 It equals nothing, itself included, so `value == NAN` is always false and is never the test a caller wants;
 `Core::IsNaN` is.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L766)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Math.rux#L769)

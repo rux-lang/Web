@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Socket.rux
-  line: 41
+  line: 45
 seo:
   title: "Sockets — Linux API"
   description: "Address families, socket types and options, and the calls that open, bind and connect sockets."
@@ -29,7 +29,7 @@ pub const AF_INET: int32 = 2;
 
 `AF_INET`: the IPv4 address family.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L45)
 
 <h2 id="af-inet6"><code>AF_INET6</code></h2>
 
@@ -39,7 +39,7 @@ pub const AF_INET6: int32 = 10;
 
 `AF_INET6`: the IPv6 address family.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L50)
 
 <h2 id="sock-stream"><code>SOCK_STREAM</code></h2>
 
@@ -49,7 +49,7 @@ pub const SOCK_STREAM: int32 = 1;
 
 `SOCK_STREAM`: a connected byte stream.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L55)
 
 <h2 id="sock-dgram"><code>SOCK_DGRAM</code></h2>
 
@@ -59,7 +59,7 @@ pub const SOCK_DGRAM: int32 = 2;
 
 `SOCK_DGRAM`: individual datagrams.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L60)
 
 <h2 id="sock-cloexec"><code>SOCK_CLOEXEC</code></h2>
 
@@ -69,7 +69,7 @@ pub const SOCK_CLOEXEC: int32 = 0x80000;
 
 `SOCK_CLOEXEC`: close the socket when the process starts another program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L65)
 
 <h2 id="sol-socket"><code>SOL_SOCKET</code></h2>
 
@@ -79,7 +79,7 @@ pub const SOL_SOCKET: int32 = 1;
 
 `SOL_SOCKET`: the level of the options every socket has.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L70)
 
 <h2 id="so-reuseaddr"><code>SO_REUSEADDR</code></h2>
 
@@ -89,7 +89,7 @@ pub const SO_REUSEADDR: int32 = 2;
 
 `SO_REUSEADDR`: let a listening address be bound again while old connections to it wind down.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L75)
 
 <h2 id="so-rcvtimeo"><code>SO_RCVTIMEO</code></h2>
 
@@ -99,7 +99,7 @@ pub const SO_RCVTIMEO: int32 = 20;
 
 `SO_RCVTIMEO`: how long a receive waits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L80)
 
 <h2 id="so-sndtimeo"><code>SO_SNDTIMEO</code></h2>
 
@@ -109,7 +109,7 @@ pub const SO_SNDTIMEO: int32 = 21;
 
 `SO_SNDTIMEO`: how long a send waits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L85)
 
 <h2 id="ipproto-tcp"><code>IPPROTO_TCP</code></h2>
 
@@ -119,7 +119,7 @@ pub const IPPROTO_TCP: int32 = 6;
 
 `IPPROTO_TCP`: the level of TCP's options.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L86)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L90)
 
 <h2 id="tcp-nodelay"><code>TCP_NODELAY</code></h2>
 
@@ -129,7 +129,7 @@ pub const TCP_NODELAY: int32 = 1;
 
 `TCP_NODELAY`: send small writes at once rather than gathering them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L95)
 
 <h2 id="ipproto-ipv6"><code>IPPROTO_IPV6</code></h2>
 
@@ -139,7 +139,7 @@ pub const IPPROTO_IPV6: int32 = 41;
 
 `IPPROTO_IPV6`: the level of IPv6's options.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L96)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L100)
 
 <h2 id="ipv6-v6only"><code>IPV6_V6ONLY</code></h2>
 
@@ -149,7 +149,7 @@ pub const IPV6_V6ONLY: int32 = 26;
 
 `IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L105)
 
 <h2 id="msg-nosignal"><code>MSG_NOSIGNAL</code></h2>
 
@@ -159,7 +159,7 @@ pub const MSG_NOSIGNAL: int32 = 0x4000;
 
 `MSG_NOSIGNAL`: report a closed peer as an error rather than with `SIGPIPE`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L106)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L110)
 
 <h2 id="socket"><code>Socket</code></h2>
 
@@ -175,7 +175,7 @@ Opens a socket.
 
 **See also**: [https://man7.org/linux/man-pages/man2/socket.2.html](https://man7.org/linux/man-pages/man2/socket.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L119)
 
 **Parameters**
 
@@ -190,7 +190,7 @@ Opens a socket.
 <h2 id="connect"><code>Connect</code></h2>
 
 ```rux
-pub unsafe func Connect(
+pub func Connect(
     fd: FileDescriptor,
     address: *opaque,
     length: uint32
@@ -202,7 +202,7 @@ Safety: `address` must be readable for `length` bytes.
 
 **See also**: [https://man7.org/linux/man-pages/man2/connect.2.html](https://man7.org/linux/man-pages/man2/connect.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L130)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L134)
 
 **Parameters**
 
@@ -217,7 +217,7 @@ Safety: `address` must be readable for `length` bytes.
 <h2 id="bind"><code>Bind</code></h2>
 
 ```rux
-pub unsafe func Bind(
+pub func Bind(
     fd: FileDescriptor,
     address: *opaque,
     length: uint32
@@ -229,7 +229,7 @@ Safety: `address` must be readable for `length` bytes.
 
 **See also**: [https://man7.org/linux/man-pages/man2/bind.2.html](https://man7.org/linux/man-pages/man2/bind.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L146)
 
 **Parameters**
 
@@ -251,7 +251,7 @@ Makes a bound stream socket accept connections.
 
 **See also**: [https://man7.org/linux/man-pages/man2/listen.2.html](https://man7.org/linux/man-pages/man2/listen.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L156)
 
 **Parameters**
 
@@ -265,7 +265,7 @@ Makes a bound stream socket accept connections.
 <h2 id="accept4"><code>Accept4</code></h2>
 
 ```rux
-pub unsafe func Accept4(
+pub func Accept4(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32,
@@ -274,12 +274,12 @@ pub unsafe func Accept4(
 ```
 
 Accepts a waiting connection as a new socket.
-Safety: `address` and `length` must be null together, or `length` must be writable and `address` writable for the
-`*length` bytes it states.
+Safety: `address` and `length` must be null together, or `length` must be writable and `address` writable for
+the `*length` bytes it states.
 
 **See also**: [https://man7.org/linux/man-pages/man2/accept4.2.html](https://man7.org/linux/man-pages/man2/accept4.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L167)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L171)
 
 **Parameters**
 
@@ -295,7 +295,7 @@ Safety: `address` and `length` must be null together, or `length` must be writab
 <h2 id="sendto"><code>SendTo</code></h2>
 
 ```rux
-pub unsafe func SendTo(
+pub func SendTo(
     fd: FileDescriptor,
     buffer: *opaque,
     count: uint,
@@ -310,7 +310,7 @@ Safety: `buffer` must be readable for `count` bytes, and a non-null `address` re
 
 **See also**: [https://man7.org/linux/man-pages/man2/sendto.2.html](https://man7.org/linux/man-pages/man2/sendto.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L182)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L186)
 
 **Parameters**
 
@@ -328,7 +328,7 @@ Safety: `buffer` must be readable for `count` bytes, and a non-null `address` re
 <h2 id="receivefrom"><code>ReceiveFrom</code></h2>
 
 ```rux
-pub unsafe func ReceiveFrom(
+pub func ReceiveFrom(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint,
@@ -339,12 +339,12 @@ pub unsafe func ReceiveFrom(
 ```
 
 Receives bytes from a socket, and where they came from.
-Safety: `buffer` must be writable for `count` bytes. `address` and `length` must be null together, or `length` must
-be writable and `address` writable for the `*length` bytes it states.
+Safety: `buffer` must be writable for `count` bytes. `address` and `length` must be null together, or `length`
+must be writable and `address` writable for the `*length` bytes it states.
 
 **See also**: [https://man7.org/linux/man-pages/man2/recvfrom.2.html](https://man7.org/linux/man-pages/man2/recvfrom.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L199)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L203)
 
 **Parameters**
 
@@ -369,7 +369,7 @@ Ends one or both directions of a connection.
 
 **See also**: [https://man7.org/linux/man-pages/man2/shutdown.2.html](https://man7.org/linux/man-pages/man2/shutdown.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L214)
 
 **Parameters**
 
@@ -383,7 +383,7 @@ Ends one or both directions of a connection.
 <h2 id="setsocketoption"><code>SetSocketOption</code></h2>
 
 ```rux
-pub unsafe func SetSocketOption(
+pub func SetSocketOption(
     fd: FileDescriptor,
     level: int32,
     name: int32,
@@ -397,7 +397,7 @@ Safety: `value` must be readable for `length` bytes.
 
 **See also**: [https://man7.org/linux/man-pages/man2/setsockopt.2.html](https://man7.org/linux/man-pages/man2/setsockopt.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L225)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L229)
 
 **Parameters**
 
@@ -414,7 +414,7 @@ Safety: `value` must be readable for `length` bytes.
 <h2 id="getsocketname"><code>GetSocketName</code></h2>
 
 ```rux
-pub unsafe func GetSocketName(
+pub func GetSocketName(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32
@@ -426,7 +426,7 @@ Safety: `length` must be writable, and `address` writable for the `*length` byte
 
 **See also**: [https://man7.org/linux/man-pages/man2/getsockname.2.html](https://man7.org/linux/man-pages/man2/getsockname.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L238)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L242)
 
 **Parameters**
 
@@ -441,7 +441,7 @@ Safety: `length` must be writable, and `address` writable for the `*length` byte
 <h2 id="getpeername"><code>GetPeerName</code></h2>
 
 ```rux
-pub unsafe func GetPeerName(
+pub func GetPeerName(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32
@@ -453,7 +453,7 @@ Safety: `length` must be writable, and `address` writable for the `*length` byte
 
 **See also**: [https://man7.org/linux/man-pages/man2/getpeername.2.html](https://man7.org/linux/man-pages/man2/getpeername.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L250)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Socket.rux#L254)
 
 **Parameters**
 

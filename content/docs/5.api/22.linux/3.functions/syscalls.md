@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Syscall.rux
-  line: 26
+  line: 30
 seo:
   title: "System calls — Linux API"
   description: The raw system-call entry points and the call numbers they take.
@@ -33,7 +33,7 @@ pub const SysMmap: uint64 = 222;
 
 `mmap(2)`'s system-call number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L30)
 
 <h2 id="sys-get-pid"><code>SysGetPid</code></h2>
 
@@ -47,7 +47,7 @@ pub const SysGetPid: uint64 = 172;
 
 `getpid(2)`'s system-call number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L36)
 
 <h2 id="syscall-0"><code>Syscall0</code></h2>
 
@@ -57,7 +57,7 @@ pub func Syscall0(number: uint64) -> int64
 
 Executes a raw Linux system call without arguments.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L125)
 
 **Parameters**
 
@@ -83,7 +83,7 @@ pub func Syscall6(
 
 Executes a raw Linux system call with six arguments.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L188)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L192)
 
 **Parameters**
 
@@ -110,7 +110,7 @@ Widens a file descriptor to the register width a system call takes it in.
 as all ones rather than as a small positive number, which is how `mmap` is told it has no backing descriptor.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L295)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Syscall.rux#L299)
 
 **Parameters**
 

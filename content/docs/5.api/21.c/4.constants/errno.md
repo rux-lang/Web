@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Types.rux
-  line: 210
+  line: 213
 seo:
   title: "errno — C API"
   description: "Reading C's thread-local errno, and which C runtime it lives in."
@@ -39,7 +39,7 @@ pub const CRuntime = "libc.so.7";
 
 The shared object this target's C runtime lives in.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L213)
 
 <h2 id="stream-runtime"><code>StreamRuntime</code></h2>
 
@@ -69,7 +69,7 @@ call through either module is readable only through `ErrnoFor(CRuntimeArea::Stre
 | `pub const StreamRuntime = "libSystem.B.dylib";` | The shared object `C::StdIo` and `C::Time` are bound to, which on this target is the same one. |
 | `pub const StreamRuntime = "libc.so.7";`         | The shared object `C::StdIo` and `C::Time` are bound to, which on this target is the same one. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L220)
 
 <h2 id="c-runtime-area"><code>CRuntimeArea</code></h2>
 
@@ -88,7 +88,7 @@ entirely.
 Everywhere else there is one runtime and both cases name it, so a caller that always passes the area matching
 the module it called is right on all four systems and needs no target branch of its own.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L283)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L286)
 
 **Cases**
 
@@ -108,7 +108,7 @@ True on Windows and false everywhere else. A caller that passes the right area n
 here so that a program can say why it is being careful, and so that a test can assert the split exists where it
 is supposed to and does not where it is not.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L295)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L298)
 
 <h2 id="errno-location-for"><code>ErrnoLocationFor</code></h2>
 
@@ -125,7 +125,7 @@ and not a crash; it reads a different thread-local integer, which is the whole h
 Cannot fail. Runs in constant time and allocates nothing.
 The address belongs to the calling thread and must not be handed to another one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L308)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L311)
 
 **Parameters**
 
@@ -147,7 +147,7 @@ over from an earlier failure is still there. Clear it through [`ErrnoLocationFor
 is to be read.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L335)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L338)
 
 **Parameters**
 
@@ -172,7 +172,7 @@ reported through `errno`.
 Cannot fail. Runs in constant time and allocates nothing.
 The address belongs to the calling thread and must not be handed to another one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L350)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L353)
 
 **Returns**: the address of the general runtime's `errno` for this thread
 
@@ -183,17 +183,16 @@ pub func Errno() -> c_int
 ```
 
 The calling thread's current `errno` value.
-Takes nothing and returns the value by copy. Meaningful only after a call that documents setting it: no C function
-clears `errno` on success, so a value left over from an earlier failure is still there. Clear it with
-`*ErrnoLocation() = 0` before the call whose failure is to be read.
-On Windows this reads the Universal CRT's `errno`, which is the one `C::StdLib` and `C::Math` set. `C::StdIo` and
-`C::Time` are still bound to the legacy `msvcrt.dll`, whose `errno` is a different variable in a different
-runtime, so a failure reported by a call in either of those modules is not visible here. That split is a known
-defect: the Universal CRT does not export the formatted-output family, so moving those modules across needs the
-`__stdio_common_*` entry points declared first.
-Cannot fail. Runs in constant time and allocates nothing.
+Takes nothing and returns the value by copy. Meaningful only after a call that documents setting it: no C
+function clears `errno` on success, so a value left over from an earlier failure is still there. Clear it with
+`*ErrnoLocation() = 0` before the call whose failure is to be read. On Windows this reads the Universal CRT's
+`errno`, which is the one `C::StdLib` and `C::Math` set. `C::StdIo` and `C::Time` are still bound to the legacy
+`msvcrt.dll`, whose `errno` is a different variable in a different runtime, so a failure reported by a call in
+either of those modules is not visible here. That split is a known defect: the Universal CRT does not export the
+formatted-output family, so moving those modules across needs the `__stdio_common_*` entry points declared
+first. Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L366)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L368)
 
 **Returns**: the general runtime's `errno` for this thread
 
@@ -205,7 +204,7 @@ pub const EDOM: c_int = 33;
 
 `EDOM`: an argument outside the domain over which a math function is defined.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L373)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L375)
 
 <h2 id="erange"><code>ERANGE</code></h2>
 
@@ -215,7 +214,7 @@ pub const ERANGE: c_int = 34;
 
 `ERANGE`: a result too large or too small for the return type to express.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L377)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L379)
 
 <h2 id="eilseq"><code>EILSEQ</code></h2>
 
@@ -235,4 +234,4 @@ pub const EILSEQ: c_int = 86;
 
 `EILSEQ`: a byte sequence that does not form a valid character.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L400)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/Types.rux#L402)

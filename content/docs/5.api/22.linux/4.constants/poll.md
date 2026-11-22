@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Poll.rux
-  line: 20
+  line: 24
 seo:
   title: "Polling — Linux API"
   description: Descriptor flags and the epoll calls a poller waits with.
@@ -38,7 +38,7 @@ The size of one `epoll_event` in bytes: its four-byte event mask, padding, and e
 | `pub const EpollEventBytes: uint = 12;` | The size of one `epoll_event` in bytes: its four-byte event mask and eight-byte word, packed.   |
 | `pub const EpollEventBytes: uint = 16;` | The size of one `epoll_event` in bytes: its four-byte event mask, padding, and eight-byte word. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L24)
 
 <h2 id="epoll-event-word-offset"><code>EpollEventWordOffset</code></h2>
 
@@ -52,7 +52,7 @@ pub const EpollEventWordOffset: uint = 8;
 
 Where the caller's word starts in an `epoll_event`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L28)
 
 <h2 id="f-getfl"><code>F_GETFL</code></h2>
 
@@ -62,7 +62,7 @@ pub const F_GETFL: int32 = 3;
 
 `F_GETFL`: the [`fcntl`](/docs/api/linux/spawn#fcntl) command that reads a descriptor's status flags.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L50)
 
 <h2 id="f-setfl"><code>F_SETFL</code></h2>
 
@@ -72,7 +72,7 @@ pub const F_SETFL: int32 = 4;
 
 `F_SETFL`: the [`fcntl`](/docs/api/linux/spawn#fcntl) command that sets a descriptor's status flags.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L55)
 
 <h2 id="o-nonblock"><code>O_NONBLOCK</code></h2>
 
@@ -82,7 +82,7 @@ pub const O_NONBLOCK: int32 = 0x800;
 
 `O_NONBLOCK`: the status flag that makes a call fail with [`EAGAIN`](/docs/api/linux/errors#eagain) rather than wait.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L60)
 
 <h2 id="epoll-cloexec"><code>EPOLL_CLOEXEC</code></h2>
 
@@ -92,7 +92,7 @@ pub const EPOLL_CLOEXEC: int32 = 0x80000;
 
 `EPOLL_CLOEXEC`: close the epoll descriptor when the process starts another program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L65)
 
 <h2 id="epoll-ctl-add"><code>EPOLL_CTL_ADD</code></h2>
 
@@ -102,7 +102,7 @@ pub const EPOLL_CTL_ADD: int32 = 1;
 
 `EPOLL_CTL_ADD`: register a descriptor.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L70)
 
 <h2 id="epoll-ctl-del"><code>EPOLL_CTL_DEL</code></h2>
 
@@ -112,7 +112,7 @@ pub const EPOLL_CTL_DEL: int32 = 2;
 
 `EPOLL_CTL_DEL`: remove a descriptor's registration.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L75)
 
 <h2 id="epoll-ctl-mod"><code>EPOLL_CTL_MOD</code></h2>
 
@@ -122,7 +122,7 @@ pub const EPOLL_CTL_MOD: int32 = 3;
 
 `EPOLL_CTL_MOD`: change a registered descriptor's events and word.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L80)
 
 <h2 id="epollin"><code>EPOLLIN</code></h2>
 
@@ -132,7 +132,7 @@ pub const EPOLLIN: uint32 = 0x1;
 
 `EPOLLIN`: there is something to read, or a connection to accept.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L85)
 
 <h2 id="epollout"><code>EPOLLOUT</code></h2>
 
@@ -142,7 +142,7 @@ pub const EPOLLOUT: uint32 = 0x4;
 
 `EPOLLOUT`: a write would not wait.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L86)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L90)
 
 <h2 id="epollerr"><code>EPOLLERR</code></h2>
 
@@ -152,7 +152,7 @@ pub const EPOLLERR: uint32 = 0x8;
 
 `EPOLLERR`: the descriptor has an error pending; always reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L95)
 
 <h2 id="epollhup"><code>EPOLLHUP</code></h2>
 
@@ -162,7 +162,7 @@ pub const EPOLLHUP: uint32 = 0x10;
 
 `EPOLLHUP`: the peer has closed the connection; always reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L96)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L100)
 
 <h2 id="epollrdhup"><code>EPOLLRDHUP</code></h2>
 
@@ -172,12 +172,12 @@ pub const EPOLLRDHUP: uint32 = 0x2000;
 
 `EPOLLRDHUP`: the peer has shut down its writing side.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L105)
 
 <h2 id="fcntl-int"><code>FcntlInt</code></h2>
 
 ```rux
-pub unsafe func FcntlInt(
+pub func FcntlInt(
     fd: FileDescriptor,
     command: int32,
     argument: int64
@@ -185,12 +185,12 @@ pub unsafe func FcntlInt(
 ```
 
 Performs `command` on a descriptor with an integer argument.
-Safety: `command` must take an integer argument, such as [`F_GETFL`](/docs/api/linux/poll#f-getfl) or [`F_SETFL`](/docs/api/linux/poll#f-setfl); for a command whose argument is a
-pointer, the kernel would use `argument` as an address.
+Safety: `command` must take an integer argument, such as [`F_GETFL`](/docs/api/linux/poll#f-getfl) or [`F_SETFL`](/docs/api/linux/poll#f-setfl); for a command whose argument is
+a pointer, the kernel would use `argument` as an address.
 
 **See also**: [https://man7.org/linux/man-pages/man2/fcntl.2.html](https://man7.org/linux/man-pages/man2/fcntl.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L116)
 
 **Parameters**
 
@@ -212,7 +212,7 @@ Opens an epoll instance.
 
 **See also**: [https://man7.org/linux/man-pages/man2/epoll_create1.2.html](https://man7.org/linux/man-pages/man2/epoll_create1.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L125)
 
 **Parameters**
 
@@ -225,7 +225,7 @@ Opens an epoll instance.
 <h2 id="epoll-control"><code>EpollControl</code></h2>
 
 ```rux
-pub unsafe func EpollControl(
+pub func EpollControl(
     epoll: FileDescriptor,
     operation: int32,
     fd: FileDescriptor,
@@ -238,7 +238,7 @@ Safety: a non-null `event` must be readable for [`EpollEventBytes`](/docs/api/li
 
 **See also**: [https://man7.org/linux/man-pages/man2/epoll_ctl.2.html](https://man7.org/linux/man-pages/man2/epoll_ctl.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L140)
 
 **Parameters**
 
@@ -254,7 +254,7 @@ Safety: a non-null `event` must be readable for [`EpollEventBytes`](/docs/api/li
 <h2 id="epoll-wait"><code>EpollWait</code></h2>
 
 ```rux
-pub unsafe func EpollWait(
+pub func EpollWait(
     epoll: FileDescriptor,
     events: *var opaque,
     capacity: int32,
@@ -262,12 +262,13 @@ pub unsafe func EpollWait(
 ) -> int64
 ```
 
-Waits until a registered descriptor is ready or `timeout` milliseconds pass, filling `events` with what is ready.
+Waits until a registered descriptor is ready or `timeout` milliseconds pass, filling `events` with what is
+ready.
 Safety: `events` must be writable for `capacity` events of [`EpollEventBytes`](/docs/api/linux/poll#epoll-event-bytes) bytes each.
 
 **See also**: [https://man7.org/linux/man-pages/man2/epoll_wait.2.html](https://man7.org/linux/man-pages/man2/epoll_wait.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Poll.rux#L155)
 
 **Parameters**
 

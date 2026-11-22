@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Resolve.rux
-  line: 10
+  line: 11
 seo:
   title: "Name resolution — Linux API"
   description: getaddrinfo and the list of addresses it returns.
@@ -38,7 +38,7 @@ pub struct AddressInfo {
 
 The C library's `addrinfo`: one result of [`getaddrinfo`](/docs/api/linux/resolve#getaddrinfo), linked to the next.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Resolve.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Resolve.rux#L11)
 
 **Fields**
 
@@ -68,7 +68,7 @@ Looks up the addresses of a host and service.
 
 **See also**: [https://man7.org/linux/man-pages/man3/getaddrinfo.3.html](https://man7.org/linux/man-pages/man3/getaddrinfo.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Resolve.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Resolve.rux#L40)
 
 **Parameters**
 
@@ -91,7 +91,7 @@ Frees the results of [`getaddrinfo`](/docs/api/linux/resolve#getaddrinfo).
 
 **See also**: [https://man7.org/linux/man-pages/man3/freeaddrinfo.3.html](https://man7.org/linux/man-pages/man3/freeaddrinfo.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Resolve.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Resolve.rux#L46)
 
 **Parameters**
 

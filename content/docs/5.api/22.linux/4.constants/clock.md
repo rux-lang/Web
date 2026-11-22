@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Clock.rux
-  line: 11
+  line: 13
 seo:
   title: "Clocks — Linux API"
   description: Reading clocks and sleeping.
@@ -29,7 +29,7 @@ pub const ClockRealtime: int32 = 0;
 
 `CLOCK_REALTIME`: wall-clock time, which can jump when the system clock is set.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L13)
 
 <h2 id="clock-monotonic"><code>ClockMonotonic</code></h2>
 
@@ -41,12 +41,12 @@ pub const ClockMonotonic: int32 = 1;
 Not comparable between boots, and not the clock to record a timestamp with. It is the one to measure a duration
 with, because setting the system clock cannot affect it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L19)
 
 <h2 id="clock-get-time"><code>ClockGetTime</code></h2>
 
 ```rux
-pub unsafe func ClockGetTime(
+pub func ClockGetTime(
     clockId: int32,
     time: *var Timespec
 ) -> int64
@@ -57,7 +57,7 @@ Reads `clockId` into `time`.
 for a clock this kernel does not have.
 Safety: `time` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L29)
 
 **Parameters**
 
@@ -71,7 +71,7 @@ Safety: `time` must be non-null and writable.
 <h2 id="nanosleep"><code>Nanosleep</code></h2>
 
 ```rux
-pub unsafe func Nanosleep(
+pub func Nanosleep(
     request: *Timespec,
     remaining: *var Timespec
 ) -> int64
@@ -86,7 +86,7 @@ The wait is against [`ClockRealtime`](/docs/api/linux/clock#clock-realtime) but 
 Safety: `request` must be non-null and readable, and a non-null `remaining` must be writable. The nanoseconds of
 `request` must be under one second or the call reports [`EINVAL`](/docs/api/linux/errors#einval).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L45)
 
 **Parameters**
 
@@ -105,7 +105,7 @@ pub const ClockProcessCpuTime: int32 = 2;
 
 `CLOCK_PROCESS_CPUTIME_ID`: processor time this process has used.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L51)
 
 <h2 id="clock-thread-cpu-time"><code>ClockThreadCpuTime</code></h2>
 
@@ -115,7 +115,7 @@ pub const ClockThreadCpuTime: int32 = 3;
 
 `CLOCK_THREAD_CPUTIME_ID`: processor time this thread has used.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L55)
 
 <h2 id="clock-monotonic-raw"><code>ClockMonotonicRaw</code></h2>
 
@@ -127,7 +127,7 @@ pub const ClockMonotonicRaw: int32 = 4;
 Ticks at the hardware's own rate rather than a corrected one, which makes it the wrong clock for measuring a
 duration anyone will compare against a wall clock, and the right one for measuring the hardware.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L61)
 
 <h2 id="timer-absolute"><code>TimerAbsolute</code></h2>
 
@@ -137,12 +137,12 @@ pub const TimerAbsolute: int32 = 1;
 
 `TIMER_ABSTIME`: [`ClockNanosleep`](/docs/api/linux/clock#clock-nanosleep) should treat its time as an absolute deadline.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L65)
 
 <h2 id="clock-get-resolution"><code>ClockGetResolution</code></h2>
 
 ```rux
-pub unsafe func ClockGetResolution(
+pub func ClockGetResolution(
     clockId: int32,
     resolution: *var Timespec
 ) -> int64
@@ -153,7 +153,7 @@ Returns zero, or a negative error number. The resolution is the granularity the 
 the cost of reading it and not a promise about accuracy.
 Safety: `resolution` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L75)
 
 **Parameters**
 
@@ -167,7 +167,7 @@ Safety: `resolution` must be non-null and writable.
 <h2 id="clock-nanosleep"><code>ClockNanosleep</code></h2>
 
 ```rux
-pub unsafe func ClockNanosleep(
+pub func ClockNanosleep(
     clockId: int32,
     flags: int32,
     request: *Timespec,
@@ -176,14 +176,14 @@ pub unsafe func ClockNanosleep(
 ```
 
 Suspends the caller against a named clock, optionally until an absolute time.
-`flags` is zero for a relative wait or [`TimerAbsolute`](/docs/api/linux/clock#timer-absolute) for a deadline. `remaining` is written only for a relative
-wait that a signal cut short, and may be null. Returns zero, or a positive error number — this one call reports
-its error positively rather than negatively, which is the kernel's inconsistency and not this binding's.
+`flags` is zero for a relative wait or [`TimerAbsolute`](/docs/api/linux/clock#timer-absolute) for a deadline. `remaining` is written only for a
+relative wait that a signal cut short, and may be null. Returns zero, or a positive error number — this one call
+reports its error positively rather than negatively, which is the kernel's inconsistency and not this binding's.
 An absolute wait is what a loop should use: a relative wait restarted after a signal drifts, because the time
 spent handling the signal is not counted.
 Safety: `request` must be non-null and readable, and a non-null `remaining` must be writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Clock.rux#L92)
 
 **Parameters**
 

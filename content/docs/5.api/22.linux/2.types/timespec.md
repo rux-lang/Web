@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Types.rux
-  line: 39
+  line: 40
 seo:
   title: "Timespec — Linux API"
   description: "A duration or an instant, as seconds and nanoseconds."
@@ -28,10 +28,10 @@ pub struct Timespec {
 }
 ```
 
-Both fields are 64 bits under the kernel's 64-bit ABI, whichever architecture. `nanoseconds` is in `[0, 999999999]`
-for a value the kernel produced; a value the caller builds must normalize it, since a call given more than a
-second's worth of nanoseconds reports [`EINVAL`](/docs/api/linux/errors#einval) rather than carrying.
-Passed by address to every call that reads or fills one.
+Both fields are 64 bits under the kernel's 64-bit ABI, whichever architecture. `nanoseconds` is in `[0,
+999999999]` for a value the kernel produced; a value the caller builds must normalize it, since a call given
+more than a second's worth of nanoseconds reports [`EINVAL`](/docs/api/linux/errors#einval) rather than carrying. Passed by address to every call
+that reads or fills one.
 
 ## Fields
 

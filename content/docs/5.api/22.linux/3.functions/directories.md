@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/File.rux
-  line: 187
+  line: 190
 seo:
   title: "Directories and links — Linux API"
   description: "The working directory, directory entries, removal, renaming and links."
@@ -24,7 +24,7 @@ The working directory, directory entries, removal, renaming and links.
 <h2 id="getdents64"><code>Getdents64</code></h2>
 
 ```rux
-pub unsafe func Getdents64(
+pub func Getdents64(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint
@@ -38,7 +38,7 @@ the record's length at 16 (2 bytes), the entry type at 18 (1 byte), and the NUL-
 kernel writes as many whole records as fit; call again for the rest.
 Safety: `buffer` must be writable for `count` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L190)
 
 **Parameters**
 
@@ -53,7 +53,7 @@ Safety: `buffer` must be writable for `count` bytes.
 <h2 id="link-at"><code>LinkAt</code></h2>
 
 ```rux
-pub unsafe func LinkAt(
+pub func LinkAt(
     oldDirectoryFd: FileDescriptor,
     oldPath: *char8,
     newDirectoryFd: FileDescriptor,
@@ -67,7 +67,7 @@ Returns zero, or a negative error number. `flags` is zero to leave a symbolic li
 or [`FollowSymlinks`](/docs/api/linux/directories#follow-symlinks) to link what it points at.
 Safety: `oldPath` and `newPath` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L205)
 
 **Parameters**
 
@@ -89,12 +89,12 @@ pub const FollowSymlinks: int32 = 0x0400;
 
 `AT_SYMLINK_FOLLOW`: make [`LinkAt`](/docs/api/linux/directories#link-at) link a symbolic link's target rather than the link.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L210)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L213)
 
 <h2 id="symlink-at"><code>SymlinkAt</code></h2>
 
 ```rux
-pub unsafe func SymlinkAt(
+pub func SymlinkAt(
     target: *char8,
     newDirectoryFd: FileDescriptor,
     linkPath: *char8
@@ -106,7 +106,7 @@ Returns zero, or a negative error number. The target is stored, not checked: a d
 readily as a good one, which is a property callers rely on.
 Safety: `target` and `linkPath` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L221)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L224)
 
 **Parameters**
 
@@ -126,15 +126,12 @@ pub const SymlinkNoFollow: int32 = 0x0100;
 
 `AT_SYMLINK_NOFOLLOW`: act on a symbolic link itself rather than on what it points at.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L227)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L230)
 
 <h2 id="getcwd"><code>Getcwd</code></h2>
 
 ```rux
-pub unsafe func Getcwd(
-    buffer: *var char8,
-    size: uint
-) -> int64
+pub func Getcwd(buffer: *var char8, size: uint) -> int64
 ```
 
 Writes the current working directory's absolute path into `buffer`, NUL-terminated.
@@ -142,7 +139,7 @@ Returns the length written including the terminator, or a negative error number;
 too small for the answer.
 Safety: `buffer` must be writable for `size` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L286)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L289)
 
 **Parameters**
 
@@ -156,7 +153,7 @@ Safety: `buffer` must be writable for `size` bytes.
 <h2 id="chdir"><code>Chdir</code></h2>
 
 ```rux
-pub unsafe func Chdir(path: *char8) -> int64
+pub func Chdir(path: *char8) -> int64
 ```
 
 Makes `path` the process's working directory.
@@ -164,7 +161,7 @@ Returns zero, or a negative error number. The change is process-wide and immedia
 which is why nothing above this should call it casually.
 Safety: `path` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L297)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L300)
 
 **Parameters**
 
@@ -177,7 +174,7 @@ Safety: `path` must be non-null and NUL-terminated.
 <h2 id="readlink-at"><code>ReadlinkAt</code></h2>
 
 ```rux
-pub unsafe func ReadlinkAt(
+pub func ReadlinkAt(
     directoryFd: FileDescriptor,
     path: *char8,
     buffer: *var char8,
@@ -191,7 +188,7 @@ number. The text is **not** NUL-terminated, and is silently truncated where it d
 filled the buffer exactly cannot tell truncation from a perfect fit and should retry with more room.
 Safety: `path` must be non-null and NUL-terminated, and `buffer` must be writable for `size` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L312)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L315)
 
 **Parameters**
 
@@ -207,7 +204,7 @@ Safety: `path` must be non-null and NUL-terminated, and `buffer` must be writabl
 <h2 id="unlink-at"><code>UnlinkAt</code></h2>
 
 ```rux
-pub unsafe func UnlinkAt(
+pub func UnlinkAt(
     directoryFd: FileDescriptor,
     path: *char8,
     flags: int32
@@ -221,7 +218,7 @@ Removing a name does not free the file: anything still holding it open keeps rea
 storage goes only when the last descriptor closes.
 Safety: `path` must be non-null and terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L350)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L353)
 
 **Parameters**
 
@@ -241,12 +238,12 @@ pub const RemoveDirectory: int32 = 512;
 
 `AT_REMOVEDIR`: make [`UnlinkAt`](/docs/api/linux/directories#unlink-at) remove a directory rather than a file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L356)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L359)
 
 <h2 id="mkdir-at"><code>MkdirAt</code></h2>
 
 ```rux
-pub unsafe func MkdirAt(
+pub func MkdirAt(
     directoryFd: FileDescriptor,
     path: *char8,
     mode: FileMode
@@ -257,7 +254,7 @@ Creates a directory named `path` with permission bits `mode`.
 Returns zero, or a negative error number — [`EEXIST`](/docs/api/linux/errors#eexist) when the name is taken, which is how this is used as a lock.
 Safety: `path` must be non-null and terminated. The mode is masked by the process umask.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L366)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L369)
 
 **Parameters**
 
@@ -272,7 +269,7 @@ Safety: `path` must be non-null and terminated. The mode is masked by the proces
 <h2 id="rename-at"><code>RenameAt</code></h2>
 
 ```rux
-pub unsafe func RenameAt(
+pub func RenameAt(
     oldDirectoryFd: FileDescriptor,
     oldPath: *char8,
     newDirectoryFd: FileDescriptor,
@@ -281,12 +278,12 @@ pub unsafe func RenameAt(
 ```
 
 Renames `oldPath` to `newPath`, each resolved against its own directory descriptor.
-Returns zero, or a negative error number. Within one file system this replaces any existing `newPath` atomically,
-which is what makes it the way to publish a file that was written under a temporary name. Across file systems it
-reports [`EXDEV`](/docs/api/linux/errors#exdev) rather than copying.
+Returns zero, or a negative error number. Within one file system this replaces any existing `newPath`
+atomically, which is what makes it the way to publish a file that was written under a temporary name. Across
+file systems it reports [`EXDEV`](/docs/api/linux/errors#exdev) rather than copying.
 Safety: both paths must be non-null and terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L381)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/File.rux#L384)
 
 **Parameters**
 

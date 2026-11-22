@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Thread.rux
-  line: 14
+  line: 16
 seo:
   title: "Threads — Linux API"
   description: "POSIX threads: starting, joining and detaching them, their stack size, and the processor count."
@@ -29,7 +29,7 @@ pub type PThread = uint64
 
 A thread as the C library names it, `pthread_t`. Every system this package family binds keeps it in one word.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L16)
 
 <h2 id="p-thread-attributes"><code>PThreadAttributes</code></h2>
 
@@ -42,21 +42,21 @@ pub struct PThreadAttributes {
 Room for a `pthread_attr_t`, which each C library sizes its own way and none larger than this.
 Only ever passed by address to the `pthread_attr_*` calls, which initialize and read it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L21)
 
 **Constructors**
 
-<h3 id="p-thread-attributes-new"><code>PThreadAttributes</code></h3>
+<h3 id="p-thread-attributes-new"><code>New</code></h3>
 
 ```rux
-pub func PThreadAttributes() -> PThreadAttributes
+pub func New() -> PThreadAttributes
 ```
 
 Zeroed storage for [`pthread_attr_init`](/docs/api/linux/thread#pthread-attr-init) to initialize.
 
 **Returns**: the storage
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L29)
 
 <h2 id="sc-nprocessors-onln"><code>SC_NPROCESSORS_ONLN</code></h2>
 
@@ -66,7 +66,7 @@ pub const SC_NPROCESSORS_ONLN: int32 = 84;
 
 `_SC_NPROCESSORS_ONLN`: the [`sysconf`](/docs/api/linux/thread#sysconf) name for the number of processors currently online.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L37)
 
 <h2 id="pthread-create"><code>pthread_create</code></h2>
 
@@ -83,7 +83,7 @@ Starts a thread running `start(argument)`.
 
 **See also**: [https://man7.org/linux/man-pages/man3/pthread_create.3.html](https://man7.org/linux/man-pages/man3/pthread_create.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L49)
 
 **Parameters**
 
@@ -109,7 +109,7 @@ Waits for a thread to finish and releases it.
 
 **See also**: [https://man7.org/linux/man-pages/man3/pthread_join.3.html](https://man7.org/linux/man-pages/man3/pthread_join.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L58)
 
 **Parameters**
 
@@ -130,7 +130,7 @@ Lets a thread release itself when it finishes, so nothing has to join it.
 
 **See also**: [https://man7.org/linux/man-pages/man3/pthread_detach.3.html](https://man7.org/linux/man-pages/man3/pthread_detach.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L65)
 
 **Parameters**
 
@@ -150,7 +150,7 @@ Initializes thread attributes to the defaults.
 
 **See also**: [https://man7.org/linux/man-pages/man3/pthread_attr_init.3.html](https://man7.org/linux/man-pages/man3/pthread_attr_init.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L72)
 
 **Parameters**
 
@@ -173,7 +173,7 @@ Sets the stack size a thread started with these attributes gets.
 
 **See also**: [https://man7.org/linux/man-pages/man3/pthread_attr_setstacksize.3.html](https://man7.org/linux/man-pages/man3/pthread_attr_setstacksize.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L80)
 
 **Parameters**
 
@@ -194,7 +194,7 @@ Releases what [`pthread_attr_init`](/docs/api/linux/thread#pthread-attr-init) se
 
 **See also**: [https://man7.org/linux/man-pages/man3/pthread_attr_destroy.3.html](https://man7.org/linux/man-pages/man3/pthread_attr_destroy.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L87)
 
 **Parameters**
 
@@ -214,7 +214,7 @@ Returns the kernel's identifier for the calling thread, which is the process ide
 
 **See also**: [https://man7.org/linux/man-pages/man2/gettid.2.html](https://man7.org/linux/man-pages/man2/gettid.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L93)
 
 **Returns**: the calling thread's identifier
 
@@ -228,7 +228,7 @@ Gives up the processor so another ready thread can run.
 
 **See also**: [https://man7.org/linux/man-pages/man2/sched_yield.2.html](https://man7.org/linux/man-pages/man2/sched_yield.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L99)
 
 **Returns**: zero, or -1 with the reason in errno
 
@@ -242,7 +242,7 @@ Reads a system configuration value.
 
 **See also**: [https://man7.org/linux/man-pages/man3/sysconf.3.html](https://man7.org/linux/man-pages/man3/sysconf.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Thread.rux#L106)
 
 **Parameters**
 

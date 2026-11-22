@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Futex.rux
-  line: 21
+  line: 24
 seo:
   title: "Futexes — Linux API"
   description: Waiting on a word and waking its waiters through futex.
@@ -29,7 +29,7 @@ pub const FutexWaitPrivate: int32 = 128;
 
 `FUTEX_WAIT_PRIVATE`: sleep while the word holds the expected value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L24)
 
 <h2 id="futex-wake-private"><code>FutexWakePrivate</code></h2>
 
@@ -39,12 +39,12 @@ pub const FutexWakePrivate: int32 = 129;
 
 `FUTEX_WAKE_PRIVATE`: wake threads sleeping on the word.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L28)
 
 <h2 id="futex-wait"><code>FutexWait</code></h2>
 
 ```rux
-pub unsafe func FutexWait(
+pub func FutexWait(
     address: *uint32,
     expected: uint32,
     timeout: *Timespec
@@ -57,7 +57,7 @@ Safety: `address` must point at a live, four-byte aligned word, and a non-null `
 
 **See also**: [https://man7.org/linux/man-pages/man2/futex.2.html](https://man7.org/linux/man-pages/man2/futex.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L39)
 
 **Parameters**
 
@@ -72,10 +72,7 @@ Safety: `address` must point at a live, four-byte aligned word, and a non-null `
 <h2 id="futex-wake"><code>FutexWake</code></h2>
 
 ```rux
-pub unsafe func FutexWake(
-    address: *uint32,
-    count: int32
-) -> int64
+pub func FutexWake(address: *uint32, count: int32) -> int64
 ```
 
 Wakes up to `count` threads sleeping on `address`.
@@ -83,7 +80,7 @@ Safety: `address` must point at a live, four-byte aligned word.
 
 **See also**: [https://man7.org/linux/man-pages/man2/futex.2.html](https://man7.org/linux/man-pages/man2/futex.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Futex.rux#L51)
 
 **Parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Time.rux
-  line: 94
+  line: 78
 seo:
   title: "tm — C API"
   description: "C's tm: a calendar time broken into its components."
@@ -37,13 +37,10 @@ pub struct tm {
 }
 ```
 
-Two of the fields are traps rather than conveniences, and both are C's rather than this binding's: `tm_year`
-counts from 1900, so 2026 is 126, and `tm_mon` counts from zero, so December is 11. `tm_sec` reaches 60 for
-a
-leap second.
-Declared once per system because the field order and the trailing members differ; the nine standard fields
-are
-the same everywhere and are all this declares.
+Two of the fields are traps rather than conveniences, and both are C's rather than this binding's:
+`tm_year` counts from 1900, so 2026 is 126, and `tm_mon` counts from zero, so December is 11. `tm_sec`
+reaches 60 for a leap second. Declared once per system because the field order and the trailing members
+differ; the nine standard fields are the same everywhere and are all this declares.
 
 **See also**: [https://en.cppreference.com/c/chrono/tm](https://en.cppreference.com/c/chrono/tm)
 

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Errors.rux
-  line: 15
+  line: 16
 seo:
   title: "Errors — Linux API"
   description: "The error numbers, and telling a raw result from an error."
@@ -29,7 +29,7 @@ pub const EPERM: int64 = 1;
 
 `EPERM`: the operation is not permitted to this caller.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L16)
 
 <h2 id="enoent"><code>ENOENT</code></h2>
 
@@ -39,7 +39,7 @@ pub const ENOENT: int64 = 2;
 
 `ENOENT`: no such file or directory.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L21)
 
 <h2 id="esrch"><code>ESRCH</code></h2>
 
@@ -49,7 +49,7 @@ pub const ESRCH: int64 = 3;
 
 `ESRCH`: no such process.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L26)
 
 <h2 id="eintr"><code>EINTR</code></h2>
 
@@ -59,7 +59,7 @@ pub const EINTR: int64 = 4;
 
 `EINTR`: the call was interrupted by a signal before it did anything.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L31)
 
 <h2 id="eio"><code>EIO</code></h2>
 
@@ -69,7 +69,7 @@ pub const EIO: int64 = 5;
 
 `EIO`: a low-level input or output error.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L36)
 
 <h2 id="enxio"><code>ENXIO</code></h2>
 
@@ -79,7 +79,7 @@ pub const ENXIO: int64 = 6;
 
 `ENXIO`: no such device or address.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L41)
 
 <h2 id="ebadf"><code>EBADF</code></h2>
 
@@ -89,7 +89,7 @@ pub const EBADF: int64 = 9;
 
 `EBADF`: the file descriptor is not open, or is not open for what was asked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L46)
 
 <h2 id="eagain"><code>EAGAIN</code></h2>
 
@@ -100,7 +100,7 @@ pub const EAGAIN: int64 = 11;
 `EAGAIN`: the operation would block, and the descriptor was set not to.
 Spelled `EWOULDBLOCK` in some interfaces; on Linux the two are one value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L52)
 
 <h2 id="enomem"><code>ENOMEM</code></h2>
 
@@ -110,7 +110,7 @@ pub const ENOMEM: int64 = 12;
 
 `ENOMEM`: not enough memory to satisfy the request.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L57)
 
 <h2 id="eacces"><code>EACCES</code></h2>
 
@@ -120,7 +120,7 @@ pub const EACCES: int64 = 13;
 
 `EACCES`: permission denied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L62)
 
 <h2 id="efault"><code>EFAULT</code></h2>
 
@@ -130,7 +130,7 @@ pub const EFAULT: int64 = 14;
 
 `EFAULT`: an address the call was given is outside the caller's address space.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L67)
 
 <h2 id="ebusy"><code>EBUSY</code></h2>
 
@@ -140,7 +140,7 @@ pub const EBUSY: int64 = 16;
 
 `EBUSY`: the resource is in use.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L72)
 
 <h2 id="eexist"><code>EEXIST</code></h2>
 
@@ -150,7 +150,7 @@ pub const EEXIST: int64 = 17;
 
 `EEXIST`: the file already exists.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L77)
 
 <h2 id="exdev"><code>EXDEV</code></h2>
 
@@ -160,7 +160,7 @@ pub const EXDEV: int64 = 18;
 
 `EXDEV`: the two paths are on different file systems.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L82)
 
 <h2 id="enotdir"><code>ENOTDIR</code></h2>
 
@@ -170,7 +170,7 @@ pub const ENOTDIR: int64 = 20;
 
 `ENOTDIR`: a path component that had to be a directory is not one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L86)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L87)
 
 <h2 id="eisdir"><code>EISDIR</code></h2>
 
@@ -180,7 +180,7 @@ pub const EISDIR: int64 = 21;
 
 `EISDIR`: the target is a directory and the operation is not one a directory accepts.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L92)
 
 <h2 id="einval"><code>EINVAL</code></h2>
 
@@ -190,7 +190,7 @@ pub const EINVAL: int64 = 22;
 
 `EINVAL`: an argument is not valid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L96)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L97)
 
 <h2 id="emfile"><code>EMFILE</code></h2>
 
@@ -200,7 +200,7 @@ pub const EMFILE: int64 = 24;
 
 `EMFILE`: this process has too many descriptors open.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L102)
 
 <h2 id="enospc"><code>ENOSPC</code></h2>
 
@@ -210,7 +210,7 @@ pub const ENOSPC: int64 = 28;
 
 `ENOSPC`: the device has no room left.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L106)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L107)
 
 <h2 id="espipe"><code>ESPIPE</code></h2>
 
@@ -220,7 +220,7 @@ pub const ESPIPE: int64 = 29;
 
 `ESPIPE`: the descriptor is a pipe or socket and cannot be seeked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L112)
 
 <h2 id="erofs"><code>EROFS</code></h2>
 
@@ -230,7 +230,7 @@ pub const EROFS: int64 = 30;
 
 `EROFS`: the file system is mounted read-only.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L117)
 
 <h2 id="epipe"><code>EPIPE</code></h2>
 
@@ -240,7 +240,7 @@ pub const EPIPE: int64 = 32;
 
 `EPIPE`: the reading end of the pipe is closed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L122)
 
 <h2 id="enametoolong"><code>ENAMETOOLONG</code></h2>
 
@@ -250,7 +250,7 @@ pub const ENAMETOOLONG: int64 = 36;
 
 `ENAMETOOLONG`: the path or a component of it is too long.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L127)
 
 <h2 id="enosys"><code>ENOSYS</code></h2>
 
@@ -261,7 +261,7 @@ pub const ENOSYS: int64 = 38;
 `ENOSYS`: the kernel does not implement this call.
 What an architecture that lacks a call reports, which is how a caller falls back to another.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L133)
 
 <h2 id="eloop"><code>ELOOP</code></h2>
 
@@ -271,7 +271,7 @@ pub const ELOOP: int64 = 40;
 
 `ELOOP`: too many symbolic links were followed resolving the path.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L138)
 
 <h2 id="eoverflow"><code>EOVERFLOW</code></h2>
 
@@ -281,7 +281,7 @@ pub const EOVERFLOW: int64 = 75;
 
 `EOVERFLOW`: a value is too large for the type the call reports it in.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L143)
 
 <h2 id="etimedout"><code>ETIMEDOUT</code></h2>
 
@@ -291,7 +291,7 @@ pub const ETIMEDOUT: int64 = 110;
 
 `ETIMEDOUT`: the operation timed out.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L148)
 
 <h2 id="maximum-errno"><code>MaximumErrno</code></h2>
 
@@ -302,7 +302,7 @@ pub const MaximumErrno: int64 = 4095;
 The largest error number the kernel's reserved range holds.
 A raw result below `-MaximumErrno` is a value, not an error.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L153)
 
 <h2 id="is-error"><code>IsError</code></h2>
 
@@ -315,7 +315,7 @@ Whether a raw system-call result is one of the kernel's reserved error values.
 mapping address a memory call returns.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L162)
 
 **Parameters**
 
@@ -336,7 +336,7 @@ The error number a raw system-call result carries, or zero when it carries none.
 gives zero, which is not an error number and never collides with one.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L172)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Errors.rux#L173)
 
 **Parameters**
 

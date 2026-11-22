@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/StdLib.rux
-  line: 39
+  line: 40
 seo:
   title: "General utilities — C API"
   description: "C's <stdlib.h>: allocation, number parsing, sorting, pseudo-random numbers and exit codes."
@@ -31,7 +31,7 @@ Computes the absolute value of an integer value.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/abs](https://en.cppreference.com/c/numeric/math/abs)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L40)
 
 **Parameters**
 
@@ -48,12 +48,12 @@ pub extern func atof(str: *char8) -> c_double
 ```
 
 Converts a byte string to a floating point value.
-Cannot report failure: a string that is not a number gives zero, and a value out of range is undefined rather
-than reported. Use strtod, which reports both.
+Cannot report failure: a string that is not a number gives zero, and a value out of range is undefined
+rather than reported. Use strtod, which reports both.
 
 **See also**: [https://en.cppreference.com/c/string/byte/atof](https://en.cppreference.com/c/string/byte/atof)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L49)
 
 **Parameters**
 
@@ -74,7 +74,7 @@ Cannot report failure, and a value out of range is undefined rather than reporte
 
 **See also**: [https://en.cppreference.com/c/string/byte/atoi](https://en.cppreference.com/c/string/byte/atoi)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L57)
 
 **Parameters**
 
@@ -95,7 +95,7 @@ Cannot report failure. Use strtol.
 
 **See also**: [https://en.cppreference.com/c/string/byte/atoi](https://en.cppreference.com/c/string/byte/atoi)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L65)
 
 **Parameters**
 
@@ -116,7 +116,7 @@ Cannot report failure. Use strtoll.
 
 **See also**: [https://en.cppreference.com/c/string/byte/atoi](https://en.cppreference.com/c/string/byte/atoi)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L73)
 
 **Parameters**
 
@@ -139,7 +139,7 @@ Allocates memory for an array of num objects of size and zero-initializes it.
 
 **See also**: [https://en.cppreference.com/c/memory/calloc](https://en.cppreference.com/c/memory/calloc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L81)
 
 **Parameters**
 
@@ -160,7 +160,7 @@ Deallocates the memory previously allocated by malloc, calloc or realloc.
 
 **See also**: [https://en.cppreference.com/c/memory/free](https://en.cppreference.com/c/memory/free)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L92)
 
 **Parameters**
 
@@ -178,7 +178,7 @@ Computes the absolute value of a long integer value.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/abs](https://en.cppreference.com/c/numeric/math/abs)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L106)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L107)
 
 **Parameters**
 
@@ -198,7 +198,7 @@ Computes the absolute value of a long long integer value.
 
 **See also**: [https://en.cppreference.com/c/numeric/math/abs](https://en.cppreference.com/c/numeric/math/abs)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L113)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L114)
 
 **Parameters**
 
@@ -218,7 +218,7 @@ Allocates size bytes of uninitialized memory.
 
 **See also**: [https://en.cppreference.com/c/memory/malloc](https://en.cppreference.com/c/memory/malloc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L120)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L121)
 
 **Parameters**
 
@@ -240,7 +240,7 @@ would like to predict. Rux/Random names its generators; Rux/Entropy reaches the 
 
 **See also**: [https://en.cppreference.com/c/numeric/random/rand](https://en.cppreference.com/c/numeric/random/rand)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L128)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L129)
 
 **Returns**: a value in `[0, RAND_MAX]`, from a sequence that guarantees nothing
 
@@ -257,7 +257,7 @@ Changes the size of the memory block pointed to by ptr to size bytes.
 
 **See also**: [https://en.cppreference.com/c/memory/realloc](https://en.cppreference.com/c/memory/realloc)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L137)
 
 **Parameters**
 
@@ -278,7 +278,7 @@ Seeds the pseudo-random number generator used by rand.
 
 **See also**: [https://en.cppreference.com/c/numeric/random/srand](https://en.cppreference.com/c/numeric/random/srand)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L143)
 
 **Parameters**
 
@@ -300,7 +300,7 @@ Converts a byte string to a long integer, reporting where it stopped.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strtol](https://en.cppreference.com/c/string/byte/strtol)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L152)
 
 **Parameters**
 
@@ -326,7 +326,7 @@ Converts a byte string to an unsigned long integer, reporting where it stopped.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strtoul](https://en.cppreference.com/c/string/byte/strtoul)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L160)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L161)
 
 **Parameters**
 
@@ -352,7 +352,7 @@ Converts a byte string to a long long integer, reporting where it stopped.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strtol](https://en.cppreference.com/c/string/byte/strtol)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L169)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L170)
 
 **Parameters**
 
@@ -378,7 +378,7 @@ Converts a byte string to an unsigned long long integer, reporting where it stop
 
 **See also**: [https://en.cppreference.com/c/string/byte/strtoul](https://en.cppreference.com/c/string/byte/strtoul)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L179)
 
 **Parameters**
 
@@ -403,7 +403,7 @@ Converts a byte string to a double, reporting where it stopped.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strtof](https://en.cppreference.com/c/string/byte/strtof)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L186)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L187)
 
 **Parameters**
 
@@ -427,7 +427,7 @@ Converts a byte string to a float, reporting where it stopped.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strtof](https://en.cppreference.com/c/string/byte/strtof)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L194)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L195)
 
 **Parameters**
 
@@ -453,7 +453,7 @@ Sorts an array in place; the comparison must be a strict weak ordering and the s
 
 **See also**: [https://en.cppreference.com/c/algorithm/qsort](https://en.cppreference.com/c/algorithm/qsort)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L203)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L204)
 
 **Parameters**
 
@@ -480,7 +480,7 @@ Finds an element of a sorted array; the array must already be ordered by the sam
 
 **See also**: [https://en.cppreference.com/c/algorithm/bsearch](https://en.cppreference.com/c/algorithm/bsearch)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L214)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L215)
 
 **Parameters**
 
@@ -502,7 +502,7 @@ pub const EXIT_SUCCESS: int32 = 0;
 
 `EXIT_SUCCESS`: the status a program returns to mean it did what it was asked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L271)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L272)
 
 <h2 id="exit-failure"><code>EXIT_FAILURE</code></h2>
 
@@ -512,7 +512,7 @@ pub const EXIT_FAILURE: int32 = 1;
 
 `EXIT_FAILURE`: the status a program returns to mean it did not.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L276)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L277)
 
 <h2 id="rand-max"><code>RAND_MAX</code></h2>
 
@@ -526,4 +526,4 @@ pub const RAND_MAX: int32 = 2147483647;
 
 `RAND_MAX`: the largest value [`rand`](/docs/api/c/stdlib#rand) can return on this target.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L285)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/StdLib.rux#L286)

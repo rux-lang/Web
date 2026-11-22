@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Time.rux
-  line: 162
+  line: 143
 seo:
   title: "timespec — C API"
   description: The public timespec data layout.

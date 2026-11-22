@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Entropy.rux
-  line: 33
+  line: 34
 seo:
   title: "GetRandom — Linux API"
   description: Fills up to length bytes of buffer with unpredictable bytes.
@@ -22,7 +22,7 @@ seo:
 Fills up to `length` bytes of `buffer` with unpredictable bytes.
 
 ```rux
-pub unsafe func GetRandom(
+pub func GetRandom(
     buffer: *var opaque,
     length: uint,
     flags: uint32
@@ -35,8 +35,8 @@ A short count is ordinary rather than a failure: a request over 256 bytes can be
 caller needing the whole buffer must call again for the rest. Without [`RandomNonBlocking`](/docs/api/linux/get-random#random-non-blocking) the first call in the
 life of a system may wait for the pool to be seeded; after that it does not wait at all.
 Runs in time proportional to `length` and allocates nothing.
-Safety: `buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or the
-unwritten tail stays whatever it held — which for a key is the worst possible outcome.
+Safety: `buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or
+the unwritten tail stays whatever it held — which for a key is the worst possible outcome.
 
 ## Parameters
 
@@ -58,7 +58,7 @@ pub const RandomNonBlocking: uint32 = 1;
 
 `GRND_NONBLOCK`: report [`EAGAIN`](/docs/api/linux/errors#eagain) rather than waiting for the pool to be seeded.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Entropy.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Entropy.rux#L13)
 
 <h3 id="random-blocking-pool"><code>RandomBlockingPool</code></h3>
 
@@ -69,4 +69,4 @@ pub const RandomBlockingPool: uint32 = 2;
 `GRND_RANDOM`: draw from the blocking pool, which is almost never what a caller wants.
 Kept for completeness. The default source is as unpredictable and does not stall.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Entropy.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Linux/Src/Entropy.rux#L18)

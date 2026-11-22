@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/String.rux
-  line: 42
+  line: 45
 seo:
   title: "Strings and memory — C API"
   description: "C's <string.h>: byte-string and raw memory operations."
@@ -40,7 +40,7 @@ Runs in time proportional to `count` and allocates nothing.
 
 **See also**: [https://en.cppreference.com/c/string/byte/memchr](https://en.cppreference.com/c/string/byte/memchr)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L45)
 
 **Parameters**
 
@@ -72,7 +72,7 @@ Both pointers must be readable for `count` bytes.
 
 **See also**: [https://en.cppreference.com/c/string/byte/memcmp](https://en.cppreference.com/c/string/byte/memcmp)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L60)
 
 **Parameters**
 
@@ -95,14 +95,14 @@ pub extern func memcpy(
 ```
 
 Copies `count` bytes from `src` to `dest`.
-`src` is borrowed and read; `dest` is borrowed and written. Returns `dest`. The two ranges must not overlap --
-that is what [`memmove`](/docs/api/c/string#memmove) is for, and overlapping them here is undefined rather than merely unpredictable.
-Runs in time proportional to `count` and allocates nothing.
-`dest` must be writable for `count` bytes, `src` readable for `count`, and the two must not overlap.
+`src` is borrowed and read; `dest` is borrowed and written. Returns `dest`. The two ranges must not overlap
+-- that is what [`memmove`](/docs/api/c/string#memmove) is for, and overlapping them here is undefined rather than merely unpredictable.
+Runs in time proportional to `count` and allocates nothing. `dest` must be writable for `count` bytes, `src`
+readable for `count`, and the two must not overlap.
 
 **See also**: [https://en.cppreference.com/c/string/byte/memcpy](https://en.cppreference.com/c/string/byte/memcpy)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L73)
 
 **Parameters**
 
@@ -125,14 +125,14 @@ pub extern func memmove(
 ```
 
 Copies `count` bytes from `src` to `dest`, correctly even when the two overlap.
-`src` is borrowed and read; `dest` is borrowed and written. Returns `dest`. Behaves as though the source were
-copied to a temporary first, so sliding a range within one buffer works in either direction.
-Runs in time proportional to `count` and allocates nothing.
-`dest` must be writable for `count` bytes and `src` readable for `count`.
+`src` is borrowed and read; `dest` is borrowed and written. Returns `dest`. Behaves as though the source
+were copied to a temporary first, so sliding a range within one buffer works in either direction. Runs in
+time proportional to `count` and allocates nothing. `dest` must be writable for `count` bytes and `src`
+readable for `count`.
 
 **See also**: [https://en.cppreference.com/c/string/byte/memmove](https://en.cppreference.com/c/string/byte/memmove)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L86)
 
 **Parameters**
 
@@ -156,14 +156,13 @@ pub extern func memset(
 
 Writes `ch` to each of the first `count` bytes of `dest`.
 `dest` is borrowed and written. `ch` is converted to an `unsigned char`, so only its low eight bits are
-stored. Returns `dest`.
-Runs in time proportional to `count` and allocates nothing.
-`dest` must be writable for `count` bytes. This is not the call for clearing a secret: a compiler is entitled
-to delete a write nothing reads back, and `Core::Zeroize` is the one that is not.
+stored. Returns `dest`. Runs in time proportional to `count` and allocates nothing. `dest` must be writable
+for `count` bytes. This is not the call for clearing a secret: a compiler is entitled to delete a write
+nothing reads back, and `Core::Zeroize` is the one that is not.
 
 **See also**: [https://en.cppreference.com/c/string/byte/memset](https://en.cppreference.com/c/string/byte/memset)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L99)
 
 **Parameters**
 
@@ -188,7 +187,7 @@ Runs in time proportional to the result and allocates nothing.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strlen](https://en.cppreference.com/c/string/byte/strlen)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L109)
 
 **Parameters**
 
@@ -212,7 +211,7 @@ Both must be non-null and terminated.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strcmp](https://en.cppreference.com/c/string/byte/strcmp)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L121)
 
 **Parameters**
 
@@ -241,7 +240,7 @@ Both must be readable until a terminator or `count` bytes, whichever comes first
 
 **See also**: [https://en.cppreference.com/c/string/byte/strncmp](https://en.cppreference.com/c/string/byte/strncmp)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L134)
 
 **Parameters**
 
@@ -270,7 +269,7 @@ Getting that wrong is the classic buffer overrun; prefer [`memcpy`](/docs/api/c/
 
 **See also**: [https://en.cppreference.com/c/string/byte/strcpy](https://en.cppreference.com/c/string/byte/strcpy)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L146)
 
 **Parameters**
 
@@ -300,7 +299,7 @@ bytes or longer, which is the trap in its name: it is not a bounded [`strcpy`](/
 
 **See also**: [https://en.cppreference.com/c/string/byte/strncpy](https://en.cppreference.com/c/string/byte/strncpy)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L160)
 
 **Parameters**
 
@@ -329,7 +328,7 @@ is a common accident: each call walks the destination from its start.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strcat](https://en.cppreference.com/c/string/byte/strcat)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L172)
 
 **Parameters**
 
@@ -351,15 +350,14 @@ pub extern func strncat(
 ```
 
 Appends at most `count` bytes of a byte string to the end of another.
-`src` is borrowed; `dest` is borrowed and written. Returns `dest`. Always terminates the result, so it writes
-up to `count + 1` bytes past the destination's existing end.
-Runs in time proportional to the destination's length plus `count`.
-`dest` must be terminated and must have room for its own length plus `count` plus one. `count` bounds what is
-taken from the source, not the size of the destination.
+`src` is borrowed; `dest` is borrowed and written. Returns `dest`. Always terminates the result, so it
+writes up to `count + 1` bytes past the destination's existing end. Runs in time proportional to the
+destination's length plus `count`. `dest` must be terminated and must have room for its own length plus
+`count` plus one. `count` bounds what is taken from the source, not the size of the destination.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strncat](https://en.cppreference.com/c/string/byte/strncat)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L184)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L185)
 
 **Parameters**
 
@@ -385,7 +383,7 @@ Runs in time proportional to the string's length and allocates nothing.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strchr](https://en.cppreference.com/c/string/byte/strchr)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L196)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L197)
 
 **Parameters**
 
@@ -410,7 +408,7 @@ Runs in time proportional to the string's length and allocates nothing.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strrchr](https://en.cppreference.com/c/string/byte/strrchr)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L208)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L209)
 
 **Parameters**
 
@@ -438,7 +436,7 @@ Both must be non-null and terminated.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strstr](https://en.cppreference.com/c/string/byte/strstr)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L220)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L221)
 
 **Parameters**
 
@@ -466,7 +464,7 @@ Both must be non-null and terminated.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strspn](https://en.cppreference.com/c/string/byte/strspn)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L233)
 
 **Parameters**
 
@@ -493,7 +491,7 @@ Both must be non-null and terminated.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strcspn](https://en.cppreference.com/c/string/byte/strcspn)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L243)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L244)
 
 **Parameters**
 
@@ -519,7 +517,7 @@ Both must be non-null and terminated.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strpbrk](https://en.cppreference.com/c/string/byte/strpbrk)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L253)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L254)
 
 **Parameters**
 
@@ -540,15 +538,15 @@ pub extern func strtok(
 ```
 
 Splits a byte string into tokens separated by any byte of `delimiters`.
-`str` is borrowed and **modified**: a terminator is written over each delimiter found. Pass the string on the
-first call and null on each call after it to continue the same scan. Returns the next token, or null when
-none is left.
-The scan's position is kept in storage shared by the whole program, so two interleaved scans destroy each
-other and no two threads may use this at once. The string must be writable, which rules out a literal.
+`str` is borrowed and **modified**: a terminator is written over each delimiter found. Pass the string on
+the first call and null on each call after it to continue the same scan. Returns the next token, or null
+when none is left. The scan's position is kept in storage shared by the whole program, so two interleaved
+scans destroy each other and no two threads may use this at once. The string must be writable, which rules
+out a literal.
 
 **See also**: [https://en.cppreference.com/c/string/byte/strtok](https://en.cppreference.com/c/string/byte/strtok)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L300)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/C/Src/String.rux#L301)
 
 **Parameters**
 
