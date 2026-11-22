@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Umtx.rux
-  line: 13
+  line: 15
 seo:
   title: "Address waits — FreeBSD API"
   description: Waiting on a word and waking its waiters through _umtx_op.
@@ -29,7 +29,7 @@ pub const UMTX_OP_WAIT_UINT_PRIVATE: int32 = 15;
 
 `UMTX_OP_WAIT_UINT_PRIVATE`: sleep while a 32-bit word holds the expected value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L15)
 
 <h2 id="umtx-op-wake-private"><code>UMTX_OP_WAKE_PRIVATE</code></h2>
 
@@ -39,12 +39,12 @@ pub const UMTX_OP_WAKE_PRIVATE: int32 = 16;
 
 `UMTX_OP_WAKE_PRIVATE`: wake threads sleeping on the word.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L20)
 
 <h2 id="umtx-wait"><code>UmtxWait</code></h2>
 
 ```rux
-pub unsafe func UmtxWait(
+pub func UmtxWait(
     address: *uint32,
     expected: uint32,
     timeout: *Timespec
@@ -56,7 +56,7 @@ Safety: `address` must point at a live, four-byte aligned word, and a non-null `
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=_umtx_op&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=_umtx_op&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L30)
 
 **Parameters**
 
@@ -71,10 +71,7 @@ Safety: `address` must point at a live, four-byte aligned word, and a non-null `
 <h2 id="umtx-wake"><code>UmtxWake</code></h2>
 
 ```rux
-pub unsafe func UmtxWake(
-    address: *uint32,
-    count: int32
-) -> int64
+pub func UmtxWake(address: *uint32, count: int32) -> int64
 ```
 
 Wakes up to `count` threads sleeping on `address`.
@@ -82,7 +79,7 @@ Safety: `address` must point at a live, four-byte aligned word.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=_umtx_op&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=_umtx_op&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Umtx.rux#L43)
 
 **Parameters**
 

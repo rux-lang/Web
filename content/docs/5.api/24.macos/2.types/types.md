@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Types.rux
-  line: 11
+  line: 12
 seo:
   title: "Types — macOS API"
   description: "macOS's scalar types for process, file and user identifiers."
@@ -29,7 +29,7 @@ pub type FileDescriptor = int32
 
 A file descriptor, as the kernel numbers one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L12)
 
 <h2 id="file-mode"><code>FileMode</code></h2>
 
@@ -40,7 +40,7 @@ pub type FileMode = uint16
 A file's type and permission bits.
 Sixteen bits here, where Linux's `mode_t` is thirty-two. The bit meanings agree; the width does not.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L21)
 
 <h2 id="file-offset"><code>FileOffset</code></h2>
 
@@ -50,7 +50,7 @@ pub type FileOffset = int64
 
 A byte offset within a file, 64 bits on every supported Apple target.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L16)
 
 <h2 id="group-id"><code>GroupId</code></h2>
 
@@ -60,7 +60,7 @@ pub type GroupId = uint32
 
 A group identifier.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L29)
 
 <h2 id="process-id"><code>ProcessId</code></h2>
 
@@ -70,7 +70,7 @@ pub type ProcessId = int32
 
 A process identifier, as `getpid` reports one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L8)
 
 <h2 id="user-id"><code>UserId</code></h2>
 
@@ -80,4 +80,4 @@ pub type UserId = uint32
 
 A user identifier.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Types.rux#L25)

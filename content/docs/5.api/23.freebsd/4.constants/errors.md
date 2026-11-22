@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Errors.rux
-  line: 12
+  line: 13
 seo:
   title: "Errors — FreeBSD API"
   description: "The error numbers, and telling a raw result from an error."
@@ -29,7 +29,7 @@ pub const EPERM: int64 = 1;
 
 `EPERM`: the operation is not permitted to this caller.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L13)
 
 <h2 id="enoent"><code>ENOENT</code></h2>
 
@@ -39,7 +39,7 @@ pub const ENOENT: int64 = 2;
 
 `ENOENT`: no such file or directory.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L18)
 
 <h2 id="esrch"><code>ESRCH</code></h2>
 
@@ -49,7 +49,7 @@ pub const ESRCH: int64 = 3;
 
 `ESRCH`: no such process.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L23)
 
 <h2 id="eintr"><code>EINTR</code></h2>
 
@@ -59,7 +59,7 @@ pub const EINTR: int64 = 4;
 
 `EINTR`: the call was interrupted by a signal before it did anything.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L28)
 
 <h2 id="eio"><code>EIO</code></h2>
 
@@ -69,7 +69,7 @@ pub const EIO: int64 = 5;
 
 `EIO`: a low-level input or output error.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L33)
 
 <h2 id="enxio"><code>ENXIO</code></h2>
 
@@ -79,7 +79,7 @@ pub const ENXIO: int64 = 6;
 
 `ENXIO`: no such device or address.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L38)
 
 <h2 id="ebadf"><code>EBADF</code></h2>
 
@@ -89,7 +89,7 @@ pub const EBADF: int64 = 9;
 
 `EBADF`: the file descriptor is not open, or is not open for what was asked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L43)
 
 <h2 id="eagain"><code>EAGAIN</code></h2>
 
@@ -99,7 +99,7 @@ pub const EAGAIN: int64 = 35;
 
 `EAGAIN`: the operation would block, and the descriptor was set not to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L48)
 
 <h2 id="enomem"><code>ENOMEM</code></h2>
 
@@ -109,7 +109,7 @@ pub const ENOMEM: int64 = 12;
 
 `ENOMEM`: not enough memory to satisfy the request.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L53)
 
 <h2 id="eacces"><code>EACCES</code></h2>
 
@@ -119,7 +119,7 @@ pub const EACCES: int64 = 13;
 
 `EACCES`: permission denied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L58)
 
 <h2 id="efault"><code>EFAULT</code></h2>
 
@@ -129,7 +129,7 @@ pub const EFAULT: int64 = 14;
 
 `EFAULT`: an address the call was given is outside the caller's address space.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L63)
 
 <h2 id="ebusy"><code>EBUSY</code></h2>
 
@@ -139,7 +139,7 @@ pub const EBUSY: int64 = 16;
 
 `EBUSY`: the resource is in use.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L68)
 
 <h2 id="eexist"><code>EEXIST</code></h2>
 
@@ -149,7 +149,7 @@ pub const EEXIST: int64 = 17;
 
 `EEXIST`: the file already exists.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L73)
 
 <h2 id="exdev"><code>EXDEV</code></h2>
 
@@ -159,7 +159,7 @@ pub const EXDEV: int64 = 18;
 
 `EXDEV`: the two paths are on different file systems.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L78)
 
 <h2 id="enotdir"><code>ENOTDIR</code></h2>
 
@@ -169,7 +169,7 @@ pub const ENOTDIR: int64 = 20;
 
 `ENOTDIR`: a path component that had to be a directory is not one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L83)
 
 <h2 id="eisdir"><code>EISDIR</code></h2>
 
@@ -179,7 +179,7 @@ pub const EISDIR: int64 = 21;
 
 `EISDIR`: the target is a directory and the operation is not one a directory accepts.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L88)
 
 <h2 id="einval"><code>EINVAL</code></h2>
 
@@ -189,7 +189,7 @@ pub const EINVAL: int64 = 22;
 
 `EINVAL`: an argument is not valid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L93)
 
 <h2 id="emfile"><code>EMFILE</code></h2>
 
@@ -199,7 +199,7 @@ pub const EMFILE: int64 = 24;
 
 `EMFILE`: this process has too many descriptors open.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L98)
 
 <h2 id="enospc"><code>ENOSPC</code></h2>
 
@@ -209,7 +209,7 @@ pub const ENOSPC: int64 = 28;
 
 `ENOSPC`: the device has no room left.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L103)
 
 <h2 id="espipe"><code>ESPIPE</code></h2>
 
@@ -219,7 +219,7 @@ pub const ESPIPE: int64 = 29;
 
 `ESPIPE`: the descriptor is a pipe or socket and cannot be seeked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L108)
 
 <h2 id="erofs"><code>EROFS</code></h2>
 
@@ -229,7 +229,7 @@ pub const EROFS: int64 = 30;
 
 `EROFS`: the file system is mounted read-only.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L113)
 
 <h2 id="epipe"><code>EPIPE</code></h2>
 
@@ -239,7 +239,7 @@ pub const EPIPE: int64 = 32;
 
 `EPIPE`: the reading end of the pipe is closed.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L118)
 
 <h2 id="enametoolong"><code>ENAMETOOLONG</code></h2>
 
@@ -249,7 +249,7 @@ pub const ENAMETOOLONG: int64 = 63;
 
 `ENAMETOOLONG`: the path or a component of it is too long.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L123)
 
 <h2 id="eloop"><code>ELOOP</code></h2>
 
@@ -259,7 +259,7 @@ pub const ELOOP: int64 = 62;
 
 `ELOOP`: too many symbolic links were followed resolving the path.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L128)
 
 <h2 id="enosys"><code>ENOSYS</code></h2>
 
@@ -269,7 +269,7 @@ pub const ENOSYS: int64 = 78;
 
 `ENOSYS`: the kernel does not implement this call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L133)
 
 <h2 id="eoverflow"><code>EOVERFLOW</code></h2>
 
@@ -279,7 +279,7 @@ pub const EOVERFLOW: int64 = 84;
 
 `EOVERFLOW`: a value is too large for the type the call reports it in.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L138)
 
 <h2 id="etimedout"><code>ETIMEDOUT</code></h2>
 
@@ -289,7 +289,7 @@ pub const ETIMEDOUT: int64 = 60;
 
 `ETIMEDOUT`: the operation timed out.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L143)
 
 <h2 id="maximum-errno"><code>MaximumErrno</code></h2>
 
@@ -299,7 +299,7 @@ pub const MaximumErrno: int64 = 4095;
 
 The largest error number the normalized error range holds.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L147)
 
 <h2 id="is-error"><code>IsError</code></h2>
 
@@ -312,7 +312,7 @@ Whether a raw system-call result is one of the normalized error values.
 mapping address a memory call returns.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L156)
 
 **Parameters**
 
@@ -332,7 +332,7 @@ The error number a raw system-call result carries, or zero when it carries none.
 `result` is read by value; the number is returned by copy, positive, as a man page names it.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L165)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Errors.rux#L166)
 
 **Parameters**
 

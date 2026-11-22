@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/File.rux
-  line: 14
+  line: 17
 seo:
   title: "Files — macOS API"
   description: "Opening, reading, writing and inspecting files through descriptors."
@@ -29,7 +29,7 @@ pub const StdIn: int32 = 0;
 
 The descriptor a process reads its input from, unless something reassigned it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L17)
 
 <h2 id="std-out"><code>StdOut</code></h2>
 
@@ -39,7 +39,7 @@ pub const StdOut: int32 = 1;
 
 The descriptor a process writes its output to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L21)
 
 <h2 id="std-err"><code>StdErr</code></h2>
 
@@ -49,7 +49,7 @@ pub const StdErr: int32 = 2;
 
 The descriptor a process writes its diagnostics to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L25)
 
 <h2 id="at-fd-cwd"><code>AtFdCwd</code></h2>
 
@@ -61,7 +61,7 @@ pub const AtFdCwd: int32 = -2;
 Darwin spells this `-2`, where Linux and FreeBSD both use `-100`. Carrying the value between packages produces a
 descriptor number, not an error.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L31)
 
 <h2 id="open-read-only"><code>OpenReadOnly</code></h2>
 
@@ -71,7 +71,7 @@ pub const OpenReadOnly: int32 = 0x0000;
 
 `O_RDONLY`: open for reading only.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L35)
 
 <h2 id="open-write-only"><code>OpenWriteOnly</code></h2>
 
@@ -81,7 +81,7 @@ pub const OpenWriteOnly: int32 = 0x0001;
 
 `O_WRONLY`: open for writing only.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L39)
 
 <h2 id="open-read-write"><code>OpenReadWrite</code></h2>
 
@@ -91,7 +91,7 @@ pub const OpenReadWrite: int32 = 0x0002;
 
 `O_RDWR`: open for both reading and writing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L43)
 
 <h2 id="open-create"><code>OpenCreate</code></h2>
 
@@ -101,7 +101,7 @@ pub const OpenCreate: int32 = 0x0200;
 
 `O_CREAT`: create the file when it does not exist, which is when the mode argument is read.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L47)
 
 <h2 id="open-exclusive"><code>OpenExclusive</code></h2>
 
@@ -111,7 +111,7 @@ pub const OpenExclusive: int32 = 0x0800;
 
 `O_EXCL`: with [`OpenCreate`](/docs/api/macos/files#open-create), fail rather than open a file that already exists.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L51)
 
 <h2 id="open-truncate"><code>OpenTruncate</code></h2>
 
@@ -121,7 +121,7 @@ pub const OpenTruncate: int32 = 0x0400;
 
 `O_TRUNC`: truncate the file to nothing when opening it for writing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L55)
 
 <h2 id="open-append"><code>OpenAppend</code></h2>
 
@@ -131,7 +131,7 @@ pub const OpenAppend: int32 = 0x0008;
 
 `O_APPEND`: every write goes to the end.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L59)
 
 <h2 id="open-non-blocking"><code>OpenNonBlocking</code></h2>
 
@@ -141,7 +141,7 @@ pub const OpenNonBlocking: int32 = 0x0004;
 
 [`O_NONBLOCK`](/docs/api/macos/poll#o-nonblock): reads and writes report [`EAGAIN`](/docs/api/macos/errors#eagain) rather than waiting.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L63)
 
 <h2 id="open-close-on-exec"><code>OpenCloseOnExec</code></h2>
 
@@ -151,7 +151,7 @@ pub const OpenCloseOnExec: int32 = 0x01000000;
 
 `O_CLOEXEC`: close this descriptor automatically when the process executes a new program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L67)
 
 <h2 id="open-directory"><code>OpenDirectory</code></h2>
 
@@ -161,7 +161,7 @@ pub const OpenDirectory: int32 = 0x00100000;
 
 `O_DIRECTORY`: fail unless the target is a directory.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L71)
 
 <h2 id="seek-set"><code>SeekSet</code></h2>
 
@@ -171,7 +171,7 @@ pub const SeekSet: int32 = 0;
 
 `SEEK_SET`: measure the new offset from the start of the file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L75)
 
 <h2 id="seek-current"><code>SeekCurrent</code></h2>
 
@@ -181,7 +181,7 @@ pub const SeekCurrent: int32 = 1;
 
 `SEEK_CUR`: measure the new offset from the current one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L79)
 
 <h2 id="seek-end"><code>SeekEnd</code></h2>
 
@@ -191,12 +191,12 @@ pub const SeekEnd: int32 = 2;
 
 `SEEK_END`: measure the new offset from the end of the file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L83)
 
 <h2 id="read"><code>Read</code></h2>
 
 ```rux
-pub unsafe func Read(
+pub func Read(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint
@@ -208,7 +208,7 @@ Reads up to `count` bytes from `fd` into `buffer`.
 number. A short count is ordinary.
 Safety: `buffer` must be writable for `count` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L98)
 
 **Parameters**
 
@@ -223,7 +223,7 @@ Safety: `buffer` must be writable for `count` bytes.
 <h2 id="write"><code>Write</code></h2>
 
 ```rux
-pub unsafe func Write(
+pub func Write(
     fd: FileDescriptor,
     buffer: *opaque,
     count: uint
@@ -235,7 +235,7 @@ Writes up to `count` bytes from `buffer` to `fd`.
 ordinary and the rest has to be written by calling again.
 Safety: `buffer` must be readable for `count` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L111)
 
 **Parameters**
 
@@ -256,7 +256,7 @@ pub func Close(fd: FileDescriptor) -> int64
 Closes `fd` and releases what the kernel held for it.
 Returns zero, or a negative error number. A failure does not mean the descriptor is still open.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L120)
 
 **Parameters**
 
@@ -269,7 +269,7 @@ Returns zero, or a negative error number. A failure does not mean the descriptor
 <h2 id="open-at"><code>OpenAt</code></h2>
 
 ```rux
-pub unsafe func OpenAt(
+pub func OpenAt(
     directoryFd: FileDescriptor,
     path: *char8,
     flags: int32,
@@ -281,7 +281,7 @@ Opens `path` relative to `directoryFd` and returns a descriptor, or a negative e
 `directoryFd` is [`AtFdCwd`](/docs/api/macos/files#at-fd-cwd) for an ordinary path. `mode` is read only when [`OpenCreate`](/docs/api/macos/files#open-create) is set.
 Safety: `path` must be non-null and terminated. The mode is masked by the process umask.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L134)
 
 **Parameters**
 
@@ -306,7 +306,7 @@ pub func Lseek(
 
 Moves the file offset of `fd` and returns where it ended up, or a negative error number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L144)
 
 **Parameters**
 
@@ -321,7 +321,7 @@ Moves the file offset of `fd` and returns where it ended up, or a negative error
 <h2 id="fstat"><code>Fstat</code></h2>
 
 ```rux
-pub unsafe func Fstat(
+pub func Fstat(
     fd: FileDescriptor,
     statBuffer: *var opaque
 ) -> int64
@@ -331,7 +331,7 @@ Fills `statBuffer` with what the kernel knows about the file behind `fd`.
 Returns zero, or a negative error number.
 Safety: `statBuffer` must be writable for the whole of the 64-bit-inode `struct stat`, which is 144 bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L193)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L196)
 
 **Parameters**
 
@@ -345,7 +345,7 @@ Safety: `statBuffer` must be writable for the whole of the 64-bit-inode `struct 
 <h2 id="fstat-at"><code>FstatAt</code></h2>
 
 ```rux
-pub unsafe func FstatAt(
+pub func FstatAt(
     directoryFd: FileDescriptor,
     path: *char8,
     statBuffer: *var opaque,
@@ -359,7 +359,7 @@ path, or [`SymlinkNoFollow`](/docs/api/macos/directories#symlink-no-follow) to d
 Safety: `path` must be non-null and NUL-terminated, and `statBuffer` must be writable for the whole of the
 64-bit-inode `struct stat`, which is 144 bytes and whose layout this package does not model.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L208)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L211)
 
 **Parameters**
 
@@ -375,7 +375,7 @@ Safety: `path` must be non-null and NUL-terminated, and `statBuffer` must be wri
 <h2 id="fchmod-at"><code>FchmodAt</code></h2>
 
 ```rux
-pub unsafe func FchmodAt(
+pub func FchmodAt(
     directoryFd: FileDescriptor,
     path: *char8,
     mode: FileMode,
@@ -388,7 +388,7 @@ Sets the permission bits of the file `path` names.
 negative error number.
 Safety: `path` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L222)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L225)
 
 **Parameters**
 
@@ -404,7 +404,7 @@ Safety: `path` must be non-null and NUL-terminated.
 <h2 id="utimens-at"><code>UtimensAt</code></h2>
 
 ```rux
-pub unsafe func UtimensAt(
+pub func UtimensAt(
     directoryFd: FileDescriptor,
     path: *char8,
     times: *opaque,
@@ -419,7 +419,7 @@ count and a nanosecond fraction, both 8 bytes. A null `times` sets both to now. 
 Safety: `path` must be non-null and NUL-terminated, and a non-null `times` must be readable for two `timespec`
 values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L238)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L241)
 
 **Parameters**
 
@@ -444,7 +444,7 @@ This is weaker on Darwin than everywhere else: it hands the data to the device w
 commit it, so a power failure can still lose a write this reported as flushed. `F_FULLFSYNC` through [`fcntl`](/docs/api/macos/spawn#fcntl) is
 what actually waits, and this package does not wrap it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L299)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L302)
 
 **Parameters**
 
@@ -466,7 +466,7 @@ pub func Ftruncate(
 Sets the length of the file behind `fd` to `length`.
 Growing creates a hole rather than allocating, so a later write into it can still fail with [`ENOSPC`](/docs/api/macos/errors#enospc).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L310)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L313)
 
 **Parameters**
 
@@ -489,7 +489,7 @@ pub func Dup2(
 Makes `newFd` a copy of `oldFd`, closing whatever `newFd` was.
 Returns `newFd`, or a negative error number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L359)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L362)
 
 **Parameters**
 
@@ -503,15 +503,15 @@ Returns `newFd`, or a negative error number.
 <h2 id="pipe"><code>Pipe</code></h2>
 
 ```rux
-pub unsafe func Pipe(descriptors: *var int32) -> int64
+pub func Pipe(descriptors: *var int32) -> int64
 ```
 
 Creates a pipe and writes its two descriptors into `descriptors`.
-The reading end lands at index zero and the writing end at index one. Darwin has no `pipe2`, so close-on-exec has
-to be set afterwards through [`fcntl`](/docs/api/macos/spawn#fcntl) — which leaves a window another thread can execute through.
+The reading end lands at index zero and the writing end at index one. Darwin has no `pipe2`, so close-on-exec
+has to be set afterwards through [`fcntl`](/docs/api/macos/spawn#fcntl) — which leaves a window another thread can execute through.
 Safety: `descriptors` must be writable for two `int32` values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L371)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L374)
 
 **Parameters**
 

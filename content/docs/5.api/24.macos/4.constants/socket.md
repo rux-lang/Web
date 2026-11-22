@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Socket.rux
-  line: 10
+  line: 13
 seo:
   title: "Sockets — macOS API"
   description: "Address families, socket types and options, and the calls that open, bind and connect sockets."
@@ -29,7 +29,7 @@ pub const AF_INET: int32 = 2;
 
 `AF_INET`: the IPv4 address family.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L13)
 
 <h2 id="af-inet6"><code>AF_INET6</code></h2>
 
@@ -39,7 +39,7 @@ pub const AF_INET6: int32 = 30;
 
 `AF_INET6`: the IPv6 address family.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L18)
 
 <h2 id="sock-stream"><code>SOCK_STREAM</code></h2>
 
@@ -49,7 +49,7 @@ pub const SOCK_STREAM: int32 = 1;
 
 `SOCK_STREAM`: a connected byte stream.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L23)
 
 <h2 id="sock-dgram"><code>SOCK_DGRAM</code></h2>
 
@@ -59,7 +59,7 @@ pub const SOCK_DGRAM: int32 = 2;
 
 `SOCK_DGRAM`: individual datagrams.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L28)
 
 <h2 id="sol-socket"><code>SOL_SOCKET</code></h2>
 
@@ -69,7 +69,7 @@ pub const SOL_SOCKET: int32 = 0xffff;
 
 `SOL_SOCKET`: the level of the options every socket has.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L33)
 
 <h2 id="so-reuseaddr"><code>SO_REUSEADDR</code></h2>
 
@@ -79,7 +79,7 @@ pub const SO_REUSEADDR: int32 = 4;
 
 `SO_REUSEADDR`: let a listening address be bound again while old connections to it wind down.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L38)
 
 <h2 id="so-rcvtimeo"><code>SO_RCVTIMEO</code></h2>
 
@@ -89,7 +89,7 @@ pub const SO_RCVTIMEO: int32 = 0x1006;
 
 `SO_RCVTIMEO`: how long a receive waits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L43)
 
 <h2 id="so-sndtimeo"><code>SO_SNDTIMEO</code></h2>
 
@@ -99,7 +99,7 @@ pub const SO_SNDTIMEO: int32 = 0x1005;
 
 `SO_SNDTIMEO`: how long a send waits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L48)
 
 <h2 id="ipproto-tcp"><code>IPPROTO_TCP</code></h2>
 
@@ -109,7 +109,7 @@ pub const IPPROTO_TCP: int32 = 6;
 
 `IPPROTO_TCP`: the level of TCP's options.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L53)
 
 <h2 id="tcp-nodelay"><code>TCP_NODELAY</code></h2>
 
@@ -119,7 +119,7 @@ pub const TCP_NODELAY: int32 = 1;
 
 `TCP_NODELAY`: send small writes at once rather than gathering them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L58)
 
 <h2 id="ipproto-ipv6"><code>IPPROTO_IPV6</code></h2>
 
@@ -129,7 +129,7 @@ pub const IPPROTO_IPV6: int32 = 41;
 
 `IPPROTO_IPV6`: the level of IPv6's options.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L63)
 
 <h2 id="ipv6-v6only"><code>IPV6_V6ONLY</code></h2>
 
@@ -139,7 +139,7 @@ pub const IPV6_V6ONLY: int32 = 27;
 
 `IPV6_V6ONLY`: accept only IPv6 on an IPv6 socket.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L68)
 
 <h2 id="so-nosigpipe"><code>SO_NOSIGPIPE</code></h2>
 
@@ -149,7 +149,7 @@ pub const SO_NOSIGPIPE: int32 = 0x1022;
 
 `SO_NOSIGPIPE`: report a closed peer as an error rather than with `SIGPIPE`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L73)
 
 <h2 id="socket"><code>Socket</code></h2>
 
@@ -165,7 +165,7 @@ Opens a socket.
 
 **See also**: [https://keith.github.io/xcode-man-pages/socket.2.html](https://keith.github.io/xcode-man-pages/socket.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L97)
 
 **Parameters**
 
@@ -180,7 +180,7 @@ Opens a socket.
 <h2 id="connect"><code>Connect</code></h2>
 
 ```rux
-pub unsafe func Connect(
+pub func Connect(
     fd: FileDescriptor,
     address: *opaque,
     length: uint32
@@ -192,7 +192,7 @@ Safety: `address` must be readable for `length` bytes.
 
 **See also**: [https://keith.github.io/xcode-man-pages/connect.2.html](https://keith.github.io/xcode-man-pages/connect.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L110)
 
 **Parameters**
 
@@ -207,7 +207,7 @@ Safety: `address` must be readable for `length` bytes.
 <h2 id="bind"><code>Bind</code></h2>
 
 ```rux
-pub unsafe func Bind(
+pub func Bind(
     fd: FileDescriptor,
     address: *opaque,
     length: uint32
@@ -219,7 +219,7 @@ Safety: `address` must be readable for `length` bytes.
 
 **See also**: [https://keith.github.io/xcode-man-pages/bind.2.html](https://keith.github.io/xcode-man-pages/bind.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L122)
 
 **Parameters**
 
@@ -241,7 +241,7 @@ Makes a bound stream socket accept connections.
 
 **See also**: [https://keith.github.io/xcode-man-pages/listen.2.html](https://keith.github.io/xcode-man-pages/listen.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L132)
 
 **Parameters**
 
@@ -255,7 +255,7 @@ Makes a bound stream socket accept connections.
 <h2 id="accept4"><code>Accept4</code></h2>
 
 ```rux
-pub unsafe func Accept4(
+pub func Accept4(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32,
@@ -264,12 +264,12 @@ pub unsafe func Accept4(
 ```
 
 Accepts a waiting connection as a new socket.
-Safety: `address` and `length` must be null together, or `length` must be writable and `address` writable for the
-`*length` bytes it states.
+Safety: `address` and `length` must be null together, or `length` must be writable and `address` writable for
+the `*length` bytes it states.
 
 **See also**: [https://keith.github.io/xcode-man-pages/accept.2.html](https://keith.github.io/xcode-man-pages/accept.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L147)
 
 **Parameters**
 
@@ -285,7 +285,7 @@ Safety: `address` and `length` must be null together, or `length` must be writab
 <h2 id="sendto"><code>SendTo</code></h2>
 
 ```rux
-pub unsafe func SendTo(
+pub func SendTo(
     fd: FileDescriptor,
     buffer: *opaque,
     count: uint,
@@ -300,7 +300,7 @@ Safety: `buffer` must be readable for `count` bytes, and a non-null `address` re
 
 **See also**: [https://keith.github.io/xcode-man-pages/sendto.2.html](https://keith.github.io/xcode-man-pages/sendto.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L162)
 
 **Parameters**
 
@@ -318,7 +318,7 @@ Safety: `buffer` must be readable for `count` bytes, and a non-null `address` re
 <h2 id="receivefrom"><code>ReceiveFrom</code></h2>
 
 ```rux
-pub unsafe func ReceiveFrom(
+pub func ReceiveFrom(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint,
@@ -329,12 +329,12 @@ pub unsafe func ReceiveFrom(
 ```
 
 Receives bytes from a socket, and where they came from.
-Safety: `buffer` must be writable for `count` bytes. `address` and `length` must be null together, or `length` must
-be writable and `address` writable for the `*length` bytes it states.
+Safety: `buffer` must be writable for `count` bytes. `address` and `length` must be null together, or `length`
+must be writable and `address` writable for the `*length` bytes it states.
 
 **See also**: [https://keith.github.io/xcode-man-pages/recvfrom.2.html](https://keith.github.io/xcode-man-pages/recvfrom.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L179)
 
 **Parameters**
 
@@ -359,7 +359,7 @@ Ends one or both directions of a connection.
 
 **See also**: [https://keith.github.io/xcode-man-pages/shutdown.2.html](https://keith.github.io/xcode-man-pages/shutdown.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L190)
 
 **Parameters**
 
@@ -373,7 +373,7 @@ Ends one or both directions of a connection.
 <h2 id="setsocketoption"><code>SetSocketOption</code></h2>
 
 ```rux
-pub unsafe func SetSocketOption(
+pub func SetSocketOption(
     fd: FileDescriptor,
     level: int32,
     name: int32,
@@ -387,7 +387,7 @@ Safety: `value` must be readable for `length` bytes.
 
 **See also**: [https://keith.github.io/xcode-man-pages/setsockopt.2.html](https://keith.github.io/xcode-man-pages/setsockopt.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L205)
 
 **Parameters**
 
@@ -404,7 +404,7 @@ Safety: `value` must be readable for `length` bytes.
 <h2 id="getsocketname"><code>GetSocketName</code></h2>
 
 ```rux
-pub unsafe func GetSocketName(
+pub func GetSocketName(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32
@@ -416,7 +416,7 @@ Safety: `length` must be writable, and `address` writable for the `*length` byte
 
 **See also**: [https://keith.github.io/xcode-man-pages/getsockname.2.html](https://keith.github.io/xcode-man-pages/getsockname.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L215)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L218)
 
 **Parameters**
 
@@ -431,7 +431,7 @@ Safety: `length` must be writable, and `address` writable for the `*length` byte
 <h2 id="getpeername"><code>GetPeerName</code></h2>
 
 ```rux
-pub unsafe func GetPeerName(
+pub func GetPeerName(
     fd: FileDescriptor,
     address: *var opaque,
     length: *var uint32
@@ -443,7 +443,7 @@ Safety: `length` must be writable, and `address` writable for the `*length` byte
 
 **See also**: [https://keith.github.io/xcode-man-pages/getpeername.2.html](https://keith.github.io/xcode-man-pages/getpeername.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L227)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Socket.rux#L230)
 
 **Parameters**
 

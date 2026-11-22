@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/File.rux
-  line: 84
+  line: 87
 seo:
   title: "Directories and links — macOS API"
   description: "The working directory, directory entries, removal, renaming and links."
@@ -29,22 +29,19 @@ pub const RemoveDirectory: int32 = 0x0080;
 
 `AT_REMOVEDIR`: make [`UnlinkAt`](/docs/api/macos/directories#unlink-at) remove a directory rather than a file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L87)
 
 <h2 id="getcwd"><code>Getcwd</code></h2>
 
 ```rux
-pub unsafe func Getcwd(
-    buffer: *var char8,
-    size: uint
-) -> int64
+pub func Getcwd(buffer: *var char8, size: uint) -> int64
 ```
 
 Writes the current working directory's absolute path into `buffer`, NUL-terminated.
 Returns zero, or a negative error number. `ERANGE` where the buffer is too small for the answer.
 Safety: `buffer` must be writable for `size` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L153)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L156)
 
 **Parameters**
 
@@ -58,14 +55,14 @@ Safety: `buffer` must be writable for `size` bytes.
 <h2 id="chdir"><code>Chdir</code></h2>
 
 ```rux
-pub unsafe func Chdir(path: *char8) -> int64
+pub func Chdir(path: *char8) -> int64
 ```
 
 Makes `path` the process's working directory.
 Returns zero, or a negative error number. The change is process-wide and immediately visible to every thread.
 Safety: `path` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L164)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L167)
 
 **Parameters**
 
@@ -78,7 +75,7 @@ Safety: `path` must be non-null and NUL-terminated.
 <h2 id="readlink-at"><code>ReadlinkAt</code></h2>
 
 ```rux
-pub unsafe func ReadlinkAt(
+pub func ReadlinkAt(
     directoryFd: FileDescriptor,
     path: *char8,
     buffer: *var char8,
@@ -91,7 +88,7 @@ Reads the text a symbolic link holds into `buffer`.
 number. The text is **not** NUL-terminated, and is silently truncated where it does not fit.
 Safety: `path` must be non-null and NUL-terminated, and `buffer` must be writable for `size` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L181)
 
 **Parameters**
 
@@ -112,12 +109,12 @@ pub const SymlinkNoFollow: int32 = 0x0020;
 
 `AT_SYMLINK_NOFOLLOW`: act on a symbolic link itself rather than on what it points at.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L184)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L187)
 
 <h2 id="link-at"><code>LinkAt</code></h2>
 
 ```rux
-pub unsafe func LinkAt(
+pub func LinkAt(
     oldDirectoryFd: FileDescriptor,
     oldPath: *char8,
     newDirectoryFd: FileDescriptor,
@@ -131,7 +128,7 @@ Returns zero, or a negative error number. `flags` is zero to leave a symbolic li
 or [`FollowSymlinks`](/docs/api/macos/directories#follow-symlinks) to link what it points at.
 Safety: `oldPath` and `newPath` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L253)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L256)
 
 **Parameters**
 
@@ -153,12 +150,12 @@ pub const FollowSymlinks: int32 = 0x0040;
 
 `AT_SYMLINK_FOLLOW`: make [`LinkAt`](/docs/api/macos/directories#link-at) link a symbolic link's target rather than the link.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L260)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L263)
 
 <h2 id="symlink-at"><code>SymlinkAt</code></h2>
 
 ```rux
-pub unsafe func SymlinkAt(
+pub func SymlinkAt(
     target: *char8,
     newDirectoryFd: FileDescriptor,
     linkPath: *char8
@@ -170,7 +167,7 @@ Returns zero, or a negative error number. The target is stored, not checked: a d
 readily as a good one, which is a property callers rely on.
 Safety: `target` and `linkPath` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L271)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L274)
 
 **Parameters**
 
@@ -185,7 +182,7 @@ Safety: `target` and `linkPath` must be non-null and NUL-terminated.
 <h2 id="getdirentries64"><code>Getdirentries64</code></h2>
 
 ```rux
-pub unsafe func Getdirentries64(
+pub func Getdirentries64(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint,
@@ -200,7 +197,7 @@ The buffer holds packed 64-bit-inode `dirent` records: the inode at offset 0 (8 
 (1 byte), and the name from 21. The kernel writes as many whole records as fit.
 Safety: `buffer` must be writable for `count` bytes, and `position` must be writable for an `int64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L287)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L290)
 
 **Parameters**
 
@@ -216,7 +213,7 @@ Safety: `buffer` must be writable for `count` bytes, and `position` must be writ
 <h2 id="unlink-at"><code>UnlinkAt</code></h2>
 
 ```rux
-pub unsafe func UnlinkAt(
+pub func UnlinkAt(
     directoryFd: FileDescriptor,
     path: *char8,
     flags: int32
@@ -227,7 +224,7 @@ Removes the name `path` from its directory.
 `flags` is zero for a file or [`RemoveDirectory`](/docs/api/macos/directories#remove-directory) for an empty directory. Removing a name does not free the file.
 Safety: `path` must be non-null and terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L323)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L326)
 
 **Parameters**
 
@@ -242,7 +239,7 @@ Safety: `path` must be non-null and terminated.
 <h2 id="mkdir-at"><code>MkdirAt</code></h2>
 
 ```rux
-pub unsafe func MkdirAt(
+pub func MkdirAt(
     directoryFd: FileDescriptor,
     path: *char8,
     mode: FileMode
@@ -253,7 +250,7 @@ Creates a directory named `path` with permission bits `mode`.
 Reports [`EEXIST`](/docs/api/macos/errors#eexist) when the name is taken.
 Safety: `path` must be non-null and terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L335)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L338)
 
 **Parameters**
 
@@ -268,7 +265,7 @@ Safety: `path` must be non-null and terminated.
 <h2 id="rename-at"><code>RenameAt</code></h2>
 
 ```rux
-pub unsafe func RenameAt(
+pub func RenameAt(
     oldDirectoryFd: FileDescriptor,
     oldPath: *char8,
     newDirectoryFd: FileDescriptor,
@@ -280,7 +277,7 @@ Renames `oldPath` to `newPath`, each resolved against its own directory descript
 Within one file system this replaces any existing `newPath` atomically. Across file systems it reports [`EXDEV`](/docs/api/macos/errors#exdev).
 Safety: both paths must be non-null and terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L348)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/File.rux#L351)
 
 **Parameters**
 

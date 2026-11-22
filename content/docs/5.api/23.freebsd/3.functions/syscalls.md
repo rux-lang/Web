@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Syscall.rux
-  line: 20
+  line: 24
 seo:
   title: "System calls — FreeBSD API"
   description: The raw system-call entry points and the call numbers they take.
@@ -29,7 +29,7 @@ pub const SysGetPid: uint64 = 20;
 
 `getpid(2)`'s system-call number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L24)
 
 <h2 id="sys-mmap"><code>SysMmap</code></h2>
 
@@ -39,7 +39,7 @@ pub const SysMmap: uint64 = 477;
 
 `mmap(2)`'s system-call number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L30)
 
 <h2 id="syscall-0"><code>Syscall0</code></h2>
 
@@ -49,7 +49,7 @@ pub func Syscall0(number: uint64) -> int64
 
 Executes a raw FreeBSD system call without arguments.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L80)
 
 **Parameters**
 
@@ -75,7 +75,7 @@ pub func Syscall6(
 
 Executes a raw FreeBSD system call with six arguments.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L170)
 
 **Parameters**
 
@@ -102,7 +102,7 @@ Widens a file descriptor to the register width a system call takes it in.
 as all ones rather than as a small positive number.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L281)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Syscall.rux#L285)
 
 **Parameters**
 

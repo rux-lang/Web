@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Clock.rux
-  line: 10
+  line: 13
 seo:
   title: "Clocks — macOS API"
   description: Reading clocks and sleeping.
@@ -29,7 +29,7 @@ pub const ClockRealtime: int32 = 0;
 
 `CLOCK_REALTIME`: wall-clock time, which can jump when the system clock is set.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L13)
 
 <h2 id="clock-monotonic"><code>ClockMonotonic</code></h2>
 
@@ -38,10 +38,10 @@ pub const ClockMonotonic: int32 = 6;
 ```
 
 `CLOCK_MONOTONIC`: time since boot, which never goes backwards.
-Darwin numbers this 6, where Linux uses 1 and FreeBSD uses 4. No clock identifier means the same thing on any two
-of the three systems.
+Darwin numbers this 6, where Linux uses 1 and FreeBSD uses 4. No clock identifier means the same thing on any
+two of the three systems.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L19)
 
 <h2 id="clock-monotonic-raw"><code>ClockMonotonicRaw</code></h2>
 
@@ -51,12 +51,12 @@ pub const ClockMonotonicRaw: int32 = 4;
 
 `CLOCK_MONOTONIC_RAW`: like [`ClockMonotonic`](/docs/api/macos/clock#clock-monotonic), but not adjusted by time synchronization.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L23)
 
 <h2 id="clock-get-time"><code>ClockGetTime</code></h2>
 
 ```rux
-pub unsafe func ClockGetTime(
+pub func ClockGetTime(
     clockId: int32,
     time: *var Timespec
 ) -> int64
@@ -67,7 +67,7 @@ Callers pass an explicit address, as they do on Linux and FreeBSD: `ClockGetTime
 The call itself needs macOS 10.12 or later; an older release has no such symbol and the program will not launch.
 Safety: `time` must be non-null and writable for a whole [`Timespec`](/docs/api/macos/timespec).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L33)
 
 **Parameters**
 
@@ -81,7 +81,7 @@ Safety: `time` must be non-null and writable for a whole [`Timespec`](/docs/api/
 <h2 id="clock-get-resolution"><code>ClockGetResolution</code></h2>
 
 ```rux
-pub unsafe func ClockGetResolution(
+pub func ClockGetResolution(
     clockId: int32,
     resolution: *var Timespec
 ) -> int64
@@ -92,7 +92,7 @@ The resolution is the granularity the clock advances by, not the cost of reading
 accuracy. Like [`ClockGetTime`](/docs/api/macos/clock#clock-get-time), it needs macOS 10.12 or later.
 Safety: `resolution` must be non-null and writable for a whole [`Timespec`](/docs/api/macos/timespec).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L45)
 
 **Parameters**
 
@@ -106,7 +106,7 @@ Safety: `resolution` must be non-null and writable for a whole [`Timespec`](/doc
 <h2 id="get-time-of-day"><code>GetTimeOfDay</code></h2>
 
 ```rux
-pub unsafe func GetTimeOfDay(time: *var Timeval) -> int64
+pub func GetTimeOfDay(time: *var Timeval) -> int64
 ```
 
 Reads the wall clock into `time`, to microsecond resolution.
@@ -115,7 +115,7 @@ The second argument of the underlying call is an obsolete time-zone output that 
 fields.
 Safety: `time` must be non-null and writable for a whole [`Timeval`](/docs/api/macos/timeval).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L57)
 
 **Parameters**
 
@@ -128,7 +128,7 @@ Safety: `time` must be non-null and writable for a whole [`Timeval`](/docs/api/m
 <h2 id="nanosleep"><code>Nanosleep</code></h2>
 
 ```rux
-pub unsafe func Nanosleep(
+pub func Nanosleep(
     request: *Timespec,
     remaining: *var Timespec
 ) -> int64
@@ -139,7 +139,7 @@ Suspends the caller for the requested duration.
 Safety: `request` must be non-null and readable, and a non-null `remaining` must be writable. The nanoseconds of
 `request` must be under one second.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Clock.rux#L69)
 
 **Parameters**
 

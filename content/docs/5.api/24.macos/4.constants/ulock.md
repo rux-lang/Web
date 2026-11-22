@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Ulock.rux
-  line: 11
+  line: 12
 seo:
   title: "Address waits — macOS API"
   description: Waiting on a word and waking its waiters through ulock_wait and ulock_wake.
@@ -29,7 +29,7 @@ pub const UL_COMPARE_AND_WAIT: uint32 = 1;
 
 `UL_COMPARE_AND_WAIT`: wait on a 32-bit word that holds the expected value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L12)
 
 <h2 id="ulf-wake-all"><code>ULF_WAKE_ALL</code></h2>
 
@@ -39,7 +39,7 @@ pub const ULF_WAKE_ALL: uint32 = 0x100;
 
 `ULF_WAKE_ALL`: wake every thread waiting on the word rather than one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L17)
 
 <h2 id="ulf-no-errno"><code>ULF_NO_ERRNO</code></h2>
 
@@ -49,7 +49,7 @@ pub const ULF_NO_ERRNO: uint32 = 0x01000000;
 
 `ULF_NO_ERRNO`: report failure as a negative error number rather than through errno.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L22)
 
 <h2 id="ulock-wait"><code>__ulock_wait</code></h2>
 
@@ -64,7 +64,7 @@ pub extern func __ulock_wait(
 
 Sleeps while `*address` equals `value`, until a wake, a signal or the timeout.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L33)
 
 **Parameters**
 
@@ -89,7 +89,7 @@ pub extern func __ulock_wake(
 
 Wakes a thread, or all of them with [`ULF_WAKE_ALL`](/docs/api/macos/ulock#ulf-wake-all), sleeping on `address`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Ulock.rux#L41)
 
 **Parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Entropy.rux
-  line: 27
+  line: 28
 seo:
   title: "GetRandom — FreeBSD API"
   description: Fills up to length bytes of buffer with unpredictable bytes.
@@ -22,7 +22,7 @@ seo:
 Fills up to `length` bytes of `buffer` with unpredictable bytes.
 
 ```rux
-pub unsafe func GetRandom(
+pub func GetRandom(
     buffer: *var opaque,
     length: uint,
     flags: uint32
@@ -32,8 +32,8 @@ pub unsafe func GetRandom(
 Returns the number of bytes actually written, or a negative error number. A request over 256 bytes may be cut
 short, and a caller needing the whole buffer must call again for the rest.
 Runs in time proportional to `length` and allocates nothing.
-Safety: `buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or the
-unwritten tail stays whatever it held — which for a key is the worst possible outcome.
+Safety: `buffer` must be writable for `length` bytes. Treat a short count as bytes obtained, not as failure, or
+the unwritten tail stays whatever it held — which for a key is the worst possible outcome.
 
 ## Parameters
 
@@ -55,7 +55,7 @@ pub const RandomNonBlocking: uint32 = 1;
 
 `GRND_NONBLOCK`: report rather than wait. Present for parity; FreeBSD's generator does not block.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Entropy.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Entropy.rux#L11)
 
 <h3 id="random-blocking-pool"><code>RandomBlockingPool</code></h3>
 
@@ -65,4 +65,4 @@ pub const RandomBlockingPool: uint32 = 2;
 
 `GRND_RANDOM`: accepted and ignored, which is what FreeBSD does with it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Entropy.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Entropy.rux#L15)

@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Types.rux
-  line: 44
+  line: 45
 seo:
   title: "Timeval — macOS API"
   description: "A duration or an instant, as seconds and microseconds."
@@ -28,9 +28,9 @@ pub struct Timeval {
 }
 ```
 
-Darwin's x86-64 layout is an eight-byte `time_t` followed by a four-byte `suseconds_t`, and four bytes of trailing
-padding. The padding is why this is not two 64-bit fields, and why writing it as though it were corrupts nothing
-but reads back a microsecond count that is half stale.
+Darwin's x86-64 layout is an eight-byte `time_t` followed by a four-byte `suseconds_t`, and four bytes of
+trailing padding. The padding is why this is not two 64-bit fields, and why writing it as though it were
+corrupts nothing but reads back a microsecond count that is half stale.
 
 ## Fields
 

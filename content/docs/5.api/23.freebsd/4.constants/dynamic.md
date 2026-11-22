@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Dynamic.rux
-  line: 12
+  line: 14
 seo:
   title: "Dynamic loading — FreeBSD API"
   description: The mode flags dlopen takes.
@@ -29,7 +29,7 @@ pub const RTLD_LAZY: int32 = 1;
 
 `RTLD_LAZY`: resolve a function symbol the first time it is called rather than at load.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L14)
 
 <h2 id="rtld-now"><code>RTLD_NOW</code></h2>
 
@@ -39,7 +39,7 @@ pub const RTLD_NOW: int32 = 2;
 
 `RTLD_NOW`: resolve every symbol before [`dlopen`](/docs/api/freebsd/dynamic#dlopen) returns.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L19)
 
 <h2 id="rtld-global"><code>RTLD_GLOBAL</code></h2>
 
@@ -49,7 +49,7 @@ pub const RTLD_GLOBAL: int32 = 256;
 
 `RTLD_GLOBAL`: make this object's symbols available to objects loaded afterwards.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L24)
 
 <h2 id="rtld-local"><code>RTLD_LOCAL</code></h2>
 
@@ -59,7 +59,7 @@ pub const RTLD_LOCAL: int32 = 0;
 
 `RTLD_LOCAL`: keep this object's symbols to itself, which is the default.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L29)
 
 <h2 id="dlopen"><code>dlopen</code></h2>
 
@@ -71,13 +71,13 @@ pub extern func dlopen(
 ```
 
 Loads a shared object and returns a handle to it, or null on failure.
-A name without a slash is resolved by the loader's own search rules, and one with a slash as a path. A second
-call for an object already loaded returns the same handle and raises its reference count rather than loading
-it twice. Failure is reported through [`dlerror`](/docs/api/freebsd/dynamic#dlerror), not errno.
+A name without a slash is resolved by the loader's own search rules, and one with a slash as a path. A
+second call for an object already loaded returns the same handle and raises its reference count rather than
+loading it twice. Failure is reported through [`dlerror`](/docs/api/freebsd/dynamic#dlerror), not errno.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=dlopen](https://man.freebsd.org/cgi/man.cgi?query=dlopen)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L42)
 
 **Parameters**
 
@@ -98,12 +98,12 @@ pub extern func dlsym(
 ```
 
 Finds a symbol in a loaded object and returns its address, or null.
-A null return is ambiguous, since a symbol whose address is legitimately zero exists. Clear [`dlerror`](/docs/api/freebsd/dynamic#dlerror) by calling
-it, then call this, then read [`dlerror`](/docs/api/freebsd/dynamic#dlerror) again to tell the two apart.
+A null return is ambiguous, since a symbol whose address is legitimately zero exists. Clear [`dlerror`](/docs/api/freebsd/dynamic#dlerror) by
+calling it, then call this, then read [`dlerror`](/docs/api/freebsd/dynamic#dlerror) again to tell the two apart.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=dlsym](https://man.freebsd.org/cgi/man.cgi?query=dlsym)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L52)
 
 **Parameters**
 
@@ -121,12 +121,12 @@ pub extern func dlclose(handle: *var opaque) -> int32
 ```
 
 Drops one reference to a loaded object, unloading it when the last one goes.
-Every address obtained from the object through [`dlsym`](/docs/api/freebsd/dynamic#dlsym) becomes invalid once it is actually unloaded, which this
-gives no way to observe.
+Every address obtained from the object through [`dlsym`](/docs/api/freebsd/dynamic#dlsym) becomes invalid once it is actually unloaded, which
+this gives no way to observe.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=dlclose](https://man.freebsd.org/cgi/man.cgi?query=dlclose)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L61)
 
 **Parameters**
 
@@ -143,11 +143,11 @@ pub extern func dlerror() -> *char8
 ```
 
 Reports the most recent loader error and clears it, or returns null when there is none.
-The message points at storage the loader owns and a later call may reuse. Reading it clears the error, so two
-calls in a row report the second as no error at all.
+The message points at storage the loader owns and a later call may reuse. Reading it clears the error, so
+two calls in a row report the second as no error at all.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=dlerror](https://man.freebsd.org/cgi/man.cgi?query=dlerror)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Dynamic.rux#L69)
 
 **Returns**: a NUL-terminated message, or null

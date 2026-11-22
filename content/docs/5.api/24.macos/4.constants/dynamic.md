@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Dynamic.rux
-  line: 8
+  line: 9
 seo:
   title: "Dynamic loading — macOS API"
   description: "libSystem, and the mode flags dlopen takes."
@@ -29,7 +29,7 @@ pub const RTLD_LAZY: int32 = 1;
 
 `RTLD_LAZY`: resolve a function symbol the first time it is called rather than at load.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Dynamic.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Dynamic.rux#L9)
 
 <h2 id="rtld-now"><code>RTLD_NOW</code></h2>
 
@@ -39,7 +39,7 @@ pub const RTLD_NOW: int32 = 2;
 
 `RTLD_NOW`: resolve every symbol before [`dlopen`](/docs/api/macos/dynamic#dlopen) returns.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Dynamic.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Dynamic.rux#L14)
 
 <h2 id="rtld-local"><code>RTLD_LOCAL</code></h2>
 
@@ -51,7 +51,7 @@ pub const RTLD_LOCAL: int32 = 4;
 Darwin numbers this 4 and [`RTLD_GLOBAL`](/docs/api/macos/dynamic#rtld-global) 8, where both Linux and FreeBSD use 0 and 256. Carrying either value
 between packages selects the opposite of what was meant.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Dynamic.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Dynamic.rux#L21)
 
 <h2 id="rtld-global"><code>RTLD_GLOBAL</code></h2>
 
@@ -61,7 +61,7 @@ pub const RTLD_GLOBAL: int32 = 8;
 
 `RTLD_GLOBAL`: make this object's symbols available to objects loaded afterwards.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Dynamic.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Dynamic.rux#L26)
 
 <h2 id="system-lib"><code>SystemLib</code></h2>
 
@@ -73,7 +73,7 @@ The library every Darwin interface is reached through.
 A single dynamic library re-exporting libc, libm, libpthread and the rest; there is no separate `libc.dylib` to
 link on Apple platforms.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L18)
 
 <h2 id="dlopen"><code>dlopen</code></h2>
 
@@ -85,13 +85,13 @@ pub extern func dlopen(
 ```
 
 Loads a shared object and returns a handle to it, or null on failure.
-A name without a slash is resolved by the loader's own search rules, and one with a slash as a path. A second
-call for an object already loaded returns the same handle and raises its reference count rather than loading
-it twice. Failure is reported through [`dlerror`](/docs/api/macos/dynamic#dlerror), not errno.
+A name without a slash is resolved by the loader's own search rules, and one with a slash as a path. A
+second call for an object already loaded returns the same handle and raises its reference count rather than
+loading it twice. Failure is reported through [`dlerror`](/docs/api/macos/dynamic#dlerror), not errno.
 
 **See also**: [https://keith.github.io/xcode-man-pages/dlopen.3.html](https://keith.github.io/xcode-man-pages/dlopen.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L215)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L217)
 
 **Parameters**
 
@@ -112,12 +112,12 @@ pub extern func dlsym(
 ```
 
 Finds a symbol in a loaded object and returns its address, or null.
-A null return is ambiguous, since a symbol whose address is legitimately zero exists. Clear [`dlerror`](/docs/api/macos/dynamic#dlerror) by calling
-it, then call this, then read [`dlerror`](/docs/api/macos/dynamic#dlerror) again to tell the two apart.
+A null return is ambiguous, since a symbol whose address is legitimately zero exists. Clear [`dlerror`](/docs/api/macos/dynamic#dlerror) by
+calling it, then call this, then read [`dlerror`](/docs/api/macos/dynamic#dlerror) again to tell the two apart.
 
 **See also**: [https://keith.github.io/xcode-man-pages/dlsym.3.html](https://keith.github.io/xcode-man-pages/dlsym.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L225)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L227)
 
 **Parameters**
 
@@ -135,12 +135,12 @@ pub extern func dlclose(handle: *var opaque) -> int32
 ```
 
 Drops one reference to a loaded object, unloading it when the last one goes.
-Every address obtained from the object through [`dlsym`](/docs/api/macos/dynamic#dlsym) becomes invalid once it is actually unloaded, which this
-gives no way to observe.
+Every address obtained from the object through [`dlsym`](/docs/api/macos/dynamic#dlsym) becomes invalid once it is actually unloaded, which
+this gives no way to observe.
 
 **See also**: [https://keith.github.io/xcode-man-pages/dlclose.3.html](https://keith.github.io/xcode-man-pages/dlclose.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L234)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L236)
 
 **Parameters**
 
@@ -157,11 +157,11 @@ pub extern func dlerror() -> *char8
 ```
 
 Reports the most recent loader error and clears it, or returns null when there is none.
-The message points at storage the loader owns and a later call may reuse. Reading it clears the error, so two
-calls in a row report the second as no error at all.
+The message points at storage the loader owns and a later call may reuse. Reading it clears the error, so
+two calls in a row report the second as no error at all.
 
 **See also**: [https://keith.github.io/xcode-man-pages/dlerror.3.html](https://keith.github.io/xcode-man-pages/dlerror.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L242)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L244)
 
 **Returns**: a NUL-terminated message, or null

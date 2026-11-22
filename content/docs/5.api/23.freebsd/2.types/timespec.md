@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Types.rux
-  line: 34
+  line: 35
 seo:
   title: "Timespec — FreeBSD API"
   description: "A duration or an instant, as seconds and nanoseconds."
@@ -28,8 +28,8 @@ pub struct Timespec {
 }
 ```
 
-`nanoseconds` is in `[0, 999999999]` for a value the kernel produced; a value the caller builds must normalize it,
-since a call given more than a second's worth reports [`EINVAL`](/docs/api/freebsd/errors#einval) rather than carrying.
+`nanoseconds` is in `[0, 999999999]` for a value the kernel produced; a value the caller builds must normalize
+it, since a call given more than a second's worth reports [`EINVAL`](/docs/api/freebsd/errors#einval) rather than carrying.
 
 ## Fields
 

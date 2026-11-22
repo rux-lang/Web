@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/File.rux
-  line: 15
+  line: 17
 seo:
   title: "Files — FreeBSD API"
   description: "Opening, reading, writing and inspecting files through descriptors."
@@ -29,7 +29,7 @@ pub const StdIn: int32 = 0;
 
 The descriptor a process reads its input from, unless something reassigned it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L17)
 
 <h2 id="std-out"><code>StdOut</code></h2>
 
@@ -39,7 +39,7 @@ pub const StdOut: int32 = 1;
 
 The descriptor a process writes its output to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L21)
 
 <h2 id="std-err"><code>StdErr</code></h2>
 
@@ -49,12 +49,12 @@ pub const StdErr: int32 = 2;
 
 The descriptor a process writes its diagnostics to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L25)
 
 <h2 id="read"><code>Read</code></h2>
 
 ```rux
-pub unsafe func Read(
+pub func Read(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint
@@ -66,7 +66,7 @@ Reads up to `count` bytes from `fd` into `buffer`.
 number. A short count is ordinary.
 Safety: `buffer` must be writable for `count` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L36)
 
 **Parameters**
 
@@ -81,7 +81,7 @@ Safety: `buffer` must be writable for `count` bytes.
 <h2 id="write"><code>Write</code></h2>
 
 ```rux
-pub unsafe func Write(
+pub func Write(
     fd: FileDescriptor,
     buffer: *opaque,
     count: uint
@@ -93,7 +93,7 @@ Writes up to `count` bytes from `buffer` to `fd`.
 ordinary and the rest has to be written by calling again.
 Safety: `buffer` must be readable for `count` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L49)
 
 **Parameters**
 
@@ -115,7 +115,7 @@ Closes `fd` and releases what the kernel held for it.
 Returns zero, or a negative error number. A failure does not mean the descriptor is still open, so retrying a
 failed close can close one another thread has since opened under the same number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L59)
 
 **Parameters**
 
@@ -134,7 +134,7 @@ pub const AtFdCwd: int32 = -100;
 `AT_FDCWD`: resolve a relative path against the current directory rather than a descriptor.
 FreeBSD spells this `-100`, the same value Linux uses, which is one of the few places the two agree exactly.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L67)
 
 <h2 id="open-read-only"><code>OpenReadOnly</code></h2>
 
@@ -144,7 +144,7 @@ pub const OpenReadOnly: int32 = 0x0000;
 
 `O_RDONLY`: open for reading only.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L71)
 
 <h2 id="open-write-only"><code>OpenWriteOnly</code></h2>
 
@@ -154,7 +154,7 @@ pub const OpenWriteOnly: int32 = 0x0001;
 
 `O_WRONLY`: open for writing only.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L75)
 
 <h2 id="open-read-write"><code>OpenReadWrite</code></h2>
 
@@ -164,7 +164,7 @@ pub const OpenReadWrite: int32 = 0x0002;
 
 `O_RDWR`: open for both reading and writing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L79)
 
 <h2 id="open-create"><code>OpenCreate</code></h2>
 
@@ -176,7 +176,7 @@ pub const OpenCreate: int32 = 0x0200;
 FreeBSD's flag bits are the BSD ones and are not Linux's: `O_CREAT` is `0x0200` here and `0x40` there. A flag
 value must never be carried between the two packages.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L85)
 
 <h2 id="open-exclusive"><code>OpenExclusive</code></h2>
 
@@ -186,7 +186,7 @@ pub const OpenExclusive: int32 = 0x0800;
 
 `O_EXCL`: with [`OpenCreate`](/docs/api/freebsd/files#open-create), fail rather than open a file that already exists.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L89)
 
 <h2 id="open-truncate"><code>OpenTruncate</code></h2>
 
@@ -196,7 +196,7 @@ pub const OpenTruncate: int32 = 0x0400;
 
 `O_TRUNC`: truncate the file to nothing when opening it for writing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L93)
 
 <h2 id="open-append"><code>OpenAppend</code></h2>
 
@@ -206,7 +206,7 @@ pub const OpenAppend: int32 = 0x0008;
 
 `O_APPEND`: every write goes to the end.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L97)
 
 <h2 id="open-non-blocking"><code>OpenNonBlocking</code></h2>
 
@@ -216,7 +216,7 @@ pub const OpenNonBlocking: int32 = 0x0004;
 
 [`O_NONBLOCK`](/docs/api/freebsd/poll#o-nonblock): reads and writes report [`EAGAIN`](/docs/api/freebsd/errors#eagain) rather than waiting.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L101)
 
 <h2 id="open-close-on-exec"><code>OpenCloseOnExec</code></h2>
 
@@ -226,7 +226,7 @@ pub const OpenCloseOnExec: int32 = 0x00100000;
 
 `O_CLOEXEC`: close this descriptor automatically when the process executes a new program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L105)
 
 <h2 id="open-directory"><code>OpenDirectory</code></h2>
 
@@ -236,7 +236,7 @@ pub const OpenDirectory: int32 = 0x00020000;
 
 `O_DIRECTORY`: fail unless the target is a directory.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L109)
 
 <h2 id="seek-set"><code>SeekSet</code></h2>
 
@@ -246,7 +246,7 @@ pub const SeekSet: int32 = 0;
 
 `SEEK_SET`: measure the new offset from the start of the file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L113)
 
 <h2 id="seek-current"><code>SeekCurrent</code></h2>
 
@@ -256,7 +256,7 @@ pub const SeekCurrent: int32 = 1;
 
 `SEEK_CUR`: measure the new offset from the current one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L117)
 
 <h2 id="seek-end"><code>SeekEnd</code></h2>
 
@@ -266,12 +266,12 @@ pub const SeekEnd: int32 = 2;
 
 `SEEK_END`: measure the new offset from the end of the file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L121)
 
 <h2 id="open-at"><code>OpenAt</code></h2>
 
 ```rux
-pub unsafe func OpenAt(
+pub func OpenAt(
     directoryFd: FileDescriptor,
     path: *char8,
     flags: int32,
@@ -283,7 +283,7 @@ Opens `path` relative to `directoryFd` and returns a descriptor, or a negative e
 `directoryFd` is [`AtFdCwd`](/docs/api/freebsd/files#at-fd-cwd) for an ordinary path. `mode` is read only when [`OpenCreate`](/docs/api/freebsd/files#open-create) is set.
 Safety: `path` must be non-null and terminated. The mode is masked by the process umask.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L136)
 
 **Parameters**
 
@@ -309,7 +309,7 @@ pub func Lseek(
 Moves the file offset of `fd` and returns where it ended up, or a negative error number.
 Seeking past the end creates a hole when something is later written there. A pipe reports [`ESPIPE`](/docs/api/freebsd/errors#espipe).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L148)
 
 **Parameters**
 
@@ -324,7 +324,7 @@ Seeking past the end creates a hole when something is later written there. A pip
 <h2 id="fstat-at"><code>FstatAt</code></h2>
 
 ```rux
-pub unsafe func FstatAt(
+pub func FstatAt(
     directoryFd: FileDescriptor,
     path: *char8,
     statBuffer: *var opaque,
@@ -338,7 +338,7 @@ path, or [`SymlinkNoFollow`](/docs/api/freebsd/directories#symlink-no-follow) to
 Safety: `path` must be non-null and NUL-terminated, and `statBuffer` must be writable for the whole of
 `struct stat`, which is 224 bytes and whose layout this package does not model.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L204)
 
 **Parameters**
 
@@ -354,7 +354,7 @@ Safety: `path` must be non-null and NUL-terminated, and `statBuffer` must be wri
 <h2 id="fchmod-at"><code>FchmodAt</code></h2>
 
 ```rux
-pub unsafe func FchmodAt(
+pub func FchmodAt(
     directoryFd: FileDescriptor,
     path: *char8,
     mode: FileMode,
@@ -367,7 +367,7 @@ Sets the permission bits of the file `path` names.
 negative error number.
 Safety: `path` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L219)
 
 **Parameters**
 
@@ -383,7 +383,7 @@ Safety: `path` must be non-null and NUL-terminated.
 <h2 id="utimens-at"><code>UtimensAt</code></h2>
 
 ```rux
-pub unsafe func UtimensAt(
+pub func UtimensAt(
     directoryFd: FileDescriptor,
     path: *char8,
     times: *opaque,
@@ -398,7 +398,7 @@ count and a nanosecond fraction, both 8 bytes. A null `times` sets both to now. 
 Safety: `path` must be non-null and NUL-terminated, and a non-null `times` must be readable for two `timespec`
 values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L234)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L236)
 
 **Parameters**
 
@@ -420,7 +420,7 @@ pub func Fsync(fd: FileDescriptor) -> int64
 Flushes everything written to `fd` through to the storage device.
 Returns zero, or a negative error number. Without it, data a successful [`Write`](/docs/api/freebsd/files#write) reported may still be lost.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L294)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L296)
 
 **Parameters**
 
@@ -442,7 +442,7 @@ pub func Ftruncate(
 Sets the length of the file behind `fd` to `length`.
 Growing creates a hole rather than allocating, so a later write into it can still fail with [`ENOSPC`](/docs/api/freebsd/errors#enospc).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L305)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L307)
 
 **Parameters**
 
@@ -456,7 +456,7 @@ Growing creates a hole rather than allocating, so a later write into it can stil
 <h2 id="fstat"><code>Fstat</code></h2>
 
 ```rux
-pub unsafe func Fstat(
+pub func Fstat(
     fd: FileDescriptor,
     statBuffer: *var opaque
 ) -> int64
@@ -467,7 +467,7 @@ The kernel's `struct stat` is not modelled here: its layout is FreeBSD's own and
 size and field order.
 Safety: `statBuffer` must be writable for the whole of FreeBSD's `struct stat`, which this does not check.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L359)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L361)
 
 **Parameters**
 
@@ -492,7 +492,7 @@ Returns `newFd`, or a negative error number. Duplicating a descriptor onto itsel
 FreeBSD has `dup2` on both architectures, so this is the plain form rather than Linux's `dup3`; setting
 close-on-exec is a separate [`fcntl`](/docs/api/freebsd/spawn#fcntl) this package does not wrap.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L371)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L373)
 
 **Parameters**
 
@@ -506,7 +506,7 @@ close-on-exec is a separate [`fcntl`](/docs/api/freebsd/spawn#fcntl) this packag
 <h2 id="pipe2"><code>Pipe2</code></h2>
 
 ```rux
-pub unsafe func Pipe2(
+pub func Pipe2(
     descriptors: *var int32,
     flags: int32
 ) -> int64
@@ -517,7 +517,7 @@ The reading end lands at index zero and the writing end at index one. `flags` ma
 [`OpenNonBlocking`](/docs/api/freebsd/files#open-non-blocking).
 Safety: `descriptors` must be writable for two `int32` values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L384)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L386)
 
 **Parameters**
 

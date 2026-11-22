@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/File.rux
-  line: 123
+  line: 125
 seo:
   title: "Directories and links — FreeBSD API"
   description: "The working directory, directory entries, removal, renaming and links."
@@ -29,15 +29,12 @@ pub const RemoveDirectory: int32 = 0x0800;
 
 `AT_REMOVEDIR`: make [`UnlinkAt`](/docs/api/freebsd/directories#unlink-at) remove a directory rather than a file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L123)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L125)
 
 <h2 id="getcwd"><code>Getcwd</code></h2>
 
 ```rux
-pub unsafe func Getcwd(
-    buffer: *var char8,
-    size: uint
-) -> int64
+pub func Getcwd(buffer: *var char8, size: uint) -> int64
 ```
 
 Writes the current working directory's absolute path into `buffer`, NUL-terminated.
@@ -45,7 +42,7 @@ Returns zero, or a negative error number — unlike Linux's, which returns the l
 buffer is too small for the answer.
 Safety: `buffer` must be writable for `size` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L161)
 
 **Parameters**
 
@@ -59,14 +56,14 @@ Safety: `buffer` must be writable for `size` bytes.
 <h2 id="chdir"><code>Chdir</code></h2>
 
 ```rux
-pub unsafe func Chdir(path: *char8) -> int64
+pub func Chdir(path: *char8) -> int64
 ```
 
 Makes `path` the process's working directory.
 Returns zero, or a negative error number. The change is process-wide and immediately visible to every thread.
 Safety: `path` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L169)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L171)
 
 **Parameters**
 
@@ -79,7 +76,7 @@ Safety: `path` must be non-null and NUL-terminated.
 <h2 id="readlink-at"><code>ReadlinkAt</code></h2>
 
 ```rux
-pub unsafe func ReadlinkAt(
+pub func ReadlinkAt(
     directoryFd: FileDescriptor,
     path: *char8,
     buffer: *var char8,
@@ -92,7 +89,7 @@ Reads the text a symbolic link holds into `buffer`.
 number. The text is **not** NUL-terminated, and is silently truncated where it does not fit.
 Safety: `path` must be non-null and NUL-terminated, and `buffer` must be writable for `size` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L183)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L185)
 
 **Parameters**
 
@@ -113,12 +110,12 @@ pub const SymlinkNoFollow: int32 = 0x0200;
 
 `AT_SYMLINK_NOFOLLOW`: act on a symbolic link itself rather than on what it points at.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L191)
 
 <h2 id="link-at"><code>LinkAt</code></h2>
 
 ```rux
-pub unsafe func LinkAt(
+pub func LinkAt(
     oldDirectoryFd: FileDescriptor,
     oldPath: *char8,
     newDirectoryFd: FileDescriptor,
@@ -132,7 +129,7 @@ Returns zero, or a negative error number. `flags` is zero to leave a symbolic li
 or [`FollowSymlinks`](/docs/api/freebsd/directories#follow-symlinks) to link what it points at.
 Safety: `oldPath` and `newPath` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L250)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L252)
 
 **Parameters**
 
@@ -154,12 +151,12 @@ pub const FollowSymlinks: int32 = 0x0400;
 
 `AT_SYMLINK_FOLLOW`: make [`LinkAt`](/docs/api/freebsd/directories#link-at) link a symbolic link's target rather than the link.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L258)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L260)
 
 <h2 id="symlink-at"><code>SymlinkAt</code></h2>
 
 ```rux
-pub unsafe func SymlinkAt(
+pub func SymlinkAt(
     target: *char8,
     newDirectoryFd: FileDescriptor,
     linkPath: *char8
@@ -171,7 +168,7 @@ Returns zero, or a negative error number. The target is stored, not checked: a d
 readily as a good one, which is a property callers rely on.
 Safety: `target` and `linkPath` must be non-null and NUL-terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L269)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L271)
 
 **Parameters**
 
@@ -186,7 +183,7 @@ Safety: `target` and `linkPath` must be non-null and NUL-terminated.
 <h2 id="getdirentries"><code>Getdirentries</code></h2>
 
 ```rux
-pub unsafe func Getdirentries(
+pub func Getdirentries(
     fd: FileDescriptor,
     buffer: *var opaque,
     count: uint,
@@ -201,7 +198,7 @@ the record's length at 16 (2 bytes), the entry type at 18 (1 byte), padding at 1
 The fourth parameter is named as macOS names `Getdirentries64`'s, which is the same output.
 Safety: `buffer` must be writable for `count` bytes, and `position` must be null or writable for an `int64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L285)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L287)
 
 **Parameters**
 
@@ -217,7 +214,7 @@ Safety: `buffer` must be writable for `count` bytes, and `position` must be null
 <h2 id="unlink-at"><code>UnlinkAt</code></h2>
 
 ```rux
-pub unsafe func UnlinkAt(
+pub func UnlinkAt(
     directoryFd: FileDescriptor,
     path: *char8,
     flags: int32
@@ -229,7 +226,7 @@ Removes the name `path` from its directory.
 anything still holding it open keeps using it.
 Safety: `path` must be non-null and terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L319)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L321)
 
 **Parameters**
 
@@ -244,7 +241,7 @@ Safety: `path` must be non-null and terminated.
 <h2 id="mkdir-at"><code>MkdirAt</code></h2>
 
 ```rux
-pub unsafe func MkdirAt(
+pub func MkdirAt(
     directoryFd: FileDescriptor,
     path: *char8,
     mode: FileMode
@@ -255,7 +252,7 @@ Creates a directory named `path` with permission bits `mode`.
 Reports [`EEXIST`](/docs/api/freebsd/errors#eexist) when the name is taken, which is how this is used as a lock.
 Safety: `path` must be non-null and terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L331)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L333)
 
 **Parameters**
 
@@ -270,7 +267,7 @@ Safety: `path` must be non-null and terminated.
 <h2 id="rename-at"><code>RenameAt</code></h2>
 
 ```rux
-pub unsafe func RenameAt(
+pub func RenameAt(
     oldDirectoryFd: FileDescriptor,
     oldPath: *char8,
     newDirectoryFd: FileDescriptor,
@@ -283,7 +280,7 @@ Within one file system this replaces any existing `newPath` atomically. Across f
 rather than copying.
 Safety: both paths must be non-null and terminated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L345)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/File.rux#L347)
 
 **Parameters**
 

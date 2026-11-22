@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Clock.rux
-  line: 12
+  line: 14
 seo:
   title: "Clocks — FreeBSD API"
   description: Reading clocks and sleeping.
@@ -29,7 +29,7 @@ pub const ClockRealtime: int32 = 0;
 
 `CLOCK_REALTIME`: wall-clock time, which can jump when the system clock is set.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L14)
 
 <h2 id="clock-monotonic"><code>ClockMonotonic</code></h2>
 
@@ -39,12 +39,12 @@ pub const ClockMonotonic: int32 = 4;
 
 `CLOCK_MONOTONIC`: time since an unspecified point, which never goes backwards.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L18)
 
 <h2 id="clock-get-time"><code>ClockGetTime</code></h2>
 
 ```rux
-pub unsafe func ClockGetTime(
+pub func ClockGetTime(
     clockId: int32,
     time: *var Timespec
 ) -> int64
@@ -54,7 +54,7 @@ Reads `clockId` into `time`.
 Returns zero, or a negative error number.
 Safety: `time` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L27)
 
 **Parameters**
 
@@ -68,7 +68,7 @@ Safety: `time` must be non-null and writable.
 <h2 id="nanosleep"><code>Nanosleep</code></h2>
 
 ```rux
-pub unsafe func Nanosleep(
+pub func Nanosleep(
     request: *Timespec,
     remaining: *var Timespec
 ) -> int64
@@ -80,7 +80,7 @@ number; [`EINTR`](/docs/api/freebsd/errors#eintr) with the unslept time in `rema
 Safety: `request` must be non-null and readable, and a non-null `remaining` must be writable. The nanoseconds of
 `request` must be under one second.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L40)
 
 **Parameters**
 
@@ -100,7 +100,7 @@ pub const ClockMonotonicFast: int32 = 12;
 `CLOCK_MONOTONIC_FAST`: like [`ClockMonotonic`](/docs/api/freebsd/clock#clock-monotonic), read from a cached value rather than the hardware.
 Cheaper and coarser. FreeBSD offers this pairing where Linux offers a coarse clock under a different number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L47)
 
 <h2 id="clock-realtime-fast"><code>ClockRealtimeFast</code></h2>
 
@@ -110,7 +110,7 @@ pub const ClockRealtimeFast: int32 = 10;
 
 `CLOCK_REALTIME_FAST`: like [`ClockRealtime`](/docs/api/freebsd/clock#clock-realtime), read from a cached value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L51)
 
 <h2 id="clock-process-cpu-time"><code>ClockProcessCpuTime</code></h2>
 
@@ -120,12 +120,12 @@ pub const ClockProcessCpuTime: int32 = 15;
 
 `CLOCK_PROCESS_CPUTIME_ID`: processor time this process has used.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L55)
 
 <h2 id="clock-get-resolution"><code>ClockGetResolution</code></h2>
 
 ```rux
-pub unsafe func ClockGetResolution(
+pub func ClockGetResolution(
     clockId: int32,
     resolution: *var Timespec
 ) -> int64
@@ -136,7 +136,7 @@ Returns zero, or a negative error number. The resolution is the granularity the 
 of reading it and not a promise about accuracy.
 Safety: `resolution` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Clock.rux#L65)
 
 **Parameters**
 

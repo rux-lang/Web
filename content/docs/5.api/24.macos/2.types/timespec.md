@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Types.rux
-  line: 32
+  line: 33
 seo:
   title: "Timespec — macOS API"
   description: "A duration or an instant, as seconds and nanoseconds."

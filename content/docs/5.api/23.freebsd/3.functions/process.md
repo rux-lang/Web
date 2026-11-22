@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Process.rux
-  line: 13
+  line: 15
 seo:
   title: "Process — FreeBSD API"
   description: Ending the process and asking its identifier.
@@ -31,7 +31,7 @@ Ends the calling process with `code`.
 Only the low eight bits reach a waiting parent. Does not return, and nothing is flushed or destroyed on the way
 out.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L15)
 
 **Parameters**
 
@@ -48,7 +48,7 @@ pub func GetPid() -> ProcessId
 The calling process's own identifier.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L24)
 
 **Returns**: the calling process's identifier
 
@@ -60,7 +60,7 @@ pub const CtlKernel: int32 = 1;
 
 `CTL_KERN`: the sysctl branch describing the kernel and its processes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L31)
 
 <h2 id="kern-proc"><code>KernelProcess</code></h2>
 
@@ -70,7 +70,7 @@ pub const KernelProcess: int32 = 14;
 
 `KERN_PROC`: the leaf under [`CtlKernel`](/docs/api/freebsd/process#ctl-kern) describing processes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L35)
 
 <h2 id="kern-proc-pathname"><code>KernelProcessPathname</code></h2>
 
@@ -80,12 +80,12 @@ pub const KernelProcessPathname: int32 = 12;
 
 `KERN_PROC_PATHNAME`: the leaf under [`KernelProcess`](/docs/api/freebsd/process#kern-proc) holding a process's executable path.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L39)
 
 <h2 id="query-executable-path"><code>QueryExecutablePath</code></h2>
 
 ```rux
-pub unsafe func QueryExecutablePath(
+pub func QueryExecutablePath(
     buffer: *var char8,
     length: *var uint
 ) -> int64
@@ -96,7 +96,7 @@ This is the `kern.proc.pathname` sysctl for process `-1`, the caller. `length` h
 and, on success, the path's length including its terminator.
 Safety: `length` must be writable, and `buffer` writable for the `*length` bytes it states.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Process.rux#L49)
 
 **Parameters**
 

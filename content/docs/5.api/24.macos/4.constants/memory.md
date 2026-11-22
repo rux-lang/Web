@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/LibSystem.rux
-  line: 142
+  line: 144
 seo:
   title: "Memory — macOS API"
   description: "Mapping, protecting and advising on pages of memory."
@@ -28,13 +28,12 @@ pub extern func getpagesize() -> int32
 ```
 
 Reports the system page size, in bytes.
-Darwin's page size is not the same on every machine: Apple Silicon uses 16 KiB where x86-64 uses 4 KiB, which
-is why this is asked rather than assumed. Cannot fail — a process that could not be told its own page size
-could not have been started.
-`Memory::QueryPageSize` is the wrapper to call; this is the raw entry point it binds, and is the only
-declaration in this block that is reachable from outside the package.
+Darwin's page size is not the same on every machine: Apple Silicon uses 16 KiB where x86-64 uses 4 KiB,
+which is why this is asked rather than assumed. Cannot fail — a process that could not be told its own page
+size could not have been started. [`Memory::QueryPageSize`](/docs/api/macos/memory#query-page-size) is the wrapper to call; this is the raw entry
+point it binds, and is the only declaration in this block that is reachable from outside the package.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L144)
 
 **Returns**: the page size in bytes
 
@@ -46,7 +45,7 @@ pub const ProtectionNone: int32 = 0x00;
 
 `PROT_NONE`: the pages may not be touched at all.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L12)
 
 <h2 id="protection-read"><code>ProtectionRead</code></h2>
 
@@ -56,7 +55,7 @@ pub const ProtectionRead: int32 = 0x01;
 
 `PROT_READ`: the pages may be read.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L16)
 
 <h2 id="protection-write"><code>ProtectionWrite</code></h2>
 
@@ -66,7 +65,7 @@ pub const ProtectionWrite: int32 = 0x02;
 
 `PROT_WRITE`: the pages may be written.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L20)
 
 <h2 id="protection-execute"><code>ProtectionExecute</code></h2>
 
@@ -78,7 +77,7 @@ pub const ProtectionExecute: int32 = 0x04;
 Apple Silicon refuses a mapping that is writable and executable at once unless the process carries the
 `com.apple.security.cs.allow-jit` entitlement and uses `MAP_JIT`, which this package does not wrap.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L26)
 
 <h2 id="map-shared"><code>MapShared</code></h2>
 
@@ -88,7 +87,7 @@ pub const MapShared: int32 = 0x0001;
 
 `MAP_SHARED`: writes are visible to other mappings of the same object and reach it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L30)
 
 <h2 id="map-private"><code>MapPrivate</code></h2>
 
@@ -98,7 +97,7 @@ pub const MapPrivate: int32 = 0x0002;
 
 `MAP_PRIVATE`: writes are private to this mapping and never reach the object.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L34)
 
 <h2 id="map-fixed"><code>MapFixed</code></h2>
 
@@ -108,7 +107,7 @@ pub const MapFixed: int32 = 0x0010;
 
 `MAP_FIXED`: place the mapping exactly at the requested address, replacing whatever was there.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L38)
 
 <h2 id="map-anonymous"><code>MapAnonymous</code></h2>
 
@@ -118,7 +117,7 @@ pub const MapAnonymous: int32 = 0x1000;
 
 `MAP_ANON`: the mapping is backed by zeroed pages rather than by a file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L42)
 
 <h2 id="advise-free"><code>AdviseFree</code></h2>
 
@@ -128,7 +127,7 @@ pub const AdviseFree: int32 = 5;
 
 `MADV_FREE`: the pages may be reclaimed, and read back as zero if they are.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L46)
 
 <h2 id="advise-dont-need"><code>AdviseDontNeed</code></h2>
 
@@ -138,7 +137,7 @@ pub const AdviseDontNeed: int32 = 4;
 
 `MADV_DONTNEED`: the pages are not needed soon. Advisory on Darwin, as on FreeBSD.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L50)
 
 <h2 id="advise-will-need"><code>AdviseWillNeed</code></h2>
 
@@ -148,12 +147,12 @@ pub const AdviseWillNeed: int32 = 3;
 
 `MADV_WILLNEED`: the pages will be read soon.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L54)
 
 <h2 id="mmap"><code>Mmap</code></h2>
 
 ```rux
-pub unsafe func Mmap(
+pub func Mmap(
     address: *opaque,
     length: uint,
     protection: int32,
@@ -168,10 +167,10 @@ Creates a mapping and returns its address, or a negative error number.
 libSystem reports failure here as `MAP_FAILED`, which is `-1` cast to a pointer rather than a small negative
 number, so the failure is folded into the same normalized form every other wrapper uses. Test the result with
 [`IsError`](/docs/api/macos/errors#is-error), not for a sign: a valid address may have its top bit set.
-Safety: with [`MapFixed`](/docs/api/macos/memory#map-fixed), the range at `address` must hold nothing the program still uses, since the mapping replaces
-whatever occupies it, including a mapping this program depends on.
+Safety: with [`MapFixed`](/docs/api/macos/memory#map-fixed), the range at `address` must hold nothing the program still uses, since the mapping
+replaces whatever occupies it, including a mapping this program depends on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L71)
 
 **Parameters**
 
@@ -189,17 +188,14 @@ whatever occupies it, including a mapping this program depends on.
 <h2 id="munmap"><code>Munmap</code></h2>
 
 ```rux
-pub unsafe func Munmap(
-    address: *opaque,
-    length: uint
-) -> int64
+pub func Munmap(address: *opaque, length: uint) -> int64
 ```
 
 Releases the mapping that begins at `address` and spans `length` bytes.
 Returns zero, or a negative error number.
 Safety: the range must be one the caller mapped and no longer uses. Every pointer into it becomes invalid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L84)
 
 **Parameters**
 
@@ -213,7 +209,7 @@ Safety: the range must be one the caller mapped and no longer uses. Every pointe
 <h2 id="mprotect"><code>Mprotect</code></h2>
 
 ```rux
-pub unsafe func Mprotect(
+pub func Mprotect(
     address: *opaque,
     length: uint,
     protection: int32
@@ -225,7 +221,7 @@ Changes what may be done with the pages covering a range.
 Apple Silicon refuses to make a range writable and executable at once without the JIT entitlement.
 Safety: the range must be one the caller mapped, and nothing may still need an access `protection` removes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L97)
 
 **Parameters**
 
@@ -240,7 +236,7 @@ Safety: the range must be one the caller mapped, and nothing may still need an a
 <h2 id="madvise"><code>Madvise</code></h2>
 
 ```rux
-pub unsafe func Madvise(
+pub func Madvise(
     address: *opaque,
     length: uint,
     advice: int32
@@ -249,10 +245,10 @@ pub unsafe func Madvise(
 
 Tells the kernel how the pages covering a range are about to be used.
 Advice is advice, with the exception of [`AdviseFree`](/docs/api/macos/memory#advise-free), which actually releases.
-Safety: the range must be one the caller mapped, and with [`AdviseFree`](/docs/api/macos/memory#advise-free) it must hold nothing still needed, since that
-advice loses whatever the range held.
+Safety: the range must be one the caller mapped, and with [`AdviseFree`](/docs/api/macos/memory#advise-free) it must hold nothing still needed, since
+that advice loses whatever the range held.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L110)
 
 **Parameters**
 
@@ -276,6 +272,6 @@ is asked rather than assumed. The underlying call cannot fail, which is why this
 negative-error return exists so that one call shape reaches all three POSIX systems, not because Darwin has a
 failure to report.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Memory.rux#L120)
 
 **Returns**: the page size in bytes, always positive on this system

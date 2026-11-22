@@ -25,10 +25,10 @@ rux add Rux/macOS
 | `Thread`    | `pthread_create`, `pthread_join`, `pthread_detach`, the `pthread_attr_*` stack-size calls, `sched_yield`, `sysconf` and `SC_NPROCESSORS_ONLN`, and `pthread_threadid_np`, linked from libSystem |
 | `Ulock`     | `__ulock_wait`, `__ulock_wake` and their flags, the word operations every lock in `Rux/Sync` sleeps on                                                                                          |
 | `Spawn`     | `posix_spawnp`, the `posix_spawn_file_actions_*` calls, `waitpid`, `kill` and `fcntl`                                                                                                           |
-| `Socket`    | the BSD socket calls behind the same wrappers as Linux and FreeBSD, `SO_NOSIGPIPE`, and `getaddrinfo`, `freeaddrinfo` and `AddressInfo`                                                         |
+| `Sockets`   | the BSD socket calls behind the same wrappers as Linux and FreeBSD, `SO_NOSIGPIPE`, and `getaddrinfo`, `freeaddrinfo` and `AddressInfo`                                                         |
 | `Poll`      | `Kqueue` and `KeventCall` over libSystem's `kqueue` and `kevent`, `Kevent`, the `EVFILT_*` and `EV_*` flags, and `FcntlInt` with `F_GETFL`, `F_SETFL` and `O_NONBLOCK`                          |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+Every declaration lives in the module of its row, and the module is part of the import path: `import macOS::File::{ Close, OpenAt };`.
 
 **Apple does not support calling the kernel directly.** The trap numbers are private, they have changed between releases, and on Apple Silicon the trap interface is not reachable from ordinary code at all. libSystem is the ABI, and this package binds it — which is what makes it different in kind from `Rux/Linux` and `Rux/FreeBSD`, whose kernels publish a stable numbering.
 
@@ -56,17 +56,17 @@ Darwin records such as `Timespec` and `Timeval` are structural values and copy b
 
 libSystem declarations retain raw pointers for nullable parameters, byte buffers, loader handles, and OS-owned storage. These pointers do not express ownership; use the documented close or unmap operation, or prefer `Rux/Io` and `Rux/Memory` for managed interfaces.
 
-The wrappers that take a raw pointer the system reads or writes — a buffer and its length, a NUL-terminated path, a structure the call fills, an address range to map, unmap, protect or advise, a socket address or a kevent array — are `unsafe func`, and the `Safety:` sentence in each one's documentation states what the caller must uphold. A call to one needs an `unsafe` block, conventionally under a `// Safety:` comment saying why the obligation holds at that call: `unsafe { ClockGetTime(ClockMonotonic, @time) }`. `FcntlInt` is one of them too, because a command whose argument is a pointer would use the integer as an address. Wrappers that take only numbers, such as `Close`, `Lseek`, `Dup2`, `Socket`, `Kqueue`, `Exit`, `GetPid`, `CurrentErrno` and `QueryPageSize`, stay safe to call. The libSystem declarations themselves, `__ulock_wait` and `__ulock_wake` among them, are `extern` and always need `unsafe`.
+The wrappers that take a raw pointer the system reads or writes — a buffer and its length, a NUL-terminated path, a structure the call fills, an address range to map, unmap, protect or advise, a socket address or a kevent array — put an obligation on their caller, and the `Safety:` sentence in each one's documentation states what it is. A call to one is conventionally written under a `// Safety:` comment saying why the obligation holds at that call: `ClockGetTime(ClockMonotonic, @time)`. `FcntlInt` is one of them too, because a command whose argument is a pointer would use the integer as an address. Wrappers that take only numbers, such as `Close`, `Lseek`, `Dup2`, `Socket`, `Kqueue`, `Exit`, `GetPid`, `CurrentErrno` and `QueryPageSize`, put none on theirs. The libSystem declarations themselves, `__ulock_wait` and `__ulock_wake` among them, are `extern`.
 
 ## Platform
 
 macOS only. Guard use behind a compile-time check, so a build for another target never resolves these declarations:
 
 ```rux
-import Core::{ #target };
+import Core::Compilation::#target;
 
 when #target.os == .macOS {
-    import macOS::{ StdOut, Write };
+    import macOS::File::{ StdOut, Write };
 }
 ```
 

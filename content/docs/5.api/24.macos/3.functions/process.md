@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/LibSystem.rux
-  line: 178
+  line: 180
 seo:
   title: "Process — macOS API"
   description: Ending the process and asking its identifier.
@@ -28,12 +28,12 @@ pub extern func _NSGetArgc() -> *int32
 ```
 
 The address of the process's argument count.
-dyld fills it before the program starts, from the stack the kernel built. The count belongs to the process for
-its whole life and must not be written.
+dyld fills it before the program starts, from the stack the kernel built. The count belongs to the process
+for its whole life and must not be written.
 
 **See also**: [https://keith.github.io/xcode-man-pages/environ.7.html](https://keith.github.io/xcode-man-pages/environ.7.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L180)
 
 **Returns**: the address of the argument count, which is never null
 
@@ -44,12 +44,12 @@ pub extern func _NSGetArgv() -> ***char8
 ```
 
 The address of the process's argument vector.
-The vector holds the argument count's worth of NUL-terminated byte strings followed by a null, all owned by the
-process for its whole life.
+The vector holds the argument count's worth of NUL-terminated byte strings followed by a null, all owned by
+the process for its whole life.
 
 **See also**: [https://keith.github.io/xcode-man-pages/environ.7.html](https://keith.github.io/xcode-man-pages/environ.7.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L186)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L188)
 
 **Returns**: the address of the argument vector, which is never null
 
@@ -68,7 +68,7 @@ The path is the one the executable was loaded by, which may be relative or pass 
 
 **See also**: [https://keith.github.io/xcode-man-pages/dyld.3.html](https://keith.github.io/xcode-man-pages/dyld.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L196)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L198)
 
 **Parameters**
 
@@ -86,12 +86,12 @@ pub extern func _NSGetEnviron() -> ***char8
 ```
 
 The address of the process's environment vector.
-The vector holds NUL-terminated `name=value` byte strings ended by a null. It is the C library's own `environ`,
-so a call that changes the environment may replace the vector it points to.
+The vector holds NUL-terminated `name=value` byte strings ended by a null. It is the C library's own
+`environ`, so a call that changes the environment may replace the vector it points to.
 
 **See also**: [https://keith.github.io/xcode-man-pages/environ.7.html](https://keith.github.io/xcode-man-pages/environ.7.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L204)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/LibSystem.rux#L206)
 
 **Returns**: the address of the environment vector, which is never null
 
@@ -102,12 +102,11 @@ pub func Exit(code: int32)
 ```
 
 Ends the calling process with `code`.
-Only the low eight bits reach a waiting parent. Does not return.
-This is `_exit` rather than `exit`: nothing registered with `atexit` runs and no stream is flushed, which matches
-what the Linux and FreeBSD packages do and is what a raw binding should do. A program wanting the other behaviour
-should call C's `exit` through `Rux/C`.
+Only the low eight bits reach a waiting parent. Does not return. This is `_exit` rather than `exit`: nothing
+registered with `atexit` runs and no stream is flushed, which matches what the Linux and FreeBSD packages do and
+is what a raw binding should do. A program wanting the other behaviour should call C's `exit` through `Rux/C`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Process.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Process.rux#L13)
 
 **Parameters**
 
@@ -124,6 +123,6 @@ pub func GetPid() -> ProcessId
 The calling process's own identifier.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Process.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Process.rux#L22)
 
 **Returns**: the calling process's identifier

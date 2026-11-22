@@ -46,10 +46,10 @@ Only ever passed by address to the `pthread_attr_*` calls, which initialize and 
 
 **Constructors**
 
-<h3 id="p-thread-attributes-new"><code>PThreadAttributes</code></h3>
+<h3 id="p-thread-attributes-new"><code>New</code></h3>
 
 ```rux
-pub func PThreadAttributes() -> PThreadAttributes
+pub func New() -> PThreadAttributes
 ```
 
 Zeroed storage for [`pthread_attr_init`](/docs/api/macos/thread#pthread-attr-init) to initialize.

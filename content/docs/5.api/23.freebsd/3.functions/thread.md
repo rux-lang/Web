@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Thread.rux
-  line: 15
+  line: 17
 seo:
   title: "Threads — FreeBSD API"
   description: "POSIX threads: starting, joining and detaching them, their stack size, and the processor count."
@@ -29,7 +29,7 @@ pub type PThread = uint64
 
 A thread as the C library names it, `pthread_t`. Every system this package family binds keeps it in one word.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L17)
 
 <h2 id="p-thread-attributes"><code>PThreadAttributes</code></h2>
 
@@ -42,21 +42,21 @@ pub struct PThreadAttributes {
 Room for a `pthread_attr_t`, which each C library sizes its own way and none larger than this.
 Only ever passed by address to the `pthread_attr_*` calls, which initialize and read it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L22)
 
 **Constructors**
 
-<h3 id="p-thread-attributes-new"><code>PThreadAttributes</code></h3>
+<h3 id="p-thread-attributes-new"><code>New</code></h3>
 
 ```rux
-pub func PThreadAttributes() -> PThreadAttributes
+pub func New() -> PThreadAttributes
 ```
 
 Zeroed storage for [`pthread_attr_init`](/docs/api/freebsd/thread#pthread-attr-init) to initialize.
 
 **Returns**: the storage
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L30)
 
 <h2 id="sc-nprocessors-onln"><code>SC_NPROCESSORS_ONLN</code></h2>
 
@@ -66,7 +66,7 @@ pub const SC_NPROCESSORS_ONLN: int32 = 58;
 
 `_SC_NPROCESSORS_ONLN`: the [`sysconf`](/docs/api/freebsd/thread#sysconf) name for the number of processors currently online.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L38)
 
 <h2 id="pthread-create"><code>pthread_create</code></h2>
 
@@ -83,7 +83,7 @@ Starts a thread running `start(argument)`.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=pthread_create&sektion=3](https://man.freebsd.org/cgi/man.cgi?query=pthread_create&sektion=3)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L50)
 
 **Parameters**
 
@@ -109,7 +109,7 @@ Waits for a thread to finish and releases it.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=pthread_join&sektion=3](https://man.freebsd.org/cgi/man.cgi?query=pthread_join&sektion=3)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L59)
 
 **Parameters**
 
@@ -130,7 +130,7 @@ Lets a thread release itself when it finishes, so nothing has to join it.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=pthread_detach&sektion=3](https://man.freebsd.org/cgi/man.cgi?query=pthread_detach&sektion=3)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L66)
 
 **Parameters**
 
@@ -150,7 +150,7 @@ Initializes thread attributes to the defaults.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=pthread_attr_init&sektion=3](https://man.freebsd.org/cgi/man.cgi?query=pthread_attr_init&sektion=3)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L73)
 
 **Parameters**
 
@@ -173,7 +173,7 @@ Sets the stack size a thread started with these attributes gets.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=pthread_attr_setstacksize&sektion=3](https://man.freebsd.org/cgi/man.cgi?query=pthread_attr_setstacksize&sektion=3)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L81)
 
 **Parameters**
 
@@ -194,7 +194,7 @@ Releases what [`pthread_attr_init`](/docs/api/freebsd/thread#pthread-attr-init) 
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=pthread_attr_destroy&sektion=3](https://man.freebsd.org/cgi/man.cgi?query=pthread_attr_destroy&sektion=3)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L86)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L88)
 
 **Parameters**
 
@@ -214,7 +214,7 @@ Returns the kernel's identifier for the calling thread.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=pthread_getthreadid_np&sektion=3](https://man.freebsd.org/cgi/man.cgi?query=pthread_getthreadid_np&sektion=3)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L94)
 
 **Returns**: the calling thread's identifier
 
@@ -228,7 +228,7 @@ Gives up the processor so another ready thread can run.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=sched_yield&sektion=2](https://man.freebsd.org/cgi/man.cgi?query=sched_yield&sektion=2)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L104)
 
 **Returns**: zero, or -1 with the reason in errno
 
@@ -242,7 +242,7 @@ Reads a system configuration value.
 
 **See also**: [https://man.freebsd.org/cgi/man.cgi?query=sysconf&sektion=3](https://man.freebsd.org/cgi/man.cgi?query=sysconf&sektion=3)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FreeBSD/Src/Thread.rux#L111)
 
 **Parameters**
 

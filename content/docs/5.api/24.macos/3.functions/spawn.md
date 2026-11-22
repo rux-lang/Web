@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Spawn.rux
-  line: 13
+  line: 14
 seo:
   title: "Starting processes — macOS API"
   description: "posix_spawn and its file actions, and waiting for and signalling a child."
@@ -32,21 +32,21 @@ pub struct SpawnFileActions {
 Room for a `posix_spawn_file_actions_t`, which each C library sizes its own way and none larger than this.
 Only ever passed by address to the `posix_spawn_file_actions_*` calls, which initialize and read it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L14)
 
 **Constructors**
 
-<h3 id="spawn-file-actions-new"><code>SpawnFileActions</code></h3>
+<h3 id="spawn-file-actions-new"><code>New</code></h3>
 
 ```rux
-pub func SpawnFileActions() -> SpawnFileActions
+pub func New() -> SpawnFileActions
 ```
 
 Zeroed storage for [`posix_spawn_file_actions_init`](/docs/api/macos/spawn#posix-spawn-file-actions-init) to initialize.
 
 **Returns**: the storage
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L22)
 
 <h2 id="f-setfd"><code>F_SETFD</code></h2>
 
@@ -56,7 +56,7 @@ pub const F_SETFD: int32 = 2;
 
 `F_SETFD`: the [`fcntl`](/docs/api/macos/spawn#fcntl) command that sets a descriptor's flags.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L30)
 
 <h2 id="fd-cloexec"><code>FD_CLOEXEC</code></h2>
 
@@ -66,7 +66,7 @@ pub const FD_CLOEXEC: int32 = 1;
 
 `FD_CLOEXEC`: close the descriptor when the process starts another program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L35)
 
 <h2 id="wnohang"><code>WNOHANG</code></h2>
 
@@ -76,7 +76,7 @@ pub const WNOHANG: int32 = 1;
 
 `WNOHANG`: have [`waitpid`](/docs/api/macos/spawn#waitpid) return at once when the child has not finished.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L40)
 
 <h2 id="sigkill"><code>SIGKILL</code></h2>
 
@@ -86,7 +86,7 @@ pub const SIGKILL: int32 = 9;
 
 `SIGKILL`: the signal that ends a process at once and cannot be caught.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L45)
 
 <h2 id="posix-spawnp"><code>posix_spawnp</code></h2>
 
@@ -105,7 +105,7 @@ Starts `file`, found through `PATH` when it has no slash, as a child process.
 
 **See also**: [https://keith.github.io/xcode-man-pages/posix_spawn.3.html](https://keith.github.io/xcode-man-pages/posix_spawn.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L59)
 
 **Parameters**
 
@@ -130,7 +130,7 @@ Initializes an empty list of file actions.
 
 **See also**: [https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_init.3.html](https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_init.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L67)
 
 **Parameters**
 
@@ -150,7 +150,7 @@ Releases what [`posix_spawn_file_actions_init`](/docs/api/macos/spawn#posix-spaw
 
 **See also**: [https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_destroy.3.html](https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_destroy.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L74)
 
 **Parameters**
 
@@ -174,7 +174,7 @@ Adds an action duplicating `fd` onto `newFd` in the child.
 
 **See also**: [https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_adddup2.3.html](https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_adddup2.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L83)
 
 **Parameters**
 
@@ -202,7 +202,7 @@ Adds an action opening `path` as `fd` in the child.
 
 **See also**: [https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_addopen.3.html](https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_addopen.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L94)
 
 **Parameters**
 
@@ -229,7 +229,7 @@ Adds an action changing the child's working directory to `path`.
 
 **See also**: [https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_addchdir_np.3.html](https://keith.github.io/xcode-man-pages/posix_spawn_file_actions_addchdir_np.3.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L103)
 
 **Parameters**
 
@@ -254,7 +254,7 @@ Waits for a child to change state, and reports how it finished.
 
 **See also**: [https://keith.github.io/xcode-man-pages/waitpid.2.html](https://keith.github.io/xcode-man-pages/waitpid.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L113)
 
 **Parameters**
 
@@ -264,7 +264,8 @@ Waits for a child to change state, and reports how it finished.
 | `status`  | `*var int32` | receives the encoded status                                                                                   |
 | `options` | `int32`      | zero to wait, or [`WNOHANG`](/docs/api/macos/spawn#wnohang) to return at once when the child is still running |
 
-**Returns**: the child's identifier, zero with [`WNOHANG`](/docs/api/macos/spawn#wnohang) when it is still running, or -1 with the reason in errno
+**Returns**: the child's identifier, zero with [`WNOHANG`](/docs/api/macos/spawn#wnohang) when it is still running, or -1 with the reason in
+errno
 
 <h2 id="kill"><code>kill</code></h2>
 
@@ -276,7 +277,7 @@ Sends a signal to a process.
 
 **See also**: [https://keith.github.io/xcode-man-pages/kill.2.html](https://keith.github.io/xcode-man-pages/kill.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L121)
 
 **Parameters**
 
@@ -301,7 +302,7 @@ Performs a control operation on a descriptor, such as setting its flags with [`F
 
 **See also**: [https://keith.github.io/xcode-man-pages/fcntl.2.html](https://keith.github.io/xcode-man-pages/fcntl.2.html)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/macOS/Src/Spawn.rux#L129)
 
 **Parameters**
 

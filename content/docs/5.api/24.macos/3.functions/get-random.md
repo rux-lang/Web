@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Entropy.rux
-  line: 17
+  line: 18
 seo:
   title: "GetRandom — macOS API"
   description: Fills length bytes of buffer with unpredictable bytes.
@@ -22,7 +22,7 @@ seo:
 Fills `length` bytes of `buffer` with unpredictable bytes.
 
 ```rux
-pub unsafe func GetRandom(buffer: *var opaque, length: uint)
+pub func GetRandom(buffer: *var opaque, length: uint)
 ```
 
 `buffer` is borrowed and written; `length` is read by value. Returns nothing, because this cannot fail: the
