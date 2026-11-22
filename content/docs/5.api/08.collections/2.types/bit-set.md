@@ -31,10 +31,10 @@ Move-only: it owns its words.
 
 ## Constructors
 
-<h3 id="new"><code>BitSet</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func BitSet(allocator: Allocator) -> BitSet
+pub func New(allocator: Allocator) -> BitSet
 ```
 
 An empty set that spans no bits and has allocated nothing.

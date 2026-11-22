@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/TreeSet.rux
-  line: 26
+  line: 29
 seo:
   title: "TreeSet<T> — Collections API"
   description: An ordered set of unique elements.
@@ -22,7 +22,7 @@ seo:
 An ordered set of unique elements.
 
 ```rux
-pub struct TreeSet<T> {
+pub struct TreeSet<T: Copyable> {
     // private fields
 }
 ```
@@ -31,16 +31,16 @@ Move-only: it owns every node and every element in them.
 
 ## Type parameters
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 ## Constructors
 
-<h3 id="new"><code>TreeSet</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func TreeSet(
+pub func New(
     allocator: Allocator,
     compare: func(T, T) -> Ordering
 ) -> TreeSet<T>
@@ -58,7 +58,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: an empty collection that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L45)
 
 ## Methods
 
@@ -72,7 +72,7 @@ How many elements the set holds.
 
 **Returns**: how many elements it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L52)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
@@ -84,7 +84,7 @@ Whether the set holds no elements.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L59)
 
 <h3 id="contains"><code>Contains</code></h3>
 
@@ -101,7 +101,7 @@ Runs in time proportional to the height, which is at most twice the logarithm of
 
 **Returns**: whether the value is present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L68)
 
 <h3 id="insert"><code>Insert</code></h3>
 
@@ -121,7 +121,7 @@ Terminates the program when the node cannot be allocated.
 
 **Returns**: whether the value was new rather than already present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L80)
 
 <h3 id="remove"><code>Remove</code></h3>
 
@@ -138,7 +138,7 @@ Cannot fail. Runs in time proportional to the height and allocates nothing.
 
 **Returns**: whether the value was there to remove
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L90)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -148,7 +148,7 @@ pub func Clear(&var self)
 
 Destroys every element, leaving an empty set that is still usable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L100)
 
 <h3 id="first"><code>First</code></h3>
 
@@ -161,7 +161,7 @@ Runs in time proportional to the height and allocates nothing.
 
 **Returns**: the smallest element, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L105)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L108)
 
 <h3 id="last"><code>Last</code></h3>
 
@@ -173,7 +173,7 @@ The largest element, or `none` for an empty set.
 
 **Returns**: the largest element, or `none` when empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L113)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L116)
 
 <h3 id="floor"><code>Floor</code></h3>
 
@@ -189,7 +189,7 @@ The largest element at or below `value`, or `none` when every element is above i
 
 **Returns**: the largest element at or below `value`, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L125)
 
 <h3 id="ceiling"><code>Ceiling</code></h3>
 
@@ -205,7 +205,7 @@ The smallest element at or above `value`, or `none` when every element is below 
 
 **Returns**: the smallest element at or above `value`, or `none`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L137)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
@@ -218,7 +218,7 @@ A walk over this set, smallest element first, leaving it untouched.
 
 **Returns**: a cursor over the elements in order
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L153)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L156)
 
 <h3 id="range"><code>Range</code></h3>
 
@@ -242,7 +242,7 @@ nothing missed. A range whose `end` is not above its `start` hands back nothing.
 
 **Returns**: a cursor over the elements that fall in `[start, end)`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L169)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
@@ -255,7 +255,7 @@ Takes ownership; the set is gone afterwards.
 
 **Returns**: a cursor that consumes the set as it goes, in order
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L181)
 
 <h3 id="is-subset-of"><code>IsSubsetOf</code></h3>
 
@@ -273,7 +273,7 @@ Runs in time proportional to this set's length times the logarithm of `other`'s.
 
 **Returns**: whether every element of this set is in `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L197)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L193)
 
 <h3 id="is-superset-of"><code>IsSupersetOf</code></h3>
 
@@ -289,7 +289,7 @@ Whether every element of `other` is in this set.
 
 **Returns**: whether every element of `other` is in this set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L218)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L214)
 
 <h3 id="is-disjoint-from"><code>IsDisjointFrom</code></h3>
 
@@ -307,7 +307,7 @@ walk gives the same answer and one of them is shorter.
 
 **Returns**: whether the two share no element
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L228)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L224)
 
 <h3 id="equals"><code>Equals</code></h3>
 
@@ -325,7 +325,7 @@ makes the lengths enough to reject most pairs before looking at an element.
 
 **Returns**: whether both hold exactly the same elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L251)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L247)
 
 <h3 id="union-with"><code>UnionWith</code></h3>
 
@@ -341,7 +341,7 @@ first node that cannot be allocated.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&TreeSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L260)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L256)
 
 <h3 id="intersect-with"><code>IntersectWith</code></h3>
 
@@ -360,7 +360,7 @@ than an edge.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&TreeSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L284)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L280)
 
 <h3 id="subtract"><code>Subtract</code></h3>
 
@@ -375,7 +375,7 @@ Allocates nothing and cannot fail, and walks the same way [`IntersectWith`](/doc
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&TreeSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L303)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L299)
 
 <h3 id="symmetric-difference-with"><code>SymmetricDifferenceWith</code></h3>
 
@@ -396,7 +396,7 @@ and only then is what is left of `other` put in.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&TreeSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L326)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L322)
 
 <h3 id="clone"><code>Clone</code></h3>
 
@@ -411,18 +411,18 @@ owning element type is rejected while compiling, at the copy.
 
 **Returns**: an independent copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L367)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L363)
 
 ## Related
 
 <h3 id="write-tree-set-debug"><code>WriteTreeSetDebug&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteTreeSetDebug<T: Debug>(
+pub func WriteTreeSetDebug<T: Debug + Copyable>(
     writer: &var TextWriter,
     value: &TreeSet<T>,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a borrowed ordered set as `{first, second, third}`, in order.
@@ -431,13 +431,13 @@ elements and between runs, unlike a hash set's.
 Every element is shown through a borrow of the node holding it, and `spec` is handed to each unchanged.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L229)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L232)
 
 **Type parameters**
 
-| Name       | Description                                          |
-| ---------- | ---------------------------------------------------- |
-| `T: Debug` | the element type, which must know how to show itself |
+| Name                  | Description                                          |
+| --------------------- | ---------------------------------------------------- |
+| `T: Debug + Copyable` | the element type, which must know how to show itself |
 
 **Parameters**
 
@@ -452,20 +452,20 @@ Reports whatever the writer or an element's implementation reported, stopping at
 <h3 id="tree-set-iterator"><code>TreeSetIterator&lt;T&gt;</code></h3>
 
 ```rux
-pub struct TreeSetIterator<T> {
+pub struct TreeSetIterator<T: Copyable> {
     // private fields
 }
 ```
 
 A walk over a borrowed set, smallest element first.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L377)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L373)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Implements Iterator**
 
@@ -482,25 +482,25 @@ Runs in constant amortized time: a whole walk crosses every edge of the tree exa
 
 **Returns**: the next element in order, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L387)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L383)
 
 <h3 id="tree-set-range-iterator"><code>TreeSetRangeIterator&lt;T&gt;</code></h3>
 
 ```rux
-pub struct TreeSetRangeIterator<T> {
+pub struct TreeSetRangeIterator<T: Copyable> {
     // private fields
 }
 ```
 
 A walk over a borrowed set that stops at a bound.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L402)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L396)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Implements Iterator**
 
@@ -516,12 +516,12 @@ The next element below the bound, or `none` once the walk reaches it.
 
 **Returns**: the next element in order, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L415)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L409)
 
 <h3 id="tree-set-into-iterator"><code>TreeSetIntoIterator&lt;T&gt;</code></h3>
 
 ```rux
-pub struct TreeSetIntoIterator<T> {
+pub struct TreeSetIntoIterator<T: Copyable> {
     // private fields
 }
 ```
@@ -530,13 +530,13 @@ A walk that consumes the set, smallest element first.
 Owns the nodes, and destroys whatever is left in them when it dies — so a walk stopped part-way destroys the
 rest exactly once, and nothing already handed out is destroyed twice.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L437)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L429)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Implements Iterator**
 
@@ -553,4 +553,4 @@ Takes the smallest element out of the tree rather than reading past it, which is
 
 **Returns**: the next element in order, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L450)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/TreeSet.rux#L442)

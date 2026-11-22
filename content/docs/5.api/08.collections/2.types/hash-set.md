@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/HashSet.rux
-  line: 17
+  line: 19
 seo:
   title: "HashSet<T> — Collections API"
   description: A hash table of distinct values.
@@ -22,7 +22,7 @@ seo:
 A hash table of distinct values.
 
 ```rux
-pub struct HashSet<T> {
+pub struct HashSet<T: Copyable> {
     // private fields
 }
 ```
@@ -31,16 +31,16 @@ Move-only: it owns its elements and its storage.
 
 ## Type parameters
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 ## Constructors
 
-<h3 id="new"><code>HashSet</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func HashSet(
+pub func New(
     allocator: Allocator,
     hash: func(T, uint64, uint64) -> uint64,
     equals: func(T, T) -> bool
@@ -57,7 +57,7 @@ An empty set that has not allocated anything, with a seed drawn from the operati
 
 **Returns**: an empty collection that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L35)
 
 ## Associated functions
 
@@ -83,7 +83,7 @@ An empty set that has not allocated anything, hashing with `seed`.
 
 **Returns**: an empty set keyed with that seed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L47)
 
 <h3 id="with-capacity"><code>WithCapacity</code></h3>
 
@@ -107,7 +107,7 @@ An empty set with room for `capacity` elements already taken.
 
 **Returns**: an empty set with room for that many elements already taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L59)
 
 ## Methods
 
@@ -121,7 +121,7 @@ How many elements the set holds.
 
 **Returns**: how many elements it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L69)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
@@ -133,7 +133,7 @@ How many slots the table has.
 
 **Returns**: how many elements fit before the next growth
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L76)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
@@ -145,7 +145,7 @@ Whether the set holds no elements.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L83)
 
 <h3 id="contains"><code>Contains</code></h3>
 
@@ -163,7 +163,7 @@ Runs in constant expected time and allocates nothing.
 
 **Returns**: whether the value is present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L93)
 
 <h3 id="insert"><code>Insert</code></h3>
 
@@ -182,7 +182,7 @@ Terminates the program when the table cannot grow.
 
 **Returns**: whether the value was new rather than already present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L104)
 
 <h3 id="remove"><code>Remove</code></h3>
 
@@ -200,7 +200,7 @@ intact. Reports `none` when the set did not have it.
 
 **Returns**: the value that was stored, or `none` when it was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L124)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
@@ -215,7 +215,7 @@ Terminates the program when the storage cannot be had.
 | ------------ | ------ | --------------------------------------- |
 | `additional` | `uint` | how many more elements to make room for |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L139)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
@@ -226,7 +226,7 @@ pub func ShrinkToFit(&var self)
 Releases the capacity the element count does not need.
 Terminates the program when the allocator refuses the smaller table.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L146)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -236,7 +236,7 @@ pub func Clear(&var self)
 
 Destroys every element, keeping the storage.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L152)
 
 <h3 id="next-element"><code>NextElement</code></h3>
 
@@ -254,7 +254,7 @@ seed's and not the insertion's, and nothing may be inserted or removed while a w
 
 **Returns**: the next element, or `none` once every slot has been looked at
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L160)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L162)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
@@ -269,7 +269,7 @@ Nothing may be inserted or removed while the iterator is alive.
 
 **Returns**: a cursor over the elements, in an order the seed decides
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L180)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L182)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
@@ -283,7 +283,7 @@ destroyed when the iterator's life ends.
 
 **Returns**: a cursor that consumes the set as it goes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L194)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L196)
 
 <h3 id="is-subset-of"><code>IsSubsetOf</code></h3>
 
@@ -304,7 +304,7 @@ Allocates nothing. Runs in time proportional to this set's size.
 
 **Returns**: whether every element of this set is in `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L227)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L211)
 
 <h3 id="is-superset-of"><code>IsSupersetOf</code></h3>
 
@@ -321,7 +321,7 @@ Both are borrowed. The mirror of [`IsSubsetOf`](/docs/api/collections/hash-set#i
 
 **Returns**: whether every element of `other` is in this set
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L249)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L233)
 
 <h3 id="is-disjoint-from"><code>IsDisjointFrom</code></h3>
 
@@ -341,7 +341,7 @@ Allocates nothing.
 
 **Returns**: whether the two share no element
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L245)
 
 <h3 id="equals"><code>Equals</code></h3>
 
@@ -358,7 +358,7 @@ Both are borrowed. Equal sizes and one containment, which together are containme
 
 **Returns**: whether both hold exactly the same elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L284)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L268)
 
 <h3 id="union-with"><code>UnionWith</code></h3>
 
@@ -378,7 +378,7 @@ Runs in time proportional to `other`.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L297)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L281)
 
 <h3 id="intersect-with"><code>IntersectWith</code></h3>
 
@@ -395,7 +395,7 @@ Allocates nothing, so it cannot fail: a set only ever gets smaller here.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L322)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L306)
 
 <h3 id="subtract"><code>Subtract</code></h3>
 
@@ -411,7 +411,7 @@ Allocates nothing, so it cannot fail.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L356)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L340)
 
 <h3 id="symmetric-difference-with"><code>SymmetricDifferenceWith</code></h3>
 
@@ -432,7 +432,7 @@ cannot be had.
 | ------- | ------------- | ----------------------------------------- |
 | `other` | `&HashSet<T>` | the collection to compare or combine with |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L388)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L372)
 
 <h3 id="clone"><code>Clone</code></h3>
 
@@ -449,14 +449,14 @@ be had.
 
 **Returns**: an independent copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L428)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L412)
 
 ## Related
 
 <h3 id="hash-set-iterator"><code>HashSetIterator&lt;T&gt;</code></h3>
 
 ```rux
-pub struct HashSetIterator<T> {
+pub struct HashSetIterator<T: Copyable> {
     // private fields
 }
 ```
@@ -464,13 +464,13 @@ pub struct HashSetIterator<T> {
 An iterator over the elements of a set, by copy.
 Borrows the set, so the set must outlive it and must not be inserted into or removed from while it is alive.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L451)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L435)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Implements Iterator**
 
@@ -488,12 +488,12 @@ with [`NextElement`](/docs/api/collections/hash-set#next-element) instead.
 
 **Returns**: the next element, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L466)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L450)
 
 <h3 id="hash-set-into-iterator"><code>HashSetIntoIterator&lt;T&gt;</code></h3>
 
 ```rux
-pub struct HashSetIntoIterator<T> {
+pub struct HashSetIntoIterator<T: Copyable> {
     // private fields
 }
 ```
@@ -501,13 +501,13 @@ pub struct HashSetIntoIterator<T> {
 An iterator that takes a set apart, yielding each element by value.
 Move-only: it owns the storage the set owned. Whatever is left when its life ends is destroyed with it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L487)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L471)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Implements Iterator**
 
@@ -525,16 +525,16 @@ destructor is exactly what nobody took.
 
 **Returns**: the next element, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L503)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashSet.rux#L487)
 
 <h3 id="write-hash-set-debug"><code>WriteHashSetDebug&lt;T&gt;</code></h3>
 
 ```rux
-pub func WriteHashSetDebug<T: Debug>(
+pub func WriteHashSetDebug<T: Debug + Copyable>(
     writer: &var TextWriter,
     value: &HashSet<T>,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a borrowed hash set as `{first, second, third}`.
@@ -544,13 +544,13 @@ seed and from what the set has been through, so it is not the insertion order an
 Every element is shown through a borrow of it, and `spec` is handed to each unchanged.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L164)
 
 **Type parameters**
 
-| Name       | Description                                          |
-| ---------- | ---------------------------------------------------- |
-| `T: Debug` | the element type, which must know how to show itself |
+| Name                  | Description                                          |
+| --------------------- | ---------------------------------------------------- |
+| `T: Debug + Copyable` | the element type, which must know how to show itself |
 
 **Parameters**
 

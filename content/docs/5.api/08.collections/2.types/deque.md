@@ -27,7 +27,7 @@ pub struct Deque<T> {
 }
 ```
 
-Move-only: it owns its elements and storage, prohibits copying, and destroys both with [`~Deque`](/docs/api/collections/deque#destructor).
+Move-only: it owns its elements and storage, prohibits copying, and destroys both in its destructor.
 
 ## Type parameters
 
@@ -37,10 +37,10 @@ Move-only: it owns its elements and storage, prohibits copying, and destroys bot
 
 ## Constructors
 
-<h3 id="new"><code>Deque</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Deque(allocator: Allocator) -> Deque<T>
+pub func New(allocator: Allocator) -> Deque<T>
 ```
 
 An empty deque that has not allocated anything.
@@ -348,7 +348,7 @@ pub func Set(
     &var self,
     index: uint,
     value: T
-) throws CollectionError
+) -> !CollectionError
 ```
 
 Replaces the element at `index` with `value`, destroying the element that was there.
@@ -372,7 +372,7 @@ pub func Replace(
     &var self,
     index: uint,
     value: T
-) -> T throws CollectionError
+) -> T ! CollectionError
 ```
 
 Replaces the element at `index` with `value` and hands back the element that was there.
@@ -493,7 +493,7 @@ An iterator over pointers to the elements, front to back.
 ## Destructor
 
 ```rux
-func ~Deque(&var self)
+destructor
 ```
 
 Destroys every element and releases the storage.
@@ -522,7 +522,7 @@ pub func WriteDequeDebug<T: Debug>(
     writer: &var TextWriter,
     value: &Deque<T>,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a borrowed deque as `[front, ..., back]`, front element first.
@@ -534,7 +534,7 @@ making the elements contiguous first would be a diagnostic quietly moving a call
 `spec` describes the elements, exactly as for a vector.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L103)
 
 **Type parameters**
 

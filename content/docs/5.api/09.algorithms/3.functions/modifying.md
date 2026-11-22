@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Modify.rux
-  line: 20
+  line: 23
 seo:
   title: "Modifying — Algorithms API"
   description: "Rearranging a slice in place, removing elements, and moving elements between slices."
@@ -24,7 +24,7 @@ Rearranging a slice in place, removing elements, and moving elements between sli
 <h2 id="swap"><code>Swap&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func Swap<T>(left: *var T, right: *var T)
+pub func Swap<T>(left: *var T, right: *var T)
 ```
 
 Exchanges the values at two locations.
@@ -32,7 +32,7 @@ Both are borrowed mutably and both are written. Passing the same location twice 
 Cannot fail. Runs in constant time and allocates nothing.
 Safety: both pointers must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L23)
 
 **Type parameters**
 
@@ -58,7 +58,7 @@ Reverses the order of `items` in place.
 is a special case.
 Cannot fail. Runs in time proportional to the length, making half as many exchanges, and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L36)
 
 **Type parameters**
 
@@ -86,7 +86,7 @@ every element at most twice.
 Reports false only for a `middle` past the length.
 Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L60)
 
 **Type parameters**
 
@@ -106,21 +106,20 @@ Runs in time proportional to the length and allocates nothing.
 <h2 id="fill"><code>Fill&lt;T&gt;</code></h2>
 
 ```rux
-pub func Fill<T>(items: var T[..], value: T)
+pub func Fill<T: Copyable>(items: var T[..], value: T)
 ```
 
 Writes `value` into every position of `items`.
-`items` is borrowed mutably and rewritten; `value` is read by value and copied into each position. An empty slice
-writes nothing.
-Cannot fail. Runs in time proportional to the length and allocates nothing.
+`items` is borrowed mutably and rewritten; `value` is read by value and copied into each position. An empty
+slice writes nothing. Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L76)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -132,7 +131,7 @@ Cannot fail. Runs in time proportional to the length and allocates nothing.
 <h2 id="copy-to"><code>CopyTo&lt;T&gt;</code></h2>
 
 ```rux
-pub func CopyTo<T>(
+pub func CopyTo<T: Copyable>(
     destination: var T[..],
     source: T[..]
 ) -> bool
@@ -146,13 +145,13 @@ The two must not overlap, unless `destination` begins at or before `source`. Use
 Runs in time proportional to the length and allocates nothing.
 Overlapping the wrong way silently copies elements that were already overwritten.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L96)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -166,7 +165,7 @@ Overlapping the wrong way silently copies elements that were already overwritten
 <h2 id="move-to"><code>MoveTo&lt;T&gt;</code></h2>
 
 ```rux
-pub func MoveTo<T>(
+pub func MoveTo<T: Copyable>(
     destination: var T[..],
     source: T[..]
 ) -> bool
@@ -179,13 +178,13 @@ Copies back to front when `destination` starts after `source`, and front to back
 shifting a run of elements along its own storage safe in either direction.
 Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L115)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L117)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -199,7 +198,7 @@ Runs in time proportional to the length and allocates nothing.
 <h2 id="unique"><code>Unique&lt;T&gt;</code></h2>
 
 ```rux
-pub func Unique<T>(items: var T[..]) -> uint
+pub func Unique<T: Copyable>(items: var T[..]) -> uint
 ```
 
 Collapses each run of adjacent equal elements in `items` to one, and reports how many are left.
@@ -211,13 +210,13 @@ unspecified.
 Requires `==` on the element type.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L138)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L140)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -230,7 +229,10 @@ Cannot fail. Runs in time proportional to the length and allocates nothing.
 <h2 id="remove-value"><code>RemoveValue&lt;T&gt;</code></h2>
 
 ```rux
-pub func RemoveValue<T>(items: var T[..], value: T) -> uint
+pub func RemoveValue<T: Copyable>(
+    items: var T[..],
+    value: T
+) -> uint
 ```
 
 Removes every element of `items` equal to `value`, and reports how many are left.
@@ -239,13 +241,13 @@ their original order, nothing is resized, and what lies past the reported length
 Requires `==` on the element type.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L164)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -259,24 +261,25 @@ Cannot fail. Runs in time proportional to the length and allocates nothing.
 <h2 id="remove-where"><code>RemoveWhere&lt;T&gt;</code></h2>
 
 ```rux
-pub func RemoveWhere<T>(
+pub func RemoveWhere<T: Copyable>(
     items: var T[..],
     predicate: func(T) -> bool
 ) -> uint
 ```
 
 Removes every element of `items` that `predicate` accepts, and reports how many are left.
-`items` is borrowed mutably and rewritten; `predicate` is called once per element. Survivors are compacted toward
-the front in their original order, nothing is resized, and what lies past the reported length is unspecified.
-Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.
+`items` is borrowed mutably and rewritten; `predicate` is called once per element. Survivors are compacted
+toward the front in their original order, nothing is resized, and what lies past the reported length is
+unspecified. Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever
+`predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L184)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L187)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -290,27 +293,27 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="partition"><code>Partition&lt;T&gt;</code></h2>
 
 ```rux
-pub func Partition<T>(
+pub func Partition<T: Copyable>(
     items: var T[..],
     predicate: func(T) -> bool
 ) -> uint
 ```
 
 Moves every element `predicate` accepts to the front of `items`, and reports how many there were.
-`items` is borrowed mutably and rewritten; `predicate` is called once per element. Everything before the reported
-index satisfies the predicate and everything from it on does not.
-Order within each group is _not_ preserved: this exchanges elements from both ends inward, which is what keeps it
-to one pass and no scratch storage. A caller that needs the original order within each group needs a stable
-partition, which needs somewhere to put things.
-Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.
+`items` is borrowed mutably and rewritten; `predicate` is called once per element. Everything before the
+reported index satisfies the predicate and everything from it on does not. Order within each group is _not_
+preserved: this exchanges elements from both ends inward, which is what keeps it to one pass and no scratch
+storage. A caller that needs the original order within each group needs a stable partition, which needs
+somewhere to put things. Cannot fail. Runs in time proportional to the length and allocates nothing beyond
+whatever `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L209)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L212)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -324,7 +327,7 @@ Cannot fail. Runs in time proportional to the length and allocates nothing beyon
 <h2 id="partition-point"><code>PartitionPoint&lt;T&gt;</code></h2>
 
 ```rux
-pub func PartitionPoint<T>(
+pub func PartitionPoint<T: Copyable>(
     items: T[..],
     predicate: func(T) -> bool
 ) -> uint
@@ -338,13 +341,13 @@ A slice that is not partitioned this way does not fail; it answers, and the answ
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L237)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L240)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 

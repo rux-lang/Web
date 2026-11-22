@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Find.rux
-  line: 201
+  line: 202
 seo:
   title: "Comparing slices — Algorithms API"
   description: "Element-by-element equality, the first difference and lexicographic order between two slices."
@@ -33,7 +33,7 @@ equal for their whole common length — so two slices of different lengths that 
 the shorter length, and two identical slices report `none`.
 Cannot fail. Runs in time proportional to the shorter length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L201)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L202)
 
 **Type parameters**
 
@@ -61,7 +61,7 @@ Both are borrowed and read. Different lengths are never equal, and two empty sli
 pointers hold.
 Cannot fail. Runs in time proportional to the shorter length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L222)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L223)
 
 **Type parameters**
 
@@ -92,7 +92,7 @@ Requires `<` and `==` on the element type. Use [`CompareBy`](/docs/api/algorithm
 wanted order is not its own.
 Cannot fail. Runs in time proportional to the shorter length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L239)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L240)
 
 **Type parameters**
 
@@ -120,12 +120,12 @@ pub func CompareBy<T>(
 ```
 
 How `left` orders against `right`, with `compare` deciding each pair.
-Both slices are borrowed and read; `compare` is called at most once per position of the shorter one. Lexicographic
-exactly as [`Compare`](/docs/api/algorithms/comparing#compare) is, and the way to order a sequence whose elements have no `<` of their own — or to order it
-by something other than their own.
-Cannot fail. Runs in time proportional to the shorter length and allocates nothing beyond whatever `compare` does.
+Both slices are borrowed and read; `compare` is called at most once per position of the shorter one.
+Lexicographic exactly as [`Compare`](/docs/api/algorithms/comparing#compare) is, and the way to order a sequence whose elements have no `<` of their own —
+or to order it by something other than their own. Cannot fail. Runs in time proportional to the shorter length
+and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L265)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L266)
 
 **Type parameters**
 

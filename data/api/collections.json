@@ -134,7 +134,7 @@
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "A fixed-length run of elements on storage this array owns.",
-        "markdown": "A fixed-length run of elements on storage this array owns.\nMove-only: it owns its elements and storage, prohibits copying, and destroys both with `~Array`.",
+        "markdown": "A fixed-length run of elements on storage this array owns.\nMove-only: it owns its elements and storage, prohibits copying, and destroys both in its destructor.",
         "typeParams": [{ "name": "T", "markdown": "the element type" }],
         "params": [],
         "returns": null,
@@ -241,7 +241,7 @@
         {
           "kind": "associated",
           "name": "FromSlice",
-          "line": 63,
+          "line": 69,
           "signature": "pub func FromSlice(allocator: Allocator, items: T[..]) -> Array<T>",
           "typeParams": [],
           "params": [
@@ -279,7 +279,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 85,
+          "line": 91,
           "signature": "pub func Clone(&self) -> Array<T>",
           "typeParams": [],
           "params": [],
@@ -311,7 +311,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 93,
+          "line": 99,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -343,7 +343,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 101,
+          "line": 107,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -375,7 +375,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 111,
+          "line": 117,
           "signature": "pub func Get(&self, index: uint) -> T?",
           "typeParams": [],
           "params": [{ "name": "index", "type": "uint" }],
@@ -407,7 +407,7 @@
         {
           "kind": "method",
           "name": "At",
-          "line": 123,
+          "line": 129,
           "signature": "pub func At(&self, index: uint) -> &T?",
           "typeParams": [],
           "params": [{ "name": "index", "type": "uint" }],
@@ -439,7 +439,7 @@
         {
           "kind": "method",
           "name": "AtMutable",
-          "line": 134,
+          "line": 140,
           "signature": "pub func AtMutable(&var self, index: uint) -> &var T?",
           "typeParams": [],
           "params": [{ "name": "index", "type": "uint" }],
@@ -471,8 +471,8 @@
         {
           "kind": "method",
           "name": "Set",
-          "line": 148,
-          "signature": "pub func Set(&var self, index: uint, value: T) throws CollectionError",
+          "line": 154,
+          "signature": "pub func Set(&var self, index: uint, value: T) -> !CollectionError",
           "typeParams": [],
           "params": [
             { "name": "index", "type": "uint" },
@@ -509,8 +509,8 @@
         {
           "kind": "method",
           "name": "Replace",
-          "line": 168,
-          "signature": "pub func Replace(&var self, index: uint, value: T) -> T throws CollectionError",
+          "line": 174,
+          "signature": "pub func Replace(&var self, index: uint, value: T) -> T ! CollectionError",
           "typeParams": [],
           "params": [
             { "name": "index", "type": "uint" },
@@ -547,7 +547,7 @@
         {
           "kind": "method",
           "name": "AsSlice",
-          "line": 184,
+          "line": 190,
           "signature": "pub func AsSlice(&self) -> T[..]",
           "typeParams": [],
           "params": [],
@@ -579,7 +579,7 @@
         {
           "kind": "method",
           "name": "AsMutableSlice",
-          "line": 195,
+          "line": 201,
           "signature": "pub func AsMutableSlice(&var self) -> var T[..]",
           "typeParams": [],
           "params": [],
@@ -611,7 +611,7 @@
         {
           "kind": "method",
           "name": "Iterate",
-          "line": 204,
+          "line": 210,
           "signature": "pub func Iterate(&self) -> ValueIterator<T>",
           "typeParams": [],
           "params": [],
@@ -643,7 +643,7 @@
         {
           "kind": "method",
           "name": "References",
-          "line": 212,
+          "line": 218,
           "signature": "pub func References(&self) -> ReferenceIterator<T>",
           "typeParams": [],
           "params": [],
@@ -675,7 +675,7 @@
         {
           "kind": "method",
           "name": "MutableReferences",
-          "line": 221,
+          "line": 227,
           "signature": "pub func MutableReferences(&var self) -> MutableReferenceIterator<T>",
           "typeParams": [],
           "params": [],
@@ -706,9 +706,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Array",
-          "line": 230,
-          "signature": "func ~Array(&var self)",
+          "name": "~",
+          "line": 236,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Array<T>",
@@ -808,10 +808,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "BitSet",
+          "kind": "associated",
+          "name": "New",
           "line": 24,
-          "signature": "pub func BitSet(allocator: Allocator) -> BitSet",
+          "signature": "pub func New(allocator: Allocator) -> BitSet",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -1340,85 +1340,8 @@
           ]
         }
       ],
-      "members": [
-        {
-          "kind": "method",
-          "name": "WriteDisplay",
-          "line": 265,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&CollectionError",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Display",
-          "public": true,
-          "doc": {
-            "summary": "Writes the description of why an operation did not happen, or `no error` for success.",
-            "markdown": "Writes the description of why an operation did not happen, or `no error` for success.\nThe descriptions are stable. They are not a parsing contract: a program branches on the case.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the whole description was accepted",
-            "see": ["https://rux-lang.dev/docs/api/collections/collection-error#write-display"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "WriteDebug",
-          "line": 281,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&CollectionError",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Debug",
-          "public": true,
-          "doc": {
-            "summary": "Names the case, qualified by its type: `CollectionError::IndexOutOfRange`.",
-            "markdown": "Names the case, qualified by its type: `CollectionError::IndexOutOfRange`.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the whole name was accepted",
-            "see": ["https://rux-lang.dev/docs/api/collections/collection-error#write-debug"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        }
-      ],
-      "implements": ["Display", "Debug"],
+      "members": [],
+      "implements": [],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",
@@ -1432,11 +1355,11 @@
     },
     {
       "kind": "function",
-      "name": "CompareUint",
-      "displayName": "CompareUint",
+      "name": "Comparing::CompareUint",
+      "displayName": "Comparing::CompareUint",
       "module": "Comparing",
       "source": "Src/Comparing.rux",
-      "line": 19,
+      "line": 20,
       "signature": "pub func CompareUint(left: uint, right: uint) -> Ordering",
       "typeParams": [],
       "doc": {
@@ -1470,11 +1393,11 @@
     },
     {
       "kind": "function",
-      "name": "CompareUint64",
-      "displayName": "CompareUint64",
+      "name": "Comparing::CompareUint64",
+      "displayName": "Comparing::CompareUint64",
       "module": "Comparing",
       "source": "Src/Comparing.rux",
-      "line": 30,
+      "line": 31,
       "signature": "pub func CompareUint64(left: uint64, right: uint64) -> Ordering",
       "typeParams": [],
       "doc": {
@@ -1508,11 +1431,11 @@
     },
     {
       "kind": "function",
-      "name": "CompareUint32",
-      "displayName": "CompareUint32",
+      "name": "Comparing::CompareUint32",
+      "displayName": "Comparing::CompareUint32",
       "module": "Comparing",
       "source": "Src/Comparing.rux",
-      "line": 41,
+      "line": 42,
       "signature": "pub func CompareUint32(left: uint32, right: uint32) -> Ordering",
       "typeParams": [],
       "doc": {
@@ -1546,11 +1469,11 @@
     },
     {
       "kind": "function",
-      "name": "CompareInt64",
-      "displayName": "CompareInt64",
+      "name": "Comparing::CompareInt64",
+      "displayName": "Comparing::CompareInt64",
       "module": "Comparing",
       "source": "Src/Comparing.rux",
-      "line": 53,
+      "line": 54,
       "signature": "pub func CompareInt64(left: int64, right: int64) -> Ordering",
       "typeParams": [],
       "doc": {
@@ -1584,11 +1507,11 @@
     },
     {
       "kind": "function",
-      "name": "CompareInt32",
-      "displayName": "CompareInt32",
+      "name": "Comparing::CompareInt32",
+      "displayName": "Comparing::CompareInt32",
       "module": "Comparing",
       "source": "Src/Comparing.rux",
-      "line": 64,
+      "line": 65,
       "signature": "pub func CompareInt32(left: int32, right: int32) -> Ordering",
       "typeParams": [],
       "doc": {
@@ -1622,11 +1545,11 @@
     },
     {
       "kind": "function",
-      "name": "CompareChar8",
-      "displayName": "CompareChar8",
+      "name": "Comparing::CompareChar8",
+      "displayName": "Comparing::CompareChar8",
       "module": "Comparing",
       "source": "Src/Comparing.rux",
-      "line": 77,
+      "line": 78,
       "signature": "pub func CompareChar8(left: char8, right: char8) -> Ordering",
       "typeParams": [],
       "doc": {
@@ -1660,11 +1583,11 @@
     },
     {
       "kind": "function",
-      "name": "CompareSlice",
-      "displayName": "CompareSlice",
+      "name": "Comparing::CompareSlice",
+      "displayName": "Comparing::CompareSlice",
       "module": "Comparing",
       "source": "Src/Comparing.rux",
-      "line": 91,
+      "line": 92,
       "signature": "pub func CompareSlice(left: char8[..], right: char8[..]) -> Ordering",
       "typeParams": [],
       "doc": {
@@ -1742,7 +1665,7 @@
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "A double-ended queue over a circular buffer.",
-        "markdown": "A double-ended queue over a circular buffer.\nMove-only: it owns its elements and storage, prohibits copying, and destroys both with `~Deque`.",
+        "markdown": "A double-ended queue over a circular buffer.\nMove-only: it owns its elements and storage, prohibits copying, and destroys both in its destructor.",
         "typeParams": [{ "name": "T", "markdown": "the element type" }],
         "params": [],
         "returns": null,
@@ -1841,10 +1764,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Deque",
+          "kind": "associated",
+          "name": "New",
           "line": 51,
-          "signature": "pub func Deque(allocator: Allocator) -> Deque<T>",
+          "signature": "pub func New(allocator: Allocator) -> Deque<T>",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -2174,9 +2097,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Deque",
+          "name": "~",
           "line": 248,
-          "signature": "func ~Deque(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Deque<T>",
@@ -2496,7 +2419,7 @@
           "kind": "method",
           "name": "Set",
           "line": 378,
-          "signature": "pub func Set(&var self, index: uint, value: T) throws CollectionError",
+          "signature": "pub func Set(&var self, index: uint, value: T) -> !CollectionError",
           "typeParams": [],
           "params": [
             { "name": "index", "type": "uint" },
@@ -2534,7 +2457,7 @@
           "kind": "method",
           "name": "Replace",
           "line": 399,
-          "signature": "pub func Replace(&var self, index: uint, value: T) -> T throws CollectionError",
+          "signature": "pub func Replace(&var self, index: uint, value: T) -> T ! CollectionError",
           "typeParams": [],
           "params": [
             { "name": "index", "type": "uint" },
@@ -2811,10 +2734,10 @@
       "displayName": "HashMap<K, V>",
       "module": "HashMap",
       "source": "Src/HashMap.rux",
-      "line": 26,
-      "signature": "pub struct HashMap<K, V>",
+      "line": 28,
+      "signature": "pub struct HashMap<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
@@ -2835,7 +2758,7 @@
           "name": "table",
           "type": "Table<K, V>",
           "public": false,
-          "line": 28,
+          "line": 30,
           "doc": "The slots, the probing and the entries.",
           "targets": [
             "windows-x86_64",
@@ -2852,7 +2775,7 @@
           "name": "hash",
           "type": "func(K, uint64, uint64) -> uint64",
           "public": false,
-          "line": 30,
+          "line": 32,
           "doc": "What a key's hash is, given the table's seed.",
           "targets": [
             "windows-x86_64",
@@ -2869,7 +2792,7 @@
           "name": "equals",
           "type": "func(K, K) -> bool",
           "public": false,
-          "line": 32,
+          "line": 34,
           "doc": "Whether two keys are the same key.",
           "targets": [
             "windows-x86_64",
@@ -2887,10 +2810,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "HashMap",
-          "line": 44,
-          "signature": "pub func HashMap(allocator: Allocator, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> HashMap<K, V>",
+          "kind": "associated",
+          "name": "New",
+          "line": 46,
+          "signature": "pub func New(allocator: Allocator, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> HashMap<K, V>",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -2929,7 +2852,7 @@
         {
           "kind": "associated",
           "name": "WithSeed",
-          "line": 59,
+          "line": 61,
           "signature": "pub func WithSeed(allocator: Allocator, seed: TableSeed, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> HashMap<K, V>",
           "typeParams": [],
           "params": [
@@ -2971,7 +2894,7 @@
         {
           "kind": "associated",
           "name": "WithCapacity",
-          "line": 73,
+          "line": 75,
           "signature": "pub func WithCapacity(allocator: Allocator, capacity: uint, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> HashMap<K, V>",
           "typeParams": [],
           "params": [
@@ -3013,7 +2936,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 83,
+          "line": 85,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -3045,7 +2968,7 @@
         {
           "kind": "method",
           "name": "Capacity",
-          "line": 92,
+          "line": 94,
           "signature": "pub func Capacity(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -3077,7 +3000,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 99,
+          "line": 101,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -3109,7 +3032,7 @@
         {
           "kind": "method",
           "name": "ContainsKey",
-          "line": 109,
+          "line": 111,
           "signature": "pub func ContainsKey(&self, key: K) -> bool",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -3141,7 +3064,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 118,
+          "line": 120,
           "signature": "pub func Get(&self, key: K) -> V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -3173,7 +3096,7 @@
         {
           "kind": "method",
           "name": "Find",
-          "line": 131,
+          "line": 133,
           "signature": "pub func Find(&self, key: K) -> &V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -3205,7 +3128,7 @@
         {
           "kind": "method",
           "name": "FindMutable",
-          "line": 144,
+          "line": 146,
           "signature": "pub func FindMutable(&var self, key: K) -> &var V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -3237,7 +3160,7 @@
         {
           "kind": "method",
           "name": "Insert",
-          "line": 159,
+          "line": 161,
           "signature": "pub func Insert(&var self, key: K, value: V)",
           "typeParams": [],
           "params": [
@@ -3275,8 +3198,8 @@
         {
           "kind": "method",
           "name": "TryInsert",
-          "line": 171,
-          "signature": "pub func TryInsert(&var self, key: K, value: V) throws AllocError",
+          "line": 173,
+          "signature": "pub func TryInsert(&var self, key: K, value: V) -> !AllocError",
           "typeParams": [],
           "params": [
             { "name": "key", "type": "K" },
@@ -3313,7 +3236,7 @@
         {
           "kind": "method",
           "name": "Remove",
-          "line": 208,
+          "line": 210,
           "signature": "pub func Remove(&var self, key: K) -> V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -3345,7 +3268,7 @@
         {
           "kind": "method",
           "name": "Reserve",
-          "line": 225,
+          "line": 227,
           "signature": "pub func Reserve(&var self, additional: uint)",
           "typeParams": [],
           "params": [{ "name": "additional", "type": "uint" }],
@@ -3377,8 +3300,8 @@
         {
           "kind": "method",
           "name": "TryReserve",
-          "line": 234,
-          "signature": "pub func TryReserve(&var self, additional: uint) throws AllocError",
+          "line": 236,
+          "signature": "pub func TryReserve(&var self, additional: uint) -> !AllocError",
           "typeParams": [],
           "params": [{ "name": "additional", "type": "uint" }],
           "receiver": "&var HashMap<K, V>",
@@ -3409,7 +3332,7 @@
         {
           "kind": "method",
           "name": "ShrinkToFit",
-          "line": 242,
+          "line": 244,
           "signature": "pub func ShrinkToFit(&var self)",
           "typeParams": [],
           "params": [],
@@ -3441,7 +3364,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 249,
+          "line": 251,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -3473,7 +3396,7 @@
         {
           "kind": "method",
           "name": "NextEntry",
-          "line": 261,
+          "line": 263,
           "signature": "pub func NextEntry(&self, cursor: &var uint) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [{ "name": "cursor", "type": "&var uint" }],
@@ -3505,7 +3428,7 @@
         {
           "kind": "method",
           "name": "GetOrInsert",
-          "line": 287,
+          "line": 289,
           "signature": "pub func GetOrInsert(&var self, key: K, value: V) -> &var V",
           "typeParams": [],
           "params": [
@@ -3543,7 +3466,7 @@
         {
           "kind": "method",
           "name": "Replace",
-          "line": 311,
+          "line": 313,
           "signature": "pub func Replace(&var self, key: K, value: V) -> V?",
           "typeParams": [],
           "params": [
@@ -3581,7 +3504,7 @@
         {
           "kind": "method",
           "name": "RemoveEntry",
-          "line": 339,
+          "line": 341,
           "signature": "pub func RemoveEntry(&var self, key: K) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -3613,7 +3536,7 @@
         {
           "kind": "method",
           "name": "Iterate",
-          "line": 357,
+          "line": 359,
           "signature": "pub func Iterate(&self) -> HashMapIterator<K, V>",
           "typeParams": [],
           "params": [],
@@ -3645,7 +3568,7 @@
         {
           "kind": "method",
           "name": "IntoIterator",
-          "line": 374,
+          "line": 376,
           "signature": "pub func IntoIterator(self) -> HashMapIntoIterator<K, V>",
           "typeParams": [],
           "params": [],
@@ -3693,7 +3616,7 @@
       "displayName": "KeyValue<K, V>",
       "module": "HashMap",
       "source": "Src/HashMap.rux",
-      "line": 408,
+      "line": 389,
       "signature": "pub struct KeyValue<K, V>",
       "typeParams": [
         { "name": "K", "bounds": [] },
@@ -3717,7 +3640,7 @@
           "name": "key",
           "type": "K",
           "public": true,
-          "line": 410,
+          "line": 391,
           "doc": "The key the entry was stored under.",
           "targets": [
             "windows-x86_64",
@@ -3734,7 +3657,7 @@
           "name": "value",
           "type": "V",
           "public": true,
-          "line": 412,
+          "line": 393,
           "doc": "The value stored under it.",
           "targets": [
             "windows-x86_64",
@@ -3769,10 +3692,10 @@
       "displayName": "HashMapIterator<K, V>",
       "module": "HashMap",
       "source": "Src/HashMap.rux",
-      "line": 421,
-      "signature": "pub struct HashMapIterator<K, V>",
+      "line": 402,
+      "signature": "pub struct HashMapIterator<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
@@ -3793,7 +3716,7 @@
           "name": "keys",
           "type": "*K",
           "public": false,
-          "line": 423,
+          "line": 404,
           "doc": "Raw borrowed table storage. Kept raw because references cannot be fields.",
           "targets": [
             "windows-x86_64",
@@ -3810,7 +3733,7 @@
           "name": "values",
           "type": "*V",
           "public": false,
-          "line": 424,
+          "line": 405,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3827,7 +3750,7 @@
           "name": "states",
           "type": "*uint8",
           "public": false,
-          "line": 425,
+          "line": 406,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3844,7 +3767,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 426,
+          "line": 407,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3861,7 +3784,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 428,
+          "line": 409,
           "doc": "The slot to look at next.",
           "targets": [
             "windows-x86_64",
@@ -3881,7 +3804,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 436,
+          "line": 417,
           "signature": "pub func Next(&var self) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [],
@@ -3929,10 +3852,10 @@
       "displayName": "HashMapIntoIterator<K, V>",
       "module": "HashMap",
       "source": "Src/HashMap.rux",
-      "line": 460,
-      "signature": "pub struct HashMapIntoIterator<K, V>",
+      "line": 441,
+      "signature": "pub struct HashMapIntoIterator<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
@@ -3953,7 +3876,7 @@
           "name": "table",
           "type": "Table<K, V>",
           "public": false,
-          "line": 462,
+          "line": 443,
           "doc": "The table taken from the map.",
           "targets": [
             "windows-x86_64",
@@ -3970,7 +3893,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 464,
+          "line": 445,
           "doc": "The slot to look at next.",
           "targets": [
             "windows-x86_64",
@@ -3990,7 +3913,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 476,
+          "line": 457,
           "signature": "pub func Next(&var self) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [],
@@ -4038,9 +3961,9 @@
       "displayName": "HashSet<T>",
       "module": "HashSet",
       "source": "Src/HashSet.rux",
-      "line": 17,
-      "signature": "pub struct HashSet<T>",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 19,
+      "signature": "pub struct HashSet<T: Copyable>",
+      "typeParams": [{ "name": "T", "bounds": ["Copyable"] }],
       "doc": {
         "summary": "A hash table of distinct values.",
         "markdown": "A hash table of distinct values.\nMove-only: it owns its elements and its storage.",
@@ -4056,7 +3979,7 @@
           "name": "table",
           "type": "Table<T, ()>",
           "public": false,
-          "line": 19,
+          "line": 21,
           "doc": "The slots and the elements. The value side carries nothing, which is what makes this a set.",
           "targets": [
             "windows-x86_64",
@@ -4073,7 +3996,7 @@
           "name": "hash",
           "type": "func(T, uint64, uint64) -> uint64",
           "public": false,
-          "line": 21,
+          "line": 23,
           "doc": "What an element's hash is, given the table's seed.",
           "targets": [
             "windows-x86_64",
@@ -4090,7 +4013,7 @@
           "name": "equals",
           "type": "func(T, T) -> bool",
           "public": false,
-          "line": 23,
+          "line": 25,
           "doc": "Whether two elements are the same element.",
           "targets": [
             "windows-x86_64",
@@ -4108,10 +4031,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "HashSet",
-          "line": 33,
-          "signature": "pub func HashSet(allocator: Allocator, hash: func(T, uint64, uint64) -> uint64, equals: func(T, T) -> bool) -> HashSet<T>",
+          "kind": "associated",
+          "name": "New",
+          "line": 35,
+          "signature": "pub func New(allocator: Allocator, hash: func(T, uint64, uint64) -> uint64, equals: func(T, T) -> bool) -> HashSet<T>",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -4150,7 +4073,7 @@
         {
           "kind": "associated",
           "name": "WithSeed",
-          "line": 45,
+          "line": 47,
           "signature": "pub func WithSeed(allocator: Allocator, seed: TableSeed, hash: func(T, uint64, uint64) -> uint64, equals: func(T, T) -> bool) -> HashSet<T>",
           "typeParams": [],
           "params": [
@@ -4192,7 +4115,7 @@
         {
           "kind": "associated",
           "name": "WithCapacity",
-          "line": 57,
+          "line": 59,
           "signature": "pub func WithCapacity(allocator: Allocator, capacity: uint, hash: func(T, uint64, uint64) -> uint64, equals: func(T, T) -> bool) -> HashSet<T>",
           "typeParams": [],
           "params": [
@@ -4234,7 +4157,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 67,
+          "line": 69,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -4266,7 +4189,7 @@
         {
           "kind": "method",
           "name": "Capacity",
-          "line": 74,
+          "line": 76,
           "signature": "pub func Capacity(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -4298,7 +4221,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 81,
+          "line": 83,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -4330,7 +4253,7 @@
         {
           "kind": "method",
           "name": "Contains",
-          "line": 91,
+          "line": 93,
           "signature": "pub func Contains(&self, value: T) -> bool",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -4362,7 +4285,7 @@
         {
           "kind": "method",
           "name": "Insert",
-          "line": 102,
+          "line": 104,
           "signature": "pub func Insert(&var self, value: T) -> bool",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -4394,7 +4317,7 @@
         {
           "kind": "method",
           "name": "Remove",
-          "line": 122,
+          "line": 124,
           "signature": "pub func Remove(&var self, value: T) -> T?",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -4426,7 +4349,7 @@
         {
           "kind": "method",
           "name": "Reserve",
-          "line": 137,
+          "line": 139,
           "signature": "pub func Reserve(&var self, additional: uint)",
           "typeParams": [],
           "params": [{ "name": "additional", "type": "uint" }],
@@ -4458,7 +4381,7 @@
         {
           "kind": "method",
           "name": "ShrinkToFit",
-          "line": 144,
+          "line": 146,
           "signature": "pub func ShrinkToFit(&var self)",
           "typeParams": [],
           "params": [],
@@ -4490,7 +4413,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 150,
+          "line": 152,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -4522,7 +4445,7 @@
         {
           "kind": "method",
           "name": "NextElement",
-          "line": 160,
+          "line": 162,
           "signature": "pub func NextElement(&self, cursor: &var uint) -> T?",
           "typeParams": [],
           "params": [{ "name": "cursor", "type": "&var uint" }],
@@ -4554,7 +4477,7 @@
         {
           "kind": "method",
           "name": "Iterate",
-          "line": 180,
+          "line": 182,
           "signature": "pub func Iterate(&self) -> HashSetIterator<T>",
           "typeParams": [],
           "params": [],
@@ -4586,7 +4509,7 @@
         {
           "kind": "method",
           "name": "IntoIterator",
-          "line": 194,
+          "line": 196,
           "signature": "pub func IntoIterator(self) -> HashSetIntoIterator<T>",
           "typeParams": [],
           "params": [],
@@ -4618,7 +4541,7 @@
         {
           "kind": "method",
           "name": "IsSubsetOf",
-          "line": 227,
+          "line": 211,
           "signature": "pub func IsSubsetOf(&self, other: &HashSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4650,7 +4573,7 @@
         {
           "kind": "method",
           "name": "IsSupersetOf",
-          "line": 249,
+          "line": 233,
           "signature": "pub func IsSupersetOf(&self, other: &HashSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4682,7 +4605,7 @@
         {
           "kind": "method",
           "name": "IsDisjointFrom",
-          "line": 261,
+          "line": 245,
           "signature": "pub func IsDisjointFrom(&self, other: &HashSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4714,7 +4637,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 284,
+          "line": 268,
           "signature": "pub func Equals(&self, other: &HashSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4746,7 +4669,7 @@
         {
           "kind": "method",
           "name": "UnionWith",
-          "line": 297,
+          "line": 281,
           "signature": "pub func UnionWith(&var self, other: &HashSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4778,7 +4701,7 @@
         {
           "kind": "method",
           "name": "IntersectWith",
-          "line": 322,
+          "line": 306,
           "signature": "pub func IntersectWith(&var self, other: &HashSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4810,7 +4733,7 @@
         {
           "kind": "method",
           "name": "Subtract",
-          "line": 356,
+          "line": 340,
           "signature": "pub func Subtract(&var self, other: &HashSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4842,7 +4765,7 @@
         {
           "kind": "method",
           "name": "SymmetricDifferenceWith",
-          "line": 388,
+          "line": 372,
           "signature": "pub func SymmetricDifferenceWith(&var self, other: &HashSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&HashSet<T>" }],
@@ -4874,7 +4797,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 428,
+          "line": 412,
           "signature": "pub func Clone(&self) -> HashSet<T>",
           "typeParams": [],
           "params": [],
@@ -4922,9 +4845,9 @@
       "displayName": "HashSetIterator<T>",
       "module": "HashSet",
       "source": "Src/HashSet.rux",
-      "line": 451,
-      "signature": "pub struct HashSetIterator<T>",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 435,
+      "signature": "pub struct HashSetIterator<T: Copyable>",
+      "typeParams": [{ "name": "T", "bounds": ["Copyable"] }],
       "doc": {
         "summary": "An iterator over the elements of a set, by copy.",
         "markdown": "An iterator over the elements of a set, by copy.\nBorrows the set, so the set must outlive it and must not be inserted into or removed from while it is alive.",
@@ -4940,7 +4863,7 @@
           "name": "keys",
           "type": "*T",
           "public": false,
-          "line": 453,
+          "line": 437,
           "doc": "Raw borrowed table storage. Kept raw because references cannot be fields.",
           "targets": [
             "windows-x86_64",
@@ -4957,7 +4880,7 @@
           "name": "states",
           "type": "*uint8",
           "public": false,
-          "line": 454,
+          "line": 438,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -4974,7 +4897,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 455,
+          "line": 439,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -4991,7 +4914,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 457,
+          "line": 441,
           "doc": "The slot to look at next.",
           "targets": [
             "windows-x86_64",
@@ -5011,7 +4934,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 466,
+          "line": 450,
           "signature": "pub func Next(&var self) -> T?",
           "typeParams": [],
           "params": [],
@@ -5059,9 +4982,9 @@
       "displayName": "HashSetIntoIterator<T>",
       "module": "HashSet",
       "source": "Src/HashSet.rux",
-      "line": 487,
-      "signature": "pub struct HashSetIntoIterator<T>",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 471,
+      "signature": "pub struct HashSetIntoIterator<T: Copyable>",
+      "typeParams": [{ "name": "T", "bounds": ["Copyable"] }],
       "doc": {
         "summary": "An iterator that takes a set apart, yielding each element by value.",
         "markdown": "An iterator that takes a set apart, yielding each element by value.\nMove-only: it owns the storage the set owned. Whatever is left when its life ends is destroyed with it.",
@@ -5077,7 +5000,7 @@
           "name": "table",
           "type": "Table<T, ()>",
           "public": false,
-          "line": 489,
+          "line": 473,
           "doc": "The table taken from the set.",
           "targets": [
             "windows-x86_64",
@@ -5094,7 +5017,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 491,
+          "line": 475,
           "doc": "The slot to look at next.",
           "targets": [
             "windows-x86_64",
@@ -5114,7 +5037,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 503,
+          "line": 487,
           "signature": "pub func Next(&var self) -> T?",
           "typeParams": [],
           "params": [],
@@ -5158,11 +5081,11 @@
     },
     {
       "kind": "function",
-      "name": "HashUint",
-      "displayName": "HashUint",
+      "name": "Hashing::HashUint",
+      "displayName": "Hashing::HashUint",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 26,
+      "line": 27,
       "signature": "pub func HashUint(value: uint, low: uint64, high: uint64) -> uint64",
       "typeParams": [],
       "doc": {
@@ -5197,11 +5120,11 @@
     },
     {
       "kind": "function",
-      "name": "HashUint64",
-      "displayName": "HashUint64",
+      "name": "Hashing::HashUint64",
+      "displayName": "Hashing::HashUint64",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 38,
+      "line": 39,
       "signature": "pub func HashUint64(value: uint64, low: uint64, high: uint64) -> uint64",
       "typeParams": [],
       "doc": {
@@ -5236,11 +5159,11 @@
     },
     {
       "kind": "function",
-      "name": "HashUint32",
-      "displayName": "HashUint32",
+      "name": "Hashing::HashUint32",
+      "displayName": "Hashing::HashUint32",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 50,
+      "line": 51,
       "signature": "pub func HashUint32(value: uint32, low: uint64, high: uint64) -> uint64",
       "typeParams": [],
       "doc": {
@@ -5275,11 +5198,11 @@
     },
     {
       "kind": "function",
-      "name": "HashInt64",
-      "displayName": "HashInt64",
+      "name": "Hashing::HashInt64",
+      "displayName": "Hashing::HashInt64",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 62,
+      "line": 63,
       "signature": "pub func HashInt64(value: int64, low: uint64, high: uint64) -> uint64",
       "typeParams": [],
       "doc": {
@@ -5314,11 +5237,11 @@
     },
     {
       "kind": "function",
-      "name": "HashInt32",
-      "displayName": "HashInt32",
+      "name": "Hashing::HashInt32",
+      "displayName": "Hashing::HashInt32",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 74,
+      "line": 75,
       "signature": "pub func HashInt32(value: int32, low: uint64, high: uint64) -> uint64",
       "typeParams": [],
       "doc": {
@@ -5353,11 +5276,11 @@
     },
     {
       "kind": "function",
-      "name": "HashChar8",
-      "displayName": "HashChar8",
+      "name": "Hashing::HashChar8",
+      "displayName": "Hashing::HashChar8",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 86,
+      "line": 87,
       "signature": "pub func HashChar8(value: char8, low: uint64, high: uint64) -> uint64",
       "typeParams": [],
       "doc": {
@@ -5392,11 +5315,11 @@
     },
     {
       "kind": "function",
-      "name": "HashSlice",
-      "displayName": "HashSlice",
+      "name": "Hashing::HashSlice",
+      "displayName": "Hashing::HashSlice",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 101,
+      "line": 102,
       "signature": "pub func HashSlice(text: char8[..], low: uint64, high: uint64) -> uint64",
       "typeParams": [],
       "doc": {
@@ -5431,11 +5354,11 @@
     },
     {
       "kind": "function",
-      "name": "EqualsUint",
-      "displayName": "EqualsUint",
+      "name": "Hashing::EqualsUint",
+      "displayName": "Hashing::EqualsUint",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 111,
+      "line": 112,
       "signature": "pub func EqualsUint(left: uint, right: uint) -> bool",
       "typeParams": [],
       "doc": {
@@ -5469,11 +5392,11 @@
     },
     {
       "kind": "function",
-      "name": "EqualsUint64",
-      "displayName": "EqualsUint64",
+      "name": "Hashing::EqualsUint64",
+      "displayName": "Hashing::EqualsUint64",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 120,
+      "line": 121,
       "signature": "pub func EqualsUint64(left: uint64, right: uint64) -> bool",
       "typeParams": [],
       "doc": {
@@ -5507,11 +5430,11 @@
     },
     {
       "kind": "function",
-      "name": "EqualsUint32",
-      "displayName": "EqualsUint32",
+      "name": "Hashing::EqualsUint32",
+      "displayName": "Hashing::EqualsUint32",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 129,
+      "line": 130,
       "signature": "pub func EqualsUint32(left: uint32, right: uint32) -> bool",
       "typeParams": [],
       "doc": {
@@ -5545,11 +5468,11 @@
     },
     {
       "kind": "function",
-      "name": "EqualsInt64",
-      "displayName": "EqualsInt64",
+      "name": "Hashing::EqualsInt64",
+      "displayName": "Hashing::EqualsInt64",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 138,
+      "line": 139,
       "signature": "pub func EqualsInt64(left: int64, right: int64) -> bool",
       "typeParams": [],
       "doc": {
@@ -5583,11 +5506,11 @@
     },
     {
       "kind": "function",
-      "name": "EqualsInt32",
-      "displayName": "EqualsInt32",
+      "name": "Hashing::EqualsInt32",
+      "displayName": "Hashing::EqualsInt32",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 147,
+      "line": 148,
       "signature": "pub func EqualsInt32(left: int32, right: int32) -> bool",
       "typeParams": [],
       "doc": {
@@ -5621,11 +5544,11 @@
     },
     {
       "kind": "function",
-      "name": "EqualsChar8",
-      "displayName": "EqualsChar8",
+      "name": "Hashing::EqualsChar8",
+      "displayName": "Hashing::EqualsChar8",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 156,
+      "line": 157,
       "signature": "pub func EqualsChar8(left: char8, right: char8) -> bool",
       "typeParams": [],
       "doc": {
@@ -5659,11 +5582,11 @@
     },
     {
       "kind": "function",
-      "name": "EqualsSlice",
-      "displayName": "EqualsSlice",
+      "name": "Hashing::EqualsSlice",
+      "displayName": "Hashing::EqualsSlice",
       "module": "Hashing",
       "source": "Src/Hashing.rux",
-      "line": 169,
+      "line": 170,
       "signature": "pub func EqualsSlice(left: char8[..], right: char8[..]) -> bool",
       "typeParams": [],
       "doc": {
@@ -5771,10 +5694,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "ValueIterator",
+          "kind": "associated",
+          "name": "New",
           "line": 40,
-          "signature": "pub func ValueIterator(items: T[..]) -> ValueIterator<T>",
+          "signature": "pub func New(items: T[..]) -> ValueIterator<T>",
           "typeParams": [],
           "params": [{ "name": "items", "type": "T[..]" }],
           "receiver": null,
@@ -5923,10 +5846,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "ReferenceIterator",
+          "kind": "associated",
+          "name": "New",
           "line": 84,
-          "signature": "pub func ReferenceIterator(items: T[..]) -> ReferenceIterator<T>",
+          "signature": "pub func New(items: T[..]) -> ReferenceIterator<T>",
           "typeParams": [],
           "params": [{ "name": "items", "type": "T[..]" }],
           "receiver": null,
@@ -6075,10 +5998,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "MutableReferenceIterator",
+          "kind": "associated",
+          "name": "New",
           "line": 126,
-          "signature": "pub func MutableReferenceIterator(items: var T[..]) -> MutableReferenceIterator<T>",
+          "signature": "pub func New(items: var T[..]) -> MutableReferenceIterator<T>",
           "typeParams": [],
           "params": [{ "name": "items", "type": "var T[..]" }],
           "receiver": null,
@@ -6157,10 +6080,10 @@
       "displayName": "LruCache<K, V>",
       "module": "LruCache",
       "source": "Src/LruCache.rux",
-      "line": 24,
-      "signature": "pub struct LruCache<K, V>",
+      "line": 25,
+      "signature": "pub struct LruCache<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
@@ -6181,7 +6104,7 @@
           "name": "entries",
           "type": "Vector<CacheEntry<K, V>>",
           "public": false,
-          "line": 25,
+          "line": 26,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -6198,7 +6121,7 @@
           "name": "index",
           "type": "HashMap<K, uint>",
           "public": false,
-          "line": 26,
+          "line": 27,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -6215,7 +6138,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 27,
+          "line": 28,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -6232,7 +6155,7 @@
           "name": "newest",
           "type": "uint",
           "public": false,
-          "line": 28,
+          "line": 29,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -6249,7 +6172,7 @@
           "name": "oldest",
           "type": "uint",
           "public": false,
-          "line": 29,
+          "line": 30,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -6267,10 +6190,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "LruCache",
-          "line": 40,
-          "signature": "pub func LruCache(allocator: Allocator, capacity: uint, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> LruCache<K, V>",
+          "kind": "associated",
+          "name": "New",
+          "line": 41,
+          "signature": "pub func New(allocator: Allocator, capacity: uint, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> LruCache<K, V>",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -6311,7 +6234,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 54,
+          "line": 55,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -6343,7 +6266,7 @@
         {
           "kind": "method",
           "name": "Capacity",
-          "line": 61,
+          "line": 62,
           "signature": "pub func Capacity(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -6375,7 +6298,7 @@
         {
           "kind": "method",
           "name": "Contains",
-          "line": 69,
+          "line": 70,
           "signature": "pub func Contains(&self, key: K) -> bool",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -6407,7 +6330,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 96,
+          "line": 97,
           "signature": "pub func Get(&var self, key: K) -> V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -6439,7 +6362,7 @@
         {
           "kind": "method",
           "name": "Peek",
-          "line": 109,
+          "line": 110,
           "signature": "pub func Peek(&self, key: K) -> V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -6471,7 +6394,7 @@
         {
           "kind": "method",
           "name": "Put",
-          "line": 122,
+          "line": 123,
           "signature": "pub func Put(&var self, key: K, value: V) -> K?",
           "typeParams": [],
           "params": [
@@ -6509,7 +6432,7 @@
         {
           "kind": "method",
           "name": "Remove",
-          "line": 170,
+          "line": 171,
           "signature": "pub func Remove(&var self, key: K) -> V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -6541,7 +6464,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 191,
+          "line": 192,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -6573,7 +6496,7 @@
         {
           "kind": "method",
           "name": "KeysByRecency",
-          "line": 202,
+          "line": 203,
           "signature": "pub func KeysByRecency(&self, into: var K[..]) -> uint",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var K[..]" }],
@@ -6617,12 +6540,12 @@
     },
     {
       "kind": "function",
-      "name": "WriteVectorDebug",
-      "displayName": "WriteVectorDebug<T>",
+      "name": "Presentation::WriteVectorDebug",
+      "displayName": "Presentation::WriteVectorDebug<T>",
       "module": "Presentation",
       "source": "Src/Presentation.rux",
-      "line": 64,
-      "signature": "pub func WriteVectorDebug<T: Debug>(writer: &var TextWriter, value: &Vector<T>, spec: FormatSpec) throws FormatError",
+      "line": 68,
+      "signature": "pub func WriteVectorDebug<T: Debug>(writer: &var TextWriter, value: &Vector<T>, spec: FormatSpec) -> !FormatError",
       "typeParams": [{ "name": "T", "bounds": ["Debug"] }],
       "doc": {
         "summary": "Writes a borrowed vector as `[first, second, third]`.",
@@ -6656,12 +6579,12 @@
     },
     {
       "kind": "function",
-      "name": "WriteArrayDebug",
-      "displayName": "WriteArrayDebug<T>",
+      "name": "Presentation::WriteArrayDebug",
+      "displayName": "Presentation::WriteArrayDebug<T>",
       "module": "Presentation",
       "source": "Src/Presentation.rux",
-      "line": 80,
-      "signature": "pub func WriteArrayDebug<T: Debug>(writer: &var TextWriter, value: &Array<T>, spec: FormatSpec) throws FormatError",
+      "line": 84,
+      "signature": "pub func WriteArrayDebug<T: Debug>(writer: &var TextWriter, value: &Array<T>, spec: FormatSpec) -> !FormatError",
       "typeParams": [{ "name": "T", "bounds": ["Debug"] }],
       "doc": {
         "summary": "Writes a borrowed array as `[first, second, third]`.",
@@ -6695,12 +6618,12 @@
     },
     {
       "kind": "function",
-      "name": "WriteDequeDebug",
-      "displayName": "WriteDequeDebug<T>",
+      "name": "Presentation::WriteDequeDebug",
+      "displayName": "Presentation::WriteDequeDebug<T>",
       "module": "Presentation",
       "source": "Src/Presentation.rux",
-      "line": 99,
-      "signature": "pub func WriteDequeDebug<T: Debug>(writer: &var TextWriter, value: &Deque<T>, spec: FormatSpec) throws FormatError",
+      "line": 103,
+      "signature": "pub func WriteDequeDebug<T: Debug>(writer: &var TextWriter, value: &Deque<T>, spec: FormatSpec) -> !FormatError",
       "typeParams": [{ "name": "T", "bounds": ["Debug"] }],
       "doc": {
         "summary": "Writes a borrowed deque as `[front, ..., back]`, front element first.",
@@ -6734,19 +6657,19 @@
     },
     {
       "kind": "function",
-      "name": "WriteHashMapDebug",
-      "displayName": "WriteHashMapDebug<K, V>",
+      "name": "Presentation::WriteHashMapDebug",
+      "displayName": "Presentation::WriteHashMapDebug<K, V>",
       "module": "Presentation",
       "source": "Src/Presentation.rux",
-      "line": 126,
-      "signature": "pub func WriteHashMapDebug<K: Debug, V: Debug>(writer: &var TextWriter, value: &HashMap<K, V>, spec: FormatSpec) throws FormatError",
+      "line": 129,
+      "signature": "pub func WriteHashMapDebug<K: Debug + Copyable, V: Debug>(writer: &var TextWriter, value: &HashMap<K, V>, spec: FormatSpec) -> !FormatError",
       "typeParams": [
-        { "name": "K", "bounds": ["Debug"] },
+        { "name": "K", "bounds": ["Debug", "Copyable"] },
         { "name": "V", "bounds": ["Debug"] }
       ],
       "doc": {
         "summary": "Writes a borrowed hash map as `{key: value, key: value}`.",
-        "markdown": "Writes a borrowed hash map as `{key: value, key: value}`.\nAn empty map is `{}`. Braces rather than brackets, because a map is not a run of elements and reading its\nrendering as one would be reading it wrongly.\nThe order is the table's, which follows from the seed the map was made with and from every insertion and removal\nsince — so it is not the insertion order, it does not hold between two maps with the same entries, and it changes\nbetween runs of the same program. Nothing here sorts, since that would need an ordering on the key that a hash\nmap does not have. `TreeMap` is the container whose rendering is stable.\nEvery key and value is shown through a borrow of it, so a map of move-only entries is shown without taking one\nout. `spec` is handed to each of them unchanged.\nReports whatever the writer or an entry's implementation reported, stopping at the first refusal.",
+        "markdown": "Writes a borrowed hash map as `{key: value, key: value}`.\nAn empty map is `{}`. Braces rather than brackets, because a map is not a run of elements and reading its\nrendering as one would be reading it wrongly. The order is the table's, which follows from the seed the map was\nmade with and from every insertion and removal since — so it is not the insertion order, it does not hold\nbetween two maps with the same entries, and it changes between runs of the same program. Nothing here sorts,\nsince that would need an ordering on the key that a hash map does not have. `TreeMap` is the container whose\nrendering is stable. Every key and value is shown through a borrow of it, so a map of move-only entries is shown\nwithout taking one out. `spec` is handed to each of them unchanged. Reports whatever the writer or an entry's\nimplementation reported, stopping at the first refusal.",
         "typeParams": [
           { "name": "K", "markdown": "the key type, which must know how to show itself" },
           { "name": "V", "markdown": "the value type, which must know how to show itself" }
@@ -6779,13 +6702,13 @@
     },
     {
       "kind": "function",
-      "name": "WriteHashSetDebug",
-      "displayName": "WriteHashSetDebug<T>",
+      "name": "Presentation::WriteHashSetDebug",
+      "displayName": "Presentation::WriteHashSetDebug<T>",
       "module": "Presentation",
       "source": "Src/Presentation.rux",
-      "line": 161,
-      "signature": "pub func WriteHashSetDebug<T: Debug>(writer: &var TextWriter, value: &HashSet<T>, spec: FormatSpec) throws FormatError",
-      "typeParams": [{ "name": "T", "bounds": ["Debug"] }],
+      "line": 164,
+      "signature": "pub func WriteHashSetDebug<T: Debug + Copyable>(writer: &var TextWriter, value: &HashSet<T>, spec: FormatSpec) -> !FormatError",
+      "typeParams": [{ "name": "T", "bounds": ["Debug", "Copyable"] }],
       "doc": {
         "summary": "Writes a borrowed hash set as `{first, second, third}`.",
         "markdown": "Writes a borrowed hash set as `{first, second, third}`.\nAn empty set is `{}`. The order is the table's and carries the same warning as a hash map's: it follows from the\nseed and from what the set has been through, so it is not the insertion order and does not hold between runs.\n`TreeSet` is the ordered one.\nEvery element is shown through a borrow of it, and `spec` is handed to each unchanged.\nReports whatever the writer or an element's implementation reported, stopping at the first refusal.",
@@ -6818,14 +6741,14 @@
     },
     {
       "kind": "function",
-      "name": "WriteTreeMapDebug",
-      "displayName": "WriteTreeMapDebug<K, V>",
+      "name": "Presentation::WriteTreeMapDebug",
+      "displayName": "Presentation::WriteTreeMapDebug<K, V>",
       "module": "Presentation",
       "source": "Src/Presentation.rux",
-      "line": 195,
-      "signature": "pub func WriteTreeMapDebug<K: Debug, V: Debug>(writer: &var TextWriter, value: &TreeMap<K, V>, spec: FormatSpec) throws FormatError",
+      "line": 198,
+      "signature": "pub func WriteTreeMapDebug<K: Debug + Copyable, V: Debug>(writer: &var TextWriter, value: &TreeMap<K, V>, spec: FormatSpec) -> !FormatError",
       "typeParams": [
-        { "name": "K", "bounds": ["Debug"] },
+        { "name": "K", "bounds": ["Debug", "Copyable"] },
         { "name": "V", "bounds": ["Debug"] }
       ],
       "doc": {
@@ -6863,13 +6786,13 @@
     },
     {
       "kind": "function",
-      "name": "WriteTreeSetDebug",
-      "displayName": "WriteTreeSetDebug<T>",
+      "name": "Presentation::WriteTreeSetDebug",
+      "displayName": "Presentation::WriteTreeSetDebug<T>",
       "module": "Presentation",
       "source": "Src/Presentation.rux",
-      "line": 229,
-      "signature": "pub func WriteTreeSetDebug<T: Debug>(writer: &var TextWriter, value: &TreeSet<T>, spec: FormatSpec) throws FormatError",
-      "typeParams": [{ "name": "T", "bounds": ["Debug"] }],
+      "line": 232,
+      "signature": "pub func WriteTreeSetDebug<T: Debug + Copyable>(writer: &var TextWriter, value: &TreeSet<T>, spec: FormatSpec) -> !FormatError",
+      "typeParams": [{ "name": "T", "bounds": ["Debug", "Copyable"] }],
       "doc": {
         "summary": "Writes a borrowed ordered set as `{first, second, third}`, in order.",
         "markdown": "Writes a borrowed ordered set as `{first, second, third}`, in order.\nAn empty set is `{}`. The order is the set's own, so the rendering is stable between sets holding the same\nelements and between runs, unlike a hash set's.\nEvery element is shown through a borrow of the node holding it, and `spec` is handed to each unchanged.\nReports whatever the writer or an element's implementation reported, stopping at the first refusal.",
@@ -6942,10 +6865,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "PriorityQueue",
+          "kind": "associated",
+          "name": "New",
           "line": 23,
-          "signature": "pub func PriorityQueue(allocator: Allocator) -> PriorityQueue<T>",
+          "signature": "pub func New(allocator: Allocator) -> PriorityQueue<T>",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -7320,10 +7243,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "SmallVector",
+          "kind": "associated",
+          "name": "New",
           "line": 39,
-          "signature": "pub func SmallVector(allocator: Allocator) -> SmallVector<T>",
+          "signature": "pub func New(allocator: Allocator) -> SmallVector<T>",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -7737,9 +7660,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~SmallVector",
+          "name": "~",
           "line": 204,
-          "signature": "func ~SmallVector(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var SmallVector<T>",
@@ -7782,11 +7705,11 @@
     },
     {
       "kind": "constant",
-      "name": "SlotEmpty",
-      "displayName": "SlotEmpty",
+      "name": "Storage::SlotEmpty",
+      "displayName": "Storage::SlotEmpty",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 38,
+      "line": 40,
       "signature": "pub const SlotEmpty: uint8",
       "typeParams": [],
       "doc": {
@@ -7817,11 +7740,11 @@
     },
     {
       "kind": "constant",
-      "name": "MaximumProbeDistance",
-      "displayName": "MaximumProbeDistance",
+      "name": "Storage::MaximumProbeDistance",
+      "displayName": "Storage::MaximumProbeDistance",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 45,
+      "line": 47,
       "signature": "pub const MaximumProbeDistance: uint",
       "typeParams": [],
       "doc": {
@@ -7852,11 +7775,11 @@
     },
     {
       "kind": "constant",
-      "name": "MinimumTableCapacity",
-      "displayName": "MinimumTableCapacity",
+      "name": "Storage::MinimumTableCapacity",
+      "displayName": "Storage::MinimumTableCapacity",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 50,
+      "line": 52,
       "signature": "pub const MinimumTableCapacity: uint",
       "typeParams": [],
       "doc": {
@@ -7887,11 +7810,11 @@
     },
     {
       "kind": "struct",
-      "name": "TableSeed",
-      "displayName": "TableSeed",
+      "name": "Storage::TableSeed",
+      "displayName": "Storage::TableSeed",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 62,
+      "line": 64,
       "signature": "pub struct TableSeed",
       "typeParams": [],
       "doc": {
@@ -7909,7 +7832,7 @@
           "name": "low",
           "type": "uint64",
           "public": false,
-          "line": 63,
+          "line": 65,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -7926,7 +7849,7 @@
           "name": "high",
           "type": "uint64",
           "public": false,
-          "line": 64,
+          "line": 66,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -7946,7 +7869,7 @@
         {
           "kind": "associated",
           "name": "Random",
-          "line": 75,
+          "line": 77,
           "signature": "pub func Random() -> TableSeed",
           "typeParams": [],
           "params": [],
@@ -7978,7 +7901,7 @@
         {
           "kind": "associated",
           "name": "Of",
-          "line": 88,
+          "line": 90,
           "signature": "pub func Of(low: uint64, high: uint64) -> TableSeed",
           "typeParams": [],
           "params": [
@@ -8028,19 +7951,19 @@
     },
     {
       "kind": "struct",
-      "name": "Table",
-      "displayName": "Table<K, V>",
+      "name": "Storage::Table",
+      "displayName": "Storage::Table<K, V>",
       "module": "Table",
       "source": "Src/Table.rux",
-      "line": 100,
-      "signature": "pub struct Table<K, V>",
+      "line": 102,
+      "signature": "pub struct Table<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
         "summary": "The open-addressing table `HashMap` and `HashSet` are both built on.",
-        "markdown": "The open-addressing table `HashMap` and `HashSet` are both built on.\nHolds keys, values, one distance byte and one hash tag per slot in four parallel runs. A set instantiates the value\ntype with something that occupies nothing worth reading, which is what lets one kernel serve both.\nMove-only: it owns its storage and entries, prohibits copying, and destroys both with `~Table`.",
+        "markdown": "The open-addressing table `HashMap` and `HashSet` are both built on.\nHolds keys, values, one distance byte and one hash tag per slot in four parallel runs. A set instantiates the\nvalue type with something that occupies nothing worth reading, which is what lets one kernel serve both.\nMove-only: it owns its storage and entries, prohibits copying, and destroys both in its destructor.",
         "typeParams": [
           { "name": "K", "markdown": "the key type" },
           { "name": "V", "markdown": "the value type" }
@@ -8056,7 +7979,7 @@
           "name": "keys",
           "type": "*var K",
           "public": false,
-          "line": 102,
+          "line": 104,
           "doc": "The keys, one per slot. Only the slots whose distance byte is not `SlotEmpty` hold one.",
           "targets": [
             "windows-x86_64",
@@ -8073,7 +7996,7 @@
           "name": "values",
           "type": "*var V",
           "public": false,
-          "line": 104,
+          "line": 106,
           "doc": "The values, one per slot, occupied exactly where the keys are.",
           "targets": [
             "windows-x86_64",
@@ -8090,7 +8013,7 @@
           "name": "states",
           "type": "*var uint8",
           "public": false,
-          "line": 106,
+          "line": 108,
           "doc": "The distance byte of each slot: `SlotEmpty`, or the entry's distance from home plus one.",
           "targets": [
             "windows-x86_64",
@@ -8107,7 +8030,7 @@
           "name": "tags",
           "type": "*var uint8",
           "public": false,
-          "line": 108,
+          "line": 110,
           "doc": "The top byte of each occupied slot's key hash, compared before the keys themselves.",
           "targets": [
             "windows-x86_64",
@@ -8124,7 +8047,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 110,
+          "line": 112,
           "doc": "How many slots hold an entry.",
           "targets": [
             "windows-x86_64",
@@ -8141,7 +8064,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 112,
+          "line": 114,
           "doc": "How many slots there are. A power of two, or zero.",
           "targets": [
             "windows-x86_64",
@@ -8158,7 +8081,7 @@
           "name": "seed",
           "type": "TableSeed",
           "public": false,
-          "line": 114,
+          "line": 116,
           "doc": "The seed the hash is taken with.",
           "targets": [
             "windows-x86_64",
@@ -8175,7 +8098,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 116,
+          "line": 118,
           "doc": "Where the storage came from, and where it goes back to.",
           "targets": [
             "windows-x86_64",
@@ -8193,10 +8116,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Table",
-          "line": 127,
-          "signature": "pub func Table(allocator: Allocator, seed: TableSeed) -> Table<K, V>",
+          "kind": "associated",
+          "name": "New",
+          "line": 129,
+          "signature": "pub func New(allocator: Allocator, seed: TableSeed) -> Table<K, V>",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -8209,7 +8132,7 @@
           "public": true,
           "doc": {
             "summary": "An empty table that has not allocated anything.",
-            "markdown": "An empty table that has not allocated anything.\n`allocator` is borrowed for the call and kept; `seed` is read by value. Costs nothing: a table nothing is put\ninto never allocates.",
+            "markdown": "An empty table that has not allocated anything.\n`allocator` is borrowed for the call and kept; `seed` is read by value. Costs nothing: a table nothing is\nput into never allocates.",
             "typeParams": [],
             "params": [
               { "name": "allocator", "markdown": "where the storage comes from" },
@@ -8233,7 +8156,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 144,
+          "line": 146,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -8265,7 +8188,7 @@
         {
           "kind": "method",
           "name": "Capacity",
-          "line": 153,
+          "line": 155,
           "signature": "pub func Capacity(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -8297,7 +8220,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 161,
+          "line": 163,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -8329,7 +8252,7 @@
         {
           "kind": "method",
           "name": "IsOccupied",
-          "line": 170,
+          "line": 172,
           "signature": "pub func IsOccupied(&self, index: uint) -> bool",
           "typeParams": [],
           "params": [{ "name": "index", "type": "uint" }],
@@ -8361,7 +8284,7 @@
         {
           "kind": "method",
           "name": "Find",
-          "line": 197,
+          "line": 199,
           "signature": "pub func Find(&self, key: K, hash: func(K, uint64, uint64) -> uint64, equals: func(K, K) -> bool) -> uint?",
           "typeParams": [],
           "params": [
@@ -8376,7 +8299,7 @@
           "public": true,
           "doc": {
             "summary": "The slot holding `key`, or `none` when the table does not have it.",
-            "markdown": "The slot holding `key`, or `none` when the table does not have it.\n`self` is borrowed; `key` is read by value; `hash` and `equals` decide identity and must be the same pair the\ntable was filled with. The seed is handed to `hash`, so a table's hashes are its own.\nStops at the first slot whose occupant is closer to home than the search has travelled: the key would have\ndisplaced that occupant on its way past, so it cannot be further along.\nRuns in constant expected time and allocates nothing.",
+            "markdown": "The slot holding `key`, or `none` when the table does not have it.\n`self` is borrowed; `key` is read by value; `hash` and `equals` decide identity and must be the same pair\nthe table was filled with. The seed is handed to `hash`, so a table's hashes are its own. Stops at the first\nslot whose occupant is closer to home than the search has travelled: the key would have displaced that\noccupant on its way past, so it cannot be further along. Runs in constant expected time and allocates\nnothing.",
             "typeParams": [],
             "params": [
               { "name": "key", "markdown": "the key to look up" },
@@ -8401,8 +8324,8 @@
         {
           "kind": "associated",
           "name": "CapacityFor",
-          "line": 327,
-          "signature": "pub func CapacityFor(length: uint) -> uint throws AllocError",
+          "line": 330,
+          "signature": "pub func CapacityFor(length: uint) -> uint ! AllocError",
           "typeParams": [],
           "params": [{ "name": "length", "type": "uint" }],
           "receiver": null,
@@ -8411,8 +8334,8 @@
           "conformance": null,
           "public": true,
           "doc": {
-            "summary": "The smallest power-of-two capacity that holds `length` entries without passing the three-quarter load factor.",
-            "markdown": "The smallest power-of-two capacity that holds `length` entries without passing the three-quarter load factor.\n`length` is read by value. Derived from the entry count rather than from the current capacity, so one rule\ncovers growing and settling alike.",
+            "summary": "The smallest power-of-two capacity that holds `length` entries without passing the three-quarter load\nfactor.",
+            "markdown": "The smallest power-of-two capacity that holds `length` entries without passing the three-quarter load\nfactor.\n`length` is read by value. Derived from the entry count rather than from the current capacity, so one rule\ncovers growing and settling alike.",
             "typeParams": [],
             "params": [{ "name": "length", "markdown": "how many elements" }],
             "returns": "the table size that holds that many entries, or throws `Unsupported` when there is none",
@@ -8433,8 +8356,8 @@
         {
           "kind": "method",
           "name": "Rehash",
-          "line": 348,
-          "signature": "pub unsafe func Rehash(&var self, capacity: uint, hash: func(K, uint64, uint64) -> uint64)",
+          "line": 350,
+          "signature": "pub func Rehash(&var self, capacity: uint, hash: func(K, uint64, uint64) -> uint64)",
           "typeParams": [],
           "params": [
             { "name": "capacity", "type": "uint" },
@@ -8447,7 +8370,7 @@
           "public": true,
           "doc": {
             "summary": "Rebuilds the table at `capacity` slots, reinserting every entry.",
-            "markdown": "Rebuilds the table at `capacity` slots, reinserting every entry.\n`self` is borrowed mutably; `hash` must be the one the table was filled with. Terminates the program when the\nnew runs cannot be had; `TryRehash` reports that instead.\nRuns in time proportional to the capacity.\nSafety: `capacity` must be a power of two no smaller than `MinimumTableCapacity`, as `CapacityFor` returns:\nevery slot index is masked by it, so any other value addresses past the runs.",
+            "markdown": "Rebuilds the table at `capacity` slots, reinserting every entry.\n`self` is borrowed mutably; `hash` must be the one the table was filled with. Terminates the program when\nthe new runs cannot be had; `TryRehash` reports that instead. Runs in time proportional to the capacity.\nSafety: `capacity` must be a power of two no smaller than `MinimumTableCapacity`, as `CapacityFor` returns:\nevery slot index is masked by it, so any other value addresses past the runs.",
             "typeParams": [],
             "params": [
               { "name": "capacity", "markdown": "how many elements to make room for" },
@@ -8471,8 +8394,8 @@
         {
           "kind": "method",
           "name": "TryRehash",
-          "line": 362,
-          "signature": "pub unsafe func TryRehash(&var self, capacity: uint, hash: func(K, uint64, uint64) -> uint64) throws AllocError",
+          "line": 365,
+          "signature": "pub func TryRehash(&var self, capacity: uint, hash: func(K, uint64, uint64) -> uint64) -> !AllocError",
           "typeParams": [],
           "params": [
             { "name": "capacity", "type": "uint" },
@@ -8484,8 +8407,8 @@
           "conformance": null,
           "public": true,
           "doc": {
-            "summary": "Rebuilds the table at `capacity` slots, reinserting every entry, or throws why the new runs could not be had.",
-            "markdown": "Rebuilds the table at `capacity` slots, reinserting every entry, or throws why the new runs could not be had.\n`self` is borrowed mutably; `hash` must be the one the table was filled with. A failure leaves the table\nexactly as it was: the new runs are taken and filled before the old ones are released.\nRuns in time proportional to the capacity.\nSafety: `capacity` must be a power of two no smaller than `MinimumTableCapacity`, as `CapacityFor` returns:\nevery slot index is masked by it, so any other value addresses past the runs.",
+            "summary": "Rebuilds the table at `capacity` slots, reinserting every entry, or throws why the new runs could not be\nhad.",
+            "markdown": "Rebuilds the table at `capacity` slots, reinserting every entry, or throws why the new runs could not be\nhad.\n`self` is borrowed mutably; `hash` must be the one the table was filled with. A failure leaves the table\nexactly as it was: the new runs are taken and filled before the old ones are released.\nRuns in time proportional to the capacity.\nSafety: `capacity` must be a power of two no smaller than `MinimumTableCapacity`, as `CapacityFor` returns:\nevery slot index is masked by it, so any other value addresses past the runs.",
             "typeParams": [],
             "params": [
               { "name": "capacity", "markdown": "how many elements to make room for" },
@@ -8509,7 +8432,7 @@
         {
           "kind": "method",
           "name": "EnsureRoom",
-          "line": 433,
+          "line": 436,
           "signature": "pub func EnsureRoom(&var self, hash: func(K, uint64, uint64) -> uint64)",
           "typeParams": [],
           "params": [{ "name": "hash", "type": "func(K, uint64, uint64) -> uint64" }],
@@ -8520,7 +8443,7 @@
           "public": true,
           "doc": {
             "summary": "Makes sure one more entry will fit, growing the table when it will not.",
-            "markdown": "Makes sure one more entry will fit, growing the table when it will not.\n`self` is borrowed mutably; `hash` must be the one the table was filled with. Terminates the program when the\ntable cannot grow; `TryEnsureRoom` reports that instead.",
+            "markdown": "Makes sure one more entry will fit, growing the table when it will not.\n`self` is borrowed mutably; `hash` must be the one the table was filled with. Terminates the program when\nthe table cannot grow; `TryEnsureRoom` reports that instead.",
             "typeParams": [],
             "params": [{ "name": "hash", "markdown": "how a key is hashed, taking the key and the two seed words" }],
             "returns": null,
@@ -8541,8 +8464,8 @@
         {
           "kind": "method",
           "name": "TryEnsureRoom",
-          "line": 443,
-          "signature": "pub func TryEnsureRoom(&var self, hash: func(K, uint64, uint64) -> uint64) throws AllocError",
+          "line": 446,
+          "signature": "pub func TryEnsureRoom(&var self, hash: func(K, uint64, uint64) -> uint64) -> !AllocError",
           "typeParams": [],
           "params": [{ "name": "hash", "type": "func(K, uint64, uint64) -> uint64" }],
           "receiver": "&var Table<K, V>",
@@ -8573,7 +8496,7 @@
         {
           "kind": "method",
           "name": "Reserve",
-          "line": 453,
+          "line": 456,
           "signature": "pub func Reserve(&var self, additional: uint, hash: func(K, uint64, uint64) -> uint64)",
           "typeParams": [],
           "params": [
@@ -8611,8 +8534,8 @@
         {
           "kind": "method",
           "name": "TryReserve",
-          "line": 463,
-          "signature": "pub func TryReserve(&var self, additional: uint, hash: func(K, uint64, uint64) -> uint64) throws AllocError",
+          "line": 466,
+          "signature": "pub func TryReserve(&var self, additional: uint, hash: func(K, uint64, uint64) -> uint64) -> !AllocError",
           "typeParams": [],
           "params": [
             { "name": "additional", "type": "uint" },
@@ -8649,7 +8572,7 @@
         {
           "kind": "method",
           "name": "ShrinkToFit",
-          "line": 476,
+          "line": 479,
           "signature": "pub func ShrinkToFit(&var self, hash: func(K, uint64, uint64) -> uint64)",
           "typeParams": [],
           "params": [{ "name": "hash", "type": "func(K, uint64, uint64) -> uint64" }],
@@ -8681,7 +8604,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 490,
+          "line": 493,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -8712,9 +8635,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Table",
-          "line": 529,
-          "signature": "func ~Table(&var self)",
+          "name": "~",
+          "line": 530,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Table<K, V>",
@@ -8757,14 +8680,14 @@
     },
     {
       "kind": "struct",
-      "name": "TreeNode",
-      "displayName": "TreeNode<K, V>",
+      "name": "Storage::TreeNode",
+      "displayName": "Storage::TreeNode<K, V>",
       "module": "Tree",
       "source": "Src/Tree.rux",
-      "line": 30,
-      "signature": "pub struct TreeNode<K, V>",
+      "line": 32,
+      "signature": "pub struct TreeNode<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
@@ -8785,7 +8708,7 @@
           "name": "key",
           "type": "K",
           "public": true,
-          "line": 32,
+          "line": 34,
           "doc": "The key this node is ordered by.",
           "targets": [
             "windows-x86_64",
@@ -8802,7 +8725,7 @@
           "name": "value",
           "type": "V",
           "public": true,
-          "line": 34,
+          "line": 36,
           "doc": "The value stored under that key.",
           "targets": [
             "windows-x86_64",
@@ -8819,7 +8742,7 @@
           "name": "left",
           "type": "*var TreeNode<K, V>",
           "public": true,
-          "line": 36,
+          "line": 38,
           "doc": "The subtree of smaller keys, or null.",
           "targets": [
             "windows-x86_64",
@@ -8836,7 +8759,7 @@
           "name": "right",
           "type": "*var TreeNode<K, V>",
           "public": true,
-          "line": 38,
+          "line": 40,
           "doc": "The subtree of larger keys, or null.",
           "targets": [
             "windows-x86_64",
@@ -8853,7 +8776,7 @@
           "name": "parent",
           "type": "*var TreeNode<K, V>",
           "public": true,
-          "line": 40,
+          "line": 42,
           "doc": "The node this one hangs from, null only for the root.",
           "targets": [
             "windows-x86_64",
@@ -8870,7 +8793,7 @@
           "name": "red",
           "type": "bool",
           "public": true,
-          "line": 42,
+          "line": 44,
           "doc": "Whether this node is red. A missing child counts as black, which is what makes null a colour and not a gap.",
           "targets": [
             "windows-x86_64",
@@ -8901,19 +8824,19 @@
     },
     {
       "kind": "struct",
-      "name": "Tree",
-      "displayName": "Tree<K, V>",
+      "name": "Storage::Tree",
+      "displayName": "Storage::Tree<K, V>",
       "module": "Tree",
       "source": "Src/Tree.rux",
-      "line": 50,
-      "signature": "pub struct Tree<K, V>",
+      "line": 52,
+      "signature": "pub struct Tree<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
         "summary": "An ordered collection of entries, kept balanced by colouring.",
-        "markdown": "An ordered collection of entries, kept balanced by colouring.\nOwns every node and everything in them, so it prohibits copying and destroys them with `~Tree`.",
+        "markdown": "An ordered collection of entries, kept balanced by colouring.\nOwns every node and everything in them, so it prohibits copying and destroys them in its destructor.",
         "typeParams": [
           { "name": "K", "markdown": "the key type" },
           { "name": "V", "markdown": "the value type" }
@@ -8929,7 +8852,7 @@
           "name": "root",
           "type": "*var TreeNode<K, V>",
           "public": false,
-          "line": 52,
+          "line": 54,
           "doc": "The topmost node, or null for an empty tree. Always black.",
           "targets": [
             "windows-x86_64",
@@ -8946,7 +8869,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 54,
+          "line": 56,
           "doc": "How many nodes the tree holds.",
           "targets": [
             "windows-x86_64",
@@ -8963,7 +8886,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 56,
+          "line": 58,
           "doc": "Where nodes come from, and where they go back to.",
           "targets": [
             "windows-x86_64",
@@ -8981,10 +8904,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Tree",
-          "line": 66,
-          "signature": "pub func Tree(allocator: Allocator) -> Tree<K, V>",
+          "kind": "associated",
+          "name": "New",
+          "line": 68,
+          "signature": "pub func New(allocator: Allocator) -> Tree<K, V>",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -9015,7 +8938,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 74,
+          "line": 76,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -9047,7 +8970,7 @@
         {
           "kind": "method",
           "name": "Root",
-          "line": 83,
+          "line": 85,
           "signature": "pub func Root(&self) -> *var TreeNode<K, V>",
           "typeParams": [],
           "params": [],
@@ -9058,7 +8981,7 @@
           "public": true,
           "doc": {
             "summary": "The topmost node, or null for an empty tree, for code that walks the shape itself.",
-            "markdown": "The topmost node, or null for an empty tree, for code that walks the shape itself.\n`self` is borrowed. Reading through the pointer needs `unsafe`, and it is valid until the tree next changes;\nthe field it reads stays private, so only the tree's own operations can move it.",
+            "markdown": "The topmost node, or null for an empty tree, for code that walks the shape itself.\n`self` is borrowed. The pointer is valid until the tree next changes;\nthe field it reads stays private, so only the tree's own operations can move it.",
             "typeParams": [],
             "params": [],
             "returns": "the root node, or null when the tree is empty",
@@ -9079,7 +9002,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 91,
+          "line": 93,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -9111,7 +9034,7 @@
         {
           "kind": "method",
           "name": "Find",
-          "line": 162,
+          "line": 164,
           "signature": "pub func Find(&self, key: K, compare: func(K, K) -> Ordering) -> *var TreeNode<K, V>",
           "typeParams": [],
           "params": [
@@ -9149,7 +9072,7 @@
         {
           "kind": "method",
           "name": "Above",
-          "line": 193,
+          "line": 196,
           "signature": "pub func Above(&self, key: K, compare: func(K, K) -> Ordering) -> *var TreeNode<K, V>",
           "typeParams": [],
           "params": [
@@ -9187,7 +9110,7 @@
         {
           "kind": "method",
           "name": "Below",
-          "line": 217,
+          "line": 221,
           "signature": "pub func Below(&self, key: K, compare: func(K, K) -> Ordering) -> *var TreeNode<K, V>",
           "typeParams": [],
           "params": [
@@ -9225,8 +9148,8 @@
         {
           "kind": "associated",
           "name": "Minimum",
-          "line": 241,
-          "signature": "pub unsafe func Minimum(from: *var TreeNode<K, V>) -> *var TreeNode<K, V>",
+          "line": 246,
+          "signature": "pub func Minimum(from: *var TreeNode<K, V>) -> *var TreeNode<K, V>",
           "typeParams": [],
           "params": [{ "name": "from", "type": "*var TreeNode<K, V>" }],
           "receiver": null,
@@ -9257,8 +9180,8 @@
         {
           "kind": "associated",
           "name": "Maximum",
-          "line": 255,
-          "signature": "pub unsafe func Maximum(from: *var TreeNode<K, V>) -> *var TreeNode<K, V>",
+          "line": 260,
+          "signature": "pub func Maximum(from: *var TreeNode<K, V>) -> *var TreeNode<K, V>",
           "typeParams": [],
           "params": [{ "name": "from", "type": "*var TreeNode<K, V>" }],
           "receiver": null,
@@ -9289,8 +9212,8 @@
         {
           "kind": "associated",
           "name": "Successor",
-          "line": 272,
-          "signature": "pub unsafe func Successor(node: *var TreeNode<K, V>) -> *var TreeNode<K, V>",
+          "line": 277,
+          "signature": "pub func Successor(node: *var TreeNode<K, V>) -> *var TreeNode<K, V>",
           "typeParams": [],
           "params": [{ "name": "node", "type": "*var TreeNode<K, V>" }],
           "receiver": null,
@@ -9321,8 +9244,8 @@
         {
           "kind": "associated",
           "name": "Predecessor",
-          "line": 290,
-          "signature": "pub unsafe func Predecessor(node: *var TreeNode<K, V>) -> *var TreeNode<K, V>",
+          "line": 295,
+          "signature": "pub func Predecessor(node: *var TreeNode<K, V>) -> *var TreeNode<K, V>",
           "typeParams": [],
           "params": [{ "name": "node", "type": "*var TreeNode<K, V>" }],
           "receiver": null,
@@ -9353,7 +9276,7 @@
         {
           "kind": "method",
           "name": "Attach",
-          "line": 371,
+          "line": 375,
           "signature": "pub func Attach(&var self, key: K, value: V, compare: func(K, K) -> Ordering) -> V?",
           "typeParams": [],
           "params": [
@@ -9368,7 +9291,7 @@
           "public": true,
           "doc": {
             "summary": "Puts `key` and `value` into the tree, replacing the value already stored under an equal key.",
-            "markdown": "Puts `key` and `value` into the tree, replacing the value already stored under an equal key.\nTakes ownership of both. Hands back the value an equal key already had, or `none` when the key is new — so a\ncaller learns whether anything was displaced without a lookup first, and gets the displaced value rather than\nhaving it quietly destroyed. When the key is already present the new key is destroyed rather than stored, since\nthe one in the tree is equal to it and is what everything already hanging below it was ordered against.\nTerminates the program when the node cannot be allocated.\nRuns in time proportional to the height, with at most two rotations. Allocates one node for a new key and\nnothing at all for one already present.",
+            "markdown": "Puts `key` and `value` into the tree, replacing the value already stored under an equal key.\nTakes ownership of both. Hands back the value an equal key already had, or `none` when the key is new — so a\ncaller learns whether anything was displaced without a lookup first, and gets the displaced value rather\nthan having it quietly destroyed. When the key is already present the new key is destroyed rather than\nstored, since the one in the tree is equal to it and is what everything already hanging below it was ordered\nagainst. Terminates the program when the node cannot be allocated. Runs in time proportional to the height,\nwith at most two rotations. Allocates one node for a new key and nothing at all for one already present.",
             "typeParams": [],
             "params": [
               { "name": "key", "markdown": "the key to look up" },
@@ -9393,8 +9316,8 @@
         {
           "kind": "method",
           "name": "Detach",
-          "line": 550,
-          "signature": "pub unsafe func Detach(&var self, node: *var TreeNode<K, V>) -> KeyValue<K, V>",
+          "line": 553,
+          "signature": "pub func Detach(&var self, node: *var TreeNode<K, V>) -> KeyValue<K, V>",
           "typeParams": [],
           "params": [{ "name": "node", "type": "*var TreeNode<K, V>" }],
           "receiver": "&var Tree<K, V>",
@@ -9425,7 +9348,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 605,
+          "line": 608,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -9456,9 +9379,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Tree",
-          "line": 648,
-          "signature": "func ~Tree(&var self)",
+          "name": "~",
+          "line": 649,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Tree<K, V>",
@@ -9505,10 +9428,10 @@
       "displayName": "TreeMap<K, V>",
       "module": "TreeMap",
       "source": "Src/TreeMap.rux",
-      "line": 19,
-      "signature": "pub struct TreeMap<K, V>",
+      "line": 21,
+      "signature": "pub struct TreeMap<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
@@ -9529,7 +9452,7 @@
           "name": "tree",
           "type": "Tree<K, V>",
           "public": false,
-          "line": 21,
+          "line": 23,
           "doc": "The nodes, and the balancing that keeps them shallow.",
           "targets": [
             "windows-x86_64",
@@ -9546,7 +9469,7 @@
           "name": "compare",
           "type": "func(K, K) -> Ordering",
           "public": false,
-          "line": 23,
+          "line": 25,
           "doc": "The order the keys are kept in. Fixed when the map is made.",
           "targets": [
             "windows-x86_64",
@@ -9564,10 +9487,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "TreeMap",
-          "line": 35,
-          "signature": "pub func TreeMap(allocator: Allocator, compare: func(K, K) -> Ordering) -> TreeMap<K, V>",
+          "kind": "associated",
+          "name": "New",
+          "line": 37,
+          "signature": "pub func New(allocator: Allocator, compare: func(K, K) -> Ordering) -> TreeMap<K, V>",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -9604,7 +9527,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 42,
+          "line": 44,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -9636,7 +9559,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 49,
+          "line": 51,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -9668,7 +9591,7 @@
         {
           "kind": "method",
           "name": "ContainsKey",
-          "line": 58,
+          "line": 60,
           "signature": "pub func ContainsKey(&self, key: K) -> bool",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -9700,7 +9623,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 66,
+          "line": 68,
           "signature": "pub func Get(&self, key: K) -> V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -9732,7 +9655,7 @@
         {
           "kind": "method",
           "name": "Find",
-          "line": 78,
+          "line": 80,
           "signature": "pub func Find(&self, key: K) -> &V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -9764,7 +9687,7 @@
         {
           "kind": "method",
           "name": "FindMutable",
-          "line": 91,
+          "line": 93,
           "signature": "pub func FindMutable(&var self, key: K) -> &var V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -9796,7 +9719,7 @@
         {
           "kind": "method",
           "name": "Insert",
-          "line": 106,
+          "line": 108,
           "signature": "pub func Insert(&var self, key: K, value: V)",
           "typeParams": [],
           "params": [
@@ -9834,7 +9757,7 @@
         {
           "kind": "method",
           "name": "Replace",
-          "line": 117,
+          "line": 119,
           "signature": "pub func Replace(&var self, key: K, value: V) -> V?",
           "typeParams": [],
           "params": [
@@ -9872,7 +9795,7 @@
         {
           "kind": "method",
           "name": "Remove",
-          "line": 126,
+          "line": 128,
           "signature": "pub func Remove(&var self, key: K) -> V?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -9904,7 +9827,7 @@
         {
           "kind": "method",
           "name": "RemoveEntry",
-          "line": 140,
+          "line": 142,
           "signature": "pub func RemoveEntry(&var self, key: K) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -9936,7 +9859,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 150,
+          "line": 152,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -9968,7 +9891,7 @@
         {
           "kind": "method",
           "name": "First",
-          "line": 166,
+          "line": 168,
           "signature": "pub func First(&self) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [],
@@ -10000,7 +9923,7 @@
         {
           "kind": "method",
           "name": "Last",
-          "line": 174,
+          "line": 176,
           "signature": "pub func Last(&self) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [],
@@ -10032,7 +9955,7 @@
         {
           "kind": "method",
           "name": "Floor",
-          "line": 186,
+          "line": 188,
           "signature": "pub func Floor(&self, key: K) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -10064,7 +9987,7 @@
         {
           "kind": "method",
           "name": "Ceiling",
-          "line": 212,
+          "line": 214,
           "signature": "pub func Ceiling(&self, key: K) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [{ "name": "key", "type": "K" }],
@@ -10096,7 +10019,7 @@
         {
           "kind": "method",
           "name": "Iterate",
-          "line": 238,
+          "line": 240,
           "signature": "pub func Iterate(&self) -> TreeMapIterator<K, V>",
           "typeParams": [],
           "params": [],
@@ -10128,7 +10051,7 @@
         {
           "kind": "method",
           "name": "Range",
-          "line": 253,
+          "line": 255,
           "signature": "pub func Range(&self, start: K, end: K) -> TreeMapRangeIterator<K, V>",
           "typeParams": [],
           "params": [
@@ -10166,7 +10089,7 @@
         {
           "kind": "method",
           "name": "IntoIterator",
-          "line": 280,
+          "line": 282,
           "signature": "pub func IntoIterator(self) -> TreeMapIntoIterator<K, V>",
           "typeParams": [],
           "params": [],
@@ -10214,10 +10137,10 @@
       "displayName": "TreeMapIterator<K, V>",
       "module": "TreeMap",
       "source": "Src/TreeMap.rux",
-      "line": 299,
-      "signature": "pub struct TreeMapIterator<K, V>",
+      "line": 294,
+      "signature": "pub struct TreeMapIterator<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
@@ -10238,7 +10161,7 @@
           "name": "next",
           "type": "*var TreeNode<K, V>",
           "public": false,
-          "line": 301,
+          "line": 296,
           "doc": "The node to hand back next, or null when the walk is done.",
           "targets": [
             "windows-x86_64",
@@ -10258,7 +10181,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 309,
+          "line": 304,
           "signature": "pub func Next(&var self) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [],
@@ -10306,10 +10229,10 @@
       "displayName": "TreeMapRangeIterator<K, V>",
       "module": "TreeMap",
       "source": "Src/TreeMap.rux",
-      "line": 325,
-      "signature": "pub struct TreeMapRangeIterator<K, V>",
+      "line": 318,
+      "signature": "pub struct TreeMapRangeIterator<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
@@ -10330,7 +10253,7 @@
           "name": "next",
           "type": "*var TreeNode<K, V>",
           "public": false,
-          "line": 327,
+          "line": 320,
           "doc": "The node to hand back next, or null when the walk is done.",
           "targets": [
             "windows-x86_64",
@@ -10347,7 +10270,7 @@
           "name": "end",
           "type": "K",
           "public": false,
-          "line": 329,
+          "line": 322,
           "doc": "The first key the walk will not hand back.",
           "targets": [
             "windows-x86_64",
@@ -10364,7 +10287,7 @@
           "name": "compare",
           "type": "func(K, K) -> Ordering",
           "public": false,
-          "line": 331,
+          "line": 324,
           "doc": "The order the map is kept in, so the walk knows where to stop.",
           "targets": [
             "windows-x86_64",
@@ -10384,7 +10307,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 338,
+          "line": 331,
           "signature": "pub func Next(&var self) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [],
@@ -10432,10 +10355,10 @@
       "displayName": "TreeMapIntoIterator<K, V>",
       "module": "TreeMap",
       "source": "Src/TreeMap.rux",
-      "line": 361,
-      "signature": "pub struct TreeMapIntoIterator<K, V>",
+      "line": 352,
+      "signature": "pub struct TreeMapIntoIterator<K: Copyable, V>",
       "typeParams": [
-        { "name": "K", "bounds": [] },
+        { "name": "K", "bounds": ["Copyable"] },
         { "name": "V", "bounds": [] }
       ],
       "doc": {
@@ -10456,7 +10379,7 @@
           "name": "tree",
           "type": "Tree<K, V>",
           "public": false,
-          "line": 363,
+          "line": 354,
           "doc": "What is left of the map.",
           "targets": [
             "windows-x86_64",
@@ -10476,7 +10399,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 373,
+          "line": 364,
           "signature": "pub func Next(&var self) -> KeyValue<K, V>?",
           "typeParams": [],
           "params": [],
@@ -10524,9 +10447,9 @@
       "displayName": "TreeSet<T>",
       "module": "TreeSet",
       "source": "Src/TreeSet.rux",
-      "line": 26,
-      "signature": "pub struct TreeSet<T>",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 29,
+      "signature": "pub struct TreeSet<T: Copyable>",
+      "typeParams": [{ "name": "T", "bounds": ["Copyable"] }],
       "doc": {
         "summary": "An ordered set of unique elements.",
         "markdown": "An ordered set of unique elements.\nMove-only: it owns every node and every element in them.",
@@ -10542,7 +10465,7 @@
           "name": "tree",
           "type": "Tree<T, ()>",
           "public": false,
-          "line": 28,
+          "line": 31,
           "doc": "The elements, as the keys of a tree carrying no values.",
           "targets": [
             "windows-x86_64",
@@ -10559,7 +10482,7 @@
           "name": "compare",
           "type": "func(T, T) -> Ordering",
           "public": false,
-          "line": 30,
+          "line": 33,
           "doc": "The order the elements are kept in. Fixed when the set is made.",
           "targets": [
             "windows-x86_64",
@@ -10577,10 +10500,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "TreeSet",
-          "line": 42,
-          "signature": "pub func TreeSet(allocator: Allocator, compare: func(T, T) -> Ordering) -> TreeSet<T>",
+          "kind": "associated",
+          "name": "New",
+          "line": 45,
+          "signature": "pub func New(allocator: Allocator, compare: func(T, T) -> Ordering) -> TreeSet<T>",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -10617,7 +10540,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 49,
+          "line": 52,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -10649,7 +10572,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 56,
+          "line": 59,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -10681,7 +10604,7 @@
         {
           "kind": "method",
           "name": "Contains",
-          "line": 65,
+          "line": 68,
           "signature": "pub func Contains(&self, value: T) -> bool",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -10713,7 +10636,7 @@
         {
           "kind": "method",
           "name": "Insert",
-          "line": 77,
+          "line": 80,
           "signature": "pub func Insert(&var self, value: T) -> bool",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -10745,7 +10668,7 @@
         {
           "kind": "method",
           "name": "Remove",
-          "line": 87,
+          "line": 90,
           "signature": "pub func Remove(&var self, value: T) -> bool",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -10777,7 +10700,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 97,
+          "line": 100,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -10809,7 +10732,7 @@
         {
           "kind": "method",
           "name": "First",
-          "line": 105,
+          "line": 108,
           "signature": "pub func First(&self) -> T?",
           "typeParams": [],
           "params": [],
@@ -10841,7 +10764,7 @@
         {
           "kind": "method",
           "name": "Last",
-          "line": 113,
+          "line": 116,
           "signature": "pub func Last(&self) -> T?",
           "typeParams": [],
           "params": [],
@@ -10873,7 +10796,7 @@
         {
           "kind": "method",
           "name": "Floor",
-          "line": 122,
+          "line": 125,
           "signature": "pub func Floor(&self, value: T) -> T?",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -10905,7 +10828,7 @@
         {
           "kind": "method",
           "name": "Ceiling",
-          "line": 134,
+          "line": 137,
           "signature": "pub func Ceiling(&self, value: T) -> T?",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -10937,7 +10860,7 @@
         {
           "kind": "method",
           "name": "Iterate",
-          "line": 153,
+          "line": 156,
           "signature": "pub func Iterate(&self) -> TreeSetIterator<T>",
           "typeParams": [],
           "params": [],
@@ -10969,7 +10892,7 @@
         {
           "kind": "method",
           "name": "Range",
-          "line": 166,
+          "line": 169,
           "signature": "pub func Range(&self, start: T, end: T) -> TreeSetRangeIterator<T>",
           "typeParams": [],
           "params": [
@@ -11007,7 +10930,7 @@
         {
           "kind": "method",
           "name": "IntoIterator",
-          "line": 178,
+          "line": 181,
           "signature": "pub func IntoIterator(self) -> TreeSetIntoIterator<T>",
           "typeParams": [],
           "params": [],
@@ -11039,7 +10962,7 @@
         {
           "kind": "method",
           "name": "IsSubsetOf",
-          "line": 197,
+          "line": 193,
           "signature": "pub func IsSubsetOf(&self, other: &TreeSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&TreeSet<T>" }],
@@ -11071,7 +10994,7 @@
         {
           "kind": "method",
           "name": "IsSupersetOf",
-          "line": 218,
+          "line": 214,
           "signature": "pub func IsSupersetOf(&self, other: &TreeSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&TreeSet<T>" }],
@@ -11103,7 +11026,7 @@
         {
           "kind": "method",
           "name": "IsDisjointFrom",
-          "line": 228,
+          "line": 224,
           "signature": "pub func IsDisjointFrom(&self, other: &TreeSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&TreeSet<T>" }],
@@ -11135,7 +11058,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 251,
+          "line": 247,
           "signature": "pub func Equals(&self, other: &TreeSet<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&TreeSet<T>" }],
@@ -11167,7 +11090,7 @@
         {
           "kind": "method",
           "name": "UnionWith",
-          "line": 260,
+          "line": 256,
           "signature": "pub func UnionWith(&var self, other: &TreeSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&TreeSet<T>" }],
@@ -11199,7 +11122,7 @@
         {
           "kind": "method",
           "name": "IntersectWith",
-          "line": 284,
+          "line": 280,
           "signature": "pub func IntersectWith(&var self, other: &TreeSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&TreeSet<T>" }],
@@ -11231,7 +11154,7 @@
         {
           "kind": "method",
           "name": "Subtract",
-          "line": 303,
+          "line": 299,
           "signature": "pub func Subtract(&var self, other: &TreeSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&TreeSet<T>" }],
@@ -11263,7 +11186,7 @@
         {
           "kind": "method",
           "name": "SymmetricDifferenceWith",
-          "line": 326,
+          "line": 322,
           "signature": "pub func SymmetricDifferenceWith(&var self, other: &TreeSet<T>)",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&TreeSet<T>" }],
@@ -11295,7 +11218,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 367,
+          "line": 363,
           "signature": "pub func Clone(&self) -> TreeSet<T>",
           "typeParams": [],
           "params": [],
@@ -11343,9 +11266,9 @@
       "displayName": "TreeSetIterator<T>",
       "module": "TreeSet",
       "source": "Src/TreeSet.rux",
-      "line": 377,
-      "signature": "pub struct TreeSetIterator<T>",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 373,
+      "signature": "pub struct TreeSetIterator<T: Copyable>",
+      "typeParams": [{ "name": "T", "bounds": ["Copyable"] }],
       "doc": {
         "summary": "A walk over a borrowed set, smallest element first.",
         "markdown": "A walk over a borrowed set, smallest element first.",
@@ -11361,7 +11284,7 @@
           "name": "next",
           "type": "*var TreeNode<T, ()>",
           "public": false,
-          "line": 379,
+          "line": 375,
           "doc": "The node to hand back next, or null when the walk is done.",
           "targets": [
             "windows-x86_64",
@@ -11381,7 +11304,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 387,
+          "line": 383,
           "signature": "pub func Next(&var self) -> T?",
           "typeParams": [],
           "params": [],
@@ -11429,9 +11352,9 @@
       "displayName": "TreeSetRangeIterator<T>",
       "module": "TreeSet",
       "source": "Src/TreeSet.rux",
-      "line": 402,
-      "signature": "pub struct TreeSetRangeIterator<T>",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 396,
+      "signature": "pub struct TreeSetRangeIterator<T: Copyable>",
+      "typeParams": [{ "name": "T", "bounds": ["Copyable"] }],
       "doc": {
         "summary": "A walk over a borrowed set that stops at a bound.",
         "markdown": "A walk over a borrowed set that stops at a bound.",
@@ -11447,7 +11370,7 @@
           "name": "next",
           "type": "*var TreeNode<T, ()>",
           "public": false,
-          "line": 404,
+          "line": 398,
           "doc": "The node to hand back next, or null when the walk is done.",
           "targets": [
             "windows-x86_64",
@@ -11464,7 +11387,7 @@
           "name": "end",
           "type": "T",
           "public": false,
-          "line": 406,
+          "line": 400,
           "doc": "The first element the walk will not hand back.",
           "targets": [
             "windows-x86_64",
@@ -11481,7 +11404,7 @@
           "name": "compare",
           "type": "func(T, T) -> Ordering",
           "public": false,
-          "line": 408,
+          "line": 402,
           "doc": "The order the set is kept in, so the walk knows where to stop.",
           "targets": [
             "windows-x86_64",
@@ -11501,7 +11424,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 415,
+          "line": 409,
           "signature": "pub func Next(&var self) -> T?",
           "typeParams": [],
           "params": [],
@@ -11549,9 +11472,9 @@
       "displayName": "TreeSetIntoIterator<T>",
       "module": "TreeSet",
       "source": "Src/TreeSet.rux",
-      "line": 437,
-      "signature": "pub struct TreeSetIntoIterator<T>",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 429,
+      "signature": "pub struct TreeSetIntoIterator<T: Copyable>",
+      "typeParams": [{ "name": "T", "bounds": ["Copyable"] }],
       "doc": {
         "summary": "A walk that consumes the set, smallest element first.",
         "markdown": "A walk that consumes the set, smallest element first.\nOwns the nodes, and destroys whatever is left in them when it dies — so a walk stopped part-way destroys the\nrest exactly once, and nothing already handed out is destroyed twice.",
@@ -11567,7 +11490,7 @@
           "name": "tree",
           "type": "Tree<T, ()>",
           "public": false,
-          "line": 439,
+          "line": 431,
           "doc": "What is left of the set.",
           "targets": [
             "windows-x86_64",
@@ -11587,7 +11510,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 450,
+          "line": 442,
           "signature": "pub func Next(&var self) -> T?",
           "typeParams": [],
           "params": [],
@@ -11675,7 +11598,7 @@
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "A growable contiguous run of elements on storage this vector owns.",
-        "markdown": "A growable contiguous run of elements on storage this vector owns.\nMove-only: it owns its elements and storage, prohibits copying, and destroys both with `~Vector`.",
+        "markdown": "A growable contiguous run of elements on storage this vector owns.\nMove-only: it owns its elements and storage, prohibits copying, and destroys both in its destructor.",
         "typeParams": [{ "name": "T", "markdown": "the element type" }],
         "params": [],
         "returns": null,
@@ -11757,10 +11680,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Vector",
+          "kind": "associated",
+          "name": "New",
           "line": 55,
-          "signature": "pub func Vector(allocator: Allocator) -> Vector<T>",
+          "signature": "pub func New(allocator: Allocator) -> Vector<T>",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -11900,7 +11823,7 @@
           "kind": "method",
           "name": "TryClone",
           "line": 116,
-          "signature": "pub func TryClone(&self) -> Vector<T> throws AllocError",
+          "signature": "pub func TryClone(&self) -> Vector<T> ! AllocError",
           "typeParams": [],
           "params": [],
           "receiver": "&Vector<T>",
@@ -12060,7 +11983,7 @@
           "kind": "method",
           "name": "TryReserve",
           "line": 190,
-          "signature": "pub func TryReserve(&var self, additional: uint) throws AllocError",
+          "signature": "pub func TryReserve(&var self, additional: uint) -> !AllocError",
           "typeParams": [],
           "params": [{ "name": "additional", "type": "uint" }],
           "receiver": "&var Vector<T>",
@@ -12186,9 +12109,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Vector",
+          "name": "~",
           "line": 249,
-          "signature": "func ~Vector(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Vector<T>",
@@ -12252,7 +12175,7 @@
           "kind": "method",
           "name": "TryPush",
           "line": 275,
-          "signature": "pub func TryPush(&var self, value: T) throws AllocError",
+          "signature": "pub func TryPush(&var self, value: T) -> !AllocError",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&var Vector<T>",
@@ -12444,7 +12367,7 @@
           "kind": "method",
           "name": "Set",
           "line": 360,
-          "signature": "pub func Set(&var self, index: uint, value: T) throws CollectionError",
+          "signature": "pub func Set(&var self, index: uint, value: T) -> !CollectionError",
           "typeParams": [],
           "params": [
             { "name": "index", "type": "uint" },
@@ -12482,7 +12405,7 @@
           "kind": "method",
           "name": "Replace",
           "line": 380,
-          "signature": "pub func Replace(&var self, index: uint, value: T) -> T throws CollectionError",
+          "signature": "pub func Replace(&var self, index: uint, value: T) -> T ! CollectionError",
           "typeParams": [],
           "params": [
             { "name": "index", "type": "uint" },
@@ -12680,7 +12603,7 @@
           "kind": "method",
           "name": "Insert",
           "line": 447,
-          "signature": "pub func Insert(&var self, index: uint, value: T) throws CollectionError",
+          "signature": "pub func Insert(&var self, index: uint, value: T) -> !CollectionError",
           "typeParams": [],
           "params": [
             { "name": "index", "type": "uint" },
@@ -12922,7 +12845,7 @@
           "kind": "method",
           "name": "IntoIterator",
           "line": 578,
-          "signature": "pub func IntoIterator(self) -> VectorIntoIterator<T>",
+          "signature": "pub func IntoIterator(~self) -> VectorIntoIterator<T>",
           "typeParams": [],
           "params": [],
           "receiver": "Vector<T>",
@@ -12953,7 +12876,7 @@
         {
           "kind": "method",
           "name": "ToArray",
-          "line": 602,
+          "line": 595,
           "signature": "pub func ToArray(&self) -> Array<T>",
           "typeParams": [],
           "params": [],
@@ -12985,8 +12908,8 @@
         {
           "kind": "method",
           "name": "IntoArray",
-          "line": 613,
-          "signature": "pub func IntoArray(self) -> Array<T>",
+          "line": 606,
+          "signature": "pub func IntoArray(~self) -> Array<T>",
           "typeParams": [],
           "params": [],
           "receiver": "Vector<T>",
@@ -13033,12 +12956,12 @@
       "displayName": "VectorIntoIterator<T>",
       "module": "Vector",
       "source": "Src/Vector.rux",
-      "line": 632,
+      "line": 620,
       "signature": "pub struct VectorIntoIterator<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "An iterator that takes a vector apart, yielding each element by value.",
-        "markdown": "An iterator that takes a vector apart, yielding each element by value.\nMove-only: it owns the storage the vector owned, prohibits copying, and destroys it with `~VectorIntoIterator`.\nThis is how a vector of elements that\nown something is emptied into somewhere else — each element is moved out rather than copied, and whatever is\nleft when the iterator's life ends is destroyed with it.",
+        "markdown": "An iterator that takes a vector apart, yielding each element by value.\nMove-only: it owns the storage the vector owned, prohibits copying, and destroys it in its destructor.\nThis is how a vector of elements that\nown something is emptied into somewhere else — each element is moved out rather than copied, and whatever is\nleft when the iterator's life ends is destroyed with it.",
         "typeParams": [{ "name": "T", "markdown": "the element type" }],
         "params": [],
         "returns": null,
@@ -13051,7 +12974,7 @@
           "name": "data",
           "type": "*var T",
           "public": false,
-          "line": 634,
+          "line": 622,
           "doc": "The storage taken from the vector.",
           "targets": [
             "windows-x86_64",
@@ -13068,7 +12991,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 636,
+          "line": 624,
           "doc": "How many elements it holds.",
           "targets": [
             "windows-x86_64",
@@ -13085,7 +13008,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 638,
+          "line": 626,
           "doc": "How many the storage could hold, kept so the block is released with the layout it was taken under.",
           "targets": [
             "windows-x86_64",
@@ -13102,7 +13025,7 @@
           "name": "position",
           "type": "uint",
           "public": false,
-          "line": 640,
+          "line": 628,
           "doc": "How many have been yielded.",
           "targets": [
             "windows-x86_64",
@@ -13119,7 +13042,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 642,
+          "line": 630,
           "doc": "Where the storage goes back to.",
           "targets": [
             "windows-x86_64",
@@ -13138,9 +13061,9 @@
       "members": [
         {
           "kind": "destructor",
-          "name": "~VectorIntoIterator",
-          "line": 650,
-          "signature": "func ~VectorIntoIterator(&var self)",
+          "name": "~",
+          "line": 638,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var VectorIntoIterator<T>",
@@ -13171,7 +13094,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 674,
+          "line": 662,
           "signature": "pub func Next(&var self) -> T?",
           "typeParams": [],
           "params": [],

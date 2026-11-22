@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Find.rux
-  line: 23
+  line: 24
 seo:
   title: "Searching — Algorithms API"
   description: "Linear queries over a slice in no particular order: whether it holds a value, where, and how many."
@@ -31,7 +31,7 @@ Whether any element of `items` equals `value`.
 `items` is borrowed and read; `value` is read by value. An empty slice contains nothing, so this is false.
 Cannot fail. Runs in time proportional to the length, stopping at the first match, and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L24)
 
 **Type parameters**
 
@@ -58,7 +58,7 @@ How many elements of `items` equal `value`.
 `items` is borrowed and read; `value` is read by value. An empty slice gives zero.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L36)
 
 **Type parameters**
 
@@ -86,7 +86,7 @@ The index of the first element of `items` equal to `value`.
 empty slice.
 Cannot fail. Runs in time proportional to the length, stopping at the first match, and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L58)
 
 **Type parameters**
 
@@ -114,7 +114,7 @@ The index of the last element of `items` equal to `value`.
 Cannot fail. Runs in time proportional to the length, stopping at the first match from the end, and allocates
 nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L77)
 
 **Type parameters**
 
@@ -145,7 +145,7 @@ The index of the first element of `items` that `predicate` accepts.
 it accepts none.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L96)
 
 **Type parameters**
 
@@ -176,7 +176,7 @@ The index of the last element of `items` that `predicate` accepts.
 `none` when it accepts none.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L115)
 
 **Type parameters**
 
@@ -206,7 +206,7 @@ How many elements of `items` the predicate accepts.
 `items` is borrowed and read; `predicate` is called once per element. An empty slice gives zero.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L133)
 
 **Type parameters**
 
@@ -238,7 +238,7 @@ element that fails.
 Cannot fail. Runs in time proportional to the length, stopping at the first rejection, and allocates nothing
 beyond whatever `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L156)
 
 **Type parameters**
 
@@ -269,7 +269,7 @@ Whether `predicate` accepts at least one element of `items`.
 Cannot fail. Runs in time proportional to the length, stopping at the first acceptance, and allocates nothing
 beyond whatever `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L175)
 
 **Type parameters**
 
@@ -300,7 +300,7 @@ Whether `predicate` accepts no element of `items`.
 Cannot fail. Runs in time proportional to the length, stopping at the first acceptance, and allocates nothing
 beyond whatever `predicate` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Find.rux#L188)
 
 **Type parameters**
 

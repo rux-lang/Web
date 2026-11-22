@@ -55,7 +55,7 @@ Running out of memory terminates the program. `Push`, `Insert`, `Reserve`, `Clon
 
 A `Try*` operation throws `Unsupported` for a size no allocator could serve, and otherwise what the allocator refused with; `AllocError::IsTransient` says whether trying again could help.
 
-What is left for a caller to handle is an index the collection does not have. `Set`, `Replace` and a vector's `Insert` throw `CollectionError`, whose one case is `IndexOutOfRange`, so a call to one is marked with `try`:
+What is left for a caller to handle is an index the collection does not have. `Set`, `Replace` and a vector's `Insert` throw `CollectionError`, whose one case is `IndexOutOfRange`, so a call to one is a fallible to handle:
 
 ```rux
 enum CollectionError: uint8 {
@@ -69,12 +69,12 @@ An operation that reports an ordinary miss does it with an optional — `Get`, `
 import Allocator::{ Allocator, SystemAllocator };
 import Collections::Vector;
 
-let allocator = SystemAllocator();
-var numbers = Vector<int32>(allocator);
+let allocator = SystemAllocator::New();
+var numbers = Vector<int32>::New(allocator);
 numbers.Push(1);
-try numbers.TryReserve(1024) catch { _ => return 1 };
+numbers.TryReserve(1024) catch { _ => return 1 };
 
-if numbers.Pop() is .Some(last) {
+if let last? = numbers.Pop() {
     // ...
 }
 ```
@@ -87,19 +87,19 @@ Containers talk to the allocator in elements rather than bytes, through three he
 
 ## Ownership
 
-Every owning container prohibits copying. Hand one to a consuming function with `move`, as in `Consume(move values)`; the compiler rejects later reads of the source. Canonical destructors destroy initialized elements before releasing their storage. The same capability is derived through generic fields, so a map or consuming iterator containing an owning kernel is also move-only.
+Every owning container prohibits copying. A named container written bare is given away, as in `Consume(values)`; the compiler rejects later reads of the source, and `Show(&values)` lends it instead. Canonical destructors destroy initialized elements before releasing their storage. The same capability is derived through generic fields, so a map or consuming iterator containing an owning kernel is also move-only.
 
-Canonical empty construction is `Vector<T>(allocator)`, `Deque<T>(allocator)`, `HashMap<K, V>(...)`, `HashSet<T>(...)`, `TreeMap<K, V>(...)`, and `TreeSet<T>(...)`. Descriptive factories such as `FromSlice`, `WithCapacity`, and `Filled` retain their names.
+Canonical empty construction is `Vector<T>::New(allocator)`, `Deque<T>::New(allocator)`, `HashMap<K, V>::New(...)`, `HashSet<T>::New(...)`, `TreeMap<K, V>::New(...)`, and `TreeSet<T>::New(...)`. Descriptive factories such as `FromSlice`, `WithCapacity`, and `Filled` retain their names.
 
 The allocator is injected at construction and kept, so an array built from an arena disappears with the arena and one built from a pool comes back to the pool.
 
 Every constructor _copies_ its elements into the storage, which means an array of a move-only element type cannot be built this way: copying such an element would give two owners to a value that promises one. `Vector<T>` and its `Push` is the shape that works, since each element is moved in exactly once.
 
-A container destroys an element it does not know is droppable by relocating it from raw backing storage into a local and letting the local's life end. This raw-storage boundary is deliberate: safe references cannot transfer ownership through borrowed storage. It costs nothing for an element type that owns nothing and is what `~Array` does.
+A container destroys an element it does not know is droppable by relocating it from raw backing storage into a local and letting the local's life end. This raw-storage boundary is deliberate: safe references cannot transfer ownership through borrowed storage. It costs nothing for an element type that owns nothing and is what the destructor of `Array` does.
 
 ## Elements that own something
 
-`Vector::Push`, deque pushes, and map/set insertion move their arguments into raw backing storage. Pass a named move-only element explicitly, for example `values.Push(move value)`. Each element is destroyed exactly once, when it is removed without being returned or when its container dies. `Pop`, removals, and consuming iterators move elements back out.
+`Vector::Push`, deque pushes, and map/set insertion move their arguments into raw backing storage. A named move-only element written bare is given away, for example `values.Push(value)`. Each element is destroyed exactly once, when it is removed without being returned or when its container dies. `Pop`, removals, and consuming iterators move elements back out.
 
 `Array`'s constructors copy, so an array of owning elements has to be built through a vector first.
 
@@ -111,13 +111,13 @@ Whether handing a value to a generic container consumes it depends on what its e
 
 All three borrow their storage. The storage must outlive the iterator and every pointer it yields. Array and Vector provide `References()` and `MutableReferences()`; the writable form borrows the container mutably when the cursor is created and visits only initialized elements.
 
-`IntoIterator` is the owning alternative for vectors, maps, and sets. Invoke it on a named owner as `(move values).IntoIterator()`; whatever is not yielded is destroyed with the consuming iterator. Borrowed iterators retain raw storage addresses because references cannot be stored in fields or returned.
+`IntoIterator` is the owning alternative for vectors, maps, and sets: `for value in values` over a named owner calls it and takes the container, `values.IntoIterator()` does the same by hand, and `for value in &values` lends the container instead. Whatever is not yielded is destroyed with the consuming iterator. Borrowed iterators retain raw storage addresses because references cannot be stored in fields or returned.
 
 A `for` loop over an iterator _variable_ advances that variable, so a loop that stops early leaves it where the walk stopped and a later loop or `Next` call resumes there. Iterate over a fresh iterator, or over the container, to walk from the start without touching the caller's.
 
 For example, `for element in numbers.MutableReferences() { *element = *element * 2; }` doubles the stored numbers.
 
-Construct `MutableReferenceIterator<T>(items)` directly to walk a `var T[..]`. Repeated `Next()` calls return `(*var T)?` and keep returning `none` after exhaustion. These cursors store raw pointers: callers must coordinate aliases and avoid moving or destroying the owner, or growing, shrinking, or reallocating its storage while an iterator or yielded pointer is in use. Iteration itself does not allocate or destroy elements.
+Construct `MutableReferenceIterator<T>::New(items)` directly to walk a `var T[..]`. Repeated `Next()` calls return `(*var T)?` and keep returning `none` after exhaustion. These cursors store raw pointers: callers must coordinate aliases and avoid moving or destroying the owner, or growing, shrinking, or reallocating its storage while an iterator or yielded pointer is in use. Iteration itself does not allocate or destroy elements.
 
 ## Hashing
 
@@ -200,7 +200,7 @@ Growth doubles from a floor of four slots, so a run of additions costs an amorti
 Algorithms takes a pointer and a length, so a container passes the fields of a view straight in. The compacting functions return a surviving length without resizing anything, and `Vector::Truncate` is what accepts it:
 
 ```rux
-import Algorithms::Unique;
+import Algorithms::Modify::Unique;
 
 let view = numbers.AsMutableSlice();
 let kept = Unique<int32>(view);
@@ -213,24 +213,27 @@ numbers.Truncate(kept);
 
 ```rux
 import Allocator::{ Allocator, SystemAllocator };
-import Collections::{ Vector, WriteVectorDebug };
-import Io::{ ConsoleWriter, IoError };
-import Text::{ FormatError, FormatSpec, TextWriter };
+import Collections::Vector;
+import Collections::Presentation::WriteVectorDebug;
+import Io::IoError;
+import Io::TextBoundary::ConsoleWriter;
+import Text::TextWriter;
+import Text::Formatting::{ FormatError, FormatSpec };
 
 // `Rux/Format` is imported for its `Debug` implementations, not for a name: `WriteVectorDebug` is bound on
 // `T: Debug`, and the implementation for `int32` lives there. Without this the bound is unsatisfied.
 import Format::*;
 
-func Show() throws FormatError {
-    let allocator = SystemAllocator();
-    var numbers = Vector<int32>(allocator);
+func Show() -> !FormatError {
+    let allocator = SystemAllocator::New();
+    var numbers = Vector<int32>::New(allocator);
     numbers.Push(1);
     numbers.Push(2);
 
     var failure: IoError? = none;
-    var console = ConsoleWriter(@failure);
+    var console = ConsoleWriter::New(@failure);
     let sink: &var TextWriter = console;
-    try WriteVectorDebug<int32>(sink, numbers, FormatSpec::Plain());
+    WriteVectorDebug<int32>(sink, &numbers, FormatSpec::Plain())!;
 }
 ```
 
@@ -244,12 +247,12 @@ Everything is borrowed. A container owns its elements and hands out no copy of a
 
 ## Guarantees and limitations
 
-- **Owners are move-only.** Their canonical destructor releases elements and storage, which makes them move-only. `Clone` is explicit and copies elements byte for byte, so it is available only for a copyable element type, plain data that `Core::Copyable` describes; `Vector<String>::Clone` is rejected at the element copy where the container's code makes it.
+- **Owners are move-only.** Their canonical destructor releases elements and storage, which makes them move-only. `Clone` is explicit and copies elements byte for byte, so it is available only for a copyable element type, plain data that `Core::Ownership::Copyable` describes; `Vector<String>::Clone` is rejected at the element copy where the container's code makes it.
 - **Elements are lent by reference.** `At`, `AtMutable`, `First`, `Last`, `Front`, `Back`, `Peek`, `Find` and `FindMutable` return `&T?` or `&var T?`, which keeps the container borrowed while the reference is in use: a shared one blocks growth, removal and every write, a mutable one every other use, so no element moves under a reference to it.
 - **Raw storage remains deliberate.** Allocator blocks, tree links, stored iterator addresses, and scalar output slots cannot be references. They never transfer ownership merely by being passed.
 - **Views borrow, never own.** Growth, rehashing, destruction, and `Deque::MakeContiguous` invalidate relevant views and raw element pointers. The compiler tracks reference loans, but deliberately raw addresses remain the caller's responsibility.
 - **Relocation uses the raw-storage compatibility boundary.** Explicit moves are used for named owners and elements; internal relocation through allocator memory remains an intentional raw operation until ownership-aware raw places are expressible.
-- **Kernel functions that take a raw node or slot count are `unsafe func`.** The tree kernel's `Tree::Minimum`, `Maximum`, `Successor` and `Predecessor` take a node pointer they cannot check: the caller must pass null or a live node of a tree whose links all point at live nodes of it. `Tree::Detach` must be given a live node of that very tree, and frees it, so nothing may read through the pointer afterwards. The hash-table kernel's `Table::Rehash` must be given a power of two no smaller than `MinimumTableCapacity`, which is what `Table::CapacityFor` returns, because every slot index is masked by it. Each call therefore sits in an `unsafe` block whose `// Safety:` comment says why that holds. The containers built on the kernels call them only that way, so nothing a container offers needs `unsafe`.
+- **Kernel functions that take a raw node or slot count put an obligation on their caller.** The tree kernel's `Tree::Minimum`, `Maximum`, `Successor` and `Predecessor` take a node pointer they cannot check: the caller must pass null or a live node of a tree whose links all point at live nodes of it. `Tree::Detach` must be given a live node of that very tree, and frees it, so nothing may read through the pointer afterwards. The hash-table kernel's `Table::Rehash` must be given a power of two no smaller than `MinimumTableCapacity`, which is what `Table::CapacityFor` returns, because every slot index is masked by it. Each call therefore sits under a `// Safety:` comment that says why that holds. The containers built on the kernels call them only that way, so nothing a container offers puts that obligation on its own caller.
 - **Indexing is checked.** `Get`, `At`, `AtMutable`, and `Set` report a miss or `IndexOutOfRange` rather than indexing past the allocation.
 
 ## Documentation

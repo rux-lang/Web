@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Comparing.rux
-  line: 19
+  line: 20
 seo:
   title: "Comparing — Collections API"
   description: Ready-made ordering callbacks for the key types a tree map or set is keyed on.
@@ -30,7 +30,7 @@ pub func CompareUint(left: uint, right: uint) -> Ordering
 The ordering of two `uint` values.
 Both are read by value. Cannot fail; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L20)
 
 **Parameters**
 
@@ -52,7 +52,7 @@ pub func CompareUint64(
 
 The ordering of two `uint64` values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L31)
 
 **Parameters**
 
@@ -74,7 +74,7 @@ pub func CompareUint32(
 
 The ordering of two `uint32` values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L42)
 
 **Parameters**
 
@@ -94,7 +94,7 @@ pub func CompareInt64(left: int64, right: int64) -> Ordering
 The ordering of two `int64` values.
 Signed, so this is not the unsigned comparison of the same bits: a negative key sorts below every positive one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L54)
 
 **Parameters**
 
@@ -113,7 +113,7 @@ pub func CompareInt32(left: int32, right: int32) -> Ordering
 
 The ordering of two `int32` values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L65)
 
 **Parameters**
 
@@ -134,7 +134,7 @@ The ordering of two `char8` code units.
 By code unit, which for ASCII is alphabetical and for anything above it is UTF-8 byte order — which is the order
 of the code points, since UTF-8 is ordered that way by construction.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L78)
 
 **Parameters**
 
@@ -159,7 +159,7 @@ Both are borrowed and read. Compares code unit by code unit and, where every sha
 shorter one first — which is the ordering a dictionary uses, and the one `Rux/Algorithms` sorts by.
 Cannot fail. Runs in time proportional to the shorter length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Comparing.rux#L92)
 
 **Parameters**
 

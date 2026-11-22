@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Tree.rux
-  line: 50
+  line: 52
 seo:
   title: "Tree<K, V> — Collections API"
   description: "An ordered collection of entries, kept balanced by colouring."
@@ -22,26 +22,26 @@ seo:
 An ordered collection of entries, kept balanced by colouring.
 
 ```rux
-pub struct Tree<K, V> {
+pub struct Tree<K: Copyable, V> {
     // private fields
 }
 ```
 
-Owns every node and everything in them, so it prohibits copying and destroys them with [`~Tree`](/docs/api/collections/tree#destructor).
+Owns every node and everything in them, so it prohibits copying and destroys them in its destructor.
 
 ## Type parameters
 
-| Name | Description    |
-| ---- | -------------- |
-| `K`  | the key type   |
-| `V`  | the value type |
+| Name          | Description    |
+| ------------- | -------------- |
+| `K: Copyable` | the key type   |
+| `V`           | the value type |
 
 ## Constructors
 
-<h3 id="new"><code>Tree</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Tree(allocator: Allocator) -> Tree<K, V>
+pub func New(allocator: Allocator) -> Tree<K, V>
 ```
 
 An empty tree that has allocated nothing.
@@ -54,14 +54,14 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: an empty tree that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L68)
 
 ## Associated functions
 
 <h3 id="minimum"><code>Minimum</code></h3>
 
 ```rux
-pub unsafe func Minimum(from: *var TreeNode<K, V>) -> *var TreeNode<K, V>
+pub func Minimum(from: *var TreeNode<K, V>) -> *var TreeNode<K, V>
 ```
 
 The node holding the smallest key of the subtree at `from`, or null when `from` is null.
@@ -74,12 +74,12 @@ Safety: `from` must be null or a live node of a tree whose links all point at li
 
 **Returns**: the leftmost node of that subtree, or null when it is empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L241)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L246)
 
 <h3 id="maximum"><code>Maximum</code></h3>
 
 ```rux
-pub unsafe func Maximum(from: *var TreeNode<K, V>) -> *var TreeNode<K, V>
+pub func Maximum(from: *var TreeNode<K, V>) -> *var TreeNode<K, V>
 ```
 
 The node holding the largest key of the subtree at `from`, or null when `from` is null.
@@ -92,12 +92,12 @@ Safety: `from` must be null or a live node of a tree whose links all point at li
 
 **Returns**: the rightmost node of that subtree, or null when it is empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L255)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L260)
 
 <h3 id="successor"><code>Successor</code></h3>
 
 ```rux
-pub unsafe func Successor(node: *var TreeNode<K, V>) -> *var TreeNode<K, V>
+pub func Successor(node: *var TreeNode<K, V>) -> *var TreeNode<K, V>
 ```
 
 The node holding the next key after `node`'s, or null when `node` holds the largest or is itself null.
@@ -113,12 +113,12 @@ Safety: `node` must be null or a live node of a tree whose links all point at li
 
 **Returns**: the node with the next key in order, or null after the last
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L272)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L277)
 
 <h3 id="predecessor"><code>Predecessor</code></h3>
 
 ```rux
-pub unsafe func Predecessor(node: *var TreeNode<K, V>) -> *var TreeNode<K, V>
+pub func Predecessor(node: *var TreeNode<K, V>) -> *var TreeNode<K, V>
 ```
 
 The node holding the key before `node`'s, or null when `node` holds the smallest or is itself null.
@@ -131,7 +131,7 @@ Safety: `node` must be null or a live node of a tree whose links all point at li
 
 **Returns**: the node with the previous key in order, or null before the first
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L290)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L295)
 
 ## Methods
 
@@ -146,7 +146,7 @@ How many entries the tree holds.
 
 **Returns**: how many nodes it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L76)
 
 <h3 id="root"><code>Root</code></h3>
 
@@ -155,12 +155,12 @@ pub func Root(&self) -> *var TreeNode<K, V>
 ```
 
 The topmost node, or null for an empty tree, for code that walks the shape itself.
-`self` is borrowed. Reading through the pointer needs `unsafe`, and it is valid until the tree next changes;
+`self` is borrowed. The pointer is valid until the tree next changes;
 the field it reads stays private, so only the tree's own operations can move it.
 
 **Returns**: the root node, or null when the tree is empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L85)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
@@ -173,7 +173,7 @@ Whether the tree holds no entries.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L93)
 
 <h3 id="find"><code>Find</code></h3>
 
@@ -198,7 +198,7 @@ length. Allocates nothing.
 
 **Returns**: the node with that key, or null when it is absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L162)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L164)
 
 <h3 id="above"><code>Above</code></h3>
 
@@ -225,7 +225,7 @@ Runs in time proportional to the height and allocates nothing.
 
 **Returns**: the node with the smallest key above this one, or null
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L193)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L196)
 
 <h3 id="below"><code>Below</code></h3>
 
@@ -247,7 +247,7 @@ The mirror of [`Above`](/docs/api/collections/tree#above), with the same costs a
 
 **Returns**: the node with the largest key below this one, or null
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L221)
 
 <h3 id="attach"><code>Attach</code></h3>
 
@@ -262,12 +262,11 @@ pub func Attach(
 
 Puts `key` and `value` into the tree, replacing the value already stored under an equal key.
 Takes ownership of both. Hands back the value an equal key already had, or `none` when the key is new — so a
-caller learns whether anything was displaced without a lookup first, and gets the displaced value rather than
-having it quietly destroyed. When the key is already present the new key is destroyed rather than stored, since
-the one in the tree is equal to it and is what everything already hanging below it was ordered against.
-Terminates the program when the node cannot be allocated.
-Runs in time proportional to the height, with at most two rotations. Allocates one node for a new key and
-nothing at all for one already present.
+caller learns whether anything was displaced without a lookup first, and gets the displaced value rather
+than having it quietly destroyed. When the key is already present the new key is destroyed rather than
+stored, since the one in the tree is equal to it and is what everything already hanging below it was ordered
+against. Terminates the program when the node cannot be allocated. Runs in time proportional to the height,
+with at most two rotations. Allocates one node for a new key and nothing at all for one already present.
 
 | Name      | Type                     | Description                           |
 | --------- | ------------------------ | ------------------------------------- |
@@ -277,12 +276,12 @@ nothing at all for one already present.
 
 **Returns**: the value an equal key already held, or `none` when the key is new
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L371)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L375)
 
 <h3 id="detach"><code>Detach</code></h3>
 
 ```rux
-pub unsafe func Detach(
+pub func Detach(
     &var self,
     node: *var TreeNode<K, V>
 ) -> KeyValue<K, V>
@@ -302,7 +301,7 @@ Safety: `node` must be a live node of this tree, and is freed here — nothing m
 
 **Returns**: the entry the node held
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L550)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L553)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -315,26 +314,26 @@ Destroys every entry and gives every node back to the allocator, leaving an empt
 kept back to make that cheaper, since a tree has no capacity to keep.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L605)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L608)
 
 ## Destructor
 
 ```rux
-func ~Tree(&var self)
+destructor
 ```
 
 Destroys every entry and gives every node back.
 Runs when the tree dies. Never called directly; a tree is move-only, so there is exactly one of these per
 tree however many times it was passed along.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L648)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L649)
 
 ## Related
 
 <h3 id="tree-node"><code>TreeNode&lt;K, V&gt;</code></h3>
 
 ```rux
-pub struct TreeNode<K, V> {
+pub struct TreeNode<K: Copyable, V> {
     pub key: K;
     pub value: V;
     pub left: *var TreeNode<K, V>;
@@ -347,14 +346,14 @@ pub struct TreeNode<K, V> {
 One node of a red-black tree.
 Its own allocation, so its address survives any rearrangement of the tree around it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Tree.rux#L32)
 
 **Type parameters**
 
-| Name | Description    |
-| ---- | -------------- |
-| `K`  | the key type   |
-| `V`  | the value type |
+| Name          | Description    |
+| ------------- | -------------- |
+| `K: Copyable` | the key type   |
+| `V`           | the value type |
 
 **Fields**
 

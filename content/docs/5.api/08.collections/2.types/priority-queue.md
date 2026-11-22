@@ -37,10 +37,10 @@ Move-only: it owns its elements.
 
 ## Constructors
 
-<h3 id="new"><code>PriorityQueue</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func PriorityQueue(allocator: Allocator) -> PriorityQueue<T>
+pub func New(allocator: Allocator) -> PriorityQueue<T>
 ```
 
 An empty queue that has not allocated anything.

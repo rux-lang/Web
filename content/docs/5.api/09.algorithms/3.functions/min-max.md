@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/MinMax.rux
-  line: 22
+  line: 24
 seo:
   title: "Minimum and maximum — Algorithms API"
   description: "The smallest and largest elements of a slice, and clamping a value into a range."
@@ -33,7 +33,7 @@ tie.
 Requires `<` on the element type.
 Cannot fail. Runs in time proportional to the length, comparing each element once, and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L24)
 
 **Type parameters**
 
@@ -61,7 +61,7 @@ tie.
 Requires `<` on the element type.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L47)
 
 **Type parameters**
 
@@ -91,7 +91,7 @@ The index of the smallest element of `items`, with `compare` deciding.
 slice, and the earliest index when several elements tie.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L70)
 
 **Type parameters**
 
@@ -122,7 +122,7 @@ The index of the largest element of `items`, with `compare` deciding.
 slice, and the earliest index when several elements tie.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L93)
 
 **Type parameters**
 
@@ -150,16 +150,13 @@ pub func MinMaxIndex<T>(
 ```
 
 The indices of the smallest and largest elements of `items`, in one pass.
-`items` is borrowed and read; `smallest` and `largest` are written only when this reports true. Reports false for
-an empty slice and writes neither. Ties go to the earliest index on both ends, exactly as the single-ended
-searches promise.
-Two separate passes would compare each element twice; this compares them in pairs and so makes about three
-comparisons for every two elements.
-Requires `<` on the element type.
-Cannot fail. Runs in time proportional to the length and allocates nothing.
-`smallest` and `largest` must be non-null and writable.
+`items` is borrowed and read; `smallest` and `largest` are written only when this reports true. Reports false
+for an empty slice and writes neither. Ties go to the earliest index on both ends, exactly as the single-ended
+searches promise. Two separate passes would compare each element twice; this compares them in pairs and so makes
+about three comparisons for every two elements. Requires `<` on the element type. Cannot fail. Runs in time
+proportional to the length and allocates nothing. `smallest` and `largest` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L120)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L119)
 
 **Type parameters**
 
@@ -189,12 +186,12 @@ pub func MinMaxIndexBy<T>(
 ```
 
 The indices of the smallest and largest elements of `items`, in one pass, with `compare` deciding.
-`items` is borrowed and read; `smallest` and `largest` are written only when this reports true. Reports false for
-an empty slice and writes neither. Ties go to the earliest index on both ends.
-Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.
-`smallest` and `largest` must be non-null and writable.
+`items` is borrowed and read; `smallest` and `largest` are written only when this reports true. Reports false
+for an empty slice and writes neither. Ties go to the earliest index on both ends. Cannot fail. Runs in time
+proportional to the length and allocates nothing beyond whatever `compare` does. `smallest` and `largest` must
+be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L157)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L154)
 
 **Type parameters**
 
@@ -223,7 +220,7 @@ The smaller of two values, or `left` when neither is smaller.
 Both are read by value and one is returned by copy. Requires `<` on the type.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L186)
 
 **Type parameters**
 
@@ -250,7 +247,7 @@ The larger of two values, or `left` when neither is larger.
 Both are read by value and one is returned by copy. Requires `<` on the type.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L204)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L199)
 
 **Type parameters**
 
@@ -279,7 +276,7 @@ that could be right, so `low` is returned — the caller passed a range it canno
 Requires `<` on the type.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L220)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L215)
 
 **Type parameters**
 
@@ -300,7 +297,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="clamp-by"><code>ClampBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func ClampBy<T>(
+pub func ClampBy<T: Copyable>(
     value: T,
     low: T,
     high: T,
@@ -313,13 +310,13 @@ All three values are read by value and one is returned by copy; `compare` is cal
 above `high` returns `low`, exactly as [`Clamp`](/docs/api/algorithms/min-max#clamp) does.
 Cannot fail. Runs in constant time and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L238)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/MinMax.rux#L233)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 

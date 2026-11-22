@@ -37,10 +37,10 @@ Move-only: it owns its elements.
 
 ## Constructors
 
-<h3 id="new"><code>SmallVector</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func SmallVector(allocator: Allocator) -> SmallVector<T>
+pub func New(allocator: Allocator) -> SmallVector<T>
 ```
 
 An empty vector, holding its first elements inline.
@@ -210,7 +210,7 @@ Destroys every element, keeping the storage.
 ## Destructor
 
 ```rux
-func ~SmallVector(&var self)
+destructor
 ```
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/SmallVector.rux#L204)

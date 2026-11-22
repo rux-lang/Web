@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/HashMap.rux
-  line: 26
+  line: 28
 seo:
   title: "HashMap<K, V> — Collections API"
   description: A hash table from keys to values.
@@ -22,7 +22,7 @@ seo:
 A hash table from keys to values.
 
 ```rux
-pub struct HashMap<K, V> {
+pub struct HashMap<K: Copyable, V> {
     // private fields
 }
 ```
@@ -31,17 +31,17 @@ Move-only: it owns its entries and storage and prohibits copying.
 
 ## Type parameters
 
-| Name | Description    |
-| ---- | -------------- |
-| `K`  | the key type   |
-| `V`  | the value type |
+| Name          | Description    |
+| ------------- | -------------- |
+| `K: Copyable` | the key type   |
+| `V`           | the value type |
 
 ## Constructors
 
-<h3 id="new"><code>HashMap</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func HashMap(
+pub func New(
     allocator: Allocator,
     hash: func(K, uint64, uint64) -> uint64,
     equals: func(K, K) -> bool
@@ -60,7 +60,7 @@ An empty map that has not allocated anything, with a seed drawn from the operati
 
 **Returns**: an empty collection that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L46)
 
 ## Associated functions
 
@@ -89,7 +89,7 @@ needs.
 
 **Returns**: an empty map keyed with that seed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L61)
 
 <h3 id="with-capacity"><code>WithCapacity</code></h3>
 
@@ -115,7 +115,7 @@ for. Terminates the program when the storage cannot be had.
 
 **Returns**: an empty map with room for that many entries already taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L75)
 
 ## Methods
 
@@ -129,7 +129,7 @@ How many entries the map holds.
 
 **Returns**: how many entries it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L85)
 
 <h3 id="capacity"><code>Capacity</code></h3>
 
@@ -143,7 +143,7 @@ displacing entries rather than storing them.
 
 **Returns**: how many entries fit before the next growth
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L94)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
@@ -155,7 +155,7 @@ Whether the map holds no entries.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L101)
 
 <h3 id="contains-key"><code>ContainsKey</code></h3>
 
@@ -173,7 +173,7 @@ Runs in constant expected time and allocates nothing.
 
 **Returns**: whether an entry with that key is present
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L111)
 
 <h3 id="get"><code>Get</code></h3>
 
@@ -190,7 +190,7 @@ The value stored under `key`, or `none` when there is no such entry.
 
 **Returns**: a copy of the value, or `none` when the key is absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L120)
 
 <h3 id="find"><code>Find</code></h3>
 
@@ -208,7 +208,7 @@ being taken, and nothing can be inserted or removed under it.
 
 **Returns**: a reference to the value, or `none` when the key is absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L133)
 
 <h3 id="find-mutable"><code>FindMutable</code></h3>
 
@@ -226,7 +226,7 @@ destroys the one that was there.
 
 **Returns**: a writable reference to the value, or `none` when the key is absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L146)
 
 <h3 id="insert"><code>Insert</code></h3>
 
@@ -245,7 +245,7 @@ Runs in constant expected time.
 | `key`   | `K`  | the key to look up  |
 | `value` | `V`  | the value to act on |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L161)
 
 <h3 id="try-insert"><code>TryInsert</code></h3>
 
@@ -254,7 +254,7 @@ pub func TryInsert(
     &var self,
     key: K,
     value: V
-) throws AllocError
+) -> !AllocError
 ```
 
 Stores `value` under `key`, replacing whatever was there, or throws why the table could not grow.
@@ -269,7 +269,7 @@ Runs in constant expected time.
 
 **Returns**: nothing, or throws the allocator's refusal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L171)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L173)
 
 <h3 id="remove"><code>Remove</code></h3>
 
@@ -289,7 +289,7 @@ Runs in constant expected time.
 
 **Returns**: the value that was stored, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L208)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L210)
 
 <h3 id="reserve"><code>Reserve</code></h3>
 
@@ -305,7 +305,7 @@ had; [`TryReserve`](/docs/api/collections/hash-map#try-reserve) reports that ins
 | ------------ | ------ | --------------------------------------- |
 | `additional` | `uint` | how many more elements to make room for |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L225)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L227)
 
 <h3 id="try-reserve"><code>TryReserve</code></h3>
 
@@ -313,7 +313,7 @@ had; [`TryReserve`](/docs/api/collections/hash-map#try-reserve) reports that ins
 pub func TryReserve(
     &var self,
     additional: uint
-) throws AllocError
+) -> !AllocError
 ```
 
 Makes room for `additional` more entries on top of those already present, or throws why it could not.
@@ -325,7 +325,7 @@ Makes room for `additional` more entries on top of those already present, or thr
 
 **Returns**: nothing, or throws the allocator's refusal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L234)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L236)
 
 <h3 id="shrink-to-fit"><code>ShrinkToFit</code></h3>
 
@@ -337,7 +337,7 @@ Releases the capacity the entry count does not need.
 `self` is borrowed mutably. An empty map gives up its storage entirely. Terminates the program when the
 allocator refuses the smaller table.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L242)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L244)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -348,7 +348,7 @@ pub func Clear(&var self)
 Destroys every entry, keeping the storage.
 `self` is borrowed mutably. Runs in time proportional to the capacity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L249)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L251)
 
 <h3 id="next-entry"><code>NextEntry</code></h3>
 
@@ -371,7 +371,7 @@ cursor is a slot.
 
 **Returns**: the next entry, or `none` once every slot has been looked at
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L263)
 
 <h3 id="get-or-insert"><code>GetOrInsert</code></h3>
 
@@ -395,7 +395,7 @@ Terminates the program when the table cannot grow.
 
 **Returns**: the value stored under `key`, borrowed for writing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L287)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L289)
 
 <h3 id="replace"><code>Replace</code></h3>
 
@@ -416,7 +416,7 @@ Terminates the program when the table cannot grow.
 
 **Returns**: the value that was there, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L311)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L313)
 
 <h3 id="remove-entry"><code>RemoveEntry</code></h3>
 
@@ -437,7 +437,7 @@ carrying anything the equality ignores makes them different values, and the map'
 
 **Returns**: the whole entry, or `none` when the key was absent
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L339)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L341)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
@@ -452,7 +452,7 @@ Nothing may be inserted or removed while the iterator is alive.
 
 **Returns**: a cursor over the entries, in an order the seed decides
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L357)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L359)
 
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
@@ -468,14 +468,14 @@ Whatever is not taken is destroyed when the iterator's life ends.
 
 **Returns**: a cursor that consumes the map as it goes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L374)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L376)
 
 ## Related
 
 <h3 id="hash-map-iterator"><code>HashMapIterator&lt;K, V&gt;</code></h3>
 
 ```rux
-pub struct HashMapIterator<K, V> {
+pub struct HashMapIterator<K: Copyable, V> {
     // private fields
 }
 ```
@@ -484,14 +484,14 @@ An iterator over the entries of a map, by copy.
 Borrows the map, so the map must outlive it and must not be inserted into or removed from while it is alive:
 either moves entries between slots, and this walks slots.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L421)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L402)
 
 **Type parameters**
 
-| Name | Description    |
-| ---- | -------------- |
-| `K`  | the key type   |
-| `V`  | the value type |
+| Name          | Description    |
+| ------------- | -------------- |
+| `K: Copyable` | the key type   |
+| `V`           | the value type |
 
 **Implements Iterator**
 
@@ -508,12 +508,12 @@ The next entry, or `none` once every slot has been looked at.
 
 **Returns**: the next entry, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L436)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L417)
 
 <h3 id="hash-map-into-iterator"><code>HashMapIntoIterator&lt;K, V&gt;</code></h3>
 
 ```rux
-pub struct HashMapIntoIterator<K, V> {
+pub struct HashMapIntoIterator<K: Copyable, V> {
     // private fields
 }
 ```
@@ -522,14 +522,14 @@ An iterator that takes a map apart, yielding each entry by value.
 Move-only: it owns the storage the map owned. Whatever is left when its life ends is destroyed with it, which is
 what makes stopping part-way safe.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L460)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L441)
 
 **Type parameters**
 
-| Name | Description    |
-| ---- | -------------- |
-| `K`  | the key type   |
-| `V`  | the value type |
+| Name          | Description    |
+| ------------- | -------------- |
+| `K: Copyable` | the key type   |
+| `V`           | the value type |
 
 **Implements Iterator**
 
@@ -547,37 +547,36 @@ destructor is exactly what nobody took.
 
 **Returns**: the next entry, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L476)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/HashMap.rux#L457)
 
 <h3 id="write-hash-map-debug"><code>WriteHashMapDebug&lt;K, V&gt;</code></h3>
 
 ```rux
-pub func WriteHashMapDebug<K: Debug, V: Debug>(
+pub func WriteHashMapDebug<K: Debug + Copyable, V: Debug>(
     writer: &var TextWriter,
     value: &HashMap<K, V>,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a borrowed hash map as `{key: value, key: value}`.
 An empty map is `{}`. Braces rather than brackets, because a map is not a run of elements and reading its
-rendering as one would be reading it wrongly.
-The order is the table's, which follows from the seed the map was made with and from every insertion and removal
-since — so it is not the insertion order, it does not hold between two maps with the same entries, and it changes
-between runs of the same program. Nothing here sorts, since that would need an ordering on the key that a hash
-map does not have. [`TreeMap`](/docs/api/collections/tree-map) is the container whose rendering is stable.
-Every key and value is shown through a borrow of it, so a map of move-only entries is shown without taking one
-out. `spec` is handed to each of them unchanged.
-Reports whatever the writer or an entry's implementation reported, stopping at the first refusal.
+rendering as one would be reading it wrongly. The order is the table's, which follows from the seed the map was
+made with and from every insertion and removal since — so it is not the insertion order, it does not hold
+between two maps with the same entries, and it changes between runs of the same program. Nothing here sorts,
+since that would need an ordering on the key that a hash map does not have. [`TreeMap`](/docs/api/collections/tree-map) is the container whose
+rendering is stable. Every key and value is shown through a borrow of it, so a map of move-only entries is shown
+without taking one out. `spec` is handed to each of them unchanged. Reports whatever the writer or an entry's
+implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L129)
 
 **Type parameters**
 
-| Name       | Description                                        |
-| ---------- | -------------------------------------------------- |
-| `K: Debug` | the key type, which must know how to show itself   |
-| `V: Debug` | the value type, which must know how to show itself |
+| Name                  | Description                                        |
+| --------------------- | -------------------------------------------------- |
+| `K: Debug + Copyable` | the key type, which must know how to show itself   |
+| `V: Debug`            | the value type, which must know how to show itself |
 
 **Parameters**
 

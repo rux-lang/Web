@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Fold.rux
-  line: 29
+  line: 28
 seo:
   title: "Folding — Algorithms API"
   description: "Reducing a slice to one value, and mapping one slice onto another."
@@ -33,13 +33,12 @@ pub func Fold<T, A>(
 
 Folds every element of `items` into an accumulator, left to right.
 `items` is borrowed and read; `initial` is read by value and returned when the sequence is empty; `combine` is
-called once per element with the accumulator so far and the element. The accumulator's type is independent of the
-element's.
-Left to right is part of the contract rather than an implementation detail: a `combine` that is not associative
-gives a different answer in the other direction, and callers depend on the order.
-Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `combine` does.
+called once per element with the accumulator so far and the element. The accumulator's type is independent of
+the element's. Left to right is part of the contract rather than an implementation detail: a `combine` that is
+not associative gives a different answer in the other direction, and callers depend on the order. Cannot fail.
+Runs in time proportional to the length and allocates nothing beyond whatever `combine` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L28)
 
 **Type parameters**
 
@@ -74,7 +73,7 @@ called once per element with the accumulator so far and the element, starting fr
 The mirror of [`Fold`](/docs/api/algorithms/folding#fold), and a different answer for any `combine` that is not associative.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `combine` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L51)
 
 **Type parameters**
 
@@ -106,7 +105,7 @@ Requires `+` on the element type. Overflow behaves exactly as `+` does on that t
 caller who needs checking folds a checked addition instead.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L73)
 
 **Type parameters**
 
@@ -135,7 +134,7 @@ it must be one rather than zero for the answer to mean anything.
 Requires `*` on the element type. Overflow behaves exactly as `*` does on that type.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L94)
 
 **Type parameters**
 
@@ -169,7 +168,7 @@ Reports false, having written nothing, when the two lengths differ — for the s
 partial result is worse than a refused one when the caller cannot tell how far it got.
 Runs in time proportional to the length and allocates nothing beyond whatever `transform` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Fold.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Modify.rux#L268)
 
 **Type parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Heap.rux
-  line: 24
+  line: 25
 seo:
   title: "Heaps — Algorithms API"
   description: "A binary max-heap laid out in the slice itself, the building block of a priority queue."
@@ -34,7 +34,7 @@ Requires `<` on the element type.
 Cannot fail. Runs in time proportional to the length — linear, not `n log n`, because sifting from the bottom up
 does most of its work on the short subtrees near the leaves. Allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L25)
 
 **Type parameters**
 
@@ -61,7 +61,7 @@ The caller appends and this repairs, because appending is the storage owner's bu
 Requires `<` on the element type.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L44)
 
 **Type parameters**
 
@@ -82,13 +82,12 @@ pub func PopHeap<T>(items: var T[..])
 ```
 
 Moves the largest element of `items` to its end and restores the heap property over the rest.
-`items` is borrowed mutably and rewritten. Afterwards the largest element sits at the last position and the first
-`length - 1` positions are a heap again; the caller is what shortens the sequence, or leaves the element there.
-Fewer than two elements do nothing.
-Requires `<` on the element type.
-Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
+`items` is borrowed mutably and rewritten. Afterwards the largest element sits at the last position and the
+first `length - 1` positions are a heap again; the caller is what shortens the sequence, or leaves the element
+there. Fewer than two elements do nothing. Requires `<` on the element type. Cannot fail. Runs in time
+proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L59)
 
 **Type parameters**
 
@@ -109,11 +108,10 @@ pub func SortHeap<T>(items: var T[..])
 ```
 
 Turns the heap `items` into a sorted sequence, smallest first.
-`items` is borrowed mutably and rewritten; it must already be a heap, which [`MakeHeap`](/docs/api/algorithms/heaps#make-heap) is what makes it. Repeated
-popping, which is exactly heapsort.
-A sequence that is not a heap does not fail; it comes out rearranged and not sorted.
-Requires `<` on the element type.
-Cannot fail. Makes O(n log n) comparisons and allocates nothing. Equal elements may be reordered.
+`items` is borrowed mutably and rewritten; it must already be a heap, which [`MakeHeap`](/docs/api/algorithms/heaps#make-heap) is what makes it.
+Repeated popping, which is exactly heapsort. A sequence that is not a heap does not fail; it comes out
+rearranged and not sorted. Requires `<` on the element type. Cannot fail. Makes O(n log n) comparisons and
+allocates nothing. Equal elements may be reordered.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L80)
 
@@ -257,7 +255,7 @@ Moves the largest element of `items` under `compare` to its end and restores the
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L194)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L195)
 
 **Type parameters**
 
@@ -286,7 +284,7 @@ Turns the heap `items` into a sequence sorted by `compare`, smallest first.
 Cannot fail. Makes O(n log n) comparisons and allocates nothing beyond whatever `compare` does. Equivalent
 elements may be reordered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L215)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L216)
 
 **Type parameters**
 
@@ -314,7 +312,7 @@ Whether `items` is arranged as a max-heap under `compare`.
 `items` is borrowed and read. An empty sequence and a single element are heaps.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L231)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L232)
 
 **Type parameters**
 
@@ -345,7 +343,7 @@ How much of `items` from the front is arranged as a max-heap under `compare`.
 the first element larger than its parent.
 Cannot fail. Runs in time proportional to the answer and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L244)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Heap.rux#L245)
 
 **Type parameters**
 

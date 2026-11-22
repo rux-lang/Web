@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Numeric.rux
-  line: 19
+  line: 20
 seo:
   title: "Numeric sequences — Algorithms API"
   description: "Running sums and scans, counting sequences, and an overflow-free midpoint."
@@ -24,7 +24,7 @@ Running sums and scans, counting sequences, and an overflow-free midpoint.
 <h2 id="partial-sum"><code>PartialSum&lt;T&gt;</code></h2>
 
 ```rux
-pub func PartialSum<T>(
+pub func PartialSum<T: Copyable>(
     items: T[..],
     into: var T[..]
 ) -> bool
@@ -34,13 +34,13 @@ Writes the running sums of `items` into `into`: element `i` becomes the sum of t
 `into` may be `items` itself. Requires `+` on the element type, with whatever overflow it has.
 Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L20)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -54,7 +54,7 @@ Runs in time proportional to the length and allocates nothing.
 <h2 id="inclusive-scan"><code>InclusiveScan&lt;T&gt;</code></h2>
 
 ```rux
-pub func InclusiveScan<T>(
+pub func InclusiveScan<T: Copyable>(
     items: T[..],
     into: var T[..],
     combine: func(T, T) -> T
@@ -70,9 +70,9 @@ Runs in time proportional to the length and allocates nothing beyond whatever `c
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -87,7 +87,7 @@ Runs in time proportional to the length and allocates nothing beyond whatever `c
 <h2 id="exclusive-scan"><code>ExclusiveScan&lt;T&gt;</code></h2>
 
 ```rux
-pub func ExclusiveScan<T>(
+pub func ExclusiveScan<T: Copyable>(
     items: T[..],
     into: var T[..],
     initial: T,
@@ -96,18 +96,17 @@ pub func ExclusiveScan<T>(
 ```
 
 Writes the running combination of `items` before each element into `into`: element `i` becomes `initial`
-combined with the first `i` elements, so the first result is `initial` and the last element of `items` takes part
-in none.
-`into` may be `items` itself.
-Runs in time proportional to the length and allocates nothing beyond whatever `combine` does.
+combined with the first `i` elements, so the first result is `initial` and the last element of `items` takes
+part in none. `into` may be `items` itself. Runs in time proportional to the length and allocates nothing beyond
+whatever `combine` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L79)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Numeric.rux#L77)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -123,7 +122,11 @@ Runs in time proportional to the length and allocates nothing beyond whatever `c
 <h2 id="iota"><code>Iota&lt;T&gt;</code></h2>
 
 ```rux
-pub func Iota<T>(into: var T[..], start: T, step: T)
+pub func Iota<T: Copyable>(
+    into: var T[..],
+    start: T,
+    step: T
+)
 ```
 
 Fills `into` with `start`, `start + step`, `start + 2 * step` and so on.
@@ -134,9 +137,9 @@ Runs in time proportional to the length and allocates nothing.
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 

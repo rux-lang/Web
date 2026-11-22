@@ -27,7 +27,7 @@ pub struct Array<T> {
 }
 ```
 
-Move-only: it owns its elements and storage, prohibits copying, and destroys both with [`~Array`](/docs/api/collections/array#destructor).
+Move-only: it owns its elements and storage, prohibits copying, and destroys both in its destructor.
 
 ## Type parameters
 
@@ -84,7 +84,7 @@ Runs in time proportional to the slice's length.
 
 **Returns**: an array holding a copy of those elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L69)
 
 ## Methods
 
@@ -104,7 +104,7 @@ Runs in time proportional to the length.
 
 **Returns**: an independent copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L91)
 
 <h3 id="length"><code>Length</code></h3>
 
@@ -117,7 +117,7 @@ How many elements the array holds.
 
 **Returns**: how many elements it holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L99)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
@@ -130,7 +130,7 @@ Whether the array holds no elements.
 
 **Returns**: whether it holds nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L107)
 
 <h3 id="get"><code>Get</code></h3>
 
@@ -148,7 +148,7 @@ indexing the slice directly.
 
 **Returns**: a copy of the element, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L117)
 
 <h3 id="at"><code>At</code></h3>
 
@@ -166,7 +166,7 @@ without being copied.
 
 **Returns**: a reference to the element, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L123)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L129)
 
 <h3 id="at-mutable"><code>AtMutable</code></h3>
 
@@ -183,7 +183,7 @@ The element at `index`, borrowed to be written where it sits, or `none` when the
 
 **Returns**: a writable reference to the element, or `none` when the index is out of range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L140)
 
 <h3 id="set"><code>Set</code></h3>
 
@@ -192,7 +192,7 @@ pub func Set(
     &var self,
     index: uint,
     value: T
-) throws CollectionError
+) -> !CollectionError
 ```
 
 Replaces the element at `index` with `value`, destroying the element that was there.
@@ -207,7 +207,7 @@ so an element that owns something is released rather than leaked; [`Replace`](/d
 
 **Returns**: nothing when the element was written, or `IndexOutOfRange`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L148)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L154)
 
 <h3 id="replace"><code>Replace</code></h3>
 
@@ -216,7 +216,7 @@ pub func Replace(
     &var self,
     index: uint,
     value: T
-) -> T throws CollectionError
+) -> T ! CollectionError
 ```
 
 Replaces the element at `index` with `value` and hands back the element that was there.
@@ -231,7 +231,7 @@ destroyed here.
 
 **Returns**: the element that was at `index`, or `IndexOutOfRange`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L168)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L174)
 
 <h3 id="as-slice"><code>AsSlice</code></h3>
 
@@ -245,7 +245,7 @@ The view is valid until the array is destroyed or moved.
 
 **Returns**: the elements, borrowed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L184)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L190)
 
 <h3 id="as-mutable-slice"><code>AsMutableSlice</code></h3>
 
@@ -260,7 +260,7 @@ The view is valid until the array is destroyed or moved.
 
 **Returns**: the elements, borrowed for writing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L195)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L201)
 
 <h3 id="iterate"><code>Iterate</code></h3>
 
@@ -273,7 +273,7 @@ An iterator over the elements, by copy.
 
 **Returns**: a cursor yielding copies of the elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L204)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L210)
 
 <h3 id="references"><code>References</code></h3>
 
@@ -286,7 +286,7 @@ An iterator over pointers to the elements.
 
 **Returns**: a cursor yielding the elements' addresses
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L212)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L218)
 
 <h3 id="mutable-references"><code>MutableReferences</code></h3>
 
@@ -300,12 +300,12 @@ while any of them is in use, and coordinate aliases that access the same element
 
 **Returns**: a cursor yielding writable element addresses
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L221)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L227)
 
 ## Destructor
 
 ```rux
-func ~Array(&var self)
+destructor
 ```
 
 Destroys every element and releases the storage.
@@ -313,7 +313,7 @@ Runs when the array's life ends. Elements go first and the block second, which i
 an element destroyed after its storage was released would be read from freed memory.
 An array that was moved away is not destroyed where it used to live, so this happens exactly once.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L230)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Array.rux#L236)
 
 ## Related
 
@@ -324,7 +324,7 @@ pub func WriteArrayDebug<T: Debug>(
     writer: &var TextWriter,
     value: &Array<T>,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a borrowed array as `[first, second, third]`.
@@ -333,7 +333,7 @@ shown without disturbing one of them.
 `spec` describes the elements, exactly as for a vector.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L84)
 
 **Type parameters**
 

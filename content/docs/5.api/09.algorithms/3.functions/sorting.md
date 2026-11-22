@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Sort.rux
-  line: 42
+  line: 45
 seo:
   title: "Sorting — Algorithms API"
   description: "Putting a slice in order in place, unstably with no storage or stably with caller scratch."
@@ -29,12 +29,11 @@ pub func Sort<T>(items: var T[..])
 
 Puts `items` into non-decreasing order.
 `items` is borrowed mutably and rewritten. Fewer than two elements are already sorted, so the data pointer is
-never read in that case and an empty view is not a special case.
-Requires `<` on the element type, as a strict weak ordering. Equal elements may be reordered: this is not stable.
-Cannot fail. Makes O(n log n) comparisons for every input, uses O(1) storage beyond the sequence, and recurses
-O(log n) deep.
+never read in that case and an empty view is not a special case. Requires `<` on the element type, as a strict
+weak ordering. Equal elements may be reordered: this is not stable. Cannot fail. Makes O(n log n) comparisons
+for every input, uses O(1) storage beyond the sequence, and recurses O(log n) deep.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L45)
 
 **Type parameters**
 
@@ -56,14 +55,13 @@ pub func SortDescending<T>(items: var T[..])
 
 Puts `items` into non-increasing order.
 `items` is borrowed mutably and rewritten. An ascending sort followed by a reversal, rather than a mirrored copy
-of every helper below: threading a direction flag through the partition and both fallbacks would cost a branch in
-the innermost comparison, and duplicating the helpers would double the amount of subtle index arithmetic to
+of every helper below: threading a direction flag through the partition and both fallbacks would cost a branch
+in the innermost comparison, and duplicating the helpers would double the amount of subtle index arithmetic to
 maintain, all for one extra linear pass. Sorting is unstable in either direction, so reversing costs nothing in
-ordering either.
-Requires `<` on the element type. Equal elements may be reordered.
-Cannot fail. Makes O(n log n) comparisons and uses O(1) storage beyond the sequence.
+ordering either. Requires `<` on the element type. Equal elements may be reordered. Cannot fail. Makes O(n log
+n) comparisons and uses O(1) storage beyond the sequence.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L72)
 
 **Type parameters**
 
@@ -94,7 +92,7 @@ there is nothing to recurse into and the stack stays flat. The same depth budget
 O(n log n), against O(n) on average.
 Requires `<` on the element type. Equal elements may be reordered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L92)
 
 **Type parameters**
 
@@ -122,15 +120,14 @@ pub func PartialSort<T>(
 
 Puts the `count` smallest elements of `items` in order at its front.
 `items` is borrowed mutably and rewritten; `count` is read by value. The first `count` positions hold the
-smallest elements in non-decreasing order, and the rest hold everything else in no particular order.
-Reports false, changing nothing, when `count` is larger than the length. A `count` of zero succeeds and does
-nothing.
-A max-heap over the first `count` elements, which each later element is compared against and displaces only if it
+smallest elements in non-decreasing order, and the rest hold everything else in no particular order. Reports
+false, changing nothing, when `count` is larger than the length. A `count` of zero succeeds and does nothing. A
+max-heap over the first `count` elements, which each later element is compared against and displaces only if it
 is smaller: O(n log count) comparisons, against the O(n log n) a full sort would cost. That is worth having when
-`count` is much smaller than the length and not otherwise.
-Requires `<` on the element type. Equal elements may be reordered.
+`count` is much smaller than the length and not otherwise. Requires `<` on the element type. Equal elements may
+be reordered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Sort.rux#L156)
 
 **Type parameters**
 
@@ -150,7 +147,7 @@ Requires `<` on the element type. Equal elements may be reordered.
 <h2 id="insertion-sort-range"><code>InsertionSortRange&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func InsertionSortRange<T>(
+pub func InsertionSortRange<T>(
     data: *var T,
     low: uint,
     high: uint
@@ -179,7 +176,7 @@ Safety: `data` must address the elements from `low` up to `high`, all live and w
 <h2 id="heap-sort-range"><code>HeapSortRange&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func HeapSortRange<T>(
+pub func HeapSortRange<T>(
     data: *var T,
     low: uint,
     high: uint
@@ -208,7 +205,7 @@ Safety: `data` must address the elements from `low` up to `high`, all live and w
 <h2 id="sort-by"><code>SortBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func SortBy<T>(
+pub func SortBy<T: Copyable>(
     items: var T[..],
     compare: func(T, T) -> Ordering
 )
@@ -225,9 +222,9 @@ O(log n) deep. Equal elements may be reordered: this is not stable.
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -239,7 +236,7 @@ O(log n) deep. Equal elements may be reordered: this is not stable.
 <h2 id="sort-descending-by"><code>SortDescendingBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func SortDescendingBy<T>(
+pub func SortDescendingBy<T: Copyable>(
     items: var T[..],
     compare: func(T, T) -> Ordering
 )
@@ -255,9 +252,9 @@ reordered.
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -269,7 +266,7 @@ reordered.
 <h2 id="nth-element-by"><code>NthElementBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func NthElementBy<T>(
+pub func NthElementBy<T: Copyable>(
     items: var T[..],
     n: uint,
     compare: func(T, T) -> Ordering
@@ -286,9 +283,9 @@ O(n) comparisons on average and O(n log n) at worst. Equivalent elements may be 
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -342,12 +339,11 @@ pub func RequiredScratch(length: uint) -> uint
 
 How much scratch storage a stable sort of `length` elements needs.
 `length` is read by value. The answer is `length` itself: a merge writes its output somewhere other than either
-of the two runs it reads, and the last merge reads the whole sequence.
-Written as a function rather than left to the reader so that a caller sizing a buffer does not have to know that,
-and so that it stays right if it ever stops being the whole length.
-Cannot fail. Runs in constant time and allocates nothing.
+of the two runs it reads, and the last merge reads the whole sequence. Written as a function rather than left to
+the reader so that a caller sizing a buffer does not have to know that, and so that it stays right if it ever
+stops being the whole length. Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Stable.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Stable.rux#L29)
 
 **Parameters**
 
@@ -367,12 +363,11 @@ pub func StableSort<T>(
 ```
 
 Puts `items` into non-decreasing order, leaving equal elements in the order they were in.
-`items` is borrowed mutably and rewritten; `scratch` is borrowed mutably and used as working storage, and what it
-holds afterwards is unspecified. Fewer than two elements are already sorted and need no scratch at all.
-Reports false, changing nothing, when `scratch` is shorter than `RequiredScratch(items.length)`. That is the only
-way this fails.
-Requires `<` on the element type, as a strict weak ordering.
-Makes O(n log n) comparisons and moves for every input — there is no bad case — and allocates nothing.
+`items` is borrowed mutably and rewritten; `scratch` is borrowed mutably and used as working storage, and what
+it holds afterwards is unspecified. Fewer than two elements are already sorted and need no scratch at all.
+Reports false, changing nothing, when `scratch` is shorter than `RequiredScratch(items.length)`. That is the
+only way this fails. Requires `<` on the element type, as a strict weak ordering. Makes O(n log n) comparisons
+and moves for every input — there is no bad case — and allocates nothing.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Stable.rux#L44)
 
@@ -394,7 +389,7 @@ Makes O(n log n) comparisons and moves for every input — there is no bad case 
 <h2 id="stable-sort-by"><code>StableSortBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func StableSortBy<T>(
+pub func StableSortBy<T: Copyable>(
     items: var T[..],
     scratch: var T[..],
     compare: func(T, T) -> Ordering
@@ -402,18 +397,18 @@ pub func StableSortBy<T>(
 ```
 
 Puts `items` into the order `compare` describes, leaving equivalent elements in the order they were in.
-`items` is borrowed mutably and rewritten; `scratch` is borrowed mutably and used as working storage, and what it
-holds afterwards is unspecified. `compare` is called O(n log n) times and must be a strict weak ordering.
-Reports false, changing nothing, when `scratch` is shorter than `RequiredScratch(items.length)`.
-Makes O(n log n) comparisons and moves for every input, and allocates nothing.
+`items` is borrowed mutably and rewritten; `scratch` is borrowed mutably and used as working storage, and what
+it holds afterwards is unspecified. `compare` is called O(n log n) times and must be a strict weak ordering.
+Reports false, changing nothing, when `scratch` is shorter than `RequiredScratch(items.length)`. Makes O(n log
+n) comparisons and moves for every input, and allocates nothing.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Stable.rux#L109)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 

@@ -43,10 +43,10 @@ something it no longer owns. Use [`ReferenceIterator`](/docs/api/collections/ite
 
 **Constructors**
 
-<h3 id="value-iterator-new"><code>ValueIterator</code></h3>
+<h3 id="value-iterator-new"><code>New</code></h3>
 
 ```rux
-pub func ValueIterator(items: T[..]) -> ValueIterator<T>
+pub func New(items: T[..]) -> ValueIterator<T>
 ```
 
 An iterator over `items`, positioned before the first element.
@@ -102,10 +102,10 @@ element where it sits rather than taking it.
 
 **Constructors**
 
-<h3 id="reference-iterator-new"><code>ReferenceIterator</code></h3>
+<h3 id="reference-iterator-new"><code>New</code></h3>
 
 ```rux
-pub func ReferenceIterator(items: T[..]) -> ReferenceIterator<T>
+pub func New(items: T[..]) -> ReferenceIterator<T>
 ```
 
 An iterator over `items`, positioned before the first element.
@@ -161,10 +161,10 @@ Elements remain in their storage, so move-only elements can be modified without 
 
 **Constructors**
 
-<h3 id="mutable-reference-iterator-new"><code>MutableReferenceIterator</code></h3>
+<h3 id="mutable-reference-iterator-new"><code>New</code></h3>
 
 ```rux
-pub func MutableReferenceIterator(items: var T[..]) -> MutableReferenceIterator<T>
+pub func New(items: var T[..]) -> MutableReferenceIterator<T>
 ```
 
 An iterator over `items`, positioned before the first element.

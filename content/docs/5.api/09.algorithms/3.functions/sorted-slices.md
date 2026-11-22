@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Search.rux
-  line: 27
+  line: 29
 seo:
   title: "Sorted slices — Algorithms API"
   description: "Binary search and bounds over a slice that is already in order, and checking that it is."
@@ -34,7 +34,7 @@ Requires `<` on the element type.
 Cannot fail. Runs in time proportional to the length, stopping at the first pair out of order, and allocates
 nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L29)
 
 **Type parameters**
 
@@ -63,7 +63,7 @@ otherwise. An empty slice gives zero and a single element gives one.
 Requires `<` on the element type.
 Cannot fail. Runs in time proportional to the answer and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L43)
 
 **Type parameters**
 
@@ -92,7 +92,7 @@ than everything gives the length.
 Requires `<` on the element type, and requires `items` to be sorted by that order.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L66)
 
 **Type parameters**
 
@@ -121,7 +121,7 @@ The last position where `value` could be inserted without breaking the order.
 Requires `<` on the element type, and requires `items` to be sorted by that order.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L92)
 
 **Type parameters**
 
@@ -141,7 +141,10 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="binary-search"><code>BinarySearch&lt;T&gt;</code></h2>
 
 ```rux
-pub func BinarySearch<T>(items: T[..], value: T) -> uint?
+pub func BinarySearch<T: Copyable>(
+    items: T[..],
+    value: T
+) -> uint?
 ```
 
 The index of an element of `items` equal to `value`.
@@ -153,13 +156,13 @@ ordering rather than by `==`: two elements neither of which is less than the oth
 would say about them.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L121)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -173,7 +176,10 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="equal-range"><code>EqualRange&lt;T&gt;</code></h2>
 
 ```rux
-pub func EqualRange<T>(items: T[..], value: T) -> uint..uint
+pub func EqualRange<T: Copyable>(
+    items: T[..],
+    value: T
+) -> uint..uint
 ```
 
 The range of positions in `items` holding elements equal to `value`.
@@ -183,13 +189,13 @@ answer a caller inserting into a sorted sequence wants.
 Requires `<` on the element type, and requires `items` to be sorted by that order.
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L139)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -214,7 +220,7 @@ Whether `items` is in non-decreasing order under `compare`.
 slice and a single element are sorted, and equal neighbours are in order.
 Cannot fail. Runs in time proportional to the length and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L152)
 
 **Type parameters**
 
@@ -245,7 +251,7 @@ How far `items` is in non-decreasing order under `compare`.
 [`IsSortedUntil`](/docs/api/algorithms/sorted-slices#is-sorted-until) does for the element type's own order.
 Cannot fail. Runs in time proportional to the answer and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L165)
 
 **Type parameters**
 
@@ -265,7 +271,7 @@ Cannot fail. Runs in time proportional to the answer and allocates nothing beyon
 <h2 id="lower-bound-by"><code>LowerBoundBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func LowerBoundBy<T>(
+pub func LowerBoundBy<T: Copyable>(
     items: T[..],
     value: T,
     compare: func(T, T) -> Ordering
@@ -277,13 +283,13 @@ The first position where `value` could be inserted into `items` under `compare` 
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L185)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L187)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -298,7 +304,7 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="upper-bound-by"><code>UpperBoundBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func UpperBoundBy<T>(
+pub func UpperBoundBy<T: Copyable>(
     items: T[..],
     value: T,
     compare: func(T, T) -> Ordering
@@ -310,13 +316,13 @@ The last position where `value` could be inserted into `items` under `compare` w
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L211)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L213)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -331,7 +337,7 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="binary-search-by"><code>BinarySearchBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func BinarySearchBy<T>(
+pub func BinarySearchBy<T: Copyable>(
     items: T[..],
     value: T,
     compare: func(T, T) -> Ordering
@@ -339,18 +345,17 @@ pub func BinarySearchBy<T>(
 ```
 
 The index of an element of `items` that `compare` calls equal to `value`.
-`items` is borrowed and read; `value` is read by value. Reports `none` when no element is equal, and the first of
-them when several are. `compare` must be the order `items` was sorted by.
-Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
-`compare` does.
+`items` is borrowed and read; `value` is read by value. Reports `none` when no element is equal, and the first
+of them when several are. `compare` must be the order `items` was sorted by. Cannot fail. Runs in time
+proportional to the logarithm of the length and allocates nothing beyond whatever `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L238)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L239)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 
@@ -365,7 +370,7 @@ Cannot fail. Runs in time proportional to the logarithm of the length and alloca
 <h2 id="equal-range-by"><code>EqualRangeBy&lt;T&gt;</code></h2>
 
 ```rux
-pub func EqualRangeBy<T>(
+pub func EqualRangeBy<T: Copyable>(
     items: T[..],
     value: T,
     compare: func(T, T) -> Ordering
@@ -378,13 +383,13 @@ position the value would be inserted. `compare` must be the order `items` was so
 Cannot fail. Runs in time proportional to the logarithm of the length and allocates nothing beyond whatever
 `compare` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L256)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Algorithms/Src/Search.rux#L257)
 
 **Type parameters**
 
-| Name | Description      |
-| ---- | ---------------- |
-| `T`  | the element type |
+| Name          | Description      |
+| ------------- | ---------------- |
+| `T: Copyable` | the element type |
 
 **Parameters**
 

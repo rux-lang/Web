@@ -27,7 +27,7 @@ pub struct Vector<T> {
 }
 ```
 
-Move-only: it owns its elements and storage, prohibits copying, and destroys both with [`~Vector`](/docs/api/collections/vector#destructor).
+Move-only: it owns its elements and storage, prohibits copying, and destroys both in its destructor.
 
 ## Type parameters
 
@@ -37,10 +37,10 @@ Move-only: it owns its elements and storage, prohibits copying, and destroys bot
 
 ## Constructors
 
-<h3 id="new"><code>Vector</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Vector(allocator: Allocator) -> Vector<T>
+pub func New(allocator: Allocator) -> Vector<T>
 ```
 
 An empty vector that has not allocated anything.
@@ -124,7 +124,7 @@ be had; [`TryClone`](/docs/api/collections/vector#try-clone) reports that instea
 <h3 id="try-clone"><code>TryClone</code></h3>
 
 ```rux
-pub func TryClone(&self) -> Vector<T> throws AllocError
+pub func TryClone(&self) -> Vector<T> ! AllocError
 ```
 
 An independent vector holding a copy of every element of this one, or why the storage could not be had.
@@ -196,7 +196,7 @@ it back. Terminates the program when the storage cannot be had, including when t
 pub func TryReserve(
     &var self,
     additional: uint
-) throws AllocError
+) -> !AllocError
 ```
 
 Makes room for `additional` more elements on top of those already present, or throws why it could not.
@@ -276,7 +276,7 @@ Amortized constant time: the doubling is what spreads the cost of growing across
 <h3 id="try-push"><code>TryPush</code></h3>
 
 ```rux
-pub func TryPush(&var self, value: T) throws AllocError
+pub func TryPush(&var self, value: T) -> !AllocError
 ```
 
 Appends one element, growing the storage when it is full, or throws why the storage could not grow.
@@ -382,7 +382,7 @@ pub func Set(
     &var self,
     index: uint,
     value: T
-) throws CollectionError
+) -> !CollectionError
 ```
 
 Replaces the element at `index` with `value`, destroying the element that was there.
@@ -406,7 +406,7 @@ pub func Replace(
     &var self,
     index: uint,
     value: T
-) -> T throws CollectionError
+) -> T ! CollectionError
 ```
 
 Replaces the element at `index` with `value` and hands back the element that was there.
@@ -499,7 +499,7 @@ pub func Insert(
     &var self,
     index: uint,
     value: T
-) throws CollectionError
+) -> !CollectionError
 ```
 
 Inserts `value` at `index`, moving everything from there on one place along.
@@ -631,7 +631,7 @@ The view is valid until the vector grows, shrinks, or is destroyed.
 <h3 id="into-iterator"><code>IntoIterator</code></h3>
 
 ```rux
-pub func IntoIterator(self) -> VectorIntoIterator<T>
+pub func IntoIterator(~self) -> VectorIntoIterator<T>
 ```
 
 Takes the vector apart into an iterator over its elements.
@@ -657,12 +657,12 @@ program when the storage cannot be had.
 
 **Returns**: an array holding a copy of the elements
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L602)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L595)
 
 <h3 id="into-array"><code>IntoArray</code></h3>
 
 ```rux
-pub func IntoArray(self) -> Array<T>
+pub func IntoArray(~self) -> Array<T>
 ```
 
 Hands the storage itself to a fixed-length array, copying nothing.
@@ -673,12 +673,12 @@ to impossible, since it asks for less than the block already holds.
 
 **Returns**: an array taking the vector's storage rather than copying it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L613)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L606)
 
 ## Destructor
 
 ```rux
-func ~Vector(&var self)
+destructor
 ```
 
 Destroys every element and releases the storage.
@@ -697,7 +697,7 @@ pub func WriteVectorDebug<T: Debug>(
     writer: &var TextWriter,
     value: &Vector<T>,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a borrowed vector as `[first, second, third]`.
@@ -708,7 +708,7 @@ a move-only element type and the vector still holds all of them afterwards.
 commas are punctuation and are never padded.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Presentation.rux#L68)
 
 **Type parameters**
 
@@ -747,12 +747,12 @@ pub struct VectorIntoIterator<T> {
 ```
 
 An iterator that takes a vector apart, yielding each element by value.
-Move-only: it owns the storage the vector owned, prohibits copying, and destroys it with [`~VectorIntoIterator`](/docs/api/collections/vector#vector-into-iterator-destructor).
+Move-only: it owns the storage the vector owned, prohibits copying, and destroys it in its destructor.
 This is how a vector of elements that
 own something is emptied into somewhere else — each element is moved out rather than copied, and whatever is
 left when the iterator's life ends is destroyed with it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L632)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L620)
 
 **Type parameters**
 
@@ -777,18 +777,18 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the next element, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L674)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L662)
 
 **Destructor**
 
-<h4 id="vector-into-iterator-destructor"><code>~VectorIntoIterator</code></h4>
+<h4 id="vector-into-iterator-destructor"><code>destructor</code></h4>
 
 ```rux
-func ~VectorIntoIterator(&var self)
+destructor
 ```
 
 Destroys whatever was not yielded and releases the storage.
 Runs when the iterator's life ends. Everything already yielded belongs to whoever took it and is not touched
 here, which is what makes stopping part-way through safe.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L650)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Collections/Src/Vector.rux#L638)
