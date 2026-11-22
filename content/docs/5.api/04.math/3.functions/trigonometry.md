@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Angle.rux
-  line: 12
+  line: 14
 seo:
   title: "Trigonometry — Math API"
   description: "Sine, cosine, tangent, their inverses, and conversion between degrees and radians."
@@ -37,7 +37,7 @@ keeps its sign, infinities keep their sign, and a NaN remains a NaN.
 | `pub func DegToRad(x: float64) -> float64` | Converts an angle from degrees to radians.                        |
 | `pub func DegToRad(x: float32) -> float32` | Converts an angle from degrees to radians at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Angle.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Angle.rux#L14)
 
 **Parameters**
 
@@ -63,7 +63,7 @@ keeps its sign, infinities keep their sign, and a NaN remains a NaN.
 | `pub func RadToDeg(x: float64) -> float64` | Converts an angle from radians to degrees.                        |
 | `pub func RadToDeg(x: float32) -> float32` | Converts an angle from radians to degrees at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Angle.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Angle.rux#L33)
 
 **Parameters**
 
@@ -89,7 +89,7 @@ input outside `[-1, 1]` returns a NaN, and a NaN remains a NaN.
 | `pub func ArcCos(x: float64) -> float64` | Computes the inverse cosine of `x` in radians.                        |
 | `pub func ArcCos(x: float32) -> float32` | Computes the inverse cosine of `x` in radians at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcCos.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcCos.rux#L16)
 
 **Parameters**
 
@@ -115,7 +115,7 @@ infinity maps to [`Pi`](/docs/api/math/constants#pi). A NaN remains a NaN.
 | `pub func ArcCot(x: float64) -> float64` | Computes the inverse cotangent of `x` in radians.                        |
 | `pub func ArcCot(x: float32) -> float32` | Computes the inverse cotangent of `x` in radians at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcCot.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcCot.rux#L15)
 
 **Parameters**
 
@@ -141,7 +141,7 @@ of the result range, an input outside `[-1, 1]` returns a NaN, and a NaN remains
 | `pub func ArcSin(x: float64) -> float64` | Computes the inverse sine of `x` in radians.                        |
 | `pub func ArcSin(x: float32) -> float32` | Computes the inverse sine of `x` in radians at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcSin.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcSin.rux#L16)
 
 **Parameters**
 
@@ -167,7 +167,7 @@ a NaN remains a NaN.
 | `pub func ArcTan(x: float64) -> float64` | Computes the inverse tangent of `x` in radians.                        |
 | `pub func ArcTan(x: float32) -> float32` | Computes the inverse tangent of `x` in radians at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcTan.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcTan.rux#L15)
 
 **Parameters**
 
@@ -194,7 +194,7 @@ anywhere else.
 | `pub func ArcTan2(y: float64, x: float64) -> float64` | The angle from the positive x axis to the point `(x, y)`, in radians, in `(-Pi, Pi]`. |
 | `pub func ArcTan2(y: float32, x: float32) -> float32` | Computes the angle from the positive x axis to `(x, y)` at `float32` precision.       |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcTan2.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcTan2.rux#L21)
 
 **Parameters**
 
@@ -221,7 +221,7 @@ accurate than a small one. Either signed zero returns `1.0`; an infinity returns
 | `pub func Cos(x: float64) -> float64` | Computes the cosine of `x`, where `x` is in radians.                        |
 | `pub func Cos(x: float32) -> float32` | Computes the cosine of `x` at `float32` precision, where `x` is in radians. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Cos.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Cos.rux#L16)
 
 **Parameters**
 
@@ -247,7 +247,7 @@ zero maps to an infinity with the same sign; an infinite input returns a NaN, an
 | `pub func Cotan(x: float64) -> float64` | Computes the cotangent of `x`, where `x` is in radians.                        |
 | `pub func Cotan(x: float32) -> float32` | Computes the cotangent of `x` at `float32` precision, where `x` is in radians. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Cotan.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Cotan.rux#L16)
 
 **Parameters**
 
@@ -273,7 +273,7 @@ accurate than a small one. A signed zero returns itself; an infinity returns a N
 | `pub func Sin(x: float64) -> float64` | Computes the sine of `x`, where `x` is in radians.                        |
 | `pub func Sin(x: float32) -> float32` | Computes the sine of `x` at `float32` precision, where `x` is in radians. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Sin.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Sin.rux#L16)
 
 **Parameters**
 
@@ -298,7 +298,7 @@ Returns `(sine, cosine)`. Equivalent to calling [`Sin`](/docs/api/math/trigonome
 | `pub func SinCos(angle: float64) -> (float64, float64)` | Computes the sine and cosine of `angle` from one argument reduction. |
 | `pub func SinCos(angle: float32) -> (float32, float32)` | Computes the sine and cosine of `angle` at `float32` precision.      |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/SinCos.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/SinCos.rux#L23)
 
 **Parameters**
 
@@ -325,7 +325,7 @@ remains a NaN.
 | `pub func Tan(x: float64) -> float64` | Computes the tangent of `x`, where `x` is in radians.                        |
 | `pub func Tan(x: float32) -> float32` | Computes the tangent of `x` at `float32` precision, where `x` is in radians. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Tan.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Tan.rux#L17)
 
 **Parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/ArcHyperbolic.rux
-  line: 15
+  line: 18
 seo:
   title: "Hyperbolic functions — Math API"
   description: "Hyperbolic sine, cosine, tangent and their inverses."
@@ -37,7 +37,7 @@ infinity of the same sign.
 | `pub func ArcSinh(x: float64) -> float64` | The inverse hyperbolic sine: the value whose hyperbolic sine is `x`. |
 | `pub func ArcSinh(x: float32) -> float32` | Computes the inverse hyperbolic sine of `x` at `float32` precision.  |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcHyperbolic.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcHyperbolic.rux#L18)
 
 **Parameters**
 
@@ -63,7 +63,7 @@ negative, since the hyperbolic cosine is even and this returns the branch above 
 | `pub func ArcCosh(x: float64) -> float64` | The inverse hyperbolic cosine: the non-negative value whose hyperbolic cosine is `x`. |
 | `pub func ArcCosh(x: float32) -> float32` | Computes the inverse hyperbolic cosine of `x` at `float32` precision.                 |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcHyperbolic.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcHyperbolic.rux#L56)
 
 **Parameters**
 
@@ -89,7 +89,7 @@ anything beyond them has no real answer and gives a NaN.
 | `pub func ArcTanh(x: float64) -> float64` | The inverse hyperbolic tangent: the value whose hyperbolic tangent is `x`. |
 | `pub func ArcTanh(x: float32) -> float32` | Computes the inverse hyperbolic tangent of `x` at `float32` precision.     |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcHyperbolic.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/ArcHyperbolic.rux#L83)
 
 **Parameters**
 
@@ -114,7 +114,7 @@ The result is at least one. Either infinity returns positive infinity, and a NaN
 | `pub func Cosh(x: float64) -> float64` | Computes the hyperbolic cosine of `x`.                        |
 | `pub func Cosh(x: float32) -> float32` | Computes the hyperbolic cosine of `x` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Cosh.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Cosh.rux#L14)
 
 **Parameters**
 
@@ -139,7 +139,7 @@ A signed zero maps to an infinity with the same sign, infinities map to `-1` or 
 | `pub func Cotanh(x: float64) -> float64` | Computes the hyperbolic cotangent of `x`.                        |
 | `pub func Cotanh(x: float32) -> float32` | Computes the hyperbolic cotangent of `x` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Cotanh.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Cotanh.rux#L13)
 
 **Parameters**
 
@@ -164,7 +164,7 @@ A signed zero or infinity returns itself, and a NaN remains a NaN.
 | `pub func Sinh(x: float64) -> float64` | Computes the hyperbolic sine of `x`.                        |
 | `pub func Sinh(x: float32) -> float32` | Computes the hyperbolic sine of `x` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Sinh.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Sinh.rux#L14)
 
 **Parameters**
 
@@ -190,7 +190,7 @@ remains a NaN.
 | `pub func Tanh(x: float64) -> float64` | Computes the hyperbolic tangent of `x`.                        |
 | `pub func Tanh(x: float32) -> float32` | Computes the hyperbolic tangent of `x` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Tanh.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Tanh.rux#L14)
 
 **Parameters**
 

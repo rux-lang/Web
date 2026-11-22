@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Exp.rux
-  line: 33
+  line: 35
 seo:
   title: "Exponentials and logarithms — Math API"
   description: "Powers of e and two, and logarithms in base e, two and ten."
@@ -37,7 +37,7 @@ NaN remains a NaN. Finite results overflow to infinity or underflow to zero when
 | `pub func Exp(x: float64) -> float64` | Computes `e` raised to `x`.                        |
 | `pub func Exp(x: float32) -> float32` | Computes `e` raised to `x` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Exp.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Exp.rux#L35)
 
 **Parameters**
 
@@ -63,7 +63,7 @@ infinity, negative infinity returns zero, and a NaN remains a NaN.
 | `pub func Exp2(x: float64) -> float64` | Computes two raised to `x`.                        |
 | `pub func Exp2(x: float32) -> float32` | Computes two raised to `x` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Exp2.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Exp2.rux#L15)
 
 **Parameters**
 
@@ -89,7 +89,7 @@ itself, positive infinity returns positive infinity, negative infinity returns `
 | `pub func Expm1(x: float64) -> float64` | Computes `Exp(x) - 1` without losing precision near zero.                        |
 | `pub func Expm1(x: float32) -> float32` | Computes `Exp(x) - 1` at `float32` precision without losing precision near zero. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Expm1.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Expm1.rux#L15)
 
 **Parameters**
 
@@ -115,7 +115,7 @@ infinity returns itself, and a NaN remains a NaN.
 | `pub func Log(x: float64) -> float64` | Computes the natural logarithm of `x`.                        |
 | `pub func Log(x: float32) -> float32` | Computes the natural logarithm of `x` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Log.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Log.rux#L70)
 
 **Parameters**
 
@@ -141,7 +141,7 @@ negative infinity, a negative value returns a NaN, positive infinity returns its
 | `pub func Log10(x: float64) -> float64` | Computes the base-ten logarithm of `x`.                        |
 | `pub func Log10(x: float32) -> float32` | Computes the base-ten logarithm of `x` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Log10.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Log10.rux#L15)
 
 **Parameters**
 
@@ -193,7 +193,7 @@ negative infinity, a negative value returns a NaN, positive infinity returns its
 | `pub func Log2(x: float64) -> float64` | Computes the base-two logarithm of `x`.                        |
 | `pub func Log2(x: float32) -> float32` | Computes the base-two logarithm of `x` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Log2.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Log2.rux#L15)
 
 **Parameters**
 

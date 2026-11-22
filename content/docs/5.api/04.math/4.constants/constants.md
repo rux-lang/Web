@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Const.rux
-  line: 8
+  line: 9
 seo:
   title: "Constants — Math API"
   description: "Mathematical constants, rounded to the nearest float64."
@@ -29,7 +29,7 @@ pub const E: float64 = 2.718281828459045;
 
 Euler's number, the base of the natural logarithm, rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L9)
 
 <h2 id="ln2"><code>Ln2</code></h2>
 
@@ -39,7 +39,7 @@ pub const Ln2: float64 = 0.6931471805599453;
 
 The natural logarithm of two, rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L13)
 
 <h2 id="log2-e"><code>Log2E</code></h2>
 
@@ -49,7 +49,7 @@ pub const Log2E: float64 = 1.4426950408889634;
 
 The base-two logarithm of [`E`](/docs/api/math/constants#e), rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L17)
 
 <h2 id="ln10"><code>Ln10</code></h2>
 
@@ -59,7 +59,7 @@ pub const Ln10: float64 = 2.302585092994046;
 
 The natural logarithm of ten, rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L21)
 
 <h2 id="log10-e"><code>Log10E</code></h2>
 
@@ -69,7 +69,7 @@ pub const Log10E: float64 = 0.4342944819032518;
 
 The base-ten logarithm of [`E`](/docs/api/math/constants#e), rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L25)
 
 <h2 id="pi"><code>Pi</code></h2>
 
@@ -79,7 +79,7 @@ pub const Pi: float64 = 3.141592653589793;
 
 The ratio of a circle's circumference to its diameter, rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L29)
 
 <h2 id="tau"><code>Tau</code></h2>
 
@@ -89,7 +89,7 @@ pub const Tau: float64 = 6.283185307179586;
 
 One full turn in radians, equal to `2 * Pi` and rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L33)
 
 <h2 id="half-pi"><code>HalfPi</code></h2>
 
@@ -99,7 +99,7 @@ pub const HalfPi: float64 = 1.5707963267948966;
 
 One quarter turn in radians, equal to `Pi / 2` and rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L37)
 
 <h2 id="quarter-pi"><code>QuarterPi</code></h2>
 
@@ -109,7 +109,7 @@ pub const QuarterPi: float64 = 0.7853981633974483;
 
 One eighth turn in radians, equal to `Pi / 4` and rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L41)
 
 <h2 id="inv-pi"><code>InvPi</code></h2>
 
@@ -119,7 +119,7 @@ pub const InvPi: float64 = 0.3183098861837907;
 
 The reciprocal of [`Pi`](/docs/api/math/constants#pi), rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L45)
 
 <h2 id="inv-tau"><code>InvTau</code></h2>
 
@@ -129,7 +129,7 @@ pub const InvTau: float64 = 0.15915494309189535;
 
 The reciprocal of [`Tau`](/docs/api/math/constants#tau), rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L49)
 
 <h2 id="sqrt2"><code>Sqrt2</code></h2>
 
@@ -139,7 +139,7 @@ pub const Sqrt2: float64 = 1.4142135623730951;
 
 The square root of two, rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L53)
 
 <h2 id="inv-sqrt2"><code>InvSqrt2</code></h2>
 
@@ -149,7 +149,7 @@ pub const InvSqrt2: float64 = 0.7071067811865476;
 
 The reciprocal of [`Sqrt2`](/docs/api/math/constants#sqrt2), rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L57)
 
 <h2 id="rad-per-deg"><code>RadPerDeg</code></h2>
 
@@ -159,7 +159,7 @@ pub const RadPerDeg: float64 = 0.017453292519943295;
 
 Radians per degree, equal to `Pi / 180` and rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L61)
 
 <h2 id="deg-per-rad"><code>DegPerRad</code></h2>
 
@@ -169,4 +169,4 @@ pub const DegPerRad: float64 = 57.29577951308232;
 
 Degrees per radian, equal to `180 / Pi` and rounded to the nearest `float64`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Const.rux#L65)

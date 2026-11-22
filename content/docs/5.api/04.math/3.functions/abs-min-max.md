@@ -63,7 +63,7 @@ zeros, a positive zero wins.
 | `pub func Max(a: float64, b: float64) -> float64` | Selects the larger of `a` and `b`.                        |
 | `pub func Max(a: float32, b: float32) -> float32` | Selects the larger of `a` and `b` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Max.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Max.rux#L15)
 
 **Parameters**
 
@@ -90,7 +90,7 @@ zeros, a negative zero wins.
 | `pub func Min(a: float64, b: float64) -> float64` | Selects the smaller of `a` and `b`.                        |
 | `pub func Min(a: float32, b: float32) -> float32` | Selects the smaller of `a` and `b` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Min.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Min.rux#L15)
 
 **Parameters**
 

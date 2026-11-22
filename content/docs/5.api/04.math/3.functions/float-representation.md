@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Classify.rux
-  line: 192
+  line: 193
 seo:
   title: "Floating-point representation — Math API"
   description: "Signs, exponents, neighbouring values and ulp distances of floating-point values."
@@ -43,7 +43,7 @@ Works on every value including NaNs and zeros, since it moves one bit and reads 
 | `pub func CopySign(magnitude: float64, sign: float64) -> float64` | `magnitude` carrying the sign of `sign`.                           |
 | `pub func CopySign(magnitude: float32, sign: float32) -> float32` | Copies the sign of `sign` onto `magnitude` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L192)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L193)
 
 **Parameters**
 
@@ -69,17 +69,17 @@ pub func NextAfter(
 ```
 
 The value adjacent to `from` in the direction of `toward`.
-One representable value in that direction, subnormals and zeros included: stepping down from the smallest positive
-normal lands in the subnormals rather than jumping to zero, and stepping down from `+0.0` gives the smallest
-negative subnormal rather than `-0.0`. `from` equal to `toward` returns `toward`, which is what makes the sign of a
-zero come from the destination. A NaN in either argument gives a NaN.
+One representable value in that direction, subnormals and zeros included: stepping down from the smallest
+positive normal lands in the subnormals rather than jumping to zero, and stepping down from `+0.0` gives the
+smallest negative subnormal rather than `-0.0`. `from` equal to `toward` returns `toward`, which is what makes
+the sign of a zero come from the destination. A NaN in either argument gives a NaN.
 
 | Overload                                                        | Summary                                                                    |
 | --------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | `pub func NextAfter(from: float64, toward: float64) -> float64` | The value adjacent to `from` in the direction of `toward`.                 |
 | `pub func NextAfter(from: float32, toward: float32) -> float32` | Finds the `float32` value adjacent to `from` in the direction of `toward`. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L214)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L215)
 
 **Parameters**
 
@@ -104,7 +104,7 @@ Finds the next `float32` value above `value`.
 | `pub func NextUp(value: float64) -> float64` | The next representable value above `value`.   |
 | `pub func NextUp(value: float32) -> float32` | Finds the next `float32` value above `value`. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L246)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L247)
 
 **Parameters**
 
@@ -128,7 +128,7 @@ Finds the next `float32` value below `value`.
 | `pub func NextDown(value: float64) -> float64` | The next representable value below `value`.   |
 | `pub func NextDown(value: float32) -> float32` | Finds the next `float32` value below `value`. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L262)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L263)
 
 **Parameters**
 
@@ -153,17 +153,17 @@ pub func ScaleByPowerOfTwo(
 ```
 
 `value` multiplied by two raised to `exponent`, with one rounding.
-The obvious spelling - multiplying by a computed power of two - overflows for large exponents and rounds twice when
-the answer lands in the subnormals. This steps in bounded pieces so neither happens: the result is correctly rounded
-once, and an exponent far outside the range saturates to an infinity or a zero rather than wrapping the exponent
-field into a wrong answer.
+The obvious spelling - multiplying by a computed power of two - overflows for large exponents and rounds twice
+when the answer lands in the subnormals. This steps in bounded pieces so neither happens: the result is
+correctly rounded once, and an exponent far outside the range saturates to an infinity or a zero rather than
+wrapping the exponent field into a wrong answer.
 
 | Overload                                                                 | Summary                                                                |
 | ------------------------------------------------------------------------ | ---------------------------------------------------------------------- |
 | `pub func ScaleByPowerOfTwo(value: float64, exponent: int64) -> float64` | `value` multiplied by two raised to `exponent`, with one rounding.     |
 | `pub func ScaleByPowerOfTwo(value: float32, exponent: int64) -> float32` | Multiplies `value` by two raised to `exponent` at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L311)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L312)
 
 **Parameters**
 
@@ -182,17 +182,17 @@ pub func ExponentOf(value: float32) -> int64
 ```
 
 The exponent of `value`: the power of two of its most significant bit.
-A normal value's exponent is such that its magnitude lies in `[2^e, 2^(e+1))`; a subnormal reports the exponent it
-would have with unbounded range, so the relationship keeps holding into the subnormals. Zero has no exponent and
-reports [`NoExponent`](/docs/api/math/float-representation#no-exponent), and a NaN or infinity reports [`IndeterminateExponent`](/docs/api/math/float-representation#indeterminate-exponent); both are values far outside any real
-exponent, so neither can be mistaken for one.
+A normal value's exponent is such that its magnitude lies in `[2^e, 2^(e+1))`; a subnormal reports the exponent
+it would have with unbounded range, so the relationship keeps holding into the subnormals. Zero has no exponent
+and reports [`NoExponent`](/docs/api/math/float-representation#no-exponent), and a NaN or infinity reports [`IndeterminateExponent`](/docs/api/math/float-representation#indeterminate-exponent); both are values far outside any
+real exponent, so neither can be mistaken for one.
 
 | Overload                                       | Summary                                                                |
 | ---------------------------------------------- | ---------------------------------------------------------------------- |
 | `pub func ExponentOf(value: float64) -> int64` | The exponent of `value`: the power of two of its most significant bit. |
 | `pub func ExponentOf(value: float32) -> int64` | Extracts the binary exponent of `value` at `float32` precision.        |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L339)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L340)
 
 **Parameters**
 
@@ -210,7 +210,7 @@ pub const NoExponent: int64 = int64::Min;
 
 What [`ExponentOf`](/docs/api/math/float-representation#exponent-of) reports for zero, which has no exponent at all.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L363)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L364)
 
 <h2 id="indeterminate-exponent"><code>IndeterminateExponent</code></h2>
 
@@ -220,7 +220,7 @@ pub const IndeterminateExponent: int64 = int64::Max;
 
 What [`ExponentOf`](/docs/api/math/float-representation#exponent-of) reports for a NaN or an infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L367)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L368)
 
 <h2 id="decompose"><code>Decompose</code></h2>
 
@@ -238,15 +238,15 @@ pub func Decompose(
 
 Splits `value` into a fraction in `[0.5, 1)` and a power of two, so that `fraction * 2^exponent == value`.
 The classic decomposition. Zero gives zero with an exponent of zero, and a NaN or infinity is returned unchanged
-with an exponent of zero - neither has a decomposition, and inventing one would be worse than returning the value
-itself. The sign stays with the fraction. `exponent` must be non-null and writable.
+with an exponent of zero - neither has a decomposition, and inventing one would be worse than returning the
+value itself. The sign stays with the fraction. `exponent` must be non-null and writable.
 
 | Overload                                                              | Summary                                                                                                    |
 | --------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `pub func Decompose(value: float64, exponent: *var int64) -> float64` | Splits `value` into a fraction in `[0.5, 1)` and a power of two, so that `fraction * 2^exponent == value`. |
 | `pub func Decompose(value: float32, exponent: *var int64) -> float32` | Decomposes `value` into a `float32` fraction and a binary exponent.                                        |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L377)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L378)
 
 **Parameters**
 
@@ -272,16 +272,16 @@ pub func SplitIntegral(
 ```
 
 Splits `value` into its integral and fractional parts, both carrying its sign.
-`integral` receives the part toward zero and the fractional part is returned, so the two always sum back to `value`
-exactly. An infinity puts itself in `integral` and returns a zero of the same sign; a NaN puts a NaN in both.
-`integral` must be non-null and writable.
+`integral` receives the part toward zero and the fractional part is returned, so the two always sum back to
+`value` exactly. An infinity puts itself in `integral` and returns a zero of the same sign; a NaN puts a NaN in
+both. `integral` must be non-null and writable.
 
 | Overload                                                                    | Summary                                                                        |
 | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------ |
 | `pub func SplitIntegral(value: float64, integral: *var float64) -> float64` | Splits `value` into its integral and fractional parts, both carrying its sign. |
 | `pub func SplitIntegral(value: float32, integral: *var float32) -> float32` | Splits `value` into integral and fractional `float32` parts.                   |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L410)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L411)
 
 **Parameters**
 
@@ -307,20 +307,20 @@ pub func UlpDistance(
 ```
 
 How many representable values lie between `left` and `right`.
-The natural way to state a floating-point error bound: two values are one ulp apart when nothing is representable
-between them, and a function accurate to half an ulp returns the nearest representable value to the true answer.
-Counting steps rather than subtracting is what makes the measure meaningful near zero, where the absolute difference
-between neighbours is vanishingly small, and near the maximum, where it is enormous. Values of opposite sign are
-counted through zero, with the two zeros treated as one value - the step from the smallest negative subnormal to the
-smallest positive one is two, not three. A NaN in either argument has no distance and reports the largest `uint64`,
-which no real distance can reach.
+The natural way to state a floating-point error bound: two values are one ulp apart when nothing is
+representable between them, and a function accurate to half an ulp returns the nearest representable value to
+the true answer. Counting steps rather than subtracting is what makes the measure meaningful near zero, where
+the absolute difference between neighbours is vanishingly small, and near the maximum, where it is enormous.
+Values of opposite sign are counted through zero, with the two zeros treated as one value - the step from the
+smallest negative subnormal to the smallest positive one is two, not three. A NaN in either argument has no
+distance and reports the largest `uint64`, which no real distance can reach.
 
 | Overload                                                        | Summary                                                               |
 | --------------------------------------------------------------- | --------------------------------------------------------------------- |
 | `pub func UlpDistance(left: float64, right: float64) -> uint64` | How many representable values lie between `left` and `right`.         |
 | `pub func UlpDistance(left: float32, right: float32) -> uint64` | Counts the representable `float32` values between `left` and `right`. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L448)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L449)
 
 **Parameters**
 

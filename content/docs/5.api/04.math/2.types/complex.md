@@ -43,13 +43,10 @@ A complex number `real + imaginary·i` over `float64`. `Copy`.
 
 **Constructors**
 
-<h3 id="new"><code>Complex</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Complex(
-    real: float64,
-    imaginary: float64
-) -> Complex
+pub func New(real: float64, imaginary: float64) -> Complex
 ```
 
 The number `real + imaginary·i`.
@@ -305,13 +302,10 @@ A complex number `real + imaginary·i` over `float32`. `Copy`.
 
 **Constructors**
 
-<h3 id="complex32-constructor"><code>Complex32</code></h3>
+<h3 id="complex32-constructor"><code>New</code></h3>
 
 ```rux
-pub func Complex32(
-    real: float32,
-    imaginary: float32
-) -> Complex32
+pub func New(real: float32, imaginary: float32) -> Complex32
 ```
 
 The number `real + imaginary·i`.

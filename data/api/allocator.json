@@ -19,7 +19,7 @@
     {
       "name": "Arena",
       "source": "Src/Arena.rux",
-      "header": "An allocator that hands out storage by advancing a pointer, and takes it all back at once.\nAn arena is the right shape whenever a program builds a lot of small things whose lives all end together: a parse\ntree, one request's working set, a frame's worth of geometry. Allocation is an addition and a bounds check, and\nnothing is tracked per allocation, because nothing is released per allocation.\nStorage comes from a backing allocator in blocks. When a block cannot serve a request the arena takes another,\ntwice the size of the last, so a long-lived arena stops going back to the system rather than asking once per\nallocation. A request larger than a whole block gets a block of its own.\n`Reset` is what makes an arena worth reusing: it rewinds every allocation while keeping the largest block, so the\nnext round of work runs without asking the system for anything at all.\nThe arena owns its blocks, so it moves rather than copies, and `~Arena` releases them. `Handle` gives the\n`Allocator` handle a container keeps: it addresses the arena, so making one is `unsafe` and its caller promises\nthat the arena outlives every copy, stays where it is, and is not reset while an allocation made through it is in\nuse."
+      "header": "An allocator that hands out storage by advancing a pointer, and takes it all back at once.\nAn arena is the right shape whenever a program builds a lot of small things whose lives all end together: a parse\ntree, one request's working set, a frame's worth of geometry. Allocation is an addition and a bounds check, and\nnothing is tracked per allocation, because nothing is released per allocation.\nStorage comes from a backing allocator in blocks. When a block cannot serve a request the arena takes another,\ntwice the size of the last, so a long-lived arena stops going back to the system rather than asking once per\nallocation. A request larger than a whole block gets a block of its own.\n`Reset` is what makes an arena worth reusing: it rewinds every allocation while keeping the largest block, so the\nnext round of work runs without asking the system for anything at all.\nThe arena owns its blocks, so it moves rather than copies, and its destructor releases them. `Handle` gives the\n`Allocator` handle a container keeps: it addresses the arena, so its caller promises\nthat the arena outlives every copy, stays where it is, and is not reset while an allocation made through it is in\nuse."
     },
     {
       "name": "Box",
@@ -34,7 +34,7 @@
     {
       "name": "Error",
       "source": "Src/Error.rux",
-      "header": "Why an allocation did not happen.\nAn allocator that fails has to say so in a way the caller can act on, and \"null\" is not that: it cannot tell a\nrequest that was too large from one the system refused from one the allocator was never able to serve. These are\nthe four answers, and every allocator in this package gives one of them.\nEvery case is a failure. An allocator returns its address or completion and declares `throws AllocError`, so\nsuccess is the return value rather than a member of this enum, and a call nobody marks with `try` is diagnosed.\nThe owning types built on an allocator treat a refusal as fatal: a `Box`, an `Rc`, a collection or a string that\ncannot get storage terminates the program through `AllocationFailed`, and its `Try*` operations hand the\n`AllocError` back instead to the code that can recover."
+      "header": "Why an allocation did not happen.\nAn allocator that fails has to say so in a way the caller can act on, and \"null\" is not that: it cannot tell a\nrequest that was too large from one the system refused from one the allocator was never able to serve. These are\nthe four answers, and every allocator in this package gives one of them.\nEvery case is a failure. An allocator returns its address or completion as `T ! AllocError`, so success is the\nreturn value rather than a member of this enum, and a call whose result nobody uses is diagnosed.\nThe owning types built on an allocator treat a refusal as fatal: a `Box`, an `Rc`, a collection or a string that\ncannot get storage terminates the program through `AllocationFailed`, and its `Try*` operations hand the\n`AllocError` back instead to the code that can recover."
     },
     {
       "name": "FixedBuffer",
@@ -49,7 +49,7 @@
     {
       "name": "Pool",
       "source": "Src/Pool.rux",
-      "header": "An allocator that serves small blocks from free lists, one per size class, and reuses what is given back.\nThe arena is fast because it never reclaims. This is the allocator for the other shape: many small values whose\nlives end at different times and in no particular order — list nodes, hash table entries, small strings. Both\nallocation and release are a handful of instructions and a pointer swap, with no search and no coalescing.\nA request is rounded up to one of a few power-of-two classes, and each class keeps its own list of blocks that\nhave been handed back. When a class runs dry the pool takes one chunk from a backing allocator and carves it into\nblocks of that class, so the backing allocator sees one request per chunk rather than one per block.\nRounding up is what pays for the speed. A 17-byte request occupies a 32-byte block, and the 15 bytes are not\nrecoverable until the whole chunk is released — which is the trade a pool makes, and the reason it is not the\nallocator to reach for when sizes vary widely.\nA request too large for the largest class, or needing an alignment stricter than a chunk is taken at, is passed\nstraight to the backing allocator. That decision is made from the layout alone, so a release reaches the same\nconclusion as the allocation it matches without the pool recording anything per block.\nThe pool owns its chunks, so it moves rather than copies, and `~Pool` releases them. `Handle` gives the\n`Allocator` handle a container keeps: it addresses the pool, so making one is `unsafe` and its caller promises that\nthe pool outlives every copy, stays where it is, and is not reset while a block taken through it is in use."
+      "header": "An allocator that serves small blocks from free lists, one per size class, and reuses what is given back.\nThe arena is fast because it never reclaims. This is the allocator for the other shape: many small values whose\nlives end at different times and in no particular order — list nodes, hash table entries, small strings. Both\nallocation and release are a handful of instructions and a pointer swap, with no search and no coalescing.\nA request is rounded up to one of a few power-of-two classes, and each class keeps its own list of blocks that\nhave been handed back. When a class runs dry the pool takes one chunk from a backing allocator and carves it into\nblocks of that class, so the backing allocator sees one request per chunk rather than one per block.\nRounding up is what pays for the speed. A 17-byte request occupies a 32-byte block, and the 15 bytes are not\nrecoverable until the whole chunk is released — which is the trade a pool makes, and the reason it is not the\nallocator to reach for when sizes vary widely.\nA request too large for the largest class, or needing an alignment stricter than a chunk is taken at, is passed\nstraight to the backing allocator. That decision is made from the layout alone, so a release reaches the same\nconclusion as the allocation it matches without the pool recording anything per block.\nThe pool owns its chunks, so it moves rather than copies, and its destructor releases them. `Handle` gives the\n`Allocator` handle a container keeps: it addresses the pool, so its caller promises that\nthe pool outlives every copy, stays where it is, and is not reset while a block taken through it is in use."
     },
     {
       "name": "Shared",
@@ -65,11 +65,11 @@
   "items": [
     {
       "kind": "constant",
-      "name": "DefaultArenaBlockSize",
-      "displayName": "DefaultArenaBlockSize",
+      "name": "Strategies::DefaultArenaBlockSize",
+      "displayName": "Strategies::DefaultArenaBlockSize",
       "module": "Arena",
       "source": "Src/Arena.rux",
-      "line": 23,
+      "line": 24,
       "signature": "pub const DefaultArenaBlockSize: uint",
       "typeParams": [],
       "doc": {
@@ -100,11 +100,11 @@
     },
     {
       "kind": "constant",
-      "name": "ArenaBlockAlignment",
-      "displayName": "ArenaBlockAlignment",
+      "name": "Strategies::ArenaBlockAlignment",
+      "displayName": "Strategies::ArenaBlockAlignment",
       "module": "Arena",
       "source": "Src/Arena.rux",
-      "line": 27,
+      "line": 28,
       "signature": "pub const ArenaBlockAlignment: uint",
       "typeParams": [],
       "doc": {
@@ -135,11 +135,11 @@
     },
     {
       "kind": "struct",
-      "name": "ArenaBlock",
-      "displayName": "ArenaBlock",
+      "name": "Strategies::ArenaBlock",
+      "displayName": "Strategies::ArenaBlock",
       "module": "Arena",
       "source": "Src/Arena.rux",
-      "line": 33,
+      "line": 34,
       "signature": "pub struct ArenaBlock",
       "typeParams": [],
       "doc": {
@@ -157,7 +157,7 @@
           "name": "previous",
           "type": "*var ArenaBlock",
           "public": false,
-          "line": 35,
+          "line": 36,
           "doc": "The block taken before this one, or null for the first.",
           "targets": [
             "windows-x86_64",
@@ -174,7 +174,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 37,
+          "line": 38,
           "doc": "Payload bytes in this block, not counting the header.",
           "targets": [
             "windows-x86_64",
@@ -191,7 +191,7 @@
           "name": "used",
           "type": "uint",
           "public": false,
-          "line": 39,
+          "line": 40,
           "doc": "Payload bytes handed out so far.",
           "targets": [
             "windows-x86_64",
@@ -222,11 +222,11 @@
     },
     {
       "kind": "struct",
-      "name": "Arena",
-      "displayName": "Arena",
+      "name": "Strategies::Arena",
+      "displayName": "Strategies::Arena",
       "module": "Arena",
       "source": "Src/Arena.rux",
-      "line": 46,
+      "line": 47,
       "signature": "pub struct Arena",
       "typeParams": [],
       "doc": {
@@ -244,7 +244,7 @@
           "name": "backing",
           "type": "Allocator",
           "public": false,
-          "line": 48,
+          "line": 49,
           "doc": "Where the blocks come from.",
           "targets": [
             "windows-x86_64",
@@ -261,7 +261,7 @@
           "name": "current",
           "type": "*var ArenaBlock",
           "public": false,
-          "line": 50,
+          "line": 51,
           "doc": "The block being handed out of, or null before the first request.",
           "targets": [
             "windows-x86_64",
@@ -278,7 +278,7 @@
           "name": "nextBlockSize",
           "type": "uint",
           "public": false,
-          "line": 52,
+          "line": 53,
           "doc": "The payload the next block will be taken with.",
           "targets": [
             "windows-x86_64",
@@ -295,7 +295,7 @@
           "name": "lastAllocation",
           "type": "uint",
           "public": false,
-          "line": 55,
+          "line": 56,
           "doc": "The address the most recent allocation returned, or null. Kept so that releasing or growing the most recent\nallocation can rewind rather than waste the space.",
           "targets": [
             "windows-x86_64",
@@ -312,7 +312,7 @@
           "name": "blocks",
           "type": "uint",
           "public": false,
-          "line": 57,
+          "line": 58,
           "doc": "How many blocks the arena holds.",
           "targets": [
             "windows-x86_64",
@@ -330,10 +330,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Arena",
-          "line": 69,
-          "signature": "pub func Arena(backing: Allocator, blockSize: uint) -> Arena",
+          "kind": "associated",
+          "name": "New",
+          "line": 70,
+          "signature": "pub func New(backing: Allocator, blockSize: uint) -> Arena",
           "typeParams": [],
           "params": [
             { "name": "backing", "type": "Allocator" },
@@ -346,7 +346,7 @@
           "public": true,
           "doc": {
             "summary": "An arena that will take its storage from `backing`.",
-            "markdown": "An arena that will take its storage from `backing`.\n`backing` is borrowed for the call and kept. `blockSize` is the payload of the first block; zero asks for the\ndefault. Cannot fail and allocates nothing: the first block is taken when the first request arrives, so an\narena that is never used costs nothing.",
+            "markdown": "An arena that will take its storage from `backing`.\n`backing` is borrowed for the call and kept. `blockSize` is the payload of the first block; zero asks for\nthe default. Cannot fail and allocates nothing: the first block is taken when the first request arrives, so\nan arena that is never used costs nothing.",
             "typeParams": [],
             "params": [
               { "name": "backing", "markdown": "where the arena's blocks come from" },
@@ -370,8 +370,8 @@
         {
           "kind": "method",
           "name": "Handle",
-          "line": 88,
-          "signature": "pub unsafe func Handle(*var self) -> Allocator",
+          "line": 89,
+          "signature": "pub func Handle(*var self) -> Allocator",
           "typeParams": [],
           "params": [],
           "receiver": "*var Arena",
@@ -381,7 +381,7 @@
           "public": true,
           "doc": {
             "summary": "An `Allocator` handle addressing this arena, for a container to keep.",
-            "markdown": "An `Allocator` handle addressing this arena, for a container to keep.\n`self` stays the caller's. Allocations through the handle update this arena rather than copied state.\nCannot fail. Runs in constant time and allocates nothing.\nSafety: the handle addresses the arena and must not outlive it, nor survive the arena being moved, and nothing\nmay `Reset` the arena while an allocation made through the handle is still in use. Nothing here tracks that: a\nhandle held past its arena's life points at released storage.",
+            "markdown": "An `Allocator` handle addressing this arena, for a container to keep.\n`self` stays the caller's. Allocations through the handle update this arena rather than copied state.\nCannot fail. Runs in constant time and allocates nothing.\nSafety: the handle addresses the arena and must not outlive it, nor survive the arena being moved, and\nnothing may `Reset` the arena while an allocation made through the handle is still in use. Nothing here\ntracks that: a handle held past its arena's life points at released storage.",
             "typeParams": [],
             "params": [],
             "returns": "a copyable handle addressing this arena",
@@ -413,7 +413,7 @@
           "public": true,
           "doc": {
             "summary": "Rewinds every allocation, keeping the largest block for the next round of work.",
-            "markdown": "Rewinds every allocation, keeping the largest block for the next round of work.\n`self` is borrowed mutably. Every pointer the arena ever handed out becomes invalid, including any still held\nby a caller — an arena reclaims in one operation, which is what makes it fast and what makes this the one\ndangerous call on it.\nThe kept block is the current one, which is the largest, so a second round of the same work runs without\nasking the system for anything. Runs in time proportional to the number of blocks.\nNothing may be read from or written to any earlier allocation afterwards.",
+            "markdown": "Rewinds every allocation, keeping the largest block for the next round of work.\n`self` is borrowed mutably. Every pointer the arena ever handed out becomes invalid, including any still\nheld by a caller — an arena reclaims in one operation, which is what makes it fast and what makes this the\none dangerous call on it. The kept block is the current one, which is the largest, so a second round of the\nsame work runs without asking the system for anything. Runs in time proportional to the number of blocks.\nNothing may be read from or written to any earlier allocation afterwards.",
             "typeParams": [],
             "params": [],
             "returns": null,
@@ -434,7 +434,7 @@
         {
           "kind": "method",
           "name": "BytesUsed",
-          "line": 131,
+          "line": 129,
           "signature": "pub func BytesUsed(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -445,7 +445,7 @@
           "public": true,
           "doc": {
             "summary": "How many payload bytes the arena has handed out, summed over every block it holds.",
-            "markdown": "How many payload bytes the arena has handed out, summed over every block it holds.\n`self` is borrowed. Alignment padding between allocations counts as used. The tail a block was left with when\na request did not fit in it and the arena moved on to a new block is not counted: nothing was handed out of\nit, and nothing will be until a `Reset`. Runs in time proportional to the number of blocks and allocates\nnothing.",
+            "markdown": "How many payload bytes the arena has handed out, summed over every block it holds.\n`self` is borrowed. Alignment padding between allocations counts as used. The tail a block was left with\nwhen a request did not fit in it and the arena moved on to a new block is not counted: nothing was handed\nout of it, and nothing will be until a `Reset`. Runs in time proportional to the number of blocks and\nallocates nothing.",
             "typeParams": [],
             "params": [],
             "returns": "how many payload bytes the arena's blocks have handed out",
@@ -466,7 +466,7 @@
         {
           "kind": "method",
           "name": "BlockCount",
-          "line": 149,
+          "line": 145,
           "signature": "pub func BlockCount(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -497,9 +497,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Arena",
-          "line": 205,
-          "signature": "func ~Arena(&var self)",
+          "name": "~",
+          "line": 202,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Arena",
@@ -530,8 +530,8 @@
         {
           "kind": "method",
           "name": "Allocate",
-          "line": 231,
-          "signature": "pub func Allocate(&var self, layout: Layout) -> *var opaque throws AllocError",
+          "line": 228,
+          "signature": "pub func Allocate(&var self, layout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [{ "name": "layout", "type": "Layout" }],
           "receiver": "&var Arena",
@@ -562,8 +562,8 @@
         {
           "kind": "method",
           "name": "Deallocate",
-          "line": 260,
-          "signature": "pub func Deallocate(&var self, block: *var opaque, layout: Layout) throws AllocError",
+          "line": 257,
+          "signature": "pub func Deallocate(&var self, block: *var opaque, layout: Layout) -> !AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },
@@ -576,7 +576,7 @@
           "public": true,
           "doc": {
             "summary": "Accepts a release and reclaims only what it can.",
-            "markdown": "Accepts a release and reclaims only what it can.\nAn arena reclaims in one operation, so an ordinary release has nothing to give back and reports `None` having\ndone nothing. The exception is the most recent allocation, whose space is rewound — which is what lets a\ngrowing collection in an arena not waste every earlier size it passed through.\nAccepting rather than refusing is deliberate: it lets an arena stand in for any allocator in generic code\nthat releases what it takes.",
+            "markdown": "Accepts a release and reclaims only what it can.\nAn arena reclaims in one operation, so an ordinary release has nothing to give back and reports `None`\nhaving done nothing. The exception is the most recent allocation, whose space is rewound — which is what\nlets a growing collection in an arena not waste every earlier size it passed through. Accepting rather than\nrefusing is deliberate: it lets an arena stand in for any allocator in generic code that releases what it\ntakes.",
             "typeParams": [],
             "params": [
               { "name": "block", "markdown": "an address this allocator returned" },
@@ -600,8 +600,8 @@
         {
           "kind": "method",
           "name": "Reallocate",
-          "line": 289,
-          "signature": "pub func Reallocate(&var self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque throws AllocError",
+          "line": 284,
+          "signature": "pub func Reallocate(&var self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },
@@ -652,16 +652,16 @@
     },
     {
       "kind": "struct",
-      "name": "Box",
-      "displayName": "Box<T>",
+      "name": "Pointers::Box",
+      "displayName": "Pointers::Box<T>",
       "module": "Box",
       "source": "Src/Box.rux",
-      "line": 25,
+      "line": 26,
       "signature": "pub struct Box<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "One heap-allocated value of `T`, owned by exactly one holder.",
-        "markdown": "One heap-allocated value of `T`, owned by exactly one holder.\nMove-only: its copy operation is prohibited and `~Box` releases its allocation. Transfer one with `move`; the\nsource is then moved-out and reading it is rejected while compiling rather than at run time.\nThe storage is released when the box is destroyed, at whichever scope exit, return, `break`, `continue` or\noverwriting assignment the value's life ends at.",
+        "markdown": "One heap-allocated value of `T`, owned by exactly one holder.\nMove-only: its copy operation is prohibited and its destructor releases its allocation. A named box written bare\nis given away; the source is then empty and reading it is rejected while compiling rather than at run time. The\nstorage is released when the box is destroyed, at whichever scope exit, return, `break`, `continue` or\noverwriting assignment the value's life ends at.",
         "typeParams": [{ "name": "T", "markdown": "the type the box owns one of" }],
         "params": [],
         "returns": null,
@@ -674,7 +674,7 @@
           "name": "pointer",
           "type": "*var T",
           "public": false,
-          "line": 27,
+          "line": 28,
           "doc": "The allocation, or null for a box whose value has been taken out.",
           "targets": [
             "windows-x86_64",
@@ -691,7 +691,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 29,
+          "line": 30,
           "doc": "The allocator the storage came from, which is the one it must go back to.",
           "targets": [
             "windows-x86_64",
@@ -709,10 +709,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Box",
-          "line": 41,
-          "signature": "pub func Box(allocator: Allocator, value: T) -> Box<T>",
+          "kind": "associated",
+          "name": "New",
+          "line": 42,
+          "signature": "pub func New(allocator: Allocator, value: T) -> Box<T>",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -749,8 +749,8 @@
         {
           "kind": "associated",
           "name": "TryCreate",
-          "line": 53,
-          "signature": "pub func TryCreate(allocator: Allocator, value: T) -> Box<T> throws AllocError",
+          "line": 54,
+          "signature": "pub func TryCreate(allocator: Allocator, value: T) -> Box<T> ! AllocError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -787,7 +787,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 69,
+          "line": 70,
           "signature": "pub func Get(&self) -> &T?",
           "typeParams": [],
           "params": [],
@@ -798,7 +798,7 @@
           "public": true,
           "doc": {
             "summary": "The value this box holds, borrowed where it sits, or `none` for a box whose value has been taken out.",
-            "markdown": "The value this box holds, borrowed where it sits, or `none` for a box whose value has been taken out.\n`self` stays borrowed while the reference is in use, so the box cannot be emptied, moved or destroyed under it.\nCannot fail. Runs in constant time and allocates nothing.",
+            "markdown": "The value this box holds, borrowed where it sits, or `none` for a box whose value has been taken out.\n`self` stays borrowed while the reference is in use, so the box cannot be emptied, moved or destroyed under\nit. Cannot fail. Runs in constant time and allocates nothing.",
             "typeParams": [],
             "params": [],
             "returns": "a reference to the held value, or `none` when the box is empty",
@@ -819,7 +819,7 @@
         {
           "kind": "method",
           "name": "GetMutable",
-          "line": 81,
+          "line": 82,
           "signature": "pub func GetMutable(&var self) -> &var T?",
           "typeParams": [],
           "params": [],
@@ -851,7 +851,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 93,
+          "line": 94,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -883,7 +883,7 @@
         {
           "kind": "method",
           "name": "Take",
-          "line": 104,
+          "line": 105,
           "signature": "pub func Take(&var self) -> T?",
           "typeParams": [],
           "params": [],
@@ -914,9 +914,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Box",
-          "line": 121,
-          "signature": "func ~Box(&var self)",
+          "name": "~",
+          "line": 122,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Box<T>",
@@ -968,7 +968,7 @@
       "typeParams": [],
       "doc": {
         "summary": "The operations every allocator provides.",
-        "markdown": "The operations every allocator provides.\nWritten as an interface so a generic can require it — `func Build<A: Allocator>(allocator: &var A)` borrows the\ncaller's allocator and resolves calls at each instantiation with nothing dispatched at run time — and so a call\ncan borrow any allocator as `&var Allocator`.\nEvery operation may write its receiver: an arena advances its pointer and a pool its free lists.\nA container keeps its allocator as an `Allocator` value, which is a copyable handle to the implementation and owns\nnothing. A stateless allocator such as `SystemAllocator` converts to one anywhere and stays valid forever; a\nstateful one gives a handle only through an `unsafe` `Handle`, whose caller promises the allocator outlives it.",
+        "markdown": "The operations every allocator provides.\nWritten as an interface so a generic can require it — `func Build<A: Allocator>(allocator: &var A)` borrows the\ncaller's allocator and resolves calls at each instantiation with nothing dispatched at run time — and so a call\ncan borrow any allocator as `&var Allocator`.\nEvery operation may write its receiver: an arena advances its pointer and a pool its free lists.\nA container keeps its allocator as an `Allocator` value, which is a copyable handle to the implementation and owns\nnothing. A stateless allocator such as `SystemAllocator` converts to one anywhere and stays valid forever; a\nstateful one gives a handle only through its `Handle`, whose caller promises the allocator outlives it.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -984,7 +984,7 @@
           "kind": "requirement",
           "name": "Allocate",
           "line": 40,
-          "signature": "func Allocate(&var self, layout: Layout) -> *var opaque throws AllocError",
+          "signature": "func Allocate(&var self, layout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [{ "name": "layout", "type": "Layout" }],
           "receiver": "&var Self",
@@ -1016,7 +1016,7 @@
           "kind": "requirement",
           "name": "Deallocate",
           "line": 50,
-          "signature": "func Deallocate(&var self, block: *var opaque, layout: Layout) throws AllocError",
+          "signature": "func Deallocate(&var self, block: *var opaque, layout: Layout) -> !AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },
@@ -1054,7 +1054,7 @@
           "kind": "requirement",
           "name": "Reallocate",
           "line": 67,
-          "signature": "func Reallocate(&var self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque throws AllocError",
+          "signature": "func Reallocate(&var self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },
@@ -1365,11 +1365,11 @@
     },
     {
       "kind": "struct",
-      "name": "FixedBuffer",
-      "displayName": "FixedBuffer",
+      "name": "Strategies::FixedBuffer",
+      "displayName": "Strategies::FixedBuffer",
       "module": "FixedBuffer",
       "source": "Src/FixedBuffer.rux",
-      "line": 19,
+      "line": 21,
       "signature": "pub struct FixedBuffer",
       "typeParams": [],
       "doc": {
@@ -1387,7 +1387,7 @@
           "name": "start",
           "type": "uint",
           "public": false,
-          "line": 21,
+          "line": 23,
           "doc": "The first byte of the storage, or null for a buffer with no storage at all.",
           "targets": [
             "windows-x86_64",
@@ -1404,7 +1404,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 23,
+          "line": 25,
           "doc": "How many bytes the storage holds.",
           "targets": [
             "windows-x86_64",
@@ -1421,7 +1421,7 @@
           "name": "used",
           "type": "uint",
           "public": false,
-          "line": 25,
+          "line": 27,
           "doc": "How many bytes have been handed out, including alignment padding.",
           "targets": [
             "windows-x86_64",
@@ -1438,7 +1438,7 @@
           "name": "lastAllocation",
           "type": "uint",
           "public": false,
-          "line": 27,
+          "line": 29,
           "doc": "The address the most recent allocation returned, or zero. Kept so releasing or growing it can rewind.",
           "targets": [
             "windows-x86_64",
@@ -1456,10 +1456,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "FixedBuffer",
-          "line": 42,
-          "signature": "pub unsafe func FixedBuffer(storage: *var opaque, capacity: uint) -> FixedBuffer",
+          "kind": "associated",
+          "name": "New",
+          "line": 44,
+          "signature": "pub func New(storage: *var opaque, capacity: uint) -> FixedBuffer",
           "typeParams": [],
           "params": [
             { "name": "storage", "type": "*var opaque" },
@@ -1472,7 +1472,7 @@
           "public": true,
           "doc": {
             "summary": "An allocator over `capacity` bytes at `storage`.",
-            "markdown": "An allocator over `capacity` bytes at `storage`.\n`storage` is borrowed and kept; nothing is copied and nothing is taken ownership of. A `capacity` of zero, or\na null `storage`, gives an allocator that refuses every request with `OutOfMemory` — which is a usable\nallocator rather than an error, and is what a caller testing exhaustion wants.\nCannot fail. Runs in constant time and allocates nothing.\nSafety: the storage must stay valid and untouched by anything else for as long as this allocator or any handle\nto it is used. Nothing here tracks that.",
+            "markdown": "An allocator over `capacity` bytes at `storage`.\n`storage` is borrowed and kept; nothing is copied and nothing is taken ownership of. A `capacity` of zero,\nor a null `storage`, gives an allocator that refuses every request with `OutOfMemory` — which is a usable\nallocator rather than an error, and is what a caller testing exhaustion wants. Cannot fail. Runs in constant\ntime and allocates nothing.\nSafety: the storage must stay valid and untouched by anything else for as long as this allocator or any\nhandle to it is used. Nothing here tracks that.",
             "typeParams": [],
             "params": [
               { "name": "storage", "markdown": "the caller's bytes to hand out of" },
@@ -1496,8 +1496,8 @@
         {
           "kind": "method",
           "name": "Handle",
-          "line": 59,
-          "signature": "pub unsafe func Handle(*var self) -> Allocator",
+          "line": 61,
+          "signature": "pub func Handle(*var self) -> Allocator",
           "typeParams": [],
           "params": [],
           "receiver": "*var FixedBuffer",
@@ -1528,7 +1528,7 @@
         {
           "kind": "method",
           "name": "Reset",
-          "line": 68,
+          "line": 70,
           "signature": "pub func Reset(&var self)",
           "typeParams": [],
           "params": [],
@@ -1560,7 +1560,7 @@
         {
           "kind": "method",
           "name": "BytesUsed",
-          "line": 77,
+          "line": 79,
           "signature": "pub func BytesUsed(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -1592,7 +1592,7 @@
         {
           "kind": "method",
           "name": "BytesRemaining",
-          "line": 85,
+          "line": 87,
           "signature": "pub func BytesRemaining(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -1624,8 +1624,8 @@
         {
           "kind": "method",
           "name": "Allocate",
-          "line": 149,
-          "signature": "pub func Allocate(&var self, layout: Layout) -> *var opaque throws AllocError",
+          "line": 151,
+          "signature": "pub func Allocate(&var self, layout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [{ "name": "layout", "type": "Layout" }],
           "receiver": "&var FixedBuffer",
@@ -1656,8 +1656,8 @@
         {
           "kind": "method",
           "name": "Deallocate",
-          "line": 164,
-          "signature": "pub func Deallocate(&var self, block: *var opaque, layout: Layout) throws AllocError",
+          "line": 166,
+          "signature": "pub func Deallocate(&var self, block: *var opaque, layout: Layout) -> !AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },
@@ -1694,8 +1694,8 @@
         {
           "kind": "method",
           "name": "Reallocate",
-          "line": 180,
-          "signature": "pub func Reallocate(&var self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque throws AllocError",
+          "line": 182,
+          "signature": "pub func Reallocate(&var self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },
@@ -2114,11 +2114,11 @@
     },
     {
       "kind": "constant",
-      "name": "PoolClassCount",
-      "displayName": "PoolClassCount",
+      "name": "Strategies::PoolClassCount",
+      "displayName": "Strategies::PoolClassCount",
       "module": "Pool",
       "source": "Src/Pool.rux",
-      "line": 24,
+      "line": 26,
       "signature": "pub const PoolClassCount: uint",
       "typeParams": [],
       "doc": {
@@ -2149,16 +2149,16 @@
     },
     {
       "kind": "constant",
-      "name": "PoolSmallestClass",
-      "displayName": "PoolSmallestClass",
+      "name": "Strategies::PoolSmallestClass",
+      "displayName": "Strategies::PoolSmallestClass",
       "module": "Pool",
       "source": "Src/Pool.rux",
-      "line": 30,
+      "line": 32,
       "signature": "pub const PoolSmallestClass: uint",
       "typeParams": [],
       "doc": {
         "summary": "The smallest size class, and so the block a one-byte request occupies.",
-        "markdown": "The smallest size class, and so the block a one-byte request occupies.\nLarge enough to hold the link a free block stores in its own storage, which is what lets a free list cost nothing\nbeyond the blocks already on it.",
+        "markdown": "The smallest size class, and so the block a one-byte request occupies.\nLarge enough to hold the link a free block stores in its own storage, which is what lets a free list cost\nnothing beyond the blocks already on it.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -2184,11 +2184,11 @@
     },
     {
       "kind": "constant",
-      "name": "PoolLargestClass",
-      "displayName": "PoolLargestClass",
+      "name": "Strategies::PoolLargestClass",
+      "displayName": "Strategies::PoolLargestClass",
       "module": "Pool",
       "source": "Src/Pool.rux",
-      "line": 34,
+      "line": 36,
       "signature": "pub const PoolLargestClass: uint",
       "typeParams": [],
       "doc": {
@@ -2219,11 +2219,11 @@
     },
     {
       "kind": "constant",
-      "name": "PoolAlignment",
-      "displayName": "PoolAlignment",
+      "name": "Strategies::PoolAlignment",
+      "displayName": "Strategies::PoolAlignment",
       "module": "Pool",
       "source": "Src/Pool.rux",
-      "line": 39,
+      "line": 41,
       "signature": "pub const PoolAlignment: uint",
       "typeParams": [],
       "doc": {
@@ -2254,11 +2254,11 @@
     },
     {
       "kind": "constant",
-      "name": "DefaultPoolBlocksPerChunk",
-      "displayName": "DefaultPoolBlocksPerChunk",
+      "name": "Strategies::DefaultPoolBlocksPerChunk",
+      "displayName": "Strategies::DefaultPoolBlocksPerChunk",
       "module": "Pool",
       "source": "Src/Pool.rux",
-      "line": 43,
+      "line": 45,
       "signature": "pub const DefaultPoolBlocksPerChunk: uint",
       "typeParams": [],
       "doc": {
@@ -2289,16 +2289,16 @@
     },
     {
       "kind": "struct",
-      "name": "PoolChunk",
-      "displayName": "PoolChunk",
+      "name": "Strategies::PoolChunk",
+      "displayName": "Strategies::PoolChunk",
       "module": "Pool",
       "source": "Src/Pool.rux",
-      "line": 49,
+      "line": 51,
       "signature": "pub struct PoolChunk",
       "typeParams": [],
       "doc": {
         "summary": "One chunk of pool storage, carved into blocks of a single class.",
-        "markdown": "One chunk of pool storage, carved into blocks of a single class.\nNever constructed by a caller. The blocks follow the header, and the header records what the chunk was taken with\nso that releasing or re-carving it needs nothing else.",
+        "markdown": "One chunk of pool storage, carved into blocks of a single class.\nNever constructed by a caller. The blocks follow the header, and the header records what the chunk was taken\nwith so that releasing or re-carving it needs nothing else.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -2311,7 +2311,7 @@
           "name": "previous",
           "type": "*var PoolChunk",
           "public": false,
-          "line": 51,
+          "line": 53,
           "doc": "The chunk taken before this one, or null for the first.",
           "targets": [
             "windows-x86_64",
@@ -2328,7 +2328,7 @@
           "name": "total",
           "type": "uint",
           "public": false,
-          "line": 53,
+          "line": 55,
           "doc": "The total size the chunk was taken with, header included.",
           "targets": [
             "windows-x86_64",
@@ -2345,7 +2345,7 @@
           "name": "classIndex",
           "type": "uint",
           "public": false,
-          "line": 55,
+          "line": 57,
           "doc": "Which class this chunk was carved into.",
           "targets": [
             "windows-x86_64",
@@ -2362,7 +2362,7 @@
           "name": "blocks",
           "type": "uint",
           "public": false,
-          "line": 57,
+          "line": 59,
           "doc": "How many blocks it was carved into.",
           "targets": [
             "windows-x86_64",
@@ -2393,11 +2393,11 @@
     },
     {
       "kind": "struct",
-      "name": "Pool",
-      "displayName": "Pool",
+      "name": "Strategies::Pool",
+      "displayName": "Strategies::Pool",
       "module": "Pool",
       "source": "Src/Pool.rux",
-      "line": 64,
+      "line": 66,
       "signature": "pub struct Pool",
       "typeParams": [],
       "doc": {
@@ -2415,7 +2415,7 @@
           "name": "backing",
           "type": "Allocator",
           "public": false,
-          "line": 66,
+          "line": 68,
           "doc": "Where the chunks come from.",
           "targets": [
             "windows-x86_64",
@@ -2432,8 +2432,8 @@
           "name": "free",
           "type": "uint[N]",
           "public": false,
-          "line": 70,
-          "doc": "The first free block of each class, by address, or zero for a class with none.\nHeld as addresses rather than pointers because a free block's link lives in the block's own storage, which is\nnot a value of any type until the block is handed out again.",
+          "line": 72,
+          "doc": "The first free block of each class, by address, or zero for a class with none.\nHeld as addresses rather than pointers because a free block's link lives in the block's own storage, which\nis not a value of any type until the block is handed out again.",
           "targets": [
             "windows-x86_64",
             "windows-aarch64",
@@ -2449,7 +2449,7 @@
           "name": "chunks",
           "type": "*var PoolChunk",
           "public": false,
-          "line": 72,
+          "line": 74,
           "doc": "The most recently taken chunk, or null before the first request.",
           "targets": [
             "windows-x86_64",
@@ -2466,7 +2466,7 @@
           "name": "blocksPerChunk",
           "type": "uint",
           "public": false,
-          "line": 74,
+          "line": 76,
           "doc": "How many blocks each new chunk is carved into.",
           "targets": [
             "windows-x86_64",
@@ -2483,7 +2483,7 @@
           "name": "live",
           "type": "uint",
           "public": false,
-          "line": 76,
+          "line": 78,
           "doc": "How many pooled blocks are currently handed out.",
           "targets": [
             "windows-x86_64",
@@ -2500,7 +2500,7 @@
           "name": "chunkCount",
           "type": "uint",
           "public": false,
-          "line": 78,
+          "line": 80,
           "doc": "How many chunks the pool holds.",
           "targets": [
             "windows-x86_64",
@@ -2518,10 +2518,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Pool",
-          "line": 90,
-          "signature": "pub func Pool(backing: Allocator, blocksPerChunk: uint) -> Pool",
+          "kind": "associated",
+          "name": "New",
+          "line": 92,
+          "signature": "pub func New(backing: Allocator, blocksPerChunk: uint) -> Pool",
           "typeParams": [],
           "params": [
             { "name": "backing", "type": "Allocator" },
@@ -2534,7 +2534,7 @@
           "public": true,
           "doc": {
             "summary": "A pool that will take its chunks from `backing`.",
-            "markdown": "A pool that will take its chunks from `backing`.\n`backing` is borrowed for the call and kept. `blocksPerChunk` is how many blocks each chunk is carved into;\nzero asks for the default. Cannot fail and allocates nothing: the first chunk is taken when the first request\narrives, so a pool that is never used costs nothing.",
+            "markdown": "A pool that will take its chunks from `backing`.\n`backing` is borrowed for the call and kept. `blocksPerChunk` is how many blocks each chunk is carved into;\nzero asks for the default. Cannot fail and allocates nothing: the first chunk is taken when the first\nrequest arrives, so a pool that is never used costs nothing.",
             "typeParams": [],
             "params": [
               { "name": "backing", "markdown": "where the pool's chunks come from" },
@@ -2558,8 +2558,8 @@
         {
           "kind": "method",
           "name": "Handle",
-          "line": 109,
-          "signature": "pub unsafe func Handle(*var self) -> Allocator",
+          "line": 111,
+          "signature": "pub func Handle(*var self) -> Allocator",
           "typeParams": [],
           "params": [],
           "receiver": "*var Pool",
@@ -2590,7 +2590,7 @@
         {
           "kind": "method",
           "name": "Reset",
-          "line": 122,
+          "line": 124,
           "signature": "pub func Reset(&var self)",
           "typeParams": [],
           "params": [],
@@ -2622,7 +2622,7 @@
         {
           "kind": "method",
           "name": "LiveBlocks",
-          "line": 153,
+          "line": 156,
           "signature": "pub func LiveBlocks(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -2654,7 +2654,7 @@
         {
           "kind": "method",
           "name": "ChunkCount",
-          "line": 161,
+          "line": 164,
           "signature": "pub func ChunkCount(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -2686,7 +2686,7 @@
         {
           "kind": "method",
           "name": "ClassSize",
-          "line": 170,
+          "line": 173,
           "signature": "pub func ClassSize(&self, index: uint) -> uint",
           "typeParams": [],
           "params": [{ "name": "index", "type": "uint" }],
@@ -2717,9 +2717,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Pool",
-          "line": 225,
-          "signature": "func ~Pool(&var self)",
+          "name": "~",
+          "line": 228,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Pool",
@@ -2729,7 +2729,7 @@
           "public": true,
           "doc": {
             "summary": "Gives every chunk back to the backing allocator.",
-            "markdown": "Gives every chunk back to the backing allocator.\nRuns when the pool's life ends. Every pooled pointer the pool handed out becomes invalid. Blocks that went to\nthe backing allocator directly are not released here and are still the caller's.",
+            "markdown": "Gives every chunk back to the backing allocator.\nRuns when the pool's life ends. Every pooled pointer the pool handed out becomes invalid. Blocks that went\nto the backing allocator directly are not released here and are still the caller's.",
             "typeParams": [],
             "params": [],
             "returns": null,
@@ -2750,8 +2750,8 @@
         {
           "kind": "method",
           "name": "Allocate",
-          "line": 260,
-          "signature": "pub func Allocate(&var self, layout: Layout) -> *var opaque throws AllocError",
+          "line": 263,
+          "signature": "pub func Allocate(&var self, layout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [{ "name": "layout", "type": "Layout" }],
           "receiver": "&var Pool",
@@ -2782,8 +2782,8 @@
         {
           "kind": "method",
           "name": "Deallocate",
-          "line": 294,
-          "signature": "pub func Deallocate(&var self, block: *var opaque, layout: Layout) throws AllocError",
+          "line": 297,
+          "signature": "pub func Deallocate(&var self, block: *var opaque, layout: Layout) -> !AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },
@@ -2820,8 +2820,8 @@
         {
           "kind": "method",
           "name": "Reallocate",
-          "line": 322,
-          "signature": "pub func Reallocate(&var self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque throws AllocError",
+          "line": 325,
+          "signature": "pub func Reallocate(&var self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },
@@ -2835,7 +2835,7 @@
           "public": true,
           "doc": {
             "summary": "Changes the size of a block, which costs nothing when both sizes land in the same class.",
-            "markdown": "Changes the size of a block, which costs nothing when both sizes land in the same class.\nThe two layouts must share an alignment. A block whose new size fits the class it already occupies comes back\nunmoved — growing a 20-byte allocation to 30 does not touch storage at all. Anything else takes a new block,\ncopies, and releases the old one.",
+            "markdown": "Changes the size of a block, which costs nothing when both sizes land in the same class.\nThe two layouts must share an alignment. A block whose new size fits the class it already occupies comes\nback unmoved — growing a 20-byte allocation to 30 does not touch storage at all. Anything else takes a new\nblock, copies, and releases the old one.",
             "typeParams": [],
             "params": [
               { "name": "block", "markdown": "the existing allocation's address" },
@@ -2872,11 +2872,11 @@
     },
     {
       "kind": "function",
-      "name": "ClassIndexFor",
-      "displayName": "ClassIndexFor",
+      "name": "Strategies::ClassIndexFor",
+      "displayName": "Strategies::ClassIndexFor",
       "module": "Pool",
       "source": "Src/Pool.rux",
-      "line": 359,
+      "line": 362,
       "signature": "pub func ClassIndexFor(layout: Layout) -> uint",
       "typeParams": [],
       "doc": {
@@ -2907,16 +2907,16 @@
     },
     {
       "kind": "struct",
-      "name": "Rc",
-      "displayName": "Rc<T>",
+      "name": "Pointers::Rc",
+      "displayName": "Pointers::Rc<T>",
       "module": "Shared",
       "source": "Src/Shared.rux",
-      "line": 31,
+      "line": 34,
       "signature": "pub struct Rc<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "A shared, counted handle to one value, for use on one thread.",
-        "markdown": "A shared, counted handle to one value, for use on one thread. A handle is move-only; `Clone` makes another handle\nto the same value.\nIts count is not atomic, so a handle is not `Sendable`: a thread's context cannot hold one.",
+        "markdown": "A shared, counted handle to one value, for use on one thread. A handle is move-only; `Clone` makes another\nhandle to the same value.\nIts count is not atomic, so a handle is not `Sendable`: a thread's context cannot hold one.",
         "typeParams": [{ "name": "T", "markdown": "the value's type" }],
         "params": [],
         "returns": null,
@@ -2929,7 +2929,7 @@
           "name": "block",
           "type": "*var SharedBlock<T>",
           "public": false,
-          "line": 32,
+          "line": 35,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -2946,7 +2946,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 33,
+          "line": 36,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -2964,10 +2964,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Rc",
-          "line": 43,
-          "signature": "pub func Rc(allocator: Allocator, value: T) -> Rc<T>",
+          "kind": "associated",
+          "name": "New",
+          "line": 46,
+          "signature": "pub func New(allocator: Allocator, value: T) -> Rc<T>",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -3004,8 +3004,8 @@
         {
           "kind": "associated",
           "name": "TryCreate",
-          "line": 52,
-          "signature": "pub func TryCreate(allocator: Allocator, value: T) -> Rc<T> throws AllocError",
+          "line": 55,
+          "signature": "pub func TryCreate(allocator: Allocator, value: T) -> Rc<T> ! AllocError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -3042,7 +3042,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 66,
+          "line": 69,
           "signature": "pub func Get(&self) -> &T",
           "typeParams": [],
           "params": [],
@@ -3074,7 +3074,7 @@
         {
           "kind": "method",
           "name": "GetMutable",
-          "line": 75,
+          "line": 79,
           "signature": "pub func GetMutable(&var self) -> &var T?",
           "typeParams": [],
           "params": [],
@@ -3106,7 +3106,7 @@
         {
           "kind": "method",
           "name": "Count",
-          "line": 85,
+          "line": 91,
           "signature": "pub func Count(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -3138,7 +3138,7 @@
         {
           "kind": "method",
           "name": "SameAs",
-          "line": 94,
+          "line": 101,
           "signature": "pub func SameAs(&self, other: &Rc<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&Rc<T>" }],
@@ -3169,9 +3169,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Rc",
-          "line": 98,
-          "signature": "func ~Rc(&var self)",
+          "name": "~",
+          "line": 105,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Rc<T>",
@@ -3202,7 +3202,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 120,
+          "line": 127,
           "signature": "pub func Clone(&self) -> Rc<T>",
           "typeParams": [],
           "params": [],
@@ -3246,16 +3246,16 @@
     },
     {
       "kind": "struct",
-      "name": "Arc",
-      "displayName": "Arc<T>",
+      "name": "Pointers::Arc",
+      "displayName": "Pointers::Arc<T>",
       "module": "Shared",
       "source": "Src/Shared.rux",
-      "line": 134,
+      "line": 141,
       "signature": "pub struct Arc<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
         "summary": "A shared, counted handle to one value whose handles may live on different threads.",
-        "markdown": "A shared, counted handle to one value whose handles may live on different threads. A handle is move-only; `Clone`\nmakes another handle to the same value, and the count is kept with atomic operations.\nThe value is only read through it, so a value that changes while shared needs its own synchronization, such as a\n`Sync::Mutex`.",
+        "markdown": "A shared, counted handle to one value whose handles may live on different threads. A handle is move-only;\n`Clone` makes another handle to the same value, and the count is kept with atomic operations.\nThe value is only read through it, so a value that changes while shared needs its own synchronization, such as a\n`Sync::Mutex`.",
         "typeParams": [{ "name": "T", "markdown": "the value's type" }],
         "params": [],
         "returns": null,
@@ -3268,7 +3268,7 @@
           "name": "block",
           "type": "*var SharedBlock<T>",
           "public": false,
-          "line": 135,
+          "line": 142,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3285,7 +3285,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 136,
+          "line": 143,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -3303,10 +3303,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Arc",
-          "line": 146,
-          "signature": "pub func Arc(allocator: Allocator, value: T) -> Arc<T>",
+          "kind": "associated",
+          "name": "New",
+          "line": 153,
+          "signature": "pub func New(allocator: Allocator, value: T) -> Arc<T>",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -3346,8 +3346,8 @@
         {
           "kind": "associated",
           "name": "TryCreate",
-          "line": 155,
-          "signature": "pub func TryCreate(allocator: Allocator, value: T) -> Arc<T> throws AllocError",
+          "line": 162,
+          "signature": "pub func TryCreate(allocator: Allocator, value: T) -> Arc<T> ! AllocError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -3387,7 +3387,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 169,
+          "line": 176,
           "signature": "pub func Get(&self) -> &T",
           "typeParams": [],
           "params": [],
@@ -3419,7 +3419,7 @@
         {
           "kind": "method",
           "name": "GetMutable",
-          "line": 178,
+          "line": 186,
           "signature": "pub func GetMutable(&var self) -> &var T?",
           "typeParams": [],
           "params": [],
@@ -3451,7 +3451,7 @@
         {
           "kind": "method",
           "name": "Count",
-          "line": 189,
+          "line": 198,
           "signature": "pub func Count(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -3483,7 +3483,7 @@
         {
           "kind": "method",
           "name": "SameAs",
-          "line": 199,
+          "line": 208,
           "signature": "pub func SameAs(&self, other: &Arc<T>) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&Arc<T>" }],
@@ -3514,9 +3514,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Arc",
-          "line": 203,
-          "signature": "func ~Arc(&var self)",
+          "name": "~",
+          "line": 212,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Arc<T>",
@@ -3547,7 +3547,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 224,
+          "line": 233,
           "signature": "pub func Clone(&self) -> Arc<T>",
           "typeParams": [],
           "params": [],
@@ -3595,7 +3595,7 @@
       "displayName": "SystemBlockHeader",
       "module": "System",
       "source": "Src/System.rux",
-      "line": 22,
+      "line": 23,
       "signature": "pub struct SystemBlockHeader",
       "typeParams": [],
       "doc": {
@@ -3613,7 +3613,7 @@
           "name": "magic",
           "type": "uint64",
           "public": false,
-          "line": 24,
+          "line": 25,
           "doc": "A fixed pattern, checked on release.",
           "targets": [
             "windows-x86_64",
@@ -3630,7 +3630,7 @@
           "name": "base",
           "type": "uint",
           "public": false,
-          "line": 26,
+          "line": 27,
           "doc": "The address the page layer gave, which is what has to be released.",
           "targets": [
             "windows-x86_64",
@@ -3647,7 +3647,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 28,
+          "line": 29,
           "doc": "The length the page layer was given, which is what it has to be released with.",
           "targets": [
             "windows-x86_64",
@@ -3664,7 +3664,7 @@
           "name": "size",
           "type": "uint",
           "public": false,
-          "line": 30,
+          "line": 31,
           "doc": "The size the caller asked for, checked against the layout on release.",
           "targets": [
             "windows-x86_64",
@@ -3699,7 +3699,7 @@
       "displayName": "SystemBlockMagic",
       "module": "System",
       "source": "Src/System.rux",
-      "line": 37,
+      "line": 38,
       "signature": "pub const SystemBlockMagic: uint64",
       "typeParams": [],
       "doc": {
@@ -3734,7 +3734,7 @@
       "displayName": "SystemAllocator",
       "module": "System",
       "source": "Src/System.rux",
-      "line": 46,
+      "line": 47,
       "signature": "pub struct SystemAllocator",
       "typeParams": [],
       "doc": {
@@ -3752,10 +3752,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "SystemAllocator",
-          "line": 54,
-          "signature": "pub func SystemAllocator() -> SystemAllocator",
+          "kind": "associated",
+          "name": "New",
+          "line": 55,
+          "signature": "pub func New() -> SystemAllocator",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -3786,8 +3786,8 @@
         {
           "kind": "method",
           "name": "Allocate",
-          "line": 70,
-          "signature": "pub func Allocate(&self, layout: Layout) -> *var opaque throws AllocError",
+          "line": 71,
+          "signature": "pub func Allocate(&self, layout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [{ "name": "layout", "type": "Layout" }],
           "receiver": "&SystemAllocator",
@@ -3818,8 +3818,8 @@
         {
           "kind": "method",
           "name": "Deallocate",
-          "line": 116,
-          "signature": "pub func Deallocate(&self, block: *var opaque, layout: Layout) throws AllocError",
+          "line": 117,
+          "signature": "pub func Deallocate(&self, block: *var opaque, layout: Layout) -> !AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },
@@ -3856,8 +3856,8 @@
         {
           "kind": "method",
           "name": "Reallocate",
-          "line": 147,
-          "signature": "pub func Reallocate(&self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque throws AllocError",
+          "line": 146,
+          "signature": "pub func Reallocate(&self, block: *var opaque, oldLayout: Layout, newLayout: Layout) -> *var opaque ! AllocError",
           "typeParams": [],
           "params": [
             { "name": "block", "type": "*var opaque" },

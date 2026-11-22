@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Integer.rux
-  line: 24
+  line: 26
 seo:
   title: "Integer arithmetic — Math API"
   description: "Checked and wrapping integer operations: magnitude, extrema, clamping, GCD, LCM and powers."
@@ -24,7 +24,10 @@ Checked and wrapping integer operations: magnitude, extrema, clamping, GCD, LCM 
 <h2 id="abs-checked"><code>AbsChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func AbsChecked<T>(value: T, result: *var T) -> bool
+pub func AbsChecked<T: Integer>(
+    value: T,
+    result: *var T
+) -> bool
 ```
 
 The magnitude of `value`, reporting whether it is representable.
@@ -33,13 +36,13 @@ wrapped one when it returns `true`. Only one input can overflow: the most negati
 magnitude is one larger than the maximum. An unsigned type never overflows here, since it is already its own
 magnitude. Runs in constant time and allocates nothing. `result` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L26)
 
 **Type parameters**
 
-| Name | Description  |
-| ---- | ------------ |
-| `T`  | integer type |
+| Name         | Description  |
+| ------------ | ------------ |
+| `T: Integer` | integer type |
 
 **Parameters**
 
@@ -53,20 +56,20 @@ magnitude. Runs in constant time and allocates nothing. `result` must be non-nul
 <h2 id="abs-wrapping"><code>AbsWrapping&lt;T&gt;</code></h2>
 
 ```rux
-pub func AbsWrapping<T>(value: T) -> T
+pub func AbsWrapping<T: Integer>(value: T) -> T
 ```
 
 The magnitude of `value`, wrapping where it is not representable.
-The most negative value of a signed type comes back unchanged, which is what the machine's own negation does. Use
-[`AbsChecked`](/docs/api/math/integer#abs-checked) where that matters. Runs in constant time and allocates nothing.
+The most negative value of a signed type comes back unchanged, which is what the machine's own negation does.
+Use [`AbsChecked`](/docs/api/math/integer#abs-checked) where that matters. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L45)
 
 **Type parameters**
 
-| Name | Description  |
-| ---- | ------------ |
-| `T`  | integer type |
+| Name         | Description  |
+| ------------ | ------------ |
+| `T: Integer` | integer type |
 
 **Parameters**
 
@@ -79,19 +82,19 @@ The most negative value of a signed type comes back unchanged, which is what the
 <h2 id="minimum"><code>Minimum&lt;T&gt;</code></h2>
 
 ```rux
-pub func Minimum<T>(left: T, right: T) -> T
+pub func Minimum<T: Integer>(left: T, right: T) -> T
 ```
 
 The smaller of two integers.
 Total and exact: integers have no NaN, so unlike the floating-point [`Min`](/docs/api/math/abs-min-max#min) there is no case to decide.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L58)
 
 **Type parameters**
 
-| Name | Description  |
-| ---- | ------------ |
-| `T`  | integer type |
+| Name         | Description  |
+| ------------ | ------------ |
+| `T: Integer` | integer type |
 
 **Parameters**
 
@@ -105,18 +108,18 @@ Total and exact: integers have no NaN, so unlike the floating-point [`Min`](/doc
 <h2 id="maximum"><code>Maximum&lt;T&gt;</code></h2>
 
 ```rux
-pub func Maximum<T>(left: T, right: T) -> T
+pub func Maximum<T: Integer>(left: T, right: T) -> T
 ```
 
 The larger of two integers.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L68)
 
 **Type parameters**
 
-| Name | Description  |
-| ---- | ------------ |
-| `T`  | integer type |
+| Name         | Description  |
+| ------------ | ------------ |
+| `T: Integer` | integer type |
 
 **Parameters**
 
@@ -130,21 +133,21 @@ The larger of two integers.
 <h2 id="clamp"><code>Clamp&lt;T&gt;</code></h2>
 
 ```rux
-pub func Clamp<T>(value: T, low: T, high: T) -> T
+pub func Clamp<T: Integer>(value: T, low: T, high: T) -> T
 ```
 
 `value` brought into `[low, high]`.
 A contradictory pair - `low` above `high` - has no correct answer, and this returns `low` rather than pretending
-otherwise. The behavior is stated so it is at least deterministic; callers who cannot rule the case out should check
-the bounds themselves.
+otherwise. The behavior is stated so it is at least deterministic; callers who cannot rule the case out should
+check the bounds themselves.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L82)
 
 **Type parameters**
 
-| Name | Description  |
-| ---- | ------------ |
-| `T`  | integer type |
+| Name         | Description  |
+| ------------ | ------------ |
+| `T: Integer` | integer type |
 
 **Parameters**
 
@@ -159,7 +162,7 @@ the bounds themselves.
 <h2 id="gcd-checked"><code>GcdChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func GcdChecked<T>(
+pub func GcdChecked<T: Integer>(
     left: T,
     right: T,
     result: *var T
@@ -167,19 +170,20 @@ pub func GcdChecked<T>(
 ```
 
 The greatest common divisor of `left` and `right`, reporting whether it is representable.
-Defined on magnitudes, so signs do not matter and the answer is never negative. `Gcd(0, 0)` is zero, which is the
-conventional answer and the only one that keeps `Gcd(x, 0) == |x|` true everywhere. The single overflow is a divisor
-equal to the magnitude of the most negative value - reachable only as `Gcd(min, 0)` and `Gcd(min, min)` - which no
-signed type can express. Runs in time proportional to the number of bits and allocates nothing. `result` must be
-non-null and writable.
+Defined on magnitudes, so signs do not matter and the answer is never negative. `Gcd(0, 0)` is zero, which is
+the conventional answer and the only one that keeps `Gcd(x, 0) == |x|` true everywhere. The single overflow is a
+divisor equal to the magnitude of the most negative value - reachable only as `Gcd(min, 0)` and `Gcd(min, min)`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L98)
+- which no signed type can express. Runs in time proportional to the number of bits and allocates nothing.
+  `result` must be non-null and writable.
+
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L100)
 
 **Type parameters**
 
-| Name | Description  |
-| ---- | ------------ |
-| `T`  | integer type |
+| Name         | Description  |
+| ------------ | ------------ |
+| `T: Integer` | integer type |
 
 **Parameters**
 
@@ -194,7 +198,7 @@ non-null and writable.
 <h2 id="lcm-checked"><code>LcmChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func LcmChecked<T>(
+pub func LcmChecked<T: Integer>(
     left: T,
     right: T,
     result: *var T
@@ -203,17 +207,17 @@ pub func LcmChecked<T>(
 
 The least common multiple of `left` and `right`, reporting whether it is representable.
 Zero with anything is zero, which keeps the identity `Gcd(a, b) * Lcm(a, b) == |a * b|` true. Everything else
-overflows readily - two coprime values multiply - so the flag is the usual case rather than the exception, and the
-division is done before the multiplication so a representable answer is not lost to an intermediate that is not.
-`result` must be non-null and writable.
+overflows readily - two coprime values multiply - so the flag is the usual case rather than the exception, and
+the division is done before the multiplication so a representable answer is not lost to an intermediate that is
+not. `result` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L128)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L130)
 
 **Type parameters**
 
-| Name | Description  |
-| ---- | ------------ |
-| `T`  | integer type |
+| Name         | Description  |
+| ------------ | ------------ |
+| `T: Integer` | integer type |
 
 **Parameters**
 
@@ -228,7 +232,7 @@ division is done before the multiplication so a representable answer is not lost
 <h2 id="pow-checked"><code>PowChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func PowChecked<T>(
+pub func PowChecked<T: Integer>(
     base: T,
     exponent: uint,
     result: *var T
@@ -236,18 +240,18 @@ pub func PowChecked<T>(
 ```
 
 `base` raised to `exponent`, reporting whether the true power is representable.
-The exponent is a plain `uint` because a negative exponent has no integer answer. Anything to the zeroth power is
-one, including zero: the empty product is one, and every identity that matters depends on it. `result` receives the
-wrapped power when this returns `true`, so a caller who wants modular arithmetic can use it directly. Runs in time
-proportional to the number of bits in `exponent`. `result` must be non-null and writable.
+The exponent is a plain `uint` because a negative exponent has no integer answer. Anything to the zeroth power
+is one, including zero: the empty product is one, and every identity that matters depends on it. `result`
+receives the wrapped power when this returns `true`, so a caller who wants modular arithmetic can use it
+directly. Runs in time proportional to the number of bits in `exponent`. `result` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L156)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Integer.rux#L158)
 
 **Type parameters**
 
-| Name | Description  |
-| ---- | ------------ |
-| `T`  | integer type |
+| Name         | Description  |
+| ------------ | ------------ |
+| `T: Integer` | integer type |
 
 **Parameters**
 

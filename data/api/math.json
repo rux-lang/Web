@@ -131,7 +131,7 @@
     {
       "name": "Integer",
       "source": "Src/Integer.rux",
-      "header": "Integer arithmetic with a mathematical flavour: magnitude, ordering, and the number-theory pair.\nEverything here is generic over the integer type in the same way `Core`'s checked arithmetic is, and for the same\nreason: an integer's zero, its signedness and its two limits all follow from one operand, so `int8` and `uint512`\nrun the same code and no width can be forgotten. Nothing here is written per width.\nThe operations that can fail say so by returning `true`, matching `AddChecked` and its family exactly. That\nconvention reads backwards the first time - `true` means the answer is not the true one - but a family that\ndisagrees with itself about which way the flag points is far worse than one that is uniformly surprising.\nWhere an operation can fail, it is because the two's-complement range is not symmetric: the most negative value of\nevery signed width has no positive counterpart, so its magnitude, its negation and its greatest common divisor with\nzero are all unrepresentable. That one asymmetry is behind nearly every edge case below."
+      "header": "Integer arithmetic with a mathematical flavour: magnitude, ordering, and the number-theory pair.\nEverything here is generic over the integer type in the same way `Core`'s checked arithmetic is, and for the same\nreason: an integer's zero, its signedness and its two limits all follow from one operand, so `int8` and `uint512` run\nthe same code and no width can be forgotten. Nothing here is written per width. The operations that can fail say so\nby returning `true`, matching the multiplication helper at the end of this file. That convention reads backwards the\nfirst time - `true` means the answer is not the true one - but a family that disagrees with itself about which way\nthe flag points is far worse than one that is uniformly surprising. Where an operation can fail, it is because the\ntwo's-complement range is not symmetric: the most negative value of every signed width has no positive counterpart,\nso its magnitude, its negation and its greatest common divisor with zero are all unrepresentable. That one asymmetry\nis behind nearly every edge case below."
     },
     {
       "name": "Log",
@@ -306,7 +306,7 @@
       "displayName": "DegToRad",
       "module": "Angle",
       "source": "Src/Angle.rux",
-      "line": 12,
+      "line": 14,
       "signature": "pub func DegToRad(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -341,7 +341,7 @@
       "displayName": "DegToRad",
       "module": "Angle",
       "source": "Src/Angle.rux",
-      "line": 21,
+      "line": 23,
       "signature": "pub func DegToRad(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -376,7 +376,7 @@
       "displayName": "RadToDeg",
       "module": "Angle",
       "source": "Src/Angle.rux",
-      "line": 31,
+      "line": 33,
       "signature": "pub func RadToDeg(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -411,7 +411,7 @@
       "displayName": "RadToDeg",
       "module": "Angle",
       "source": "Src/Angle.rux",
-      "line": 40,
+      "line": 42,
       "signature": "pub func RadToDeg(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -446,7 +446,7 @@
       "displayName": "ArcCos",
       "module": "ArcCos",
       "source": "Src/ArcCos.rux",
-      "line": 14,
+      "line": 16,
       "signature": "pub func ArcCos(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -481,7 +481,7 @@
       "displayName": "ArcCos",
       "module": "ArcCos",
       "source": "Src/ArcCos.rux",
-      "line": 30,
+      "line": 32,
       "signature": "pub func ArcCos(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -516,7 +516,7 @@
       "displayName": "ArcCot",
       "module": "ArcCot",
       "source": "Src/ArcCot.rux",
-      "line": 12,
+      "line": 15,
       "signature": "pub func ArcCot(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -551,7 +551,7 @@
       "displayName": "ArcCot",
       "module": "ArcCot",
       "source": "Src/ArcCot.rux",
-      "line": 22,
+      "line": 25,
       "signature": "pub func ArcCot(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -586,7 +586,7 @@
       "displayName": "ArcSinh",
       "module": "ArcHyperbolic",
       "source": "Src/ArcHyperbolic.rux",
-      "line": 15,
+      "line": 18,
       "signature": "pub func ArcSinh(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -621,7 +621,7 @@
       "displayName": "ArcSinh",
       "module": "ArcHyperbolic",
       "source": "Src/ArcHyperbolic.rux",
-      "line": 43,
+      "line": 46,
       "signature": "pub func ArcSinh(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -656,7 +656,7 @@
       "displayName": "ArcCosh",
       "module": "ArcHyperbolic",
       "source": "Src/ArcHyperbolic.rux",
-      "line": 53,
+      "line": 56,
       "signature": "pub func ArcCosh(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -691,7 +691,7 @@
       "displayName": "ArcCosh",
       "module": "ArcHyperbolic",
       "source": "Src/ArcHyperbolic.rux",
-      "line": 70,
+      "line": 73,
       "signature": "pub func ArcCosh(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -726,7 +726,7 @@
       "displayName": "ArcTanh",
       "module": "ArcHyperbolic",
       "source": "Src/ArcHyperbolic.rux",
-      "line": 80,
+      "line": 83,
       "signature": "pub func ArcTanh(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -761,7 +761,7 @@
       "displayName": "ArcTanh",
       "module": "ArcHyperbolic",
       "source": "Src/ArcHyperbolic.rux",
-      "line": 104,
+      "line": 107,
       "signature": "pub func ArcTanh(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -796,7 +796,7 @@
       "displayName": "ArcSin",
       "module": "ArcSin",
       "source": "Src/ArcSin.rux",
-      "line": 14,
+      "line": 16,
       "signature": "pub func ArcSin(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -831,7 +831,7 @@
       "displayName": "ArcSin",
       "module": "ArcSin",
       "source": "Src/ArcSin.rux",
-      "line": 28,
+      "line": 30,
       "signature": "pub func ArcSin(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -866,7 +866,7 @@
       "displayName": "ArcTan",
       "module": "ArcTan",
       "source": "Src/ArcTan.rux",
-      "line": 13,
+      "line": 15,
       "signature": "pub func ArcTan(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -901,7 +901,7 @@
       "displayName": "ArcTan",
       "module": "ArcTan",
       "source": "Src/ArcTan.rux",
-      "line": 89,
+      "line": 91,
       "signature": "pub func ArcTan(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -936,7 +936,7 @@
       "displayName": "ArcTan2",
       "module": "ArcTan2",
       "source": "Src/ArcTan2.rux",
-      "line": 18,
+      "line": 21,
       "signature": "pub func ArcTan2(y: float64, x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -974,7 +974,7 @@
       "displayName": "ArcTan2",
       "module": "ArcTan2",
       "source": "Src/ArcTan2.rux",
-      "line": 55,
+      "line": 58,
       "signature": "pub func ArcTan2(y: float32, x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -1148,11 +1148,11 @@
     },
     {
       "kind": "enum",
-      "name": "FloatClass",
-      "displayName": "FloatClass",
+      "name": "Classification::FloatClass",
+      "displayName": "Classification::FloatClass",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 28,
+      "line": 29,
       "signature": "pub enum FloatClass",
       "typeParams": [],
       "doc": {
@@ -1172,7 +1172,7 @@
           "name": "NotANumber",
           "value": "0",
           "payload": null,
-          "line": 30,
+          "line": 31,
           "doc": "Not a number: the result of an operation with no meaningful answer.",
           "targets": [
             "windows-x86_64",
@@ -1189,7 +1189,7 @@
           "name": "Infinite",
           "value": "1",
           "payload": null,
-          "line": 32,
+          "line": 33,
           "doc": "One of the two infinities.",
           "targets": [
             "windows-x86_64",
@@ -1206,7 +1206,7 @@
           "name": "Zero",
           "value": "2",
           "payload": null,
-          "line": 34,
+          "line": 35,
           "doc": "Positive or negative zero.",
           "targets": [
             "windows-x86_64",
@@ -1223,7 +1223,7 @@
           "name": "Subnormal",
           "value": "3",
           "payload": null,
-          "line": 36,
+          "line": 37,
           "doc": "A value too small to carry a full significand, whose precision degrades toward zero.",
           "targets": [
             "windows-x86_64",
@@ -1240,7 +1240,7 @@
           "name": "Normal",
           "value": "4",
           "payload": null,
-          "line": 38,
+          "line": 39,
           "doc": "An ordinary value at full precision.",
           "targets": [
             "windows-x86_64",
@@ -1269,11 +1269,11 @@
     },
     {
       "kind": "function",
-      "name": "IsNan",
-      "displayName": "IsNan",
+      "name": "Classification::IsNan",
+      "displayName": "Classification::IsNan",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 46,
+      "line": 47,
       "signature": "pub func IsNan(value: float64) -> bool",
       "typeParams": [],
       "doc": {
@@ -1304,11 +1304,11 @@
     },
     {
       "kind": "function",
-      "name": "IsNan",
-      "displayName": "IsNan",
+      "name": "Classification::IsNan",
+      "displayName": "Classification::IsNan",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 54,
+      "line": 55,
       "signature": "pub func IsNan(value: float32) -> bool",
       "typeParams": [],
       "doc": {
@@ -1339,11 +1339,11 @@
     },
     {
       "kind": "function",
-      "name": "IsInfinite",
-      "displayName": "IsInfinite",
+      "name": "Classification::IsInfinite",
+      "displayName": "Classification::IsInfinite",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 62,
+      "line": 63,
       "signature": "pub func IsInfinite(value: float64) -> bool",
       "typeParams": [],
       "doc": {
@@ -1374,11 +1374,11 @@
     },
     {
       "kind": "function",
-      "name": "IsInfinite",
-      "displayName": "IsInfinite",
+      "name": "Classification::IsInfinite",
+      "displayName": "Classification::IsInfinite",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 70,
+      "line": 71,
       "signature": "pub func IsInfinite(value: float32) -> bool",
       "typeParams": [],
       "doc": {
@@ -1409,11 +1409,11 @@
     },
     {
       "kind": "function",
-      "name": "IsFinite",
-      "displayName": "IsFinite",
+      "name": "Classification::IsFinite",
+      "displayName": "Classification::IsFinite",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 78,
+      "line": 79,
       "signature": "pub func IsFinite(value: float64) -> bool",
       "typeParams": [],
       "doc": {
@@ -1444,11 +1444,11 @@
     },
     {
       "kind": "function",
-      "name": "IsFinite",
-      "displayName": "IsFinite",
+      "name": "Classification::IsFinite",
+      "displayName": "Classification::IsFinite",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 86,
+      "line": 87,
       "signature": "pub func IsFinite(value: float32) -> bool",
       "typeParams": [],
       "doc": {
@@ -1479,11 +1479,11 @@
     },
     {
       "kind": "function",
-      "name": "IsZero",
-      "displayName": "IsZero",
+      "name": "Classification::IsZero",
+      "displayName": "Classification::IsZero",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 95,
+      "line": 96,
       "signature": "pub func IsZero(value: float64) -> bool",
       "typeParams": [],
       "doc": {
@@ -1514,11 +1514,11 @@
     },
     {
       "kind": "function",
-      "name": "IsZero",
-      "displayName": "IsZero",
+      "name": "Classification::IsZero",
+      "displayName": "Classification::IsZero",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 103,
+      "line": 104,
       "signature": "pub func IsZero(value: float32) -> bool",
       "typeParams": [],
       "doc": {
@@ -1549,11 +1549,11 @@
     },
     {
       "kind": "function",
-      "name": "IsSubnormal",
-      "displayName": "IsSubnormal",
+      "name": "Classification::IsSubnormal",
+      "displayName": "Classification::IsSubnormal",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 111,
+      "line": 112,
       "signature": "pub func IsSubnormal(value: float64) -> bool",
       "typeParams": [],
       "doc": {
@@ -1584,11 +1584,11 @@
     },
     {
       "kind": "function",
-      "name": "IsSubnormal",
-      "displayName": "IsSubnormal",
+      "name": "Classification::IsSubnormal",
+      "displayName": "Classification::IsSubnormal",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 120,
+      "line": 121,
       "signature": "pub func IsSubnormal(value: float32) -> bool",
       "typeParams": [],
       "doc": {
@@ -1619,11 +1619,11 @@
     },
     {
       "kind": "function",
-      "name": "IsNormal",
-      "displayName": "IsNormal",
+      "name": "Classification::IsNormal",
+      "displayName": "Classification::IsNormal",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 130,
+      "line": 131,
       "signature": "pub func IsNormal(value: float64) -> bool",
       "typeParams": [],
       "doc": {
@@ -1654,11 +1654,11 @@
     },
     {
       "kind": "function",
-      "name": "IsNormal",
-      "displayName": "IsNormal",
+      "name": "Classification::IsNormal",
+      "displayName": "Classification::IsNormal",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 139,
+      "line": 140,
       "signature": "pub func IsNormal(value: float32) -> bool",
       "typeParams": [],
       "doc": {
@@ -1689,11 +1689,11 @@
     },
     {
       "kind": "function",
-      "name": "Classify",
-      "displayName": "Classify",
+      "name": "Classification::Classify",
+      "displayName": "Classification::Classify",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 148,
+      "line": 149,
       "signature": "pub func Classify(value: float64) -> FloatClass",
       "typeParams": [],
       "doc": {
@@ -1724,11 +1724,11 @@
     },
     {
       "kind": "function",
-      "name": "Classify",
-      "displayName": "Classify",
+      "name": "Classification::Classify",
+      "displayName": "Classification::Classify",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 160,
+      "line": 161,
       "signature": "pub func Classify(value: float32) -> FloatClass",
       "typeParams": [],
       "doc": {
@@ -1759,16 +1759,16 @@
     },
     {
       "kind": "function",
-      "name": "SignBit",
-      "displayName": "SignBit",
+      "name": "Classification::SignBit",
+      "displayName": "Classification::SignBit",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 174,
+      "line": 175,
       "signature": "pub func SignBit(value: float64) -> bool",
       "typeParams": [],
       "doc": {
         "summary": "Whether `value`'s sign bit is set.",
-        "markdown": "Whether `value`'s sign bit is set.\nThis is the sign bit, not a comparison: `SignBit(-0.0)` is `true` where `-0.0 < 0.0` is false, and a negative NaN\nanswers `true` where every comparison against it answers false. That is the whole reason to ask by bit.",
+        "markdown": "Whether `value`'s sign bit is set.\nThis is the sign bit, not a comparison: `SignBit(-0.0)` is `true` where `-0.0 < 0.0` is false, and a negative\nNaN answers `true` where every comparison against it answers false. That is the whole reason to ask by bit.",
         "typeParams": [],
         "params": [{ "name": "value", "markdown": "value whose sign is inspected" }],
         "returns": "`true` when the sign bit is set",
@@ -1794,11 +1794,11 @@
     },
     {
       "kind": "function",
-      "name": "SignBit",
-      "displayName": "SignBit",
+      "name": "Classification::SignBit",
+      "displayName": "Classification::SignBit",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 182,
+      "line": 183,
       "signature": "pub func SignBit(value: float32) -> bool",
       "typeParams": [],
       "doc": {
@@ -1829,11 +1829,11 @@
     },
     {
       "kind": "function",
-      "name": "CopySign",
-      "displayName": "CopySign",
+      "name": "Classification::CopySign",
+      "displayName": "Classification::CopySign",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 192,
+      "line": 193,
       "signature": "pub func CopySign(magnitude: float64, sign: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -1867,11 +1867,11 @@
     },
     {
       "kind": "function",
-      "name": "CopySign",
-      "displayName": "CopySign",
+      "name": "Classification::CopySign",
+      "displayName": "Classification::CopySign",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 201,
+      "line": 202,
       "signature": "pub func CopySign(magnitude: float32, sign: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -1905,16 +1905,16 @@
     },
     {
       "kind": "function",
-      "name": "NextAfter",
-      "displayName": "NextAfter",
+      "name": "Classification::NextAfter",
+      "displayName": "Classification::NextAfter",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 214,
+      "line": 215,
       "signature": "pub func NextAfter(from: float64, toward: float64) -> float64",
       "typeParams": [],
       "doc": {
         "summary": "The value adjacent to `from` in the direction of `toward`.",
-        "markdown": "The value adjacent to `from` in the direction of `toward`.\nOne representable value in that direction, subnormals and zeros included: stepping down from the smallest positive\nnormal lands in the subnormals rather than jumping to zero, and stepping down from `+0.0` gives the smallest\nnegative subnormal rather than `-0.0`. `from` equal to `toward` returns `toward`, which is what makes the sign of a\nzero come from the destination. A NaN in either argument gives a NaN.",
+        "markdown": "The value adjacent to `from` in the direction of `toward`.\nOne representable value in that direction, subnormals and zeros included: stepping down from the smallest\npositive normal lands in the subnormals rather than jumping to zero, and stepping down from `+0.0` gives the\nsmallest negative subnormal rather than `-0.0`. `from` equal to `toward` returns `toward`, which is what makes\nthe sign of a zero come from the destination. A NaN in either argument gives a NaN.",
         "typeParams": [],
         "params": [
           { "name": "from", "markdown": "starting value" },
@@ -1943,11 +1943,11 @@
     },
     {
       "kind": "function",
-      "name": "NextAfter",
-      "displayName": "NextAfter",
+      "name": "Classification::NextAfter",
+      "displayName": "Classification::NextAfter",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 233,
+      "line": 234,
       "signature": "pub func NextAfter(from: float32, toward: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -1981,11 +1981,11 @@
     },
     {
       "kind": "function",
-      "name": "NextUp",
-      "displayName": "NextUp",
+      "name": "Classification::NextUp",
+      "displayName": "Classification::NextUp",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 246,
+      "line": 247,
       "signature": "pub func NextUp(value: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -2016,11 +2016,11 @@
     },
     {
       "kind": "function",
-      "name": "NextUp",
-      "displayName": "NextUp",
+      "name": "Classification::NextUp",
+      "displayName": "Classification::NextUp",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 254,
+      "line": 255,
       "signature": "pub func NextUp(value: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -2051,11 +2051,11 @@
     },
     {
       "kind": "function",
-      "name": "NextDown",
-      "displayName": "NextDown",
+      "name": "Classification::NextDown",
+      "displayName": "Classification::NextDown",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 262,
+      "line": 263,
       "signature": "pub func NextDown(value: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -2086,11 +2086,11 @@
     },
     {
       "kind": "function",
-      "name": "NextDown",
-      "displayName": "NextDown",
+      "name": "Classification::NextDown",
+      "displayName": "Classification::NextDown",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 270,
+      "line": 271,
       "signature": "pub func NextDown(value: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -2121,11 +2121,11 @@
     },
     {
       "kind": "function",
-      "name": "PositiveInfinity64",
-      "displayName": "PositiveInfinity64",
+      "name": "Classification::PositiveInfinity64",
+      "displayName": "Classification::PositiveInfinity64",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 277,
+      "line": 278,
       "signature": "pub func PositiveInfinity64() -> float64",
       "typeParams": [],
       "doc": {
@@ -2156,11 +2156,11 @@
     },
     {
       "kind": "function",
-      "name": "PositiveInfinity32",
-      "displayName": "PositiveInfinity32",
+      "name": "Classification::PositiveInfinity32",
+      "displayName": "Classification::PositiveInfinity32",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 284,
+      "line": 285,
       "signature": "pub func PositiveInfinity32() -> float32",
       "typeParams": [],
       "doc": {
@@ -2191,11 +2191,11 @@
     },
     {
       "kind": "function",
-      "name": "QuietNan64",
-      "displayName": "QuietNan64",
+      "name": "Classification::QuietNan64",
+      "displayName": "Classification::QuietNan64",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 291,
+      "line": 292,
       "signature": "pub func QuietNan64() -> float64",
       "typeParams": [],
       "doc": {
@@ -2226,11 +2226,11 @@
     },
     {
       "kind": "function",
-      "name": "QuietNan32",
-      "displayName": "QuietNan32",
+      "name": "Classification::QuietNan32",
+      "displayName": "Classification::QuietNan32",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 298,
+      "line": 299,
       "signature": "pub func QuietNan32() -> float32",
       "typeParams": [],
       "doc": {
@@ -2261,16 +2261,16 @@
     },
     {
       "kind": "function",
-      "name": "ScaleByPowerOfTwo",
-      "displayName": "ScaleByPowerOfTwo",
+      "name": "Classification::ScaleByPowerOfTwo",
+      "displayName": "Classification::ScaleByPowerOfTwo",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 311,
+      "line": 312,
       "signature": "pub func ScaleByPowerOfTwo(value: float64, exponent: int64) -> float64",
       "typeParams": [],
       "doc": {
         "summary": "`value` multiplied by two raised to `exponent`, with one rounding.",
-        "markdown": "`value` multiplied by two raised to `exponent`, with one rounding.\nThe obvious spelling - multiplying by a computed power of two - overflows for large exponents and rounds twice when\nthe answer lands in the subnormals. This steps in bounded pieces so neither happens: the result is correctly rounded\nonce, and an exponent far outside the range saturates to an infinity or a zero rather than wrapping the exponent\nfield into a wrong answer.",
+        "markdown": "`value` multiplied by two raised to `exponent`, with one rounding.\nThe obvious spelling - multiplying by a computed power of two - overflows for large exponents and rounds twice\nwhen the answer lands in the subnormals. This steps in bounded pieces so neither happens: the result is\ncorrectly rounded once, and an exponent far outside the range saturates to an infinity or a zero rather than\nwrapping the exponent field into a wrong answer.",
         "typeParams": [],
         "params": [
           { "name": "value", "markdown": "value to scale" },
@@ -2299,11 +2299,11 @@
     },
     {
       "kind": "function",
-      "name": "ScaleByPowerOfTwo",
-      "displayName": "ScaleByPowerOfTwo",
+      "name": "Classification::ScaleByPowerOfTwo",
+      "displayName": "Classification::ScaleByPowerOfTwo",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 324,
+      "line": 325,
       "signature": "pub func ScaleByPowerOfTwo(value: float32, exponent: int64) -> float32",
       "typeParams": [],
       "doc": {
@@ -2337,16 +2337,16 @@
     },
     {
       "kind": "function",
-      "name": "ExponentOf",
-      "displayName": "ExponentOf",
+      "name": "Classification::ExponentOf",
+      "displayName": "Classification::ExponentOf",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 339,
+      "line": 340,
       "signature": "pub func ExponentOf(value: float64) -> int64",
       "typeParams": [],
       "doc": {
         "summary": "The exponent of `value`: the power of two of its most significant bit.",
-        "markdown": "The exponent of `value`: the power of two of its most significant bit.\nA normal value's exponent is such that its magnitude lies in `[2^e, 2^(e+1))`; a subnormal reports the exponent it\nwould have with unbounded range, so the relationship keeps holding into the subnormals. Zero has no exponent and\nreports `NoExponent`, and a NaN or infinity reports `IndeterminateExponent`; both are values far outside any real\nexponent, so neither can be mistaken for one.",
+        "markdown": "The exponent of `value`: the power of two of its most significant bit.\nA normal value's exponent is such that its magnitude lies in `[2^e, 2^(e+1))`; a subnormal reports the exponent\nit would have with unbounded range, so the relationship keeps holding into the subnormals. Zero has no exponent\nand reports `NoExponent`, and a NaN or infinity reports `IndeterminateExponent`; both are values far outside any\nreal exponent, so neither can be mistaken for one.",
         "typeParams": [],
         "params": [{ "name": "value", "markdown": "value whose exponent is extracted" }],
         "returns": "its binary exponent, `NoExponent` for zero, or `IndeterminateExponent` for a NaN or infinity",
@@ -2372,11 +2372,11 @@
     },
     {
       "kind": "function",
-      "name": "ExponentOf",
-      "displayName": "ExponentOf",
+      "name": "Classification::ExponentOf",
+      "displayName": "Classification::ExponentOf",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 353,
+      "line": 354,
       "signature": "pub func ExponentOf(value: float32) -> int64",
       "typeParams": [],
       "doc": {
@@ -2407,11 +2407,11 @@
     },
     {
       "kind": "constant",
-      "name": "NoExponent",
-      "displayName": "NoExponent",
+      "name": "Classification::NoExponent",
+      "displayName": "Classification::NoExponent",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 363,
+      "line": 364,
       "signature": "pub const NoExponent: int64",
       "typeParams": [],
       "doc": {
@@ -2442,11 +2442,11 @@
     },
     {
       "kind": "constant",
-      "name": "IndeterminateExponent",
-      "displayName": "IndeterminateExponent",
+      "name": "Classification::IndeterminateExponent",
+      "displayName": "Classification::IndeterminateExponent",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 367,
+      "line": 368,
       "signature": "pub const IndeterminateExponent: int64",
       "typeParams": [],
       "doc": {
@@ -2477,16 +2477,16 @@
     },
     {
       "kind": "function",
-      "name": "Decompose",
-      "displayName": "Decompose",
+      "name": "Classification::Decompose",
+      "displayName": "Classification::Decompose",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 377,
+      "line": 378,
       "signature": "pub func Decompose(value: float64, exponent: *var int64) -> float64",
       "typeParams": [],
       "doc": {
         "summary": "Splits `value` into a fraction in `[0.5, 1)` and a power of two, so that `fraction * 2^exponent == value`.",
-        "markdown": "Splits `value` into a fraction in `[0.5, 1)` and a power of two, so that `fraction * 2^exponent == value`.\nThe classic decomposition. Zero gives zero with an exponent of zero, and a NaN or infinity is returned unchanged\nwith an exponent of zero - neither has a decomposition, and inventing one would be worse than returning the value\nitself. The sign stays with the fraction. `exponent` must be non-null and writable.",
+        "markdown": "Splits `value` into a fraction in `[0.5, 1)` and a power of two, so that `fraction * 2^exponent == value`.\nThe classic decomposition. Zero gives zero with an exponent of zero, and a NaN or infinity is returned unchanged\nwith an exponent of zero - neither has a decomposition, and inventing one would be worse than returning the\nvalue itself. The sign stays with the fraction. `exponent` must be non-null and writable.",
         "typeParams": [],
         "params": [
           { "name": "value", "markdown": "value to decompose" },
@@ -2515,11 +2515,11 @@
     },
     {
       "kind": "function",
-      "name": "Decompose",
-      "displayName": "Decompose",
+      "name": "Classification::Decompose",
+      "displayName": "Classification::Decompose",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 392,
+      "line": 393,
       "signature": "pub func Decompose(value: float32, exponent: *var int64) -> float32",
       "typeParams": [],
       "doc": {
@@ -2553,16 +2553,16 @@
     },
     {
       "kind": "function",
-      "name": "SplitIntegral",
-      "displayName": "SplitIntegral",
+      "name": "Classification::SplitIntegral",
+      "displayName": "Classification::SplitIntegral",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 410,
+      "line": 411,
       "signature": "pub func SplitIntegral(value: float64, integral: *var float64) -> float64",
       "typeParams": [],
       "doc": {
         "summary": "Splits `value` into its integral and fractional parts, both carrying its sign.",
-        "markdown": "Splits `value` into its integral and fractional parts, both carrying its sign.\n`integral` receives the part toward zero and the fractional part is returned, so the two always sum back to `value`\nexactly. An infinity puts itself in `integral` and returns a zero of the same sign; a NaN puts a NaN in both.\n`integral` must be non-null and writable.",
+        "markdown": "Splits `value` into its integral and fractional parts, both carrying its sign.\n`integral` receives the part toward zero and the fractional part is returned, so the two always sum back to\n`value` exactly. An infinity puts itself in `integral` and returns a zero of the same sign; a NaN puts a NaN in\nboth. `integral` must be non-null and writable.",
         "typeParams": [],
         "params": [
           { "name": "value", "markdown": "value to split" },
@@ -2591,11 +2591,11 @@
     },
     {
       "kind": "function",
-      "name": "SplitIntegral",
-      "displayName": "SplitIntegral",
+      "name": "Classification::SplitIntegral",
+      "displayName": "Classification::SplitIntegral",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 428,
+      "line": 429,
       "signature": "pub func SplitIntegral(value: float32, integral: *var float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -2629,16 +2629,16 @@
     },
     {
       "kind": "function",
-      "name": "UlpDistance",
-      "displayName": "UlpDistance",
+      "name": "Classification::UlpDistance",
+      "displayName": "Classification::UlpDistance",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 448,
+      "line": 449,
       "signature": "pub func UlpDistance(left: float64, right: float64) -> uint64",
       "typeParams": [],
       "doc": {
         "summary": "How many representable values lie between `left` and `right`.",
-        "markdown": "How many representable values lie between `left` and `right`.\nThe natural way to state a floating-point error bound: two values are one ulp apart when nothing is representable\nbetween them, and a function accurate to half an ulp returns the nearest representable value to the true answer.\nCounting steps rather than subtracting is what makes the measure meaningful near zero, where the absolute difference\nbetween neighbours is vanishingly small, and near the maximum, where it is enormous. Values of opposite sign are\ncounted through zero, with the two zeros treated as one value - the step from the smallest negative subnormal to the\nsmallest positive one is two, not three. A NaN in either argument has no distance and reports the largest `uint64`,\nwhich no real distance can reach.",
+        "markdown": "How many representable values lie between `left` and `right`.\nThe natural way to state a floating-point error bound: two values are one ulp apart when nothing is\nrepresentable between them, and a function accurate to half an ulp returns the nearest representable value to\nthe true answer. Counting steps rather than subtracting is what makes the measure meaningful near zero, where\nthe absolute difference between neighbours is vanishingly small, and near the maximum, where it is enormous.\nValues of opposite sign are counted through zero, with the two zeros treated as one value - the step from the\nsmallest negative subnormal to the smallest positive one is two, not three. A NaN in either argument has no\ndistance and reports the largest `uint64`, which no real distance can reach.",
         "typeParams": [],
         "params": [
           { "name": "left", "markdown": "first value" },
@@ -2667,11 +2667,11 @@
     },
     {
       "kind": "function",
-      "name": "UlpDistance",
-      "displayName": "UlpDistance",
+      "name": "Classification::UlpDistance",
+      "displayName": "Classification::UlpDistance",
       "module": "Classify",
       "source": "Src/Classify.rux",
-      "line": 465,
+      "line": 466,
       "signature": "pub func UlpDistance(left: float32, right: float32) -> uint64",
       "typeParams": [],
       "doc": {
@@ -2762,10 +2762,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Complex",
+          "kind": "associated",
+          "name": "New",
           "line": 26,
-          "signature": "pub func Complex(real: float64, imaginary: float64) -> Complex",
+          "signature": "pub func New(real: float64, imaginary: float64) -> Complex",
           "typeParams": [],
           "params": [
             { "name": "real", "type": "float64" },
@@ -3357,10 +3357,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Complex32",
+          "kind": "associated",
+          "name": "New",
           "line": 184,
-          "signature": "pub func Complex32(real: float32, imaginary: float32) -> Complex32",
+          "signature": "pub func New(real: float32, imaginary: float32) -> Complex32",
           "typeParams": [],
           "params": [
             { "name": "real", "type": "float32" },
@@ -3895,11 +3895,11 @@
     },
     {
       "kind": "constant",
-      "name": "E",
-      "displayName": "E",
+      "name": "Constants::E",
+      "displayName": "Constants::E",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 8,
+      "line": 9,
       "signature": "pub const E: float64",
       "typeParams": [],
       "doc": {
@@ -3930,11 +3930,11 @@
     },
     {
       "kind": "constant",
-      "name": "Ln2",
-      "displayName": "Ln2",
+      "name": "Constants::Ln2",
+      "displayName": "Constants::Ln2",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 12,
+      "line": 13,
       "signature": "pub const Ln2: float64",
       "typeParams": [],
       "doc": {
@@ -3965,11 +3965,11 @@
     },
     {
       "kind": "constant",
-      "name": "Log2E",
-      "displayName": "Log2E",
+      "name": "Constants::Log2E",
+      "displayName": "Constants::Log2E",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 16,
+      "line": 17,
       "signature": "pub const Log2E: float64",
       "typeParams": [],
       "doc": {
@@ -4000,11 +4000,11 @@
     },
     {
       "kind": "constant",
-      "name": "Ln10",
-      "displayName": "Ln10",
+      "name": "Constants::Ln10",
+      "displayName": "Constants::Ln10",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 20,
+      "line": 21,
       "signature": "pub const Ln10: float64",
       "typeParams": [],
       "doc": {
@@ -4035,11 +4035,11 @@
     },
     {
       "kind": "constant",
-      "name": "Log10E",
-      "displayName": "Log10E",
+      "name": "Constants::Log10E",
+      "displayName": "Constants::Log10E",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 24,
+      "line": 25,
       "signature": "pub const Log10E: float64",
       "typeParams": [],
       "doc": {
@@ -4070,11 +4070,11 @@
     },
     {
       "kind": "constant",
-      "name": "Pi",
-      "displayName": "Pi",
+      "name": "Constants::Pi",
+      "displayName": "Constants::Pi",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 28,
+      "line": 29,
       "signature": "pub const Pi: float64",
       "typeParams": [],
       "doc": {
@@ -4105,11 +4105,11 @@
     },
     {
       "kind": "constant",
-      "name": "Tau",
-      "displayName": "Tau",
+      "name": "Constants::Tau",
+      "displayName": "Constants::Tau",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 32,
+      "line": 33,
       "signature": "pub const Tau: float64",
       "typeParams": [],
       "doc": {
@@ -4140,11 +4140,11 @@
     },
     {
       "kind": "constant",
-      "name": "HalfPi",
-      "displayName": "HalfPi",
+      "name": "Constants::HalfPi",
+      "displayName": "Constants::HalfPi",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 36,
+      "line": 37,
       "signature": "pub const HalfPi: float64",
       "typeParams": [],
       "doc": {
@@ -4175,11 +4175,11 @@
     },
     {
       "kind": "constant",
-      "name": "QuarterPi",
-      "displayName": "QuarterPi",
+      "name": "Constants::QuarterPi",
+      "displayName": "Constants::QuarterPi",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 40,
+      "line": 41,
       "signature": "pub const QuarterPi: float64",
       "typeParams": [],
       "doc": {
@@ -4210,11 +4210,11 @@
     },
     {
       "kind": "constant",
-      "name": "InvPi",
-      "displayName": "InvPi",
+      "name": "Constants::InvPi",
+      "displayName": "Constants::InvPi",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 44,
+      "line": 45,
       "signature": "pub const InvPi: float64",
       "typeParams": [],
       "doc": {
@@ -4245,11 +4245,11 @@
     },
     {
       "kind": "constant",
-      "name": "InvTau",
-      "displayName": "InvTau",
+      "name": "Constants::InvTau",
+      "displayName": "Constants::InvTau",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 48,
+      "line": 49,
       "signature": "pub const InvTau: float64",
       "typeParams": [],
       "doc": {
@@ -4280,11 +4280,11 @@
     },
     {
       "kind": "constant",
-      "name": "Sqrt2",
-      "displayName": "Sqrt2",
+      "name": "Constants::Sqrt2",
+      "displayName": "Constants::Sqrt2",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 52,
+      "line": 53,
       "signature": "pub const Sqrt2: float64",
       "typeParams": [],
       "doc": {
@@ -4315,11 +4315,11 @@
     },
     {
       "kind": "constant",
-      "name": "InvSqrt2",
-      "displayName": "InvSqrt2",
+      "name": "Constants::InvSqrt2",
+      "displayName": "Constants::InvSqrt2",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 56,
+      "line": 57,
       "signature": "pub const InvSqrt2: float64",
       "typeParams": [],
       "doc": {
@@ -4350,11 +4350,11 @@
     },
     {
       "kind": "constant",
-      "name": "RadPerDeg",
-      "displayName": "RadPerDeg",
+      "name": "Constants::RadPerDeg",
+      "displayName": "Constants::RadPerDeg",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 60,
+      "line": 61,
       "signature": "pub const RadPerDeg: float64",
       "typeParams": [],
       "doc": {
@@ -4385,11 +4385,11 @@
     },
     {
       "kind": "constant",
-      "name": "DegPerRad",
-      "displayName": "DegPerRad",
+      "name": "Constants::DegPerRad",
+      "displayName": "Constants::DegPerRad",
       "module": "Const",
       "source": "Src/Const.rux",
-      "line": 64,
+      "line": 65,
       "signature": "pub const DegPerRad: float64",
       "typeParams": [],
       "doc": {
@@ -4424,7 +4424,7 @@
       "displayName": "Cos",
       "module": "Cos",
       "source": "Src/Cos.rux",
-      "line": 14,
+      "line": 16,
       "signature": "pub func Cos(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -4459,7 +4459,7 @@
       "displayName": "Cos",
       "module": "Cos",
       "source": "Src/Cos.rux",
-      "line": 43,
+      "line": 45,
       "signature": "pub func Cos(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -4494,7 +4494,7 @@
       "displayName": "Cosh",
       "module": "Cosh",
       "source": "Src/Cosh.rux",
-      "line": 11,
+      "line": 14,
       "signature": "pub func Cosh(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -4529,7 +4529,7 @@
       "displayName": "Cosh",
       "module": "Cosh",
       "source": "Src/Cosh.rux",
-      "line": 36,
+      "line": 39,
       "signature": "pub func Cosh(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -4564,7 +4564,7 @@
       "displayName": "Cotan",
       "module": "Cotan",
       "source": "Src/Cotan.rux",
-      "line": 14,
+      "line": 16,
       "signature": "pub func Cotan(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -4599,7 +4599,7 @@
       "displayName": "Cotan",
       "module": "Cotan",
       "source": "Src/Cotan.rux",
-      "line": 44,
+      "line": 46,
       "signature": "pub func Cotan(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -4634,7 +4634,7 @@
       "displayName": "Cotanh",
       "module": "Cotanh",
       "source": "Src/Cotanh.rux",
-      "line": 11,
+      "line": 13,
       "signature": "pub func Cotanh(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -4669,7 +4669,7 @@
       "displayName": "Cotanh",
       "module": "Cotanh",
       "source": "Src/Cotanh.rux",
-      "line": 27,
+      "line": 29,
       "signature": "pub func Cotanh(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -4704,7 +4704,7 @@
       "displayName": "Exp",
       "module": "Exp",
       "source": "Src/Exp.rux",
-      "line": 33,
+      "line": 35,
       "signature": "pub func Exp(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -4739,7 +4739,7 @@
       "displayName": "Exp",
       "module": "Exp",
       "source": "Src/Exp.rux",
-      "line": 90,
+      "line": 92,
       "signature": "pub func Exp(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -4774,7 +4774,7 @@
       "displayName": "Exp2",
       "module": "Exp2",
       "source": "Src/Exp2.rux",
-      "line": 12,
+      "line": 15,
       "signature": "pub func Exp2(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -4809,7 +4809,7 @@
       "displayName": "Exp2",
       "module": "Exp2",
       "source": "Src/Exp2.rux",
-      "line": 47,
+      "line": 50,
       "signature": "pub func Exp2(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -4844,7 +4844,7 @@
       "displayName": "Expm1",
       "module": "Expm1",
       "source": "Src/Expm1.rux",
-      "line": 13,
+      "line": 15,
       "signature": "pub func Expm1(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -4879,7 +4879,7 @@
       "displayName": "Expm1",
       "module": "Expm1",
       "source": "Src/Expm1.rux",
-      "line": 113,
+      "line": 115,
       "signature": "pub func Expm1(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -5056,13 +5056,13 @@
     },
     {
       "kind": "function",
-      "name": "AbsChecked",
-      "displayName": "AbsChecked<T>",
+      "name": "Integers::AbsChecked",
+      "displayName": "Integers::AbsChecked<T>",
       "module": "Integer",
       "source": "Src/Integer.rux",
-      "line": 24,
-      "signature": "pub func AbsChecked<T>(value: T, result: *var T) -> bool",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 26,
+      "signature": "pub func AbsChecked<T: Integer>(value: T, result: *var T) -> bool",
+      "typeParams": [{ "name": "T", "bounds": ["Integer"] }],
       "doc": {
         "summary": "The magnitude of `value`, reporting whether it is representable.",
         "markdown": "The magnitude of `value`, reporting whether it is representable.\n`result` receives the magnitude the machine produced, which is the true one when this returns `false` and the\nwrapped one when it returns `true`. Only one input can overflow: the most negative value of a signed type, whose\nmagnitude is one larger than the maximum. An unsigned type never overflows here, since it is already its own\nmagnitude. Runs in constant time and allocates nothing. `result` must be non-null and writable.",
@@ -5094,16 +5094,16 @@
     },
     {
       "kind": "function",
-      "name": "AbsWrapping",
-      "displayName": "AbsWrapping<T>",
+      "name": "Integers::AbsWrapping",
+      "displayName": "Integers::AbsWrapping<T>",
       "module": "Integer",
       "source": "Src/Integer.rux",
-      "line": 43,
-      "signature": "pub func AbsWrapping<T>(value: T) -> T",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 45,
+      "signature": "pub func AbsWrapping<T: Integer>(value: T) -> T",
+      "typeParams": [{ "name": "T", "bounds": ["Integer"] }],
       "doc": {
         "summary": "The magnitude of `value`, wrapping where it is not representable.",
-        "markdown": "The magnitude of `value`, wrapping where it is not representable.\nThe most negative value of a signed type comes back unchanged, which is what the machine's own negation does. Use\n`AbsChecked` where that matters. Runs in constant time and allocates nothing.",
+        "markdown": "The magnitude of `value`, wrapping where it is not representable.\nThe most negative value of a signed type comes back unchanged, which is what the machine's own negation does.\nUse `AbsChecked` where that matters. Runs in constant time and allocates nothing.",
         "typeParams": [{ "name": "T", "markdown": "integer type" }],
         "params": [{ "name": "value", "markdown": "value whose magnitude is computed" }],
         "returns": "the magnitude of `value`, wrapping when necessary",
@@ -5129,13 +5129,13 @@
     },
     {
       "kind": "function",
-      "name": "Minimum",
-      "displayName": "Minimum<T>",
+      "name": "Integers::Minimum",
+      "displayName": "Integers::Minimum<T>",
       "module": "Integer",
       "source": "Src/Integer.rux",
-      "line": 56,
-      "signature": "pub func Minimum<T>(left: T, right: T) -> T",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 58,
+      "signature": "pub func Minimum<T: Integer>(left: T, right: T) -> T",
+      "typeParams": [{ "name": "T", "bounds": ["Integer"] }],
       "doc": {
         "summary": "The smaller of two integers.",
         "markdown": "The smaller of two integers.\nTotal and exact: integers have no NaN, so unlike the floating-point `Min` there is no case to decide.",
@@ -5167,13 +5167,13 @@
     },
     {
       "kind": "function",
-      "name": "Maximum",
-      "displayName": "Maximum<T>",
+      "name": "Integers::Maximum",
+      "displayName": "Integers::Maximum<T>",
       "module": "Integer",
       "source": "Src/Integer.rux",
-      "line": 66,
-      "signature": "pub func Maximum<T>(left: T, right: T) -> T",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 68,
+      "signature": "pub func Maximum<T: Integer>(left: T, right: T) -> T",
+      "typeParams": [{ "name": "T", "bounds": ["Integer"] }],
       "doc": {
         "summary": "The larger of two integers.",
         "markdown": "The larger of two integers.",
@@ -5205,16 +5205,16 @@
     },
     {
       "kind": "function",
-      "name": "Clamp",
-      "displayName": "Clamp<T>",
+      "name": "Integers::Clamp",
+      "displayName": "Integers::Clamp<T>",
       "module": "Integer",
       "source": "Src/Integer.rux",
-      "line": 80,
-      "signature": "pub func Clamp<T>(value: T, low: T, high: T) -> T",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 82,
+      "signature": "pub func Clamp<T: Integer>(value: T, low: T, high: T) -> T",
+      "typeParams": [{ "name": "T", "bounds": ["Integer"] }],
       "doc": {
         "summary": "`value` brought into `[low, high]`.",
-        "markdown": "`value` brought into `[low, high]`.\nA contradictory pair - `low` above `high` - has no correct answer, and this returns `low` rather than pretending\notherwise. The behavior is stated so it is at least deterministic; callers who cannot rule the case out should check\nthe bounds themselves.",
+        "markdown": "`value` brought into `[low, high]`.\nA contradictory pair - `low` above `high` - has no correct answer, and this returns `low` rather than pretending\notherwise. The behavior is stated so it is at least deterministic; callers who cannot rule the case out should\ncheck the bounds themselves.",
         "typeParams": [{ "name": "T", "markdown": "integer type" }],
         "params": [
           { "name": "value", "markdown": "value to constrain" },
@@ -5244,16 +5244,16 @@
     },
     {
       "kind": "function",
-      "name": "GcdChecked",
-      "displayName": "GcdChecked<T>",
+      "name": "Integers::GcdChecked",
+      "displayName": "Integers::GcdChecked<T>",
       "module": "Integer",
       "source": "Src/Integer.rux",
-      "line": 98,
-      "signature": "pub func GcdChecked<T>(left: T, right: T, result: *var T) -> bool",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 100,
+      "signature": "pub func GcdChecked<T: Integer>(left: T, right: T, result: *var T) -> bool",
+      "typeParams": [{ "name": "T", "bounds": ["Integer"] }],
       "doc": {
         "summary": "The greatest common divisor of `left` and `right`, reporting whether it is representable.",
-        "markdown": "The greatest common divisor of `left` and `right`, reporting whether it is representable.\nDefined on magnitudes, so signs do not matter and the answer is never negative. `Gcd(0, 0)` is zero, which is the\nconventional answer and the only one that keeps `Gcd(x, 0) == |x|` true everywhere. The single overflow is a divisor\nequal to the magnitude of the most negative value - reachable only as `Gcd(min, 0)` and `Gcd(min, min)` - which no\nsigned type can express. Runs in time proportional to the number of bits and allocates nothing. `result` must be\nnon-null and writable.",
+        "markdown": "The greatest common divisor of `left` and `right`, reporting whether it is representable.\nDefined on magnitudes, so signs do not matter and the answer is never negative. `Gcd(0, 0)` is zero, which is\nthe conventional answer and the only one that keeps `Gcd(x, 0) == |x|` true everywhere. The single overflow is a\ndivisor equal to the magnitude of the most negative value - reachable only as `Gcd(min, 0)` and `Gcd(min, min)`\n- which no signed type can express. Runs in time proportional to the number of bits and allocates nothing.\n`result` must be non-null and writable.",
         "typeParams": [{ "name": "T", "markdown": "integer type" }],
         "params": [
           { "name": "left", "markdown": "first integer" },
@@ -5283,16 +5283,16 @@
     },
     {
       "kind": "function",
-      "name": "LcmChecked",
-      "displayName": "LcmChecked<T>",
+      "name": "Integers::LcmChecked",
+      "displayName": "Integers::LcmChecked<T>",
       "module": "Integer",
       "source": "Src/Integer.rux",
-      "line": 128,
-      "signature": "pub func LcmChecked<T>(left: T, right: T, result: *var T) -> bool",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 130,
+      "signature": "pub func LcmChecked<T: Integer>(left: T, right: T, result: *var T) -> bool",
+      "typeParams": [{ "name": "T", "bounds": ["Integer"] }],
       "doc": {
         "summary": "The least common multiple of `left` and `right`, reporting whether it is representable.",
-        "markdown": "The least common multiple of `left` and `right`, reporting whether it is representable.\nZero with anything is zero, which keeps the identity `Gcd(a, b) * Lcm(a, b) == |a * b|` true. Everything else\noverflows readily - two coprime values multiply - so the flag is the usual case rather than the exception, and the\ndivision is done before the multiplication so a representable answer is not lost to an intermediate that is not.\n`result` must be non-null and writable.",
+        "markdown": "The least common multiple of `left` and `right`, reporting whether it is representable.\nZero with anything is zero, which keeps the identity `Gcd(a, b) * Lcm(a, b) == |a * b|` true. Everything else\noverflows readily - two coprime values multiply - so the flag is the usual case rather than the exception, and\nthe division is done before the multiplication so a representable answer is not lost to an intermediate that is\nnot. `result` must be non-null and writable.",
         "typeParams": [{ "name": "T", "markdown": "integer type" }],
         "params": [
           { "name": "left", "markdown": "first integer" },
@@ -5322,16 +5322,16 @@
     },
     {
       "kind": "function",
-      "name": "PowChecked",
-      "displayName": "PowChecked<T>",
+      "name": "Integers::PowChecked",
+      "displayName": "Integers::PowChecked<T>",
       "module": "Integer",
       "source": "Src/Integer.rux",
-      "line": 156,
-      "signature": "pub func PowChecked<T>(base: T, exponent: uint, result: *var T) -> bool",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 158,
+      "signature": "pub func PowChecked<T: Integer>(base: T, exponent: uint, result: *var T) -> bool",
+      "typeParams": [{ "name": "T", "bounds": ["Integer"] }],
       "doc": {
         "summary": "`base` raised to `exponent`, reporting whether the true power is representable.",
-        "markdown": "`base` raised to `exponent`, reporting whether the true power is representable.\nThe exponent is a plain `uint` because a negative exponent has no integer answer. Anything to the zeroth power is\none, including zero: the empty product is one, and every identity that matters depends on it. `result` receives the\nwrapped power when this returns `true`, so a caller who wants modular arithmetic can use it directly. Runs in time\nproportional to the number of bits in `exponent`. `result` must be non-null and writable.",
+        "markdown": "`base` raised to `exponent`, reporting whether the true power is representable.\nThe exponent is a plain `uint` because a negative exponent has no integer answer. Anything to the zeroth power\nis one, including zero: the empty product is one, and every identity that matters depends on it. `result`\nreceives the wrapped power when this returns `true`, so a caller who wants modular arithmetic can use it\ndirectly. Runs in time proportional to the number of bits in `exponent`. `result` must be non-null and writable.",
         "typeParams": [{ "name": "T", "markdown": "integer type" }],
         "params": [
           { "name": "base", "markdown": "integer base" },
@@ -5365,7 +5365,7 @@
       "displayName": "Log",
       "module": "Log",
       "source": "Src/Log.rux",
-      "line": 69,
+      "line": 70,
       "signature": "pub func Log(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -5400,7 +5400,7 @@
       "displayName": "Log",
       "module": "Log",
       "source": "Src/Log.rux",
-      "line": 91,
+      "line": 92,
       "signature": "pub func Log(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -5435,7 +5435,7 @@
       "displayName": "Log10",
       "module": "Log10",
       "source": "Src/Log10.rux",
-      "line": 14,
+      "line": 15,
       "signature": "pub func Log10(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -5470,7 +5470,7 @@
       "displayName": "Log10",
       "module": "Log10",
       "source": "Src/Log10.rux",
-      "line": 45,
+      "line": 46,
       "signature": "pub func Log10(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -5575,7 +5575,7 @@
       "displayName": "Log2",
       "module": "Log2",
       "source": "Src/Log2.rux",
-      "line": 14,
+      "line": 15,
       "signature": "pub func Log2(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -5610,7 +5610,7 @@
       "displayName": "Log2",
       "module": "Log2",
       "source": "Src/Log2.rux",
-      "line": 45,
+      "line": 46,
       "signature": "pub func Log2(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -5645,7 +5645,7 @@
       "displayName": "Max",
       "module": "Max",
       "source": "Src/Max.rux",
-      "line": 13,
+      "line": 15,
       "signature": "pub func Max(a: float64, b: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -5683,7 +5683,7 @@
       "displayName": "Max",
       "module": "Max",
       "source": "Src/Max.rux",
-      "line": 28,
+      "line": 30,
       "signature": "pub func Max(a: float32, b: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -5721,7 +5721,7 @@
       "displayName": "Min",
       "module": "Min",
       "source": "Src/Min.rux",
-      "line": 13,
+      "line": 15,
       "signature": "pub func Min(a: float64, b: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -5759,7 +5759,7 @@
       "displayName": "Min",
       "module": "Min",
       "source": "Src/Min.rux",
-      "line": 28,
+      "line": 30,
       "signature": "pub func Min(a: float32, b: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -5797,7 +5797,7 @@
       "displayName": "Mod",
       "module": "Mod",
       "source": "Src/Mod.rux",
-      "line": 14,
+      "line": 16,
       "signature": "pub func Mod(x: float64, y: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -5835,7 +5835,7 @@
       "displayName": "Mod",
       "module": "Mod",
       "source": "Src/Mod.rux",
-      "line": 97,
+      "line": 99,
       "signature": "pub func Mod(x: float32, y: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -5873,7 +5873,7 @@
       "displayName": "Pow",
       "module": "Pow",
       "source": "Src/Pow.rux",
-      "line": 164,
+      "line": 165,
       "signature": "pub func Pow(x: float64, y: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -5911,7 +5911,7 @@
       "displayName": "Pow",
       "module": "Pow",
       "source": "Src/Pow.rux",
-      "line": 328,
+      "line": 329,
       "signature": "pub func Pow(x: float32, y: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -5949,7 +5949,7 @@
       "displayName": "PowInteger",
       "module": "PowInteger",
       "source": "Src/PowInteger.rux",
-      "line": 19,
+      "line": 20,
       "signature": "pub func PowInteger(base: float64, exponent: int64) -> float64",
       "typeParams": [],
       "doc": {
@@ -5987,7 +5987,7 @@
       "displayName": "PowInteger",
       "module": "PowInteger",
       "source": "Src/PowInteger.rux",
-      "line": 44,
+      "line": 45,
       "signature": "pub func PowInteger(base: float32, exponent: int64) -> float32",
       "typeParams": [],
       "doc": {
@@ -6095,7 +6095,7 @@
       "displayName": "RoundingMode",
       "module": "Rounding",
       "source": "Src/Rounding.rux",
-      "line": 16,
+      "line": 18,
       "signature": "pub enum RoundingMode",
       "typeParams": [],
       "doc": {
@@ -6115,7 +6115,7 @@
           "name": "TowardZero",
           "value": "0",
           "payload": null,
-          "line": 18,
+          "line": 20,
           "doc": "Toward zero, discarding the fraction: `Trunc`.",
           "targets": [
             "windows-x86_64",
@@ -6132,7 +6132,7 @@
           "name": "TowardNegative",
           "value": "1",
           "payload": null,
-          "line": 20,
+          "line": 22,
           "doc": "Downward, toward negative infinity: `Floor`.",
           "targets": [
             "windows-x86_64",
@@ -6149,7 +6149,7 @@
           "name": "TowardPositive",
           "value": "2",
           "payload": null,
-          "line": 22,
+          "line": 24,
           "doc": "Upward, toward positive infinity: `Ceil`.",
           "targets": [
             "windows-x86_64",
@@ -6166,7 +6166,7 @@
           "name": "ToNearestTiesAway",
           "value": "3",
           "payload": null,
-          "line": 25,
+          "line": 27,
           "doc": "To the nearest, with a halfway value going away from zero: `Round`.\nWhat most people mean by rounding, and what school teaches.",
           "targets": [
             "windows-x86_64",
@@ -6183,7 +6183,7 @@
           "name": "ToNearestTiesEven",
           "value": "4",
           "payload": null,
-          "line": 29,
+          "line": 31,
           "doc": "To the nearest, with a halfway value going to the even neighbour.\nIEEE 754's default, and the one that keeps a long run of roundings from drifting: ties away from zero rounds up\nhalf the time and down never.",
           "targets": [
             "windows-x86_64",
@@ -6216,7 +6216,7 @@
       "displayName": "RoundTiesToEven",
       "module": "Rounding",
       "source": "Src/Rounding.rux",
-      "line": 38,
+      "line": 40,
       "signature": "pub func RoundTiesToEven(value: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -6251,7 +6251,7 @@
       "displayName": "RoundTiesToEven",
       "module": "Rounding",
       "source": "Src/Rounding.rux",
-      "line": 57,
+      "line": 59,
       "signature": "pub func RoundTiesToEven(value: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -6286,7 +6286,7 @@
       "displayName": "RoundTo",
       "module": "Rounding",
       "source": "Src/Rounding.rux",
-      "line": 68,
+      "line": 70,
       "signature": "pub func RoundTo(value: float64, mode: RoundingMode) -> float64",
       "typeParams": [],
       "doc": {
@@ -6324,7 +6324,7 @@
       "displayName": "RoundTo",
       "module": "Rounding",
       "source": "Src/Rounding.rux",
-      "line": 81,
+      "line": 83,
       "signature": "pub func RoundTo(value: float32, mode: RoundingMode) -> float32",
       "typeParams": [],
       "doc": {
@@ -6362,9 +6362,9 @@
       "displayName": "ToIntegerChecked<T>",
       "module": "Rounding",
       "source": "Src/Rounding.rux",
-      "line": 102,
-      "signature": "pub func ToIntegerChecked<T>(value: float64, sample: T, mode: RoundingMode, result: *var T) -> bool",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 104,
+      "signature": "pub func ToIntegerChecked<T: Integer>(value: float64, sample: T, mode: RoundingMode, result: *var T) -> bool",
+      "typeParams": [{ "name": "T", "bounds": ["Integer"] }],
       "doc": {
         "summary": "`value` rounded in the named direction and converted to an integer, reporting whether it fits.",
         "markdown": "`value` rounded in the named direction and converted to an integer, reporting whether it fits.\n`sample` is read by value and only its type matters, exactly as `Core`'s `MaximumOf` reads one. Returns `true` when\nthe rounded value is not representable in the integer type — because it is a NaN, an infinity, or simply out of\nrange — and leaves `result` zero in that case. This is the only place a float becomes an integer, and it refuses\nrather than saturating, because a caller who has not thought about the out-of-range case is better served by a flag\nthan by a plausible wrong number. `result` must be non-null and writable.",
@@ -6402,7 +6402,7 @@
       "displayName": "Sin",
       "module": "Sin",
       "source": "Src/Sin.rux",
-      "line": 14,
+      "line": 16,
       "signature": "pub func Sin(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -6437,7 +6437,7 @@
       "displayName": "Sin",
       "module": "Sin",
       "source": "Src/Sin.rux",
-      "line": 47,
+      "line": 49,
       "signature": "pub func Sin(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -6472,7 +6472,7 @@
       "displayName": "SinCos",
       "module": "SinCos",
       "source": "Src/SinCos.rux",
-      "line": 21,
+      "line": 23,
       "signature": "pub func SinCos(angle: float64) -> (float64, float64)",
       "typeParams": [],
       "doc": {
@@ -6507,7 +6507,7 @@
       "displayName": "SinCos",
       "module": "SinCos",
       "source": "Src/SinCos.rux",
-      "line": 67,
+      "line": 69,
       "signature": "pub func SinCos(angle: float32) -> (float32, float32)",
       "typeParams": [],
       "doc": {
@@ -6542,7 +6542,7 @@
       "displayName": "Sinh",
       "module": "Sinh",
       "source": "Src/Sinh.rux",
-      "line": 11,
+      "line": 14,
       "signature": "pub func Sinh(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -6577,7 +6577,7 @@
       "displayName": "Sinh",
       "module": "Sinh",
       "source": "Src/Sinh.rux",
-      "line": 39,
+      "line": 42,
       "signature": "pub func Sinh(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -6612,7 +6612,7 @@
       "displayName": "Sqrt",
       "module": "Sqrt",
       "source": "Src/Sqrt.rux",
-      "line": 44,
+      "line": 45,
       "signature": "pub func Sqrt(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -6647,7 +6647,7 @@
       "displayName": "Sqrt",
       "module": "Sqrt",
       "source": "Src/Sqrt.rux",
-      "line": 54,
+      "line": 55,
       "signature": "pub func Sqrt(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -6682,7 +6682,7 @@
       "displayName": "Tan",
       "module": "Tan",
       "source": "Src/Tan.rux",
-      "line": 15,
+      "line": 17,
       "signature": "pub func Tan(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -6717,7 +6717,7 @@
       "displayName": "Tan",
       "module": "Tan",
       "source": "Src/Tan.rux",
-      "line": 43,
+      "line": 45,
       "signature": "pub func Tan(x: float32) -> float32",
       "typeParams": [],
       "doc": {
@@ -6752,7 +6752,7 @@
       "displayName": "Tanh",
       "module": "Tanh",
       "source": "Src/Tanh.rux",
-      "line": 12,
+      "line": 14,
       "signature": "pub func Tanh(x: float64) -> float64",
       "typeParams": [],
       "doc": {
@@ -6787,7 +6787,7 @@
       "displayName": "Tanh",
       "module": "Tanh",
       "source": "Src/Tanh.rux",
-      "line": 33,
+      "line": 35,
       "signature": "pub func Tanh(x: float32) -> float32",
       "typeParams": [],
       "doc": {

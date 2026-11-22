@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Classify.rux
-  line: 28
+  line: 29
 seo:
   title: "Classification and special values — Math API"
   description: "Telling NaNs, infinities, zeros, subnormals and normal values apart, and making the special ones."
@@ -36,7 +36,7 @@ pub enum FloatClass: int32 {
 The five kinds IEEE 754 sorts every value into.
 `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L29)
 
 **Cases**
 
@@ -63,7 +63,7 @@ A NaN is the only value not equal to itself, which is why this needs no bit patt
 | `pub func IsNan(value: float64) -> bool` | Whether `value` is a NaN.                                   |
 | `pub func IsNan(value: float32) -> bool` | Determines whether `value` is a NaN at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L47)
 
 **Parameters**
 
@@ -87,7 +87,7 @@ Determines whether `value` is an infinity at `float32` precision.
 | `pub func IsInfinite(value: float64) -> bool` | Whether `value` is one of the two infinities.                     |
 | `pub func IsInfinite(value: float32) -> bool` | Determines whether `value` is an infinity at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L63)
 
 **Parameters**
 
@@ -111,7 +111,7 @@ Whether `value` is an ordinary number: neither a NaN nor an infinity.
 | `pub func IsFinite(value: float64) -> bool` | Whether `value` is an ordinary number: neither a NaN nor an infinity. |
 | `pub func IsFinite(value: float32) -> bool` | Determines whether `value` is finite at `float32` precision.          |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L79)
 
 **Parameters**
 
@@ -136,7 +136,7 @@ Both zeros answer `true`; [`SignBit`](/docs/api/math/classification#sign-bit) is
 | `pub func IsZero(value: float64) -> bool` | Whether `value` is either zero.                                          |
 | `pub func IsZero(value: float32) -> bool` | Determines whether `value` is either signed zero at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L96)
 
 **Parameters**
 
@@ -160,7 +160,7 @@ Whether `value` is subnormal: nonzero, but too small to carry a full significand
 | `pub func IsSubnormal(value: float64) -> bool` | Whether `value` is subnormal: nonzero, but too small to carry a full significand. |
 | `pub func IsSubnormal(value: float32) -> bool` | Determines whether `value` is subnormal at `float32` precision.                   |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L112)
 
 **Parameters**
 
@@ -185,7 +185,7 @@ Zero is **not** normal, which surprises people and is the definition every IEEE 
 | `pub func IsNormal(value: float64) -> bool` | Whether `value` is an ordinary value at full precision.      |
 | `pub func IsNormal(value: float32) -> bool` | Determines whether `value` is normal at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L130)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L131)
 
 **Parameters**
 
@@ -209,7 +209,7 @@ Which of the five kinds `value` belongs to.
 | `pub func Classify(value: float64) -> FloatClass` | Which of the five kinds `value` belongs to. |
 | `pub func Classify(value: float32) -> FloatClass` | Classifies `value` at `float32` precision.  |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L148)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L149)
 
 **Parameters**
 
@@ -227,15 +227,15 @@ pub func SignBit(value: float32) -> bool
 ```
 
 Whether `value`'s sign bit is set.
-This is the sign bit, not a comparison: `SignBit(-0.0)` is `true` where `-0.0 < 0.0` is false, and a negative NaN
-answers `true` where every comparison against it answers false. That is the whole reason to ask by bit.
+This is the sign bit, not a comparison: `SignBit(-0.0)` is `true` where `-0.0 < 0.0` is false, and a negative
+NaN answers `true` where every comparison against it answers false. That is the whole reason to ask by bit.
 
 | Overload                                   | Summary                                                                   |
 | ------------------------------------------ | ------------------------------------------------------------------------- |
 | `pub func SignBit(value: float64) -> bool` | Whether `value`'s sign bit is set.                                        |
 | `pub func SignBit(value: float32) -> bool` | Determines whether the sign bit of `value` is set at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L175)
 
 **Parameters**
 
@@ -253,7 +253,7 @@ pub func PositiveInfinity64() -> float64
 
 Positive infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L277)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L278)
 
 **Returns**: positive infinity at `float64` precision
 
@@ -265,7 +265,7 @@ pub func PositiveInfinity32() -> float32
 
 Positive infinity at the narrow width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L284)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L285)
 
 **Returns**: positive infinity at `float32` precision
 
@@ -277,7 +277,7 @@ pub func QuietNan64() -> float64
 
 A quiet NaN.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L291)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L292)
 
 **Returns**: A quiet NaN at `float64` precision
 
@@ -289,6 +289,6 @@ pub func QuietNan32() -> float32
 
 A quiet NaN at the narrow width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L298)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Classify.rux#L299)
 
 **Returns**: A quiet NaN at `float32` precision

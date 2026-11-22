@@ -26,18 +26,18 @@ pub interface Allocator {
     func Allocate(
         &var self,
         layout: Layout
-    ) -> *var opaque throws AllocError;
+    ) -> *var opaque ! AllocError;
     func Deallocate(
         &var self,
         block: *var opaque,
         layout: Layout
-    ) throws AllocError;
+    ) -> !AllocError;
     func Reallocate(
         &var self,
         block: *var opaque,
         oldLayout: Layout,
         newLayout: Layout
-    ) -> *var opaque throws AllocError;
+    ) -> *var opaque ! AllocError;
 }
 ```
 
@@ -47,7 +47,7 @@ can borrow any allocator as `&var Allocator`.
 Every operation may write its receiver: an arena advances its pointer and a pool its free lists.
 A container keeps its allocator as an `Allocator` value, which is a copyable handle to the implementation and owns
 nothing. A stateless allocator such as [`SystemAllocator`](/docs/api/allocator/system-allocator) converts to one anywhere and stays valid forever; a
-stateful one gives a handle only through an `unsafe` `Handle`, whose caller promises the allocator outlives it.
+stateful one gives a handle only through its `Handle`, whose caller promises the allocator outlives it.
 
 ## Requirements
 
@@ -57,7 +57,7 @@ stateful one gives a handle only through an `unsafe` `Handle`, whose caller prom
 func Allocate(
     &var self,
     layout: Layout
-) -> *var opaque throws AllocError
+) -> *var opaque ! AllocError
 ```
 
 Takes storage matching `layout` and reports where it landed.
@@ -80,7 +80,7 @@ func Deallocate(
     &var self,
     block: *var opaque,
     layout: Layout
-) throws AllocError
+) -> !AllocError
 ```
 
 Gives back storage that this allocator handed out.
@@ -105,7 +105,7 @@ func Reallocate(
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
-) -> *var opaque throws AllocError
+) -> *var opaque ! AllocError
 ```
 
 Changes the size of a block, preserving as much of its contents as both layouts hold.

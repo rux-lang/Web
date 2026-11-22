@@ -10,19 +10,19 @@ rux add Rux/Allocator
 
 ## What it provides
 
-| Module        | Covers                                                                     |
-| ------------- | -------------------------------------------------------------------------- |
-| `Layout`      | a validated size-and-alignment pair, and the layouts a type or array needs |
-| `Error`       | `AllocError`, the questions worth asking of one, and `AllocationFailed`    |
-| `Contract`    | the `Allocator` interface every allocator here implements                  |
-| `System`      | `SystemAllocator`, which asks the operating system for pages               |
-| `Box`         | `Box<T>`, one heap value with exactly one owner                            |
-| `Shared`      | `Rc<T>` and `Arc<T>`, one heap value shared by counted handles             |
-| `Arena`       | `Arena`, which advances a pointer and reclaims everything at once          |
-| `FixedBuffer` | `FixedBuffer`, which hands out storage the caller already has              |
-| `Pool`        | `Pool`, which serves small blocks from per-class free lists                |
+| Import from             | File          | Covers                                                                     |
+| ----------------------- | ------------- | -------------------------------------------------------------------------- |
+| `Allocator`             | `Layout`      | a validated size-and-alignment pair, and the layouts a type or array needs |
+| `Allocator`             | `Error`       | `AllocError`, the questions worth asking of one, and `AllocationFailed`    |
+| `Allocator`             | `Contract`    | the `Allocator` interface every allocator here implements                  |
+| `Allocator`             | `System`      | `SystemAllocator`, which asks the operating system for pages               |
+| `Allocator::Pointers`   | `Box`         | `Box<T>`, one heap value with exactly one owner                            |
+| `Allocator::Pointers`   | `Shared`      | `Rc<T>` and `Arc<T>`, one heap value shared by counted handles             |
+| `Allocator::Strategies` | `Arena`       | `Arena`, which advances a pointer and reclaims everything at once          |
+| `Allocator::Strategies` | `FixedBuffer` | `FixedBuffer`, which hands out storage the caller already has              |
+| `Allocator::Strategies` | `Pool`        | `Pool`, which serves small blocks from per-class free lists                |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+The contract, `Layout`, the errors and `SystemAllocator` are imported from the package root, because nearly every allocating package needs them; the allocators built on top of another one live in `Allocator::Strategies`, and the owning handles in `Allocator::Pointers`.
 
 A `Layout` that exists is valid. `Layout::Of` refuses an alignment that is not a power of two, or a size whose rounding would pass the end of the address space — so nothing downstream checks again. That second case is the one worth naming: it is how a request for a huge array becomes an allocation far smaller than the caller asked for. Use `Layout::ForValue<T>()` or `Layout::ForArray<T>(count)` when storage follows a type; neither requires a sample value, so describing a move-only type consumes nothing.
 
@@ -33,29 +33,30 @@ Four promises hold for every allocator here:
 - **A release must match its allocation** — the same pointer, and an equal layout. The allocator needs the size to know what it is taking back.
 - **A failure leaves everything alone.** A failed reallocation leaves the original block valid and still the caller's.
 
-Every operation can throw `AllocError`: `Allocate` and `Reallocate` return a `*var opaque` and throw `AllocError`, and `Deallocate` returns nothing and throws `AllocError`. Every `AllocError` case is a failure, so a caller passes it on with `try`, handles it with `try ... catch`, and a call left unmarked is a compile error. A release on a cleanup path that has nobody to report to says so explicitly with `try allocator.Deallocate(block, layout) catch { _ => {} };`.
+Every operation can fail with `AllocError`: `Allocate` and `Reallocate` return `*var opaque ! AllocError`, and `Deallocate` returns `!AllocError`. Every `AllocError` case is a failure, so a caller passes it on with `!` or handles it with `catch`, and a call whose result is not used is a compile error. A release on a cleanup path that has nobody to report to says so explicitly with `allocator.Deallocate(block, layout) !!;`.
 
 A zero-sized layout is legal and gives a non-null aligned address that nothing may be read from or written to, and which must still be released. That is cheaper than a null case every caller has to branch on, and it keeps an empty collection from being a special shape.
 
-`Arena`, `Pool`, `FixedBuffer`, and `Box<T>` prohibit copying. The first two and the box use canonical destructors; the fixed buffer owns no storage but still cannot be copied because duplicate bump state could hand out overlapping blocks. Move an owner explicitly, for example `let destination = move source`. Running out of memory is fatal for the owners: `Box` returns `Box<T>` and terminates the program through `AllocationFailed` when the allocator refuses, and `Box::TryCreate` throws the `AllocError` instead, destroying the value it was given. `Rc` and `Arc` work the same way, with `TryCreate` beside each. Collections and strings built on an allocator follow the same rule. Destroying a box destroys its value before returning the allocation, while `Take` moves the value to the caller as a `T?` and leaves the box empty. `Get` and `GetMutable` lend the value where it sits as `&T?` and `&var T?`, `none` for a box that was emptied, and keep the box borrowed while the reference is in use.
+`Arena`, `Pool`, `FixedBuffer`, and `Box<T>` prohibit copying. The first two and the box use canonical destructors; the fixed buffer owns no storage but still cannot be copied because duplicate bump state could hand out overlapping blocks. A named owner written bare is given away, for example `let destination = source`. Running out of memory is fatal for the owners: `Box` returns `Box<T>` and terminates the program through `AllocationFailed` when the allocator refuses, and `Box::TryCreate` throws the `AllocError` instead, destroying the value it was given. `Rc` and `Arc` work the same way, with `TryCreate` beside each. Collections and strings built on an allocator follow the same rule. Destroying a box destroys its value before returning the allocation, while `Take` moves the value to the caller as a `T?` and leaves the box empty. `Get` and `GetMutable` lend the value where it sits as `&T?` and `&var T?`, `none` for a box that was emptied, and keep the box borrowed while the reference is in use.
 
-`Rc<T>` and `Arc<T>` share their value instead: each handle owns one count and is move-only, `Clone` makes another handle to the same value and adds to the count, and the value is destroyed when the last handle goes. Both implement `Core::Cloneable`. `Rc` counts with plain arithmetic for one thread, so it is declared `#Unsendable` and cannot be a thread's context; `Arc` counts atomically, so its clones can be made and dropped on any thread. Both lend the value for reading through `Get`, a `&T` that keeps the handle borrowed, and for writing through `GetMutable`, a `&var T?` that is present only while a single handle exists. There are no weak handles, so a cycle of handles is never freed.
+`Rc<T>` and `Arc<T>` share their value instead: each handle owns one count and is move-only, `Clone` makes another handle to the same value and adds to the count, and the value is destroyed when the last handle goes. Both implement `Core::Ownership::Cloneable`. `Rc` counts with plain arithmetic for one thread, so it is declared `#Unsendable` and cannot be a thread's context; `Arc` counts atomically, so its clones can be made and dropped on any thread. Both lend the value for reading through `Get`, a `&T` that keeps the handle borrowed, and for writing through `GetMutable`, a `&var T?` that is present only while a single handle exists. There are no weak handles, so a cycle of handles is never freed.
 
-Canonical construction is `SystemAllocator()`, `Arena(backing, blockSize)`, `Pool(backing, blocksPerChunk)`, and `FixedBuffer(storage, capacity)`. The `FixedBuffer` constructor is an `unsafe func`, because it keeps a raw address: its caller promises that the storage stays valid, and untouched by anything else, for as long as the buffer or any handle to it is used. Each of the three implements `Allocator` itself, so it can be borrowed as `&var Allocator` for a call without a handle. `Layout::Of` retains its name because it validates and returns `Layout?`, so `Layout::Of(size, alignment) ?? throw AllocError::Unsupported` turns an unrepresentable layout into an error.
+Canonical construction is `SystemAllocator::New()`, `Arena::New(backing, blockSize)`, `Pool::New(backing, blocksPerChunk)`, and `FixedBuffer::New(storage, capacity)`. The `FixedBuffer` constructor keeps a raw address, so its caller promises that the storage stays valid, and untouched by anything else, for as long as the buffer or any handle to it is used. Each of the three implements `Allocator` itself, so it can be borrowed as `&var Allocator` for a call without a handle. `Layout::Of` retains its name because it validates and returns `Layout?`, so `Layout::Of(size, alignment) ?? throw AllocError::Unsupported` turns an unrepresentable layout into an error.
 
 An `Arena` hands out storage by advancing a pointer and takes it all back at once, which is the right shape whenever a program builds many small things whose lives end together. Blocks come from a backing allocator and each is twice the size of the last, so a long-lived arena stops going back to the system. `Reset` rewinds every allocation while keeping the largest block, so a second round of the same work asks the system for nothing. `BytesUsed` sums what every block has handed out, alignment padding included; the tail a block is left with when a request moves on to a new block is not counted.
 
-There are three ways to take an allocator. A function that allocates for the length of a call borrows it, as `&var Allocator`, or bounds a generic by it, `func Build<A: Allocator>(allocator: &var A)`, which resolves each call for the concrete type with nothing dispatched at run time. A value that keeps its allocator — every container, string and box here — keeps an `Allocator` value, which is a copyable handle that addresses an implementation and owns nothing. `SystemAllocator` carries no state, so it converts to a handle wherever one is wanted and the handle stays valid for the whole program: `Vector<int>(SystemAllocator())` and `let allocator = SystemAllocator();` are the everyday spellings. An `Arena`, `Pool` or `FixedBuffer` has state of its own, so its handle comes only from `Handle`, an `unsafe func` whose caller promises that the allocator outlives every copy of the handle, is not moved while one exists, and is not reset while an allocation made through one is still in use. Nothing checks that, and a handle held past it points at released or moved storage:
+There are three ways to take an allocator. A function that allocates for the length of a call borrows it, as `&var Allocator`, or bounds a generic by it, `func Build<A: Allocator>(allocator: &var A)`, which resolves each call for the concrete type with nothing dispatched at run time. A value that keeps its allocator — every container, string and box here — keeps an `Allocator` value, which is a copyable handle that addresses an implementation and owns nothing. `SystemAllocator` carries no state, so it converts to a handle wherever one is wanted and the handle stays valid for the whole program: `Vector<int>::New(SystemAllocator::New())` and `let allocator = SystemAllocator::New();` are the everyday spellings. An `Arena`, `Pool` or `FixedBuffer` has state of its own, so its handle comes only from `Handle`, whose caller promises that the allocator outlives every copy of the handle, is not moved while one exists, and is not reset while an allocation made through one is still in use. Nothing checks that, and a handle held past it points at released or moved storage:
 
 ```rux
-import Allocator::{ Arena, SystemAllocator };
+import Allocator::SystemAllocator;
+import Allocator::Strategies::Arena;
 import Collections::Vector;
 
 func Main() -> int {
-    var arena = Arena(SystemAllocator(), 4096);
+    var arena = Arena::New(SystemAllocator::New(), 4096);
     // Safety: `arena` outlives `values`, which is the only holder of the handle, and is neither moved nor reset
     // while `values` exists.
-    var values = Vector<int>(unsafe { arena.Handle() });
+    var values = Vector<int>::New(arena.Handle());
     values.Push(4);
     return values.Length() as int - 1;
 }

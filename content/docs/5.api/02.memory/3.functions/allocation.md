@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Alloc.rux
-  line: 29
+  line: 40
 seo:
   title: "Heap allocation — Memory API"
   description: "Allocating, resizing and releasing blocks on the system heap."
@@ -35,7 +35,7 @@ to at least 16 bytes on every supported target.
 The bytes are uninitialized. Reading any byte before writing it, accessing beyond `size`, or using the address
 after it is released is invalid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Alloc.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Alloc.rux#L40)
 
 **Parameters**
 
@@ -48,14 +48,14 @@ after it is released is invalid.
 <h2 id="free"><code>Free</code></h2>
 
 ```rux
-pub unsafe func Free(ptr: *opaque)
+pub func Free(ptr: *opaque)
 ```
 
 Releases an allocation. A null pointer is accepted and does nothing.
 Safety: a non-null `ptr` must be the live base address returned by [`Alloc`](/docs/api/memory/allocation#alloc) or [`Realloc`](/docs/api/memory/allocation#realloc). Every pointer into the
 block becomes invalid immediately; releasing an interior, foreign, or already released address is invalid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Free.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Free.rux#L21)
 
 **Parameters**
 
@@ -66,10 +66,7 @@ block becomes invalid immediately; releasing an interior, foreign, or already re
 <h2 id="realloc"><code>Realloc</code></h2>
 
 ```rux
-pub unsafe func Realloc(
-    ptr: *opaque,
-    size: uint
-) -> *var opaque
+pub func Realloc(ptr: *opaque, size: uint) -> *var opaque
 ```
 
 Resizes an allocation to `size` bytes, preserving the bytes that still fit.
@@ -79,7 +76,7 @@ returned address has the same numeric value.
 Safety: a non-null `ptr` must be the live base address returned by [`Alloc`](/docs/api/memory/allocation#alloc) or an earlier `Realloc`. Interior,
 released, or foreign addresses are invalid. Bytes added beyond the old size are uninitialized.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Realloc.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Realloc.rux#L26)
 
 **Parameters**
 

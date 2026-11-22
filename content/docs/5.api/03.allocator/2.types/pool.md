@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Pool.rux
-  line: 64
+  line: 66
 seo:
   title: "Pool — Allocator API"
   description: An allocator that serves small blocks from per-class free lists.
@@ -32,10 +32,10 @@ stored [`Allocator`](/docs/api/allocator/allocator) handle is needed.
 
 ## Constructors
 
-<h3 id="new"><code>Pool</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Pool(
+pub func New(
     backing: Allocator,
     blocksPerChunk: uint
 ) -> Pool
@@ -43,8 +43,8 @@ pub func Pool(
 
 A pool that will take its chunks from `backing`.
 `backing` is borrowed for the call and kept. `blocksPerChunk` is how many blocks each chunk is carved into;
-zero asks for the default. Cannot fail and allocates nothing: the first chunk is taken when the first request
-arrives, so a pool that is never used costs nothing.
+zero asks for the default. Cannot fail and allocates nothing: the first chunk is taken when the first
+request arrives, so a pool that is never used costs nothing.
 
 | Name             | Type        | Description                                                    |
 | ---------------- | ----------- | -------------------------------------------------------------- |
@@ -53,14 +53,14 @@ arrives, so a pool that is never used costs nothing.
 
 **Returns**: the pool, holding no chunk yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L92)
 
 ## Methods
 
 <h3 id="handle"><code>Handle</code></h3>
 
 ```rux
-pub unsafe func Handle(*var self) -> Allocator
+pub func Handle(*var self) -> Allocator
 ```
 
 An [`Allocator`](/docs/api/allocator/allocator) handle addressing this pool, for a container to keep.
@@ -71,7 +71,7 @@ may [`Reset`](/docs/api/allocator/pool#reset) the pool while a block taken throu
 
 **Returns**: a copyable handle addressing this pool
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L111)
 
 <h3 id="reset"><code>Reset</code></h3>
 
@@ -88,7 +88,7 @@ touched, and are still the caller's to release.
 Runs in time proportional to the number of blocks. Cannot fail.
 Nothing may be read from or written to any pooled allocation afterwards.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L124)
 
 <h3 id="live-blocks"><code>LiveBlocks</code></h3>
 
@@ -102,7 +102,7 @@ track them.
 
 **Returns**: how many blocks are currently handed out
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L153)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L156)
 
 <h3 id="chunk-count"><code>ChunkCount</code></h3>
 
@@ -115,7 +115,7 @@ How many chunks the pool has taken from its backing allocator.
 
 **Returns**: how many chunks the pool holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L164)
 
 <h3 id="class-size"><code>ClassSize</code></h3>
 
@@ -132,7 +132,7 @@ The block size of class `index`, or zero for an index past the last class.
 
 **Returns**: the block size that class serves
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L173)
 
 ## Implements Allocator
 
@@ -144,7 +144,7 @@ The block size of class `index`, or zero for an index past the last class.
 pub func Allocate(
     &var self,
     layout: Layout
-) -> *var opaque throws AllocError
+) -> *var opaque ! AllocError
 ```
 
 Takes a block of the smallest class that holds `layout`.
@@ -161,7 +161,7 @@ The block lives until it is released, the pool is reset, or the pool is destroye
 
 **Returns**: the address of the storage, or why none was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L260)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L263)
 
 <h3 id="deallocate"><code>Deallocate</code></h3>
 
@@ -170,7 +170,7 @@ pub func Deallocate(
     &var self,
     block: *var opaque,
     layout: Layout
-) throws AllocError
+) -> !AllocError
 ```
 
 Puts a block back on the free list of the class its layout names.
@@ -186,7 +186,7 @@ The block may be handed to the next allocation of its class at once.
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L294)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L297)
 
 <h3 id="reallocate"><code>Reallocate</code></h3>
 
@@ -196,13 +196,13 @@ pub func Reallocate(
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
-) -> *var opaque throws AllocError
+) -> *var opaque ! AllocError
 ```
 
 Changes the size of a block, which costs nothing when both sizes land in the same class.
-The two layouts must share an alignment. A block whose new size fits the class it already occupies comes back
-unmoved — growing a 20-byte allocation to 30 does not touch storage at all. Anything else takes a new block,
-copies, and releases the old one.
+The two layouts must share an alignment. A block whose new size fits the class it already occupies comes
+back unmoved — growing a 20-byte allocation to 30 does not touch storage at all. Anything else takes a new
+block, copies, and releases the old one.
 
 | Name        | Type          | Description                                           |
 | ----------- | ------------- | ----------------------------------------------------- |
@@ -212,19 +212,19 @@ copies, and releases the old one.
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L322)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L325)
 
 ## Destructor
 
 ```rux
-func ~Pool(&var self)
+destructor
 ```
 
 Gives every chunk back to the backing allocator.
-Runs when the pool's life ends. Every pooled pointer the pool handed out becomes invalid. Blocks that went to
-the backing allocator directly are not released here and are still the caller's.
+Runs when the pool's life ends. Every pooled pointer the pool handed out becomes invalid. Blocks that went
+to the backing allocator directly are not released here and are still the caller's.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L225)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L228)
 
 ## Related
 
@@ -236,7 +236,7 @@ pub const PoolClassCount: uint = 5;
 
 How many size classes a pool serves.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L26)
 
 <h3 id="pool-smallest-class"><code>PoolSmallestClass</code></h3>
 
@@ -245,10 +245,10 @@ pub const PoolSmallestClass: uint = 16;
 ```
 
 The smallest size class, and so the block a one-byte request occupies.
-Large enough to hold the link a free block stores in its own storage, which is what lets a free list cost nothing
-beyond the blocks already on it.
+Large enough to hold the link a free block stores in its own storage, which is what lets a free list cost
+nothing beyond the blocks already on it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L32)
 
 <h3 id="pool-largest-class"><code>PoolLargestClass</code></h3>
 
@@ -258,7 +258,7 @@ pub const PoolLargestClass: uint = 256;
 
 The largest size class. A request past this goes to the backing allocator instead.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L36)
 
 <h3 id="pool-alignment"><code>PoolAlignment</code></h3>
 
@@ -269,7 +269,7 @@ pub const PoolAlignment: uint = 16;
 The alignment every chunk is taken at, and so the strictest alignment a pooled block can satisfy.
 Every class is a multiple of this, so every block carved from a chunk is aligned to it as well.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L41)
 
 <h3 id="default-pool-blocks-per-chunk"><code>DefaultPoolBlocksPerChunk</code></h3>
 
@@ -279,7 +279,7 @@ pub const DefaultPoolBlocksPerChunk: uint = 32;
 
 How many blocks a chunk holds when the caller does not say.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L45)
 
 <h3 id="pool-chunk"><code>PoolChunk</code></h3>
 
@@ -290,10 +290,10 @@ pub struct PoolChunk {
 ```
 
 One chunk of pool storage, carved into blocks of a single class.
-Never constructed by a caller. The blocks follow the header, and the header records what the chunk was taken with
-so that releasing or re-carving it needs nothing else.
+Never constructed by a caller. The blocks follow the header, and the header records what the chunk was taken
+with so that releasing or re-carving it needs nothing else.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L51)
 
 <h3 id="class-index-for"><code>ClassIndexFor</code></h3>
 
@@ -308,7 +308,7 @@ The answer depends only on the layout, which is what lets a release reach the sa
 it matches without the pool recording anything per block.
 Cannot fail. Runs in time proportional to the number of classes and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L359)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Pool.rux#L362)
 
 **Parameters**
 

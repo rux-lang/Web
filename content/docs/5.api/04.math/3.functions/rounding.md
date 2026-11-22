@@ -88,7 +88,7 @@ reduced with integer long division so the intermediate product cannot discard th
 | `pub func Mod(x: float64, y: float64) -> float64` | Computes the floating-point remainder of `x / y`, with the sign of `x`.                        |
 | `pub func Mod(x: float32, y: float32) -> float32` | Computes the floating-point remainder of `x / y` at `float32` precision, with the sign of `x`. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Mod.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Mod.rux#L16)
 
 **Parameters**
 
@@ -141,7 +141,7 @@ pub enum RoundingMode: int32 {
 Which way a value that falls between two integers should go.
 `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Rounding.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Rounding.rux#L18)
 
 **Cases**
 
@@ -169,7 +169,7 @@ preserved, and a NaN or infinity passes through unchanged.
 | `pub func RoundTiesToEven(value: float64) -> float64` | The nearest integer to `value`, with a halfway value going to the even neighbour.                 |
 | `pub func RoundTiesToEven(value: float32) -> float32` | Rounds `value` to the nearest integral `float32`, with halfway cases going to the even neighbour. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Rounding.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Rounding.rux#L40)
 
 **Parameters**
 
@@ -200,7 +200,7 @@ Rounds `value` in the requested direction at `float32` precision.
 | `pub func RoundTo(value: float64, mode: RoundingMode) -> float64` | `value` rounded to an integer in the named direction.             |
 | `pub func RoundTo(value: float32, mode: RoundingMode) -> float32` | Rounds `value` in the requested direction at `float32` precision. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Rounding.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Rounding.rux#L70)
 
 **Parameters**
 
@@ -214,7 +214,7 @@ Rounds `value` in the requested direction at `float32` precision.
 <h2 id="to-integer-checked"><code>ToIntegerChecked&lt;T&gt;</code></h2>
 
 ```rux
-pub func ToIntegerChecked<T>(
+pub func ToIntegerChecked<T: Integer>(
     value: float64,
     sample: T,
     mode: RoundingMode,
@@ -229,13 +229,13 @@ range — and leaves `result` zero in that case. This is the only place a float 
 rather than saturating, because a caller who has not thought about the out-of-range case is better served by a flag
 than by a plausible wrong number. `result` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Rounding.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Math/Src/Rounding.rux#L104)
 
 **Type parameters**
 
-| Name | Description              |
-| ---- | ------------------------ |
-| `T`  | destination integer type |
+| Name         | Description              |
+| ------------ | ------------------------ |
+| `T: Integer` | destination integer type |
 
 **Parameters**
 

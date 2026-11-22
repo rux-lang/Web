@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/System.rux
-  line: 46
+  line: 47
 seo:
   title: "SystemAllocator — Allocator API"
   description: An allocator that asks the operating system for pages.
@@ -33,10 +33,10 @@ rather than for many small values directly.
 
 ## Constructors
 
-<h3 id="new"><code>SystemAllocator</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func SystemAllocator() -> SystemAllocator
+pub func New() -> SystemAllocator
 ```
 
 Constructs a stateless system allocator.
@@ -45,7 +45,7 @@ nothing to keep alive behind it.
 
 **Returns**: the allocator, which holds no state of its own
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L55)
 
 ## Implements Allocator
 
@@ -57,7 +57,7 @@ nothing to keep alive behind it.
 pub func Allocate(
     &self,
     layout: Layout
-) -> *var opaque throws AllocError
+) -> *var opaque ! AllocError
 ```
 
 Takes storage matching `layout` from the operating system.
@@ -73,7 +73,7 @@ The storage is the caller's until [`Deallocate`](/docs/api/allocator/system-allo
 
 **Returns**: the address of the storage, or why none was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L71)
 
 <h3 id="deallocate"><code>Deallocate</code></h3>
 
@@ -82,7 +82,7 @@ pub func Deallocate(
     &self,
     block: *var opaque,
     layout: Layout
-) throws AllocError
+) -> !AllocError
 ```
 
 Gives the storage behind `block` back to the operating system.
@@ -98,7 +98,7 @@ Every pointer into the block becomes invalid.
 
 **Returns**: nothing when the release was accepted, or why it was refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L117)
 
 <h3 id="reallocate"><code>Reallocate</code></h3>
 
@@ -108,7 +108,7 @@ pub func Reallocate(
     block: *var opaque,
     oldLayout: Layout,
     newLayout: Layout
-) -> *var opaque throws AllocError
+) -> *var opaque ! AllocError
 ```
 
 Changes the size of a block by taking a new one and copying what fits.
@@ -127,7 +127,7 @@ The old pointer is invalid once this succeeds. On failure it is untouched and st
 
 **Returns**: the address the block is at afterwards, or why it was not resized
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L146)
 
 ## Related
 
@@ -143,7 +143,7 @@ What a system allocation records about itself, immediately before the address th
 Never constructed by a caller. The magic is checked on release, which is what turns a mismatched or foreign
 pointer into a reported `InvalidBlock` rather than a corrupted heap.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L23)
 
 <h3 id="system-block-magic"><code>SystemBlockMagic</code></h3>
 
@@ -155,4 +155,4 @@ The pattern a valid system block header carries.
 Chosen to be unlikely in ordinary data, so a pointer that was never one of these is very unlikely to look like
 one. This is a check against a mistake, not against an adversary.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/System.rux#L38)

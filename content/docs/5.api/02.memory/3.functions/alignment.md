@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Access.rux
-  line: 22
+  line: 24
 seo:
   title: "Alignment — Memory API"
   description: Testing addresses for alignment and rounding them to a boundary.
@@ -28,12 +28,11 @@ pub func IsAligned(address: uint, alignment: uint) -> bool
 ```
 
 Whether `address` is a multiple of `alignment`.
-`address` and `alignment` are read by value. An `alignment` of zero reports false rather than dividing by it, and
-an alignment that is not a power of two gives an answer that is arithmetically true but rarely meaningful, since
-hardware alignment is always a power of two.
-Cannot fail. Runs in constant time and allocates nothing.
+`address` and `alignment` are read by value. An `alignment` of zero reports false rather than dividing by it,
+and an alignment that is not a power of two gives an answer that is arithmetically true but rarely meaningful,
+since hardware alignment is always a power of two. Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L24)
 
 **Parameters**
 
@@ -54,11 +53,11 @@ pub func IsPointerAligned(
 ```
 
 Whether `pointer` is aligned for `alignment`.
-`pointer` is read by value and never dereferenced. A null pointer reports true for every alignment, since zero is
-a multiple of everything; a caller that means "usable" has to ask that separately.
-Cannot fail. Runs in constant time and allocates nothing.
+`pointer` is read by value and never dereferenced. A null pointer reports true for every alignment, since zero
+is a multiple of everything; a caller that means "usable" has to ask that separately. Cannot fail. Runs in
+constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L37)
 
 **Parameters**
 
@@ -77,13 +76,12 @@ pub func AlignUp(value: uint, alignment: uint) -> uint
 
 The next multiple of `alignment` at or above `value`.
 `value` and `alignment` are read by value. An `alignment` of zero or one returns `value` unchanged, since every
-value is already a multiple of both.
-Returns `value` itself when it is already aligned, so this is idempotent.
-A `value` within `alignment - 1` of the maximum has no next multiple, and this wraps to a small number rather
-than reporting it. A caller sizing an allocation must check for that before trusting the result; [`AlignUpChecked`](/docs/api/memory/alignment#align-up-checked)
+value is already a multiple of both. Returns `value` itself when it is already aligned, so this is idempotent. A
+`value` within `alignment - 1` of the maximum has no next multiple, and this wraps to a small number rather than
+reporting it. A caller sizing an allocation must check for that before trusting the result; [`AlignUpChecked`](/docs/api/memory/alignment#align-up-checked)
 does the checking.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L51)
 
 **Parameters**
 
@@ -111,7 +109,7 @@ Returns `true` when rounding up would pass the maximum, which is the case an all
 wrapped size is an allocation far smaller than the caller asked for.
 Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L68)
 
 **Parameters**
 
@@ -133,7 +131,7 @@ The previous multiple of `alignment` at or below `value`.
 `value` and `alignment` are read by value. An `alignment` of zero or one returns `value` unchanged.
 Cannot fail: rounding down never leaves the range.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Memory/Src/Access.rux#L94)
 
 **Parameters**
 

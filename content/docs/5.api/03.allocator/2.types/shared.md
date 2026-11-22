@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Shared.rux
-  line: 31
+  line: 34
 seo:
   title: "Shared ownership — Allocator API"
   description: "Reference-counted handles: Rc within one thread and Arc across threads."
@@ -29,11 +29,11 @@ pub struct Rc<T> {
 }
 ```
 
-A shared, counted handle to one value, for use on one thread. A handle is move-only; [`Clone`](/docs/api/allocator/shared#rc-clone) makes another handle
-to the same value.
+A shared, counted handle to one value, for use on one thread. A handle is move-only; [`Clone`](/docs/api/allocator/shared#rc-clone) makes another
+handle to the same value.
 Its count is not atomic, so a handle is not `Sendable`: a thread's context cannot hold one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L34)
 
 **Type parameters**
 
@@ -43,10 +43,10 @@ Its count is not atomic, so a handle is not `Sendable`: a thread's context canno
 
 **Constructors**
 
-<h3 id="rc-create"><code>Rc</code></h3>
+<h3 id="rc-create"><code>New</code></h3>
 
 ```rux
-pub func Rc(allocator: Allocator, value: T) -> Rc<T>
+pub func New(allocator: Allocator, value: T) -> Rc<T>
 ```
 
 The first handle to `value`, moved onto the heap.
@@ -59,7 +59,7 @@ Terminates the program when the allocator refuses; [`TryCreate`](/docs/api/alloc
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L46)
 
 **Associated functions**
 
@@ -69,7 +69,7 @@ Terminates the program when the allocator refuses; [`TryCreate`](/docs/api/alloc
 pub func TryCreate(
     allocator: Allocator,
     value: T
-) -> Rc<T> throws AllocError
+) -> Rc<T> ! AllocError
 ```
 
 The first handle to `value`, moved onto the heap, or why there was no storage.
@@ -81,7 +81,7 @@ The first handle to `value`, moved onto the heap, or why there was no storage.
 
 **Returns**: the handle, or throws why there was no storage; the value is destroyed then
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L55)
 
 **Methods**
 
@@ -96,7 +96,7 @@ The shared value, borrowed for reading.
 
 **Returns**: a reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L69)
 
 <h3 id="rc-get-mutable"><code>GetMutable</code></h3>
 
@@ -109,7 +109,7 @@ The value borrowed for writing, while this is the only handle to it.
 
 **Returns**: a writable reference to the value, or `none` while other handles share it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L79)
 
 <h3 id="rc-count"><code>Count</code></h3>
 
@@ -121,7 +121,7 @@ How many handles share the value.
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L91)
 
 <h3 id="rc-same-as"><code>SameAs</code></h3>
 
@@ -137,7 +137,7 @@ Whether `other` shares the same value, rather than an equal one.
 
 **Returns**: whether both point at one value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L101)
 
 **Implements Cloneable**
 
@@ -154,17 +154,17 @@ Borrows this handle and allocates nothing; the value lives until the last handle
 
 **Returns**: a new handle sharing the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L120)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L127)
 
 **Destructor**
 
-<h3 id="rc-destructor"><code>~Rc</code></h3>
+<h3 id="rc-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~Rc(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L105)
 
 <h2 id="arc"><code>Arc&lt;T&gt;</code></h2>
 
@@ -174,12 +174,12 @@ pub struct Arc<T> {
 }
 ```
 
-A shared, counted handle to one value whose handles may live on different threads. A handle is move-only; [`Clone`](/docs/api/allocator/shared#arc-clone)
-makes another handle to the same value, and the count is kept with atomic operations.
+A shared, counted handle to one value whose handles may live on different threads. A handle is move-only;
+[`Clone`](/docs/api/allocator/shared#arc-clone) makes another handle to the same value, and the count is kept with atomic operations.
 The value is only read through it, so a value that changes while shared needs its own synchronization, such as a
 `Sync::Mutex`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L141)
 
 **Type parameters**
 
@@ -189,10 +189,10 @@ The value is only read through it, so a value that changes while shared needs it
 
 **Constructors**
 
-<h3 id="arc-create"><code>Arc</code></h3>
+<h3 id="arc-create"><code>New</code></h3>
 
 ```rux
-pub func Arc(allocator: Allocator, value: T) -> Arc<T>
+pub func New(allocator: Allocator, value: T) -> Arc<T>
 ```
 
 The first handle to `value`, moved onto the heap.
@@ -205,7 +205,7 @@ Terminates the program when the allocator refuses; [`TryCreate`](/docs/api/alloc
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L153)
 
 **Associated functions**
 
@@ -215,7 +215,7 @@ Terminates the program when the allocator refuses; [`TryCreate`](/docs/api/alloc
 pub func TryCreate(
     allocator: Allocator,
     value: T
-) -> Arc<T> throws AllocError
+) -> Arc<T> ! AllocError
 ```
 
 The first handle to `value`, moved onto the heap, or why there was no storage.
@@ -227,7 +227,7 @@ The first handle to `value`, moved onto the heap, or why there was no storage.
 
 **Returns**: the handle, or throws why there was no storage; the value is destroyed then
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L162)
 
 **Methods**
 
@@ -242,7 +242,7 @@ The shared value, borrowed for reading.
 
 **Returns**: a reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L169)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L176)
 
 <h3 id="arc-get-mutable"><code>GetMutable</code></h3>
 
@@ -255,7 +255,7 @@ The value borrowed for writing, while this is the only handle to it.
 
 **Returns**: a writable reference to the value, or `none` while other handles share it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L178)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L186)
 
 <h3 id="arc-count"><code>Count</code></h3>
 
@@ -267,7 +267,7 @@ How many handles share the value, at some moment while this one existed; another
 
 **Returns**: the count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L198)
 
 <h3 id="arc-same-as"><code>SameAs</code></h3>
 
@@ -283,7 +283,7 @@ Whether `other` shares the same value, rather than an equal one.
 
 **Returns**: whether both point at one value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L199)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L208)
 
 **Implements Cloneable**
 
@@ -301,14 +301,14 @@ until the last handle on any thread is destroyed.
 
 **Returns**: a new handle sharing the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L224)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L233)
 
 **Destructor**
 
-<h3 id="arc-destructor"><code>~Arc</code></h3>
+<h3 id="arc-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~Arc(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L203)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Allocator/Src/Shared.rux#L212)
