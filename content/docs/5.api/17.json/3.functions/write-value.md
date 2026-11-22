@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Writer.rux
-  line: 175
+  line: 174
 seo:
   title: "WriteValue — Json API"
   description: Writes value to writer in the given style.
@@ -26,7 +26,7 @@ pub func WriteValue(
     writer: &var TextWriter,
     value: &JsonValue,
     style: JsonStyle
-) throws FormatError
+) -> !FormatError
 ```
 
 The value is borrowed and nothing is allocated: the document writes itself into the destination as it is
@@ -60,7 +60,7 @@ The writer descends recursively, so this bounds its own stack rather than the do
 the parser's default depth, which is what actually decides whether a document of this size can exist: a tree
 built in memory rather than parsed is the only way to reach this at all.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L26)
 
 <h3 id="json-style"><code>JsonStyle</code></h3>
 
@@ -72,7 +72,7 @@ pub struct JsonStyle {
 
 How a document should be laid out.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L30)
 
 **Associated functions**
 
@@ -86,7 +86,7 @@ The compact style: no whitespace anywhere. What a document on a wire should be.
 
 **Returns**: a style that writes no whitespace at all
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L41)
 
 <h4 id="json-style-pretty"><code>Pretty</code></h4>
 
@@ -98,7 +98,7 @@ The readable style: two spaces per level.
 
 **Returns**: a style that indents and puts each member on its own line
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L48)
 
 <h3 id="write-escaped"><code>WriteEscaped</code></h3>
 
@@ -106,7 +106,7 @@ The readable style: two spaces per level.
 pub func WriteEscaped(
     writer: &var TextWriter,
     text: char8[..]
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the escaped form of `text`, including its surrounding quotes.
@@ -116,7 +116,7 @@ into escapes — which is legal but makes output several times larger for no gai
 Reports whatever the destination reported, stopping at the first refusal, so a destination that has already
 refused something is not written to again and a partly written string is not followed by its closing quote.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Writer.rux#L66)
 
 **Parameters**
 

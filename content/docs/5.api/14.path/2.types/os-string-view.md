@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/OsString.rux
-  line: 29
+  line: 31
 seo:
   title: "OsStringView — Path API"
   description: A borrowed run of native units.
@@ -37,17 +37,17 @@ pub struct OsStringView {
 
 ## Constructors
 
-<h3 id="new"><code>OsStringView</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func OsStringView() -> OsStringView
+pub func New() -> OsStringView
 ```
 
 A view over nothing.
 
 **Returns**: an empty view
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L40)
 
 ## Associated functions
 
@@ -65,7 +65,7 @@ A view over `units` as they stand: no validation, because there is nothing to va
 
 **Returns**: a view over those units, which it does not copy
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L48)
 
 ## Methods
 
@@ -79,7 +79,7 @@ How many native units the view spans — bytes or code units, not characters.
 
 **Returns**: how many units the value holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L55)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
@@ -91,7 +91,7 @@ Whether the view spans nothing.
 
 **Returns**: whether it holds no units at all
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L62)
 
 <h3 id="units"><code>Units</code></h3>
 
@@ -103,7 +103,7 @@ The units themselves.
 
 **Returns**: the units, borrowed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L69)
 
 <h3 id="equals"><code>Equals</code></h3>
 
@@ -121,7 +121,7 @@ one are still two names here, because which names those are is the filesystem's 
 
 **Returns**: whether both hold the same units in the same order
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L79)
 
 <h3 id="to-text"><code>ToText</code></h3>
 
@@ -129,7 +129,7 @@ one are still two names here, because which names those are is the filesystem's 
 pub func ToText(
     &self,
     allocator: Allocator
-) -> String throws TextError
+) -> String ! TextError
 ```
 
 This native text as UTF-8, or nothing where it is not text.
@@ -144,7 +144,7 @@ program that must show it anyway shows it lossily by its own policy, knowingly.
 
 **Returns**: the units converted to text, or a failure when they are not valid in it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L96)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L98)
 
 ## Implements Display
 
@@ -157,7 +157,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the name as text, with every native unit that is not text replaced by U+FFFD.
@@ -175,7 +175,7 @@ refused rather than applied because a truncated path is a different path, and ma
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L220)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L221)
 
 ## Implements Debug
 
@@ -188,7 +188,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the name exactly, quoted, with every unit that is not text spelled as an escape.
@@ -205,4 +205,4 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L238)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L239)

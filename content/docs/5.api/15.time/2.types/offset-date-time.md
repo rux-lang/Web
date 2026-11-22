@@ -42,10 +42,10 @@ interchange, where the offset is part of what was recorded and losing it changes
 
 ## Constructors
 
-<h3 id="new"><code>OffsetDateTime</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func OffsetDateTime(
+pub func New(
     dateTime: DateTime,
     offset: UtcOffset
 ) -> OffsetDateTime
@@ -90,7 +90,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the moment as RFC 3339: `YYYY-MM-DDTHH:MM:SS[.fraction]` followed by `Z` or a signed `HH:MM`.
@@ -120,7 +120,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`.
@@ -140,7 +140,7 @@ The failures [`WriteDisplay`](/docs/api/time/offset-date-time#write-display) rep
 <h3 id="parse-rfc3339"><code>ParseRfc3339</code></h3>
 
 ```rux
-pub func ParseRfc3339(text: char8[..]) -> OffsetDateTime throws TimeParseError
+pub func ParseRfc3339(text: char8[..]) -> OffsetDateTime ! TimeParseError
 ```
 
 Reads `YYYY-MM-DDTHH:MM:SS[.fraction](Z|+HH:MM|-HH:MM)`.
@@ -151,7 +151,7 @@ moment.
 The failures the date, time and offset readers report, plus `InvalidSyntax` for text after the offset. Each
 carries the byte offset where it was found.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L288)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L286)
 
 **Parameters**
 

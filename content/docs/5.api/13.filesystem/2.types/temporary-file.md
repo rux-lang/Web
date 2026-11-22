@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Temporary.rux
-  line: 84
+  line: 85
 seo:
   title: "TemporaryFile — FileSystem API"
   description: A temporary file that owns both its contents and its name.
@@ -40,14 +40,14 @@ outlive this value — which is what a rename into place is built on.
 
 ## Constructors
 
-<h3 id="create"><code>TemporaryFile</code></h3>
+<h3 id="create"><code>New</code></h3>
 
 ```rux
-pub func TemporaryFile(
+pub func New(
     allocator: Allocator,
     directory: Path,
     prefix: char8[..]
-) -> TemporaryFile throws IoError
+) -> TemporaryFile ! IoError
 ```
 
 Creates a new temporary file in `directory`, named from `prefix` and sixteen hex digits of entropy.
@@ -62,7 +62,7 @@ collision, and the next name is tried.
 
 **Returns**: the created file, which is removed when closed unless kept
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L103)
 
 ## Methods
 
@@ -76,15 +76,12 @@ The file's path, for handing to something that needs a name.
 
 **Returns**: the path it was created at
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L131)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L132)
 
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
-pub func Close(
-    &var self,
-    allocator: Allocator
-) throws IoError
+pub func Close(&var self, allocator: Allocator) -> !IoError
 ```
 
 Closes the file and deletes it, reporting the first thing that went wrong.
@@ -95,24 +92,24 @@ Closes the file and deletes it, reporting the first thing that went wrong.
 
 **Returns**: success when it was removed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L139)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L140)
 
 <h3 id="keep"><code>Keep</code></h3>
 
 ```rux
-pub func Keep(&var self) throws IoError
+pub func Keep(&var self) -> !IoError
 ```
 
 Closes the file and leaves it where it is, giving up the name.
 
 **Returns**: success when it will be left in place rather than removed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L156)
 
 ## Destructor
 
 ```rux
-func ~TemporaryFile(&var self)
+destructor
 ```
 
 Closes and deletes with the outcome discarded: the safety net, not the contract.
@@ -120,7 +117,7 @@ A destructor has nowhere to report a failed deletion, so a caller who needs to k
 this guarantees is that a temporary file is never left behind by an early return or a failure path, which
 is the reason the type exists.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L165)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L166)
 
 ## Related
 
@@ -134,12 +131,12 @@ How many names are tried before a temporary file gives up.
 With 128 bits of name, one collision is already a surprise and three in a row is not chance; failing is the
 honest response to an entropy source that has stopped being one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L27)
 
 <h3 id="temporary-directory"><code>TemporaryDirectory</code></h3>
 
 ```rux
-pub func TemporaryDirectory(allocator: Allocator) -> PathBuffer throws IoError
+pub func TemporaryDirectory(allocator: Allocator) -> PathBuffer ! IoError
 ```
 
 The directory the system sets aside for temporary files.
@@ -147,7 +144,7 @@ On Windows this is what the platform reports, which consults `TMP`, `TEMP` and `
 Unix systems it is `/tmp`: reading `TMPDIR` needs environment access this package does not have yet, so a
 caller who must honor it passes the directory to the functions below instead.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L36)
 
 **Parameters**
 

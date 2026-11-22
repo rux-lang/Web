@@ -76,11 +76,11 @@
   "items": [
     {
       "kind": "function",
-      "name": "Binomial",
-      "displayName": "Binomial<G>",
+      "name": "Distributions::Binomial",
+      "displayName": "Distributions::Binomial<G>",
       "module": "Counting",
       "source": "Src/Counting.rux",
-      "line": 21,
+      "line": 22,
       "signature": "pub func Binomial<G: RandomGenerator>(generator: &var G, trials: uint64, probability: float64) -> uint64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -115,11 +115,11 @@
     },
     {
       "kind": "function",
-      "name": "Poisson",
-      "displayName": "Poisson<G>",
+      "name": "Distributions::Poisson",
+      "displayName": "Distributions::Poisson<G>",
       "module": "Counting",
       "source": "Src/Counting.rux",
-      "line": 54,
+      "line": 55,
       "signature": "pub func Poisson<G: RandomGenerator>(generator: &var G, mean: float64) -> uint64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -153,11 +153,11 @@
     },
     {
       "kind": "function",
-      "name": "Bernoulli",
-      "displayName": "Bernoulli<G>",
+      "name": "Distributions::Bernoulli",
+      "displayName": "Distributions::Bernoulli<G>",
       "module": "Distribution",
       "source": "Src/Distribution.rux",
-      "line": 19,
+      "line": 21,
       "signature": "pub func Bernoulli<G: RandomGenerator>(generator: &var G, probability: float64) -> bool",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -191,11 +191,11 @@
     },
     {
       "kind": "function",
-      "name": "Exponential",
-      "displayName": "Exponential<G>",
+      "name": "Distributions::Exponential",
+      "displayName": "Distributions::Exponential<G>",
       "module": "Distribution",
       "source": "Src/Distribution.rux",
-      "line": 34,
+      "line": 36,
       "signature": "pub func Exponential<G: RandomGenerator>(generator: &var G) -> float64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -226,11 +226,11 @@
     },
     {
       "kind": "function",
-      "name": "ExponentialWithRate",
-      "displayName": "ExponentialWithRate<G>",
+      "name": "Distributions::ExponentialWithRate",
+      "displayName": "Distributions::ExponentialWithRate<G>",
       "module": "Distribution",
       "source": "Src/Distribution.rux",
-      "line": 45,
+      "line": 47,
       "signature": "pub func ExponentialWithRate<G: RandomGenerator>(generator: &var G, rate: float64) -> float64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -264,11 +264,11 @@
     },
     {
       "kind": "function",
-      "name": "NormalPair",
-      "displayName": "NormalPair<G>",
+      "name": "Distributions::NormalPair",
+      "displayName": "Distributions::NormalPair<G>",
       "module": "Distribution",
       "source": "Src/Distribution.rux",
-      "line": 62,
+      "line": 64,
       "signature": "pub func NormalPair<G: RandomGenerator>(generator: &var G, first: *var float64, second: *var float64)",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -303,8 +303,8 @@
     },
     {
       "kind": "function",
-      "name": "Normal",
-      "displayName": "Normal<G>",
+      "name": "Distributions::Normal",
+      "displayName": "Distributions::Normal<G>",
       "module": "Distribution",
       "source": "Src/Distribution.rux",
       "line": 80,
@@ -338,8 +338,8 @@
     },
     {
       "kind": "function",
-      "name": "NormalWith",
-      "displayName": "NormalWith<G>",
+      "name": "Distributions::NormalWith",
+      "displayName": "Distributions::NormalWith<G>",
       "module": "Distribution",
       "source": "Src/Distribution.rux",
       "line": 96,
@@ -625,11 +625,11 @@
     },
     {
       "kind": "constant",
-      "name": "DirectMethodLimit",
-      "displayName": "DirectMethodLimit",
+      "name": "Distributions::DirectMethodLimit",
+      "displayName": "Distributions::DirectMethodLimit",
       "module": "Gamma",
       "source": "Src/Gamma.rux",
-      "line": 16,
+      "line": 17,
       "signature": "pub const DirectMethodLimit: float64",
       "typeParams": [],
       "doc": {
@@ -660,11 +660,11 @@
     },
     {
       "kind": "function",
-      "name": "Gamma",
-      "displayName": "Gamma<G>",
+      "name": "Distributions::Gamma",
+      "displayName": "Distributions::Gamma<G>",
       "module": "Gamma",
       "source": "Src/Gamma.rux",
-      "line": 28,
+      "line": 29,
       "signature": "pub func Gamma<G: RandomGenerator>(generator: &var G, shape: float64) -> float64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -698,11 +698,11 @@
     },
     {
       "kind": "function",
-      "name": "GammaWithScale",
-      "displayName": "GammaWithScale<G>",
+      "name": "Distributions::GammaWithScale",
+      "displayName": "Distributions::GammaWithScale<G>",
       "module": "Gamma",
       "source": "Src/Gamma.rux",
-      "line": 73,
+      "line": 74,
       "signature": "pub func GammaWithScale<G: RandomGenerator>(generator: &var G, shape: float64, scale: float64) -> float64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -737,11 +737,11 @@
     },
     {
       "kind": "function",
-      "name": "Beta",
-      "displayName": "Beta<G>",
+      "name": "Distributions::Beta",
+      "displayName": "Distributions::Beta<G>",
       "module": "Gamma",
       "source": "Src/Gamma.rux",
-      "line": 87,
+      "line": 88,
       "signature": "pub func Beta<G: RandomGenerator>(generator: &var G, first: float64, second: float64) -> float64",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -884,10 +884,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "SplitMix64",
+          "kind": "associated",
+          "name": "New",
           "line": 42,
-          "signature": "pub func SplitMix64(seed: uint64) -> SplitMix64",
+          "signature": "pub func New(seed: uint64) -> SplitMix64",
           "typeParams": [],
           "params": [{ "name": "seed", "type": "uint64" }],
           "receiver": null,
@@ -1054,10 +1054,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Pcg64Dxsm",
+          "kind": "associated",
+          "name": "New",
           "line": 34,
-          "signature": "pub func Pcg64Dxsm(seed: uint64) -> Pcg64Dxsm",
+          "signature": "pub func New(seed: uint64) -> Pcg64Dxsm",
           "typeParams": [],
           "params": [{ "name": "seed", "type": "uint64" }],
           "receiver": null,
@@ -1170,8 +1170,8 @@
     },
     {
       "kind": "struct",
-      "name": "Reservoir",
-      "displayName": "Reservoir<T>",
+      "name": "Sampling::Reservoir",
+      "displayName": "Sampling::Reservoir<T>",
       "module": "Reservoir",
       "source": "Src/Reservoir.rux",
       "line": 13,
@@ -1227,10 +1227,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Reservoir",
+          "kind": "associated",
+          "name": "New",
           "line": 25,
-          "signature": "pub func Reservoir(room: var T[..]) -> Reservoir<T>",
+          "signature": "pub func New(room: var T[..]) -> Reservoir<T>",
           "typeParams": [],
           "params": [{ "name": "room", "type": "var T[..]" }],
           "receiver": null,
@@ -1337,8 +1337,8 @@
     },
     {
       "kind": "function",
-      "name": "Offer",
-      "displayName": "Offer<G, T>",
+      "name": "Sampling::Offer",
+      "displayName": "Sampling::Offer<G, T>",
       "module": "Reservoir",
       "source": "Src/Reservoir.rux",
       "line": 56,
@@ -1382,15 +1382,15 @@
     },
     {
       "kind": "function",
-      "name": "Shuffle",
-      "displayName": "Shuffle<G, T>",
+      "name": "Sampling::Shuffle",
+      "displayName": "Sampling::Shuffle<G, T>",
       "module": "Sample",
       "source": "Src/Sample.rux",
-      "line": 20,
-      "signature": "pub func Shuffle<G: RandomGenerator, T>(generator: &var G, items: var T[..])",
+      "line": 23,
+      "signature": "pub func Shuffle<G: RandomGenerator + Copyable, T: Copyable>(generator: &var G, items: var T[..])",
       "typeParams": [
-        { "name": "G", "bounds": ["RandomGenerator"] },
-        { "name": "T", "bounds": [] }
+        { "name": "G", "bounds": ["RandomGenerator", "Copyable"] },
+        { "name": "T", "bounds": ["Copyable"] }
       ],
       "doc": {
         "summary": "Shuffles `items` into a uniformly random order.",
@@ -1426,11 +1426,11 @@
     },
     {
       "kind": "function",
-      "name": "ChooseIndex",
-      "displayName": "ChooseIndex<G>",
+      "name": "Sampling::ChooseIndex",
+      "displayName": "Sampling::ChooseIndex<G>",
       "module": "Sample",
       "source": "Src/Sample.rux",
-      "line": 43,
+      "line": 46,
       "signature": "pub func ChooseIndex<G: RandomGenerator>(generator: &var G, count: uint) -> uint",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -1464,11 +1464,11 @@
     },
     {
       "kind": "function",
-      "name": "WeightedIndex",
-      "displayName": "WeightedIndex<G>",
+      "name": "Sampling::WeightedIndex",
+      "displayName": "Sampling::WeightedIndex<G>",
       "module": "Sample",
       "source": "Src/Sample.rux",
-      "line": 59,
+      "line": 62,
       "signature": "pub func WeightedIndex<G: RandomGenerator>(generator: &var G, weights: float64[..]) -> uint",
       "typeParams": [{ "name": "G", "bounds": ["RandomGenerator"] }],
       "doc": {
@@ -1507,11 +1507,11 @@
       "module": "Seeding",
       "source": "Src/Seeding.rux",
       "line": 18,
-      "signature": "pub func XoshiroFromEntropy() -> Xoshiro256 throws EntropyError",
+      "signature": "pub func XoshiroFromEntropy() -> Xoshiro256 ! EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "A `Xoshiro256` seeded from the operating system's entropy.",
-        "markdown": "A `Xoshiro256` seeded from the operating system's entropy.\nFails with why the entropy could not be obtained. A caller that is content with a predictable generator when\nthe system has no entropy recovers explicitly, as in `try XoshiroFromEntropy() catch { _ => Xoshiro256(0u64) }`.",
+        "markdown": "A `Xoshiro256` seeded from the operating system's entropy.\nFails with why the entropy could not be obtained. A caller that is content with a predictable generator when\nthe system has no entropy recovers explicitly, as in `XoshiroFromEntropy() !! Xoshiro256(0u64)`.",
         "typeParams": [],
         "params": [],
         "returns": "a generator seeded from the system, or why it could not be seeded",
@@ -1542,7 +1542,7 @@
       "module": "Seeding",
       "source": "Src/Seeding.rux",
       "line": 26,
-      "signature": "pub func PcgFromEntropy() -> Pcg64Dxsm throws EntropyError",
+      "signature": "pub func PcgFromEntropy() -> Pcg64Dxsm ! EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "A `Pcg64Dxsm` seeded from the operating system's entropy, on the default stream.",
@@ -1577,7 +1577,7 @@
       "module": "Seeding",
       "source": "Src/Seeding.rux",
       "line": 36,
-      "signature": "pub func PcgFromEntropyWithStream(stream: uint64) -> Pcg64Dxsm throws EntropyError",
+      "signature": "pub func PcgFromEntropyWithStream(stream: uint64) -> Pcg64Dxsm ! EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "A `Pcg64Dxsm` seeded from entropy on the stream `stream` selects.",
@@ -1802,10 +1802,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Xoshiro256",
+          "kind": "associated",
+          "name": "New",
           "line": 31,
-          "signature": "pub func Xoshiro256(seed: uint64) -> Xoshiro256",
+          "signature": "pub func New(seed: uint64) -> Xoshiro256",
           "typeParams": [],
           "params": [{ "name": "seed", "type": "uint64" }],
           "receiver": null,

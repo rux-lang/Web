@@ -29,10 +29,10 @@ pub struct TomlParser {
 
 ## Constructors
 
-<h3 id="new"><code>TomlParser</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func TomlParser(
+pub func New(
     allocator: Allocator,
     input: char8[..],
     limits: TomlLimits
@@ -81,7 +81,7 @@ Whether parsing has failed.
 <h3 id="parse"><code>Parse</code></h3>
 
 ```rux
-pub func Parse(&var self) -> TomlValue throws TomlParseFailure
+pub func Parse(&var self) -> TomlValue ! TomlParseFailure
 ```
 
 Reads the whole document into a table.

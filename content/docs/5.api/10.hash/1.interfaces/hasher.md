@@ -87,7 +87,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="hash-bytes"><code>HashBytes&lt;H&gt;</code></h3>
 
 ```rux
-pub unsafe func HashBytes<H: Hasher>(
+pub func HashBytes<H: Hasher>(
     hasher: &var H,
     bytes: *byte,
     length: uint

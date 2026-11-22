@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Fnv.rux
-  line: 38
+  line: 37
 seo:
   title: "Fnv1a32 — Hash API"
   description: "FNV-1a over 32 bits, computed one byte at a time."
@@ -32,17 +32,17 @@ occasionally useful and never surprising, since there is nothing else in it.
 
 ## Constructors
 
-<h3 id="new"><code>Fnv1a32</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Fnv1a32() -> Fnv1a32
+pub func New() -> Fnv1a32
 ```
 
 Constructs a hasher with nothing written into it yet.
 
 **Returns**: a hasher seeded with the 32-bit offset basis
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L46)
 
 ## Methods
 
@@ -56,7 +56,7 @@ Puts the hasher back to where [`Fnv1a32()`](/docs/api/hash/fnv1a32) leaves one.
 `self` is borrowed mutably. Everything written so far is forgotten.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L54)
 
 <h3 id="value"><code>Value</code></h3>
 
@@ -71,7 +71,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the hash of everything written so far
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L64)
 
 ## Implements Hasher
 
@@ -95,7 +95,7 @@ Runs in time proportional to `length` and allocates nothing.
 | `bytes`  | `*byte` | the bytes to absorb                  |
 | `length` | `uint`  | how many bytes; zero absorbs nothing |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L79)
 
 <h3 id="finish"><code>Finish</code></h3>
 
@@ -111,7 +111,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the hash of everything written since the last reset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L98)
 
 ## Related
 
@@ -123,7 +123,7 @@ pub const FnvOffsetBasis32: uint32 = 0x811C9DC5;
 
 The 32-bit FNV-1a offset basis, which is what an empty input hashes to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L19)
 
 <h3 id="fnv-prime32"><code>FnvPrime32</code></h3>
 
@@ -133,15 +133,12 @@ pub const FnvPrime32: uint32 = 16777619;
 
 The 32-bit FNV prime.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L23)
 
 <h3 id="fnv1a32-of"><code>Fnv1a32Of</code></h3>
 
 ```rux
-pub unsafe func Fnv1a32Of(
-    bytes: *byte,
-    length: uint
-) -> uint32
+pub func Fnv1a32Of(bytes: *byte, length: uint) -> uint32
 ```
 
 The 32-bit FNV-1a hash of `length` bytes at `bytes`.
@@ -151,7 +148,7 @@ The one-shot form of making a hasher, writing once and finishing. Identical in r
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
 Safety: `bytes` must be readable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L172)
 
 **Parameters**
 

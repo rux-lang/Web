@@ -31,10 +31,10 @@ pub struct Adler32 {
 
 ## Constructors
 
-<h3 id="new"><code>Adler32</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Adler32() -> Adler32
+pub func New() -> Adler32
 ```
 
 Constructs a checksum with nothing written into it yet.

@@ -34,10 +34,10 @@ Structural `Copy`; copying takes an independent snapshot of the register.
 
 ## Constructors
 
-<h3 id="new"><code>Crc32c</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Crc32c() -> Crc32c
+pub func New() -> Crc32c
 ```
 
 Constructs a checksum with nothing written into it yet.
@@ -137,10 +137,7 @@ The compiler computes the table from the polynomial.
 <h3 id="crc32c-of"><code>Crc32cOf</code></h3>
 
 ```rux
-pub unsafe func Crc32cOf(
-    bytes: *byte,
-    length: uint
-) -> uint32
+pub func Crc32cOf(bytes: *byte, length: uint) -> uint32
 ```
 
 The CRC-32C of `length` bytes at `bytes`.

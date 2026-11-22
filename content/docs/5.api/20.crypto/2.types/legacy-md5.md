@@ -32,10 +32,10 @@ Structural `Copy`; copying takes an independent snapshot of the digest state.
 
 ## Constructors
 
-<h3 id="new"><code>LegacyMd5</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func LegacyMd5() -> LegacyMd5
+pub func New() -> LegacyMd5
 ```
 
 An MD5 state.

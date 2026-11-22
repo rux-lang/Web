@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Instant.rux
-  line: 23
+  line: 33
 seo:
   title: "Instant — Time API"
   description: A reading of the monotonic clock.
@@ -43,7 +43,7 @@ Cannot fail on any supported system: the monotonic clock exists from boot and ne
 
 **Returns**: the monotonic clock, read now
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L43)
 
 ## Methods
 
@@ -63,7 +63,7 @@ visible bug instead of a wildly large duration.
 
 **Returns**: the time between the two readings, or `None` when `earlier` is not earlier
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L64)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L72)
 
 <h3 id="elapsed"><code>Elapsed</code></h3>
 
@@ -75,7 +75,7 @@ The time from this reading to now.
 
 **Returns**: the time from this reading to now
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L83)
 
 ## Implements Debug
 
@@ -88,7 +88,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the reading as `Instant(nanoseconds: N)`.
@@ -105,4 +105,4 @@ one form, and neither a style nor a fraction has anything to select here.
 
 **Returns**: success when the whole reading was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Instant.rux#L27)

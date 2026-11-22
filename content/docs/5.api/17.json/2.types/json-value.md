@@ -78,7 +78,7 @@ A boolean value.
 pub func Number(
     allocator: Allocator,
     text: char8[..]
-) -> JsonValue throws JsonError
+) -> JsonValue ! JsonError
 ```
 
 A number, from the text it is written with, checked against JSON's number grammar as [`JsonNumber`](/docs/api/json/json-number) does.
@@ -99,7 +99,7 @@ Text the grammar refuses, such as `01`, `1e` or `NaN`, is `MalformedNumber`, and
 pub func Text(
     allocator: Allocator,
     value: char8[..]
-) -> JsonValue throws TextError
+) -> JsonValue ! TextError
 ```
 
 A string value.
@@ -222,7 +222,7 @@ How many elements an array holds, or members an object holds; `none` for any oth
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(&var self, value: JsonValue) throws JsonError
+pub func Push(&var self, value: JsonValue) -> !JsonError
 ```
 
 Appends `value` to an array, taking ownership of it.
@@ -242,7 +242,7 @@ pub func Insert(
     &var self,
     name: String,
     value: JsonValue
-) throws JsonError
+) -> !JsonError
 ```
 
 Appends a member to an object, taking ownership of both name and value.
@@ -337,7 +337,7 @@ rules will not allow silently. Duplicates are rare enough that the cost never ma
 ## Destructor
 
 ```rux
-func ~JsonValue(&var self)
+destructor
 ```
 
 Releases everything this value owns.
@@ -420,10 +420,10 @@ A name-value pair inside an object.
 
 **Destructor**
 
-<h4 id="json-member-destructor"><code>~JsonMember</code></h4>
+<h4 id="json-member-destructor"><code>destructor</code></h4>
 
 ```rux
-func ~JsonMember(&var self)
+destructor
 ```
 
 Releases the member's name and value.

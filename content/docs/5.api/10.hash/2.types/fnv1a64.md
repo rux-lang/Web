@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Fnv.rux
-  line: 109
+  line: 108
 seo:
   title: "Fnv1a64 — Hash API"
   description: "FNV-1a over 64 bits, computed one byte at a time."
@@ -33,17 +33,17 @@ Structural `Copy`; copying takes an independent snapshot of the accumulator.
 
 ## Constructors
 
-<h3 id="new"><code>Fnv1a64</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Fnv1a64() -> Fnv1a64
+pub func New() -> Fnv1a64
 ```
 
 Constructs a hasher with nothing written into it yet.
 
 **Returns**: a hasher seeded with the 64-bit offset basis
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L117)
 
 ## Methods
 
@@ -57,7 +57,7 @@ Puts the hasher back to where [`Fnv1a64()`](/docs/api/hash/fnv1a64) leaves one.
 `self` is borrowed mutably. Everything written so far is forgotten.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L126)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L125)
 
 ## Implements Hasher
 
@@ -80,7 +80,7 @@ Runs in time proportional to `length` and allocates nothing.
 | `bytes`  | `*byte` | the bytes to absorb                  |
 | `length` | `uint`  | how many bytes; zero absorbs nothing |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L139)
 
 <h3 id="finish"><code>Finish</code></h3>
 
@@ -95,7 +95,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the hash of everything written since the last reset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L157)
 
 ## Related
 
@@ -107,7 +107,7 @@ pub const FnvOffsetBasis64: uint64 = 0xCBF29CE484222325;
 
 The 64-bit FNV-1a offset basis, which is what an empty input hashes to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L27)
 
 <h3 id="fnv-prime64"><code>FnvPrime64</code></h3>
 
@@ -117,15 +117,12 @@ pub const FnvPrime64: uint64 = 0x100000001B3;
 
 The 64-bit FNV prime.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L31)
 
 <h3 id="fnv1a64-of"><code>Fnv1a64Of</code></h3>
 
 ```rux
-pub unsafe func Fnv1a64Of(
-    bytes: *byte,
-    length: uint
-) -> uint64
+pub func Fnv1a64Of(bytes: *byte, length: uint) -> uint64
 ```
 
 The 64-bit FNV-1a hash of `length` bytes at `bytes`.
@@ -134,7 +131,7 @@ case in which `bytes` may be null.
 Cannot fail. Runs in time proportional to `length` and allocates nothing.
 Safety: `bytes` must be readable for `length` bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L188)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Hash/Src/Fnv.rux#L187)
 
 **Parameters**
 

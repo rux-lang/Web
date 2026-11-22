@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Sample.rux
-  line: 20
+  line: 23
 seo:
   title: "Sampling and shuffling — Random API"
   description: "Shuffling a slice and choosing indices, uniformly or by weight."
@@ -24,7 +24,7 @@ Shuffling a slice and choosing indices, uniformly or by weight.
 <h2 id="shuffle"><code>Shuffle&lt;G, T&gt;</code></h2>
 
 ```rux
-pub func Shuffle<G: RandomGenerator, T>(
+pub func Shuffle<G: RandomGenerator + Copyable, T: Copyable>(
     generator: &var G,
     items: var T[..]
 )
@@ -36,14 +36,14 @@ is what makes it uniform: swapping with a position anywhere in the collection is
 biased, and it is the version almost everyone writes first.
 Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Sample.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Sample.rux#L23)
 
 **Type parameters**
 
-| Name                 | Description          |
-| -------------------- | -------------------- |
-| `G: RandomGenerator` | the generator's type |
-| `T`                  | the item type        |
+| Name                            | Description          |
+| ------------------------------- | -------------------- |
+| `G: RandomGenerator + Copyable` | the generator's type |
+| `T: Copyable`                   | the item type        |
 
 **Parameters**
 
@@ -65,7 +65,7 @@ A uniformly chosen index below `count`, or `count` itself when there is nothing 
 Returning the count for an empty collection gives the caller a value that cannot be mistaken for a valid
 index, which a zero would be.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Sample.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Sample.rux#L46)
 
 **Type parameters**
 
@@ -98,7 +98,7 @@ ignoring the entry. Weights that are all zero, or an empty slice, give the lengt
 out-of-range answer [`ChooseIndex`](/docs/api/random/sampling#choose-index) gives for an empty collection.
 Runs in time proportional to the length, reading the weights twice: once to total them and once to select.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Sample.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Sample.rux#L62)
 
 **Type parameters**
 

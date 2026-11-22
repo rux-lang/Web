@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Sleep.rux
-  line: 82
+  line: 95
 seo:
   title: "Waiter — Time API"
   description: "One wait, however the caller reaches the system."
@@ -26,7 +26,7 @@ pub interface Waiter {
     func WaitFor(
         &var self,
         span: Duration
-    ) -> Duration throws TimeError;
+    ) -> Duration ! TimeError;
 }
 ```
 
@@ -42,7 +42,7 @@ says the system refused. [`SleepFor`](/docs/api/time/sleep) drives whichever imp
 func WaitFor(
     &var self,
     span: Duration
-) -> Duration throws TimeError
+) -> Duration ! TimeError
 ```
 
 Waits for at most `span`, and reports what remains of it.
@@ -57,7 +57,7 @@ elapsed.
 
 **Returns**: what is left of `span`, or why the wait did not happen
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L104)
 
 ## Implementations
 
@@ -79,14 +79,14 @@ The wait every supported system actually provides. `Copy`.
 Holds nothing: the system is the state. Construct one with `SystemWaiter()` and hand it to [`SleepUsing`](/docs/api/time/sleep#sleep-using), or use
 [`SleepFor`](/docs/api/time/sleep), which does that.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L111)
 
 **Constructors**
 
-<h4 id="system-waiter-new"><code>SystemWaiter</code></h4>
+<h4 id="system-waiter-new"><code>New</code></h4>
 
 ```rux
-pub func SystemWaiter() -> SystemWaiter
+pub func New() -> SystemWaiter
 ```
 
 A waiter that reaches the operating system.
@@ -94,7 +94,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the waiter
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L122)
 
 **Implements Waiter**
 

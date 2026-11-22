@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Print.rux
-  line: 73
+  line: 75
 seo:
   title: "Print — Io API"
   description: "Writes a value's text to standard output."
@@ -158,7 +158,7 @@ by [`ToIoError`](/docs/api/io/io-error#to-io-error), so a request that was wrong
 the destination did. Which formatting failure it was does not survive that translation, since [`IoError`](/docs/api/io/io-error) has no
 room for one; a caller who needs it builds a [`ConsoleWriter`](/docs/api/io/console-writer) and calls `Text::WriteValue` themselves.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Print.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Print.rux#L47)
 
 **Parameters**
 

@@ -27,7 +27,7 @@ pub interface Seeker {
         &var self,
         origin: SeekFrom,
         offset: int64
-    ) -> uint64 throws IoError;
+    ) -> uint64 ! IoError;
 }
 ```
 
@@ -40,7 +40,7 @@ func Seek(
     &var self,
     origin: SeekFrom,
     offset: int64
-) -> uint64 throws IoError
+) -> uint64 ! IoError
 ```
 
 Moves the position `offset` bytes from `origin` and succeeds with where it landed.

@@ -39,7 +39,7 @@ in place, which is the behavior that makes this worth using.
 pub func Begin(
     allocator: Allocator,
     target: Path
-) -> AtomicWrite throws IoError
+) -> AtomicWrite ! IoError
 ```
 
 Begins replacing `target`.
@@ -72,10 +72,7 @@ The name the finished file will take.
 <h3 id="commit"><code>Commit</code></h3>
 
 ```rux
-pub func Commit(
-    &var self,
-    allocator: Allocator
-) throws IoError
+pub func Commit(&var self, allocator: Allocator) -> !IoError
 ```
 
 Forces the contents to the device and moves them onto the target.
@@ -100,7 +97,7 @@ rather than being durable on some and pretending on the rest.
 pub func Abandon(
     &var self,
     allocator: Allocator
-) throws IoError
+) -> !IoError
 ```
 
 Throws the partial file away and leaves the target as it was.
@@ -133,7 +130,7 @@ Gives the buffers back. The temporary's own destructor removes any partial file.
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Writes into the partial file.
@@ -153,7 +150,7 @@ One attempt, partial on purpose, exactly as the underlying file's is; `WriteAll`
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Flushes the partial file, which holds nothing back.
@@ -166,7 +163,7 @@ Flushes the partial file, which holds nothing back.
 ## Destructor
 
 ```rux
-func ~AtomicWrite(&var self)
+destructor
 ```
 
 Discards an uncommitted replacement, leaving the target untouched.
@@ -184,7 +181,7 @@ pub func WriteAtomically(
     allocator: Allocator,
     target: Path,
     contents: char8[..]
-) throws IoError
+) -> !IoError
 ```
 
 Replaces `target` with `contents`, atomically.

@@ -22,7 +22,7 @@ seo:
 A version 4 UUID drawn from the operating system's entropy.
 
 ```rux
-pub func Random() -> Uuid throws EntropyError
+pub func Random() -> Uuid ! EntropyError
 ```
 
 Fails with why entropy was unavailable rather than producing a zero-filled UUID with the version bits set, which

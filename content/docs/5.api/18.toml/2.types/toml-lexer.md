@@ -36,10 +36,10 @@ pub struct TomlLexer {
 
 ## Constructors
 
-<h3 id="new"><code>TomlLexer</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func TomlLexer(input: char8[..]) -> TomlLexer
+pub func New(input: char8[..]) -> TomlLexer
 ```
 
 A lexer over `input`.
@@ -232,7 +232,7 @@ pub func TomlDecodeText(
     span: char8[..],
     form: TomlTextForm,
     bad: *var bool
-) -> String throws TextError
+) -> String ! TextError
 ```
 
 Decodes a text token's span into an owned string, honouring the escapes its form allows.

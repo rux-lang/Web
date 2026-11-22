@@ -33,13 +33,13 @@ text is also what lets a document round-trip exactly, which a parser converting 
 
 ## Constructors
 
-<h3 id="constructor"><code>JsonNumber</code></h3>
+<h3 id="constructor"><code>New</code></h3>
 
 ```rux
-pub func JsonNumber(
+pub func New(
     allocator: Allocator,
     text: char8[..]
-) -> JsonNumber throws JsonError
+) -> JsonNumber ! JsonError
 ```
 
 A number from its text, which is checked against JSON's number grammar and copied.

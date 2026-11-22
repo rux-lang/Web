@@ -88,8 +88,8 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 <h2 id="parse"><code>Parse</code></h2>
 
 ```rux
-pub func Parse(text: char8[..]) -> Uuid throws UuidParseError
-pub func Parse(text: StringView) -> Uuid throws UuidParseError
+pub func Parse(text: char8[..]) -> Uuid ! UuidParseError
+pub func Parse(text: StringView) -> Uuid ! UuidParseError
 ```
 
 Reads a UUID from its canonical or URN text form.
@@ -101,10 +101,10 @@ Reports `WrongLength` for text that is neither form's length, `BadPrefix` for a 
 other character that is not a digit. Each carries the byte offset into `text` where it was found. A refused
 parse produces no value at all rather than a half-filled one.
 
-| Overload                                                         | Summary                                            |
-| ---------------------------------------------------------------- | -------------------------------------------------- |
-| `pub func Parse(text: char8[..]) -> Uuid throws UuidParseError`  | Reads a UUID from its canonical or URN text form.  |
-| `pub func Parse(text: StringView) -> Uuid throws UuidParseError` | Reads a UUID from the text a `StringView` borrows. |
+| Overload                                                    | Summary                                            |
+| ----------------------------------------------------------- | -------------------------------------------------- |
+| `pub func Parse(text: char8[..]) -> Uuid ! UuidParseError`  | Reads a UUID from its canonical or URN text form.  |
+| `pub func Parse(text: StringView) -> Uuid ! UuidParseError` | Reads a UUID from the text a `StringView` borrows. |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Uuid/Src/Text.rux#L94)
 
@@ -122,7 +122,7 @@ parse produces no value at all rather than a half-filled one.
 pub func Format(
     value: &Uuid,
     into: var char8[..]
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the canonical text form into `into`, in lower case.
@@ -149,7 +149,7 @@ rather than a shorter one. Room past the thirty-six characters is not touched.
 pub func FormatUpper(
     value: &Uuid,
     into: var char8[..]
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the canonical text form into `into`, in upper case.
@@ -173,7 +173,7 @@ The failure [`Format`](/docs/api/uuid/text#format) reports, for the same reason 
 pub func FormatUrn(
     value: &Uuid,
     into: var char8[..]
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the URN form into `into`: the canonical form after `urn:uuid:`.

@@ -22,7 +22,7 @@ seo:
 A version 7 UUID: the current time in its leading bits, entropy in the rest.
 
 ```rux
-pub func TimeOrdered() -> Uuid throws EntropyError
+pub func TimeOrdered() -> Uuid ! EntropyError
 ```
 
 Fails with why entropy was unavailable rather than producing a timestamp-shaped value with no randomness — which
@@ -35,7 +35,7 @@ would be guessable and would look fine.
 <h3 id="time-ordered-at"><code>TimeOrderedAt</code></h3>
 
 ```rux
-pub func TimeOrderedAt(milliseconds: uint64) -> Uuid throws EntropyError
+pub func TimeOrderedAt(milliseconds: uint64) -> Uuid ! EntropyError
 ```
 
 A version 7 UUID for a given millisecond, with entropy in the rest.

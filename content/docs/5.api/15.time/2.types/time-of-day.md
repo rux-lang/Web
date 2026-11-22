@@ -105,7 +105,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the time as `HH:MM:SS`, with a fractional part when there is one.
@@ -134,7 +134,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`.
@@ -154,14 +154,14 @@ The failures [`WriteDisplay`](/docs/api/time/time-of-day#write-display) reports.
 <h3 id="parse-time-of-day"><code>ParseTimeOfDay</code></h3>
 
 ```rux
-pub func ParseTimeOfDay(text: char8[..]) -> TimeOfDay throws TimeParseError
+pub func ParseTimeOfDay(text: char8[..]) -> TimeOfDay ! TimeParseError
 ```
 
 Reads `HH:MM:SS` with an optional fractional second.
 Reports `InvalidSyntax` for a shape that does not match, `InvalidTime` for a field outside its range, and
 `ExcessiveFraction` for more fraction digits than a nanosecond holds. Second 60 folds rather than failing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L254)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L252)
 
 **Parameters**
 

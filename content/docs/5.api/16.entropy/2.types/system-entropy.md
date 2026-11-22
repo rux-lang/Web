@@ -30,10 +30,10 @@ source can be handed the real one.
 
 ## Constructors
 
-<h3 id="new"><code>SystemEntropy</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func SystemEntropy() -> SystemEntropy
+pub func New() -> SystemEntropy
 ```
 
 The operating system's generator.
@@ -56,7 +56,7 @@ pub func Fill(
     &var self,
     buffer: *var opaque,
     length: uint
-) throws EntropyError
+) -> !EntropyError
 ```
 
 Fills `length` bytes of `buffer` from the operating system.
@@ -86,7 +86,7 @@ A signal arriving during the call is ordinary and retrying is correct, but a pro
 must not spin forever inside what its caller believes is one operation. Reaching this reports `Interrupted`,
 which says exactly that and leaves trying again to the caller, who knows whether it is worth it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Source.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Source.rux#L38)
 
 <h3 id="max-entropy-request"><code>MaxEntropyRequest</code></h3>
 
@@ -98,15 +98,15 @@ The largest request the source accepts in a single call.
 Windows takes a 32-bit count, so this is what a portable caller may ask for at once. A larger buffer is filled by
 asking more than once, which `Fill` does.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Source.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Source.rux#L44)
 
 <h3 id="fill-from-source"><code>FillFromSource</code></h3>
 
 ```rux
-pub unsafe func FillFromSource(
+pub func FillFromSource(
     buffer: *var opaque,
     length: uint
-) throws EntropyError
+) -> !EntropyError
 ```
 
 Fills `length` bytes of `buffer` from the system's generator, in one pass.
@@ -122,7 +122,7 @@ Runs in time proportional to `length` and allocates nothing.
 Safety: `buffer` must be writable for `length` bytes. On any failure the buffer is zeroized, so a caller who ignores
 the result gets zeros rather than a partly random buffer that would pass a glance.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Source.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Entropy/Src/Source.rux#L62)
 
 **Parameters**
 

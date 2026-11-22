@@ -29,10 +29,10 @@ pub struct JsonEventReader {
 
 ## Constructors
 
-<h3 id="constructor"><code>JsonEventReader</code></h3>
+<h3 id="constructor"><code>New</code></h3>
 
 ```rux
-pub func JsonEventReader(
+pub func New(
     allocator: Allocator,
     source: Reader,
     limits: JsonLimits
@@ -67,7 +67,7 @@ mean allocating, and a caller skipping past a field should not pay for its conte
 
 **Returns**: the current event's text, borrowed from the reader until its next event
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L165)
 
 <h3 id="text-is-escaped"><code>TextIsEscaped</code></h3>
 
@@ -79,7 +79,7 @@ Whether that text holds escapes a caller must resolve.
 
 **Returns**: whether the text still holds escape sequences a caller must decode
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L172)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L174)
 
 <h3 id="depth"><code>Depth</code></h3>
 
@@ -91,7 +91,7 @@ How deeply nested the reader currently is.
 
 **Returns**: how many arrays and objects are currently open
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L179)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L181)
 
 <h3 id="release"><code>Release</code></h3>
 
@@ -101,12 +101,12 @@ pub func Release(&var self)
 
 Gives the buffer back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L243)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L245)
 
 <h3 id="next"><code>Next</code></h3>
 
 ```rux
-pub func Next(&var self) -> JsonEvent? throws JsonReadError
+pub func Next(&var self) -> JsonEvent? ! JsonReadError
 ```
 
 The next event, or `none` at the end of the document.
@@ -117,17 +117,17 @@ either, every later call throws the same error again.
 
 **Returns**: the next event, or `none` once the top-level value and any whitespace after it have been read
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L412)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L414)
 
 ## Destructor
 
 ```rux
-func ~JsonEventReader(&var self)
+destructor
 ```
 
 Releases the buffer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L254)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Json/Src/Events.rux#L256)
 
 ## Related
 

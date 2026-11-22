@@ -25,7 +25,7 @@ Parses `input` into a value, rejecting duplicate names.
 pub func Parse(
     allocator: Allocator,
     input: char8[..]
-) -> JsonValue throws JsonParseError
+) -> JsonValue ! JsonParseError
 ```
 
 The default limits apply. A failure gives back the reason and its position and no value at all, so a document
@@ -76,7 +76,7 @@ pub func ParseWith(
     input: char8[..],
     limits: JsonLimits,
     duplicates: DuplicateKeyPolicy
-) -> JsonValue throws JsonParseError
+) -> JsonValue ! JsonParseError
 ```
 
 Parses `input` under chosen limits and a chosen duplicate-name policy.

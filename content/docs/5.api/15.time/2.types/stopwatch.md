@@ -32,10 +32,10 @@ elapsed time is the sum of every stretch between a start and a stop, plus the cu
 
 ## Constructors
 
-<h3 id="new"><code>Stopwatch</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Stopwatch() -> Stopwatch
+pub func New() -> Stopwatch
 ```
 
 A stopwatch that is stopped and reads zero.

@@ -31,10 +31,10 @@ Copy, and holding only the register, so passing one by value takes a snapshot of
 
 ## Constructors
 
-<h3 id="new"><code>Crc32</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Crc32() -> Crc32
+pub func New() -> Crc32
 ```
 
 Constructs a checksum with nothing written into it yet.
@@ -149,10 +149,7 @@ lookup and one shift rather than eight conditional shifts. The compiler computes
 <h3 id="crc32-of"><code>Crc32Of</code></h3>
 
 ```rux
-pub unsafe func Crc32Of(
-    bytes: *byte,
-    length: uint
-) -> uint32
+pub func Crc32Of(bytes: *byte, length: uint) -> uint32
 ```
 
 The CRC-32 of `length` bytes at `bytes`.

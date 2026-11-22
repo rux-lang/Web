@@ -36,10 +36,10 @@ Borrows the bytes, which must outlive it.
 
 **Constructors**
 
-<h3 id="byte-reader-new"><code>ByteReader</code></h3>
+<h3 id="byte-reader-new"><code>New</code></h3>
 
 ```rux
-pub func ByteReader(bytes: char8[..]) -> ByteReader
+pub func New(bytes: char8[..]) -> ByteReader
 ```
 
 A reader of `bytes`, at their start.
@@ -88,7 +88,7 @@ The bytes not yet read.
 pub func Read(
     &var self,
     into: var char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Copies the next bytes into `into`, as many as fit.
@@ -112,7 +112,7 @@ pub func Seek(
     &var self,
     origin: SeekFrom,
     offset: int64
-) -> uint64 throws IoError
+) -> uint64 ! IoError
 ```
 
 Moves the position, anywhere from the start to the end of the bytes.
@@ -141,10 +141,10 @@ Writing at a position before the end, after a seek, overwrites what is there and
 
 **Constructors**
 
-<h3 id="byte-writer-new"><code>ByteWriter</code></h3>
+<h3 id="byte-writer-new"><code>New</code></h3>
 
 ```rux
-pub func ByteWriter(allocator: Allocator) -> ByteWriter
+pub func New(allocator: Allocator) -> ByteWriter
 ```
 
 An empty writer that takes its storage from `allocator` as it grows.
@@ -213,7 +213,7 @@ Gives the storage back and empties the writer.
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Writes all of `bytes` at the position, growing the storage as needed.
@@ -229,7 +229,7 @@ Writes all of `bytes` at the position, growing the storage as needed.
 <h3 id="byte-writer-flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Does nothing: the bytes are already where they go.
@@ -249,7 +249,7 @@ pub func Seek(
     &var self,
     origin: SeekFrom,
     offset: int64
-) -> uint64 throws IoError
+) -> uint64 ! IoError
 ```
 
 Moves the position at which the next write lands, anywhere from the start to the end of what was written.
@@ -265,10 +265,10 @@ Moves the position at which the next write lands, anywhere from the start to the
 
 **Destructor**
 
-<h3 id="byte-writer-destructor"><code>~ByteWriter</code></h3>
+<h3 id="byte-writer-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~ByteWriter(&var self)
+destructor
 ```
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/MemoryStream.rux#L169)

@@ -522,10 +522,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "TomlEventReader",
+          "kind": "associated",
+          "name": "New",
           "line": 89,
-          "signature": "pub func TomlEventReader(input: char8[..]) -> TomlEventReader",
+          "signature": "pub func New(input: char8[..]) -> TomlEventReader",
           "typeParams": [],
           "params": [{ "name": "input", "type": "char8[..]" }],
           "receiver": null,
@@ -749,7 +749,7 @@
           "kind": "method",
           "name": "Next",
           "line": 245,
-          "signature": "pub func Next(&var self) -> TomlEvent? throws TomlParseFailure",
+          "signature": "pub func Next(&var self) -> TomlEvent? ! TomlParseFailure",
           "typeParams": [],
           "params": [],
           "receiver": "&var TomlEventReader",
@@ -1673,10 +1673,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "TomlLexer",
+          "kind": "associated",
+          "name": "New",
           "line": 128,
-          "signature": "pub func TomlLexer(input: char8[..]) -> TomlLexer",
+          "signature": "pub func New(input: char8[..]) -> TomlLexer",
           "typeParams": [],
           "params": [{ "name": "input", "type": "char8[..]" }],
           "receiver": null,
@@ -1788,7 +1788,7 @@
       "module": "Lexer",
       "source": "Src/Lexer.rux",
       "line": 540,
-      "signature": "pub func TomlDecodeText(allocator: Allocator, span: char8[..], form: TomlTextForm, bad: *var bool) -> String throws TextError",
+      "signature": "pub func TomlDecodeText(allocator: Allocator, span: char8[..], form: TomlTextForm, bad: *var bool) -> String ! TextError",
       "typeParams": [],
       "doc": {
         "summary": "Decodes a text token's span into an owned string, honouring the escapes its form allows.",
@@ -2189,7 +2189,7 @@
           "kind": "method",
           "name": "WriteDisplay",
           "line": 107,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2227,7 +2227,7 @@
           "kind": "method",
           "name": "WriteDebug",
           "line": 186,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2536,10 +2536,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "TomlParser",
+          "kind": "associated",
+          "name": "New",
           "line": 301,
-          "signature": "pub func TomlParser(allocator: Allocator, input: char8[..], limits: TomlLimits) -> TomlParser",
+          "signature": "pub func New(allocator: Allocator, input: char8[..], limits: TomlLimits) -> TomlParser",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -2643,7 +2643,7 @@
           "kind": "method",
           "name": "Parse",
           "line": 810,
-          "signature": "pub func Parse(&var self) -> TomlValue throws TomlParseFailure",
+          "signature": "pub func Parse(&var self) -> TomlValue ! TomlParseFailure",
           "typeParams": [],
           "params": [],
           "receiver": "&var TomlParser",
@@ -2691,7 +2691,7 @@
       "module": "Parser",
       "source": "Src/Parser.rux",
       "line": 858,
-      "signature": "pub func TomlParse(allocator: Allocator, input: char8[..]) -> TomlValue throws TomlParseFailure",
+      "signature": "pub func TomlParse(allocator: Allocator, input: char8[..]) -> TomlValue ! TomlParseFailure",
       "typeParams": [],
       "doc": {
         "summary": "Reads `input` into a table, or says why it could not and where.",
@@ -2728,12 +2728,12 @@
       "displayName": "TomlScalarError",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 26,
+      "line": 27,
       "signature": "pub variant TomlScalarError",
       "typeParams": [],
       "doc": {
         "summary": "Why a scalar could not be read, and where in it.",
-        "markdown": "Why a scalar could not be read, and where in it.\nFailure-only: there is no case meaning nothing went wrong, because a scalar that read hands back its value\ninstead. Every offset is a zero-based byte offset into the scalar's own text, as the caller wrote it —\nunderscores included — and reachable through `Text::ParseFailure`.",
+        "markdown": "Why a scalar could not be read, and where in it.\nFailure-only: there is no case meaning nothing went wrong, because a scalar that read hands back its value\ninstead. Every offset is a zero-based byte offset into the scalar's own text, as the caller wrote it —\nunderscores included — and reachable through `Text::Formatting::ParseFailure`.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -2748,7 +2748,7 @@
           "name": "Malformed",
           "value": null,
           "payload": "(uint)",
-          "line": 30,
+          "line": 31,
           "doc": "The text does not have the shape TOML defines, at the byte carried. That is the first character that\ncannot be part of what was being read: a digit the base does not have, a point with nothing after it, an\nunderscore that is not between two digits, or the end of the text when it stops early.",
           "targets": [
             "windows-x86_64",
@@ -2765,7 +2765,7 @@
           "name": "OutOfRange",
           "value": null,
           "payload": "(uint)",
-          "line": 33,
+          "line": 34,
           "doc": "The value is outside what an `int64`, a `float64` or the calendar can hold. The offset is the start of the\ntext, since it is the whole value that does not fit rather than any one character of it.",
           "targets": [
             "windows-x86_64",
@@ -2782,7 +2782,7 @@
           "name": "TooLong",
           "value": null,
           "payload": "(uint)",
-          "line": 35,
+          "line": 36,
           "doc": "The text is longer than any TOML scalar needs. The offset is the first character past the bound.",
           "targets": [
             "windows-x86_64",
@@ -2800,7 +2800,7 @@
         {
           "kind": "method",
           "name": "Offset",
-          "line": 43,
+          "line": 44,
           "signature": "pub func Offset(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -2832,8 +2832,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 61,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 62,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2870,8 +2870,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 80,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 81,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2924,8 +2924,8 @@
       "displayName": "TomlParseInteger",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 169,
-      "signature": "pub func TomlParseInteger(text: char8[..]) -> int64 throws TomlScalarError",
+      "line": 170,
+      "signature": "pub func TomlParseInteger(text: char8[..]) -> int64 ! TomlScalarError",
       "typeParams": [],
       "doc": {
         "summary": "Reads an integer, in any of the four bases TOML writes.",
@@ -2959,8 +2959,8 @@
       "displayName": "TomlParseFloat",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 254,
-      "signature": "pub func TomlParseFloat(text: char8[..]) -> float64 throws TomlScalarError",
+      "line": 255,
+      "signature": "pub func TomlParseFloat(text: char8[..]) -> float64 ! TomlScalarError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a float, including the infinities and NaN that TOML can spell and JSON cannot.",
@@ -2994,7 +2994,7 @@
       "displayName": "TomlDateTimeShape",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 380,
+      "line": 381,
       "signature": "pub enum TomlDateTimeShape",
       "typeParams": [],
       "doc": {
@@ -3014,7 +3014,7 @@
           "name": "Offset",
           "value": "1",
           "payload": null,
-          "line": 382,
+          "line": 383,
           "doc": "A date and a time with an offset, which names a moment.",
           "targets": [
             "windows-x86_64",
@@ -3031,7 +3031,7 @@
           "name": "Local",
           "value": "2",
           "payload": null,
-          "line": 384,
+          "line": 385,
           "doc": "A date and a time with no offset, which names a wall clock reading.",
           "targets": [
             "windows-x86_64",
@@ -3048,7 +3048,7 @@
           "name": "DateOnly",
           "value": "3",
           "payload": null,
-          "line": 386,
+          "line": 387,
           "doc": "A date alone.",
           "targets": [
             "windows-x86_64",
@@ -3065,7 +3065,7 @@
           "name": "TimeOnly",
           "value": "4",
           "payload": null,
-          "line": 388,
+          "line": 389,
           "doc": "A time alone.",
           "targets": [
             "windows-x86_64",
@@ -3098,7 +3098,7 @@
       "displayName": "TomlDateTime",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 396,
+      "line": 397,
       "signature": "pub struct TomlDateTime",
       "typeParams": [],
       "doc": {
@@ -3116,7 +3116,7 @@
           "name": "shape",
           "type": "TomlDateTimeShape",
           "public": true,
-          "line": 398,
+          "line": 399,
           "doc": "Which of the four forms the text was.",
           "targets": [
             "windows-x86_64",
@@ -3133,7 +3133,7 @@
           "name": "date",
           "type": "Date",
           "public": true,
-          "line": 400,
+          "line": 401,
           "doc": "The date, for every shape but `TimeOnly`.",
           "targets": [
             "windows-x86_64",
@@ -3150,7 +3150,7 @@
           "name": "time",
           "type": "TimeOfDay",
           "public": true,
-          "line": 402,
+          "line": 403,
           "doc": "The time, for every shape but `DateOnly`.",
           "targets": [
             "windows-x86_64",
@@ -3167,7 +3167,7 @@
           "name": "offset",
           "type": "UtcOffset",
           "public": true,
-          "line": 404,
+          "line": 405,
           "doc": "The offset, for `Offset` alone. UTC otherwise, which means nothing there.",
           "targets": [
             "windows-x86_64",
@@ -3202,8 +3202,8 @@
       "displayName": "TomlParseDateTime",
       "module": "Scalar",
       "source": "Src/Scalar.rux",
-      "line": 418,
-      "signature": "pub func TomlParseDateTime(text: char8[..]) -> TomlDateTime throws TomlScalarError",
+      "line": 419,
+      "signature": "pub func TomlParseDateTime(text: char8[..]) -> TomlDateTime ! TomlScalarError",
       "typeParams": [],
       "doc": {
         "summary": "Reads any of TOML's four date-time forms, reporting which one it was.",
@@ -3497,9 +3497,9 @@
       "members": [
         {
           "kind": "destructor",
-          "name": "~TomlEntry",
+          "name": "~",
           "line": 455,
-          "signature": "func ~TomlEntry(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var TomlEntry",
@@ -3940,7 +3940,7 @@
           "kind": "associated",
           "name": "Text",
           "line": 138,
-          "signature": "pub func Text(allocator: Allocator, value: char8[..]) -> TomlValue throws TextError",
+          "signature": "pub func Text(allocator: Allocator, value: char8[..]) -> TomlValue ! TextError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -4576,7 +4576,7 @@
           "kind": "method",
           "name": "Push",
           "line": 335,
-          "signature": "pub func Push(&var self, value: TomlValue) throws TomlError",
+          "signature": "pub func Push(&var self, value: TomlValue) -> !TomlError",
           "typeParams": [],
           "params": [{ "name": "value", "type": "TomlValue" }],
           "receiver": "&var TomlValue",
@@ -4608,7 +4608,7 @@
           "kind": "method",
           "name": "Insert",
           "line": 349,
-          "signature": "pub func Insert(&var self, key: String, value: TomlValue) throws TomlError",
+          "signature": "pub func Insert(&var self, key: String, value: TomlValue) -> !TomlError",
           "typeParams": [],
           "params": [
             { "name": "key", "type": "String" },
@@ -4804,9 +4804,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~TomlValue",
+          "name": "~",
           "line": 444,
-          "signature": "func ~TomlValue(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var TomlValue",
@@ -4853,7 +4853,7 @@
       "displayName": "MaximumHeaderPath",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 32,
+      "line": 35,
       "signature": "pub const MaximumHeaderPath: uint",
       "typeParams": [],
       "doc": {
@@ -4888,8 +4888,8 @@
       "displayName": "TomlWriteDocument",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 416,
-      "signature": "pub func TomlWriteDocument(writer: &var TextWriter, table: &TomlValue) throws FormatError",
+      "line": 419,
+      "signature": "pub func TomlWriteDocument(writer: &var TextWriter, table: &TomlValue) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `table` as a TOML document.",

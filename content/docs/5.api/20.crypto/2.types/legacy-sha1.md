@@ -32,10 +32,10 @@ Structural `Copy`; copying takes an independent snapshot of the digest state.
 
 ## Constructors
 
-<h3 id="new"><code>LegacySha1</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func LegacySha1() -> LegacySha1
+pub func New() -> LegacySha1
 ```
 
 A SHA-1 state.

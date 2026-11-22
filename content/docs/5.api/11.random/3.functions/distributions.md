@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Counting.rux
-  line: 21
+  line: 22
 seo:
   title: "Distributions — Random API"
   description: "Values from the Bernoulli, exponential, normal, binomial, Poisson, gamma and beta distributions."
@@ -39,7 +39,7 @@ trial's success probability has a beta distribution, and comparing it to `probab
 answer falls on and leaves a strictly smaller problem. That halves the count each step, so a binomial over a
 billion trials costs about thirty draws rather than a billion.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Counting.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Counting.rux#L22)
 
 **Type parameters**
 
@@ -73,7 +73,7 @@ draws that way, and the product would underflow to zero before the loop ended, s
 chunks: a gamma draw of integer shape is the waiting time for that many events, and either it overshoots the
 interval, in which case the count is a binomial of what is left, or it fits and the remainder carries on.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Counting.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Counting.rux#L55)
 
 **Type parameters**
 
@@ -105,7 +105,7 @@ computing a probability that drifts slightly out of range gets the sensible answ
 occasional inversion. The comparison is against a draw in `[0, 1)`, so a probability of exactly zero is
 impossible rather than merely rare — which is what makes the two ends behave.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L21)
 
 **Type parameters**
 
@@ -134,7 +134,7 @@ because [`NextFloat64`](/docs/api/random/random-generator#next-float64) can retu
 produce an infinite sample is instead the one that produces zero, which the distribution does allow.
 Multiply the result by a mean, or divide by a rate, to scale it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L36)
 
 **Type parameters**
 
@@ -162,7 +162,7 @@ pub func ExponentialWithRate<G: RandomGenerator>(
 A value from the exponential distribution with the given rate.
 A rate at or below zero has no distribution and gives zero.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L47)
 
 **Type parameters**
 
@@ -197,7 +197,7 @@ The polar form of the transform avoids the trigonometric functions at the cost o
 its draws; this uses the direct form, which consumes a fixed two words and is therefore reproducible in a way
 a rejection loop is not. `first` and `second` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Distribution.rux#L64)
 
 **Type parameters**
 
@@ -279,7 +279,7 @@ pub const DirectMethodLimit: float64 = 30.0;
 
 Below this the direct methods are cheaper than the reductions, and above it they stop being practical.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Gamma.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Gamma.rux#L17)
 
 <h2 id="gamma"><code>Gamma&lt;G&gt;</code></h2>
 
@@ -296,7 +296,7 @@ than ninety-five percent of the time for any shape at or above one. A shape belo
 shape one larger and scaled down, since the density is unbounded at zero there and the squeeze does not hold.
 A shape at or below zero has no distribution and gives zero.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Gamma.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Gamma.rux#L29)
 
 **Type parameters**
 
@@ -325,7 +325,7 @@ pub func GammaWithScale<G: RandomGenerator>(
 
 A value from the gamma distribution with the given shape and scale.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Gamma.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Gamma.rux#L74)
 
 **Type parameters**
 
@@ -357,7 +357,7 @@ A value from the beta distribution with the two given shapes, in `[0, 1]`.
 Built from two gamma draws, which is the definition rather than an approximation of it. Two shapes that are
 both zero leave nothing to divide and give a half.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Gamma.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Gamma.rux#L88)
 
 **Type parameters**
 

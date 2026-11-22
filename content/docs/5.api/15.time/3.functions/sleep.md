@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Sleep.rux
-  line: 204
+  line: 217
 seo:
   title: "SleepFor — Time API"
   description: Stops the calling thread for at least span.
@@ -22,7 +22,7 @@ seo:
 Stops the calling thread for at least `span`.
 
 ```rux
-pub func SleepFor(span: Duration) throws TimeError
+pub func SleepFor(span: Duration) -> !TimeError
 ```
 
 At least: the system wakes the thread no earlier, and how much later is the scheduler's business. A negative or
@@ -33,7 +33,7 @@ one system wait can express is waited for in chunks rather than clamped, so a hu
 days.
 Fails with `InvalidDuration` when the system refused the request, which a normalized non-negative span should not
 produce, and `Failed` for anything else. A caller with nothing to do about a failed wait says so with
-`try SleepFor(span) catch { _ => {} }`; the point is that it is no longer indistinguishable from success.
+`SleepFor(span) !!;`; the point is that it is no longer indistinguishable from success.
 
 ## Parameters
 
@@ -58,7 +58,7 @@ Why a wait did not happen. `Copy`.
 Every case is a failure. An interruption is not one: a waiter that was cut short succeeds with the part of the span
 still to wait, and [`SleepFor`](/docs/api/time/sleep) goes back for it, because a caller that asked for a span asked for the whole span.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L45)
 
 **Cases**
 
@@ -79,7 +79,7 @@ one less. Every system's wait is chunked to this so that the loop is the same ev
 the chunking is a test of what actually runs.
 About 49.7 days. A span longer than this is waited for in more than one chunk.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L58)
 
 <h3 id="wait-chunk-milliseconds"><code>WaitChunkMilliseconds</code></h3>
 
@@ -96,7 +96,7 @@ This is where the old clamp was, and it is public so that the hundred-day case c
 hundred days.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L71)
 
 **Parameters**
 
@@ -116,7 +116,7 @@ How many waits [`SleepFor`](/docs/api/time/sleep) will make before giving up on 
 A [`Waiter`](/docs/api/time/waiter) that reports success without waiting and without reducing the remainder would spin forever. This is
 not a limit any real wait reaches: the system waiter always either advances or fails.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L174)
 
 <h3 id="sleep-using"><code>SleepUsing&lt;W&gt;</code></h3>
 
@@ -124,7 +124,7 @@ not a limit any real wait reaches: the system waiter always either advances or f
 pub func SleepUsing<W: Waiter>(
     waiter: &var W,
     span: Duration
-) throws TimeError
+) -> !TimeError
 ```
 
 Waits out `span` through `waiter`, retrying interruptions and chunking what one wait cannot express.
@@ -135,7 +135,7 @@ Fails with whatever the waiter failed with, having stopped there rather than ask
 when the waiter neither advanced nor failed [`MaximumWaitAttempts`](/docs/api/time/sleep#maximum-wait-attempts) times running, which no real wait does and which
 is what keeps a broken implementation from hanging a program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L175)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Sleep.rux#L188)
 
 **Type parameters**
 

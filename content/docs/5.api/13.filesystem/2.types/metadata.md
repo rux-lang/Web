@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Metadata.rux
-  line: 82
+  line: 86
 seo:
   title: "Metadata — FileSystem API"
   description: Everything a single query can say about a file.
@@ -61,7 +61,7 @@ pub enum FileKind: int32 {
 
 What kind of thing a name refers to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L35)
 
 **Cases**
 
@@ -79,14 +79,14 @@ pub func MetadataOf(
     allocator: Allocator,
     path: Path,
     followLinks: bool
-) -> Metadata throws IoError
+) -> Metadata ! IoError
 ```
 
 Describes the file `path` names.
 `followLinks` decides what a symbolic link at the end of the path means: following it describes the target,
 and not following it describes the link, which is the only way `SymbolicLink` is ever reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L365)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L369)
 
 **Parameters**
 
@@ -107,14 +107,14 @@ pub func SetTimes(
     accessed: Timestamp,
     modified: Timestamp,
     followLinks: bool
-) throws IoError
+) -> !IoError
 ```
 
 Sets the access and modification times of the file `path` names.
 Creation time is not settable here: Windows would allow it and the Unix systems would not, and an operation
 that silently means different things on different systems is worse than one that is not offered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L479)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L483)
 
 **Parameters**
 

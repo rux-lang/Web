@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Directory.rux
-  line: 77
+  line: 81
 seo:
   title: "File operations — FileSystem API"
   description: "Deleting, renaming, copying and linking files by name."
@@ -27,12 +27,12 @@ Deleting, renaming, copying and linking files by name.
 pub func DeleteFile(
     allocator: Allocator,
     path: Path
-) throws IoError
+) -> !IoError
 ```
 
 Deletes the file `path` names. Removing the name does not disturb any handle still open on the file.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Directory.rux#L81)
 
 **Parameters**
 
@@ -50,14 +50,14 @@ pub func Rename(
     allocator: Allocator,
     from: Path,
     to: Path
-) throws IoError
+) -> !IoError
 ```
 
 Renames `from` to `to`, moving it between directories if the paths differ there.
 An existing `to` is replaced, atomically within one volume: a reader sees the old file or the new, never a
 gap. Across volumes Windows copies and deletes instead — not atomic — and the Unix systems refuse.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Transfer.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Transfer.rux#L32)
 
 **Parameters**
 
@@ -76,7 +76,7 @@ pub func CreateHardLink(
     allocator: Allocator,
     existing: Path,
     link: Path
-) throws IoError
+) -> !IoError
 ```
 
 Creates `link` as a hard link: a second name for the file `existing` names.
@@ -84,7 +84,7 @@ The two names are then equals — neither is "the original" — and the content 
 deleted. A symbolic link at `existing` is not followed: the link is made to the name given. Directories
 cannot be hard-linked on any supported system.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Transfer.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Transfer.rux#L62)
 
 **Parameters**
 
@@ -104,7 +104,7 @@ pub func CreateSymbolicLink(
     target: Path,
     link: Path,
     targetIsDirectory: bool
-) throws IoError
+) -> !IoError
 ```
 
 Creates `link` as a symbolic link holding `target` as its text.
@@ -113,7 +113,7 @@ matters only on Windows, which types its links; the Unix systems ignore it. Wind
 behind a privilege unless the machine runs Developer Mode, so `PermissionDenied` here is an environment, not
 a bug.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Transfer.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Transfer.rux#L94)
 
 **Parameters**
 
@@ -133,14 +133,14 @@ pub func CopyFile(
     allocator: Allocator,
     from: Path,
     to: Path
-) throws IoError
+) -> !IoError
 ```
 
 Copies the file `from` names to `to`, following a symbolic link to the bytes it points at.
 An existing `to` is replaced. The copy is the bytes and nothing else: permissions, timestamps and the rest of
 the metadata are the destination's own, fresh — carrying them is a policy the metadata work owns.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Transfer.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Transfer.rux#L127)
 
 **Parameters**
 

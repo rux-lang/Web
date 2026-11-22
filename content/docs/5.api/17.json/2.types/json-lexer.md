@@ -36,10 +36,10 @@ pub struct JsonLexer {
 
 ## Constructors
 
-<h3 id="new"><code>JsonLexer</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func JsonLexer(
+pub func New(
     input: char8[..],
     limits: JsonLimits
 ) -> JsonLexer

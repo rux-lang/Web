@@ -37,10 +37,10 @@ pub struct Path {
 
 ## Constructors
 
-<h3 id="new"><code>Path</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Path() -> Path
+pub func New() -> Path
 ```
 
 A path over nothing.
@@ -201,7 +201,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The lossy rendering of the path's units.
@@ -216,7 +216,7 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 
 **Returns**: success when the whole path was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L279)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L280)
 
 ## Implements Debug
 
@@ -229,7 +229,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The exact, quoted rendering of the path's units.
@@ -242,7 +242,7 @@ The failures [`OsStringView::WriteDebug`](/docs/api/path/os-string-view#write-de
 
 **Returns**: success when the whole path was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L292)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/Path.rux#L293)
 
 ## Related
 

@@ -26,8 +26,8 @@ pub interface Writer {
     func Write(
         &var self,
         bytes: char8[..]
-    ) -> uint throws IoError;
-    func Flush(&var self) throws IoError;
+    ) -> uint ! IoError;
+    func Flush(&var self) -> !IoError;
 }
 ```
 
@@ -36,10 +36,7 @@ pub interface Writer {
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-func Write(
-    &var self,
-    bytes: char8[..]
-) -> uint throws IoError
+func Write(&var self, bytes: char8[..]) -> uint ! IoError
 ```
 
 Takes what it can of `bytes` and succeeds with how much.
@@ -55,7 +52,7 @@ Takes what it can of `bytes` and succeeds with how much.
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-func Flush(&var self) throws IoError
+func Flush(&var self) -> !IoError
 ```
 
 Pushes whatever is held toward the destination.
@@ -80,7 +77,7 @@ Pushes whatever is held toward the destination.
 pub func WriteAll(
     writer: &var Writer,
     bytes: char8[..]
-) throws IoError
+) -> !IoError
 ```
 
 Writes all of `bytes`, looping over partial writes, or says why it could not.

@@ -654,10 +654,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "JsonEventReader",
+          "kind": "associated",
+          "name": "New",
           "line": 125,
-          "signature": "pub func JsonEventReader(allocator: Allocator, source: Reader, limits: JsonLimits) -> JsonEventReader",
+          "signature": "pub func New(allocator: Allocator, source: Reader, limits: JsonLimits) -> JsonEventReader",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -696,7 +696,7 @@
         {
           "kind": "method",
           "name": "Text",
-          "line": 163,
+          "line": 165,
           "signature": "pub func Text(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
@@ -728,7 +728,7 @@
         {
           "kind": "method",
           "name": "TextIsEscaped",
-          "line": 172,
+          "line": 174,
           "signature": "pub func TextIsEscaped(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -760,7 +760,7 @@
         {
           "kind": "method",
           "name": "Depth",
-          "line": 179,
+          "line": 181,
           "signature": "pub func Depth(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -792,7 +792,7 @@
         {
           "kind": "method",
           "name": "Release",
-          "line": 243,
+          "line": 245,
           "signature": "pub func Release(&var self)",
           "typeParams": [],
           "params": [],
@@ -823,9 +823,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~JsonEventReader",
-          "line": 254,
-          "signature": "func ~JsonEventReader(&var self)",
+          "name": "~",
+          "line": 256,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var JsonEventReader",
@@ -856,8 +856,8 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 412,
-          "signature": "pub func Next(&var self) -> JsonEvent? throws JsonReadError",
+          "line": 414,
+          "signature": "pub func Next(&var self) -> JsonEvent? ! JsonReadError",
           "typeParams": [],
           "params": [],
           "receiver": "&var JsonEventReader",
@@ -1761,10 +1761,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "JsonLexer",
+          "kind": "associated",
+          "name": "New",
           "line": 151,
-          "signature": "pub func JsonLexer(input: char8[..], limits: JsonLimits) -> JsonLexer",
+          "signature": "pub func New(input: char8[..], limits: JsonLimits) -> JsonLexer",
           "typeParams": [],
           "params": [
             { "name": "input", "type": "char8[..]" },
@@ -2175,7 +2175,7 @@
           "kind": "method",
           "name": "WriteDisplay",
           "line": 103,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2213,7 +2213,7 @@
           "kind": "method",
           "name": "WriteDebug",
           "line": 156,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2438,10 +2438,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "JsonParser",
+          "kind": "associated",
+          "name": "New",
           "line": 228,
-          "signature": "pub func JsonParser(allocator: Allocator, input: char8[..], limits: JsonLimits) -> JsonParser",
+          "signature": "pub func New(allocator: Allocator, input: char8[..], limits: JsonLimits) -> JsonParser",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -2545,7 +2545,7 @@
           "kind": "method",
           "name": "Parse",
           "line": 565,
-          "signature": "pub func Parse(&var self) -> JsonValue throws JsonParseError",
+          "signature": "pub func Parse(&var self) -> JsonValue ! JsonParseError",
           "typeParams": [],
           "params": [],
           "receiver": "&var JsonParser",
@@ -2593,7 +2593,7 @@
       "module": "Parser",
       "source": "Src/Parser.rux",
       "line": 639,
-      "signature": "pub func Parse(allocator: Allocator, input: char8[..]) -> JsonValue throws JsonParseError",
+      "signature": "pub func Parse(allocator: Allocator, input: char8[..]) -> JsonValue ! JsonParseError",
       "typeParams": [],
       "doc": {
         "summary": "Parses `input` into a value, rejecting duplicate names.",
@@ -2631,7 +2631,7 @@
       "module": "Parser",
       "source": "Src/Parser.rux",
       "line": 657,
-      "signature": "pub func ParseWith(allocator: Allocator, input: char8[..], limits: JsonLimits, duplicates: DuplicateKeyPolicy) -> JsonValue throws JsonParseError",
+      "signature": "pub func ParseWith(allocator: Allocator, input: char8[..], limits: JsonLimits, duplicates: DuplicateKeyPolicy) -> JsonValue ! JsonParseError",
       "typeParams": [],
       "doc": {
         "summary": "Parses `input` under chosen limits and a chosen duplicate-name policy.",
@@ -2914,10 +2914,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "JsonNumber",
+          "kind": "associated",
+          "name": "New",
           "line": 120,
-          "signature": "pub func JsonNumber(allocator: Allocator, text: char8[..]) -> JsonNumber throws JsonError",
+          "signature": "pub func New(allocator: Allocator, text: char8[..]) -> JsonNumber ! JsonError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -3216,9 +3216,9 @@
       "members": [
         {
           "kind": "destructor",
-          "name": "~JsonMember",
+          "name": "~",
           "line": 454,
-          "signature": "func ~JsonMember(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var JsonMember",
@@ -3476,7 +3476,7 @@
           "kind": "associated",
           "name": "Number",
           "line": 254,
-          "signature": "pub func Number(allocator: Allocator, text: char8[..]) -> JsonValue throws JsonError",
+          "signature": "pub func Number(allocator: Allocator, text: char8[..]) -> JsonValue ! JsonError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -3514,7 +3514,7 @@
           "kind": "associated",
           "name": "Text",
           "line": 275,
-          "signature": "pub func Text(allocator: Allocator, value: char8[..]) -> JsonValue throws TextError",
+          "signature": "pub func Text(allocator: Allocator, value: char8[..]) -> JsonValue ! TextError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -3808,7 +3808,7 @@
           "kind": "method",
           "name": "Push",
           "line": 354,
-          "signature": "pub func Push(&var self, value: JsonValue) throws JsonError",
+          "signature": "pub func Push(&var self, value: JsonValue) -> !JsonError",
           "typeParams": [],
           "params": [{ "name": "value", "type": "JsonValue" }],
           "receiver": "&var JsonValue",
@@ -3840,7 +3840,7 @@
           "kind": "method",
           "name": "Insert",
           "line": 368,
-          "signature": "pub func Insert(&var self, name: String, value: JsonValue) throws JsonError",
+          "signature": "pub func Insert(&var self, name: String, value: JsonValue) -> !JsonError",
           "typeParams": [],
           "params": [
             { "name": "name", "type": "String" },
@@ -4004,9 +4004,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~JsonValue",
+          "name": "~",
           "line": 443,
-          "signature": "func ~JsonValue(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var JsonValue",
@@ -4053,7 +4053,7 @@
       "displayName": "MaximumWriteDepth",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 25,
+      "line": 26,
       "signature": "pub const MaximumWriteDepth: uint",
       "typeParams": [],
       "doc": {
@@ -4088,7 +4088,7 @@
       "displayName": "JsonStyle",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 29,
+      "line": 30,
       "signature": "pub struct JsonStyle",
       "typeParams": [],
       "doc": {
@@ -4106,7 +4106,7 @@
           "name": "indent",
           "type": "uint",
           "public": false,
-          "line": 31,
+          "line": 32,
           "doc": "Spaces of indentation per level; zero writes everything on one line.",
           "targets": [
             "windows-x86_64",
@@ -4123,7 +4123,7 @@
           "name": "spaceAfterColon",
           "type": "bool",
           "public": false,
-          "line": 33,
+          "line": 34,
           "doc": "Whether a space follows the colon after a member name. Ignored when indenting, which always adds one.",
           "targets": [
             "windows-x86_64",
@@ -4143,7 +4143,7 @@
         {
           "kind": "associated",
           "name": "Compact",
-          "line": 40,
+          "line": 41,
           "signature": "pub func Compact() -> JsonStyle",
           "typeParams": [],
           "params": [],
@@ -4175,7 +4175,7 @@
         {
           "kind": "associated",
           "name": "Pretty",
-          "line": 47,
+          "line": 48,
           "signature": "pub func Pretty() -> JsonStyle",
           "typeParams": [],
           "params": [],
@@ -4223,8 +4223,8 @@
       "displayName": "WriteEscaped",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 65,
-      "signature": "pub func WriteEscaped(writer: &var TextWriter, text: char8[..]) throws FormatError",
+      "line": 66,
+      "signature": "pub func WriteEscaped(writer: &var TextWriter, text: char8[..]) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the escaped form of `text`, including its surrounding quotes.",
@@ -4261,8 +4261,8 @@
       "displayName": "WriteValue",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 175,
-      "signature": "pub func WriteValue(writer: &var TextWriter, value: &JsonValue, style: JsonStyle) throws FormatError",
+      "line": 174,
+      "signature": "pub func WriteValue(writer: &var TextWriter, value: &JsonValue, style: JsonStyle) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `value` to `writer` in the given style.",

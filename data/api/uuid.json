@@ -47,7 +47,7 @@
       "module": "Random",
       "source": "Src/Random.rux",
       "line": 20,
-      "signature": "pub func Random() -> Uuid throws EntropyError",
+      "signature": "pub func Random() -> Uuid ! EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "A version 4 UUID drawn from the operating system's entropy.",
@@ -359,7 +359,7 @@
       "module": "Text",
       "source": "Src/Text.rux",
       "line": 94,
-      "signature": "pub func Parse(text: char8[..]) -> Uuid throws UuidParseError",
+      "signature": "pub func Parse(text: char8[..]) -> Uuid ! UuidParseError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a UUID from its canonical or URN text form.",
@@ -394,7 +394,7 @@
       "module": "Text",
       "source": "Src/Text.rux",
       "line": 163,
-      "signature": "pub func Parse(text: StringView) -> Uuid throws UuidParseError",
+      "signature": "pub func Parse(text: StringView) -> Uuid ! UuidParseError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a UUID from the text a `StringView` borrows.",
@@ -429,7 +429,7 @@
       "module": "Text",
       "source": "Src/Text.rux",
       "line": 198,
-      "signature": "pub func Format(value: &Uuid, into: var char8[..]) throws FormatError",
+      "signature": "pub func Format(value: &Uuid, into: var char8[..]) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the canonical text form into `into`, in lower case.",
@@ -467,7 +467,7 @@
       "module": "Text",
       "source": "Src/Text.rux",
       "line": 211,
-      "signature": "pub func FormatUpper(value: &Uuid, into: var char8[..]) throws FormatError",
+      "signature": "pub func FormatUpper(value: &Uuid, into: var char8[..]) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the canonical text form into `into`, in upper case.",
@@ -505,7 +505,7 @@
       "module": "Text",
       "source": "Src/Text.rux",
       "line": 232,
-      "signature": "pub func FormatUrn(value: &Uuid, into: var char8[..]) throws FormatError",
+      "signature": "pub func FormatUrn(value: &Uuid, into: var char8[..]) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the URN form into `into`: the canonical form after `urn:uuid:`.",
@@ -543,7 +543,7 @@
       "module": "TimeOrdered",
       "source": "Src/TimeOrdered.rux",
       "line": 21,
-      "signature": "pub func TimeOrdered() -> Uuid throws EntropyError",
+      "signature": "pub func TimeOrdered() -> Uuid ! EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "A version 7 UUID: the current time in its leading bits, entropy in the rest.",
@@ -578,7 +578,7 @@
       "module": "TimeOrdered",
       "source": "Src/TimeOrdered.rux",
       "line": 32,
-      "signature": "pub func TimeOrderedAt(milliseconds: uint64) -> Uuid throws EntropyError",
+      "signature": "pub func TimeOrderedAt(milliseconds: uint64) -> Uuid ! EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "A version 7 UUID for a given millisecond, with entropy in the rest.",
@@ -702,10 +702,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "MonotonicUuid",
+          "kind": "associated",
+          "name": "New",
           "line": 83,
-          "signature": "pub func MonotonicUuid() -> MonotonicUuid",
+          "signature": "pub func New() -> MonotonicUuid",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -737,7 +737,7 @@
           "kind": "method",
           "name": "Next",
           "line": 91,
-          "signature": "pub func Next(&var self) -> Uuid throws EntropyError",
+          "signature": "pub func Next(&var self) -> Uuid ! EntropyError",
           "typeParams": [],
           "params": [],
           "receiver": "&var MonotonicUuid",
@@ -823,7 +823,7 @@
           "kind": "method",
           "name": "WriteDisplay",
           "line": 265,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -861,7 +861,7 @@
           "kind": "method",
           "name": "WriteDebug",
           "line": 282,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },

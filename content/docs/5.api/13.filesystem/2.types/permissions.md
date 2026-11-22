@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Metadata.rux
-  line: 48
+  line: 52
 seo:
   title: "Permissions — FileSystem API"
   description: "Who may do what to a file, in both spellings the supported systems use."
@@ -55,7 +55,7 @@ Permissions from Unix mode bits, with `readOnly` derived from the owner-write bi
 
 **Returns**: permissions carrying those bits
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L64)
 
 <h3 id="from-read-only"><code>FromReadOnly</code></h3>
 
@@ -71,7 +71,7 @@ Permissions from the read-only flag alone, with the mode synthesized from it.
 
 **Returns**: permissions that are writable or not, which is all Windows records
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L72)
 
 ## Methods
 
@@ -85,7 +85,7 @@ Whether the owner may write.
 
 **Returns**: whether the owner may write the file
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L79)
 
 ## Related
 
@@ -96,7 +96,7 @@ pub func SetPermissions(
     allocator: Allocator,
     path: Path,
     permissions: Permissions
-) throws IoError
+) -> !IoError
 ```
 
 Sets who may do what to the file `path` names.
@@ -104,7 +104,7 @@ On the Unix systems the mode bits are written as given. On Windows only the read
 that alone is written and the rest of `permissions` is ignored — ask [`CapabilitiesOfSystem`](/docs/api/filesystem/capabilities#capabilities-of-system) first if the
 difference matters. A symbolic link is always followed: its own bits mean nothing on any supported system.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L434)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L438)
 
 **Parameters**
 

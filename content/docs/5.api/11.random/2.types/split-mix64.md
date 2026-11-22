@@ -35,10 +35,10 @@ get correlated streams out of an excellent algorithm.
 
 ## Constructors
 
-<h3 id="new"><code>SplitMix64</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func SplitMix64(seed: uint64) -> SplitMix64
+pub func New(seed: uint64) -> SplitMix64
 ```
 
 A mixer starting from `seed`. Every seed is acceptable, including zero.

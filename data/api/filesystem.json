@@ -151,7 +151,7 @@
           "kind": "associated",
           "name": "Begin",
           "line": 48,
-          "signature": "pub func Begin(allocator: Allocator, target: Path) -> AtomicWrite throws IoError",
+          "signature": "pub func Begin(allocator: Allocator, target: Path) -> AtomicWrite ! IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -221,7 +221,7 @@
           "kind": "method",
           "name": "Commit",
           "line": 82,
-          "signature": "pub func Commit(&var self, allocator: Allocator) throws IoError",
+          "signature": "pub func Commit(&var self, allocator: Allocator) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": "&var AtomicWrite",
@@ -253,7 +253,7 @@
           "kind": "method",
           "name": "Abandon",
           "line": 99,
-          "signature": "pub func Abandon(&var self, allocator: Allocator) throws IoError",
+          "signature": "pub func Abandon(&var self, allocator: Allocator) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": "&var AtomicWrite",
@@ -315,9 +315,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~AtomicWrite",
+          "name": "~",
           "line": 115,
-          "signature": "func ~AtomicWrite(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var AtomicWrite",
@@ -349,7 +349,7 @@
           "kind": "method",
           "name": "Write",
           "line": 130,
-          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var AtomicWrite",
@@ -381,7 +381,7 @@
           "kind": "method",
           "name": "Flush",
           "line": 138,
-          "signature": "pub func Flush(&var self) throws IoError",
+          "signature": "pub func Flush(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var AtomicWrite",
@@ -429,7 +429,7 @@
       "module": "Atomic",
       "source": "Src/Atomic.rux",
       "line": 150,
-      "signature": "pub func WriteAtomically(allocator: Allocator, target: Path, contents: char8[..]) throws IoError",
+      "signature": "pub func WriteAtomically(allocator: Allocator, target: Path, contents: char8[..]) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Replaces `target` with `contents`, atomically.",
@@ -467,8 +467,8 @@
       "displayName": "MakeDirectory",
       "module": "Directory",
       "source": "Src/Directory.rux",
-      "line": 28,
-      "signature": "pub func MakeDirectory(allocator: Allocator, path: Path) throws IoError",
+      "line": 32,
+      "signature": "pub func MakeDirectory(allocator: Allocator, path: Path) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Creates the directory `path` names.",
@@ -505,8 +505,8 @@
       "displayName": "DeleteDirectory",
       "module": "Directory",
       "source": "Src/Directory.rux",
-      "line": 53,
-      "signature": "pub func DeleteDirectory(allocator: Allocator, path: Path) throws IoError",
+      "line": 57,
+      "signature": "pub func DeleteDirectory(allocator: Allocator, path: Path) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Deletes the empty directory `path` names; a directory with anything still in it is refused.",
@@ -543,8 +543,8 @@
       "displayName": "DeleteFile",
       "module": "Directory",
       "source": "Src/Directory.rux",
-      "line": 77,
-      "signature": "pub func DeleteFile(allocator: Allocator, path: Path) throws IoError",
+      "line": 81,
+      "signature": "pub func DeleteFile(allocator: Allocator, path: Path) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Deletes the file `path` names.",
@@ -581,7 +581,7 @@
       "displayName": "DirectoryIterator",
       "module": "Directory",
       "source": "Src/Directory.rux",
-      "line": 100,
+      "line": 104,
       "signature": "pub struct DirectoryIterator",
       "typeParams": [],
       "doc": {
@@ -599,7 +599,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 102,
+          "line": 106,
           "doc": "Where the record buffer came from, and where the names come from.",
           "targets": [
             "windows-x86_64",
@@ -616,7 +616,7 @@
           "name": "handle",
           "type": "RawFile",
           "public": false,
-          "line": 104,
+          "line": 108,
           "doc": "The platform's enumeration handle.",
           "targets": [
             "windows-x86_64",
@@ -633,7 +633,7 @@
           "name": "data",
           "type": "*var char8",
           "public": false,
-          "line": 106,
+          "line": 110,
           "doc": "The record buffer.",
           "targets": [
             "windows-x86_64",
@@ -650,7 +650,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 108,
+          "line": 112,
           "doc": "Its size.",
           "targets": [
             "windows-x86_64",
@@ -667,7 +667,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 110,
+          "line": 114,
           "doc": "How many bytes of it are records (the Unix systems).",
           "targets": [
             "windows-x86_64",
@@ -684,7 +684,7 @@
           "name": "offset",
           "type": "uint",
           "public": false,
-          "line": 112,
+          "line": 116,
           "doc": "The parse position within them (the Unix systems).",
           "targets": [
             "windows-x86_64",
@@ -701,7 +701,7 @@
           "name": "pending",
           "type": "bool",
           "public": false,
-          "line": 114,
+          "line": 118,
           "doc": "Whether an entry is already waiting in the buffer (Windows).",
           "targets": [
             "windows-x86_64",
@@ -718,7 +718,7 @@
           "name": "open",
           "type": "bool",
           "public": false,
-          "line": 116,
+          "line": 120,
           "doc": "Whether the handle is still this value's to give back.",
           "targets": [
             "windows-x86_64",
@@ -738,8 +738,8 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 214,
-          "signature": "pub func Next(&var self) -> OsString? throws IoError",
+          "line": 216,
+          "signature": "pub func Next(&var self) -> OsString? ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var DirectoryIterator",
@@ -770,7 +770,7 @@
         {
           "kind": "method",
           "name": "Release",
-          "line": 333,
+          "line": 335,
           "signature": "pub func Release(&var self)",
           "typeParams": [],
           "params": [],
@@ -801,9 +801,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~DirectoryIterator",
-          "line": 357,
-          "signature": "func ~DirectoryIterator(&var self)",
+          "name": "~",
+          "line": 359,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var DirectoryIterator",
@@ -850,8 +850,8 @@
       "displayName": "ReadDirectory",
       "module": "Directory",
       "source": "Src/Directory.rux",
-      "line": 134,
-      "signature": "pub func ReadDirectory(allocator: Allocator, path: Path) -> DirectoryIterator throws IoError",
+      "line": 138,
+      "signature": "pub func ReadDirectory(allocator: Allocator, path: Path) -> DirectoryIterator ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "Begins enumerating the directory `path` names.",
@@ -888,7 +888,7 @@
       "displayName": "OpenOptions",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 41,
+      "line": 45,
       "signature": "pub struct OpenOptions",
       "typeParams": [],
       "doc": {
@@ -906,7 +906,7 @@
           "name": "read",
           "type": "bool",
           "public": false,
-          "line": 43,
+          "line": 47,
           "doc": "The handle may read.",
           "targets": [
             "windows-x86_64",
@@ -923,7 +923,7 @@
           "name": "write",
           "type": "bool",
           "public": true,
-          "line": 45,
+          "line": 49,
           "doc": "The handle may write.",
           "targets": [
             "windows-x86_64",
@@ -940,7 +940,7 @@
           "name": "append",
           "type": "bool",
           "public": false,
-          "line": 47,
+          "line": 51,
           "doc": "The handle may write, and every write lands at the end.",
           "targets": [
             "windows-x86_64",
@@ -957,7 +957,7 @@
           "name": "truncate",
           "type": "bool",
           "public": true,
-          "line": 49,
+          "line": 53,
           "doc": "An existing file's contents are discarded on open. Requires `write`.",
           "targets": [
             "windows-x86_64",
@@ -974,7 +974,7 @@
           "name": "create",
           "type": "bool",
           "public": true,
-          "line": 51,
+          "line": 55,
           "doc": "A missing file is created. Requires `write` or `append`.",
           "targets": [
             "windows-x86_64",
@@ -991,7 +991,7 @@
           "name": "createNew",
           "type": "bool",
           "public": true,
-          "line": 54,
+          "line": 58,
           "doc": "The file must not exist: it is created, and an existing one is `AlreadyExists`. Wins over `create` and\n`truncate`, and is the option that makes creation a claim rather than a race.",
           "targets": [
             "windows-x86_64",
@@ -1009,10 +1009,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "OpenOptions",
-          "line": 61,
-          "signature": "pub func OpenOptions() -> OpenOptions",
+          "kind": "associated",
+          "name": "New",
+          "line": 65,
+          "signature": "pub func New() -> OpenOptions",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -1043,7 +1043,7 @@
         {
           "kind": "associated",
           "name": "Reading",
-          "line": 68,
+          "line": 72,
           "signature": "pub func Reading() -> OpenOptions",
           "typeParams": [],
           "params": [],
@@ -1075,7 +1075,7 @@
         {
           "kind": "associated",
           "name": "Writing",
-          "line": 77,
+          "line": 81,
           "signature": "pub func Writing() -> OpenOptions",
           "typeParams": [],
           "params": [],
@@ -1107,7 +1107,7 @@
         {
           "kind": "associated",
           "name": "Appending",
-          "line": 88,
+          "line": 92,
           "signature": "pub func Appending() -> OpenOptions",
           "typeParams": [],
           "params": [],
@@ -1155,7 +1155,7 @@
       "displayName": "File",
       "module": "File",
       "source": "Src/File.rux",
-      "line": 110,
+      "line": 114,
       "signature": "pub struct File",
       "typeParams": [],
       "doc": {
@@ -1173,7 +1173,7 @@
           "name": "handle",
           "type": "RawFile",
           "public": false,
-          "line": 112,
+          "line": 116,
           "doc": "The platform's handle.",
           "targets": [
             "windows-x86_64",
@@ -1190,7 +1190,7 @@
           "name": "open",
           "type": "bool",
           "public": false,
-          "line": 114,
+          "line": 118,
           "doc": "Whether it is still this value's to close.",
           "targets": [
             "windows-x86_64",
@@ -1210,8 +1210,8 @@
         {
           "kind": "associated",
           "name": "Open",
-          "line": 186,
-          "signature": "pub func Open(allocator: Allocator, path: Path, options: OpenOptions) -> File throws IoError",
+          "line": 190,
+          "signature": "pub func Open(allocator: Allocator, path: Path, options: OpenOptions) -> File ! IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -1250,7 +1250,7 @@
         {
           "kind": "method",
           "name": "IsOpen",
-          "line": 261,
+          "line": 265,
           "signature": "pub func IsOpen(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -1282,8 +1282,8 @@
         {
           "kind": "method",
           "name": "Close",
-          "line": 270,
-          "signature": "pub func Close(&var self) throws IoError",
+          "line": 274,
+          "signature": "pub func Close(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var File",
@@ -1313,9 +1313,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~File",
-          "line": 286,
-          "signature": "func ~File(&var self)",
+          "name": "~",
+          "line": 290,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var File",
@@ -1346,8 +1346,8 @@
         {
           "kind": "method",
           "name": "Read",
-          "line": 31,
-          "signature": "pub func Read(&var self, into: var char8[..]) -> uint throws IoError",
+          "line": 33,
+          "signature": "pub func Read(&var self, into: var char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var File",
@@ -1378,8 +1378,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 66,
-          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
+          "line": 68,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var File",
@@ -1410,8 +1410,8 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 93,
-          "signature": "pub func Flush(&var self) throws IoError",
+          "line": 95,
+          "signature": "pub func Flush(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var File",
@@ -1442,8 +1442,8 @@
         {
           "kind": "method",
           "name": "Seek",
-          "line": 107,
-          "signature": "pub func Seek(&var self, origin: SeekFrom, offset: int64) -> uint64 throws IoError",
+          "line": 109,
+          "signature": "pub func Seek(&var self, origin: SeekFrom, offset: int64) -> uint64 ! IoError",
           "typeParams": [],
           "params": [
             { "name": "origin", "type": "SeekFrom" },
@@ -1480,8 +1480,8 @@
         {
           "kind": "method",
           "name": "Sync",
-          "line": 140,
-          "signature": "pub func Sync(&var self) throws IoError",
+          "line": 142,
+          "signature": "pub func Sync(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var File",
@@ -1512,8 +1512,8 @@
         {
           "kind": "method",
           "name": "Size",
-          "line": 160,
-          "signature": "pub func Size(&var self) -> uint64 throws IoError",
+          "line": 162,
+          "signature": "pub func Size(&var self) -> uint64 ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var File",
@@ -1544,8 +1544,8 @@
         {
           "kind": "method",
           "name": "SetLength",
-          "line": 187,
-          "signature": "pub func SetLength(&var self, length: uint64) throws IoError",
+          "line": 189,
+          "signature": "pub func SetLength(&var self, length: uint64) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "length", "type": "uint64" }],
           "receiver": "&var File",
@@ -1576,8 +1576,8 @@
         {
           "kind": "method",
           "name": "Metadata",
-          "line": 403,
-          "signature": "pub func Metadata(&self) -> Metadata throws IoError",
+          "line": 407,
+          "signature": "pub func Metadata(&self) -> Metadata ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&File",
@@ -1624,7 +1624,7 @@
       "displayName": "SymbolicLinkLimit",
       "module": "Location",
       "source": "Src/Location.rux",
-      "line": 30,
+      "line": 33,
       "signature": "pub const SymbolicLinkLimit: uint",
       "typeParams": [],
       "doc": {
@@ -1659,8 +1659,8 @@
       "displayName": "CurrentDirectory",
       "module": "Location",
       "source": "Src/Location.rux",
-      "line": 36,
-      "signature": "pub func CurrentDirectory(allocator: Allocator) -> OsString throws IoError",
+      "line": 39,
+      "signature": "pub func CurrentDirectory(allocator: Allocator) -> OsString ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "The process's working directory, as an absolute path.",
@@ -1694,8 +1694,8 @@
       "displayName": "SetCurrentDirectory",
       "module": "Location",
       "source": "Src/Location.rux",
-      "line": 70,
-      "signature": "pub func SetCurrentDirectory(allocator: Allocator, path: Path) throws IoError",
+      "line": 73,
+      "signature": "pub func SetCurrentDirectory(allocator: Allocator, path: Path) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Makes `path` the process's working directory.",
@@ -1732,8 +1732,8 @@
       "displayName": "Absolute",
       "module": "Location",
       "source": "Src/Location.rux",
-      "line": 97,
-      "signature": "pub func Absolute(allocator: Allocator, path: Path) -> PathBuffer throws IoError",
+      "line": 100,
+      "signature": "pub func Absolute(allocator: Allocator, path: Path) -> PathBuffer ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "`path` made absolute against the working directory and simplified lexically.",
@@ -1770,8 +1770,8 @@
       "displayName": "Canonicalize",
       "module": "Location",
       "source": "Src/Location.rux",
-      "line": 217,
-      "signature": "pub func Canonicalize(allocator: Allocator, path: Path) -> PathBuffer throws IoError",
+      "line": 220,
+      "signature": "pub func Canonicalize(allocator: Allocator, path: Path) -> PathBuffer ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "The one true name of the existing file `path` refers to.",
@@ -1808,7 +1808,7 @@
       "displayName": "FileKind",
       "module": "Metadata",
       "source": "Src/Metadata.rux",
-      "line": 31,
+      "line": 35,
       "signature": "pub enum FileKind",
       "typeParams": [],
       "doc": {
@@ -1828,7 +1828,7 @@
           "name": "File",
           "value": "0",
           "payload": null,
-          "line": 33,
+          "line": 37,
           "doc": "An ordinary file of bytes.",
           "targets": [
             "windows-x86_64",
@@ -1845,7 +1845,7 @@
           "name": "Directory",
           "value": "1",
           "payload": null,
-          "line": 35,
+          "line": 39,
           "doc": "A directory.",
           "targets": [
             "windows-x86_64",
@@ -1862,7 +1862,7 @@
           "name": "SymbolicLink",
           "value": "2",
           "payload": null,
-          "line": 37,
+          "line": 41,
           "doc": "A symbolic link — only ever reported by a no-follow query, since following one lands on its target.",
           "targets": [
             "windows-x86_64",
@@ -1879,7 +1879,7 @@
           "name": "Other",
           "value": "3",
           "payload": null,
-          "line": 39,
+          "line": 43,
           "doc": "A device, socket, pipe, or anything else the filesystem holds that is none of the above.",
           "targets": [
             "windows-x86_64",
@@ -1912,7 +1912,7 @@
       "displayName": "Permissions",
       "module": "Metadata",
       "source": "Src/Metadata.rux",
-      "line": 48,
+      "line": 52,
       "signature": "pub struct Permissions",
       "typeParams": [],
       "doc": {
@@ -1930,7 +1930,7 @@
           "name": "mode",
           "type": "uint32",
           "public": true,
-          "line": 50,
+          "line": 54,
           "doc": "The Unix permission bits.",
           "targets": [
             "windows-x86_64",
@@ -1947,7 +1947,7 @@
           "name": "readOnly",
           "type": "bool",
           "public": false,
-          "line": 52,
+          "line": 56,
           "doc": "Whether writing is refused.",
           "targets": [
             "windows-x86_64",
@@ -1967,7 +1967,7 @@
         {
           "kind": "associated",
           "name": "FromMode",
-          "line": 60,
+          "line": 64,
           "signature": "pub func FromMode(mode: uint32) -> Permissions",
           "typeParams": [],
           "params": [{ "name": "mode", "type": "uint32" }],
@@ -1999,7 +1999,7 @@
         {
           "kind": "associated",
           "name": "FromReadOnly",
-          "line": 68,
+          "line": 72,
           "signature": "pub func FromReadOnly(readOnly: bool) -> Permissions",
           "typeParams": [],
           "params": [{ "name": "readOnly", "type": "bool" }],
@@ -2031,7 +2031,7 @@
         {
           "kind": "method",
           "name": "IsWritable",
-          "line": 75,
+          "line": 79,
           "signature": "pub func IsWritable(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -2079,7 +2079,7 @@
       "displayName": "Metadata",
       "module": "Metadata",
       "source": "Src/Metadata.rux",
-      "line": 82,
+      "line": 86,
       "signature": "pub struct Metadata",
       "typeParams": [],
       "doc": {
@@ -2097,7 +2097,7 @@
           "name": "kind",
           "type": "FileKind",
           "public": true,
-          "line": 84,
+          "line": 88,
           "doc": "What the name refers to.",
           "targets": [
             "windows-x86_64",
@@ -2114,7 +2114,7 @@
           "name": "size",
           "type": "uint64",
           "public": true,
-          "line": 86,
+          "line": 90,
           "doc": "The length in bytes; zero for a directory, whose size means nothing portable.",
           "targets": [
             "windows-x86_64",
@@ -2131,7 +2131,7 @@
           "name": "linkCount",
           "type": "uint64",
           "public": true,
-          "line": 88,
+          "line": 92,
           "doc": "How many names the content has. Always one on a system that does not count them.",
           "targets": [
             "windows-x86_64",
@@ -2148,7 +2148,7 @@
           "name": "permissions",
           "type": "Permissions",
           "public": true,
-          "line": 90,
+          "line": 94,
           "doc": "Who may do what.",
           "targets": [
             "windows-x86_64",
@@ -2165,7 +2165,7 @@
           "name": "accessed",
           "type": "Timestamp",
           "public": true,
-          "line": 92,
+          "line": 96,
           "doc": "When the contents were last read.",
           "targets": [
             "windows-x86_64",
@@ -2182,7 +2182,7 @@
           "name": "modified",
           "type": "Timestamp",
           "public": true,
-          "line": 94,
+          "line": 98,
           "doc": "When the contents were last written.",
           "targets": [
             "windows-x86_64",
@@ -2199,7 +2199,7 @@
           "name": "created",
           "type": "Timestamp",
           "public": false,
-          "line": 96,
+          "line": 100,
           "doc": "When the file came into being, where the system records that.",
           "targets": [
             "windows-x86_64",
@@ -2216,7 +2216,7 @@
           "name": "hasCreated",
           "type": "bool",
           "public": true,
-          "line": 98,
+          "line": 102,
           "doc": "Whether `created` means anything.",
           "targets": [
             "windows-x86_64",
@@ -2251,7 +2251,7 @@
       "displayName": "Capabilities",
       "module": "Metadata",
       "source": "Src/Metadata.rux",
-      "line": 103,
+      "line": 107,
       "signature": "pub struct Capabilities",
       "typeParams": [],
       "doc": {
@@ -2269,7 +2269,7 @@
           "name": "unixPermissions",
           "type": "bool",
           "public": true,
-          "line": 105,
+          "line": 109,
           "doc": "Whether `Permissions::mode` is the system's own answer rather than one synthesized from a flag.",
           "targets": [
             "windows-x86_64",
@@ -2286,7 +2286,7 @@
           "name": "creationTime",
           "type": "bool",
           "public": true,
-          "line": 107,
+          "line": 111,
           "doc": "Whether the system records a creation time.",
           "targets": [
             "windows-x86_64",
@@ -2303,7 +2303,7 @@
           "name": "hardLinkCounts",
           "type": "bool",
           "public": false,
-          "line": 109,
+          "line": 113,
           "doc": "Whether names have a meaningful link count.",
           "targets": [
             "windows-x86_64",
@@ -2320,7 +2320,7 @@
           "name": "settableTimes",
           "type": "bool",
           "public": false,
-          "line": 111,
+          "line": 115,
           "doc": "Whether setting timestamps is supported at all.",
           "targets": [
             "windows-x86_64",
@@ -2355,7 +2355,7 @@
       "displayName": "CapabilitiesOfSystem",
       "module": "Metadata",
       "source": "Src/Metadata.rux",
-      "line": 117,
+      "line": 121,
       "signature": "pub func CapabilitiesOfSystem() -> Capabilities",
       "typeParams": [],
       "doc": {
@@ -2390,8 +2390,8 @@
       "displayName": "MetadataOf",
       "module": "Metadata",
       "source": "Src/Metadata.rux",
-      "line": 365,
-      "signature": "pub func MetadataOf(allocator: Allocator, path: Path, followLinks: bool) -> Metadata throws IoError",
+      "line": 369,
+      "signature": "pub func MetadataOf(allocator: Allocator, path: Path, followLinks: bool) -> Metadata ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "Describes the file `path` names.",
@@ -2429,8 +2429,8 @@
       "displayName": "SetPermissions",
       "module": "Metadata",
       "source": "Src/Metadata.rux",
-      "line": 434,
-      "signature": "pub func SetPermissions(allocator: Allocator, path: Path, permissions: Permissions) throws IoError",
+      "line": 438,
+      "signature": "pub func SetPermissions(allocator: Allocator, path: Path, permissions: Permissions) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Sets who may do what to the file `path` names.",
@@ -2468,8 +2468,8 @@
       "displayName": "SetTimes",
       "module": "Metadata",
       "source": "Src/Metadata.rux",
-      "line": 479,
-      "signature": "pub func SetTimes(allocator: Allocator, path: Path, accessed: Timestamp, modified: Timestamp, followLinks: bool) throws IoError",
+      "line": 483,
+      "signature": "pub func SetTimes(allocator: Allocator, path: Path, accessed: Timestamp, modified: Timestamp, followLinks: bool) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Sets the access and modification times of the file `path` names.",
@@ -2509,7 +2509,7 @@
       "displayName": "TemporaryNameAttempts",
       "module": "Temporary",
       "source": "Src/Temporary.rux",
-      "line": 26,
+      "line": 27,
       "signature": "pub const TemporaryNameAttempts: uint",
       "typeParams": [],
       "doc": {
@@ -2544,8 +2544,8 @@
       "displayName": "TemporaryDirectory",
       "module": "Temporary",
       "source": "Src/Temporary.rux",
-      "line": 35,
-      "signature": "pub func TemporaryDirectory(allocator: Allocator) -> PathBuffer throws IoError",
+      "line": 36,
+      "signature": "pub func TemporaryDirectory(allocator: Allocator) -> PathBuffer ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "The directory the system sets aside for temporary files.",
@@ -2579,7 +2579,7 @@
       "displayName": "TemporaryFile",
       "module": "Temporary",
       "source": "Src/Temporary.rux",
-      "line": 84,
+      "line": 85,
       "signature": "pub struct TemporaryFile",
       "typeParams": [],
       "doc": {
@@ -2597,7 +2597,7 @@
           "name": "file",
           "type": "File",
           "public": true,
-          "line": 86,
+          "line": 87,
           "doc": "The open file.",
           "targets": [
             "windows-x86_64",
@@ -2614,7 +2614,7 @@
           "name": "path",
           "type": "PathBuffer",
           "public": false,
-          "line": 88,
+          "line": 89,
           "doc": "Its full path.",
           "targets": [
             "windows-x86_64",
@@ -2631,7 +2631,7 @@
           "name": "owned",
           "type": "bool",
           "public": false,
-          "line": 90,
+          "line": 91,
           "doc": "Whether the name is still this value's to delete.",
           "targets": [
             "windows-x86_64",
@@ -2649,10 +2649,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "TemporaryFile",
-          "line": 102,
-          "signature": "pub func TemporaryFile(allocator: Allocator, directory: Path, prefix: char8[..]) -> TemporaryFile throws IoError",
+          "kind": "associated",
+          "name": "New",
+          "line": 103,
+          "signature": "pub func New(allocator: Allocator, directory: Path, prefix: char8[..]) -> TemporaryFile ! IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -2691,7 +2691,7 @@
         {
           "kind": "method",
           "name": "AsPath",
-          "line": 131,
+          "line": 132,
           "signature": "pub func AsPath(&self) -> Path",
           "typeParams": [],
           "params": [],
@@ -2723,8 +2723,8 @@
         {
           "kind": "method",
           "name": "Close",
-          "line": 139,
-          "signature": "pub func Close(&var self, allocator: Allocator) throws IoError",
+          "line": 140,
+          "signature": "pub func Close(&var self, allocator: Allocator) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": "&var TemporaryFile",
@@ -2755,8 +2755,8 @@
         {
           "kind": "method",
           "name": "Keep",
-          "line": 155,
-          "signature": "pub func Keep(&var self) throws IoError",
+          "line": 156,
+          "signature": "pub func Keep(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var TemporaryFile",
@@ -2786,9 +2786,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~TemporaryFile",
-          "line": 165,
-          "signature": "func ~TemporaryFile(&var self)",
+          "name": "~",
+          "line": 166,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var TemporaryFile",
@@ -2835,7 +2835,7 @@
       "displayName": "TemporaryDirectoryHandle",
       "module": "Temporary",
       "source": "Src/Temporary.rux",
-      "line": 181,
+      "line": 182,
       "signature": "pub struct TemporaryDirectoryHandle",
       "typeParams": [],
       "doc": {
@@ -2853,7 +2853,7 @@
           "name": "path",
           "type": "PathBuffer",
           "public": false,
-          "line": 183,
+          "line": 184,
           "doc": "The directory's full path.",
           "targets": [
             "windows-x86_64",
@@ -2870,7 +2870,7 @@
           "name": "owned",
           "type": "bool",
           "public": false,
-          "line": 185,
+          "line": 186,
           "doc": "Whether the name is still this value's to remove.",
           "targets": [
             "windows-x86_64",
@@ -2888,10 +2888,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "TemporaryDirectoryHandle",
-          "line": 195,
-          "signature": "pub func TemporaryDirectoryHandle(allocator: Allocator, directory: Path, prefix: char8[..]) -> TemporaryDirectoryHandle throws IoError",
+          "kind": "associated",
+          "name": "New",
+          "line": 196,
+          "signature": "pub func New(allocator: Allocator, directory: Path, prefix: char8[..]) -> TemporaryDirectoryHandle ! IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -2930,7 +2930,7 @@
         {
           "kind": "method",
           "name": "AsPath",
-          "line": 219,
+          "line": 220,
           "signature": "pub func AsPath(&self) -> Path",
           "typeParams": [],
           "params": [],
@@ -2962,8 +2962,8 @@
         {
           "kind": "method",
           "name": "Close",
-          "line": 227,
-          "signature": "pub func Close(&var self, allocator: Allocator) throws IoError",
+          "line": 228,
+          "signature": "pub func Close(&var self, allocator: Allocator) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": "&var TemporaryDirectoryHandle",
@@ -2994,7 +2994,7 @@
         {
           "kind": "method",
           "name": "Keep",
-          "line": 239,
+          "line": 240,
           "signature": "pub func Keep(&var self)",
           "typeParams": [],
           "params": [],
@@ -3025,9 +3025,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~TemporaryDirectoryHandle",
-          "line": 245,
-          "signature": "func ~TemporaryDirectoryHandle(&var self)",
+          "name": "~",
+          "line": 246,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var TemporaryDirectoryHandle",
@@ -3074,8 +3074,8 @@
       "displayName": "Rename",
       "module": "Transfer",
       "source": "Src/Transfer.rux",
-      "line": 30,
-      "signature": "pub func Rename(allocator: Allocator, from: Path, to: Path) throws IoError",
+      "line": 32,
+      "signature": "pub func Rename(allocator: Allocator, from: Path, to: Path) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Renames `from` to `to`, moving it between directories if the paths differ there.",
@@ -3113,8 +3113,8 @@
       "displayName": "CreateHardLink",
       "module": "Transfer",
       "source": "Src/Transfer.rux",
-      "line": 60,
-      "signature": "pub func CreateHardLink(allocator: Allocator, existing: Path, link: Path) throws IoError",
+      "line": 62,
+      "signature": "pub func CreateHardLink(allocator: Allocator, existing: Path, link: Path) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Creates `link` as a hard link: a second name for the file `existing` names.",
@@ -3152,8 +3152,8 @@
       "displayName": "CreateSymbolicLink",
       "module": "Transfer",
       "source": "Src/Transfer.rux",
-      "line": 92,
-      "signature": "pub func CreateSymbolicLink(allocator: Allocator, target: Path, link: Path, targetIsDirectory: bool) throws IoError",
+      "line": 94,
+      "signature": "pub func CreateSymbolicLink(allocator: Allocator, target: Path, link: Path, targetIsDirectory: bool) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Creates `link` as a symbolic link holding `target` as its text.",
@@ -3195,8 +3195,8 @@
       "displayName": "CopyFile",
       "module": "Transfer",
       "source": "Src/Transfer.rux",
-      "line": 125,
-      "signature": "pub func CopyFile(allocator: Allocator, from: Path, to: Path) throws IoError",
+      "line": 127,
+      "signature": "pub func CopyFile(allocator: Allocator, from: Path, to: Path) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Copies the file `from` names to `to`, following a symbolic link to the bytes it points at.",

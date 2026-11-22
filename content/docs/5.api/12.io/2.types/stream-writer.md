@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/TextBoundary.rux
-  line: 131
+  line: 133
 seo:
   title: "StreamWriter — Io API"
   description: "A TextWriter over any stream, recording the stream's failure where the caller can see it."
@@ -37,10 +37,10 @@ The slot must outlive the writer. It is a stored address, so nothing here tracks
 
 ## Constructors
 
-<h3 id="new"><code>StreamWriter</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func StreamWriter(
+pub func New(
     sink: Writer,
     failure: *var IoError?
 ) -> StreamWriter
@@ -57,7 +57,7 @@ so a writer built over a slot that already holds a failure writes nothing at all
 
 **Returns**: a text writer over that stream
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L148)
 
 ## Implements TextWriter
 
@@ -66,10 +66,7 @@ so a writer built over a slot that already holds a failure writes nothing at all
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    &var self,
-    bytes: char8[..]
-) throws FormatError
+pub func Write(&var self, bytes: char8[..]) -> !FormatError
 ```
 
 Writes `bytes` to the stream.
@@ -83,4 +80,4 @@ through rendering does not go on writing into a destination that has already fai
 
 **Returns**: success when the stream accepted the whole run
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L161)

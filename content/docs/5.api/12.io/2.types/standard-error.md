@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Standard.rux
-  line: 345
+  line: 349
 seo:
   title: "StandardError — Io API"
   description: "Standard error: the same contract as standard output, on the stream reports belong to."
@@ -39,7 +39,7 @@ The process's standard error.
 
 **Returns**: the stream, which the process owns for its whole life
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L356)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L360)
 
 ## Implements Writer
 
@@ -51,7 +51,7 @@ The process's standard error.
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Writes what it can of `bytes` to standard error.
@@ -62,16 +62,16 @@ Writes what it can of `bytes` to standard error.
 
 **Returns**: how many bytes were taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L376)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L380)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Nothing: these writes hold nothing back.
 
 **Returns**: success, since everything written already reached the system
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L383)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Standard.rux#L387)

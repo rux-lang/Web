@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Binary.rux
-  line: 17
+  line: 18
 seo:
   title: "Binary encoding — Io API"
   description: Fixed-width integers and floats read from a reader and written to a writer in a chosen byte order.
@@ -32,7 +32,7 @@ pub enum Endian: int32 {
 
 A byte order: which end of a multi-byte value comes first.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L18)
 
 **Cases**
 
@@ -48,14 +48,14 @@ pub func ReadWord(
     reader: &var Reader,
     endian: Endian,
     width: uint
-) -> uint512 throws IoError
+) -> uint512 ! IoError
 ```
 
 Reads a `width`-byte unsigned word in the given order, into the low bytes of the result.
 The word functions are the one implementation the typed surface below stands on; call those unless the width
 itself is a runtime quantity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L33)
 
 **Parameters**
 
@@ -75,12 +75,12 @@ pub func WriteWord(
     endian: Endian,
     width: uint,
     value: uint512
-) throws IoError
+) -> !IoError
 ```
 
 Writes the low `width` bytes of `value` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L55)
 
 **Parameters**
 
@@ -99,12 +99,12 @@ Writes the low `width` bytes of `value` in the given order.
 pub func ReadUint8(
     reader: &var Reader,
     endian: Endian
-) -> uint8 throws IoError
+) -> uint8 ! IoError
 ```
 
 Reads a `uint8` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L74)
 
 **Parameters**
 
@@ -122,12 +122,12 @@ pub func WriteUint8(
     writer: &var Writer,
     endian: Endian,
     value: uint8
-) throws IoError
+) -> !IoError
 ```
 
 Writes a `uint8` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L85)
 
 **Parameters**
 
@@ -145,12 +145,12 @@ Writes a `uint8` in the given order.
 pub func ReadInt8(
     reader: &var Reader,
     endian: Endian
-) -> int8 throws IoError
+) -> int8 ! IoError
 ```
 
 Reads an `int8`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L94)
 
 **Parameters**
 
@@ -168,12 +168,12 @@ pub func WriteInt8(
     writer: &var Writer,
     endian: Endian,
     value: int8
-) throws IoError
+) -> !IoError
 ```
 
 Writes an `int8`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L105)
 
 **Parameters**
 
@@ -191,12 +191,12 @@ Writes an `int8`: its two's-complement bytes, unchanged.
 pub func ReadUint16(
     reader: &var Reader,
     endian: Endian
-) -> uint16 throws IoError
+) -> uint16 ! IoError
 ```
 
 Reads a `uint16` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L113)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L114)
 
 **Parameters**
 
@@ -214,12 +214,12 @@ pub func WriteUint16(
     writer: &var Writer,
     endian: Endian,
     value: uint16
-) throws IoError
+) -> !IoError
 ```
 
 Writes a `uint16` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L125)
 
 **Parameters**
 
@@ -237,12 +237,12 @@ Writes a `uint16` in the given order.
 pub func ReadInt16(
     reader: &var Reader,
     endian: Endian
-) -> int16 throws IoError
+) -> int16 ! IoError
 ```
 
 Reads an `int16`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L133)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L134)
 
 **Parameters**
 
@@ -260,12 +260,12 @@ pub func WriteInt16(
     writer: &var Writer,
     endian: Endian,
     value: int16
-) throws IoError
+) -> !IoError
 ```
 
 Writes an `int16`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L145)
 
 **Parameters**
 
@@ -283,12 +283,12 @@ Writes an `int16`: its two's-complement bytes, unchanged.
 pub func ReadUint32(
     reader: &var Reader,
     endian: Endian
-) -> uint32 throws IoError
+) -> uint32 ! IoError
 ```
 
 Reads a `uint32` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L153)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L154)
 
 **Parameters**
 
@@ -306,12 +306,12 @@ pub func WriteUint32(
     writer: &var Writer,
     endian: Endian,
     value: uint32
-) throws IoError
+) -> !IoError
 ```
 
 Writes a `uint32` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L164)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L165)
 
 **Parameters**
 
@@ -329,12 +329,12 @@ Writes a `uint32` in the given order.
 pub func ReadInt32(
     reader: &var Reader,
     endian: Endian
-) -> int32 throws IoError
+) -> int32 ! IoError
 ```
 
 Reads an `int32`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L174)
 
 **Parameters**
 
@@ -352,12 +352,12 @@ pub func WriteInt32(
     writer: &var Writer,
     endian: Endian,
     value: int32
-) throws IoError
+) -> !IoError
 ```
 
 Writes an `int32`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L184)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L185)
 
 **Parameters**
 
@@ -375,12 +375,12 @@ Writes an `int32`: its two's-complement bytes, unchanged.
 pub func ReadUint64(
     reader: &var Reader,
     endian: Endian
-) -> uint64 throws IoError
+) -> uint64 ! IoError
 ```
 
 Reads a `uint64` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L193)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L194)
 
 **Parameters**
 
@@ -398,12 +398,12 @@ pub func WriteUint64(
     writer: &var Writer,
     endian: Endian,
     value: uint64
-) throws IoError
+) -> !IoError
 ```
 
 Writes a `uint64` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L204)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L205)
 
 **Parameters**
 
@@ -421,12 +421,12 @@ Writes a `uint64` in the given order.
 pub func ReadInt64(
     reader: &var Reader,
     endian: Endian
-) -> int64 throws IoError
+) -> int64 ! IoError
 ```
 
 Reads an `int64`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L213)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L214)
 
 **Parameters**
 
@@ -444,12 +444,12 @@ pub func WriteInt64(
     writer: &var Writer,
     endian: Endian,
     value: int64
-) throws IoError
+) -> !IoError
 ```
 
 Writes an `int64`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L224)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L225)
 
 **Parameters**
 
@@ -467,12 +467,12 @@ Writes an `int64`: its two's-complement bytes, unchanged.
 pub func ReadUint128(
     reader: &var Reader,
     endian: Endian
-) -> uint128 throws IoError
+) -> uint128 ! IoError
 ```
 
 Reads a `uint128` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L233)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L234)
 
 **Parameters**
 
@@ -490,12 +490,12 @@ pub func WriteUint128(
     writer: &var Writer,
     endian: Endian,
     value: uint128
-) throws IoError
+) -> !IoError
 ```
 
 Writes a `uint128` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L244)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L245)
 
 **Parameters**
 
@@ -513,12 +513,12 @@ Writes a `uint128` in the given order.
 pub func ReadInt128(
     reader: &var Reader,
     endian: Endian
-) -> int128 throws IoError
+) -> int128 ! IoError
 ```
 
 Reads an `int128`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L253)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L254)
 
 **Parameters**
 
@@ -536,12 +536,12 @@ pub func WriteInt128(
     writer: &var Writer,
     endian: Endian,
     value: int128
-) throws IoError
+) -> !IoError
 ```
 
 Writes an `int128`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L264)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L265)
 
 **Parameters**
 
@@ -559,12 +559,12 @@ Writes an `int128`: its two's-complement bytes, unchanged.
 pub func ReadUint256(
     reader: &var Reader,
     endian: Endian
-) -> uint256 throws IoError
+) -> uint256 ! IoError
 ```
 
 Reads a `uint256` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L273)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L274)
 
 **Parameters**
 
@@ -582,12 +582,12 @@ pub func WriteUint256(
     writer: &var Writer,
     endian: Endian,
     value: uint256
-) throws IoError
+) -> !IoError
 ```
 
 Writes a `uint256` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L284)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L285)
 
 **Parameters**
 
@@ -605,12 +605,12 @@ Writes a `uint256` in the given order.
 pub func ReadInt256(
     reader: &var Reader,
     endian: Endian
-) -> int256 throws IoError
+) -> int256 ! IoError
 ```
 
 Reads an `int256`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L293)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L294)
 
 **Parameters**
 
@@ -628,12 +628,12 @@ pub func WriteInt256(
     writer: &var Writer,
     endian: Endian,
     value: int256
-) throws IoError
+) -> !IoError
 ```
 
 Writes an `int256`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L304)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L305)
 
 **Parameters**
 
@@ -651,12 +651,12 @@ Writes an `int256`: its two's-complement bytes, unchanged.
 pub func ReadUint512(
     reader: &var Reader,
     endian: Endian
-) -> uint512 throws IoError
+) -> uint512 ! IoError
 ```
 
 Reads a `uint512` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L313)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L314)
 
 **Parameters**
 
@@ -674,12 +674,12 @@ pub func WriteUint512(
     writer: &var Writer,
     endian: Endian,
     value: uint512
-) throws IoError
+) -> !IoError
 ```
 
 Writes a `uint512` in the given order.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L324)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L325)
 
 **Parameters**
 
@@ -697,12 +697,12 @@ Writes a `uint512` in the given order.
 pub func ReadInt512(
     reader: &var Reader,
     endian: Endian
-) -> int512 throws IoError
+) -> int512 ! IoError
 ```
 
 Reads an `int512`: the unsigned bytes, reinterpreted in two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L333)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L334)
 
 **Parameters**
 
@@ -720,12 +720,12 @@ pub func WriteInt512(
     writer: &var Writer,
     endian: Endian,
     value: int512
-) throws IoError
+) -> !IoError
 ```
 
 Writes an `int512`: its two's-complement bytes, unchanged.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L344)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L345)
 
 **Parameters**
 
@@ -743,12 +743,12 @@ Writes an `int512`: its two's-complement bytes, unchanged.
 pub func ReadFloat32(
     reader: &var Reader,
     endian: Endian
-) -> float32 throws IoError
+) -> float32 ! IoError
 ```
 
 Reads a `float32` as the IEEE 754 bit pattern of its width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L353)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L354)
 
 **Parameters**
 
@@ -766,12 +766,12 @@ pub func WriteFloat32(
     writer: &var Writer,
     endian: Endian,
     value: float32
-) throws IoError
+) -> !IoError
 ```
 
 Writes a `float32` as the IEEE 754 bit pattern of its width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L367)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L368)
 
 **Parameters**
 
@@ -789,12 +789,12 @@ Writes a `float32` as the IEEE 754 bit pattern of its width.
 pub func ReadFloat64(
     reader: &var Reader,
     endian: Endian
-) -> float64 throws IoError
+) -> float64 ! IoError
 ```
 
 Reads a `float64` as the IEEE 754 bit pattern of its width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L380)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L381)
 
 **Parameters**
 
@@ -812,12 +812,12 @@ pub func WriteFloat64(
     writer: &var Writer,
     endian: Endian,
     value: float64
-) throws IoError
+) -> !IoError
 ```
 
 Writes a `float64` as the IEEE 754 bit pattern of its width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L394)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Binary.rux#L395)
 
 **Parameters**
 

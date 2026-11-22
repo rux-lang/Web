@@ -29,10 +29,10 @@ pub struct TomlEventReader {
 
 ## Constructors
 
-<h3 id="new"><code>TomlEventReader</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func TomlEventReader(input: char8[..]) -> TomlEventReader
+pub func New(input: char8[..]) -> TomlEventReader
 ```
 
 A reader over `input`.
@@ -123,7 +123,7 @@ How deep inside arrays and inline tables the reader is.
 <h3 id="next"><code>Next</code></h3>
 
 ```rux
-pub func Next(&var self) -> TomlEvent? throws TomlParseFailure
+pub func Next(&var self) -> TomlEvent? ! TomlParseFailure
 ```
 
 The next event, or `none` when the document is finished.

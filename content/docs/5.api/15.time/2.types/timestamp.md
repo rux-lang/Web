@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Timestamp.rux
-  line: 26
+  line: 40
 seo:
   title: "Timestamp — Time API"
   description: "A moment in UTC: seconds since the Unix epoch and a fraction, normalized."
@@ -50,7 +50,7 @@ The epoch itself: 1970-01-01T00:00:00 UTC exactly.
 
 **Returns**: 1970-01-01T00:00:00Z
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L51)
 
 <h3 id="now"><code>Now</code></h3>
 
@@ -62,7 +62,7 @@ The wall clock, read now.
 
 **Returns**: the wall clock, read now
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L58)
 
 <h3 id="from-unix-seconds"><code>FromUnixSeconds</code></h3>
 
@@ -78,7 +78,7 @@ A moment from a plain second count, the shape most protocols carry.
 
 **Returns**: that many seconds after the epoch
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L85)
 
 ## Methods
 
@@ -92,7 +92,7 @@ The whole seconds since the epoch, rounded toward negative infinity.
 
 **Returns**: whole seconds since the epoch, negative before it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L92)
 
 <h3 id="subsecond-nanoseconds"><code>SubsecondNanoseconds</code></h3>
 
@@ -104,7 +104,7 @@ The fraction beyond the whole seconds, in nanoseconds.
 
 **Returns**: the nanoseconds within the second, in `[0, 999999999]`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L99)
 
 <h3 id="since"><code>Since</code></h3>
 
@@ -122,7 +122,7 @@ reversed. That is information, not an error, which is the difference from [`Inst
 
 **Returns**: the time between the two moments, or `None` when `earlier` is not earlier
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L109)
 
 <h3 id="plus"><code>Plus</code></h3>
 
@@ -138,7 +138,7 @@ This moment shifted by `span`, or `None` past the range.
 
 **Returns**: the moment that far later, or `None` when it does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L118)
 
 <h3 id="equals"><code>Equals</code></h3>
 
@@ -154,7 +154,7 @@ Whether two timestamps name the same moment.
 
 **Returns**: whether the two name the same moment
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L130)
 
 <h3 id="compare"><code>Compare</code></h3>
 
@@ -170,7 +170,7 @@ How this moment orders against `other`.
 
 **Returns**: how this moment orders against `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L138)
 
 <h3 id="is-in-calendar-range"><code>IsInCalendarRange</code></h3>
 
@@ -186,7 +186,7 @@ Borrows the moment and leaves it untouched. Cannot fail; runs in constant time a
 
 **Returns**: true when the calendar form exists for this moment
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L33)
 
 ## Implements Display
 
@@ -199,7 +199,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the moment as RFC 3339 in UTC, or as the Unix second count under the `unix` style.
@@ -220,7 +220,7 @@ leaves the destination as it was.
 
 **Returns**: success when the whole moment was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L86)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L87)
 
 ## Implements Debug
 
@@ -233,7 +233,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`: a moment has one reading, and the style chooses between the two forms here too.
@@ -246,4 +246,4 @@ The failures [`WriteDisplay`](/docs/api/time/timestamp#write-display) reports, i
 
 **Returns**: success when the whole moment was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Timestamp.rux#L102)

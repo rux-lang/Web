@@ -143,7 +143,7 @@ The rate, which differs per size — unlike the SHA-2 family, whose block is fix
 <h3 id="keccak-permute"><code>KeccakPermute</code></h3>
 
 ```rux
-pub unsafe func KeccakPermute(lanes: *var uint64)
+pub func KeccakPermute(lanes: *var uint64)
 ```
 
 The Keccak-f[1600] permutation, applied in place to twenty-five lanes.

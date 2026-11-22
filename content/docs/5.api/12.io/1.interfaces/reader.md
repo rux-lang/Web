@@ -26,7 +26,7 @@ pub interface Reader {
     func Read(
         &var self,
         into: var char8[..]
-    ) -> uint throws IoError;
+    ) -> uint ! IoError;
 }
 ```
 
@@ -35,10 +35,7 @@ pub interface Reader {
 <h3 id="read"><code>Read</code></h3>
 
 ```rux
-func Read(
-    &var self,
-    into: var char8[..]
-) -> uint throws IoError
+func Read(&var self, into: var char8[..]) -> uint ! IoError
 ```
 
 Fills what it can of `into` and succeeds with how much.
@@ -81,7 +78,7 @@ moved nothing, which is a stream that will never finish the job.
 pub func ReadExact(
     reader: &var Reader,
     into: var char8[..]
-) throws IoError
+) -> !IoError
 ```
 
 Fills all of `into`, looping over partial reads, or says why it could not.

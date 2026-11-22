@@ -29,10 +29,10 @@ pub struct JsonParser {
 
 ## Constructors
 
-<h3 id="new"><code>JsonParser</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func JsonParser(
+pub func New(
     allocator: Allocator,
     input: char8[..],
     limits: JsonLimits
@@ -87,7 +87,7 @@ A caller using [`Parse`](/docs/api/json/json-parser#parse) never needs this: the
 <h3 id="parse"><code>Parse</code></h3>
 
 ```rux
-pub func Parse(&var self) -> JsonValue throws JsonParseError
+pub func Parse(&var self) -> JsonValue ! JsonParseError
 ```
 
 Parses the whole document and returns its top-level value, or why it could not.

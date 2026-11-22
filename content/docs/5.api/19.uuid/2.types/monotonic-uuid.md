@@ -36,10 +36,10 @@ serialize against each other or interleave into one sequence.
 
 ## Constructors
 
-<h3 id="new"><code>MonotonicUuid</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func MonotonicUuid() -> MonotonicUuid
+pub func New() -> MonotonicUuid
 ```
 
 A generator that has produced nothing yet.
@@ -53,7 +53,7 @@ A generator that has produced nothing yet.
 <h3 id="next"><code>Next</code></h3>
 
 ```rux
-pub func Next(&var self) -> Uuid throws EntropyError
+pub func Next(&var self) -> Uuid ! EntropyError
 ```
 
 The next identifier, strictly greater than the one before it.

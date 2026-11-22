@@ -28,8 +28,8 @@ pub struct PathBuffer {
 }
 ```
 
-Move-only: it prohibits copying and gives its block back with [`~PathBuffer`](/docs/api/path/path-buffer#destructor).
-Storage invariant, which every `unsafe` block here relies on: `length <= capacity`; `data` is null exactly when
+Move-only: it prohibits copying and gives its block back in its destructor.
+Storage invariant, which every raw access here relies on: `length <= capacity`; `data` is null exactly when
 `capacity` is zero, and otherwise addresses a block of `capacity` units from `allocator` whose first `length` are
 initialized.
 
@@ -41,10 +41,10 @@ initialized.
 
 ## Constructors
 
-<h3 id="new"><code>PathBuffer</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func PathBuffer(allocator: Allocator) -> PathBuffer
+pub func New(allocator: Allocator) -> PathBuffer
 ```
 
 An empty buffer that has allocated nothing.
@@ -166,7 +166,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The lossy rendering of the units the buffer owns.
@@ -179,7 +179,7 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 
 **Returns**: success when the whole path was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L305)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L306)
 
 ## Implements Debug
 
@@ -192,7 +192,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The exact, quoted rendering of the units the buffer owns.
@@ -205,12 +205,12 @@ The failures [`OsStringView::WriteDebug`](/docs/api/path/os-string-view#write-de
 
 **Returns**: success when the whole path was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L318)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/PathBuffer.rux#L319)
 
 ## Destructor
 
 ```rux
-func ~PathBuffer(&var self)
+destructor
 ```
 
 Gives the block back.

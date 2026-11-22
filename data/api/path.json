@@ -56,7 +56,7 @@
       "displayName": "OsUnit",
       "module": "OsString",
       "source": "Src/OsString.rux",
-      "line": 18,
+      "line": 20,
       "signature": "pub type OsUnit = uint16",
       "typeParams": [],
       "doc": {
@@ -82,7 +82,7 @@
       "displayName": "OsUnit",
       "module": "OsString",
       "source": "Src/OsString.rux",
-      "line": 23,
+      "line": 25,
       "signature": "pub type OsUnit = char8",
       "typeParams": [],
       "doc": {
@@ -108,7 +108,7 @@
       "displayName": "OsStringView",
       "module": "OsString",
       "source": "Src/OsString.rux",
-      "line": 29,
+      "line": 31,
       "signature": "pub struct OsStringView",
       "typeParams": [],
       "doc": {
@@ -126,7 +126,7 @@
           "name": "units",
           "type": "OsUnit[..]",
           "public": true,
-          "line": 31,
+          "line": 33,
           "doc": "The units, exactly as the system holds them.",
           "targets": [
             "windows-x86_64",
@@ -144,10 +144,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "OsStringView",
-          "line": 38,
-          "signature": "pub func OsStringView() -> OsStringView",
+          "kind": "associated",
+          "name": "New",
+          "line": 40,
+          "signature": "pub func New() -> OsStringView",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -178,7 +178,7 @@
         {
           "kind": "associated",
           "name": "FromUnits",
-          "line": 46,
+          "line": 48,
           "signature": "pub func FromUnits(units: OsUnit[..]) -> OsStringView",
           "typeParams": [],
           "params": [{ "name": "units", "type": "OsUnit[..]" }],
@@ -210,7 +210,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 53,
+          "line": 55,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -242,7 +242,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 60,
+          "line": 62,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -274,7 +274,7 @@
         {
           "kind": "method",
           "name": "Units",
-          "line": 67,
+          "line": 69,
           "signature": "pub func Units(&self) -> OsUnit[..]",
           "typeParams": [],
           "params": [],
@@ -306,7 +306,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 77,
+          "line": 79,
           "signature": "pub func Equals(&self, other: &OsStringView) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&OsStringView" }],
@@ -338,8 +338,8 @@
         {
           "kind": "method",
           "name": "ToText",
-          "line": 96,
-          "signature": "pub func ToText(&self, allocator: Allocator) -> String throws TextError",
+          "line": 98,
+          "signature": "pub func ToText(&self, allocator: Allocator) -> String ! TextError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": "&OsStringView",
@@ -370,8 +370,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 220,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 221,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -408,8 +408,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 238,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 239,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -462,12 +462,12 @@
       "displayName": "OsString",
       "module": "OsString",
       "source": "Src/OsString.rux",
-      "line": 140,
+      "line": 142,
       "signature": "pub struct OsString",
       "typeParams": [],
       "doc": {
         "summary": "Native text that owns its units.",
-        "markdown": "Native text that owns its units.\nMove-only: it owns its native-unit block and gives it back when it dies. `Clone` makes an independent copy.\nStorage invariant, which every `unsafe` block here relies on: `data` is null exactly when `length` is zero, and\notherwise addresses a block of `length` initialized units from `allocator`.",
+        "markdown": "Native text that owns its units.\nMove-only: it owns its native-unit block and gives it back when it dies. `Clone` makes an independent copy.\nStorage invariant, which every raw access here relies on: `data` is null exactly when `length` is zero, and\notherwise addresses a block of `length` initialized units from `allocator`.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -480,7 +480,7 @@
           "name": "data",
           "type": "*var OsUnit",
           "public": false,
-          "line": 142,
+          "line": 144,
           "doc": "The units, or null for no length.",
           "targets": [
             "windows-x86_64",
@@ -497,7 +497,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 144,
+          "line": 146,
           "doc": "How many units there are.",
           "targets": [
             "windows-x86_64",
@@ -514,7 +514,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 146,
+          "line": 148,
           "doc": "Where the block came from, and where it goes back to.",
           "targets": [
             "windows-x86_64",
@@ -532,10 +532,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "OsString",
-          "line": 154,
-          "signature": "pub func OsString(allocator: Allocator) -> OsString",
+          "kind": "associated",
+          "name": "New",
+          "line": 156,
+          "signature": "pub func New(allocator: Allocator) -> OsString",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -566,7 +566,7 @@
         {
           "kind": "associated",
           "name": "FromView",
-          "line": 165,
+          "line": 167,
           "signature": "pub func FromView(allocator: Allocator, view: OsStringView) -> OsString",
           "typeParams": [],
           "params": [
@@ -604,7 +604,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 184,
+          "line": 186,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -636,7 +636,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 191,
+          "line": 193,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -668,7 +668,7 @@
         {
           "kind": "method",
           "name": "View",
-          "line": 198,
+          "line": 200,
           "signature": "pub func View(&self) -> OsStringView",
           "typeParams": [],
           "params": [],
@@ -700,7 +700,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 205,
+          "line": 207,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -731,9 +731,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~OsString",
-          "line": 220,
-          "signature": "func ~OsString(&var self)",
+          "name": "~",
+          "line": 222,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var OsString",
@@ -764,7 +764,7 @@
         {
           "kind": "associated",
           "name": "FromText",
-          "line": 232,
+          "line": 234,
           "signature": "pub func FromText(allocator: Allocator, text: char8[..]) -> OsString",
           "typeParams": [],
           "params": [
@@ -834,8 +834,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 251,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 252,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -872,8 +872,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 264,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 265,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1160,10 +1160,10 @@
           ]
         },
         {
-          "kind": "constructor",
-          "name": "Path",
+          "kind": "associated",
+          "name": "New",
           "line": 50,
-          "signature": "pub func Path() -> Path",
+          "signature": "pub func New() -> Path",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -1386,8 +1386,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 279,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 280,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1424,8 +1424,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 292,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 293,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1586,7 +1586,7 @@
       "typeParams": [],
       "doc": {
         "summary": "An owning, growable path.",
-        "markdown": "An owning, growable path.\nMove-only: it prohibits copying and gives its block back with `~PathBuffer`.\nStorage invariant, which every `unsafe` block here relies on: `length <= capacity`; `data` is null exactly when\n`capacity` is zero, and otherwise addresses a block of `capacity` units from `allocator` whose first `length` are\ninitialized.",
+        "markdown": "An owning, growable path.\nMove-only: it prohibits copying and gives its block back in its destructor.\nStorage invariant, which every raw access here relies on: `length <= capacity`; `data` is null exactly when\n`capacity` is zero, and otherwise addresses a block of `capacity` units from `allocator` whose first `length` are\ninitialized.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -1668,10 +1668,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "PathBuffer",
+          "kind": "associated",
+          "name": "New",
           "line": 31,
-          "signature": "pub func PathBuffer(allocator: Allocator) -> PathBuffer",
+          "signature": "pub func New(allocator: Allocator) -> PathBuffer",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -1931,9 +1931,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~PathBuffer",
+          "name": "~",
           "line": 170,
-          "signature": "func ~PathBuffer(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var PathBuffer",
@@ -1964,8 +1964,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 305,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 306,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2002,8 +2002,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 318,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 319,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },

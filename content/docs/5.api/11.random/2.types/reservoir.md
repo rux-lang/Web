@@ -39,10 +39,10 @@ size.
 
 ## Constructors
 
-<h3 id="new"><code>Reservoir</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Reservoir(room: var T[..]) -> Reservoir<T>
+pub func New(room: var T[..]) -> Reservoir<T>
 ```
 
 A reservoir that will fill `room`.

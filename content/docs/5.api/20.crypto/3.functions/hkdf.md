@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Hkdf.rux
-  line: 100
+  line: 102
 seo:
   title: "Hkdf<D> — Crypto API"
   description: "Extract and expand in one call: the whole of HKDF."
@@ -22,7 +22,7 @@ seo:
 Extract and expand in one call: the whole of HKDF.
 
 ```rux
-pub func Hkdf<D: Digest>(
+pub func Hkdf<D: Digest + Copyable>(
     prototype: D,
     salt: char8[..],
     material: char8[..],
@@ -35,9 +35,9 @@ Returns `false` for an output longer than 255 digests, exactly as [`HkdfExpand`]
 
 ## Type parameters
 
-| Name        | Description     |
-| ----------- | --------------- |
-| `D: Digest` | the digest type |
+| Name                   | Description     |
+| ---------------------- | --------------- |
+| `D: Digest + Copyable` | the digest type |
 
 ## Parameters
 
@@ -61,12 +61,12 @@ pub const HkdfMaximumBlocks: uint = 255;
 
 The most blocks `Expand` can produce, since its counter is one byte.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hkdf.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hkdf.rux#L19)
 
 <h3 id="hkdf-extract"><code>HkdfExtract&lt;D&gt;</code></h3>
 
 ```rux
-pub func HkdfExtract<D: Digest>(
+pub func HkdfExtract<D: Digest + Copyable>(
     prototype: D,
     salt: char8[..],
     material: char8[..],
@@ -78,13 +78,13 @@ Extracts a pseudorandom key from `material`, salted with `salt`.
 `into` must be exactly the digest's length. An empty salt is legal and means a string of that many zeros,
 which is what the specification says — so an absent salt is not the same as no salt at all.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hkdf.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hkdf.rux#L30)
 
 **Type parameters**
 
-| Name        | Description     |
-| ----------- | --------------- |
-| `D: Digest` | the digest type |
+| Name                   | Description     |
+| ---------------------- | --------------- |
+| `D: Digest + Copyable` | the digest type |
 
 **Parameters**
 
@@ -98,7 +98,7 @@ which is what the specification says — so an absent salt is not the same as no
 <h3 id="hkdf-expand"><code>HkdfExpand&lt;D&gt;</code></h3>
 
 ```rux
-pub func HkdfExpand<D: Digest>(
+pub func HkdfExpand<D: Digest + Copyable>(
     prototype: D,
     key: char8[..],
     info: char8[..],
@@ -111,13 +111,13 @@ Returns `false` when `into` is longer than 255 digests, which is the most the on
 nothing is written in that case. `info` names what the derived key is for, and two expansions of one key
 under different info strings are unrelated.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hkdf.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hkdf.rux#L59)
 
 **Type parameters**
 
-| Name        | Description     |
-| ----------- | --------------- |
-| `D: Digest` | the digest type |
+| Name                   | Description     |
+| ---------------------- | --------------- |
+| `D: Digest + Copyable` | the digest type |
 
 **Parameters**
 

@@ -201,7 +201,7 @@
           "kind": "requirement",
           "name": "Fill",
           "line": 28,
-          "signature": "func Fill(&var self, buffer: *var opaque, length: uint) throws EntropyError",
+          "signature": "func Fill(&var self, buffer: *var opaque, length: uint) -> !EntropyError",
           "typeParams": [],
           "params": [
             { "name": "buffer", "type": "*var opaque" },
@@ -272,10 +272,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "SystemEntropy",
+          "kind": "associated",
+          "name": "New",
           "line": 45,
-          "signature": "pub func SystemEntropy() -> SystemEntropy",
+          "signature": "pub func New() -> SystemEntropy",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -307,7 +307,7 @@
           "kind": "method",
           "name": "Fill",
           "line": 60,
-          "signature": "pub func Fill(&var self, buffer: *var opaque, length: uint) throws EntropyError",
+          "signature": "pub func Fill(&var self, buffer: *var opaque, length: uint) -> !EntropyError",
           "typeParams": [],
           "params": [
             { "name": "buffer", "type": "*var opaque" },
@@ -361,7 +361,7 @@
       "module": "Fill",
       "source": "Src/Fill.rux",
       "line": 81,
-      "signature": "pub unsafe func FillFrom(source: &var EntropySource, buffer: *var opaque, length: uint) throws EntropyError",
+      "signature": "pub func FillFrom(source: &var EntropySource, buffer: *var opaque, length: uint) -> !EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "Fills `length` bytes of `buffer` from `source`, in as many calls as it takes.",
@@ -400,7 +400,7 @@
       "module": "Fill",
       "source": "Src/Fill.rux",
       "line": 115,
-      "signature": "pub unsafe func FillWithRetries(source: &var EntropySource, buffer: *var opaque, length: uint, attempts: uint) throws EntropyError",
+      "signature": "pub func FillWithRetries(source: &var EntropySource, buffer: *var opaque, length: uint, attempts: uint) -> !EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "Fills `length` bytes of `buffer` from `source`, trying again while the failure says trying again might work.",
@@ -440,7 +440,7 @@
       "module": "Fill",
       "source": "Src/Fill.rux",
       "line": 142,
-      "signature": "pub unsafe func Fill(buffer: *var opaque, length: uint) throws EntropyError",
+      "signature": "pub func Fill(buffer: *var opaque, length: uint) -> !EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "Fills `length` bytes of `buffer` from the operating system.",
@@ -478,7 +478,7 @@
       "module": "Fill",
       "source": "Src/Fill.rux",
       "line": 153,
-      "signature": "pub func NextUint64() -> uint64 throws EntropyError",
+      "signature": "pub func NextUint64() -> uint64 ! EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "An unpredictable 64-bit value, which is what a generator wants for a seed.",
@@ -512,7 +512,7 @@
       "displayName": "MaxEntropyAttempts",
       "module": "Source",
       "source": "Src/Source.rux",
-      "line": 31,
+      "line": 38,
       "signature": "pub const MaxEntropyAttempts: uint",
       "typeParams": [],
       "doc": {
@@ -547,7 +547,7 @@
       "displayName": "MaxEntropyRequest",
       "module": "Source",
       "source": "Src/Source.rux",
-      "line": 37,
+      "line": 44,
       "signature": "pub const MaxEntropyRequest: uint",
       "typeParams": [],
       "doc": {
@@ -582,8 +582,8 @@
       "displayName": "FillFromSource",
       "module": "Source",
       "source": "Src/Source.rux",
-      "line": 55,
-      "signature": "pub unsafe func FillFromSource(buffer: *var opaque, length: uint) throws EntropyError",
+      "line": 62,
+      "signature": "pub func FillFromSource(buffer: *var opaque, length: uint) -> !EntropyError",
       "typeParams": [],
       "doc": {
         "summary": "Fills `length` bytes of `buffer` from the system's generator, in one pass.",

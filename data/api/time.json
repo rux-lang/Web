@@ -33,7 +33,7 @@
     {
       "name": "CalendarParse",
       "source": "Src/CalendarParse.rux",
-      "header": "Reading a calendar value out of text, and saying exactly what was wrong with it.\nThe old parser answered `bool` and wrote through output slots, which made every failure the same failure. A\ncaller could not tell a typo from a February the thirtieth, and could not point at the character: both are\n\"false\", and both leave the caller re-reading its own input to guess.\nSo every parser here answers a `Result` and every failure carries a zero-based byte offset into the text it was\ngiven. The categories are the ones a caller acts on differently. A malformed shape is the writer's mistake and\nthe offset is where the shape stopped matching. An invalid month, a nonexistent day and an out-of-range time are\nwell-formed text naming something that does not exist, which is a different mistake and usually a different\nbug. An excessive fraction and an out-of-range offset are each a field that parsed and then would not fit.\nEnd of input is an offset like any other: it is the text's length, which is where the missing character would\nhave gone.\nThe four entry points share their machinery rather than reimplementing it, so `ParseRfc3339` cannot disagree\nwith `ParseDate` about what a date is."
+      "header": "Reading a calendar value out of text, and saying exactly what was wrong with it.\nThe old parser answered `bool` and wrote through output slots, which made every failure the same failure. A caller\ncould not tell a typo from a February the thirtieth, and could not point at the character: both are \"false\", and both\nleave the caller re-reading its own input to guess. So every parser here can fail with a `TimeParseError`, and every\nfailure carries a zero-based byte offset into the text it was given. The categories are the ones a caller acts on\ndifferently. A malformed shape is the writer's mistake and the offset is where the shape stopped matching. An invalid\nmonth, a nonexistent day and an out-of-range time are well-formed text naming something that does not exist, which is\na different mistake and usually a different bug. An excessive fraction and an out-of-range offset are each a field\nthat parsed and then would not fit. End of input is an offset like any other: it is the text's length, which is where\nthe missing character would have gone. The four entry points share their machinery rather than reimplementing it, so\n`ParseRfc3339` cannot disagree with `ParseDate` about what a date is."
     },
     {
       "name": "CalendarText",
@@ -392,7 +392,7 @@
         {
           "kind": "method",
           "name": "PlusDays",
-          "line": 19,
+          "line": 18,
           "signature": "pub func PlusDays(&self, days: int64) -> Date?",
           "typeParams": [],
           "params": [{ "name": "days", "type": "int64" }],
@@ -424,7 +424,7 @@
         {
           "kind": "method",
           "name": "PlusMonths",
-          "line": 33,
+          "line": 31,
           "signature": "pub func PlusMonths(&self, months: int64) -> Date?",
           "typeParams": [],
           "params": [{ "name": "months", "type": "int64" }],
@@ -456,7 +456,7 @@
         {
           "kind": "method",
           "name": "PlusYears",
-          "line": 53,
+          "line": 51,
           "signature": "pub func PlusYears(&self, years: int64) -> Date?",
           "typeParams": [],
           "params": [{ "name": "years", "type": "int64" }],
@@ -488,7 +488,7 @@
         {
           "kind": "method",
           "name": "DaysSince",
-          "line": 66,
+          "line": 63,
           "signature": "pub func DaysSince(&self, earlier: Date) -> int64",
           "typeParams": [],
           "params": [{ "name": "earlier", "type": "Date" }],
@@ -521,7 +521,7 @@
           "kind": "method",
           "name": "WriteDisplay",
           "line": 158,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -559,7 +559,7 @@
           "kind": "method",
           "name": "WriteDebug",
           "line": 177,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -881,7 +881,7 @@
           "kind": "method",
           "name": "WriteDisplay",
           "line": 192,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -919,7 +919,7 @@
           "kind": "method",
           "name": "WriteDebug",
           "line": 211,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1113,7 +1113,7 @@
           "kind": "method",
           "name": "WriteDisplay",
           "line": 227,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1151,7 +1151,7 @@
           "kind": "method",
           "name": "WriteDebug",
           "line": 249,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1362,7 +1362,7 @@
           "kind": "method",
           "name": "WriteDisplay",
           "line": 266,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1400,7 +1400,7 @@
           "kind": "method",
           "name": "WriteDebug",
           "line": 282,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1453,12 +1453,12 @@
       "displayName": "TimeParseError",
       "module": "CalendarParse",
       "source": "Src/CalendarParse.rux",
-      "line": 22,
+      "line": 20,
       "signature": "pub variant TimeParseError",
       "typeParams": [],
       "doc": {
         "summary": "Why text could not be read as a calendar value.",
-        "markdown": "Why text could not be read as a calendar value.\nFailure-only: every case is a failure, and each carries the zero-based UTF-8 byte offset into the text where it\nwas found. Success is `Result::Success`.\nCopy, carrying one offset.",
+        "markdown": "Why text could not be read as a calendar value.\nFailure-only: every case is a failure, and each carries the zero-based UTF-8 byte offset into the text where it\nwas found. Success is the parsed value itself.\nCopy, carrying one offset.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -1473,7 +1473,7 @@
           "name": "InvalidSyntax",
           "value": null,
           "payload": "(uint)",
-          "line": 26,
+          "line": 24,
           "doc": "The text does not have the shape required: a missing separator, a non-digit where a digit belongs, text\nafter the value, or input that stops early. The offset is where the shape stopped matching, which is the\ntext's length when it ran out.",
           "targets": [
             "windows-x86_64",
@@ -1490,7 +1490,7 @@
           "name": "InvalidMonth",
           "value": null,
           "payload": "(uint)",
-          "line": 28,
+          "line": 26,
           "doc": "A well-formed two-digit month naming no month. The offset is the first of its digits.",
           "targets": [
             "windows-x86_64",
@@ -1507,7 +1507,7 @@
           "name": "NonexistentDay",
           "value": null,
           "payload": "(uint)",
-          "line": 31,
+          "line": 29,
           "doc": "A well-formed day that the month does not have, such as the thirtieth of February. The offset is the first\nof its digits.",
           "targets": [
             "windows-x86_64",
@@ -1524,7 +1524,7 @@
           "name": "InvalidTime",
           "value": null,
           "payload": "(uint)",
-          "line": 34,
+          "line": 32,
           "doc": "A well-formed hour, minute or second outside its range. The offset is the first digit of the offending\nfield. Second 60 is not here: it is the leap second, and it folds rather than failing.",
           "targets": [
             "windows-x86_64",
@@ -1541,7 +1541,7 @@
           "name": "ExcessiveFraction",
           "value": null,
           "payload": "(uint)",
-          "line": 36,
+          "line": 34,
           "doc": "More fraction digits than a nanosecond can hold. The offset is the first digit that could not be kept.",
           "targets": [
             "windows-x86_64",
@@ -1558,7 +1558,7 @@
           "name": "InvalidOffset",
           "value": null,
           "payload": "(uint)",
-          "line": 38,
+          "line": 36,
           "doc": "A well-formed offset outside what an offset may be. The offset is the sign that opened it.",
           "targets": [
             "windows-x86_64",
@@ -1576,7 +1576,7 @@
         {
           "kind": "method",
           "name": "Offset",
-          "line": 46,
+          "line": 44,
           "signature": "pub func Offset(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -1624,8 +1624,8 @@
       "displayName": "ParseDate",
       "module": "CalendarParse",
       "source": "Src/CalendarParse.rux",
-      "line": 241,
-      "signature": "pub func ParseDate(text: char8[..]) -> Date throws TimeParseError",
+      "line": 239,
+      "signature": "pub func ParseDate(text: char8[..]) -> Date ! TimeParseError",
       "typeParams": [],
       "doc": {
         "summary": "Reads `YYYY-MM-DD`.",
@@ -1659,8 +1659,8 @@
       "displayName": "ParseTimeOfDay",
       "module": "CalendarParse",
       "source": "Src/CalendarParse.rux",
-      "line": 254,
-      "signature": "pub func ParseTimeOfDay(text: char8[..]) -> TimeOfDay throws TimeParseError",
+      "line": 252,
+      "signature": "pub func ParseTimeOfDay(text: char8[..]) -> TimeOfDay ! TimeParseError",
       "typeParams": [],
       "doc": {
         "summary": "Reads `HH:MM:SS` with an optional fractional second.",
@@ -1694,8 +1694,8 @@
       "displayName": "ParseDateTime",
       "module": "CalendarParse",
       "source": "Src/CalendarParse.rux",
-      "line": 269,
-      "signature": "pub func ParseDateTime(text: char8[..]) -> DateTime throws TimeParseError",
+      "line": 267,
+      "signature": "pub func ParseDateTime(text: char8[..]) -> DateTime ! TimeParseError",
       "typeParams": [],
       "doc": {
         "summary": "Reads `YYYY-MM-DDTHH:MM:SS[.fraction]`, with no offset.",
@@ -1729,8 +1729,8 @@
       "displayName": "ParseRfc3339",
       "module": "CalendarParse",
       "source": "Src/CalendarParse.rux",
-      "line": 288,
-      "signature": "pub func ParseRfc3339(text: char8[..]) -> OffsetDateTime throws TimeParseError",
+      "line": 286,
+      "signature": "pub func ParseRfc3339(text: char8[..]) -> OffsetDateTime ! TimeParseError",
       "typeParams": [],
       "doc": {
         "summary": "Reads `YYYY-MM-DDTHH:MM:SS[.fraction](Z|+HH:MM|-HH:MM)`.",
@@ -1817,10 +1817,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "OffsetDateTime",
+          "kind": "associated",
+          "name": "New",
           "line": 37,
-          "signature": "pub func OffsetDateTime(dateTime: DateTime, offset: UtcOffset) -> OffsetDateTime",
+          "signature": "pub func New(dateTime: DateTime, offset: UtcOffset) -> OffsetDateTime",
           "typeParams": [],
           "params": [
             { "name": "dateTime", "type": "DateTime" },
@@ -1890,7 +1890,7 @@
           "kind": "method",
           "name": "WriteDisplay",
           "line": 308,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1928,7 +1928,7 @@
           "kind": "method",
           "name": "WriteDebug",
           "line": 324,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2167,7 +2167,7 @@
         {
           "kind": "associated",
           "name": "FromHours",
-          "line": 56,
+          "line": 55,
           "signature": "pub func FromHours(hours: int64) -> Duration?",
           "typeParams": [],
           "params": [{ "name": "hours", "type": "int64" }],
@@ -2199,7 +2199,7 @@
         {
           "kind": "associated",
           "name": "FromMilliseconds",
-          "line": 67,
+          "line": 65,
           "signature": "pub func FromMilliseconds(milliseconds: int64) -> Duration",
           "typeParams": [],
           "params": [{ "name": "milliseconds", "type": "int64" }],
@@ -2231,7 +2231,7 @@
         {
           "kind": "associated",
           "name": "FromMicroseconds",
-          "line": 75,
+          "line": 73,
           "signature": "pub func FromMicroseconds(microseconds: int64) -> Duration",
           "typeParams": [],
           "params": [{ "name": "microseconds", "type": "int64" }],
@@ -2263,7 +2263,7 @@
         {
           "kind": "associated",
           "name": "FromNanoseconds",
-          "line": 83,
+          "line": 81,
           "signature": "pub func FromNanoseconds(nanoseconds: int64) -> Duration",
           "typeParams": [],
           "params": [{ "name": "nanoseconds", "type": "int64" }],
@@ -2295,7 +2295,7 @@
         {
           "kind": "method",
           "name": "IsZero",
-          "line": 103,
+          "line": 101,
           "signature": "pub func IsZero(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -2327,7 +2327,7 @@
         {
           "kind": "method",
           "name": "IsNegative",
-          "line": 111,
+          "line": 109,
           "signature": "pub func IsNegative(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -2359,7 +2359,7 @@
         {
           "kind": "method",
           "name": "WholeSeconds",
-          "line": 118,
+          "line": 116,
           "signature": "pub func WholeSeconds(&self) -> int64",
           "typeParams": [],
           "params": [],
@@ -2391,7 +2391,7 @@
         {
           "kind": "method",
           "name": "SubsecondNanoseconds",
-          "line": 125,
+          "line": 123,
           "signature": "pub func SubsecondNanoseconds(&self) -> uint32",
           "typeParams": [],
           "params": [],
@@ -2423,7 +2423,7 @@
         {
           "kind": "method",
           "name": "TotalMilliseconds",
-          "line": 132,
+          "line": 130,
           "signature": "pub func TotalMilliseconds(&self) -> int64?",
           "typeParams": [],
           "params": [],
@@ -2455,7 +2455,7 @@
         {
           "kind": "method",
           "name": "TotalMicroseconds",
-          "line": 139,
+          "line": 137,
           "signature": "pub func TotalMicroseconds(&self) -> int64?",
           "typeParams": [],
           "params": [],
@@ -2487,7 +2487,7 @@
         {
           "kind": "method",
           "name": "TotalNanoseconds",
-          "line": 146,
+          "line": 144,
           "signature": "pub func TotalNanoseconds(&self) -> int64?",
           "typeParams": [],
           "params": [],
@@ -2519,7 +2519,7 @@
         {
           "kind": "method",
           "name": "Plus",
-          "line": 164,
+          "line": 160,
           "signature": "pub func Plus(&self, other: Duration) -> Duration?",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Duration" }],
@@ -2551,7 +2551,7 @@
         {
           "kind": "method",
           "name": "Minus",
-          "line": 179,
+          "line": 174,
           "signature": "pub func Minus(&self, other: Duration) -> Duration?",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Duration" }],
@@ -2583,7 +2583,7 @@
         {
           "kind": "method",
           "name": "Negated",
-          "line": 193,
+          "line": 187,
           "signature": "pub func Negated(&self) -> Duration?",
           "typeParams": [],
           "params": [],
@@ -2615,7 +2615,7 @@
         {
           "kind": "method",
           "name": "Times",
-          "line": 202,
+          "line": 196,
           "signature": "pub func Times(&self, factor: int64) -> Duration?",
           "typeParams": [],
           "params": [{ "name": "factor", "type": "int64" }],
@@ -2647,7 +2647,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 219,
+          "line": 210,
           "signature": "pub func Equals(&self, other: Duration) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Duration" }],
@@ -2679,7 +2679,7 @@
         {
           "kind": "method",
           "name": "Compare",
-          "line": 228,
+          "line": 219,
           "signature": "pub func Compare(&self, other: Duration) -> Ordering",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Duration" }],
@@ -2711,8 +2711,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 120,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 114,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2749,8 +2749,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 140,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 134,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -2803,8 +2803,8 @@
       "displayName": "ParseDuration",
       "module": "DurationText",
       "source": "Src/DurationText.rux",
-      "line": 154,
-      "signature": "pub func ParseDuration(text: char8[..]) -> Duration throws TimeParseError",
+      "line": 148,
+      "signature": "pub func ParseDuration(text: char8[..]) -> Duration ! TimeParseError",
       "typeParams": [],
       "doc": {
         "summary": "Reads a span written as signed decimal seconds followed by `s`.",
@@ -2838,7 +2838,7 @@
       "displayName": "Instant",
       "module": "Instant",
       "source": "Src/Instant.rux",
-      "line": 23,
+      "line": 33,
       "signature": "pub struct Instant",
       "typeParams": [],
       "doc": {
@@ -2856,7 +2856,7 @@
           "name": "ticks",
           "type": "uint64",
           "public": false,
-          "line": 25,
+          "line": 35,
           "doc": "Nanoseconds since some origin fixed for the life of the process.",
           "targets": [
             "windows-x86_64",
@@ -2876,7 +2876,7 @@
         {
           "kind": "associated",
           "name": "Now",
-          "line": 33,
+          "line": 43,
           "signature": "pub func Now() -> Instant",
           "typeParams": [],
           "params": [],
@@ -2908,7 +2908,7 @@
         {
           "kind": "method",
           "name": "Since",
-          "line": 64,
+          "line": 72,
           "signature": "pub func Since(&self, earlier: Instant) -> Duration?",
           "typeParams": [],
           "params": [{ "name": "earlier", "type": "Instant" }],
@@ -2940,7 +2940,7 @@
         {
           "kind": "method",
           "name": "Elapsed",
-          "line": 75,
+          "line": 83,
           "signature": "pub func Elapsed(&self) -> Duration",
           "typeParams": [],
           "params": [],
@@ -2972,8 +2972,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 26,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 27,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -3026,7 +3026,7 @@
       "displayName": "TimeError",
       "module": "Sleep",
       "source": "Src/Sleep.rux",
-      "line": 32,
+      "line": 45,
       "signature": "pub enum TimeError",
       "typeParams": [],
       "doc": {
@@ -3046,7 +3046,7 @@
           "name": "InvalidDuration",
           "value": "2",
           "payload": null,
-          "line": 34,
+          "line": 47,
           "doc": "The system refused the request itself, rather than being unable to finish it.",
           "targets": [
             "windows-x86_64",
@@ -3063,7 +3063,7 @@
           "name": "Failed",
           "value": "3",
           "payload": null,
-          "line": 36,
+          "line": 49,
           "doc": "The system reported a failure this module has no name for.",
           "targets": [
             "windows-x86_64",
@@ -3096,7 +3096,7 @@
       "displayName": "MaximumWaitMilliseconds",
       "module": "Sleep",
       "source": "Src/Sleep.rux",
-      "line": 45,
+      "line": 58,
       "signature": "pub const MaximumWaitMilliseconds: int64",
       "typeParams": [],
       "doc": {
@@ -3131,7 +3131,7 @@
       "displayName": "WaitChunkMilliseconds",
       "module": "Sleep",
       "source": "Src/Sleep.rux",
-      "line": 58,
+      "line": 71,
       "signature": "pub func WaitChunkMilliseconds(span: Duration) -> int64",
       "typeParams": [],
       "doc": {
@@ -3166,7 +3166,7 @@
       "displayName": "Waiter",
       "module": "Sleep",
       "source": "Src/Sleep.rux",
-      "line": 82,
+      "line": 95,
       "signature": "pub interface Waiter",
       "typeParams": [],
       "doc": {
@@ -3186,8 +3186,8 @@
         {
           "kind": "requirement",
           "name": "WaitFor",
-          "line": 91,
-          "signature": "func WaitFor(&var self, span: Duration) -> Duration throws TimeError",
+          "line": 104,
+          "signature": "func WaitFor(&var self, span: Duration) -> Duration ! TimeError",
           "typeParams": [],
           "params": [{ "name": "span", "type": "Duration" }],
           "receiver": "&var Self",
@@ -3234,7 +3234,7 @@
       "displayName": "SystemWaiter",
       "module": "Sleep",
       "source": "Src/Sleep.rux",
-      "line": 98,
+      "line": 111,
       "signature": "pub struct SystemWaiter",
       "typeParams": [],
       "doc": {
@@ -3252,7 +3252,7 @@
           "name": "reserved",
           "type": "uint8",
           "public": false,
-          "line": 101,
+          "line": 114,
           "doc": "Present because a struct with no fields has no address to distinguish two of, and this type is passed by\nreference to a generic. It is never read.",
           "targets": [
             "windows-x86_64",
@@ -3270,10 +3270,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "SystemWaiter",
-          "line": 109,
-          "signature": "pub func SystemWaiter() -> SystemWaiter",
+          "kind": "associated",
+          "name": "New",
+          "line": 122,
+          "signature": "pub func New() -> SystemWaiter",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -3320,7 +3320,7 @@
       "displayName": "MaximumWaitAttempts",
       "module": "Sleep",
       "source": "Src/Sleep.rux",
-      "line": 161,
+      "line": 174,
       "signature": "pub const MaximumWaitAttempts: uint",
       "typeParams": [],
       "doc": {
@@ -3355,8 +3355,8 @@
       "displayName": "SleepUsing<W>",
       "module": "Sleep",
       "source": "Src/Sleep.rux",
-      "line": 175,
-      "signature": "pub func SleepUsing<W: Waiter>(waiter: &var W, span: Duration) throws TimeError",
+      "line": 188,
+      "signature": "pub func SleepUsing<W: Waiter>(waiter: &var W, span: Duration) -> !TimeError",
       "typeParams": [{ "name": "W", "bounds": ["Waiter"] }],
       "doc": {
         "summary": "Waits out `span` through `waiter`, retrying interruptions and chunking what one wait cannot express.",
@@ -3393,12 +3393,12 @@
       "displayName": "SleepFor",
       "module": "Sleep",
       "source": "Src/Sleep.rux",
-      "line": 204,
-      "signature": "pub func SleepFor(span: Duration) throws TimeError",
+      "line": 217,
+      "signature": "pub func SleepFor(span: Duration) -> !TimeError",
       "typeParams": [],
       "doc": {
         "summary": "Stops the calling thread for at least `span`.",
-        "markdown": "Stops the calling thread for at least `span`.\nAt least: the system wakes the thread no earlier, and how much later is the scheduler's business. A negative or\nzero span returns at once.\nA signal can interrupt the wait on the Unix systems, and this goes back for the remainder until the whole span\nhas passed — the interruption is invisible, which is what makes this safe to use for pacing. A span longer than\none system wait can express is waited for in chunks rather than clamped, so a hundred-day sleep is a hundred\ndays.\nFails with `InvalidDuration` when the system refused the request, which a normalized non-negative span should not\nproduce, and `Failed` for anything else. A caller with nothing to do about a failed wait says so with\n`try SleepFor(span) catch { _ => {} }`; the point is that it is no longer indistinguishable from success.",
+        "markdown": "Stops the calling thread for at least `span`.\nAt least: the system wakes the thread no earlier, and how much later is the scheduler's business. A negative or\nzero span returns at once.\nA signal can interrupt the wait on the Unix systems, and this goes back for the remainder until the whole span\nhas passed — the interruption is invisible, which is what makes this safe to use for pacing. A span longer than\none system wait can express is waited for in chunks rather than clamped, so a hundred-day sleep is a hundred\ndays.\nFails with `InvalidDuration` when the system refused the request, which a normalized non-negative span should not\nproduce, and `Failed` for anything else. A caller with nothing to do about a failed wait says so with\n`SleepFor(span) !!;`; the point is that it is no longer indistinguishable from success.",
         "typeParams": [],
         "params": [{ "name": "span", "markdown": "how long to wait for" }],
         "returns": "nothing when the whole span was waited out, or why it was not",
@@ -3498,10 +3498,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Stopwatch",
+          "kind": "associated",
+          "name": "New",
           "line": 34,
-          "signature": "pub func Stopwatch() -> Stopwatch",
+          "signature": "pub func New() -> Stopwatch",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -3804,7 +3804,7 @@
       "displayName": "Timestamp",
       "module": "Timestamp",
       "source": "Src/Timestamp.rux",
-      "line": 26,
+      "line": 40,
       "signature": "pub struct Timestamp",
       "typeParams": [],
       "doc": {
@@ -3822,7 +3822,7 @@
           "name": "seconds",
           "type": "int64",
           "public": true,
-          "line": 28,
+          "line": 42,
           "doc": "Whole seconds since the epoch, carrying the sign.",
           "targets": [
             "windows-x86_64",
@@ -3839,7 +3839,7 @@
           "name": "nanoseconds",
           "type": "uint32",
           "public": true,
-          "line": 30,
+          "line": 44,
           "doc": "The fraction, in nanoseconds, always in [0, 1e9).",
           "targets": [
             "windows-x86_64",
@@ -3859,7 +3859,7 @@
         {
           "kind": "associated",
           "name": "Epoch",
-          "line": 37,
+          "line": 51,
           "signature": "pub func Epoch() -> Timestamp",
           "typeParams": [],
           "params": [],
@@ -3891,7 +3891,7 @@
         {
           "kind": "associated",
           "name": "Now",
-          "line": 44,
+          "line": 58,
           "signature": "pub func Now() -> Timestamp",
           "typeParams": [],
           "params": [],
@@ -3923,7 +3923,7 @@
         {
           "kind": "associated",
           "name": "FromUnixSeconds",
-          "line": 71,
+          "line": 85,
           "signature": "pub func FromUnixSeconds(seconds: int64) -> Timestamp",
           "typeParams": [],
           "params": [{ "name": "seconds", "type": "int64" }],
@@ -3955,7 +3955,7 @@
         {
           "kind": "method",
           "name": "UnixSeconds",
-          "line": 78,
+          "line": 92,
           "signature": "pub func UnixSeconds(&self) -> int64",
           "typeParams": [],
           "params": [],
@@ -3987,7 +3987,7 @@
         {
           "kind": "method",
           "name": "SubsecondNanoseconds",
-          "line": 85,
+          "line": 99,
           "signature": "pub func SubsecondNanoseconds(&self) -> uint32",
           "typeParams": [],
           "params": [],
@@ -4019,7 +4019,7 @@
         {
           "kind": "method",
           "name": "Since",
-          "line": 95,
+          "line": 109,
           "signature": "pub func Since(&self, earlier: Timestamp) -> Duration?",
           "typeParams": [],
           "params": [{ "name": "earlier", "type": "Timestamp" }],
@@ -4051,7 +4051,7 @@
         {
           "kind": "method",
           "name": "Plus",
-          "line": 104,
+          "line": 118,
           "signature": "pub func Plus(&self, span: Duration) -> Timestamp?",
           "typeParams": [],
           "params": [{ "name": "span", "type": "Duration" }],
@@ -4083,7 +4083,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 116,
+          "line": 130,
           "signature": "pub func Equals(&self, other: Timestamp) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Timestamp" }],
@@ -4115,7 +4115,7 @@
         {
           "kind": "method",
           "name": "Compare",
-          "line": 124,
+          "line": 138,
           "signature": "pub func Compare(&self, other: Timestamp) -> Ordering",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Timestamp" }],
@@ -4147,7 +4147,7 @@
         {
           "kind": "method",
           "name": "IsInCalendarRange",
-          "line": 32,
+          "line": 33,
           "signature": "pub func IsInCalendarRange(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -4179,8 +4179,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 86,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 87,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -4217,8 +4217,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 101,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 102,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },

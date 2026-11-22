@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Digest.rux
-  line: 65
+  line: 66
 seo:
   title: "Secrets — Crypto API"
   description: Comparing secrets in constant time and wiping them so the compiler cannot skip it.
@@ -35,7 +35,7 @@ sequences whatever it finds, accumulating differences rather than branching on t
 Sequences of different lengths are unequal, and that answer is immediate: a length is not a secret, and
 pretending otherwise would mean reading past one of them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L66)
 
 **Parameters**
 
@@ -58,7 +58,7 @@ it — which is how a key a program believed it had erased stays in memory, in a
 written to swap. The barrier below is handed the buffer's address and its body is opaque, so the writes must
 have happened before it runs and the call cannot be dropped.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L102)
 
 **Parameters**
 

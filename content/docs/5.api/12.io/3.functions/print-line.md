@@ -184,7 +184,7 @@ pub func PrintValueLine(value: &Display) -> IoError?
 
 Writes a value's text to standard output, then a newline.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Print.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/Print.rux#L59)
 
 **Parameters**
 
@@ -200,7 +200,7 @@ Writes a value's text to standard output, then a newline.
 pub func WriteValueLine<T: Display>(
     writer: &var TextWriter,
     value: &T
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a value's text, then a newline, and writes the newline only if the value went out whole.
@@ -216,7 +216,7 @@ borrowed, so it may be written as often as wanted and is still the caller's.
 Reports the value's own failure when it has one, without attempting the newline. Otherwise reports whatever the
 newline's write reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L190)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L193)
 
 **Type parameters**
 
@@ -240,7 +240,7 @@ pub func WriteFormatLine(
     writer: &var TextWriter,
     #Format format: char8[..],
     ...
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes `format` with each `{}` replaced by the next argument, then a newline, on the same rule.
@@ -252,7 +252,7 @@ A literal `format` has its placeholders counted against the arguments while comp
 `#Format`. Reports the formatting failure when there is one, without attempting the newline. Otherwise reports
 whatever the newline's write reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L207)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L210)
 
 **Parameters**
 

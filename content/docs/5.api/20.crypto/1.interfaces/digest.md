@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Digest.rux
-  line: 25
+  line: 26
 seo:
   title: "Digest — Crypto API"
   description: An incremental digest.
@@ -49,7 +49,7 @@ legal and changes nothing.
 | ------- | ----------- | ------------------- |
 | `bytes` | `char8[..]` | the bytes to absorb |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L32)
 
 <h3 id="finish"><code>Finish</code></h3>
 
@@ -66,7 +66,7 @@ and an implementation is free to consume its state producing one.
 | ------ | --------------- | ------------------- |
 | `into` | `var char8[..]` | receives the output |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L40)
 
 <h3 id="digest-length"><code>DigestLength</code></h3>
 
@@ -78,7 +78,7 @@ How many bytes [`Finish`](/docs/api/crypto/digest#finish) writes.
 
 **Returns**: how many bytes a digest occupies
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L45)
 
 <h3 id="block-length"><code>BlockLength</code></h3>
 
@@ -92,7 +92,7 @@ choosing a buffer size that avoids splitting work.
 
 **Returns**: how many bytes the compression function consumes at a time
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Digest.rux#L52)
 
 ## Implementations
 

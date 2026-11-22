@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Hmac.rux
-  line: 32
+  line: 34
 seo:
   title: "Hmac<D> — Crypto API"
   description: An incremental HMAC over any digest.
@@ -22,7 +22,7 @@ seo:
 An incremental HMAC over any digest.
 
 ```rux
-pub struct Hmac<D: Digest> {
+pub struct Hmac<D: Digest + Copyable> {
     // private fields
 }
 ```
@@ -33,16 +33,16 @@ Structural `Copy` whenever `D` is copyable; copying snapshots both digest states
 
 ## Type parameters
 
-| Name        | Description     |
-| ----------- | --------------- |
-| `D: Digest` | the digest type |
+| Name                   | Description     |
+| ---------------------- | --------------- |
+| `D: Digest + Copyable` | the digest type |
 
 ## Constructors
 
-<h3 id="new"><code>Hmac</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Hmac(prototype: D, key: char8[..]) -> Hmac<D>
+pub func New(prototype: D, key: char8[..]) -> Hmac<D>
 ```
 
 An HMAC keyed with `key`.
@@ -57,61 +57,67 @@ they are the same key after this step. A shorter key is padded with zeros.
 
 **Returns**: an authenticator keyed with those bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L52)
 
 ## Methods
 
 <h3 id="update"><code>Update</code></h3>
 
 ```rux
-pub func Update<D: Digest>(&var self, bytes: char8[..])
+pub func Update<D: Digest + Copyable>(
+    &var self,
+    bytes: char8[..]
+)
 ```
 
 Adds `bytes` to the message being authenticated.
 
-| Type parameter | Description     |
-| -------------- | --------------- |
-| `D: Digest`    | the digest type |
+| Type parameter         | Description     |
+| ---------------------- | --------------- |
+| `D: Digest + Copyable` | the digest type |
 
 | Name    | Type        | Description         |
 | ------- | ----------- | ------------------- |
 | `bytes` | `char8[..]` | the bytes to absorb |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L103)
 
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish<D: Digest>(&var self, into: var char8[..])
+pub func Finish<D: Digest + Copyable>(
+    &var self,
+    into: var char8[..]
+)
 ```
 
 Writes the authentication tag into `into`.
 
-| Type parameter | Description     |
-| -------------- | --------------- |
-| `D: Digest`    | the digest type |
+| Type parameter         | Description     |
+| ---------------------- | --------------- |
+| `D: Digest + Copyable` | the digest type |
 
 | Name   | Type            | Description         |
 | ------ | --------------- | ------------------- |
 | `into` | `var char8[..]` | receives the output |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L109)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L111)
 
 <h3 id="tag-length"><code>TagLength</code></h3>
 
 ```rux
-pub func TagLength<D: Digest>(&self) -> uint
+pub func TagLength<D: Digest + Copyable>(&self) -> uint
 ```
 
 How many bytes [`Finish`](/docs/api/crypto/hmac#finish) writes: the underlying digest's length.
 
-| Type parameter | Description     |
-| -------------- | --------------- |
-| `D: Digest`    | the digest type |
+| Type parameter         | Description     |
+| ---------------------- | --------------- |
+| `D: Digest + Copyable` | the digest type |
 
 **Returns**: how many bytes a tag occupies, which is the digest's length
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L120)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L122)
 
 ## Related
 
@@ -126,12 +132,12 @@ SHAKE128's rate is the largest at a hundred and sixty eight bytes; SHA-512's blo
 eight and SHA-256's sixty four. The buffers below are written as that literal because an array length must
 be a compile-time integer and a constant does not satisfy that yet.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L26)
 
 <h3 id="hmac-of"><code>HmacOf&lt;D&gt;</code></h3>
 
 ```rux
-pub func HmacOf<D: Digest>(
+pub func HmacOf<D: Digest + Copyable>(
     prototype: D,
     key: char8[..],
     message: char8[..],
@@ -141,13 +147,13 @@ pub func HmacOf<D: Digest>(
 
 The HMAC of `message` under `key`, in one call.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Crypto/Src/Hmac.rux#L134)
 
 **Type parameters**
 
-| Name        | Description     |
-| ----------- | --------------- |
-| `D: Digest` | the digest type |
+| Name                   | Description     |
+| ---------------------- | --------------- |
+| `D: Digest + Copyable` | the digest type |
 
 **Parameters**
 

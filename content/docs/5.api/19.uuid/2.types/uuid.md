@@ -205,7 +205,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the canonical lower-case form, or the URN form under the `urn` style.
@@ -236,7 +236,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`: an identifier has one reading, and quoting it would say nothing extra.

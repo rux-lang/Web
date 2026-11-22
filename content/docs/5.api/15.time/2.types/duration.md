@@ -96,7 +96,7 @@ Exactly `hours` hours, or `None` past the range.
 
 **Returns**: that many hours, or `None` when the count does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L55)
 
 <h3 id="from-milliseconds"><code>FromMilliseconds</code></h3>
 
@@ -113,7 +113,7 @@ Cannot overflow: every `int64` count of milliseconds fits.
 
 **Returns**: that many milliseconds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L65)
 
 <h3 id="from-microseconds"><code>FromMicroseconds</code></h3>
 
@@ -129,7 +129,7 @@ Exactly `microseconds` microseconds.
 
 **Returns**: that many microseconds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L73)
 
 <h3 id="from-nanoseconds"><code>FromNanoseconds</code></h3>
 
@@ -145,7 +145,7 @@ Exactly `nanoseconds` nanoseconds.
 
 **Returns**: that many nanoseconds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L81)
 
 ## Methods
 
@@ -159,7 +159,7 @@ Whether this span is exactly nothing.
 
 **Returns**: whether the span is exactly zero
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L101)
 
 <h3 id="is-negative"><code>IsNegative</code></h3>
 
@@ -172,7 +172,7 @@ The sign lives in the seconds alone, which the normalization guarantees.
 
 **Returns**: whether the span runs backwards
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L109)
 
 <h3 id="whole-seconds"><code>WholeSeconds</code></h3>
 
@@ -184,7 +184,7 @@ The whole seconds, rounded toward negative infinity.
 
 **Returns**: the whole seconds, truncated toward zero
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L116)
 
 <h3 id="subsecond-nanoseconds"><code>SubsecondNanoseconds</code></h3>
 
@@ -196,7 +196,7 @@ The fraction beyond the whole seconds, in nanoseconds, always in [0, 1e9).
 
 **Returns**: the nanoseconds within the second, in `[0, 999999999]`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L123)
 
 <h3 id="total-milliseconds"><code>TotalMilliseconds</code></h3>
 
@@ -208,7 +208,7 @@ This span as milliseconds, truncated toward zero, or `None` where an `int64` of 
 
 **Returns**: the whole span in milliseconds, or `None` when it does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L130)
 
 <h3 id="total-microseconds"><code>TotalMicroseconds</code></h3>
 
@@ -220,7 +220,7 @@ This span as microseconds, truncated toward zero.
 
 **Returns**: the whole span in microseconds, or `None` when it does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L139)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L137)
 
 <h3 id="total-nanoseconds"><code>TotalNanoseconds</code></h3>
 
@@ -232,7 +232,7 @@ This span as nanoseconds, or `None` where an `int64` of them cannot hold it — 
 
 **Returns**: the whole span in nanoseconds, or `None` when it does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L144)
 
 <h3 id="plus"><code>Plus</code></h3>
 
@@ -248,7 +248,7 @@ The sum of two spans, or `None` past the range.
 
 **Returns**: the sum, or `None` when it does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L164)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L160)
 
 <h3 id="minus"><code>Minus</code></h3>
 
@@ -264,7 +264,7 @@ The difference of two spans, or `None` past the range.
 
 **Returns**: the difference, or `None` when it does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L179)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L174)
 
 <h3 id="negated"><code>Negated</code></h3>
 
@@ -276,7 +276,7 @@ This span negated, or `None` for the one value whose negation does not fit.
 
 **Returns**: the span running the other way, or `None` when it does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L193)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L187)
 
 <h3 id="times"><code>Times</code></h3>
 
@@ -292,7 +292,7 @@ This span scaled by a whole factor, or `None` past the range.
 
 **Returns**: the product, or `None` when it does not fit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L196)
 
 <h3 id="equals"><code>Equals</code></h3>
 
@@ -308,7 +308,7 @@ Whether two spans are the same time.
 
 **Returns**: whether the two spans are the same length
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L219)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L210)
 
 <h3 id="compare"><code>Compare</code></h3>
 
@@ -325,7 +325,7 @@ Two comparisons, which the normalization pays for: the seconds decide, and the f
 
 **Returns**: how this span orders against `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L228)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L219)
 
 ## Implements Display
 
@@ -338,7 +338,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the span as signed decimal seconds followed by `s`.
@@ -358,7 +358,7 @@ precision past nine.
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L120)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L114)
 
 ## Implements Debug
 
@@ -371,7 +371,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`: a span has one reading.
@@ -384,7 +384,7 @@ The failures [`WriteDisplay`](/docs/api/time/duration#write-display) reports.
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Duration.rux#L134)
 
 ## Related
 
@@ -401,7 +401,7 @@ How many nanoseconds one second holds.
 <h3 id="parse-duration"><code>ParseDuration</code></h3>
 
 ```rux
-pub func ParseDuration(text: char8[..]) -> Duration throws TimeParseError
+pub func ParseDuration(text: char8[..]) -> Duration ! TimeParseError
 ```
 
 Reads a span written as signed decimal seconds followed by `s`.
@@ -411,7 +411,7 @@ Reports `InvalidSyntax` with the byte offset where the shape stopped matching, a
 first digit that a nanosecond cannot hold. A magnitude too large for the representation is `InvalidSyntax` at
 the digit that overflowed, since the text is well formed and the value simply is not one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/DurationText.rux#L154)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/DurationText.rux#L148)
 
 **Parameters**
 

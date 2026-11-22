@@ -9,7 +9,7 @@ api:
   kind: variant
   version: 0.1.0
   source: Src/CalendarParse.rux
-  line: 22
+  line: 20
 seo:
   title: "TimeParseError — Time API"
   description: Why text could not be read as a calendar value.
@@ -33,7 +33,7 @@ pub variant TimeParseError {
 ```
 
 Failure-only: every case is a failure, and each carries the zero-based UTF-8 byte offset into the text where it
-was found. Success is `Result::Success`.
+was found. Success is the parsed value itself.
 Copy, carrying one offset.
 
 ## Cases
@@ -62,4 +62,4 @@ Borrows the error. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the zero-based UTF-8 byte offset, which is the text's length at end of input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L44)

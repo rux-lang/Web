@@ -32,10 +32,10 @@ snapshot of the hash so far is what is wanted.
 
 ## Constructors
 
-<h3 id="new"><code>XxHash64</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func XxHash64() -> XxHash64
+pub func New() -> XxHash64
 ```
 
 Constructs an unseeded hasher with nothing written into it yet.
@@ -186,7 +186,7 @@ different-looking code for the same algorithm.
 <h3 id="read-little-endian64"><code>ReadLittleEndian64</code></h3>
 
 ```rux
-pub unsafe func ReadLittleEndian64(bytes: *byte) -> uint64
+pub func ReadLittleEndian64(bytes: *byte) -> uint64
 ```
 
 The eight bytes at `bytes` as a 64-bit value, least significant byte first.
@@ -209,7 +209,7 @@ Safety: `bytes` must be readable for eight bytes.
 <h3 id="read-little-endian32"><code>ReadLittleEndian32</code></h3>
 
 ```rux
-pub unsafe func ReadLittleEndian32(bytes: *byte) -> uint32
+pub func ReadLittleEndian32(bytes: *byte) -> uint32
 ```
 
 The four bytes at `bytes` as a 32-bit value, least significant byte first.
@@ -301,7 +301,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="xx-hash64-seeded-of"><code>XxHash64SeededOf</code></h3>
 
 ```rux
-pub unsafe func XxHash64SeededOf(
+pub func XxHash64SeededOf(
     bytes: *byte,
     length: uint,
     seed: uint64
@@ -329,10 +329,7 @@ Safety: `bytes` must be readable for `length` bytes.
 <h3 id="xx-hash64-of"><code>XxHash64Of</code></h3>
 
 ```rux
-pub unsafe func XxHash64Of(
-    bytes: *byte,
-    length: uint
-) -> uint64
+pub func XxHash64Of(bytes: *byte, length: uint) -> uint64
 ```
 
 The xxHash64 of `length` bytes at `bytes`, seeded with zero.

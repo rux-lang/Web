@@ -22,7 +22,7 @@ seo:
 An unpredictable 64-bit value, which is what a generator wants for a seed.
 
 ```rux
-pub func NextUint64() -> uint64 throws EntropyError
+pub func NextUint64() -> uint64 ! EntropyError
 ```
 
 A failed draw scrubs its local copy before failing, so nothing of a partial draw is left behind on the stack.

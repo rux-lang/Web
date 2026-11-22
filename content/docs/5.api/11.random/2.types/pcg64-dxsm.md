@@ -29,10 +29,10 @@ pub struct Pcg64Dxsm {
 
 ## Constructors
 
-<h3 id="new"><code>Pcg64Dxsm</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Pcg64Dxsm(seed: uint64) -> Pcg64Dxsm
+pub func New(seed: uint64) -> Pcg64Dxsm
 ```
 
 A generator seeded by spreading `seed` through [`SplitMix64`](/docs/api/random/split-mix64), on the default stream.
@@ -105,7 +105,7 @@ PCG's "cheap" 64-bit multiplier, which the DXSM variant uses in the 128-bit step
 <h3 id="pcg-from-entropy"><code>PcgFromEntropy</code></h3>
 
 ```rux
-pub func PcgFromEntropy() -> Pcg64Dxsm throws EntropyError
+pub func PcgFromEntropy() -> Pcg64Dxsm ! EntropyError
 ```
 
 A [`Pcg64Dxsm`](/docs/api/random/pcg64-dxsm) seeded from the operating system's entropy, on the default stream.
@@ -118,7 +118,7 @@ Fails and recovers exactly as [`XoshiroFromEntropy`](/docs/api/random/xoshiro256
 <h3 id="pcg-from-entropy-with-stream"><code>PcgFromEntropyWithStream</code></h3>
 
 ```rux
-pub func PcgFromEntropyWithStream(stream: uint64) -> Pcg64Dxsm throws EntropyError
+pub func PcgFromEntropyWithStream(stream: uint64) -> Pcg64Dxsm ! EntropyError
 ```
 
 A [`Pcg64Dxsm`](/docs/api/random/pcg64-dxsm) seeded from entropy on the stream `stream` selects.

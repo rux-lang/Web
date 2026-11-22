@@ -9,7 +9,7 @@ api:
   kind: variant
   version: 0.1.0
   source: Src/Scalar.rux
-  line: 26
+  line: 27
 seo:
   title: "TomlScalarError — Toml API"
   description: "Why a scalar could not be read, and where in it."
@@ -31,7 +31,7 @@ pub variant TomlScalarError {
 
 Failure-only: there is no case meaning nothing went wrong, because a scalar that read hands back its value
 instead. Every offset is a zero-based byte offset into the scalar's own text, as the caller wrote it —
-underscores included — and reachable through `Text::ParseFailure`.
+underscores included — and reachable through `Text::Formatting::ParseFailure`.
 
 ## Cases
 
@@ -56,7 +56,7 @@ Borrows the failure and leaves it untouched. Cannot fail; runs in constant time 
 
 **Returns**: the zero-based byte offset into the scalar's own text
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L44)
 
 ## Implements Display
 
@@ -69,7 +69,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the description of why the scalar could not be read, without the position.
@@ -84,7 +84,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L62)
 
 ## Implements Debug
 
@@ -97,7 +97,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Names the case and its position: `TomlScalarError::Malformed(3)`.
@@ -110,4 +110,4 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Toml/Src/Scalar.rux#L81)

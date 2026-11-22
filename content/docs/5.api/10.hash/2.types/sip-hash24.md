@@ -55,7 +55,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="with-key-bytes"><code>WithKeyBytes</code></h3>
 
 ```rux
-pub unsafe func WithKeyBytes(key: *byte) -> SipHash24
+pub func WithKeyBytes(key: *byte) -> SipHash24
 ```
 
 A hasher keyed with the sixteen bytes at `key`, least significant byte of each half first.
@@ -247,7 +247,7 @@ Cannot fail. Runs in time proportional to `count` and allocates nothing.
 <h3 id="sip-word"><code>SipWord</code></h3>
 
 ```rux
-pub unsafe func SipWord(bytes: *byte) -> uint64
+pub func SipWord(bytes: *byte) -> uint64
 ```
 
 The eight bytes at `bytes` as a 64-bit word, least significant byte first.

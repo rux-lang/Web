@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Metadata.rux
-  line: 103
+  line: 107
 seo:
   title: "Capabilities — FileSystem API"
   description: "What the running system can actually answer, so a caller can ask before it assumes."
@@ -46,6 +46,6 @@ pub func CapabilitiesOfSystem() -> Capabilities
 
 What this system can answer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Metadata.rux#L121)
 
 **Returns**: what this system's metadata actually carries, so a caller can tell an absent value from a false one

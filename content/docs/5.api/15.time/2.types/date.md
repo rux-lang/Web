@@ -167,7 +167,7 @@ Exact: a day is a day, and the round trip through the epoch count neither loses 
 
 **Returns**: the date that many days later, or `None` when it leaves the range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L18)
 
 <h3 id="plus-months"><code>PlusMonths</code></h3>
 
@@ -184,7 +184,7 @@ January 31st plus one month is the last day of February; the clamp is the policy
 
 **Returns**: the date that many months later, clamped to the month's last day, or `None` when it leaves the range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L31)
 
 <h3 id="plus-years"><code>PlusYears</code></h3>
 
@@ -200,7 +200,7 @@ The date `years` later, with February 29th clamping to the 28th where the year i
 
 **Returns**: the date that many years later, clamped for 29 February, or `None` when it leaves the range
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L51)
 
 <h3 id="days-since"><code>DaysSince</code></h3>
 
@@ -216,7 +216,7 @@ The whole days from `earlier` to this date, negative when it is the later one.
 
 **Returns**: how many days `earlier` is before this date, negative if it is after
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/Calendar.rux#L63)
 
 ## Implements Display
 
@@ -229,7 +229,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the date as `YYYY-MM-DD`.
@@ -258,7 +258,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`: a date has one reading, and quoting it would say nothing extra.
@@ -316,7 +316,7 @@ Zero for a month that does not exist, which is what lets [`Date::FromParts`](/do
 <h3 id="parse-date"><code>ParseDate</code></h3>
 
 ```rux
-pub func ParseDate(text: char8[..]) -> Date throws TimeParseError
+pub func ParseDate(text: char8[..]) -> Date ! TimeParseError
 ```
 
 Reads `YYYY-MM-DD`.
@@ -324,7 +324,7 @@ Strict: four year digits, two month digits, two day digits, dashes between, and 
 Reports `InvalidSyntax` for a shape that does not match, `InvalidMonth` for a month outside 1 through 12, and
 `NonexistentDay` for a day the month does not have. Each carries the byte offset where it was found.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L241)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L239)
 
 **Parameters**
 

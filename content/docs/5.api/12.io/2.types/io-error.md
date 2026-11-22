@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/IoError.rux
-  line: 73
+  line: 74
 seo:
   title: "IoError — Io API"
   description: "A structured I/O failure: the shared meaning, and the platform's own code beside it."
@@ -54,7 +54,7 @@ A failure of `kind` with no platform code.
 
 **Returns**: an error of that kind, carrying no platform value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L85)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L86)
 
 ## Methods
 
@@ -68,7 +68,7 @@ Whether the stream ended, which is the one report that is not a failure.
 
 **Returns**: whether the stream ended, which is not a failure
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L93)
 
 <h3 id="is-interrupted"><code>IsInterrupted</code></h3>
 
@@ -82,7 +82,7 @@ spins, so it is returned to whoever can wait for readiness, such as a `Net` poll
 
 **Returns**: whether retrying the operation immediately is the right response
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L102)
 
 ## Implements Display
 
@@ -95,7 +95,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the kind as lower-case words, and the platform's code after them when there is one, as
@@ -109,7 +109,7 @@ whatever the writer reported, and `UnsupportedRequest` for a style.
 
 **Returns**: success when the whole text was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L159)
 
 ## Related
 
@@ -147,7 +147,7 @@ pub enum IoErrorKind: int32 {
 
 What an I/O operation reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L17)
 
 **Cases**
 
@@ -190,7 +190,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the kind as lower-case words, such as `not found`, under the placeholder's width, fill and alignment.
@@ -203,7 +203,7 @@ No style is understood. Reports whatever the writer reported, and `UnsupportedRe
 
 **Returns**: success when the whole text was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/IoError.rux#L145)
 
 <h3 id="from-io-error"><code>FromIoError</code></h3>
 
@@ -213,13 +213,12 @@ pub func FromIoError(error: IoError) -> FormatError
 
 Turns an error a stream threw into what a formatter understands.
 Every failure becomes `WriterFailure`, which is the only thing `FormatError` can say about a destination, so a
-formatter passes a stream's error on with `try Write(...) catch { error => throw FromIoError(error) }`. The
-details do not travel this way — an adapter records the original [`IoError`](/docs/api/io/io-error) where its caller can read it, which is
-what keeps the loss from being a loss.
-The end of a stream is a failure here. Nothing is being read, so a write that reports it is a destination that
-cannot take the bytes, whatever it calls that.
+formatter passes a stream's error on with `Write(...) catch { error => throw FromIoError(error) }`. The details
+do not travel this way — an adapter records the original [`IoError`](/docs/api/io/io-error) where its caller can read it, which is what
+keeps the loss from being a loss. The end of a stream is a failure here. Nothing is being read, so a write that
+reports it is a destination that cannot take the bytes, whatever it calls that.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L38)
 
 **Parameters**
 
@@ -243,7 +242,7 @@ here. Bytes that were not text are `InvalidText`; a bounded destination that fil
 instead. It maps to `Other` rather than being ignored, so an adapter that forgets to keep the original is
 visibly wrong rather than quietly reporting success.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L52)
 
 **Parameters**
 

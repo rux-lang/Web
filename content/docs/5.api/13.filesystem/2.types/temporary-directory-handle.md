@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Temporary.rux
-  line: 181
+  line: 182
 seo:
   title: "TemporaryDirectoryHandle — FileSystem API"
   description: A temporary directory that owns its name.
@@ -34,14 +34,14 @@ would be a worse surprise than a refusal.
 
 ## Constructors
 
-<h3 id="create"><code>TemporaryDirectoryHandle</code></h3>
+<h3 id="create"><code>New</code></h3>
 
 ```rux
-pub func TemporaryDirectoryHandle(
+pub func New(
     allocator: Allocator,
     directory: Path,
     prefix: char8[..]
-) -> TemporaryDirectoryHandle throws IoError
+) -> TemporaryDirectoryHandle ! IoError
 ```
 
 Creates a new temporary directory in `directory`, named from `prefix` and sixteen hex digits of entropy.
@@ -54,7 +54,7 @@ Creates a new temporary directory in `directory`, named from `prefix` and sixtee
 
 **Returns**: the created directory, which is removed when closed unless kept
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L195)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L196)
 
 ## Methods
 
@@ -68,15 +68,12 @@ The directory's path, for building names inside it.
 
 **Returns**: the path it was created at
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L219)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L220)
 
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
-pub func Close(
-    &var self,
-    allocator: Allocator
-) throws IoError
+pub func Close(&var self, allocator: Allocator) -> !IoError
 ```
 
 Removes the directory and reports what the removal said.
@@ -87,7 +84,7 @@ Removes the directory and reports what the removal said.
 
 **Returns**: success when it was removed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L227)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L228)
 
 <h3 id="keep"><code>Keep</code></h3>
 
@@ -97,14 +94,14 @@ pub func Keep(&var self)
 
 Leaves the directory where it is, giving up the name.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L239)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L240)
 
 ## Destructor
 
 ```rux
-func ~TemporaryDirectoryHandle(&var self)
+destructor
 ```
 
 Removes the directory with the outcome discarded: the safety net, not the contract.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L245)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Temporary.rux#L246)

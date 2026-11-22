@@ -109,7 +109,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the local date and time as `YYYY-MM-DDTHH:MM:SS`, with no offset.
@@ -140,7 +140,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`.
@@ -160,7 +160,7 @@ The failures [`WriteDisplay`](/docs/api/time/date-time#write-display) reports.
 <h3 id="parse-date-time"><code>ParseDateTime</code></h3>
 
 ```rux
-pub func ParseDateTime(text: char8[..]) -> DateTime throws TimeParseError
+pub func ParseDateTime(text: char8[..]) -> DateTime ! TimeParseError
 ```
 
 Reads `YYYY-MM-DDTHH:MM:SS[.fraction]`, with no offset.
@@ -169,7 +169,7 @@ and one present is text after the value: a [`DateTime`](/docs/api/time/date-time
 discard it silently. [`ParseRfc3339`](/docs/api/time/offset-date-time#parse-rfc3339) is what reads a moment that carries one.
 The failures [`ParseDate`](/docs/api/time/date#parse-date) and [`ParseTimeOfDay`](/docs/api/time/time-of-day#parse-time-of-day) report, at their offsets within this text.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L269)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Time/Src/CalendarParse.rux#L267)
 
 **Parameters**
 

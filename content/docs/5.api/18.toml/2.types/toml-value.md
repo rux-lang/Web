@@ -72,7 +72,7 @@ An empty array.
 pub func Text(
     allocator: Allocator,
     value: char8[..]
-) -> TomlValue throws TextError
+) -> TomlValue ! TextError
 ```
 
 A string value, whose bytes are copied and validated as UTF-8.
@@ -369,7 +369,7 @@ How many elements an array holds, or entries a table holds; `none` for any other
 <h3 id="push"><code>Push</code></h3>
 
 ```rux
-pub func Push(&var self, value: TomlValue) throws TomlError
+pub func Push(&var self, value: TomlValue) -> !TomlError
 ```
 
 Appends `value` to an array, taking ownership of it.
@@ -389,7 +389,7 @@ pub func Insert(
     &var self,
     key: String,
     value: TomlValue
-) throws TomlError
+) -> !TomlError
 ```
 
 Appends an entry to a table, copying the key and taking ownership of the value.
@@ -498,7 +498,7 @@ The entry at `index`, borrowed, or `none` when there is none.
 ## Destructor
 
 ```rux
-func ~TomlValue(&var self)
+destructor
 ```
 
 Releases everything this value owns.
@@ -568,10 +568,10 @@ One entry of a table: its key and its value.
 
 **Destructor**
 
-<h4 id="toml-entry-destructor"><code>~TomlEntry</code></h4>
+<h4 id="toml-entry-destructor"><code>destructor</code></h4>
 
 ```rux
-func ~TomlEntry(&var self)
+destructor
 ```
 
 Releases the key and the value.

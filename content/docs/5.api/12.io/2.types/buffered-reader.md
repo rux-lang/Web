@@ -31,14 +31,14 @@ Move-only: it owns its buffer. The reader it wraps is borrowed through the inter
 
 ## Constructors
 
-<h3 id="new"><code>BufferedReader</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func BufferedReader(
+pub func New(
     allocator: Allocator,
     source: Reader,
     capacity: uint
-) -> BufferedReader throws IoError
+) -> BufferedReader ! IoError
 ```
 
 A buffered reader over `source` with `capacity` bytes of buffer.
@@ -97,7 +97,7 @@ Marks `count` buffered bytes as read.
 <h3 id="fill"><code>Fill</code></h3>
 
 ```rux
-pub func Fill(&var self) throws IoError
+pub func Fill(&var self) -> !IoError
 ```
 
 Refills an empty buffer from the source, retrying interruptions.
@@ -114,7 +114,7 @@ that reports success while handing over nothing is reported as the end rather th
 pub func Read(
     &var self,
     into: var char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Fills what it can of `into`: from the buffer while it has bytes, straight from the source for a request
@@ -142,7 +142,7 @@ Gives the buffer back.
 ## Destructor
 
 ```rux
-func ~BufferedReader(&var self)
+destructor
 ```
 
 Gives the buffer back. Unread buffered bytes are abandoned, which loses nothing anybody asked for.

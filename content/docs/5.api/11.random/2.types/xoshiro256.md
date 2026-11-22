@@ -29,10 +29,10 @@ pub struct Xoshiro256 {
 
 ## Constructors
 
-<h3 id="new"><code>Xoshiro256</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Xoshiro256(seed: uint64) -> Xoshiro256
+pub func New(seed: uint64) -> Xoshiro256
 ```
 
 A generator seeded by spreading `seed` through [`SplitMix64`](/docs/api/random/split-mix64).
@@ -92,12 +92,12 @@ two implementations agree on the first word rather than being one step apart for
 <h3 id="xoshiro-from-entropy"><code>XoshiroFromEntropy</code></h3>
 
 ```rux
-pub func XoshiroFromEntropy() -> Xoshiro256 throws EntropyError
+pub func XoshiroFromEntropy() -> Xoshiro256 ! EntropyError
 ```
 
 A [`Xoshiro256`](/docs/api/random/xoshiro256) seeded from the operating system's entropy.
 Fails with why the entropy could not be obtained. A caller that is content with a predictable generator when
-the system has no entropy recovers explicitly, as in `try XoshiroFromEntropy() catch { _ => Xoshiro256(0u64) }`.
+the system has no entropy recovers explicitly, as in `XoshiroFromEntropy() !! Xoshiro256(0u64)`.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Random/Src/Seeding.rux#L18)
 

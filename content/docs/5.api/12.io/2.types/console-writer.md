@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/TextBoundary.rux
-  line: 81
+  line: 82
 seo:
   title: "ConsoleWriter — Io API"
   description: "A TextWriter over standard output that records the stream's failure where the caller can see it."
@@ -37,10 +37,10 @@ The slot must outlive the writer. It is a stored address, so nothing here tracks
 
 ## Constructors
 
-<h3 id="new"><code>ConsoleWriter</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func ConsoleWriter(failure: *var IoError?) -> ConsoleWriter
+pub func New(failure: *var IoError?) -> ConsoleWriter
 ```
 
 A writer over standard output, recording into `failure`.
@@ -53,7 +53,7 @@ already holds a failure writes nothing at all.
 
 **Returns**: a writer over standard output
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L94)
 
 ## Implements TextWriter
 
@@ -62,10 +62,7 @@ already holds a failure writes nothing at all.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    &var self,
-    bytes: char8[..]
-) throws FormatError
+pub func Write(&var self, bytes: char8[..]) -> !FormatError
 ```
 
 Writes `bytes` to standard output.
@@ -81,4 +78,4 @@ revalidated, and standard output is not a bounded destination.
 
 **Returns**: success when the stream accepted the whole run
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Io/Src/TextBoundary.rux#L109)

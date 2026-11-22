@@ -72,7 +72,7 @@
       "module": "Blake3",
       "source": "Src/Blake3.rux",
       "line": 80,
-      "signature": "pub unsafe func Blake3Compress(chaining: *uint32, message: *uint32, counter: uint64, blockLength: uint32, flags: uint32, into: *var uint32)",
+      "signature": "pub func Blake3Compress(chaining: *uint32, message: *uint32, counter: uint64, blockLength: uint32, flags: uint32, into: *var uint32)",
       "typeParams": [],
       "doc": {
         "summary": "The compression function: sixteen words of state over seven rounds, producing sixteen words of output.",
@@ -268,8 +268,8 @@
         {
           "kind": "method",
           "name": "Output",
-          "line": 235,
-          "signature": "pub unsafe func Output(&self, extraFlags: uint32, into: *var uint32)",
+          "line": 233,
+          "signature": "pub func Output(&self, extraFlags: uint32, into: *var uint32)",
           "typeParams": [],
           "params": [
             { "name": "extraFlags", "type": "uint32" },
@@ -322,7 +322,7 @@
       "displayName": "Blake3",
       "module": "Blake3",
       "source": "Src/Blake3.rux",
-      "line": 258,
+      "line": 256,
       "signature": "pub struct Blake3",
       "typeParams": [],
       "doc": {
@@ -340,7 +340,7 @@
           "name": "chunk",
           "type": "Blake3Chunk",
           "public": false,
-          "line": 260,
+          "line": 258,
           "doc": "The chunk currently being filled.",
           "targets": [
             "windows-x86_64",
@@ -357,7 +357,7 @@
           "name": "stack",
           "type": "uint32[N]",
           "public": false,
-          "line": 262,
+          "line": 260,
           "doc": "The stack of completed subtree chaining values, deepest last.",
           "targets": [
             "windows-x86_64",
@@ -374,7 +374,7 @@
           "name": "stackDepth",
           "type": "uint",
           "public": false,
-          "line": 264,
+          "line": 262,
           "doc": "How many subtrees the stack holds.",
           "targets": [
             "windows-x86_64",
@@ -391,7 +391,7 @@
           "name": "key",
           "type": "uint32[N]",
           "public": false,
-          "line": 266,
+          "line": 264,
           "doc": "The key, which is the initial value for an unkeyed hash.",
           "targets": [
             "windows-x86_64",
@@ -408,7 +408,7 @@
           "name": "flags",
           "type": "uint32",
           "public": false,
-          "line": 268,
+          "line": 266,
           "doc": "Flags every compression carries: none for an unkeyed hash.",
           "targets": [
             "windows-x86_64",
@@ -426,10 +426,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Blake3",
-          "line": 291,
-          "signature": "pub func Blake3() -> Blake3",
+          "kind": "associated",
+          "name": "New",
+          "line": 289,
+          "signature": "pub func New() -> Blake3",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -460,7 +460,7 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 345,
+          "line": 343,
           "signature": "pub func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
@@ -492,7 +492,7 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 370,
+          "line": 366,
           "signature": "pub func Finish(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
@@ -524,7 +524,7 @@
         {
           "kind": "method",
           "name": "DigestLength",
-          "line": 461,
+          "line": 455,
           "signature": "pub func DigestLength(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -556,7 +556,7 @@
         {
           "kind": "method",
           "name": "BlockLength",
-          "line": 468,
+          "line": 462,
           "signature": "pub func BlockLength(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -670,7 +670,7 @@
       "displayName": "Blake3Of",
       "module": "Blake3",
       "source": "Src/Blake3.rux",
-      "line": 477,
+      "line": 471,
       "signature": "pub func Blake3Of(bytes: char8[..], into: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -786,7 +786,7 @@
       "displayName": "Digest",
       "module": "Digest",
       "source": "Src/Digest.rux",
-      "line": 25,
+      "line": 26,
       "signature": "pub interface Digest",
       "typeParams": [],
       "doc": {
@@ -806,7 +806,7 @@
         {
           "kind": "requirement",
           "name": "Update",
-          "line": 31,
+          "line": 32,
           "signature": "func Update(&var self, bytes: char8[..])",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
@@ -838,7 +838,7 @@
         {
           "kind": "requirement",
           "name": "Finish",
-          "line": 39,
+          "line": 40,
           "signature": "func Finish(&var self, into: var char8[..])",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
@@ -870,7 +870,7 @@
         {
           "kind": "requirement",
           "name": "DigestLength",
-          "line": 44,
+          "line": 45,
           "signature": "func DigestLength(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -902,7 +902,7 @@
         {
           "kind": "requirement",
           "name": "BlockLength",
-          "line": 51,
+          "line": 52,
           "signature": "func BlockLength(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -950,7 +950,7 @@
       "displayName": "Equal",
       "module": "Digest",
       "source": "Src/Digest.rux",
-      "line": 65,
+      "line": 66,
       "signature": "pub func Equal(left: char8[..], right: char8[..]) -> bool",
       "typeParams": [],
       "doc": {
@@ -988,7 +988,7 @@
       "displayName": "Wipe",
       "module": "Digest",
       "source": "Src/Digest.rux",
-      "line": 101,
+      "line": 102,
       "signature": "pub func Wipe(bytes: var char8[..])",
       "typeParams": [],
       "doc": {
@@ -1023,7 +1023,7 @@
       "displayName": "HkdfMaximumBlocks",
       "module": "Hkdf",
       "source": "Src/Hkdf.rux",
-      "line": 17,
+      "line": 19,
       "signature": "pub const HkdfMaximumBlocks: uint",
       "typeParams": [],
       "doc": {
@@ -1058,9 +1058,9 @@
       "displayName": "HkdfExtract<D>",
       "module": "Hkdf",
       "source": "Src/Hkdf.rux",
-      "line": 28,
-      "signature": "pub func HkdfExtract<D: Digest>(prototype: D, salt: char8[..], material: char8[..], into: var char8[..])",
-      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "line": 30,
+      "signature": "pub func HkdfExtract<D: Digest + Copyable>(prototype: D, salt: char8[..], material: char8[..], into: var char8[..])",
+      "typeParams": [{ "name": "D", "bounds": ["Digest", "Copyable"] }],
       "doc": {
         "summary": "Extracts a pseudorandom key from `material`, salted with `salt`.",
         "markdown": "Extracts a pseudorandom key from `material`, salted with `salt`.\n`into` must be exactly the digest's length. An empty salt is legal and means a string of that many zeros,\nwhich is what the specification says — so an absent salt is not the same as no salt at all.",
@@ -1098,9 +1098,9 @@
       "displayName": "HkdfExpand<D>",
       "module": "Hkdf",
       "source": "Src/Hkdf.rux",
-      "line": 57,
-      "signature": "pub func HkdfExpand<D: Digest>(prototype: D, key: char8[..], info: char8[..], into: var char8[..]) -> bool",
-      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "line": 59,
+      "signature": "pub func HkdfExpand<D: Digest + Copyable>(prototype: D, key: char8[..], info: char8[..], into: var char8[..]) -> bool",
+      "typeParams": [{ "name": "D", "bounds": ["Digest", "Copyable"] }],
       "doc": {
         "summary": "Expands `key` into `into`, separated by `info`.",
         "markdown": "Expands `key` into `into`, separated by `info`.\nReturns `false` when `into` is longer than 255 digests, which is the most the one-byte counter can address;\nnothing is written in that case. `info` names what the derived key is for, and two expansions of one key\nunder different info strings are unrelated.",
@@ -1138,9 +1138,9 @@
       "displayName": "Hkdf<D>",
       "module": "Hkdf",
       "source": "Src/Hkdf.rux",
-      "line": 100,
-      "signature": "pub func Hkdf<D: Digest>(prototype: D, salt: char8[..], material: char8[..], info: char8[..], into: var char8[..]) -> bool",
-      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "line": 102,
+      "signature": "pub func Hkdf<D: Digest + Copyable>(prototype: D, salt: char8[..], material: char8[..], info: char8[..], into: var char8[..]) -> bool",
+      "typeParams": [{ "name": "D", "bounds": ["Digest", "Copyable"] }],
       "doc": {
         "summary": "Extract and expand in one call: the whole of HKDF.",
         "markdown": "Extract and expand in one call: the whole of HKDF.\nReturns `false` for an output longer than 255 digests, exactly as `HkdfExpand` does.",
@@ -1179,7 +1179,7 @@
       "displayName": "HmacMaximumBlock",
       "module": "Hmac",
       "source": "Src/Hmac.rux",
-      "line": 24,
+      "line": 26,
       "signature": "pub const HmacMaximumBlock: uint",
       "typeParams": [],
       "doc": {
@@ -1214,9 +1214,9 @@
       "displayName": "Hmac<D>",
       "module": "Hmac",
       "source": "Src/Hmac.rux",
-      "line": 32,
-      "signature": "pub struct Hmac<D: Digest>",
-      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "line": 34,
+      "signature": "pub struct Hmac<D: Digest + Copyable>",
+      "typeParams": [{ "name": "D", "bounds": ["Digest", "Copyable"] }],
       "doc": {
         "summary": "An incremental HMAC over any digest.",
         "markdown": "An incremental HMAC over any digest.\n`prototype` supplies both the algorithm and its parameters; it is copied rather than consumed, so one\nprototype can start any number of authentications.\nStructural `Copy` whenever `D` is copyable; copying snapshots both digest states independently.",
@@ -1232,7 +1232,7 @@
           "name": "inner",
           "type": "D",
           "public": false,
-          "line": 34,
+          "line": 36,
           "doc": "The inner hash, which sees the padded key followed by the message.",
           "targets": [
             "windows-x86_64",
@@ -1249,7 +1249,7 @@
           "name": "outer",
           "type": "D",
           "public": false,
-          "line": 36,
+          "line": 38,
           "doc": "The outer hash, which sees the padded key followed by the inner digest.",
           "targets": [
             "windows-x86_64",
@@ -1266,7 +1266,7 @@
           "name": "digestLength",
           "type": "uint",
           "public": false,
-          "line": 38,
+          "line": 40,
           "doc": "How many bytes the digest writes.",
           "targets": [
             "windows-x86_64",
@@ -1284,10 +1284,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Hmac",
-          "line": 50,
-          "signature": "pub func Hmac(prototype: D, key: char8[..]) -> Hmac<D>",
+          "kind": "associated",
+          "name": "New",
+          "line": 52,
+          "signature": "pub func New(prototype: D, key: char8[..]) -> Hmac<D>",
           "typeParams": [],
           "params": [
             { "name": "prototype", "type": "D" },
@@ -1324,9 +1324,9 @@
         {
           "kind": "method",
           "name": "Update",
-          "line": 101,
-          "signature": "pub func Update<D: Digest>(&var self, bytes: char8[..])",
-          "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+          "line": 103,
+          "signature": "pub func Update<D: Digest + Copyable>(&var self, bytes: char8[..])",
+          "typeParams": [{ "name": "D", "bounds": ["Digest", "Copyable"] }],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Hmac<D>",
           "returnType": null,
@@ -1356,9 +1356,9 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 109,
-          "signature": "pub func Finish<D: Digest>(&var self, into: var char8[..])",
-          "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+          "line": 111,
+          "signature": "pub func Finish<D: Digest + Copyable>(&var self, into: var char8[..])",
+          "typeParams": [{ "name": "D", "bounds": ["Digest", "Copyable"] }],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var Hmac<D>",
           "returnType": null,
@@ -1388,9 +1388,9 @@
         {
           "kind": "method",
           "name": "TagLength",
-          "line": 120,
-          "signature": "pub func TagLength<D: Digest>(&self) -> uint",
-          "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+          "line": 122,
+          "signature": "pub func TagLength<D: Digest + Copyable>(&self) -> uint",
+          "typeParams": [{ "name": "D", "bounds": ["Digest", "Copyable"] }],
           "params": [],
           "receiver": "&Hmac<D>",
           "returnType": "uint",
@@ -1436,9 +1436,9 @@
       "displayName": "HmacOf<D>",
       "module": "Hmac",
       "source": "Src/Hmac.rux",
-      "line": 132,
-      "signature": "pub func HmacOf<D: Digest>(prototype: D, key: char8[..], message: char8[..], into: var char8[..])",
-      "typeParams": [{ "name": "D", "bounds": ["Digest"] }],
+      "line": 134,
+      "signature": "pub func HmacOf<D: Digest + Copyable>(prototype: D, key: char8[..], message: char8[..], into: var char8[..])",
+      "typeParams": [{ "name": "D", "bounds": ["Digest", "Copyable"] }],
       "doc": {
         "summary": "The HMAC of `message` under `key`, in one call.",
         "markdown": "The HMAC of `message` under `key`, in one call.",
@@ -1477,7 +1477,7 @@
       "module": "Keccak",
       "source": "Src/Keccak.rux",
       "line": 47,
-      "signature": "pub unsafe func KeccakPermute(lanes: *var uint64)",
+      "signature": "pub func KeccakPermute(lanes: *var uint64)",
       "typeParams": [],
       "doc": {
         "summary": "The Keccak-f[1600] permutation, applied in place to twenty-five lanes.",
@@ -2128,10 +2128,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "LegacyMd5",
+          "kind": "associated",
+          "name": "New",
           "line": 68,
-          "signature": "pub func LegacyMd5() -> LegacyMd5",
+          "signature": "pub func New() -> LegacyMd5",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -2367,10 +2367,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "LegacySha1",
+          "kind": "associated",
+          "name": "New",
           "line": 224,
-          "signature": "pub func LegacySha1() -> LegacySha1",
+          "signature": "pub func New() -> LegacySha1",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -2623,10 +2623,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Sha256",
+          "kind": "associated",
+          "name": "New",
           "line": 62,
-          "signature": "pub func Sha256() -> Sha256",
+          "signature": "pub func New() -> Sha256",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -3013,10 +3013,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Sha512",
+          "kind": "associated",
+          "name": "New",
           "line": 99,
-          "signature": "pub func Sha512() -> Sha512",
+          "signature": "pub func New() -> Sha512",
           "typeParams": [],
           "params": [],
           "receiver": null,

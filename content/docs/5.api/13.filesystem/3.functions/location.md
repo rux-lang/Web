@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Location.rux
-  line: 30
+  line: 33
 seo:
   title: "Working directory — FileSystem API"
   description: "The process's current directory, and a path made absolute or canonical against it."
@@ -31,17 +31,17 @@ How many symbolic links one canonicalization will follow before giving up.
 A link that points at itself, or at a chain that returns to it, would otherwise be followed forever. The
 limit is what every system uses for the same reason, and reaching it is reported as `LimitExceeded`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L33)
 
 <h2 id="current-directory"><code>CurrentDirectory</code></h2>
 
 ```rux
-pub func CurrentDirectory(allocator: Allocator) -> OsString throws IoError
+pub func CurrentDirectory(allocator: Allocator) -> OsString ! IoError
 ```
 
 The process's working directory, as an absolute path.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L39)
 
 **Parameters**
 
@@ -57,14 +57,14 @@ The process's working directory, as an absolute path.
 pub func SetCurrentDirectory(
     allocator: Allocator,
     path: Path
-) throws IoError
+) -> !IoError
 ```
 
 Makes `path` the process's working directory.
 Process-wide and immediately visible to every thread, which invalidates every relative path any of them was
 about to resolve. Nothing in this package calls it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L73)
 
 **Parameters**
 
@@ -81,7 +81,7 @@ about to resolve. Nothing in this package calls it.
 pub func Absolute(
     allocator: Allocator,
     path: Path
-) -> PathBuffer throws IoError
+) -> PathBuffer ! IoError
 ```
 
 `path` made absolute against the working directory and simplified lexically.
@@ -89,7 +89,7 @@ Arithmetic, not a question for the filesystem: the path need not exist, nothing 
 link is resolved — so a `..` that crosses one is simplified away as though it did not. [`Canonicalize`](/docs/api/filesystem/location#canonicalize) is the
 operation that tells the truth about links, at the cost of requiring the file to be there.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L100)
 
 **Parameters**
 
@@ -106,7 +106,7 @@ operation that tells the truth about links, at the cost of requiring the file to
 pub func Canonicalize(
     allocator: Allocator,
     path: Path
-) -> PathBuffer throws IoError
+) -> PathBuffer ! IoError
 ```
 
 The one true name of the existing file `path` refers to.
@@ -118,7 +118,7 @@ On Windows the answer arrives in the verbatim form and spelled as the filesystem
 name actually has, short names expanded — because that is what the system reports, and rewriting it would be
 this package guessing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L217)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/Location.rux#L220)
 
 **Parameters**
 

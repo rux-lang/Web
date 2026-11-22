@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/File.rux
-  line: 110
+  line: 114
 seo:
   title: "File — FileSystem API"
   description: "An owned, open file."
@@ -40,7 +40,7 @@ pub func Open(
     allocator: Allocator,
     path: Path,
     options: OpenOptions
-) -> File throws IoError
+) -> File ! IoError
 ```
 
 Opens `path` under `options`.
@@ -55,7 +55,7 @@ in the platform's own terms, translated.
 
 **Returns**: the open file
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L186)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L190)
 
 ## Methods
 
@@ -69,12 +69,12 @@ Whether the handle is still open.
 
 **Returns**: whether the file is open
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L265)
 
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
-pub func Close(&var self) throws IoError
+pub func Close(&var self) -> !IoError
 ```
 
 Closes the handle and reports what the platform said.
@@ -83,12 +83,12 @@ gave the handle back. This is the error-visible path; a written file deserves it
 
 **Returns**: success when the descriptor was released; closing twice is not an error
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L270)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L274)
 
 <h3 id="sync"><code>Sync</code></h3>
 
 ```rux
-pub func Sync(&var self) throws IoError
+pub func Sync(&var self) -> !IoError
 ```
 
 Forces everything written through to the storage device.
@@ -97,12 +97,12 @@ failure, and the one a caller who just wrote something they cannot lose actually
 
 **Returns**: success when the system reported the data durable
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L142)
 
 <h3 id="size"><code>Size</code></h3>
 
 ```rux
-pub func Size(&var self) -> uint64 throws IoError
+pub func Size(&var self) -> uint64 ! IoError
 ```
 
 The file's length in bytes.
@@ -112,12 +112,12 @@ arrives with the metadata work.
 
 **Returns**: the file's size in bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L160)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L162)
 
 <h3 id="set-length"><code>SetLength</code></h3>
 
 ```rux
-pub func SetLength(&var self, length: uint64) throws IoError
+pub func SetLength(&var self, length: uint64) -> !IoError
 ```
 
 Sets the file's length: shrinking discards what was past the new end, growing leaves a hole.
@@ -130,12 +130,12 @@ grows the file again — the same rule as seeking past the end.
 
 **Returns**: success when the file is that size; extending reads back as zeros
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L187)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L189)
 
 <h3 id="metadata"><code>Metadata</code></h3>
 
 ```rux
-pub func Metadata(&self) -> Metadata throws IoError
+pub func Metadata(&self) -> Metadata ! IoError
 ```
 
 Describes this open file.
@@ -144,7 +144,7 @@ query the way a path-based one can.
 
 **Returns**: what the system knows about the open file
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L403)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L407)
 
 ## Implements Reader
 
@@ -156,7 +156,7 @@ query the way a path-based one can.
 pub func Read(
     &var self,
     into: var char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Reads what one attempt yields into `into`; a short count is not an error and the end is `EndOfStream`.
@@ -167,7 +167,7 @@ Reads what one attempt yields into `into`; a short count is not an error and the
 
 **Returns**: how many bytes were read; `IsEnd` at the end of the file
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L33)
 
 ## Implements Writer
 
@@ -179,7 +179,7 @@ Reads what one attempt yields into `into`; a short count is not an error and the
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Writes what one attempt takes of `bytes`; a short count means call again, which `WriteAll` does.
@@ -190,19 +190,19 @@ Writes what one attempt takes of `bytes`; a short count means call again, which 
 
 **Returns**: how many bytes were taken, which may be fewer than offered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L68)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Nothing: these writes hold nothing back. Durability is [`Sync`](/docs/api/filesystem/file#sync), which is a different promise.
 
 **Returns**: success when everything written reached the system
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L95)
 
 ## Implements Seeker
 
@@ -215,7 +215,7 @@ pub func Seek(
     &var self,
     origin: SeekFrom,
     offset: int64
-) -> uint64 throws IoError
+) -> uint64 ! IoError
 ```
 
 Moves the position `offset` bytes from `origin` and reports where it landed.
@@ -230,17 +230,17 @@ end regardless, because append is a property of the writes, not of the position.
 
 **Returns**: the resulting offset from the start
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L109)
 
 ## Destructor
 
 ```rux
-func ~File(&var self)
+destructor
 ```
 
 Closes with the outcome discarded: the safety net, not the contract.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L286)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L290)
 
 ## Related
 
@@ -261,7 +261,7 @@ What an open may do, and what it does about existence.
 what happens to the file itself. `append` positions every write at the end, whatever was written in between,
 which is the property log writers need and `write` alone does not have.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L45)
 
 **Fields**
 
@@ -274,17 +274,17 @@ which is the property log writers need and `write` alone does not have.
 
 **Constructors**
 
-<h4 id="open-options-new"><code>OpenOptions</code></h4>
+<h4 id="open-options-new"><code>New</code></h4>
 
 ```rux
-pub func OpenOptions() -> OpenOptions
+pub func New() -> OpenOptions
 ```
 
 Nothing at all: the caller states every intention.
 
 **Returns**: options that permit nothing, which must be added to before opening
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L65)
 
 **Associated functions**
 
@@ -298,7 +298,7 @@ Reading an existing file.
 
 **Returns**: options that open an existing file for reading
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L72)
 
 <h4 id="open-options-writing"><code>Writing</code></h4>
 
@@ -310,7 +310,7 @@ Writing a file from its beginning: created if missing, emptied if not.
 
 **Returns**: options that create or truncate a file for writing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L77)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L81)
 
 <h4 id="open-options-appending"><code>Appending</code></h4>
 
@@ -322,4 +322,4 @@ Adding to a file's end: created if missing, appended to if not.
 
 **Returns**: options that create or open a file and write at its end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/FileSystem/Src/File.rux#L92)

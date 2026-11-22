@@ -33,14 +33,14 @@ calls it before letting go.
 
 ## Constructors
 
-<h3 id="new"><code>BufferedWriter</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func BufferedWriter(
+pub func New(
     allocator: Allocator,
     sink: Writer,
     capacity: uint
-) -> BufferedWriter throws IoError
+) -> BufferedWriter ! IoError
 ```
 
 A buffered writer over `sink` with `capacity` bytes of buffer.
@@ -72,7 +72,7 @@ How many bytes wait unsent.
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Sends everything gathered, then asks the sink to flush too.
@@ -87,7 +87,7 @@ Sends everything gathered, then asks the sink to flush too.
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Takes `bytes`: into the buffer while they fit, around it in one piece when they never would.
@@ -114,7 +114,7 @@ For the caller who has decided the bytes must not go — the one case where losi
 ## Destructor
 
 ```rux
-func ~BufferedWriter(&var self)
+destructor
 ```
 
 Flushes as a safety net — the outcome has nowhere to go, so a caller who cares flushed already — then

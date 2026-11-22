@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/OsString.rux
-  line: 140
+  line: 142
 seo:
   title: "OsString — Path API"
   description: Native text that owns its units.
@@ -28,15 +28,15 @@ pub struct OsString {
 ```
 
 Move-only: it owns its native-unit block and gives it back when it dies. [`Clone`](/docs/api/path/os-string#clone) makes an independent copy.
-Storage invariant, which every `unsafe` block here relies on: `data` is null exactly when `length` is zero, and
+Storage invariant, which every raw access here relies on: `data` is null exactly when `length` is zero, and
 otherwise addresses a block of `length` initialized units from `allocator`.
 
 ## Constructors
 
-<h3 id="new"><code>OsString</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func OsString(allocator: Allocator) -> OsString
+pub func New(allocator: Allocator) -> OsString
 ```
 
 Native text of no length, which has allocated nothing.
@@ -47,7 +47,7 @@ Native text of no length, which has allocated nothing.
 
 **Returns**: an empty owned string that has taken no storage yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L154)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L156)
 
 ## Associated functions
 
@@ -71,7 +71,7 @@ program when the copy cannot be made.
 
 **Returns**: a copy of `view` this string owns
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L165)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L167)
 
 <h3 id="from-text"><code>FromText</code></h3>
 
@@ -94,7 +94,7 @@ The bytes must be well-formed UTF-8, which everything in `Rux/Text` produces and
 
 **Returns**: the text converted to the platform's own units
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L234)
 
 ## Methods
 
@@ -108,7 +108,7 @@ How many native units the text holds.
 
 **Returns**: how many units the value holds
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L184)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L186)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
@@ -120,7 +120,7 @@ Whether the text holds nothing.
 
 **Returns**: whether it holds no units at all
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L193)
 
 <h3 id="view"><code>View</code></h3>
 
@@ -132,7 +132,7 @@ A view over this text, which is what everything read-only takes.
 
 **Returns**: a borrowed view of the owned units
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L198)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L200)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -142,7 +142,7 @@ pub func Clear(&var self)
 
 Gives the block back and leaves text of no length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L205)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L207)
 
 ## Implements Cloneable
 
@@ -174,7 +174,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The lossy rendering of the units this text owns.
@@ -187,7 +187,7 @@ The failures [`OsStringView::WriteDisplay`](/docs/api/path/os-string-view#write-
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L251)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L252)
 
 ## Implements Debug
 
@@ -200,7 +200,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The exact rendering of the units this text owns.
@@ -213,17 +213,17 @@ The failures [`OsStringView::WriteDebug`](/docs/api/path/os-string-view#write-de
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L264)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L265)
 
 ## Destructor
 
 ```rux
-func ~OsString(&var self)
+destructor
 ```
 
 Gives the block back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L220)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L222)
 
 ## Related
 
@@ -239,4 +239,4 @@ pub type OsUnit = char8
 
 The unit a native string is made of: a UTF-16 code unit on Windows, and a byte on the Unix systems.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Path/Src/OsString.rux#L20)

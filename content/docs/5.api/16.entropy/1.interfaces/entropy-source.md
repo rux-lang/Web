@@ -27,7 +27,7 @@ pub interface EntropySource {
         &var self,
         buffer: *var opaque,
         length: uint
-    ) throws EntropyError;
+    ) -> !EntropyError;
 }
 ```
 
@@ -43,7 +43,7 @@ func Fill(
     &var self,
     buffer: *var opaque,
     length: uint
-) throws EntropyError
+) -> !EntropyError
 ```
 
 Fills `length` bytes of `buffer` with unpredictable bytes.
@@ -72,11 +72,11 @@ partial survives.
 <h3 id="fill-from"><code>FillFrom</code></h3>
 
 ```rux
-pub unsafe func FillFrom(
+pub func FillFrom(
     source: &var EntropySource,
     buffer: *var opaque,
     length: uint
-) throws EntropyError
+) -> !EntropyError
 ```
 
 Fills `length` bytes of `buffer` from `source`, in as many calls as it takes.
@@ -104,12 +104,12 @@ parts an earlier call filled successfully.
 <h3 id="fill-with-retries"><code>FillWithRetries</code></h3>
 
 ```rux
-pub unsafe func FillWithRetries(
+pub func FillWithRetries(
     source: &var EntropySource,
     buffer: *var opaque,
     length: uint,
     attempts: uint
-) throws EntropyError
+) -> !EntropyError
 ```
 
 Fills `length` bytes of `buffer` from `source`, trying again while the failure says trying again might work.

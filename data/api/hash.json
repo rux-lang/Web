@@ -104,10 +104,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Adler32",
+          "kind": "associated",
+          "name": "New",
           "line": 23,
-          "signature": "pub func Adler32() -> Adler32",
+          "signature": "pub func New() -> Adler32",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -499,10 +499,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Crc32",
+          "kind": "associated",
+          "name": "New",
           "line": 80,
-          "signature": "pub func Crc32() -> Crc32",
+          "signature": "pub func New() -> Crc32",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -719,10 +719,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Crc32c",
+          "kind": "associated",
+          "name": "New",
           "line": 150,
-          "signature": "pub func Crc32c() -> Crc32c",
+          "signature": "pub func New() -> Crc32c",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -904,7 +904,7 @@
       "module": "Crc",
       "source": "Src/Crc.rux",
       "line": 212,
-      "signature": "pub unsafe func Crc32Of(bytes: *byte, length: uint) -> uint32",
+      "signature": "pub func Crc32Of(bytes: *byte, length: uint) -> uint32",
       "typeParams": [],
       "doc": {
         "summary": "The CRC-32 of `length` bytes at `bytes`.",
@@ -942,7 +942,7 @@
       "module": "Crc",
       "source": "Src/Crc.rux",
       "line": 227,
-      "signature": "pub unsafe func Crc32cOf(bytes: *byte, length: uint) -> uint32",
+      "signature": "pub func Crc32cOf(bytes: *byte, length: uint) -> uint32",
       "typeParams": [],
       "doc": {
         "summary": "The CRC-32C of `length` bytes at `bytes`.",
@@ -979,7 +979,7 @@
       "displayName": "FnvOffsetBasis32",
       "module": "Fnv",
       "source": "Src/Fnv.rux",
-      "line": 20,
+      "line": 19,
       "signature": "pub const FnvOffsetBasis32: uint32",
       "typeParams": [],
       "doc": {
@@ -1014,7 +1014,7 @@
       "displayName": "FnvPrime32",
       "module": "Fnv",
       "source": "Src/Fnv.rux",
-      "line": 24,
+      "line": 23,
       "signature": "pub const FnvPrime32: uint32",
       "typeParams": [],
       "doc": {
@@ -1049,7 +1049,7 @@
       "displayName": "FnvOffsetBasis64",
       "module": "Fnv",
       "source": "Src/Fnv.rux",
-      "line": 28,
+      "line": 27,
       "signature": "pub const FnvOffsetBasis64: uint64",
       "typeParams": [],
       "doc": {
@@ -1084,7 +1084,7 @@
       "displayName": "FnvPrime64",
       "module": "Fnv",
       "source": "Src/Fnv.rux",
-      "line": 32,
+      "line": 31,
       "signature": "pub const FnvPrime64: uint64",
       "typeParams": [],
       "doc": {
@@ -1119,7 +1119,7 @@
       "displayName": "Fnv1a32",
       "module": "Fnv",
       "source": "Src/Fnv.rux",
-      "line": 38,
+      "line": 37,
       "signature": "pub struct Fnv1a32",
       "typeParams": [],
       "doc": {
@@ -1137,7 +1137,7 @@
           "name": "state",
           "type": "uint32",
           "public": false,
-          "line": 40,
+          "line": 39,
           "doc": "The accumulator, starting at the offset basis.",
           "targets": [
             "windows-x86_64",
@@ -1155,10 +1155,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Fnv1a32",
-          "line": 47,
-          "signature": "pub func Fnv1a32() -> Fnv1a32",
+          "kind": "associated",
+          "name": "New",
+          "line": 46,
+          "signature": "pub func New() -> Fnv1a32",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -1189,7 +1189,7 @@
         {
           "kind": "method",
           "name": "Reset",
-          "line": 55,
+          "line": 54,
           "signature": "pub func Reset(&var self)",
           "typeParams": [],
           "params": [],
@@ -1221,7 +1221,7 @@
         {
           "kind": "method",
           "name": "Value",
-          "line": 65,
+          "line": 64,
           "signature": "pub func Value(&self) -> uint32",
           "typeParams": [],
           "params": [],
@@ -1253,7 +1253,7 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 80,
+          "line": 79,
           "signature": "pub func Write(&var self, bytes: *byte, length: uint)",
           "typeParams": [],
           "params": [
@@ -1291,7 +1291,7 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 99,
+          "line": 98,
           "signature": "pub func Finish(&var self) -> uint64",
           "typeParams": [],
           "params": [],
@@ -1339,7 +1339,7 @@
       "displayName": "Fnv1a64",
       "module": "Fnv",
       "source": "Src/Fnv.rux",
-      "line": 109,
+      "line": 108,
       "signature": "pub struct Fnv1a64",
       "typeParams": [],
       "doc": {
@@ -1357,7 +1357,7 @@
           "name": "state",
           "type": "uint64",
           "public": false,
-          "line": 111,
+          "line": 110,
           "doc": "The accumulator, starting at the offset basis.",
           "targets": [
             "windows-x86_64",
@@ -1375,10 +1375,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Fnv1a64",
-          "line": 118,
-          "signature": "pub func Fnv1a64() -> Fnv1a64",
+          "kind": "associated",
+          "name": "New",
+          "line": 117,
+          "signature": "pub func New() -> Fnv1a64",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -1409,7 +1409,7 @@
         {
           "kind": "method",
           "name": "Reset",
-          "line": 126,
+          "line": 125,
           "signature": "pub func Reset(&var self)",
           "typeParams": [],
           "params": [],
@@ -1441,7 +1441,7 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 140,
+          "line": 139,
           "signature": "pub func Write(&var self, bytes: *byte, length: uint)",
           "typeParams": [],
           "params": [
@@ -1479,7 +1479,7 @@
         {
           "kind": "method",
           "name": "Finish",
-          "line": 158,
+          "line": 157,
           "signature": "pub func Finish(&var self) -> uint64",
           "typeParams": [],
           "params": [],
@@ -1527,8 +1527,8 @@
       "displayName": "Fnv1a32Of",
       "module": "Fnv",
       "source": "Src/Fnv.rux",
-      "line": 173,
-      "signature": "pub unsafe func Fnv1a32Of(bytes: *byte, length: uint) -> uint32",
+      "line": 172,
+      "signature": "pub func Fnv1a32Of(bytes: *byte, length: uint) -> uint32",
       "typeParams": [],
       "doc": {
         "summary": "The 32-bit FNV-1a hash of `length` bytes at `bytes`.",
@@ -1565,8 +1565,8 @@
       "displayName": "Fnv1a64Of",
       "module": "Fnv",
       "source": "Src/Fnv.rux",
-      "line": 188,
-      "signature": "pub unsafe func Fnv1a64Of(bytes: *byte, length: uint) -> uint64",
+      "line": 187,
+      "signature": "pub func Fnv1a64Of(bytes: *byte, length: uint) -> uint64",
       "typeParams": [],
       "doc": {
         "summary": "The 64-bit FNV-1a hash of `length` bytes at `bytes`.",
@@ -1710,7 +1710,7 @@
       "module": "Hasher",
       "source": "Src/Hasher.rux",
       "line": 50,
-      "signature": "pub unsafe func HashBytes<H: Hasher>(hasher: &var H, bytes: *byte, length: uint) -> uint64",
+      "signature": "pub func HashBytes<H: Hasher>(hasher: &var H, bytes: *byte, length: uint) -> uint64",
       "typeParams": [{ "name": "H", "bounds": ["Hasher"] }],
       "doc": {
         "summary": "Writes `length` bytes and returns the hash, for a caller with nothing else to add.",
@@ -2409,7 +2409,7 @@
           "kind": "associated",
           "name": "WithKeyBytes",
           "line": 173,
-          "signature": "pub unsafe func WithKeyBytes(key: *byte) -> SipHash24",
+          "signature": "pub func WithKeyBytes(key: *byte) -> SipHash24",
           "typeParams": [],
           "params": [{ "name": "key", "type": "*byte" }],
           "receiver": null,
@@ -2559,7 +2559,7 @@
       "module": "SipHash",
       "source": "Src/SipHash.rux",
       "line": 286,
-      "signature": "pub unsafe func SipWord(bytes: *byte) -> uint64",
+      "signature": "pub func SipWord(bytes: *byte) -> uint64",
       "typeParams": [],
       "doc": {
         "summary": "The eight bytes at `bytes` as a 64-bit word, least significant byte first.",
@@ -2844,7 +2844,7 @@
       "module": "XxHash",
       "source": "Src/XxHash.rux",
       "line": 55,
-      "signature": "pub unsafe func ReadLittleEndian64(bytes: *byte) -> uint64",
+      "signature": "pub func ReadLittleEndian64(bytes: *byte) -> uint64",
       "typeParams": [],
       "doc": {
         "summary": "The eight bytes at `bytes` as a 64-bit value, least significant byte first.",
@@ -2879,7 +2879,7 @@
       "module": "XxHash",
       "source": "Src/XxHash.rux",
       "line": 72,
-      "signature": "pub unsafe func ReadLittleEndian32(bytes: *byte) -> uint32",
+      "signature": "pub func ReadLittleEndian32(bytes: *byte) -> uint32",
       "typeParams": [],
       "doc": {
         "summary": "The four bytes at `bytes` as a 32-bit value, least significant byte first.",
@@ -3179,10 +3179,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "XxHash64",
+          "kind": "associated",
+          "name": "New",
           "line": 148,
-          "signature": "pub func XxHash64() -> XxHash64",
+          "signature": "pub func New() -> XxHash64",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -3364,7 +3364,7 @@
       "module": "XxHash",
       "source": "Src/XxHash.rux",
       "line": 316,
-      "signature": "pub unsafe func XxHash64SeededOf(bytes: *byte, length: uint, seed: uint64) -> uint64",
+      "signature": "pub func XxHash64SeededOf(bytes: *byte, length: uint, seed: uint64) -> uint64",
       "typeParams": [],
       "doc": {
         "summary": "The xxHash64 of `length` bytes at `bytes`, using `seed`.",
@@ -3403,7 +3403,7 @@
       "module": "XxHash",
       "source": "Src/XxHash.rux",
       "line": 331,
-      "signature": "pub unsafe func XxHash64Of(bytes: *byte, length: uint) -> uint64",
+      "signature": "pub func XxHash64Of(bytes: *byte, length: uint) -> uint64",
       "typeParams": [],
       "doc": {
         "summary": "The xxHash64 of `length` bytes at `bytes`, seeded with zero.",
