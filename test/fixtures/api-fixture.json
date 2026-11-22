@@ -240,10 +240,10 @@
           }
         },
         {
-          "kind": "constructor",
-          "name": "Arena",
+          "kind": "associated",
+          "name": "New",
           "line": 30,
-          "signature": "pub func Arena(capacity: uint) -> Arena",
+          "signature": "pub func New(capacity: uint) -> Arena",
           "typeParams": [],
           "params": [
             {
@@ -403,9 +403,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Arena",
+          "name": "~",
           "line": 70,
-          "signature": "func ~Arena(self: &var Arena)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Arena",
@@ -428,8 +428,8 @@
     },
     {
       "kind": "struct",
-      "name": "ArenaHandle",
-      "displayName": "ArenaHandle",
+      "name": "Handles::ArenaHandle",
+      "displayName": "Handles::ArenaHandle",
       "module": "Arena",
       "source": "Src/Arena.rux",
       "line": 80,

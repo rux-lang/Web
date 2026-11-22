@@ -392,8 +392,8 @@ describe("renderApiPackage", async () => {
     const arena = pages.get(`${base}/2.types/arena.md`)!;
     expect(between(arena, '<h3 id="new">', "## Methods")).toBe(
       [
-        '<h3 id="new"><code>Arena</code></h3>',
-        "```rux\npub func Arena(capacity: uint) -> Arena\n```",
+        '<h3 id="new"><code>New</code></h3>',
+        "```rux\npub func New(capacity: uint) -> Arena\n```",
         "An empty arena.",
         "| Name       | Type   | Description                    |\n| ---------- | ------ | ------------------------------ |\n| `capacity` | `uint` | how many bytes it may hand out |",
         "**Returns**: the arena",
@@ -411,7 +411,7 @@ describe("renderApiPackage", async () => {
 
   it("puts the destructor under its section without a second #destructor", () => {
     const arena = pages.get(`${base}/2.types/arena.md`)!;
-    expect(between(arena, "## Destructor", "## Related")).toMatch(/^## Destructor\n\n```rux\nfunc ~Arena/);
+    expect(between(arena, "## Destructor", "## Related")).toMatch(/^## Destructor\n\n```rux\ndestructor\n```/);
     expect(arena).not.toContain('id="destructor"');
   });
 
@@ -437,10 +437,14 @@ describe("renderApiPackage", async () => {
     expect(related).toContain('<h4 id="arena-handle-reset"><code>Reset</code></h4>');
   });
 
-  it("links a destructor by its ~Name", () => {
-    expect(pages.get(`${base}/2.types/arena.md`)).toContain(
-      "and [`~Arena`](/docs/api/gadget/arena#destructor) still releases every block.",
-    );
+  it("leaves a destructor, which has no name of its own, unlinked in prose", () => {
+    expect(pages.get(`${base}/2.types/arena.md`)).toContain("and `~Arena` still releases every block.");
+  });
+
+  it("titles a module-qualified item by its short name", () => {
+    const arena = pages.get(`${base}/2.types/arena.md`)!;
+    expect(arena).not.toContain("Handles::");
+    expect(between(arena, "## Related")).toContain("`ArenaHandle` conforms to [`Store`](/docs/api/gadget/store).");
   });
 
   it("shows only public fields, and enum cases with their values and base type", () => {

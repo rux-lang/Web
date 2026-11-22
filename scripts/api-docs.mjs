@@ -138,6 +138,14 @@ const packageSlug = (snapshot) => snapshot.package.name.toLowerCase();
 const isPublic = (member) => member.public !== false;
 const memberLabel = (item, member) => `${item.name}::${member.name}`;
 
+/**
+ * A name without the module path the compiler qualifies it with:
+ * `Strategies::Arena` → `Arena`, `Pointers::Box<T>` → `Box<T>`. Pages, titles
+ * and links show the short name; the `import` path is in the signature's
+ * module and the `@see` URL, never in a heading.
+ */
+export const shortName = (name) => name.replace(/^(?:[A-Za-z_][A-Za-z0-9_]*::)+/, "");
+
 function routingUrl(see, slug, owner) {
   const url = see.find((subject) => subject.startsWith(`${SITE}/docs/api/`));
   if (!url) return null;
@@ -166,7 +174,8 @@ const CALLABLE_MEMBERS = new Set(["constructor", "associated", "method", "operat
 function overloads(a, b) {
   if (Boolean(a.member) !== Boolean(b.member)) return false;
   const [x, y] = a.member ? [a.member, b.member] : [a.item, b.item];
-  if (x.name !== y.name) return false;
+  // `File::CreateFileW` and `Kernel::CreateFileW` are one function declared in two modules' views.
+  if (shortName(x.name) !== shortName(y.name)) return false;
   const callable = a.member ? CALLABLE_MEMBERS : CALLABLE_ITEMS;
   if (callable.has(x.kind) && callable.has(y.kind)) return true;
   return Boolean(x.targets && y.targets) && !x.targets.some((target) => y.targets.includes(target));
@@ -582,8 +591,16 @@ function memberSignature(member) {
   return member.signature;
 }
 
-const memberDisplay = (member) =>
-  member.kind === "destructor" && !member.name.startsWith("~") ? `~${member.name}` : member.name;
+/** A destructor is the `destructor { }` block, which has no name of its own to show. */
+const memberDisplay = (member) => (member.kind === "destructor" ? "destructor" : member.name);
+
+/**
+ * The section a member is listed under. A type's constructor is the associated
+ * function named `New` (`func New(…) -> Self`, or `-> Self ! E`): the compiler
+ * reports it as an associated function like any other, and the page still
+ * gives it the Constructors section the reader looks for first.
+ */
+const sectionKind = (member) => (member.kind === "associated" && member.name === "New" ? "constructor" : member.kind);
 
 // ---------------------------------------------------------------------------
 // Targets
@@ -869,13 +886,13 @@ function linkIndex(snapshot, plan) {
   };
   for (const item of snapshot.items) {
     const url = plan.places.get(item).url;
-    add(item.name, url);
-    add(item.displayName, url);
+    const short = shortName(item.name);
+    for (const name of new Set([item.name, item.displayName, short, shortName(item.displayName)])) add(name, url);
     for (const member of item.members.filter(isPublic)) {
       const memberUrl = plan.places.get(member).url;
-      add(`${item.name}::${member.name}`, memberUrl);
-      if (member.kind === "destructor") add(memberDisplay(member), memberUrl);
-      else if (!["constructor", "operator"].includes(member.kind)) add(member.name, memberUrl);
+      if (member.kind === "destructor") continue;
+      for (const owner of new Set([item.name, short])) add(`${owner}::${member.name}`, memberUrl);
+      if (!["constructor", "operator"].includes(sectionKind(member))) add(member.name, memberUrl);
     }
   }
   return names;
@@ -1054,7 +1071,7 @@ function renderItemSections(page, ctx, set, sectionLevel, memberLevel) {
   if (item.kind === "interface") {
     const implementations = byUrl(
       ctx,
-      ctx.snapshot.items.filter((other) => other.implements?.includes(item.name)),
+      ctx.snapshot.items.filter((other) => other.implements?.some((name) => shortName(name) === shortName(item.name))),
     );
     if (implementations.length) {
       page.section(sectionLevel, "Implementations");
@@ -1062,7 +1079,7 @@ function renderItemSections(page, ctx, set, sectionLevel, memberLevel) {
         table(
           ["Type", "Summary"],
           implementations.map(([other]) => [
-            `[${code(other.displayName)}](${sitePath(ctx.plan.places.get(other).url)})`,
+            `[${code(shortName(other.displayName))}](${sitePath(ctx.plan.places.get(other).url)})`,
             cell(transformProse(other.doc.summary ?? "", ctx.resolve({ item: other, self: null }))),
           ]),
         ),
@@ -1072,22 +1089,24 @@ function renderItemSections(page, ctx, set, sectionLevel, memberLevel) {
 
   const own = members.filter((member) => !member.conformance && member.kind !== "requirement");
   for (const { kind, title } of MEMBER_SECTIONS) {
-    const group = own.filter((member) => member.kind === kind);
+    const group = own.filter((member) => sectionKind(member) === kind);
     if (!group.length) continue;
     page.section(sectionLevel, title);
     renderGroups(group);
   }
 
-  const conformances = [...new Set(set.flatMap((entry) => entry.implements ?? []))];
+  // The compiler may name one interface by its short and its module-qualified name; both are one section.
+  const conformances = [...new Set(set.flatMap((entry) => entry.implements ?? []).map(shortName))];
   for (const member of members) {
-    if (member.conformance && !conformances.includes(member.conformance)) conformances.push(member.conformance);
+    const name = member.conformance && shortName(member.conformance);
+    if (name && !conformances.includes(name)) conformances.push(name);
   }
-  for (const name of conformances) {
-    page.section(sectionLevel, `Implements ${name}`);
-    const target = ctx.snapshot.items.find((other) => other.kind === "interface" && other.name === name);
-    const link = target ? `[${code(name)}](${sitePath(ctx.plan.places.get(target).url)})` : code(name);
-    page.add(`${code(item.displayName)} conforms to ${link}.`);
-    renderGroups(members.filter((entry) => entry.conformance === name));
+  for (const shown of conformances) {
+    page.section(sectionLevel, `Implements ${shown}`);
+    const target = ctx.snapshot.items.find((other) => other.kind === "interface" && shortName(other.name) === shown);
+    const link = target ? `[${code(shown)}](${sitePath(ctx.plan.places.get(target).url)})` : code(shown);
+    page.add(`${code(shortName(item.displayName))} conforms to ${link}.`);
+    renderGroups(members.filter((entry) => entry.conformance && shortName(entry.conformance) === shown));
   }
 
   const constants = own.filter((member) => member.kind === "constant");
@@ -1113,7 +1132,7 @@ function renderPlacedItem(page, ctx, set, level, sectionLevel, memberLevel) {
   const main = canonical(set);
   const place = ctx.plan.places.get(first);
   const prose = (markdown) => transformProse(markdown, ctx.resolve({ item: main, self: place.url }));
-  page.anchored(level, place.anchor, first.displayName);
+  page.anchored(level, place.anchor, shortName(first.displayName));
   page.add(signatureFence(ctx, set, itemSignature), availabilityNote(ctx, set));
   if (main.doc.markdown) page.add(prose(main.doc.markdown));
   page.add(overloadSummaries(set, itemSignature, prose));
@@ -1169,14 +1188,15 @@ function renderItemPage(ctx, pageSlug, { owner, sections }) {
   const place = plan.places.get(first);
   const prose = (markdown) => transformProse(markdown, ctx.resolve({ item: main, self: place.url }));
   const { summary, rest } = splitSummary(main.doc);
-  const description = plainText(summary) || first.displayName;
+  const title = shortName(first.displayName);
+  const description = plainText(summary) || title;
   const page = new PageWriter();
   page.add(
     frontmatter({
-      title: first.displayName,
+      title,
       description,
       path: `/docs/api/${plan.slug}/${pageSlug}`,
-      navigation: first.displayName,
+      navigation: title,
       api: {
         package: snapshot.package.name,
         kind: first.kind,
@@ -1184,11 +1204,11 @@ function renderItemPage(ctx, pageSlug, { owner, sections }) {
         source: first.source,
         line: first.line,
       },
-      seoTitle: `${first.displayName} — ${snapshot.package.name} API`,
+      seoTitle: `${title} — ${snapshot.package.name} API`,
     }),
   );
   page.add(generatedComment(plan.slug));
-  page.add(`# ${escapeHtml(first.displayName)}`);
+  page.add(`# ${escapeHtml(title)}`);
   if (summary) page.add(prose(summary));
   page.add(signatureFence(ctx, owner, itemSignature), availabilityNote(ctx, owner));
   if (rest) page.add(prose(rest));
@@ -1353,7 +1373,7 @@ function renderOverview(ctx, readme, entry) {
           const { url } = plan.places.get(item);
           const summary = canonical(set).doc.summary ?? "";
           return [
-            `[${code(item.displayName)}](${sitePath(url)})`,
+            `[${code(shortName(item.displayName))}](${sitePath(url)})`,
             cell(transformProse(summary, ctx.resolve({ item, self: url }))),
           ];
         }),

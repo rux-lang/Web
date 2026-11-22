@@ -32,9 +32,9 @@ Every Markdown string is the documentation's own normalized Markdown, unchanged:
   "items": [
     {
       "kind": "struct", // struct | enum | variant | union | interface | function | constant | type | primitive | extern
-      "name": "Arena",
-      "displayName": "Arena", // with type parameters: "Box<T>"
-      "module": "Arena",
+      "name": "Strategies::Arena", // qualified by the `module` blocks it is declared in, if any
+      "displayName": "Strategies::Arena", // with type parameters: "Pointers::Box<T>"
+      "module": "Arena", // file stem, not the `module` block
       "source": "Src/Arena.rux",
       "line": 44,
       "signature": "pub struct Arena", // DeclSignature: a single line, no body
@@ -62,10 +62,10 @@ Every Markdown string is the documentation's own normalized Markdown, unchanged:
       "members": [
         // from every `extend <this type>` block and, for an interface, its requirements
         {
-          "kind": "constructor", // constructor | method | associated | operator | destructor | constant | requirement
-          "name": "Arena",
+          "kind": "associated", // method | associated | operator | destructor | constant | requirement
+          "name": "New",
           "line": 70,
-          "signature": "pub func Arena(backing: Allocator, blockSize: uint) -> Arena",
+          "signature": "pub func New(backing: Allocator, blockSize: uint) -> Arena",
           "typeParams": [],
           "params": [
             { "name": "backing", "type": "Allocator" },
@@ -91,17 +91,18 @@ Every primitive type is built into the compiler, so no package declares one. A p
 
 ## Member kinds
 
-- `constructor` — an associated function whose name is the type's own name (`func Arena(…) -> Arena`).
-- `associated` — any other function in an `extend` block with no `self` receiver (`Layout::New`, `Box::Create`).
+- `associated` — a function in an `extend` block with no `self` receiver (`Arena::New`, `Layout::Of`, `Box::TryCreate`). A constructor is an ordinary associated function; the site lists the one named `New` under Constructors. (Snapshots taken before rux 0.4.0's named constructors had a separate `constructor` kind for a function named after its type, which the renderer still accepts.)
 - `method` — a function whose first parameter is `self`.
 - `operator` — a method whose name is an operator: `==`, `!=`, `<`, `+`, `[]`, … (`func =` is the copy operator and is private by convention).
-- `destructor` — `func ~Type`.
+- `destructor` — the type's `destructor { }` block, with `name` `~` and `signature` `destructor`. It renders as `destructor`.
 - `constant` — a `const` inside an `extend` block.
 - `requirement` — a function declared inside an `interface`.
 
 ## What the site does with it
 
 The `@see` URL is the routing table. `https://rux-lang.dev/docs/api/<slug>/<page>` makes the item the owner of page `<page>`; `…/<page>#<anchor>` places the item (or member) as an anchored section on that page. Members default to their type's page. Fields and cases need no `@see`. See `scripts/api-docs.mjs`.
+
+An item declared inside a `module` block is named with that path (`Strategies::Arena`). Titles, headings, the sidebar and the index show the short name (`Arena`) — routing comes from the `@see` URL, never the name — and prose links resolve both spellings. Two declarations whose short names agree are compared as one name, so `File::CreateFileW` and `Kernel::CreateFileW` can form one overload set.
 
 Several declarations may share one URL as an _overload set_: callables of one name (`Print(String)`, `Print(StringView)`, …), or declarations of one name that no target has both of (`type c_long = int32` on Windows, `int64` elsewhere). The set renders as one section with every signature in one fence. Anything else that shares a URL is an error.
 

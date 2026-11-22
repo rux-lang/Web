@@ -46,11 +46,6 @@ export const PACKAGES = [
         description:
           "The atomic loads, stores, exchanges and read-modify-write operations, memory orders and fences that the Atomic package builds on.",
       },
-      adaptors: {
-        title: "Iterator adaptors",
-        description:
-          "Lazy adaptors over any iterator — map, filter, skip, take, enumerate, zip and chain — and walking a slice.",
-      },
       integers: {
         title: "Integers",
         description:
@@ -72,9 +67,9 @@ export const PACKAGES = [
           "The character types `char8` to `char512`, with their width and limit constants. The built-in `char` is `char32` and shares its constants.",
       },
       arithmetic: {
-        title: "Integer arithmetic",
+        title: "Numeric capabilities",
         description:
-          "Checked, wrapping and saturating arithmetic at every integer width, the limits of an integer type, and the `uint64` intrinsics allocation sizes are computed with.",
+          "The intrinsic interfaces a generic bound names to admit integer or floating-point arithmetic — `Integer`, `SignedInteger` and `Float` — and the limits of an integer type.",
       },
       bits: {
         title: "Bit operations",
@@ -101,9 +96,10 @@ export const PACKAGES = [
         description:
           "Run-time assertions and panics that report and terminate, and the compile-time `#Error` and `#Warn` that reject or flag a configuration.",
       },
-      outcomes: {
-        title: "Outcomes",
-        description: "Asking which channel a native fallible `T ! E` holds without unwrapping it.",
+      ownership: {
+        title: "Ownership",
+        description:
+          "Taking a value out of a place that cannot give it away — a field, an element or a referent — by replacing it or swapping it with another.",
       },
     },
   },
@@ -302,6 +298,11 @@ export const PACKAGES = [
     icon: "i-lucide-arrow-down-wide-narrow",
     description: "Generic algorithms over slices and mutable slices",
     topics: {
+      adaptors: {
+        title: "Iterator adaptors",
+        description:
+          "Lazy adaptors over any cursor — map, filter, skip, take, enumerate, zip and chain — and walking a slice.",
+      },
       numeric: {
         title: "Numeric sequences",
         description: "Running sums and scans, counting sequences, and an overflow-free midpoint.",
