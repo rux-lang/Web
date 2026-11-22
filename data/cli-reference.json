@@ -413,7 +413,7 @@
     {
       "name": "lint",
       "summary": "Lint package source files",
-      "description": "Run source-level diagnostics without emitting build artifacts",
+      "description": "Analyze package source files and report lint diagnostics without emitting build artifacts",
       "usages": ["rux lint [options]"],
       "arguments": [],
       "options": [],
