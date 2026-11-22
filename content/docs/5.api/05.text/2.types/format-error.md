@@ -33,7 +33,7 @@ pub variant FormatError {
 }
 ```
 
-Failure-only: every case is a failure, and success is what an operation that `throws FormatError` returns
+Failure-only: every case is a failure, and success is what an operation declared `-> T ! FormatError` returns
 rather than a case here. Which case arises says who must fix it, so the
 categories are not interchangeable and a writer may not invent the ones that belong to the parser or the value.
 Copy, and cheap to return: the widest payload is a pair of counts.
@@ -59,70 +59,13 @@ pub func IsWriterFailure(&self) -> bool
 ```
 
 Whether this failure came from the destination rather than from the text or the request.
-Useful at a boundary that must tell an unusable destination apart from a request that was wrong: the first is
-worth retrying elsewhere and the second never is.
-Borrows the error and leaves it untouched. Cannot fail; runs in constant time and allocates nothing.
+Useful at a boundary that must tell an unusable destination apart from a request that was wrong: the first
+is worth retrying elsewhere and the second never is. Borrows the error and leaves it untouched. Cannot fail;
+runs in constant time and allocates nothing.
 
 **Returns**: true for `WriterFailure`, false for every other case
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L60)
-
-## Implements Display
-
-`FormatError` conforms to [`Display`](/docs/api/text/display).
-
-<h3 id="write-display"><code>WriteDisplay</code></h3>
-
-```rux
-pub func WriteDisplay(
-    &self,
-    writer: &var TextWriter,
-    spec: FormatSpec
-) throws FormatError
-```
-
-Writes the description of why a value could not be turned into text.
-The position an `InvalidSpecification` carries, and the two counts an `ArgumentCountMismatch` carries, are
-deliberately absent: they are what [`Debug`](/docs/api/text/debug) adds. A description says what happened, and a reader who needs
-the byte offset is reading a log rather than a message.
-Reports whatever the writer reported, and `UnsupportedRequest` for any style or precision.
-
-| Name     | Type              | Description                    |
-| -------- | ----------------- | ------------------------------ |
-| `writer` | `&var TextWriter` | the destination                |
-| `spec`   | `FormatSpec`      | what the placeholder asked for |
-
-**Returns**: success when the whole description was accepted
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L139)
-
-## Implements Debug
-
-`FormatError` conforms to [`Debug`](/docs/api/text/debug).
-
-<h3 id="write-debug"><code>WriteDebug</code></h3>
-
-```rux
-pub func WriteDebug(
-    &self,
-    writer: &var TextWriter,
-    spec: FormatSpec
-) throws FormatError
-```
-
-Names the case and the payload it carries: `FormatError::InvalidSpecification(12)`.
-This is where the position and the counts appear, since they are what makes one occurrence of a failure
-different from another and what a log is read for.
-Reports whatever the writer reported, and `UnsupportedRequest` for any style or precision.
-
-| Name     | Type              | Description                    |
-| -------- | ----------------- | ------------------------------ |
-| `writer` | `&var TextWriter` | the destination                |
-| `spec`   | `FormatSpec`      | what the placeholder asked for |
-
-**Returns**: success when the whole rendering was accepted
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L162)
 
 ## Related
 
@@ -148,58 +91,6 @@ Copy, carrying no payload and owning nothing.
 | -------------- | --------------------------------------------------------------------------------------- |
 | `InvalidUtf8`  | The bytes offered were not well-formed UTF-8.                                           |
 | `NotABoundary` | A byte offset that is not where a character starts, and so not a place text may be cut. |
-
-**Implements Display**
-
-`TextFailureKind` conforms to [`Display`](/docs/api/text/display).
-
-<h4 id="text-failure-kind-write-display"><code>WriteDisplay</code></h4>
-
-```rux
-pub func WriteDisplay(
-    &self,
-    writer: &var TextWriter,
-    spec: FormatSpec
-) throws FormatError
-```
-
-The same description [`TextError`](/docs/api/text/text-error) gives the same failure, which is the point of sharing one writer.
-Reports whatever the writer reported, and `UnsupportedRequest` for any style or precision.
-
-| Name     | Type              | Description                    |
-| -------- | ----------------- | ------------------------------ |
-| `writer` | `&var TextWriter` | the destination                |
-| `spec`   | `FormatSpec`      | what the placeholder asked for |
-
-**Returns**: success when the whole description was accepted
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L108)
-
-**Implements Debug**
-
-`TextFailureKind` conforms to [`Debug`](/docs/api/text/debug).
-
-<h4 id="text-failure-kind-write-debug"><code>WriteDebug</code></h4>
-
-```rux
-pub func WriteDebug(
-    &self,
-    writer: &var TextWriter,
-    spec: FormatSpec
-) throws FormatError
-```
-
-Names the case, qualified by its type: `TextFailureKind::InvalidUtf8`.
-Reports whatever the writer reported, and `UnsupportedRequest` for any style or precision.
-
-| Name     | Type              | Description                    |
-| -------- | ----------------- | ------------------------------ |
-| `writer` | `&var TextWriter` | the destination                |
-| `spec`   | `FormatSpec`      | what the placeholder asked for |
-
-**Returns**: success when the whole name was accepted
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L122)
 
 <h3 id="text-failure-of"><code>TextFailureOf</code></h3>
 
@@ -227,7 +118,7 @@ pub func FromTextError(error: TextError) -> FormatError
 
 `error` translated across the boundary between this package's status convention and the formatting protocol.
 This is the only sanctioned crossing: every text failure becomes a `TextFailure` carrying the reason. It is the
-mapper a formatting operation hands a text operation's failure to, as in `try builder.Append(view) catch {
+mapper a formatting operation hands a text operation's failure to, as in `builder.Append(view) catch {
 e => throw FromTextError(e) }`.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/FormatError.rux#L84)

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Case.rux
-  line: 18
+  line: 17
 seo:
   title: "Case mapping — Unicode API"
   description: "Simple and full upper, lower and title case mappings, and case folding."
@@ -29,7 +29,7 @@ pub func ToUpperSimple(scalar: char32) -> char32
 
 The simple uppercase of `scalar`: one value to one, itself when it has no mapping.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L17)
 
 **Parameters**
 
@@ -47,7 +47,7 @@ pub func ToLowerSimple(scalar: char32) -> char32
 
 The simple lowercase of `scalar`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L25)
 
 **Parameters**
 
@@ -65,7 +65,7 @@ pub func ToTitleSimple(scalar: char32) -> char32
 
 The simple titlecase of `scalar`: the uppercase, except for the few dozen characters whose titlecase differs.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L33)
 
 **Parameters**
 
@@ -81,12 +81,12 @@ The simple titlecase of `scalar`: the uppercase, except for the few dozen charac
 pub func NextInCaseOrbit(scalar: char32) -> char32
 ```
 
-The next scalar value that case-insensitive comparison treats as `scalar`, going round the set of values with the
-same simple case folding: `k`, `K` and the Kelvin sign, or `σ`, `ς` and `Σ`. Calling it again on each answer
-visits every member of the set and comes back to `scalar`, so a caller asking whether a set of characters holds any
-form of a letter tests each answer until it returns.
+The next scalar value that case-insensitive comparison treats as `scalar`, going round the set of values with
+the same simple case folding: `k`, `K` and the Kelvin sign, or `σ`, `ς` and `Σ`. Calling it again on each answer
+visits every member of the set and comes back to `scalar`, so a caller asking whether a set of characters holds
+any form of a letter tests each answer until it returns.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Case.rux#L46)
 
 **Parameters**
 

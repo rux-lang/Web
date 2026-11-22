@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Writer.rux
-  line: 20
+  line: 23
 seo:
   title: "TextWriter — Text API"
   description: Somewhere formatted text can be written.
@@ -23,10 +23,7 @@ Somewhere formatted text can be written.
 
 ```rux
 pub interface TextWriter {
-    func Write(
-        &var self,
-        bytes: char8[..]
-    ) throws FormatError;
+    func Write(&var self, bytes: char8[..]) -> !FormatError;
 }
 ```
 
@@ -38,7 +35,7 @@ view, which refers to the caller's own writer rather than a copy that would lose
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-func Write(&var self, bytes: char8[..]) throws FormatError
+func Write(&var self, bytes: char8[..]) -> !FormatError
 ```
 
 Writes `bytes`, which must be well-formed UTF-8 and must not end part-way through a character.
@@ -56,7 +53,7 @@ already have emitted a prefix.
 
 **Returns**: success when the complete run was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Writer.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Writer.rux#L35)
 
 ## Implementations
 
@@ -73,14 +70,14 @@ already have emitted a prefix.
 pub func WriteBytes(
     writer: &var TextWriter,
     bytes: char8[..]
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes `bytes` to `writer`.
 The writer is borrowed exclusively for the call, so position changes remain visible to its owner. This forwards
 without inspecting the bytes, which is what keeps the writer's permitted failures exactly the writer's.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Writer.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Writer.rux#L45)
 
 **Parameters**
 
@@ -97,7 +94,7 @@ without inspecting the bytes, which is what keeps the writer's permitted failure
 pub func WriteAscii(
     writer: &var TextWriter,
     byte: char8
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes one ASCII byte.
@@ -105,7 +102,7 @@ Reports `TextFailure(InvalidUtf8)` for a byte above 0x7F: a single byte above th
 and a writer takes whole characters. [`WriteScalar`](/docs/api/text/text-writer#write-scalar) is what writes one that needs more than a byte. Otherwise
 reports whatever the writer reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Writer.rux#L54)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Writer.rux#L57)
 
 **Parameters**
 
@@ -122,14 +119,14 @@ reports whatever the writer reported.
 pub func WriteScalar(
     writer: &var TextWriter,
     scalar: char32
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes one character, encoded as UTF-8.
 Reports `TextFailure(InvalidUtf8)` for a value that is not a Unicode scalar value. This is strict encoding, not
 presentation: a caller that wants an invalid value shown as U+FFFD replaces it before calling.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Writer.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Writer.rux#L73)
 
 **Parameters**
 

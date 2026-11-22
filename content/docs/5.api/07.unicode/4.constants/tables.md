@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/GeneratedCase.rux
-  line: 14
+  line: 15
 seo:
   title: "Generated tables — Unicode API"
   description: The Unicode 17.0.0 Character Database tables the lookups search.
@@ -29,7 +29,7 @@ pub const SimpleUpperPairs: uint32[N] = …;
 
 Simple uppercase pairs: code point, its uppercase. Sorted; absence means the point maps to itself.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L15)
 
 <h2 id="simple-lower-pairs"><code>SimpleLowerPairs</code></h2>
 
@@ -39,7 +39,7 @@ pub const SimpleLowerPairs: uint32[N] = …;
 
 Simple lowercase pairs: code point, its lowercase.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L270)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L271)
 
 <h2 id="simple-title-pairs"><code>SimpleTitlePairs</code></h2>
 
@@ -49,7 +49,7 @@ pub const SimpleTitlePairs: uint32[N] = …;
 
 Simple titlecase pairs, for the points whose titlecase differs from their uppercase.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L523)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L524)
 
 <h2 id="case-orbit-pairs"><code>CaseOrbitPairs</code></h2>
 
@@ -60,7 +60,7 @@ pub const CaseOrbitPairs: uint32[N] = …;
 Case orbits the simple mappings do not pair: code point, the next point that folds to the same point, the
 largest followed by the smallest. Sorted.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L773)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L774)
 
 <h2 id="full-fold-index"><code>FullFoldIndex</code></h2>
 
@@ -71,7 +71,7 @@ pub const FullFoldIndex: uint32[N] = …;
 Full case folding index: code point, offset, length. C and F entries only, so the folding is the same in every
 locale.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L795)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L796)
 
 <h2 id="full-fold-elements"><code>FullFoldElements</code></h2>
 
@@ -81,7 +81,7 @@ pub const FullFoldElements: uint32[N] = …;
 
 Full case folding elements, indexed by FullFoldIndex.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1197)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1198)
 
 <h2 id="full-upper-index"><code>FullUpperIndex</code></h2>
 
@@ -92,7 +92,7 @@ pub const FullUpperIndex: uint32[N] = …;
 Unconditional full uppercase index: code point, offset, length. The conditional mappings are deliberately absent
 — they depend on locale or context.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1346)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1347)
 
 <h2 id="full-upper-elements"><code>FullUpperElements</code></h2>
 
@@ -102,7 +102,7 @@ pub const FullUpperElements: uint32[N] = …;
 
 Unconditional full uppercase elements.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1377)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1378)
 
 <h2 id="full-lower-index"><code>FullLowerIndex</code></h2>
 
@@ -112,7 +112,7 @@ pub const FullLowerIndex: uint32[N] = …;
 
 Unconditional full lowercase index: code point, offset, length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1401)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1402)
 
 <h2 id="full-lower-elements"><code>FullLowerElements</code></h2>
 
@@ -122,7 +122,7 @@ pub const FullLowerElements: uint32[N] = …;
 
 Unconditional full lowercase elements.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1432)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedCase.rux#L1433)
 
 <h2 id="normalization-vector-index"><code>NormalizationVectorIndex</code></h2>
 
@@ -132,7 +132,7 @@ pub const NormalizationVectorIndex: uint32[N] = …;
 
 Normalization vector index: five (offset, length) pairs per row, for the columns c1..c5.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L13)
 
 <h2 id="normalization-vector-elements"><code>NormalizationVectorElements</code></h2>
 
@@ -145,7 +145,7 @@ each vector's five forms start. These come from the Unicode Consortium's own Nor
 passing run means agreement with the standard's own expected output rather than with this implementation's idea
 of it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L1295)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L1296)
 
 <h2 id="grapheme-vector-index"><code>GraphemeVectorIndex</code></h2>
 
@@ -155,7 +155,7 @@ pub const GraphemeVectorIndex: uint32[N] = …;
 
 Grapheme vector index: offset, length per row.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L2563)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L2564)
 
 <h2 id="grapheme-vector-points"><code>GraphemeVectorPoints</code></h2>
 
@@ -165,7 +165,7 @@ pub const GraphemeVectorPoints: uint32[N] = …;
 
 Grapheme vector code points.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L2696)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L2697)
 
 <h2 id="grapheme-vector-breaks"><code>GraphemeVectorBreaks</code></h2>
 
@@ -176,7 +176,7 @@ pub const GraphemeVectorBreaks: uint32[N] = …;
 Grapheme vector break masks: bit N set when a boundary precedes point N, the highest bit for the end of the row.
 No row is longer than thirty-one points.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L2868)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedConformance.rux#L2869)
 
 <h2 id="grapheme-break-ranges"><code>GraphemeBreakRanges</code></h2>
 
@@ -187,7 +187,7 @@ pub const GraphemeBreakRanges: uint32[N] = …;
 Grapheme break class ranges: first, last, class ordinal. The ordinals mirror [`GraphemeBreak`](/docs/api/unicode/grapheme-break) in Graphemes.rux,
 and a code point in no range is `Any`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L16)
 
 <h2 id="pictographic-ranges"><code>PictographicRanges</code></h2>
 
@@ -197,7 +197,7 @@ pub const PictographicRanges: uint32[N] = …;
 
 Extended_Pictographic ranges: first, last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L367)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L368)
 
 <h2 id="conjunct-consonant-ranges"><code>ConjunctConsonantRanges</code></h2>
 
@@ -207,7 +207,7 @@ pub const ConjunctConsonantRanges: uint32[N] = …;
 
 InCB=Consonant ranges: first, last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L398)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L399)
 
 <h2 id="conjunct-linker-ranges"><code>ConjunctLinkerRanges</code></h2>
 
@@ -217,7 +217,7 @@ pub const ConjunctLinkerRanges: uint32[N] = …;
 
 InCB=Linker ranges: first, last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L416)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L417)
 
 <h2 id="conjunct-extend-ranges"><code>ConjunctExtendRanges</code></h2>
 
@@ -227,7 +227,7 @@ pub const ConjunctExtendRanges: uint32[N] = …;
 
 InCB=Extend ranges: first, last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L425)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedGraphemes.rux#L426)
 
 <h2 id="canonical-decomposition-index"><code>CanonicalDecompositionIndex</code></h2>
 
@@ -238,7 +238,7 @@ pub const CanonicalDecompositionIndex: uint32[N] = …;
 Canonical decomposition index: code point, offset, length. Fully expanded, so lookup never recurses. Hangul is
 absent: its decomposition is arithmetic and computed instead.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L14)
 
 <h2 id="canonical-decomposition-elements"><code>CanonicalDecompositionElements</code></h2>
 
@@ -250,7 +250,7 @@ The scalar values every canonical decomposition expands to, run together end to 
 [`CanonicalDecompositionIndex`](/docs/api/unicode/tables#canonical-decomposition-index) says where each point's run starts and how long it is; this holds the runs
 themselves, so a decomposition is a slice of it rather than a table lookup per value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L541)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L542)
 
 <h2 id="compatibility-decomposition-index"><code>CompatibilityDecompositionIndex</code></h2>
 
@@ -260,7 +260,7 @@ pub const CompatibilityDecompositionIndex: uint32[N] = …;
 
 Compatibility decomposition index: code point, offset, length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L834)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L835)
 
 <h2 id="compatibility-decomposition-elements"><code>CompatibilityDecompositionElements</code></h2>
 
@@ -272,7 +272,7 @@ The scalar values every compatibility decomposition expands to, run together end
 [`CompatibilityDecompositionIndex`](/docs/api/unicode/tables#compatibility-decomposition-index) says where each point's run starts and how long it is. These are the
 decompositions that change appearance rather than preserving it, which is what separates NFKD from NFD.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L2320)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L2321)
 
 <h2 id="composition-triples"><code>CompositionTriples</code></h2>
 
@@ -283,7 +283,7 @@ pub const CompositionTriples: uint32[N] = …;
 Primary composite triples: starter, combining, composed. Sorted by starter then combining, for binary search.
 The exclusions and non-starter decompositions are already left out.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L3093)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedNormalization.rux#L3094)
 
 <h2 id="category-ranges"><code>CategoryRanges</code></h2>
 
@@ -293,7 +293,7 @@ pub const CategoryRanges: uint32[N] = …;
 
 General category ranges: first, last, category ordinal. Sorted by first; a code point in no range is unassigned.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L15)
 
 <h2 id="combining-class-ranges"><code>CombiningClassRanges</code></h2>
 
@@ -304,7 +304,7 @@ pub const CombiningClassRanges: uint32[N] = …;
 Canonical combining class ranges: first, last, class. A code point in no range has class zero, which is nearly
 all of them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L873)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L874)
 
 <h2 id="white-space-ranges"><code>WhiteSpaceRanges</code></h2>
 
@@ -314,7 +314,7 @@ pub const WhiteSpaceRanges: uint32[N] = …;
 
 White_Space ranges: first, last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L979)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L980)
 
 <h2 id="alphabetic-ranges"><code>AlphabeticRanges</code></h2>
 
@@ -324,7 +324,7 @@ pub const AlphabeticRanges: uint32[N] = …;
 
 Alphabetic ranges: first, last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L986)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L987)
 
 <h2 id="numeric-ranges"><code>NumericRanges</code></h2>
 
@@ -334,7 +334,7 @@ pub const NumericRanges: uint32[N] = …;
 
 Numeric ranges — the Nd, Nl and No categories: first, last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L1118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedProperties.rux#L1119)
 
 <h2 id="script-ranges"><code>ScriptRanges</code></h2>
 
@@ -344,7 +344,7 @@ pub const ScriptRanges: uint32[N] = …;
 
 Script ranges: first, last, script number. Sorted by first; a point in no range is in the Unknown script.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L11)
 
 <h2 id="script-name-index"><code>ScriptNameIndex</code></h2>
 
@@ -355,7 +355,7 @@ pub const ScriptNameIndex: uint32[N] = …;
 Script names: offset into ScriptNameBytes and length, by script number. The scripts are numbered in the order of
 their names.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L262)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L263)
 
 <h2 id="script-name-bytes"><code>ScriptNameBytes</code></h2>
 
@@ -365,7 +365,7 @@ pub const ScriptNameBytes: uint32[N] = …;
 
 The bytes of the scripts' long names, such as Latin or Old_Italic, all ASCII.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L297)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L298)
 
 <h2 id="unknown-script"><code>UnknownScript</code></h2>
 
@@ -375,4 +375,4 @@ pub const UnknownScript: uint32[N] = …;
 
 The script number of Unknown, the script of a point in no range.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L426)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/GeneratedScripts.rux#L427)

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Char8.rux
-  line: 12
+  line: 15
 seo:
   title: "Writing characters and booleans — Format API"
   description: "How characters, character slices and booleans render, and how a value that is no character is escaped."
@@ -29,7 +29,7 @@ pub const ReplacementCharacter: char32 = 0xFFFDu32 as char32;
 
 The character written in place of anything that is not one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Char8.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Char8.rux#L15)
 
 <h2 id="maximum-scalar-value"><code>MaximumScalarValue</code></h2>
 
@@ -41,7 +41,7 @@ The largest value a Unicode scalar can have, past which nothing is a character.
 Named because a `char64` has room for a great deal more than this, and the check that it does not hold one has
 to happen at the full width: narrowing first would turn `0x100000041` into `A`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L27)
 
 <h2 id="is-wide-scalar-value"><code>IsWideScalarValue</code></h2>
 
@@ -51,11 +51,11 @@ pub func IsWideScalarValue(value: uint64) -> bool
 
 Whether `value`, at whatever width it was read from, is a Unicode scalar value.
 Takes a `uint64` so that a `char64` is checked before it is narrowed rather than after. A value past the last
-scalar and a value in the surrogate range are both refused, which is the same rule `Text::IsScalarValue`
+scalar and a value in the surrogate range are both refused, which is the same rule `Text::Utf8::IsScalarValue`
 applies at thirty-two bits.
 Cannot fail; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L37)
 
 **Parameters**
 
@@ -71,7 +71,7 @@ Cannot fail; runs in constant time and allocates nothing.
 pub func WriteInvalidEscape(
     writer: &var TextWriter,
     value: uint64
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the escape for a value that is not a character, preserving exactly what it was.
@@ -80,7 +80,7 @@ one; anything else is written `\u{...}` with as many digits as its width needs, 
 can collide with either: the escapes are only ever written for values that are not characters.
 Reports whatever the writer reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L63)
 
 **Parameters**
 
@@ -103,7 +103,7 @@ be checked. Any bit above the sixty-fourth makes the value no character at all, 
 nothing is narrowed until the value is known to be at most U+10FFFF.
 Cannot fail; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L85)
 
 **Parameters**
 
@@ -119,7 +119,7 @@ Cannot fail; runs in constant time and allocates nothing.
 pub func WriteWideInvalidEscape(
     writer: &var TextWriter,
     value: uint512
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the escape for a value that is not a character, from a character wider than sixty-four bits.
@@ -129,7 +129,7 @@ digits past sixty-four bits, 64 past 128 and 128 past 256, so every bit the valu
 are written one at a time from the value itself, and nothing is allocated.
 Reports whatever the writer reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L100)
 
 **Parameters**
 
@@ -146,7 +146,7 @@ Reports whatever the writer reported, stopping at the first refusal.
 pub func WriteWideCharacterDebug(
     writer: &var TextWriter,
     value: uint512
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the `Debug` form of a character wider than sixty-four bits.
@@ -154,7 +154,7 @@ A value that fits sixty-four bits is written exactly as a `char64` of the same n
 wider one as its full escape, so no two values of any character width share a rendering they should not.
 Reports whatever the writer reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L124)
 
 **Parameters**
 
@@ -172,7 +172,7 @@ pub func WriteCharacterDebug(
     writer: &var TextWriter,
     value: uint64,
     whole: bool
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes one character's `Debug` form: quoted, and preserved exactly when it is not a character.
@@ -182,7 +182,7 @@ byte's answer that governs: `Display` writes U+FFFD for it, so `Debug` must pres
 the character that number happens to name.
 Reports whatever the writer reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L143)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L145)
 
 **Parameters**
 
@@ -200,7 +200,7 @@ Reports whatever the writer reported, stopping at the first refusal.
 pub func WriteEscapedScalar(
     writer: &var TextWriter,
     scalar: uint32
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes one scalar as it appears inside a quoted rendering, escaping what would otherwise be ambiguous.
@@ -209,7 +209,7 @@ quoted character reads the same here as inside a quoted string.
 Reports whatever the writer reported, and `TextFailure(InvalidUtf8)` for a value that is not a scalar, which a
 caller checks before calling.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L165)
 
 **Parameters**
 
@@ -238,7 +238,7 @@ pass over the units and the fill is written around the transcoding instead. Both
 rendering already fills the width, which is the common case and costs nothing.
 Cannot fail; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L188)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/CharacterText.rux#L190)
 
 **Parameters**
 
@@ -256,14 +256,14 @@ pub func FormatScalar(
     writer: &var TextWriter,
     spec: FormatSpec,
     scalar: char32
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes one character under `spec`'s width, fill and alignment.
 Reports `TextFailure(InvalidUtf8)` when `scalar` is not a Unicode scalar value, and otherwise whatever the
 writer reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/IntegerText.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/IntegerText.rux#L125)
 
 **Parameters**
 

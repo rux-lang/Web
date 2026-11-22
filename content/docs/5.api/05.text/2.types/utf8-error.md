@@ -9,7 +9,7 @@ api:
   kind: enum
   version: 0.1.0
   source: Src/Utf8.rux
-  line: 39
+  line: 40
 seo:
   title: "Utf8Error — Text API"
   description: What was wrong with a byte sequence.
@@ -41,55 +41,3 @@ return, and throw this.
 | `Truncated`           | `1`   | A sequence starts but the bytes run out before it ends.                                                                                                                                                  |
 | `InvalidStart`        | `2`   | A byte that cannot start a sequence: a continuation byte on its own, or one of the values UTF-8 never uses.                                                                                              |
 | `InvalidContinuation` | `3`   | A byte where a continuation byte was required, or a continuation outside the range this leading byte allows — which is what rejects an overlong form, a surrogate half, or a value past the last scalar. |
-
-## Implements Display
-
-`Utf8Error` conforms to [`Display`](/docs/api/text/display).
-
-<h3 id="write-display"><code>WriteDisplay</code></h3>
-
-```rux
-pub func WriteDisplay(
-    &self,
-    writer: &var TextWriter,
-    spec: FormatSpec
-) throws FormatError
-```
-
-Writes the description of what is wrong with a byte sequence, or `well-formed UTF-8` for success.
-Reports whatever the writer reported, and `UnsupportedRequest` for any style or precision.
-
-| Name     | Type              | Description                    |
-| -------- | ----------------- | ------------------------------ |
-| `writer` | `&var TextWriter` | the destination                |
-| `spec`   | `FormatSpec`      | what the placeholder asked for |
-
-**Returns**: success when the whole description was accepted
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L204)
-
-## Implements Debug
-
-`Utf8Error` conforms to [`Debug`](/docs/api/text/debug).
-
-<h3 id="write-debug"><code>WriteDebug</code></h3>
-
-```rux
-pub func WriteDebug(
-    &self,
-    writer: &var TextWriter,
-    spec: FormatSpec
-) throws FormatError
-```
-
-Names the case, qualified by its type: `Utf8Error::Truncated`.
-Reports whatever the writer reported, and `UnsupportedRequest` for any style or precision.
-
-| Name     | Type              | Description                    |
-| -------- | ----------------- | ------------------------------ |
-| `writer` | `&var TextWriter` | the destination                |
-| `spec`   | `FormatSpec`      | what the placeholder asked for |
-
-**Returns**: success when the whole name was accepted
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L221)

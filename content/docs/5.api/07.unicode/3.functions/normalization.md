@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Normalize.rux
-  line: 17
+  line: 18
 seo:
   title: "Normalization — Unicode API"
   description: "Canonical and compatibility decomposition, and the NFD, NFC, NFKD and NFKC normal forms."
@@ -29,7 +29,7 @@ pub const HangulBase: uint32 = 0xAC00;
 
 The first Hangul syllable, LV and LVT composition's base.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L18)
 
 <h2 id="decompose-canonical"><code>DecomposeCanonical</code></h2>
 
@@ -46,7 +46,7 @@ Reports the length through `written`, or `false` without a defined result when t
 decompositions are fully expanded in the tables, so nothing recurses.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L119)
 
 **Parameters**
 
@@ -71,7 +71,7 @@ pub func DecomposeCompatibility(
 Writes the compatibility decomposition of `text` into `into`, marks in canonical order: NFKD.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L130)
 
 **Parameters**
 
@@ -96,7 +96,7 @@ pub func NormalizeCanonical(
 Writes the NFC of `text` into `into`: canonical decomposition, canonical order, then composition.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L260)
 
 **Parameters**
 
@@ -121,7 +121,7 @@ pub func NormalizeCompatibility(
 Writes the NFKC of `text` into `into`: compatibility decomposition, canonical order, then composition.
 `written` must be non-null and writable.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L277)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Normalize.rux#L276)
 
 **Parameters**
 

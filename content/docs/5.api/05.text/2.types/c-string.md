@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/CString.rux
-  line: 20
+  line: 21
 seo:
   title: "CString — Text API"
   description: "Text carrying the terminator C expects, in storage of its own."
@@ -45,7 +45,7 @@ part of the block and not part of the text, so [`Length`](/docs/api/text/c-strin
 pub func FromText(
     allocator: Allocator,
     text: char8[..]
-) -> CString throws TextError
+) -> CString ! TextError
 ```
 
 A terminated copy of `text`, or why the text cannot cross the boundary.
@@ -59,7 +59,7 @@ how a checked name and a used name part company.
 
 **Returns**: the terminated copy, or a failure when the text holds an interior zero byte
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L39)
 
 <h3 id="from-view"><code>FromView</code></h3>
 
@@ -67,7 +67,7 @@ how a checked name and a used name part company.
 pub func FromView(
     allocator: Allocator,
     view: StringView
-) -> CString throws TextError
+) -> CString ! TextError
 ```
 
 A terminated copy of `view`, or why the text cannot cross the boundary.
@@ -83,16 +83,16 @@ Runs in time proportional to the length — one pass to check, one to copy — a
 
 **Returns**: the terminated copy, or a failure when the text holds an interior zero byte
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L52)
 
 <h3 id="from-raw"><code>FromRaw</code></h3>
 
 ```rux
-pub unsafe func FromRaw(
+pub func FromRaw(
     allocator: Allocator,
     raw: *char8,
     limit: uint
-) -> CString throws TextError
+) -> CString ! TextError
 ```
 
 A copy of the C text at `raw`, read to its terminator, or why it is not text.
@@ -110,7 +110,7 @@ Safety: a non-null `raw` must be readable up to its terminator or for `limit` by
 
 **Returns**: the copy, or a failure when no terminator was found within `limit`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L93)
 
 ## Methods
 
@@ -124,7 +124,7 @@ How many bytes of text come before the terminator.
 
 **Returns**: how many bytes precede the terminator
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L126)
 
 <h3 id="raw"><code>Raw</code></h3>
 
@@ -138,7 +138,7 @@ keeping a pointer into a freed block.
 
 **Returns**: the address to hand to a C interface, which stays valid while this does
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L135)
 
 <h3 id="view"><code>View</code></h3>
 
@@ -151,7 +151,7 @@ The view borrows this [`CString`](/docs/api/text/c-string) and must not outlive 
 
 **Returns**: the bytes as text, without the terminator
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L142)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L143)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -162,14 +162,14 @@ pub func Clear(&var self)
 Gives the block back and leaves a [`CString`](/docs/api/text/c-string) that owns nothing.
 Safe to call twice, since what it leaves behind owns nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L152)
 
 ## Destructor
 
 ```rux
-func ~CString(&var self)
+destructor
 ```
 
 Gives the block back.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L164)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/CString.rux#L165)

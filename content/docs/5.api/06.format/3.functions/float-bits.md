@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Float16.rux
-  line: 28
+  line: 32
 seo:
   title: "Float classification and bits — Format API"
   description: "Whether a float is NaN, infinite or finite, and the bits it is stored as."
@@ -32,7 +32,7 @@ pub func IsNan(value: float8) -> bool
 
 Provides the public `IsNan` operation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float16.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float16.rux#L32)
 
 **Parameters**
 
@@ -53,7 +53,7 @@ pub func IsInfinite(value: float8) -> bool
 
 Provides the public `IsInfinite` operation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float16.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float16.rux#L41)
 
 **Parameters**
 
@@ -74,7 +74,7 @@ pub func IsFinite(value: float8) -> bool
 
 Provides the public `IsFinite` operation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float16.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Float16.rux#L51)
 
 **Parameters**
 
@@ -94,7 +94,7 @@ The bits of `value`, as they are stored.
 Reads the value's storage as an integer of the same width through a raw pointer. This is the representation
 rather than the value: there is no conversion that preserves the bits, since a cast asks for the number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L36)
 
 **Parameters**
 
@@ -113,7 +113,7 @@ pub func BitsOfFloat32(value: float32) -> uint32
 The bits of `value`, as they are stored.
 As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the narrower width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L47)
 
 **Parameters**
 
@@ -132,7 +132,7 @@ pub func BitsOfFloat16(value: float16) -> uint16
 The bits of `value`, as they are stored.
 As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the half-precision width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L58)
 
 **Parameters**
 
@@ -151,7 +151,7 @@ pub func BitsOfFloat8(value: float8) -> uint8
 The bits of `value`, as they are stored.
 As [`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64), at the eight-bit width: a sign, four exponent bits and three stored significand bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/FloatDigits.rux#L69)
 
 **Parameters**
 
@@ -169,9 +169,10 @@ pub func Float64FromBits(bits: uint64) -> float64
 
 The `float64` whose bits are `bits`.
 Writes the value's storage from an integer of the same width through a raw pointer, which is the inverse of
-[`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64) and unsafe for the same reason: there is no conversion that preserves a representation.
+[`BitsOfFloat64`](/docs/api/format/float-bits#bits-of-float64) and written that way for the same reason: there is no conversion that preserves a
+representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L271)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L266)
 
 **Parameters**
 
@@ -190,7 +191,7 @@ pub func Float32FromBits(bits: uint32) -> float32
 The `float32` whose bits are `bits`.
 As [`Float64FromBits`](/docs/api/format/float-bits#float64-from-bits), at the narrower width.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L283)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/NarrowParse.rux#L278)
 
 **Parameters**
 

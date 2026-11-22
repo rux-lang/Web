@@ -33,10 +33,10 @@ never leading zero limbs above it — every operation restores that before it re
 
 ## Constructors
 
-<h3 id="new"><code>FixedNat</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func FixedNat() -> FixedNat
+pub func New() -> FixedNat
 ```
 
 Zero.

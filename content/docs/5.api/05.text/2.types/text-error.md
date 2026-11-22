@@ -29,7 +29,7 @@ pub enum TextError: int32 {
 ```
 
 Every case is a failure. An operation that can fail returns its result, or nothing, and declares
-`throws TextError`, so success is the return value rather than a case here.
+`! TextError` after it, so success is the return value rather than a case here.
 
 ## Cases
 
@@ -49,7 +49,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the description of what went wrong, or `no error` for success.
@@ -64,7 +64,7 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/TextError.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/TextError.rux#L78)
 
 ## Implements Debug
 
@@ -77,7 +77,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Names the case, qualified by its type: `TextError::InvalidUtf8`.
@@ -90,4 +90,4 @@ Reports whatever the writer reported, and `UnsupportedRequest` for any style or 
 
 **Returns**: success when the whole name was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/TextError.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/TextError.rux#L94)

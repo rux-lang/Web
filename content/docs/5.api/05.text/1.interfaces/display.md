@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Display.rux
-  line: 22
+  line: 24
 seo:
   title: "Display — Text API"
   description: The text a value has for a reader.
@@ -26,7 +26,7 @@ pub interface Display {
     func WriteDisplay(
         writer: &var TextWriter,
         spec: FormatSpec
-    ) throws FormatError;
+    ) -> !FormatError;
 }
 ```
 
@@ -42,7 +42,7 @@ instead of implementing this.
 func WriteDisplay(
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes this value's text under `spec`.
@@ -58,18 +58,13 @@ refused something.
 
 **Returns**: success when the value's complete text was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Display.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Display.rux#L34)
 
 ## Implementations
 
-| Type                                                               | Summary                                                               |
-| ------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| [`TextFailureKind`](/docs/api/text/format-error#text-failure-kind) | The ways text handling fails, with no case for success.               |
-| [`FormatError`](/docs/api/text/format-error)                       | Why a formatting operation did not produce the text it was asked for. |
-| [`String`](/docs/api/text/string)                                  | Text that owns its bytes.                                             |
-| [`StringView`](/docs/api/text/string-view)                         | A borrowed run of bytes that has been checked to be UTF-8.            |
-| [`TextError`](/docs/api/text/text-error)                           | What went wrong.                                                      |
-| [`Utf8Error`](/docs/api/text/utf8-error)                           | What was wrong with a byte sequence.                                  |
+| Type                                     | Summary          |
+| ---------------------------------------- | ---------------- |
+| [`TextError`](/docs/api/text/text-error) | What went wrong. |
 
 ## Related
 
@@ -80,14 +75,14 @@ pub func WriteValue(
     writer: &var TextWriter,
     value: &Display,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes `value` under `spec` through its [`Display`](/docs/api/text/display) implementation.
 A named entry point for rendering one value, so a caller with a value and a writer needs no placeholder pattern
 to put them together.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Display.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Display.rux#L59)
 
 **Parameters**
 

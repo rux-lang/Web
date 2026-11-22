@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Cursor.rux
-  line: 16
+  line: 18
 seo:
   title: "ByteCursor — Format API"
   description: A fixed buffer being filled from the front.
@@ -29,10 +29,10 @@ pub struct ByteCursor {
 
 ## Constructors
 
-<h3 id="new"><code>ByteCursor</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func ByteCursor(room: var char8[..]) -> ByteCursor
+pub func New(room: var char8[..]) -> ByteCursor
 ```
 
 A cursor over `room`, filling from its start.
@@ -43,7 +43,7 @@ A cursor over `room`, filling from its start.
 
 **Returns**: a cursor over that storage, having written nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L32)
 
 ## Methods
 
@@ -59,7 +59,7 @@ Appends one byte, or records an overrun when there is no room.
 | ------ | ------- | ----------- |
 | `byte` | `char8` | the byte    |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L39)
 
 <h3 id="push-bytes"><code>PushBytes</code></h3>
 
@@ -73,7 +73,7 @@ Appends every byte of `bytes`, or records an overrun when they do not all fit.
 | ------- | ----------- | ----------- |
 | `bytes` | `char8[..]` | the bytes   |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L51)
 
 <h3 id="written"><code>Written</code></h3>
 
@@ -85,7 +85,7 @@ What has been written.
 
 **Returns**: the bytes written so far, borrowed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L63)
 
 <h3 id="overran"><code>Overran</code></h3>
 
@@ -97,7 +97,7 @@ Whether a write was refused for want of room.
 
 **Returns**: whether more was pushed than the buffer holds, which silently dropped the excess
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L70)
 
 ## Implements TextWriter
 
@@ -106,10 +106,7 @@ Whether a write was refused for want of room.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    &var self,
-    bytes: char8[..]
-) throws FormatError
+pub func Write(&var self, bytes: char8[..]) -> !FormatError
 ```
 
 Writes `bytes` into the buffer.
@@ -125,4 +122,4 @@ buffer is the caller's, the partial content is visible through [`Written`](/docs
 
 **Returns**: success when every byte fitted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/Cursor.rux#L85)

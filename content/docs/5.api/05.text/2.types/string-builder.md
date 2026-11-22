@@ -28,16 +28,16 @@ pub struct StringBuilder {
 ```
 
 Move-only: it explicitly prohibits copying and owns its block. Holds well-formed UTF-8 at every moment.
-Storage invariant, which every operation keeps and every `unsafe` block here relies on: `length <= capacity`;
+Storage invariant, which every operation keeps and every raw access here relies on: `length <= capacity`;
 `data` is null exactly when `capacity` is zero, and otherwise addresses a block of `capacity` bytes from
 `allocator` whose first `length` bytes are initialized, well-formed UTF-8.
 
 ## Constructors
 
-<h3 id="new"><code>StringBuilder</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func StringBuilder(allocator: Allocator) -> StringBuilder
+pub func New(allocator: Allocator) -> StringBuilder
 ```
 
 A builder that has allocated nothing.
@@ -162,7 +162,7 @@ reports both instead.
 pub func TryReserve(
     &var self,
     additional: uint
-) throws AllocError
+) -> !AllocError
 ```
 
 Makes sure there is room for `additional` more bytes, or throws why there is none.
@@ -223,7 +223,7 @@ cannot grow.
 pub func AppendBytes(
     &var self,
     bytes: char8[..]
-) throws TextError
+) -> !TextError
 ```
 
 Appends `bytes` when they are UTF-8, and reports `InvalidUtf8` when they are not.
@@ -243,7 +243,7 @@ Costs a pass over the bytes. [`Append`](/docs/api/text/string-builder#append) of
 pub func AppendScalar(
     &var self,
     scalar: char32
-) throws TextError
+) -> !TextError
 ```
 
 Appends one character.
@@ -261,10 +261,7 @@ which is what keeps a builder from holding something that is not text.
 <h3 id="append-ascii"><code>AppendAscii</code></h3>
 
 ```rux
-pub func AppendAscii(
-    &var self,
-    byte: char8
-) throws TextError
+pub func AppendAscii(&var self, byte: char8) -> !TextError
 ```
 
 Appends one ASCII byte.
@@ -338,10 +335,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    &var self,
-    bytes: char8[..]
-) throws FormatError
+pub func Write(&var self, bytes: char8[..]) -> !FormatError
 ```
 
 Appends `bytes` to the builder.
@@ -361,12 +355,12 @@ elsewhere without first undoing a partial write. Terminates the program when the
 
 **Returns**: success when the complete run was appended
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringBuilder.rux#L95)
 
 ## Destructor
 
 ```rux
-func ~StringBuilder(&var self)
+destructor
 ```
 
 Gives the block back.

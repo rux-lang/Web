@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/WideFloat.rux
-  line: 15
+  line: 17
 seo:
   title: "FloatLayout — Format API"
   description: "The shape of one binary interchange format: where its fields are and what they mean."
@@ -46,7 +46,7 @@ The x87 extended format: sixty-four significand bits with the integer bit writte
 
 **Returns**: the layout of x87's 80-bit extended format
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L34)
 
 <h3 id="binary128"><code>Binary128</code></h3>
 
@@ -58,7 +58,7 @@ IEEE binary128: a hundred and thirteen bits of precision.
 
 **Returns**: the layout of IEEE 754 binary128
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L41)
 
 <h3 id="binary256"><code>Binary256</code></h3>
 
@@ -70,7 +70,7 @@ IEEE binary256: two hundred and thirty-seven bits of precision.
 
 **Returns**: the layout of IEEE 754 binary256
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L48)
 
 <h3 id="binary512"><code>Binary512</code></h3>
 
@@ -82,7 +82,7 @@ IEEE binary512: four hundred and eighty-nine bits of precision.
 
 **Returns**: the layout of IEEE 754 binary512
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L55)
 
 ## Methods
 
@@ -96,7 +96,7 @@ How many bits the stored significand field has: the precision, less the leading 
 
 **Returns**: how many bits the stored significand field occupies
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L62)
 
 <h3 id="minimum-exponent"><code>MinimumExponent</code></h3>
 
@@ -108,7 +108,7 @@ The smallest exponent a normal value has, as the power of two its integer signif
 
 **Returns**: the smallest exponent a normal value can have
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L69)
 
 <h3 id="maximum-exponent"><code>MaximumExponent</code></h3>
 
@@ -120,7 +120,7 @@ The largest exponent a finite value has, on the same scale.
 
 **Returns**: the largest exponent a finite value can have
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L76)
 
 <h3 id="decimal-digits"><code>DecimalDigits</code></h3>
 
@@ -132,7 +132,7 @@ How many decimal digits the shortest exact rendering can need: one more than the
 
 **Returns**: how many decimal digits round-trip through this format
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L83)
 
 ## Related
 
@@ -150,7 +150,7 @@ pub enum WideClass: int32 {
 
 What kind of value a bit pattern holds.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L90)
 
 **Cases**
 
@@ -173,7 +173,7 @@ pub struct UnpackedWide {
 
 A finite value taken apart: `significand` times two to the `exponent`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L105)
 
 **Fields**
 
@@ -192,7 +192,7 @@ pub func UnpackWide(
 
 Takes a bit pattern apart under `layout`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L121)
 
 **Parameters**
 
@@ -216,7 +216,7 @@ pub func PackWide(
 
 Puts a finite value back together under `layout`, which must already be within range and precision.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L175)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L177)
 
 **Parameters**
 
@@ -240,7 +240,7 @@ pub func InfinityBits(
 
 The bits of infinity under `layout`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L197)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L199)
 
 **Parameters**
 
@@ -259,7 +259,7 @@ pub func NanBits(layout: &FloatLayout) -> uint512
 
 The bits of a quiet NaN under `layout`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L213)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloat.rux#L215)
 
 **Parameters**
 
@@ -278,12 +278,12 @@ pub func WriteWideFloat(
     spec: FormatSpec,
     bits: uint512,
     layout: &FloatLayout
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes `bits`, read under `layout`, as text under `spec`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatText.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/WideFloatText.rux#L34)
 
 **Parameters**
 

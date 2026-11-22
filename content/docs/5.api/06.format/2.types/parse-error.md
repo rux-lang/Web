@@ -9,7 +9,7 @@ api:
   kind: variant
   version: 0.1.0
   source: Src/ParseFloat64.rux
-  line: 22
+  line: 24
 seo:
   title: "ParseError — Format API"
   description: Why text could not be read as a value.
@@ -29,9 +29,8 @@ pub variant ParseError {
 }
 ```
 
-Failure-only: every case is a failure, and each says where in the text it was found. Success is the value a parser
-returns rather than a case here.
-Copy, carrying one offset.
+Failure-only: every case is a failure, and each says where in the text it was found. Success is the value a
+parser returns rather than a case here. Copy, carrying one offset.
 
 ## Cases
 
@@ -56,4 +55,4 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 
 **Returns**: the zero-based UTF-8 byte offset, which is the text's length at end of input
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Format/Src/ParseFloat64.rux#L40)

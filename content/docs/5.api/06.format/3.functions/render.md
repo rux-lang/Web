@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Format.rux
-  line: 181
+  line: 182
 seo:
   title: "Render — Format API"
   description: "The text format becomes with its placeholders filled, as a string of its own."
@@ -26,7 +26,7 @@ pub func Render(
     allocator: Allocator,
     #Format format: char8[..],
     ...
-) -> String throws FormatError
+) -> String ! FormatError
 ```
 
 This is the allocating entry point, and the only one: every other way of rendering writes into a destination the

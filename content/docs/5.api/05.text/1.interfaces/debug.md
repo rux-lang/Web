@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Display.rux
-  line: 39
+  line: 41
 seo:
   title: "Debug — Text API"
   description: The text a value has for whoever is inspecting a program.
@@ -26,7 +26,7 @@ pub interface Debug {
     func WriteDebug(
         writer: &var TextWriter,
         spec: FormatSpec
-    ) throws FormatError;
+    ) -> !FormatError;
 }
 ```
 
@@ -41,7 +41,7 @@ value by its numeric form where [`Display`](/docs/api/text/display) would replac
 func WriteDebug(
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes this value's inspection text under `spec`.
@@ -54,18 +54,13 @@ The same failures `WriteDisplay` may report, for the same reasons.
 
 **Returns**: success when the value's complete text was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Display.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Display.rux#L48)
 
 ## Implementations
 
-| Type                                                               | Summary                                                               |
-| ------------------------------------------------------------------ | --------------------------------------------------------------------- |
-| [`TextFailureKind`](/docs/api/text/format-error#text-failure-kind) | The ways text handling fails, with no case for success.               |
-| [`FormatError`](/docs/api/text/format-error)                       | Why a formatting operation did not produce the text it was asked for. |
-| [`String`](/docs/api/text/string)                                  | Text that owns its bytes.                                             |
-| [`StringView`](/docs/api/text/string-view)                         | A borrowed run of bytes that has been checked to be UTF-8.            |
-| [`TextError`](/docs/api/text/text-error)                           | What went wrong.                                                      |
-| [`Utf8Error`](/docs/api/text/utf8-error)                           | What was wrong with a byte sequence.                                  |
+| Type                                     | Summary          |
+| ---------------------------------------- | ---------------- |
+| [`TextError`](/docs/api/text/text-error) | What went wrong. |
 
 ## Related
 
@@ -76,12 +71,12 @@ pub func WriteDebugValue(
     writer: &var TextWriter,
     value: &Debug,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes `value` under `spec` through its [`Debug`](/docs/api/text/debug) implementation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Display.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Display.rux#L69)
 
 **Parameters**
 
@@ -99,7 +94,7 @@ Writes `value` under `spec` through its [`Debug`](/docs/api/text/debug) implemen
 pub func WriteEscaped(
     writer: &var TextWriter,
     text: char8[..]
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes `text` with the characters that would be ambiguous or invisible replaced by escapes.
@@ -111,7 +106,7 @@ Runs of ordinary bytes are written in one call rather than byte by byte, so esca
 write per character.
 Reports whatever the writer reported, stopping at the first refusal.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Presentation.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Presentation.rux#L89)
 
 **Parameters**
 
@@ -129,7 +124,7 @@ pub func WriteOptionalDebug<T: Debug>(
     writer: &var TextWriter,
     value: &((T?)),
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a borrowed optional as `Some(value)` or `none`.
@@ -139,7 +134,7 @@ cannot be copied, as many times as wanted, and the optional still holds it after
 Reports whatever the writer or the payload's implementation reported, stopping at the first refusal, so a
 destination that has already refused something is not written to again.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L35)
 
 **Type parameters**
 
@@ -157,41 +152,6 @@ destination that has already refused something is not written to again.
 
 **Returns**: success when the whole rendering was accepted
 
-<h3 id="write-result-debug"><code>WriteResultDebug&lt;T, E&gt;</code></h3>
-
-```rux
-pub func WriteResultDebug<T: Debug, E: Debug>(
-    writer: &var TextWriter,
-    value: &Result<T, E>,
-    spec: FormatSpec
-) throws FormatError
-```
-
-Writes a borrowed `Result` as `Success(value)` or `Failure(reason)`.
-Both payloads are borrowed, so neither case is consumed by being shown. The names are the case names, so what
-is written names the case a reader would branch on.
-`spec` is handed to whichever payload is present and describes it rather than the wrapper.
-Reports whatever the writer or the payload's implementation reported, stopping at the first refusal.
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L66)
-
-**Type parameters**
-
-| Name       | Description                                                  |
-| ---------- | ------------------------------------------------------------ |
-| `T: Debug` | the success payload type, which must know how to show itself |
-| `E: Debug` | the failure payload type, which must know how to show itself |
-
-**Parameters**
-
-| Name     | Type              | Description                               |
-| -------- | ----------------- | ----------------------------------------- |
-| `writer` | `&var TextWriter` | the destination                           |
-| `value`  | `&Result<T, E>`   | the result to show, borrowed for the call |
-| `spec`   | `FormatSpec`      | what to show the payload under            |
-
-**Returns**: success when the whole rendering was accepted
-
 <h3 id="write-slice-debug"><code>WriteSliceDebug&lt;T&gt;</code></h3>
 
 ```rux
@@ -199,7 +159,7 @@ pub func WriteSliceDebug<T: Debug>(
     writer: &var TextWriter,
     items: T[..],
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a borrowed run of elements as `[first, second, third]`.
@@ -213,7 +173,7 @@ commas are punctuation and are never padded.
 Reports whatever the writer or an element's implementation reported, stopping at the first refusal rather than
 continuing through the rest of the run.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Structure.rux#L65)
 
 **Type parameters**
 

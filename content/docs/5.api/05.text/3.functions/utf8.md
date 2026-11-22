@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Utf8.rux
-  line: 19
+  line: 20
 seo:
   title: "UTF-8 — Text API"
   description: "Encoding, decoding and validating UTF-8, and the limits of a Unicode scalar value."
@@ -29,7 +29,7 @@ pub const MaxScalarValue: uint32 = 0x10FFFF;
 
 The largest Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L20)
 
 <h2 id="first-surrogate"><code>FirstSurrogate</code></h2>
 
@@ -39,7 +39,7 @@ pub const FirstSurrogate: uint32 = 0xD800;
 
 The first value of the surrogate range, which holds no scalar values.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L24)
 
 <h2 id="last-surrogate"><code>LastSurrogate</code></h2>
 
@@ -49,7 +49,7 @@ pub const LastSurrogate: uint32 = 0xDFFF;
 
 The last value of the surrogate range.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L28)
 
 <h2 id="max-encoded-length"><code>MaxEncodedLength</code></h2>
 
@@ -59,7 +59,7 @@ pub const MaxEncodedLength: uint = 4;
 
 The most bytes any one scalar value takes in UTF-8.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L32)
 
 <h2 id="decoded-scalar"><code>DecodedScalar</code></h2>
 
@@ -72,7 +72,7 @@ pub struct DecodedScalar {
 
 One scalar value decoded from UTF-8, with the number of bytes it occupied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L52)
 
 **Fields**
 
@@ -92,7 +92,7 @@ pub struct Utf8Failure {
 
 Where and why a byte sequence stopped being well-formed UTF-8.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L61)
 
 **Fields**
 
@@ -110,7 +110,7 @@ pub func IsScalarValue(value: uint32) -> bool
 Whether `value` is a Unicode scalar value: at most [`MaxScalarValue`](/docs/api/text/utf8#max-scalar-value), and not a surrogate half.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L73)
 
 **Parameters**
 
@@ -129,7 +129,7 @@ pub func EncodedLength(scalar: char32) -> uint
 How many bytes `scalar` takes in UTF-8, or zero when it is not a scalar value.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L82)
 
 **Parameters**
 
@@ -147,7 +147,7 @@ pub func IsContinuation(byte: char8) -> bool
 
 Whether `byte` is a continuation byte, the `10xxxxxx` shape every byte after a leading one has.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L94)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L95)
 
 **Parameters**
 
@@ -163,7 +163,7 @@ Whether `byte` is a continuation byte, the `10xxxxxx` shape every byte after a l
 pub func Encode(
     scalar: char32,
     into: var char8[..]
-) -> uint throws Utf8Error
+) -> uint ! Utf8Error
 ```
 
 Writes `scalar` into `into` as UTF-8 and reports how many bytes it took.
@@ -172,7 +172,7 @@ Writes `scalar` into `into` as UTF-8 and reports how many bytes it took.
 written in either case.
 Cannot allocate. Runs in constant time.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L108)
 
 **Parameters**
 
@@ -189,7 +189,7 @@ Cannot allocate. Runs in constant time.
 pub func DecodeAt(
     bytes: char8[..],
     index: uint
-) -> DecodedScalar throws Utf8Error
+) -> DecodedScalar ! Utf8Error
 ```
 
 Decodes the scalar value starting at `index`, reporting it and how many bytes it occupied.
@@ -197,7 +197,7 @@ Decodes the scalar value starting at `index`, reporting it and how many bytes it
 advances one byte and carries on, and one rejecting it stops.
 Cannot allocate. Runs in constant time.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L196)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L195)
 
 **Parameters**
 
@@ -211,14 +211,14 @@ Cannot allocate. Runs in constant time.
 <h2 id="validate"><code>Validate</code></h2>
 
 ```rux
-pub func Validate(bytes: char8[..]) throws Utf8Failure
+pub func Validate(bytes: char8[..]) -> !Utf8Failure
 ```
 
 Whether `bytes` is well-formed UTF-8 from end to end, reporting where it first is not.
 `bytes` is borrowed. A failure carries the index of the byte that starts the offending sequence.
 Cannot allocate. Runs in time proportional to the length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L237)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L236)
 
 **Parameters**
 
@@ -238,7 +238,7 @@ Whether `index` is where a scalar value starts, and so a place a string may be c
 The length counts as a boundary, so the end of a string is always a legal cut. An index past the length is not.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L251)
 
 **Parameters**
 
@@ -260,7 +260,7 @@ Counts leading bytes, which is one per scalar value in well-formed UTF-8. Bytes 
 count that means nothing; [`Validate`](/docs/api/text/utf8#validate) is what answers whether they are.
 Cannot fail. Runs in time proportional to the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L266)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L265)
 
 **Parameters**
 
@@ -283,7 +283,7 @@ The index of the scalar boundary at or below `index`.
 An index inside a sequence is walked back to the start of that sequence, which is what a caller cutting at an
 arbitrary byte offset needs. An index at or past the length gives the length.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L286)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Utf8.rux#L285)
 
 **Parameters**
 

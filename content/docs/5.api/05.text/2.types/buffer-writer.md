@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/BufferWriter.rux
-  line: 22
+  line: 25
 seo:
   title: "BufferWriter — Text API"
   description: A fixed buffer being filled with text from the front.
@@ -36,10 +36,10 @@ The room it was built over must outlive it. It stores the slice, and nothing her
 
 ## Constructors
 
-<h3 id="new"><code>BufferWriter</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func BufferWriter(room: var char8[..]) -> BufferWriter
+pub func New(room: var char8[..]) -> BufferWriter
 ```
 
 A writer over `room`, filling from its start.
@@ -53,7 +53,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: a writer holding no text yet
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L37)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L40)
 
 ## Methods
 
@@ -70,7 +70,7 @@ Borrows the writer. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the bytes written, which are valid UTF-8
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L47)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L50)
 
 <h3 id="length"><code>Length</code></h3>
 
@@ -83,7 +83,7 @@ Borrows the writer. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the byte count, which is not a character count
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L59)
 
 <h3 id="remaining"><code>Remaining</code></h3>
 
@@ -98,7 +98,7 @@ Borrows the writer. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the remaining capacity in bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L69)
 
 <h3 id="clear"><code>Clear</code></h3>
 
@@ -112,7 +112,7 @@ nothing can reach them: [`Written`](/docs/api/text/buffer-writer#written) stops 
 `Rux/Memory` on the room itself.
 Borrows the writer exclusively. Cannot fail; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L79)
 
 ## Implements TextWriter
 
@@ -121,10 +121,7 @@ Borrows the writer exclusively. Cannot fail; runs in constant time and allocates
 <h3 id="write"><code>Write</code></h3>
 
 ```rux
-pub func Write(
-    &var self,
-    bytes: char8[..]
-) throws FormatError
+pub func Write(&var self, bytes: char8[..]) -> !FormatError
 ```
 
 Appends `bytes`, whole or not at all.
@@ -142,4 +139,4 @@ arithmetic, neither of which a fixed buffer performs.
 
 **Returns**: success when the complete run was appended
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L93)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/BufferWriter.rux#L96)

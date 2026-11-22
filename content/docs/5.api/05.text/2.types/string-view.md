@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/StringView.rux
-  line: 17
+  line: 19
 seo:
   title: "StringView — Text API"
   description: A borrowed run of bytes that has been checked to be UTF-8.
@@ -31,10 +31,10 @@ Copy, owning nothing. The bytes it names must outlive it.
 
 ## Constructors
 
-<h3 id="new"><code>StringView</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func StringView() -> StringView
+pub func New() -> StringView
 ```
 
 A view over nothing.
@@ -42,7 +42,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: an empty view
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L29)
 
 ## Associated functions
 
@@ -63,7 +63,7 @@ Runs in time proportional to the length and allocates nothing.
 
 **Returns**: a view over those bytes, or `none` when they are not valid UTF-8
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L40)
 
 <h3 id="from-validated"><code>FromValidated</code></h3>
 
@@ -83,166 +83,9 @@ answers rather than errors: a scalar walk reads past a truncated sequence, and a
 
 **Returns**: a view over those bytes, taken as valid without checking
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L53)
 
 ## Methods
-
-<h3 id="starts-with"><code>StartsWith</code></h3>
-
-```rux
-pub func StartsWith(&self, prefix: StringView) -> bool
-```
-
-Whether this view begins with `prefix`.
-Every view begins with the empty one.
-Runs in time proportional to the prefix and allocates nothing.
-
-| Name     | Type         | Description                       |
-| -------- | ------------ | --------------------------------- |
-| `prefix` | `StringView` | the text to look for at the start |
-
-**Returns**: whether the text begins with `prefix`
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L22)
-
-<h3 id="ends-with"><code>EndsWith</code></h3>
-
-```rux
-pub func EndsWith(&self, suffix: StringView) -> bool
-```
-
-Whether this view ends with `suffix`.
-
-| Name     | Type         | Description                     |
-| -------- | ------------ | ------------------------------- |
-| `suffix` | `StringView` | the text to look for at the end |
-
-**Returns**: whether the text ends with `suffix`
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L37)
-
-<h3 id="index-of"><code>IndexOf</code></h3>
-
-```rux
-pub func IndexOf(&self, needle: StringView) -> uint?
-```
-
-The byte index where `needle` first occurs, or `none`.
-The empty needle occurs at the start, which is what makes `IndexOf` agree with [`StartsWith`](/docs/api/text/string-view#starts-with) for it.
-Runs in time proportional to the product of the lengths in the worst case, which for the short needles this
-is used with is the same as proportional to the text.
-
-| Name     | Type         | Description          |
-| -------- | ------------ | -------------------- |
-| `needle` | `StringView` | the text to look for |
-
-**Returns**: the byte offset of the first occurrence, or `none`
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L57)
-
-<h3 id="last-index-of"><code>LastIndexOf</code></h3>
-
-```rux
-pub func LastIndexOf(&self, needle: StringView) -> uint?
-```
-
-The byte index where `needle` last occurs, or `none`.
-
-| Name     | Type         | Description          |
-| -------- | ------------ | -------------------- |
-| `needle` | `StringView` | the text to look for |
-
-**Returns**: the byte offset of the last occurrence, or `none`
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L86)
-
-<h3 id="contains"><code>Contains</code></h3>
-
-```rux
-pub func Contains(&self, needle: StringView) -> bool
-```
-
-Whether `needle` occurs anywhere in this view.
-
-| Name     | Type         | Description          |
-| -------- | ------------ | -------------------- |
-| `needle` | `StringView` | the text to look for |
-
-**Returns**: whether `needle` occurs anywhere in the text
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L114)
-
-<h3 id="trim-start"><code>TrimStart</code></h3>
-
-```rux
-pub func TrimStart(&self) -> StringView
-```
-
-This view without the ASCII whitespace at its start.
-Borrows: what comes back names the same bytes, further in.
-
-**Returns**: the text without its leading ASCII spaces
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L122)
-
-<h3 id="trim-end"><code>TrimEnd</code></h3>
-
-```rux
-pub func TrimEnd(&self) -> StringView
-```
-
-This view without the ASCII whitespace at its end.
-
-**Returns**: the text without its trailing ASCII spaces
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L134)
-
-<h3 id="trim"><code>Trim</code></h3>
-
-```rux
-pub func Trim(&self) -> StringView
-```
-
-This view without the ASCII whitespace at either end.
-
-**Returns**: the text without its leading and trailing ASCII spaces
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L146)
-
-<h3 id="lines"><code>Lines</code></h3>
-
-```rux
-pub func Lines(&self) -> LineIterator
-```
-
-A walk over the lines of this view, each without its line break.
-A line ends at `\n` or `\r\n`; a break at the very end does not start another, empty line, so `"a\nb\n"`
-has two lines and empty text has none. A lone `\r` is part of its line.
-`self` is borrowed and must outlive the walk.
-
-**Returns**: a cursor over the lines
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L157)
-
-<h3 id="split"><code>Split</code></h3>
-
-```rux
-pub func Split(
-    &self,
-    separator: StringView
-) -> SplitIterator
-```
-
-A walk over the parts of this view between occurrences of `separator`.
-`self` is borrowed and must outlive the walk, as must `separator`.
-
-| Name        | Type         | Description                        |
-| ----------- | ------------ | ---------------------------------- |
-| `separator` | `StringView` | the text that separates the pieces |
-
-**Returns**: a cursor over the pieces between separators
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L166)
 
 <h3 id="length"><code>Length</code></h3>
 
@@ -255,7 +98,7 @@ Not how many characters: that is [`ScalarCount`](/docs/api/text/string-view#scal
 
 **Returns**: how many bytes the text occupies
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L61)
 
 <h3 id="is-empty"><code>IsEmpty</code></h3>
 
@@ -267,7 +110,7 @@ Whether the view spans no bytes.
 
 **Returns**: whether the text has no bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L66)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L68)
 
 <h3 id="bytes"><code>Bytes</code></h3>
 
@@ -279,7 +122,7 @@ The bytes themselves, for handing to something that reads bytes.
 
 **Returns**: the text's bytes, borrowed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L75)
 
 <h3 id="scalar-count"><code>ScalarCount</code></h3>
 
@@ -293,7 +136,7 @@ method rather than a field.
 
 **Returns**: how many Unicode scalar values the text holds, which is not its byte length
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L84)
 
 <h3 id="is-boundary"><code>IsBoundary</code></h3>
 
@@ -309,7 +152,7 @@ Whether `index` is where a scalar value starts, and so a place this view may be 
 
 **Returns**: whether `index` falls between two scalar values rather than inside one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L92)
 
 <h3 id="part"><code>Part</code></h3>
 
@@ -330,7 +173,7 @@ Runs in constant time and allocates nothing.
 
 **Returns**: the text between the two offsets, or `none` when either is not a boundary
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L104)
 
 <h3 id="scalar-at"><code>ScalarAt</code></h3>
 
@@ -346,7 +189,7 @@ The scalar value starting at `index`, or `none` when `index` is not a boundary i
 
 **Returns**: the scalar value beginning at `index`, or `none` when it is not a boundary
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L114)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L116)
 
 <h3 id="equals"><code>Equals</code></h3>
 
@@ -370,7 +213,7 @@ one encoding. It is not equality after normalization, which is a different quest
 
 **Returns**: whether both hold the same bytes
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L129)
 
 <h3 id="compare"><code>Compare</code></h3>
 
@@ -394,7 +237,7 @@ comparing scalar values give the same answer. It is not alphabetical in any lang
 
 **Returns**: how the two order byte by byte, which is code-point order for UTF-8
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L146)
 
 <h3 id="scalars"><code>Scalars</code></h3>
 
@@ -407,65 +250,7 @@ A walk over this view's scalar values.
 
 **Returns**: a cursor over the text's scalar values
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L184)
-
-## Implements Display
-
-`StringView` conforms to [`Display`](/docs/api/text/display).
-
-<h3 id="write-display"><code>WriteDisplay</code></h3>
-
-```rux
-pub func WriteDisplay(
-    &self,
-    writer: &var TextWriter,
-    spec: FormatSpec
-) throws FormatError
-```
-
-Writes what this view spans, truncated to the spec's precision and padded to its width.
-Precision counts Unicode scalar values rather than bytes, and a cut lands on a character boundary by
-construction: the walk that counts them is the walk that finds where to stop.
-Reports whatever the writer reported, and `UnsupportedRequest` for a style, since text has none.
-
-| Name     | Type              | Description                    |
-| -------- | ----------------- | ------------------------------ |
-| `writer` | `&var TextWriter` | the destination                |
-| `spec`   | `FormatSpec`      | what the placeholder asked for |
-
-**Returns**: success when the view's text was accepted
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L50)
-
-## Implements Debug
-
-`StringView` conforms to [`Debug`](/docs/api/text/debug).
-
-<h3 id="write-debug"><code>WriteDebug</code></h3>
-
-```rux
-pub func WriteDebug(
-    &self,
-    writer: &var TextWriter,
-    spec: FormatSpec
-) throws FormatError
-```
-
-Writes what this view spans, quoted and escaped.
-The quotes sit outside the precision: what is kept is text, and the quotes say where it stops. Alignment is
-not applied, because padding a quoted rendering to a width would put the fill outside the quotes, where it
-would read as part of the surrounding text rather than as part of the value.
-Reports whatever the writer reported, stopping at the first refusal, so a failed opening quote is not
-followed by a body. Reports `UnsupportedRequest` for a style.
-
-| Name     | Type              | Description                    |
-| -------- | ----------------- | ------------------------------ |
-| `writer` | `&var TextWriter` | the destination                |
-| `spec`   | `FormatSpec`      | what the placeholder asked for |
-
-**Returns**: success when the quoted view was accepted
-
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L186)
 
 ## Related
 
@@ -479,7 +264,7 @@ Whether `byte` is ASCII whitespace: space, tab, newline, carriage return, form f
 ASCII only, deliberately. Unicode calls a good many more characters whitespace, and which ones is a question for
 the tables; every one of them is multi-byte, so trimming by this rule never cuts a character in half.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L181)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L183)
 
 **Parameters**
 
@@ -500,7 +285,7 @@ pub struct SplitIterator {
 A walk over the parts of a view between occurrences of a separator.
 Every part is a borrow of the original, so splitting allocates nothing however many parts there are.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L191)
 
 **Implements Iterator**
 
@@ -520,7 +305,7 @@ endless walk.
 
 **Returns**: the next piece, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L207)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L209)
 
 <h3 id="line-iterator"><code>LineIterator</code></h3>
 
@@ -533,7 +318,7 @@ pub struct LineIterator {
 A walk over the lines of a view, each without its line break.
 Every line is a borrow of the original, so walking allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L229)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L231)
 
 **Implements Iterator**
 
@@ -549,7 +334,7 @@ The next line, without its `\n` or `\r\n`, or `none` after the last.
 
 **Returns**: the next line, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L240)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Search.rux#L242)
 
 <h3 id="scalar-iterator"><code>ScalarIterator</code></h3>
 
@@ -561,7 +346,7 @@ pub struct ScalarIterator {
 
 A walk over the scalar values of a view, first to last.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L193)
 
 **Implements Iterator**
 
@@ -579,4 +364,4 @@ so reaching one means the bytes were vouched for and were not.
 
 **Returns**: the next scalar value, or `none` at the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L204)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/StringView.rux#L206)

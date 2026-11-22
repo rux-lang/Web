@@ -66,12 +66,12 @@
     {
       "name": "String",
       "source": "Src/String.rux",
-      "header": "Text that owns the bytes it holds.\nA `String` owns one block, knows the allocator to give it back to, and never writes to it again. Every operation\nthat produces different text produces a different `String`, and leaves the receiver as it was.\nImmutability is not a preference here, it is what makes the type safe to hand around: a `String` may be built over\nbytes that came from a literal, and a literal lives on a read-only page. A type that promised mutation would have\nto copy defensively on every write or fault on some of them. `StringBuilder` is where text is assembled; `String`\nis what assembling it produces.\nA `String` owns its block, so it is move-only: `=` from a named string is an error, `move` hands the block over,\nand `Clone` makes an independent block from the same allocator, reporting a failed allocation instead of hiding\none. `StringView` borrows and copies no bytes; `View` creates one for free.\nEvery `String` this package produces holds well-formed UTF-8, checked once where the bytes enter. Everything\ndownstream may rely on that, which is what makes cutting and indexing cheap."
+      "header": "Text that owns the bytes it holds.\nA `String` owns one block, knows the allocator to give it back to, and never writes to it again. Every operation\nthat produces different text produces a different `String`, and leaves the receiver as it was.\nImmutability is not a preference here, it is what makes the type safe to hand around: a `String` may be built over\nbytes that came from a literal, and a literal lives on a read-only page. A type that promised mutation would have\nto copy defensively on every write or fault on some of them. `StringBuilder` is where text is assembled; `String`\nis what assembling it produces.\nA `String` owns its block, so it is move-only: `=` from a named string gives the block away, and `Clone` makes an\nindependent block from the same allocator, reporting a failed allocation instead of hiding one. `StringView`\nborrows and copies no bytes; `View` creates one for free.\nEvery `String` this package produces holds well-formed UTF-8, checked once where the bytes enter. Everything\ndownstream may rely on that, which is what makes cutting and indexing cheap."
     },
     {
       "name": "StringBuilder",
       "source": "Src/StringBuilder.rux",
-      "header": "Where text is assembled.\nA `String` is immutable, so building one a piece at a time through `String` alone would allocate and copy on every\nstep — quadratic work to produce a linear result. A builder keeps spare room and doubles it, so a sequence of\nappends costs each byte a constant amount on average, and hands the block over at the end without copying it.\nThe builder holds well-formed UTF-8 at every moment, not only at the end. That is why it accepts whole characters\nand checked runs of bytes rather than arbitrary ones: a builder that could hold half a character would make\n`View` a lie and `TakeString` a validation pass. Appending an incomplete sequence is refused rather than deferred.\nIt prohibits copying and `~StringBuilder` gives its block back. `TakeString` transfers the block without copying;\nafter it the builder owns nothing and is ready to be used again.\nA builder that cannot grow terminates the program. `TryReserve` is for the code that can recover: it throws the\nallocator's `AllocError` and leaves the builder as it was, and once it has succeeded the appends that fit in the\nroom it took allocate nothing."
+      "header": "Where text is assembled.\nA `String` is immutable, so building one a piece at a time through `String` alone would allocate and copy on every\nstep — quadratic work to produce a linear result. A builder keeps spare room and doubles it, so a sequence of\nappends costs each byte a constant amount on average, and hands the block over at the end without copying it.\nThe builder holds well-formed UTF-8 at every moment, not only at the end. That is why it accepts whole characters\nand checked runs of bytes rather than arbitrary ones: a builder that could hold half a character would make\n`View` a lie and `TakeString` a validation pass. Appending an incomplete sequence is refused rather than deferred.\nIt prohibits copying and its destructor gives its block back. `TakeString` transfers the block without copying;\nafter it the builder owns nothing and is ready to be used again.\nA builder that cannot grow terminates the program. `TryReserve` is for the code that can recover: it throws the\nallocator's `AllocError` and leaves the builder as it was, and once it has succeeded the appends that fit in the\nroom it took allocate nothing."
     },
     {
       "name": "StringView",
@@ -107,11 +107,11 @@
   "items": [
     {
       "kind": "function",
-      "name": "PaddingAround",
-      "displayName": "PaddingAround",
+      "name": "Formatting::PaddingAround",
+      "displayName": "Formatting::PaddingAround",
       "module": "Align",
       "source": "Src/Align.rux",
-      "line": 23,
+      "line": 25,
       "signature": "pub func PaddingAround(spec: FormatSpec, occupied: uint, numeric: bool, before: *var uint, after: *var uint)",
       "typeParams": [],
       "doc": {
@@ -148,12 +148,12 @@
     },
     {
       "kind": "function",
-      "name": "WriteFill",
-      "displayName": "WriteFill",
+      "name": "Formatting::WriteFill",
+      "displayName": "Formatting::WriteFill",
       "module": "Align",
       "source": "Src/Align.rux",
       "line": 56,
-      "signature": "pub func WriteFill(writer: &var TextWriter, spec: FormatSpec, count: uint) throws FormatError",
+      "signature": "pub func WriteFill(writer: &var TextWriter, spec: FormatSpec, count: uint) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `count` copies of the spec's fill byte.",
@@ -187,12 +187,12 @@
     },
     {
       "kind": "function",
-      "name": "WriteAligned",
-      "displayName": "WriteAligned",
+      "name": "Formatting::WriteAligned",
+      "displayName": "Formatting::WriteAligned",
       "module": "Align",
       "source": "Src/Align.rux",
       "line": 76,
-      "signature": "pub func WriteAligned(writer: &var TextWriter, spec: FormatSpec, rendered: char8[..], numeric: bool) throws FormatError",
+      "signature": "pub func WriteAligned(writer: &var TextWriter, spec: FormatSpec, rendered: char8[..], numeric: bool) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `rendered` into `writer` under `spec`'s width, fill and alignment.",
@@ -227,16 +227,16 @@
     },
     {
       "kind": "function",
-      "name": "WriteDisplayAligned",
-      "displayName": "WriteDisplayAligned",
+      "name": "Formatting::WriteDisplayAligned",
+      "displayName": "Formatting::WriteDisplayAligned",
       "module": "Align",
       "source": "Src/Align.rux",
-      "line": 101,
-      "signature": "pub func WriteDisplayAligned(writer: &var TextWriter, value: &Display, spec: FormatSpec) throws FormatError",
+      "line": 100,
+      "signature": "pub func WriteDisplayAligned(writer: &var TextWriter, value: &Display, spec: FormatSpec) -> !FormatError",
       "typeParams": [],
       "doc": {
-        "summary": "Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value writes\nitself.",
-        "markdown": "Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value writes\nitself.\nFor a value whose `WriteDisplay` writes its text in pieces, which `WriteAligned` cannot pad: such a value calls\nthis first when `spec` has a width. The value writes into 256 bytes of local room under the spec with no width,\nwhich is what keeps its own call from coming back here, and the room is then padded into `writer`. A rendering too\nlong for the room is written through unpadded, since a width that short would add no padding anyway.\nReports whatever the value or the writer reported.",
+        "summary": "Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value\nwrites itself.",
+        "markdown": "Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value\nwrites itself. For a value whose `WriteDisplay` writes its text in pieces, which `WriteAligned` cannot pad: such\na value calls this first when `spec` has a width. The value writes into 256 bytes of local room under the spec\nwith no width, which is what keeps its own call from coming back here, and the room is then padded into\n`writer`. A rendering too long for the room is written through unpadded, since a width that short would add no\npadding anyway. Reports whatever the value or the writer reported.",
         "typeParams": [],
         "params": [
           { "name": "writer", "markdown": "the destination" },
@@ -270,7 +270,7 @@
       "displayName": "BufferWriter",
       "module": "BufferWriter",
       "source": "Src/BufferWriter.rux",
-      "line": 22,
+      "line": 25,
       "signature": "pub struct BufferWriter",
       "typeParams": [],
       "doc": {
@@ -288,7 +288,7 @@
           "name": "room",
           "type": "var char8[..]",
           "public": false,
-          "line": 24,
+          "line": 27,
           "doc": "The room available.",
           "targets": [
             "windows-x86_64",
@@ -305,7 +305,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 26,
+          "line": 29,
           "doc": "How much of it holds text.",
           "targets": [
             "windows-x86_64",
@@ -323,10 +323,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "BufferWriter",
-          "line": 37,
-          "signature": "pub func BufferWriter(room: var char8[..]) -> BufferWriter",
+          "kind": "associated",
+          "name": "New",
+          "line": 40,
+          "signature": "pub func New(room: var char8[..]) -> BufferWriter",
           "typeParams": [],
           "params": [{ "name": "room", "type": "var char8[..]" }],
           "receiver": null,
@@ -357,7 +357,7 @@
         {
           "kind": "method",
           "name": "Written",
-          "line": 47,
+          "line": 50,
           "signature": "pub func Written(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
@@ -389,7 +389,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 56,
+          "line": 59,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -421,7 +421,7 @@
         {
           "kind": "method",
           "name": "Remaining",
-          "line": 66,
+          "line": 69,
           "signature": "pub func Remaining(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -453,7 +453,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 76,
+          "line": 79,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -485,8 +485,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 93,
-          "signature": "pub func Write(&var self, bytes: char8[..]) throws FormatError",
+          "line": 96,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> !FormatError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var BufferWriter",
@@ -533,7 +533,7 @@
       "displayName": "CString",
       "module": "CString",
       "source": "Src/CString.rux",
-      "line": 20,
+      "line": 21,
       "signature": "pub struct CString",
       "typeParams": [],
       "doc": {
@@ -551,7 +551,7 @@
           "name": "data",
           "type": "*var char8",
           "public": false,
-          "line": 23,
+          "line": 24,
           "doc": "The bytes, ending with the one zero byte the text does not contain. Null only for a `CString` that was\nconsumed by a move; every constructor allocates, since even empty C text is one byte long.",
           "targets": [
             "windows-x86_64",
@@ -568,7 +568,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 25,
+          "line": 26,
           "doc": "How many bytes of text come before the terminator.",
           "targets": [
             "windows-x86_64",
@@ -585,7 +585,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": true,
-          "line": 27,
+          "line": 28,
           "doc": "Where the block came from, and where it goes back to.",
           "targets": [
             "windows-x86_64",
@@ -605,8 +605,8 @@
         {
           "kind": "associated",
           "name": "FromText",
-          "line": 38,
-          "signature": "pub func FromText(allocator: Allocator, text: char8[..]) -> CString throws TextError",
+          "line": 39,
+          "signature": "pub func FromText(allocator: Allocator, text: char8[..]) -> CString ! TextError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -643,8 +643,8 @@
         {
           "kind": "associated",
           "name": "FromView",
-          "line": 51,
-          "signature": "pub func FromView(allocator: Allocator, view: StringView) -> CString throws TextError",
+          "line": 52,
+          "signature": "pub func FromView(allocator: Allocator, view: StringView) -> CString ! TextError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -681,8 +681,8 @@
         {
           "kind": "associated",
           "name": "FromRaw",
-          "line": 92,
-          "signature": "pub unsafe func FromRaw(allocator: Allocator, raw: *char8, limit: uint) -> CString throws TextError",
+          "line": 93,
+          "signature": "pub func FromRaw(allocator: Allocator, raw: *char8, limit: uint) -> CString ! TextError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -721,7 +721,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 125,
+          "line": 126,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -753,7 +753,7 @@
         {
           "kind": "method",
           "name": "Raw",
-          "line": 134,
+          "line": 135,
           "signature": "pub func Raw(&self) -> *char8",
           "typeParams": [],
           "params": [],
@@ -785,7 +785,7 @@
         {
           "kind": "method",
           "name": "View",
-          "line": 142,
+          "line": 143,
           "signature": "pub func View(&self) -> StringView",
           "typeParams": [],
           "params": [],
@@ -817,7 +817,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 151,
+          "line": 152,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -848,9 +848,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~CString",
-          "line": 164,
-          "signature": "func ~CString(&var self)",
+          "name": "~",
+          "line": 165,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var CString",
@@ -897,7 +897,7 @@
       "displayName": "Display",
       "module": "Display",
       "source": "Src/Display.rux",
-      "line": 22,
+      "line": 24,
       "signature": "pub interface Display",
       "typeParams": [],
       "doc": {
@@ -917,8 +917,8 @@
         {
           "kind": "requirement",
           "name": "WriteDisplay",
-          "line": 32,
-          "signature": "func WriteDisplay(writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 34,
+          "signature": "func WriteDisplay(writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -971,7 +971,7 @@
       "displayName": "Debug",
       "module": "Display",
       "source": "Src/Display.rux",
-      "line": 39,
+      "line": 41,
       "signature": "pub interface Debug",
       "typeParams": [],
       "doc": {
@@ -991,8 +991,8 @@
         {
           "kind": "requirement",
           "name": "WriteDebug",
-          "line": 46,
-          "signature": "func WriteDebug(writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 48,
+          "signature": "func WriteDebug(writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1045,8 +1045,8 @@
       "displayName": "WriteValue",
       "module": "Display",
       "source": "Src/Display.rux",
-      "line": 57,
-      "signature": "pub func WriteValue(writer: &var TextWriter, value: &Display, spec: FormatSpec) throws FormatError",
+      "line": 59,
+      "signature": "pub func WriteValue(writer: &var TextWriter, value: &Display, spec: FormatSpec) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `value` under `spec` through its `Display` implementation.",
@@ -1084,8 +1084,8 @@
       "displayName": "WriteDebugValue",
       "module": "Display",
       "source": "Src/Display.rux",
-      "line": 67,
-      "signature": "pub func WriteDebugValue(writer: &var TextWriter, value: &Debug, spec: FormatSpec) throws FormatError",
+      "line": 69,
+      "signature": "pub func WriteDebugValue(writer: &var TextWriter, value: &Debug, spec: FormatSpec) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `value` under `spec` through its `Debug` implementation.",
@@ -1119,8 +1119,8 @@
     },
     {
       "kind": "variant",
-      "name": "TextFailureKind",
-      "displayName": "TextFailureKind",
+      "name": "Formatting::TextFailureKind",
+      "displayName": "Formatting::TextFailureKind",
       "module": "FormatError",
       "source": "Src/FormatError.rux",
       "line": 18,
@@ -1174,85 +1174,8 @@
           ]
         }
       ],
-      "members": [
-        {
-          "kind": "method",
-          "name": "WriteDisplay",
-          "line": 108,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&TextFailureKind",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Display",
-          "public": true,
-          "doc": {
-            "summary": "The same description `TextError` gives the same failure, which is the point of sharing one writer.",
-            "markdown": "The same description `TextError` gives the same failure, which is the point of sharing one writer.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the whole description was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/format-error#text-failure-kind-write-display"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "WriteDebug",
-          "line": 122,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&TextFailureKind",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Debug",
-          "public": true,
-          "doc": {
-            "summary": "Names the case, qualified by its type: `TextFailureKind::InvalidUtf8`.",
-            "markdown": "Names the case, qualified by its type: `TextFailureKind::InvalidUtf8`.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the whole name was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/format-error#text-failure-kind-write-debug"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        }
-      ],
-      "implements": ["Display", "Debug"],
+      "members": [],
+      "implements": [],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",
@@ -1266,8 +1189,8 @@
     },
     {
       "kind": "variant",
-      "name": "FormatError",
-      "displayName": "FormatError",
+      "name": "Formatting::FormatError",
+      "displayName": "Formatting::FormatError",
       "module": "FormatError",
       "source": "Src/FormatError.rux",
       "line": 31,
@@ -1275,7 +1198,7 @@
       "typeParams": [],
       "doc": {
         "summary": "Why a formatting operation did not produce the text it was asked for.",
-        "markdown": "Why a formatting operation did not produce the text it was asked for.\nFailure-only: every case is a failure, and success is what an operation that `throws FormatError` returns\nrather than a case here. Which case arises says who must fix it, so the\ncategories are not interchangeable and a writer may not invent the ones that belong to the parser or the value.\nCopy, and cheap to return: the widest payload is a pair of counts.",
+        "markdown": "Why a formatting operation did not produce the text it was asked for.\nFailure-only: every case is a failure, and success is what an operation declared `-> T ! FormatError` returns\nrather than a case here. Which case arises says who must fix it, so the\ncategories are not interchangeable and a writer may not invent the ones that belong to the parser or the value.\nCopy, and cheap to return: the widest payload is a pair of counts.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -1409,82 +1332,6 @@
       "members": [
         {
           "kind": "method",
-          "name": "WriteDisplay",
-          "line": 139,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&FormatError",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Display",
-          "public": true,
-          "doc": {
-            "summary": "Writes the description of why a value could not be turned into text.",
-            "markdown": "Writes the description of why a value could not be turned into text.\nThe position an `InvalidSpecification` carries, and the two counts an `ArgumentCountMismatch` carries, are\ndeliberately absent: they are what `Debug` adds. A description says what happened, and a reader who needs\nthe byte offset is reading a log rather than a message.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the whole description was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/format-error#write-display"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "WriteDebug",
-          "line": 162,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&FormatError",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Debug",
-          "public": true,
-          "doc": {
-            "summary": "Names the case and the payload it carries: `FormatError::InvalidSpecification(12)`.",
-            "markdown": "Names the case and the payload it carries: `FormatError::InvalidSpecification(12)`.\nThis is where the position and the counts appear, since they are what makes one occurrence of a failure\ndifferent from another and what a log is read for.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the whole rendering was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/format-error#write-debug"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
           "name": "IsWriterFailure",
           "line": 60,
           "signature": "pub func IsWriterFailure(&self) -> bool",
@@ -1497,7 +1344,7 @@
           "public": true,
           "doc": {
             "summary": "Whether this failure came from the destination rather than from the text or the request.",
-            "markdown": "Whether this failure came from the destination rather than from the text or the request.\nUseful at a boundary that must tell an unusable destination apart from a request that was wrong: the first is\nworth retrying elsewhere and the second never is.\nBorrows the error and leaves it untouched. Cannot fail; runs in constant time and allocates nothing.",
+            "markdown": "Whether this failure came from the destination rather than from the text or the request.\nUseful at a boundary that must tell an unusable destination apart from a request that was wrong: the first\nis worth retrying elsewhere and the second never is. Borrows the error and leaves it untouched. Cannot fail;\nruns in constant time and allocates nothing.",
             "typeParams": [],
             "params": [],
             "returns": "true for `WriterFailure`, false for every other case",
@@ -1516,7 +1363,7 @@
           ]
         }
       ],
-      "implements": ["Display", "Debug"],
+      "implements": [],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",
@@ -1530,8 +1377,8 @@
     },
     {
       "kind": "function",
-      "name": "TextFailureOf",
-      "displayName": "TextFailureOf",
+      "name": "Formatting::TextFailureOf",
+      "displayName": "Formatting::TextFailureOf",
       "module": "FormatError",
       "source": "Src/FormatError.rux",
       "line": 72,
@@ -1565,8 +1412,8 @@
     },
     {
       "kind": "function",
-      "name": "FromTextError",
-      "displayName": "FromTextError",
+      "name": "Formatting::FromTextError",
+      "displayName": "Formatting::FromTextError",
       "module": "FormatError",
       "source": "Src/FormatError.rux",
       "line": 84,
@@ -1574,7 +1421,7 @@
       "typeParams": [],
       "doc": {
         "summary": "`error` translated across the boundary between this package's status convention and the formatting protocol.",
-        "markdown": "`error` translated across the boundary between this package's status convention and the formatting protocol.\nThis is the only sanctioned crossing: every text failure becomes a `TextFailure` carrying the reason. It is the\nmapper a formatting operation hands a text operation's failure to, as in `try builder.Append(view) catch {\ne => throw FromTextError(e) }`.",
+        "markdown": "`error` translated across the boundary between this package's status convention and the formatting protocol.\nThis is the only sanctioned crossing: every text failure becomes a `TextFailure` carrying the reason. It is the\nmapper a formatting operation hands a text operation's failure to, as in `builder.Append(view) catch {\ne => throw FromTextError(e) }`.",
         "typeParams": [],
         "params": [{ "name": "error", "markdown": "why the storage or validation operation failed" }],
         "returns": "the matching formatting failure",
@@ -1600,8 +1447,8 @@
     },
     {
       "kind": "interface",
-      "name": "ParseFailure",
-      "displayName": "ParseFailure",
+      "name": "Formatting::ParseFailure",
+      "displayName": "Formatting::ParseFailure",
       "module": "FormatError",
       "source": "Src/FormatError.rux",
       "line": 96,
@@ -1668,12 +1515,12 @@
     },
     {
       "kind": "function",
-      "name": "WriteEscaped",
-      "displayName": "WriteEscaped",
+      "name": "Formatting::WriteEscaped",
+      "displayName": "Formatting::WriteEscaped",
       "module": "Presentation",
       "source": "Src/Presentation.rux",
-      "line": 87,
-      "signature": "pub func WriteEscaped(writer: &var TextWriter, text: char8[..]) throws FormatError",
+      "line": 89,
+      "signature": "pub func WriteEscaped(writer: &var TextWriter, text: char8[..]) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `text` with the characters that would be ambiguous or invisible replaced by escapes.",
@@ -1706,11 +1553,11 @@
     },
     {
       "kind": "function",
-      "name": "IsAsciiSpace",
-      "displayName": "IsAsciiSpace",
+      "name": "Transform::IsAsciiSpace",
+      "displayName": "Transform::IsAsciiSpace",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 181,
+      "line": 183,
       "signature": "pub func IsAsciiSpace(byte: char8) -> bool",
       "typeParams": [],
       "doc": {
@@ -1741,11 +1588,11 @@
     },
     {
       "kind": "struct",
-      "name": "SplitIterator",
-      "displayName": "SplitIterator",
+      "name": "Transform::SplitIterator",
+      "displayName": "Transform::SplitIterator",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 189,
+      "line": 191,
       "signature": "pub struct SplitIterator",
       "typeParams": [],
       "doc": {
@@ -1763,7 +1610,7 @@
           "name": "rest",
           "type": "StringView",
           "public": false,
-          "line": 191,
+          "line": 193,
           "doc": "What is left to walk.",
           "targets": [
             "windows-x86_64",
@@ -1780,7 +1627,7 @@
           "name": "separator",
           "type": "StringView",
           "public": false,
-          "line": 193,
+          "line": 195,
           "doc": "What separates the parts.",
           "targets": [
             "windows-x86_64",
@@ -1797,7 +1644,7 @@
           "name": "finished",
           "type": "bool",
           "public": false,
-          "line": 196,
+          "line": 198,
           "doc": "Whether the walk is over. A walk ends after the part following the last separator, which may be empty, so\nrunning out of bytes is not by itself the end.",
           "targets": [
             "windows-x86_64",
@@ -1817,7 +1664,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 207,
+          "line": 209,
           "signature": "pub func Next(&var self) -> StringView?",
           "typeParams": [],
           "params": [],
@@ -1861,11 +1708,11 @@
     },
     {
       "kind": "struct",
-      "name": "LineIterator",
-      "displayName": "LineIterator",
+      "name": "Transform::LineIterator",
+      "displayName": "Transform::LineIterator",
       "module": "Search",
       "source": "Src/Search.rux",
-      "line": 229,
+      "line": 231,
       "signature": "pub struct LineIterator",
       "typeParams": [],
       "doc": {
@@ -1883,7 +1730,7 @@
           "name": "rest",
           "type": "char8[..]",
           "public": false,
-          "line": 231,
+          "line": 233,
           "doc": "What is left to walk.",
           "targets": [
             "windows-x86_64",
@@ -1900,7 +1747,7 @@
           "name": "finished",
           "type": "bool",
           "public": false,
-          "line": 233,
+          "line": 235,
           "doc": "Whether the walk is over.",
           "targets": [
             "windows-x86_64",
@@ -1920,7 +1767,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 240,
+          "line": 242,
           "signature": "pub func Next(&var self) -> StringView?",
           "typeParams": [],
           "params": [],
@@ -1964,11 +1811,11 @@
     },
     {
       "kind": "enum",
-      "name": "FormatAlign",
-      "displayName": "FormatAlign",
+      "name": "Formatting::FormatAlign",
+      "displayName": "Formatting::FormatAlign",
       "module": "Spec",
       "source": "Src/Spec.rux",
-      "line": 18,
+      "line": 19,
       "signature": "pub enum FormatAlign",
       "typeParams": [],
       "doc": {
@@ -1988,7 +1835,7 @@
           "name": "Default",
           "value": "0",
           "payload": null,
-          "line": 20,
+          "line": 21,
           "doc": "The type's own default: numbers to the right, text to the left.",
           "targets": [
             "windows-x86_64",
@@ -2005,7 +1852,7 @@
           "name": "Left",
           "value": "1",
           "payload": null,
-          "line": 22,
+          "line": 23,
           "doc": "The value at the start, fill after it.",
           "targets": [
             "windows-x86_64",
@@ -2022,7 +1869,7 @@
           "name": "Center",
           "value": "2",
           "payload": null,
-          "line": 24,
+          "line": 25,
           "doc": "The value in the middle, fill on both sides, the odd column on the right.",
           "targets": [
             "windows-x86_64",
@@ -2039,7 +1886,7 @@
           "name": "Right",
           "value": "3",
           "payload": null,
-          "line": 26,
+          "line": 27,
           "doc": "The value at the end, fill before it.",
           "targets": [
             "windows-x86_64",
@@ -2068,11 +1915,11 @@
     },
     {
       "kind": "enum",
-      "name": "FormatBase",
-      "displayName": "FormatBase",
+      "name": "Formatting::FormatBase",
+      "displayName": "Formatting::FormatBase",
       "module": "Spec",
       "source": "Src/Spec.rux",
-      "line": 34,
+      "line": 35,
       "signature": "pub enum FormatBase",
       "typeParams": [],
       "doc": {
@@ -2092,7 +1939,7 @@
           "name": "Decimal",
           "value": "0",
           "payload": null,
-          "line": 36,
+          "line": 37,
           "doc": "Base ten, the default.",
           "targets": [
             "windows-x86_64",
@@ -2109,7 +1956,7 @@
           "name": "Binary",
           "value": "1",
           "payload": null,
-          "line": 38,
+          "line": 39,
           "doc": "Base two, `b`, prefixed `0b` under `#`.",
           "targets": [
             "windows-x86_64",
@@ -2126,7 +1973,7 @@
           "name": "Octal",
           "value": "2",
           "payload": null,
-          "line": 40,
+          "line": 41,
           "doc": "Base eight, `o`, prefixed `0o` under `#`.",
           "targets": [
             "windows-x86_64",
@@ -2143,7 +1990,7 @@
           "name": "LowerHex",
           "value": "3",
           "payload": null,
-          "line": 42,
+          "line": 43,
           "doc": "Base sixteen with lower-case digits, `x`, prefixed `0x` under `#`.",
           "targets": [
             "windows-x86_64",
@@ -2160,7 +2007,7 @@
           "name": "UpperHex",
           "value": "4",
           "payload": null,
-          "line": 44,
+          "line": 45,
           "doc": "Base sixteen with upper-case digits, `X`, prefixed `0x` under `#`.",
           "targets": [
             "windows-x86_64",
@@ -2189,11 +2036,11 @@
     },
     {
       "kind": "struct",
-      "name": "FormatSpec",
-      "displayName": "FormatSpec",
+      "name": "Formatting::FormatSpec",
+      "displayName": "Formatting::FormatSpec",
       "module": "Spec",
       "source": "Src/Spec.rux",
-      "line": 51,
+      "line": 52,
       "signature": "pub struct FormatSpec",
       "typeParams": [],
       "doc": {
@@ -2211,7 +2058,7 @@
           "name": "fill",
           "type": "char8",
           "public": false,
-          "line": 53,
+          "line": 54,
           "doc": "The byte that pads, a space unless the spec names one.",
           "targets": [
             "windows-x86_64",
@@ -2228,7 +2075,7 @@
           "name": "align",
           "type": "FormatAlign",
           "public": false,
-          "line": 55,
+          "line": 56,
           "doc": "Where the padding goes.",
           "targets": [
             "windows-x86_64",
@@ -2245,7 +2092,7 @@
           "name": "showSign",
           "type": "bool",
           "public": false,
-          "line": 57,
+          "line": 58,
           "doc": "Whether a non-negative number shows a plus sign.",
           "targets": [
             "windows-x86_64",
@@ -2262,7 +2109,7 @@
           "name": "alternate",
           "type": "bool",
           "public": false,
-          "line": 59,
+          "line": 60,
           "doc": "Whether a based integer carries its base prefix.",
           "targets": [
             "windows-x86_64",
@@ -2279,7 +2126,7 @@
           "name": "zeroPad",
           "type": "bool",
           "public": false,
-          "line": 62,
+          "line": 63,
           "doc": "Whether a number pads with zeros between its sign and its digits, which is different from filling: the\nzeros are inside the number, so `-7` at width four is `-007` and not `00-7`.",
           "targets": [
             "windows-x86_64",
@@ -2296,7 +2143,7 @@
           "name": "width",
           "type": "uint",
           "public": false,
-          "line": 64,
+          "line": 65,
           "doc": "The fewest columns the rendering occupies. Zero asks for nothing.",
           "targets": [
             "windows-x86_64",
@@ -2313,7 +2160,7 @@
           "name": "precision",
           "type": "uint",
           "public": false,
-          "line": 67,
+          "line": 68,
           "doc": "How many characters of text to keep, or how many digits a float carries. Meaningful only when\n`HasPrecision` reports true, since zero is a precision a caller can mean.",
           "targets": [
             "windows-x86_64",
@@ -2330,7 +2177,7 @@
           "name": "hasPrecision",
           "type": "bool",
           "public": false,
-          "line": 69,
+          "line": 70,
           "doc": "Whether the spec named a precision.",
           "targets": [
             "windows-x86_64",
@@ -2347,7 +2194,7 @@
           "name": "base",
           "type": "FormatBase",
           "public": false,
-          "line": 71,
+          "line": 72,
           "doc": "The base an integer renders in, derived from a single-letter style so an integer need not read style text.",
           "targets": [
             "windows-x86_64",
@@ -2364,7 +2211,7 @@
           "name": "style",
           "type": "char8[..]",
           "public": false,
-          "line": 76,
+          "line": 77,
           "doc": "The style the specification named, borrowed from the specification text. Empty when none was written.\nThis borrows rather than copies because a style is read during the call that parses it and never held: a\nvalue applies its specification and is done. Storing one past the text it names is a lifetime error nothing\nhere can catch.",
           "targets": [
             "windows-x86_64",
@@ -2384,7 +2231,7 @@
         {
           "kind": "associated",
           "name": "Plain",
-          "line": 84,
+          "line": 85,
           "signature": "pub func Plain() -> FormatSpec",
           "typeParams": [],
           "params": [],
@@ -2416,7 +2263,7 @@
         {
           "kind": "method",
           "name": "Fill",
-          "line": 103,
+          "line": 104,
           "signature": "pub func Fill(&self) -> char8",
           "typeParams": [],
           "params": [],
@@ -2448,7 +2295,7 @@
         {
           "kind": "method",
           "name": "Alignment",
-          "line": 113,
+          "line": 114,
           "signature": "pub func Alignment(&self) -> FormatAlign",
           "typeParams": [],
           "params": [],
@@ -2480,7 +2327,7 @@
         {
           "kind": "method",
           "name": "ShowsSign",
-          "line": 121,
+          "line": 122,
           "signature": "pub func ShowsSign(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -2512,7 +2359,7 @@
         {
           "kind": "method",
           "name": "IsAlternate",
-          "line": 129,
+          "line": 130,
           "signature": "pub func IsAlternate(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -2544,7 +2391,7 @@
         {
           "kind": "method",
           "name": "ZeroPads",
-          "line": 137,
+          "line": 138,
           "signature": "pub func ZeroPads(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -2576,7 +2423,7 @@
         {
           "kind": "method",
           "name": "Width",
-          "line": 146,
+          "line": 147,
           "signature": "pub func Width(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -2608,7 +2455,7 @@
         {
           "kind": "method",
           "name": "Precision",
-          "line": 156,
+          "line": 157,
           "signature": "pub func Precision(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -2640,7 +2487,7 @@
         {
           "kind": "method",
           "name": "HasPrecision",
-          "line": 164,
+          "line": 165,
           "signature": "pub func HasPrecision(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -2672,7 +2519,7 @@
         {
           "kind": "method",
           "name": "Base",
-          "line": 172,
+          "line": 173,
           "signature": "pub func Base(&self) -> FormatBase",
           "typeParams": [],
           "params": [],
@@ -2704,7 +2551,7 @@
         {
           "kind": "method",
           "name": "Style",
-          "line": 183,
+          "line": 184,
           "signature": "pub func Style(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
@@ -2736,7 +2583,7 @@
         {
           "kind": "method",
           "name": "HasStyle",
-          "line": 191,
+          "line": 192,
           "signature": "pub func HasStyle(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -2768,7 +2615,7 @@
         {
           "kind": "method",
           "name": "StyleIs",
-          "line": 202,
+          "line": 203,
           "signature": "pub func StyleIs(&self, name: char8[..]) -> bool",
           "typeParams": [],
           "params": [{ "name": "name", "type": "char8[..]" }],
@@ -2812,12 +2659,12 @@
     },
     {
       "kind": "function",
-      "name": "ParseFormatSpec",
-      "displayName": "ParseFormatSpec",
+      "name": "Formatting::ParseFormatSpec",
+      "displayName": "Formatting::ParseFormatSpec",
       "module": "Spec",
       "source": "Src/Spec.rux",
       "line": 310,
-      "signature": "pub func ParseFormatSpec(text: char8[..]) -> FormatSpec throws FormatError",
+      "signature": "pub func ParseFormatSpec(text: char8[..]) -> FormatSpec ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Parses the text between `{:` and `}`.",
@@ -2849,12 +2696,12 @@
     },
     {
       "kind": "function",
-      "name": "RejectStyle",
-      "displayName": "RejectStyle",
+      "name": "Formatting::RejectStyle",
+      "displayName": "Formatting::RejectStyle",
       "module": "Spec",
       "source": "Src/Spec.rux",
       "line": 406,
-      "signature": "pub func RejectStyle(spec: FormatSpec) throws FormatError",
+      "signature": "pub func RejectStyle(spec: FormatSpec) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Refuses a specification that names any style.",
@@ -2884,12 +2731,12 @@
     },
     {
       "kind": "function",
-      "name": "RejectNonBaseStyle",
-      "displayName": "RejectNonBaseStyle",
+      "name": "Formatting::RejectNonBaseStyle",
+      "displayName": "Formatting::RejectNonBaseStyle",
       "module": "Spec",
       "source": "Src/Spec.rux",
       "line": 419,
-      "signature": "pub func RejectNonBaseStyle(spec: FormatSpec) throws FormatError",
+      "signature": "pub func RejectNonBaseStyle(spec: FormatSpec) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Refuses a specification whose style is not one of the integer bases.",
@@ -2923,12 +2770,12 @@
       "displayName": "String",
       "module": "String",
       "source": "Src/String.rux",
-      "line": 24,
+      "line": 26,
       "signature": "pub struct String",
       "typeParams": [],
       "doc": {
         "summary": "Text that owns its bytes.",
-        "markdown": "Text that owns its bytes.\nMove-only: it owns its block and gives it back when it dies. `Clone` makes an independent copy explicitly.\nStorage invariant, which every operation keeps and every `unsafe` block here relies on: `length <= capacity`;\n`data` is null exactly when `capacity` is zero, and otherwise addresses a block of `capacity` bytes from\n`allocator` whose first `length` bytes are initialized, well-formed UTF-8.",
+        "markdown": "Text that owns its bytes.\nMove-only: it owns its block and gives it back when it dies. `Clone` makes an independent copy explicitly.\nStorage invariant, which every operation keeps and every raw access here relies on: `length <= capacity`;\n`data` is null exactly when `capacity` is zero, and otherwise addresses a block of `capacity` bytes from\n`allocator` whose first `length` bytes are initialized, well-formed UTF-8.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -2941,7 +2788,7 @@
           "name": "data",
           "type": "*var char8",
           "public": false,
-          "line": 27,
+          "line": 29,
           "doc": "The bytes, or null for text of no length. Private, so nothing outside this package can break the invariant;\n`Bytes` and `View` lend them.",
           "targets": [
             "windows-x86_64",
@@ -2958,7 +2805,7 @@
           "name": "length",
           "type": "uint",
           "public": false,
-          "line": 29,
+          "line": 31,
           "doc": "How many bytes there are. Not how many characters; `Length` reads it.",
           "targets": [
             "windows-x86_64",
@@ -2975,7 +2822,7 @@
           "name": "capacity",
           "type": "uint",
           "public": false,
-          "line": 33,
+          "line": 35,
           "doc": "How large the block is. An allocator is given back the layout it handed out, and a string built by handing\na builder's block over gets one with room to spare, so what was allocated and what is used are not always\nthe same number.",
           "targets": [
             "windows-x86_64",
@@ -2992,7 +2839,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 35,
+          "line": 37,
           "doc": "Where the block came from, and where it goes back to.",
           "targets": [
             "windows-x86_64",
@@ -3010,86 +2857,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "method",
-          "name": "WriteDisplay",
-          "line": 22,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&String",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Display",
-          "public": true,
-          "doc": {
-            "summary": "Writes this string's bytes.",
-            "markdown": "Writes this string's bytes.\nReports whatever the writer reported, and `UnsupportedRequest` for a style, since text has none.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the string's text was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/string#write-display"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "WriteDebug",
-          "line": 35,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&String",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Debug",
-          "public": true,
-          "doc": {
-            "summary": "Writes this string quoted and escaped.",
-            "markdown": "Writes this string quoted and escaped.\nReports whatever the writer reported, and `UnsupportedRequest` for a style.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the quoted string was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/string#write-debug"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "constructor",
-          "name": "String",
-          "line": 45,
-          "signature": "pub func String(allocator: Allocator) -> String",
+          "kind": "associated",
+          "name": "New",
+          "line": 47,
+          "signature": "pub func New(allocator: Allocator) -> String",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -3120,7 +2891,7 @@
         {
           "kind": "associated",
           "name": "FromValidated",
-          "line": 59,
+          "line": 61,
           "signature": "pub func FromValidated(allocator: Allocator, bytes: char8[..]) -> String",
           "typeParams": [],
           "params": [
@@ -3158,8 +2929,8 @@
         {
           "kind": "associated",
           "name": "FromBytes",
-          "line": 95,
-          "signature": "pub func FromBytes(allocator: Allocator, bytes: char8[..]) -> String throws TextError",
+          "line": 97,
+          "signature": "pub func FromBytes(allocator: Allocator, bytes: char8[..]) -> String ! TextError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -3196,7 +2967,7 @@
         {
           "kind": "associated",
           "name": "FromView",
-          "line": 107,
+          "line": 109,
           "signature": "pub func FromView(allocator: Allocator, view: StringView) -> String",
           "typeParams": [],
           "params": [
@@ -3234,7 +3005,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 115,
+          "line": 117,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -3266,7 +3037,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 122,
+          "line": 124,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -3298,7 +3069,7 @@
         {
           "kind": "method",
           "name": "Bytes",
-          "line": 129,
+          "line": 131,
           "signature": "pub func Bytes(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
@@ -3330,7 +3101,7 @@
         {
           "kind": "method",
           "name": "View",
-          "line": 138,
+          "line": 140,
           "signature": "pub func View(&self) -> StringView",
           "typeParams": [],
           "params": [],
@@ -3362,7 +3133,7 @@
         {
           "kind": "method",
           "name": "ScalarCount",
-          "line": 145,
+          "line": 147,
           "signature": "pub func ScalarCount(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -3394,7 +3165,7 @@
         {
           "kind": "method",
           "name": "IsBoundary",
-          "line": 153,
+          "line": 155,
           "signature": "pub func IsBoundary(&self, index: uint) -> bool",
           "typeParams": [],
           "params": [{ "name": "index", "type": "uint" }],
@@ -3426,7 +3197,7 @@
         {
           "kind": "method",
           "name": "Part",
-          "line": 164,
+          "line": 166,
           "signature": "pub func Part(&self, start: uint, end: uint) -> StringView?",
           "typeParams": [],
           "params": [
@@ -3464,8 +3235,8 @@
         {
           "kind": "method",
           "name": "Substring",
-          "line": 175,
-          "signature": "pub func Substring(&self, start: uint, end: uint) -> String throws TextError",
+          "line": 177,
+          "signature": "pub func Substring(&self, start: uint, end: uint) -> String ! TextError",
           "typeParams": [],
           "params": [
             { "name": "start", "type": "uint" },
@@ -3502,8 +3273,8 @@
         {
           "kind": "method",
           "name": "TryClone",
-          "line": 184,
-          "signature": "pub func TryClone(&self) -> String throws AllocError",
+          "line": 186,
+          "signature": "pub func TryClone(&self) -> String ! AllocError",
           "typeParams": [],
           "params": [],
           "receiver": "&String",
@@ -3534,7 +3305,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 192,
+          "line": 194,
           "signature": "pub func Equals(&self, other: &String) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&String" }],
@@ -3566,7 +3337,7 @@
         {
           "kind": "method",
           "name": "Compare",
-          "line": 202,
+          "line": 204,
           "signature": "pub func Compare(&self, other: &String) -> Ordering",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&String" }],
@@ -3598,7 +3369,7 @@
         {
           "kind": "method",
           "name": "Clear",
-          "line": 212,
+          "line": 214,
           "signature": "pub func Clear(&var self)",
           "typeParams": [],
           "params": [],
@@ -3630,7 +3401,7 @@
         {
           "kind": "method",
           "name": "ReplaceWith",
-          "line": 229,
+          "line": 231,
           "signature": "pub func ReplaceWith(&var self, value: String)",
           "typeParams": [],
           "params": [{ "name": "value", "type": "String" }],
@@ -3661,9 +3432,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~String",
-          "line": 244,
-          "signature": "func ~String(&var self)",
+          "name": "~",
+          "line": 246,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var String",
@@ -3694,7 +3465,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 254,
+          "line": 256,
           "signature": "pub func Clone(&self) -> String",
           "typeParams": [],
           "params": [],
@@ -3724,7 +3495,7 @@
           ]
         }
       ],
-      "implements": ["Display", "Debug", "Cloneable"],
+      "implements": ["Cloneable"],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",
@@ -3782,7 +3553,7 @@
       "typeParams": [],
       "doc": {
         "summary": "A growable buffer of text.",
-        "markdown": "A growable buffer of text.\nMove-only: it explicitly prohibits copying and owns its block. Holds well-formed UTF-8 at every moment.\nStorage invariant, which every operation keeps and every `unsafe` block here relies on: `length <= capacity`;\n`data` is null exactly when `capacity` is zero, and otherwise addresses a block of `capacity` bytes from\n`allocator` whose first `length` bytes are initialized, well-formed UTF-8.",
+        "markdown": "A growable buffer of text.\nMove-only: it explicitly prohibits copying and owns its block. Holds well-formed UTF-8 at every moment.\nStorage invariant, which every operation keeps and every raw access here relies on: `length <= capacity`;\n`data` is null exactly when `capacity` is zero, and otherwise addresses a block of `capacity` bytes from\n`allocator` whose first `length` bytes are initialized, well-formed UTF-8.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -3864,10 +3635,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "StringBuilder",
+          "kind": "associated",
+          "name": "New",
           "line": 47,
-          "signature": "pub func StringBuilder(allocator: Allocator) -> StringBuilder",
+          "signature": "pub func New(allocator: Allocator) -> StringBuilder",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -4129,7 +3900,7 @@
           "kind": "method",
           "name": "TryReserve",
           "line": 119,
-          "signature": "pub func TryReserve(&var self, additional: uint) throws AllocError",
+          "signature": "pub func TryReserve(&var self, additional: uint) -> !AllocError",
           "typeParams": [],
           "params": [{ "name": "additional", "type": "uint" }],
           "receiver": "&var StringBuilder",
@@ -4257,7 +4028,7 @@
           "kind": "method",
           "name": "AppendBytes",
           "line": 159,
-          "signature": "pub func AppendBytes(&var self, bytes: char8[..]) throws TextError",
+          "signature": "pub func AppendBytes(&var self, bytes: char8[..]) -> !TextError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var StringBuilder",
@@ -4289,7 +4060,7 @@
           "kind": "method",
           "name": "AppendScalar",
           "line": 170,
-          "signature": "pub func AppendScalar(&var self, scalar: char32) throws TextError",
+          "signature": "pub func AppendScalar(&var self, scalar: char32) -> !TextError",
           "typeParams": [],
           "params": [{ "name": "scalar", "type": "char32" }],
           "receiver": "&var StringBuilder",
@@ -4321,7 +4092,7 @@
           "kind": "method",
           "name": "AppendAscii",
           "line": 184,
-          "signature": "pub func AppendAscii(&var self, byte: char8) throws TextError",
+          "signature": "pub func AppendAscii(&var self, byte: char8) -> !TextError",
           "typeParams": [],
           "params": [{ "name": "byte", "type": "char8" }],
           "receiver": "&var StringBuilder",
@@ -4479,9 +4250,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~StringBuilder",
+          "name": "~",
           "line": 246,
-          "signature": "func ~StringBuilder(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var StringBuilder",
@@ -4512,8 +4283,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 92,
-          "signature": "pub func Write(&var self, bytes: char8[..]) throws FormatError",
+          "line": 95,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> !FormatError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var StringBuilder",
@@ -4560,7 +4331,7 @@
       "displayName": "StringView",
       "module": "StringView",
       "source": "Src/StringView.rux",
-      "line": 17,
+      "line": 19,
       "signature": "pub struct StringView",
       "typeParams": [],
       "doc": {
@@ -4578,7 +4349,7 @@
           "name": "bytes",
           "type": "char8[..]",
           "public": false,
-          "line": 19,
+          "line": 21,
           "doc": "The bytes. Well-formed UTF-8 for any view this package produces.",
           "targets": [
             "windows-x86_64",
@@ -4596,406 +4367,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "method",
-          "name": "WriteDisplay",
-          "line": 50,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&StringView",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Display",
-          "public": true,
-          "doc": {
-            "summary": "Writes what this view spans, truncated to the spec's precision and padded to its width.",
-            "markdown": "Writes what this view spans, truncated to the spec's precision and padded to its width.\nPrecision counts Unicode scalar values rather than bytes, and a cut lands on a character boundary by\nconstruction: the walk that counts them is the walk that finds where to stop.\nReports whatever the writer reported, and `UnsupportedRequest` for a style, since text has none.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the view's text was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#write-display"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "WriteDebug",
-          "line": 67,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&StringView",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Debug",
-          "public": true,
-          "doc": {
-            "summary": "Writes what this view spans, quoted and escaped.",
-            "markdown": "Writes what this view spans, quoted and escaped.\nThe quotes sit outside the precision: what is kept is text, and the quotes say where it stops. Alignment is\nnot applied, because padding a quoted rendering to a width would put the fill outside the quotes, where it\nwould read as part of the surrounding text rather than as part of the value.\nReports whatever the writer reported, stopping at the first refusal, so a failed opening quote is not\nfollowed by a body. Reports `UnsupportedRequest` for a style.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the quoted view was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#write-debug"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "StartsWith",
-          "line": 22,
-          "signature": "pub func StartsWith(&self, prefix: StringView) -> bool",
-          "typeParams": [],
-          "params": [{ "name": "prefix", "type": "StringView" }],
-          "receiver": "&StringView",
-          "returnType": "bool",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "Whether this view begins with `prefix`.",
-            "markdown": "Whether this view begins with `prefix`.\nEvery view begins with the empty one.\nRuns in time proportional to the prefix and allocates nothing.",
-            "typeParams": [],
-            "params": [{ "name": "prefix", "markdown": "the text to look for at the start" }],
-            "returns": "whether the text begins with `prefix`",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#starts-with"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "EndsWith",
-          "line": 37,
-          "signature": "pub func EndsWith(&self, suffix: StringView) -> bool",
-          "typeParams": [],
-          "params": [{ "name": "suffix", "type": "StringView" }],
-          "receiver": "&StringView",
-          "returnType": "bool",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "Whether this view ends with `suffix`.",
-            "markdown": "Whether this view ends with `suffix`.",
-            "typeParams": [],
-            "params": [{ "name": "suffix", "markdown": "the text to look for at the end" }],
-            "returns": "whether the text ends with `suffix`",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#ends-with"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "IndexOf",
-          "line": 57,
-          "signature": "pub func IndexOf(&self, needle: StringView) -> uint?",
-          "typeParams": [],
-          "params": [{ "name": "needle", "type": "StringView" }],
-          "receiver": "&StringView",
-          "returnType": "uint?",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "The byte index where `needle` first occurs, or `none`.",
-            "markdown": "The byte index where `needle` first occurs, or `none`.\nThe empty needle occurs at the start, which is what makes `IndexOf` agree with `StartsWith` for it.\nRuns in time proportional to the product of the lengths in the worst case, which for the short needles this\nis used with is the same as proportional to the text.",
-            "typeParams": [],
-            "params": [{ "name": "needle", "markdown": "the text to look for" }],
-            "returns": "the byte offset of the first occurrence, or `none`",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#index-of"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "LastIndexOf",
-          "line": 86,
-          "signature": "pub func LastIndexOf(&self, needle: StringView) -> uint?",
-          "typeParams": [],
-          "params": [{ "name": "needle", "type": "StringView" }],
-          "receiver": "&StringView",
-          "returnType": "uint?",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "The byte index where `needle` last occurs, or `none`.",
-            "markdown": "The byte index where `needle` last occurs, or `none`.",
-            "typeParams": [],
-            "params": [{ "name": "needle", "markdown": "the text to look for" }],
-            "returns": "the byte offset of the last occurrence, or `none`",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#last-index-of"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "Contains",
-          "line": 114,
-          "signature": "pub func Contains(&self, needle: StringView) -> bool",
-          "typeParams": [],
-          "params": [{ "name": "needle", "type": "StringView" }],
-          "receiver": "&StringView",
-          "returnType": "bool",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "Whether `needle` occurs anywhere in this view.",
-            "markdown": "Whether `needle` occurs anywhere in this view.",
-            "typeParams": [],
-            "params": [{ "name": "needle", "markdown": "the text to look for" }],
-            "returns": "whether `needle` occurs anywhere in the text",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#contains"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "TrimStart",
-          "line": 122,
-          "signature": "pub func TrimStart(&self) -> StringView",
-          "typeParams": [],
-          "params": [],
-          "receiver": "&StringView",
-          "returnType": "StringView",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "This view without the ASCII whitespace at its start.",
-            "markdown": "This view without the ASCII whitespace at its start.\nBorrows: what comes back names the same bytes, further in.",
-            "typeParams": [],
-            "params": [],
-            "returns": "the text without its leading ASCII spaces",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#trim-start"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "TrimEnd",
-          "line": 134,
-          "signature": "pub func TrimEnd(&self) -> StringView",
-          "typeParams": [],
-          "params": [],
-          "receiver": "&StringView",
-          "returnType": "StringView",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "This view without the ASCII whitespace at its end.",
-            "markdown": "This view without the ASCII whitespace at its end.",
-            "typeParams": [],
-            "params": [],
-            "returns": "the text without its trailing ASCII spaces",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#trim-end"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "Trim",
-          "line": 146,
-          "signature": "pub func Trim(&self) -> StringView",
-          "typeParams": [],
-          "params": [],
-          "receiver": "&StringView",
-          "returnType": "StringView",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "This view without the ASCII whitespace at either end.",
-            "markdown": "This view without the ASCII whitespace at either end.",
-            "typeParams": [],
-            "params": [],
-            "returns": "the text without its leading and trailing ASCII spaces",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#trim"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "Lines",
-          "line": 157,
-          "signature": "pub func Lines(&self) -> LineIterator",
-          "typeParams": [],
-          "params": [],
-          "receiver": "&StringView",
-          "returnType": "LineIterator",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "A walk over the lines of this view, each without its line break.",
-            "markdown": "A walk over the lines of this view, each without its line break.\nA line ends at `\\n` or `\\r\\n`; a break at the very end does not start another, empty line, so `\"a\\nb\\n\"`\nhas two lines and empty text has none. A lone `\\r` is part of its line.\n`self` is borrowed and must outlive the walk.",
-            "typeParams": [],
-            "params": [],
-            "returns": "a cursor over the lines",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#lines"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "Split",
-          "line": 166,
-          "signature": "pub func Split(&self, separator: StringView) -> SplitIterator",
-          "typeParams": [],
-          "params": [{ "name": "separator", "type": "StringView" }],
-          "receiver": "&StringView",
-          "returnType": "SplitIterator",
-          "value": null,
-          "conformance": null,
-          "public": true,
-          "doc": {
-            "summary": "A walk over the parts of this view between occurrences of `separator`.",
-            "markdown": "A walk over the parts of this view between occurrences of `separator`.\n`self` is borrowed and must outlive the walk, as must `separator`.",
-            "typeParams": [],
-            "params": [{ "name": "separator", "markdown": "the text that separates the pieces" }],
-            "returns": "a cursor over the pieces between separators",
-            "see": ["https://rux-lang.dev/docs/api/text/string-view#split"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "constructor",
-          "name": "StringView",
-          "line": 27,
-          "signature": "pub func StringView() -> StringView",
+          "kind": "associated",
+          "name": "New",
+          "line": 29,
+          "signature": "pub func New() -> StringView",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -5026,7 +4401,7 @@
         {
           "kind": "associated",
           "name": "FromBytes",
-          "line": 38,
+          "line": 40,
           "signature": "pub func FromBytes(bytes: char8[..]) -> StringView?",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
@@ -5058,7 +4433,7 @@
         {
           "kind": "associated",
           "name": "FromValidated",
-          "line": 51,
+          "line": 53,
           "signature": "pub func FromValidated(bytes: char8[..]) -> StringView",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
@@ -5090,7 +4465,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 59,
+          "line": 61,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -5122,7 +4497,7 @@
         {
           "kind": "method",
           "name": "IsEmpty",
-          "line": 66,
+          "line": 68,
           "signature": "pub func IsEmpty(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -5154,7 +4529,7 @@
         {
           "kind": "method",
           "name": "Bytes",
-          "line": 73,
+          "line": 75,
           "signature": "pub func Bytes(&self) -> char8[..]",
           "typeParams": [],
           "params": [],
@@ -5186,7 +4561,7 @@
         {
           "kind": "method",
           "name": "ScalarCount",
-          "line": 82,
+          "line": 84,
           "signature": "pub func ScalarCount(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -5218,7 +4593,7 @@
         {
           "kind": "method",
           "name": "IsBoundary",
-          "line": 90,
+          "line": 92,
           "signature": "pub func IsBoundary(&self, index: uint) -> bool",
           "typeParams": [],
           "params": [{ "name": "index", "type": "uint" }],
@@ -5250,7 +4625,7 @@
         {
           "kind": "method",
           "name": "Part",
-          "line": 102,
+          "line": 104,
           "signature": "pub func Part(&self, start: uint, end: uint) -> StringView?",
           "typeParams": [],
           "params": [
@@ -5288,7 +4663,7 @@
         {
           "kind": "method",
           "name": "ScalarAt",
-          "line": 114,
+          "line": 116,
           "signature": "pub func ScalarAt(&self, index: uint) -> char32?",
           "typeParams": [],
           "params": [{ "name": "index", "type": "uint" }],
@@ -5320,7 +4695,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 127,
+          "line": 129,
           "signature": "pub func Equals(&self, other: &StringView) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&StringView" }],
@@ -5352,7 +4727,7 @@
         {
           "kind": "method",
           "name": "Compare",
-          "line": 144,
+          "line": 146,
           "signature": "pub func Compare(&self, other: &StringView) -> Ordering",
           "typeParams": [],
           "params": [{ "name": "other", "type": "&StringView" }],
@@ -5384,7 +4759,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 166,
+          "line": 168,
           "signature": "pub func Equals(&self, other: StringView) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "StringView" }],
@@ -5416,7 +4791,7 @@
         {
           "kind": "method",
           "name": "Compare",
-          "line": 175,
+          "line": 177,
           "signature": "pub func Compare(&self, other: StringView) -> Ordering",
           "typeParams": [],
           "params": [{ "name": "other", "type": "StringView" }],
@@ -5448,7 +4823,7 @@
         {
           "kind": "method",
           "name": "Scalars",
-          "line": 184,
+          "line": 186,
           "signature": "pub func Scalars(&self) -> ScalarIterator",
           "typeParams": [],
           "params": [],
@@ -5478,7 +4853,7 @@
           ]
         }
       ],
-      "implements": ["Display", "Debug"],
+      "implements": [],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",
@@ -5496,7 +4871,7 @@
       "displayName": "ScalarIterator",
       "module": "StringView",
       "source": "Src/StringView.rux",
-      "line": 191,
+      "line": 193,
       "signature": "pub struct ScalarIterator",
       "typeParams": [],
       "doc": {
@@ -5514,7 +4889,7 @@
           "name": "bytes",
           "type": "char8[..]",
           "public": false,
-          "line": 193,
+          "line": 195,
           "doc": "The bytes being walked.",
           "targets": [
             "windows-x86_64",
@@ -5531,7 +4906,7 @@
           "name": "cursor",
           "type": "uint",
           "public": false,
-          "line": 195,
+          "line": 197,
           "doc": "The byte index the next scalar value starts at.",
           "targets": [
             "windows-x86_64",
@@ -5551,7 +4926,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 204,
+          "line": 206,
           "signature": "pub func Next(&var self) -> char32?",
           "typeParams": [],
           "params": [],
@@ -5595,12 +4970,12 @@
     },
     {
       "kind": "function",
-      "name": "WriteOptionalDebug",
-      "displayName": "WriteOptionalDebug<T>",
+      "name": "Formatting::WriteOptionalDebug",
+      "displayName": "Formatting::WriteOptionalDebug<T>",
       "module": "Structure",
       "source": "Src/Structure.rux",
-      "line": 40,
-      "signature": "pub func WriteOptionalDebug<T: Debug>(writer: &var TextWriter, value: &((T?)), spec: FormatSpec) throws FormatError",
+      "line": 35,
+      "signature": "pub func WriteOptionalDebug<T: Debug>(writer: &var TextWriter, value: &((T?)), spec: FormatSpec) -> !FormatError",
       "typeParams": [{ "name": "T", "bounds": ["Debug"] }],
       "doc": {
         "summary": "Writes a borrowed optional as `Some(value)` or `none`.",
@@ -5634,57 +5009,12 @@
     },
     {
       "kind": "function",
-      "name": "WriteResultDebug",
-      "displayName": "WriteResultDebug<T, E>",
+      "name": "Formatting::WriteSliceDebug",
+      "displayName": "Formatting::WriteSliceDebug<T>",
       "module": "Structure",
       "source": "Src/Structure.rux",
-      "line": 66,
-      "signature": "pub func WriteResultDebug<T: Debug, E: Debug>(writer: &var TextWriter, value: &Result<T, E>, spec: FormatSpec) throws FormatError",
-      "typeParams": [
-        { "name": "T", "bounds": ["Debug"] },
-        { "name": "E", "bounds": ["Debug"] }
-      ],
-      "doc": {
-        "summary": "Writes a borrowed `Result` as `Success(value)` or `Failure(reason)`.",
-        "markdown": "Writes a borrowed `Result` as `Success(value)` or `Failure(reason)`.\nBoth payloads are borrowed, so neither case is consumed by being shown. The names are the case names, so what\nis written names the case a reader would branch on.\n`spec` is handed to whichever payload is present and describes it rather than the wrapper.\nReports whatever the writer or the payload's implementation reported, stopping at the first refusal.",
-        "typeParams": [
-          { "name": "T", "markdown": "the success payload type, which must know how to show itself" },
-          { "name": "E", "markdown": "the failure payload type, which must know how to show itself" }
-        ],
-        "params": [
-          { "name": "writer", "markdown": "the destination" },
-          { "name": "value", "markdown": "the result to show, borrowed for the call" },
-          { "name": "spec", "markdown": "what to show the payload under" }
-        ],
-        "returns": "success when the whole rendering was accepted",
-        "see": ["https://rux-lang.dev/docs/api/text/debug#write-result-debug"],
-        "deprecated": null
-      },
-      "value": null,
-      "fields": [],
-      "baseType": null,
-      "cases": [],
-      "members": [],
-      "implements": [],
-      "targets": [
-        "windows-x86_64",
-        "windows-aarch64",
-        "linux-x86_64",
-        "linux-aarch64",
-        "macos-x86_64",
-        "macos-aarch64",
-        "freebsd-x86_64",
-        "freebsd-aarch64"
-      ]
-    },
-    {
-      "kind": "function",
-      "name": "WriteSliceDebug",
-      "displayName": "WriteSliceDebug<T>",
-      "module": "Structure",
-      "source": "Src/Structure.rux",
-      "line": 98,
-      "signature": "pub func WriteSliceDebug<T: Debug>(writer: &var TextWriter, items: T[..], spec: FormatSpec) throws FormatError",
+      "line": 65,
+      "signature": "pub func WriteSliceDebug<T: Debug>(writer: &var TextWriter, items: T[..], spec: FormatSpec) -> !FormatError",
       "typeParams": [{ "name": "T", "bounds": ["Debug"] }],
       "doc": {
         "summary": "Writes a borrowed run of elements as `[first, second, third]`.",
@@ -5727,7 +5057,7 @@
       "typeParams": [],
       "doc": {
         "summary": "What went wrong.",
-        "markdown": "What went wrong.\nEvery case is a failure. An operation that can fail returns its result, or nothing, and declares\n`throws TextError`, so success is the return value rather than a case here.",
+        "markdown": "What went wrong.\nEvery case is a failure. An operation that can fail returns its result, or nothing, and declares\n`! TextError` after it, so success is the return value rather than a case here.",
         "typeParams": [],
         "params": [],
         "returns": null,
@@ -5777,8 +5107,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 76,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 78,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -5815,8 +5145,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 92,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 94,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -5865,11 +5195,11 @@
     },
     {
       "kind": "function",
-      "name": "Join",
-      "displayName": "Join",
+      "name": "Transform::Join",
+      "displayName": "Transform::Join",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 22,
+      "line": 23,
       "signature": "pub func Join(allocator: Allocator, parts: StringView[..], separator: StringView) -> String",
       "typeParams": [],
       "doc": {
@@ -5904,12 +5234,12 @@
     },
     {
       "kind": "function",
-      "name": "ToUpper",
-      "displayName": "ToUpper",
+      "name": "Transform::ToUpper",
+      "displayName": "Transform::ToUpper",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 78,
-      "signature": "pub func ToUpper(allocator: Allocator, view: StringView) -> String throws TextError",
+      "line": 79,
+      "signature": "pub func ToUpper(allocator: Allocator, view: StringView) -> String ! TextError",
       "typeParams": [],
       "doc": {
         "summary": "The text of `view` in upper case by Unicode's full, unconditional mappings, so `ß` becomes `SS` and `ŉ` becomes\n`ʼN`.",
@@ -5942,12 +5272,12 @@
     },
     {
       "kind": "function",
-      "name": "ToLower",
-      "displayName": "ToLower",
+      "name": "Transform::ToLower",
+      "displayName": "Transform::ToLower",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 88,
-      "signature": "pub func ToLower(allocator: Allocator, view: StringView) -> String throws TextError",
+      "line": 89,
+      "signature": "pub func ToLower(allocator: Allocator, view: StringView) -> String ! TextError",
       "typeParams": [],
       "doc": {
         "summary": "The text of `view` in lower case by Unicode's full, unconditional mappings.",
@@ -5980,12 +5310,12 @@
     },
     {
       "kind": "function",
-      "name": "FoldCase",
-      "displayName": "FoldCase",
+      "name": "Transform::FoldCase",
+      "displayName": "Transform::FoldCase",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 98,
-      "signature": "pub func FoldCase(allocator: Allocator, view: StringView) -> String throws TextError",
+      "line": 99,
+      "signature": "pub func FoldCase(allocator: Allocator, view: StringView) -> String ! TextError",
       "typeParams": [],
       "doc": {
         "summary": "The text of `view` case-folded by Unicode's full folding, the form for comparing text without regard to case:\ntwo texts that differ only in case fold to the same bytes, `Straße` and `STRASSE` included.",
@@ -6018,11 +5348,11 @@
     },
     {
       "kind": "function",
-      "name": "Concat",
-      "displayName": "Concat",
+      "name": "Transform::Concat",
+      "displayName": "Transform::Concat",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 108,
+      "line": 109,
       "signature": "pub func Concat(allocator: Allocator, left: StringView, right: StringView) -> String",
       "typeParams": [],
       "doc": {
@@ -6057,11 +5387,11 @@
     },
     {
       "kind": "function",
-      "name": "Repeat",
-      "displayName": "Repeat",
+      "name": "Transform::Repeat",
+      "displayName": "Transform::Repeat",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 124,
+      "line": 125,
       "signature": "pub func Repeat(allocator: Allocator, view: StringView, count: uint) -> String",
       "typeParams": [],
       "doc": {
@@ -6096,11 +5426,11 @@
     },
     {
       "kind": "function",
-      "name": "Replace",
-      "displayName": "Replace",
+      "name": "Transform::Replace",
+      "displayName": "Transform::Replace",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 150,
+      "line": 151,
       "signature": "pub func Replace(allocator: Allocator, view: StringView, needle: StringView, replacement: StringView) -> String",
       "typeParams": [],
       "doc": {
@@ -6136,11 +5466,11 @@
     },
     {
       "kind": "function",
-      "name": "IsAsciiLetter",
-      "displayName": "IsAsciiLetter",
+      "name": "Transform::IsAsciiLetter",
+      "displayName": "Transform::IsAsciiLetter",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 180,
+      "line": 181,
       "signature": "pub func IsAsciiLetter(byte: char8) -> bool",
       "typeParams": [],
       "doc": {
@@ -6171,11 +5501,11 @@
     },
     {
       "kind": "function",
-      "name": "ToAsciiUpper",
-      "displayName": "ToAsciiUpper",
+      "name": "Transform::ToAsciiUpper",
+      "displayName": "Transform::ToAsciiUpper",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 192,
+      "line": 193,
       "signature": "pub func ToAsciiUpper(allocator: Allocator, view: StringView) -> String",
       "typeParams": [],
       "doc": {
@@ -6209,11 +5539,11 @@
     },
     {
       "kind": "function",
-      "name": "ToAsciiLower",
-      "displayName": "ToAsciiLower",
+      "name": "Transform::ToAsciiLower",
+      "displayName": "Transform::ToAsciiLower",
       "module": "Transform",
       "source": "Src/Transform.rux",
-      "line": 201,
+      "line": 202,
       "signature": "pub func ToAsciiLower(allocator: Allocator, view: StringView) -> String",
       "typeParams": [],
       "doc": {
@@ -6247,11 +5577,11 @@
     },
     {
       "kind": "constant",
-      "name": "MaxScalarValue",
-      "displayName": "MaxScalarValue",
+      "name": "Utf8::MaxScalarValue",
+      "displayName": "Utf8::MaxScalarValue",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 19,
+      "line": 20,
       "signature": "pub const MaxScalarValue: uint32",
       "typeParams": [],
       "doc": {
@@ -6282,11 +5612,11 @@
     },
     {
       "kind": "constant",
-      "name": "FirstSurrogate",
-      "displayName": "FirstSurrogate",
+      "name": "Utf8::FirstSurrogate",
+      "displayName": "Utf8::FirstSurrogate",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 23,
+      "line": 24,
       "signature": "pub const FirstSurrogate: uint32",
       "typeParams": [],
       "doc": {
@@ -6317,11 +5647,11 @@
     },
     {
       "kind": "constant",
-      "name": "LastSurrogate",
-      "displayName": "LastSurrogate",
+      "name": "Utf8::LastSurrogate",
+      "displayName": "Utf8::LastSurrogate",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 27,
+      "line": 28,
       "signature": "pub const LastSurrogate: uint32",
       "typeParams": [],
       "doc": {
@@ -6352,11 +5682,11 @@
     },
     {
       "kind": "constant",
-      "name": "MaxEncodedLength",
-      "displayName": "MaxEncodedLength",
+      "name": "Utf8::MaxEncodedLength",
+      "displayName": "Utf8::MaxEncodedLength",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 31,
+      "line": 32,
       "signature": "pub const MaxEncodedLength: uint",
       "typeParams": [],
       "doc": {
@@ -6387,11 +5717,11 @@
     },
     {
       "kind": "enum",
-      "name": "Utf8Error",
-      "displayName": "Utf8Error",
+      "name": "Utf8::Utf8Error",
+      "displayName": "Utf8::Utf8Error",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 39,
+      "line": 40,
       "signature": "pub enum Utf8Error",
       "typeParams": [],
       "doc": {
@@ -6411,7 +5741,7 @@
           "name": "Truncated",
           "value": "1",
           "payload": null,
-          "line": 41,
+          "line": 42,
           "doc": "A sequence starts but the bytes run out before it ends.",
           "targets": [
             "windows-x86_64",
@@ -6428,7 +5758,7 @@
           "name": "InvalidStart",
           "value": "2",
           "payload": null,
-          "line": 43,
+          "line": 44,
           "doc": "A byte that cannot start a sequence: a continuation byte on its own, or one of the values UTF-8 never uses.",
           "targets": [
             "windows-x86_64",
@@ -6445,7 +5775,7 @@
           "name": "InvalidContinuation",
           "value": "3",
           "payload": null,
-          "line": 46,
+          "line": 47,
           "doc": "A byte where a continuation byte was required, or a continuation outside the range this leading byte allows\n— which is what rejects an overlong form, a surrogate half, or a value past the last scalar.",
           "targets": [
             "windows-x86_64",
@@ -6459,85 +5789,8 @@
           ]
         }
       ],
-      "members": [
-        {
-          "kind": "method",
-          "name": "WriteDisplay",
-          "line": 204,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&Utf8Error",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Display",
-          "public": true,
-          "doc": {
-            "summary": "Writes the description of what is wrong with a byte sequence, or `well-formed UTF-8` for success.",
-            "markdown": "Writes the description of what is wrong with a byte sequence, or `well-formed UTF-8` for success.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the whole description was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/utf8-error#write-display"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        },
-        {
-          "kind": "method",
-          "name": "WriteDebug",
-          "line": 221,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
-          "typeParams": [],
-          "params": [
-            { "name": "writer", "type": "&var TextWriter" },
-            { "name": "spec", "type": "FormatSpec" }
-          ],
-          "receiver": "&Utf8Error",
-          "returnType": "! FormatError",
-          "value": null,
-          "conformance": "Debug",
-          "public": true,
-          "doc": {
-            "summary": "Names the case, qualified by its type: `Utf8Error::Truncated`.",
-            "markdown": "Names the case, qualified by its type: `Utf8Error::Truncated`.\nReports whatever the writer reported, and `UnsupportedRequest` for any style or precision.",
-            "typeParams": [],
-            "params": [
-              { "name": "writer", "markdown": "the destination" },
-              { "name": "spec", "markdown": "what the placeholder asked for" }
-            ],
-            "returns": "success when the whole name was accepted",
-            "see": ["https://rux-lang.dev/docs/api/text/utf8-error#write-debug"],
-            "deprecated": null
-          },
-          "targets": [
-            "windows-x86_64",
-            "windows-aarch64",
-            "linux-x86_64",
-            "linux-aarch64",
-            "macos-x86_64",
-            "macos-aarch64",
-            "freebsd-x86_64",
-            "freebsd-aarch64"
-          ]
-        }
-      ],
-      "implements": ["Display", "Debug"],
+      "members": [],
+      "implements": [],
       "targets": [
         "windows-x86_64",
         "windows-aarch64",
@@ -6551,11 +5804,11 @@
     },
     {
       "kind": "struct",
-      "name": "DecodedScalar",
-      "displayName": "DecodedScalar",
+      "name": "Utf8::DecodedScalar",
+      "displayName": "Utf8::DecodedScalar",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 51,
+      "line": 52,
       "signature": "pub struct DecodedScalar",
       "typeParams": [],
       "doc": {
@@ -6573,7 +5826,7 @@
           "name": "scalar",
           "type": "char32",
           "public": true,
-          "line": 53,
+          "line": 54,
           "doc": "The Unicode scalar value.",
           "targets": [
             "windows-x86_64",
@@ -6590,7 +5843,7 @@
           "name": "width",
           "type": "uint",
           "public": true,
-          "line": 55,
+          "line": 56,
           "doc": "How many bytes it occupied, one through four.",
           "targets": [
             "windows-x86_64",
@@ -6621,11 +5874,11 @@
     },
     {
       "kind": "struct",
-      "name": "Utf8Failure",
-      "displayName": "Utf8Failure",
+      "name": "Utf8::Utf8Failure",
+      "displayName": "Utf8::Utf8Failure",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 60,
+      "line": 61,
       "signature": "pub struct Utf8Failure",
       "typeParams": [],
       "doc": {
@@ -6643,7 +5896,7 @@
           "name": "reason",
           "type": "Utf8Error",
           "public": true,
-          "line": 62,
+          "line": 63,
           "doc": "What was wrong.",
           "targets": [
             "windows-x86_64",
@@ -6660,7 +5913,7 @@
           "name": "index",
           "type": "uint",
           "public": true,
-          "line": 64,
+          "line": 65,
           "doc": "The offset of the byte that starts the offending sequence.",
           "targets": [
             "windows-x86_64",
@@ -6691,11 +5944,11 @@
     },
     {
       "kind": "function",
-      "name": "IsScalarValue",
-      "displayName": "IsScalarValue",
+      "name": "Utf8::IsScalarValue",
+      "displayName": "Utf8::IsScalarValue",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 72,
+      "line": 73,
       "signature": "pub func IsScalarValue(value: uint32) -> bool",
       "typeParams": [],
       "doc": {
@@ -6726,11 +5979,11 @@
     },
     {
       "kind": "function",
-      "name": "EncodedLength",
-      "displayName": "EncodedLength",
+      "name": "Utf8::EncodedLength",
+      "displayName": "Utf8::EncodedLength",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 81,
+      "line": 82,
       "signature": "pub func EncodedLength(scalar: char32) -> uint",
       "typeParams": [],
       "doc": {
@@ -6761,11 +6014,11 @@
     },
     {
       "kind": "function",
-      "name": "IsContinuation",
-      "displayName": "IsContinuation",
+      "name": "Utf8::IsContinuation",
+      "displayName": "Utf8::IsContinuation",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 94,
+      "line": 95,
       "signature": "pub func IsContinuation(byte: char8) -> bool",
       "typeParams": [],
       "doc": {
@@ -6796,12 +6049,12 @@
     },
     {
       "kind": "function",
-      "name": "Encode",
-      "displayName": "Encode",
+      "name": "Utf8::Encode",
+      "displayName": "Utf8::Encode",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 107,
-      "signature": "pub func Encode(scalar: char32, into: var char8[..]) -> uint throws Utf8Error",
+      "line": 108,
+      "signature": "pub func Encode(scalar: char32, into: var char8[..]) -> uint ! Utf8Error",
       "typeParams": [],
       "doc": {
         "summary": "Writes `scalar` into `into` as UTF-8 and reports how many bytes it took.",
@@ -6834,12 +6087,12 @@
     },
     {
       "kind": "function",
-      "name": "DecodeAt",
-      "displayName": "DecodeAt",
+      "name": "Utf8::DecodeAt",
+      "displayName": "Utf8::DecodeAt",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 196,
-      "signature": "pub func DecodeAt(bytes: char8[..], index: uint) -> DecodedScalar throws Utf8Error",
+      "line": 195,
+      "signature": "pub func DecodeAt(bytes: char8[..], index: uint) -> DecodedScalar ! Utf8Error",
       "typeParams": [],
       "doc": {
         "summary": "Decodes the scalar value starting at `index`, reporting it and how many bytes it occupied.",
@@ -6872,12 +6125,12 @@
     },
     {
       "kind": "function",
-      "name": "Validate",
-      "displayName": "Validate",
+      "name": "Utf8::Validate",
+      "displayName": "Utf8::Validate",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 237,
-      "signature": "pub func Validate(bytes: char8[..]) throws Utf8Failure",
+      "line": 236,
+      "signature": "pub func Validate(bytes: char8[..]) -> !Utf8Failure",
       "typeParams": [],
       "doc": {
         "summary": "Whether `bytes` is well-formed UTF-8 from end to end, reporting where it first is not.",
@@ -6907,11 +6160,11 @@
     },
     {
       "kind": "function",
-      "name": "IsBoundary",
-      "displayName": "IsBoundary",
+      "name": "Utf8::IsBoundary",
+      "displayName": "Utf8::IsBoundary",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 252,
+      "line": 251,
       "signature": "pub func IsBoundary(bytes: char8[..], index: uint) -> bool",
       "typeParams": [],
       "doc": {
@@ -6945,11 +6198,11 @@
     },
     {
       "kind": "function",
-      "name": "CountScalars",
-      "displayName": "CountScalars",
+      "name": "Utf8::CountScalars",
+      "displayName": "Utf8::CountScalars",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 266,
+      "line": 265,
       "signature": "pub func CountScalars(bytes: char8[..]) -> uint",
       "typeParams": [],
       "doc": {
@@ -6980,11 +6233,11 @@
     },
     {
       "kind": "function",
-      "name": "BoundaryAtOrBelow",
-      "displayName": "BoundaryAtOrBelow",
+      "name": "Utf8::BoundaryAtOrBelow",
+      "displayName": "Utf8::BoundaryAtOrBelow",
       "module": "Utf8",
       "source": "Src/Utf8.rux",
-      "line": 286,
+      "line": 285,
       "signature": "pub func BoundaryAtOrBelow(bytes: char8[..], index: uint) -> uint",
       "typeParams": [],
       "doc": {
@@ -7022,7 +6275,7 @@
       "displayName": "TextWriter",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 20,
+      "line": 23,
       "signature": "pub interface TextWriter",
       "typeParams": [],
       "doc": {
@@ -7042,8 +6295,8 @@
         {
           "kind": "requirement",
           "name": "Write",
-          "line": 32,
-          "signature": "func Write(&var self, bytes: char8[..]) throws FormatError",
+          "line": 35,
+          "signature": "func Write(&var self, bytes: char8[..]) -> !FormatError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var Self",
@@ -7090,8 +6343,8 @@
       "displayName": "WriteBytes",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 42,
-      "signature": "pub func WriteBytes(writer: &var TextWriter, bytes: char8[..]) throws FormatError",
+      "line": 45,
+      "signature": "pub func WriteBytes(writer: &var TextWriter, bytes: char8[..]) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `bytes` to `writer`.",
@@ -7128,8 +6381,8 @@
       "displayName": "WriteAscii",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 54,
-      "signature": "pub func WriteAscii(writer: &var TextWriter, byte: char8) throws FormatError",
+      "line": 57,
+      "signature": "pub func WriteAscii(writer: &var TextWriter, byte: char8) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes one ASCII byte.",
@@ -7166,8 +6419,8 @@
       "displayName": "WriteScalar",
       "module": "Writer",
       "source": "Src/Writer.rux",
-      "line": 70,
-      "signature": "pub func WriteScalar(writer: &var TextWriter, scalar: char32) throws FormatError",
+      "line": 73,
+      "signature": "pub func WriteScalar(writer: &var TextWriter, scalar: char32) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes one character, encoded as UTF-8.",

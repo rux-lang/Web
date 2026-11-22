@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Spec.rux
-  line: 51
+  line: 52
 seo:
   title: "FormatSpec — Text API"
   description: Everything a placeholder asked for.
@@ -43,7 +43,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: a spec with no width, no precision, default alignment and base ten
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L85)
 
 ## Methods
 
@@ -58,7 +58,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the fill byte, a space unless the placeholder named one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L104)
 
 <h3 id="alignment"><code>Alignment</code></h3>
 
@@ -73,7 +73,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the requested alignment, or `Default` when the placeholder named none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L113)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L114)
 
 <h3 id="shows-sign"><code>ShowsSign</code></h3>
 
@@ -86,7 +86,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: true when the placeholder wrote `+`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L122)
 
 <h3 id="is-alternate"><code>IsAlternate</code></h3>
 
@@ -99,7 +99,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: true when the placeholder wrote `#`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L130)
 
 <h3 id="zero-pads"><code>ZeroPads</code></h3>
 
@@ -112,7 +112,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: true when the placeholder wrote a leading `0`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L138)
 
 <h3 id="width"><code>Width</code></h3>
 
@@ -126,7 +126,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the requested width, or zero when the placeholder asked for none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L147)
 
 <h3 id="precision"><code>Precision</code></h3>
 
@@ -141,7 +141,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the requested precision, meaningful only alongside [`HasPrecision`](/docs/api/text/format-spec#has-precision)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L156)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L157)
 
 <h3 id="has-precision"><code>HasPrecision</code></h3>
 
@@ -154,7 +154,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: true when a precision was written, including `.0`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L164)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L165)
 
 <h3 id="base"><code>Base</code></h3>
 
@@ -167,7 +167,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the requested base, or `Decimal` when the placeholder named none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L172)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L173)
 
 <h3 id="style"><code>Style</code></h3>
 
@@ -183,7 +183,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: the style bytes, empty when no style was written
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L183)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L184)
 
 <h3 id="has-style"><code>HasStyle</code></h3>
 
@@ -196,7 +196,7 @@ Borrows the spec. Cannot fail; runs in constant time and allocates nothing.
 
 **Returns**: true when a style was written
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L192)
 
 <h3 id="style-is"><code>StyleIs</code></h3>
 
@@ -215,7 +215,7 @@ Borrows the spec. Cannot fail; runs in time proportional to `name`, and allocate
 
 **Returns**: true when the specification named exactly that style
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L203)
 
 ## Related
 
@@ -238,7 +238,7 @@ base prefix and the digits can go out in order without the rendered text existin
 column of numbers line up its units and a column of names line up its first letters.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L25)
 
 **Parameters**
 
@@ -257,7 +257,7 @@ pub func WriteFill(
     writer: &var TextWriter,
     spec: FormatSpec,
     count: uint
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes `count` copies of the spec's fill byte.
@@ -284,7 +284,7 @@ pub func WriteAligned(
     spec: FormatSpec,
     rendered: char8[..],
     numeric: bool
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes `rendered` into `writer` under `spec`'s width, fill and alignment.
@@ -313,18 +313,17 @@ pub func WriteDisplayAligned(
     writer: &var TextWriter,
     value: &Display,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
-Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value writes
-itself.
-For a value whose `WriteDisplay` writes its text in pieces, which [`WriteAligned`](/docs/api/text/format-spec#write-aligned) cannot pad: such a value calls
-this first when `spec` has a width. The value writes into 256 bytes of local room under the spec with no width,
-which is what keeps its own call from coming back here, and the room is then padded into `writer`. A rendering too
-long for the room is written through unpadded, since a width that short would add no padding anyway.
-Reports whatever the value or the writer reported.
+Writes `value`'s text under `spec`, applying the spec's width, fill and alignment around the text the value
+writes itself. For a value whose `WriteDisplay` writes its text in pieces, which [`WriteAligned`](/docs/api/text/format-spec#write-aligned) cannot pad: such
+a value calls this first when `spec` has a width. The value writes into 256 bytes of local room under the spec
+with no width, which is what keeps its own call from coming back here, and the room is then padded into
+`writer`. A rendering too long for the room is written through unpadded, since a width that short would add no
+padding anyway. Reports whatever the value or the writer reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Align.rux#L100)
 
 **Parameters**
 
@@ -350,7 +349,7 @@ pub enum FormatAlign: int32 {
 Where the padding goes when the rendering is narrower than the width.
 Copy, carrying no payload.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L19)
 
 **Cases**
 
@@ -378,7 +377,7 @@ Copy, carrying no payload. A negative signed integer renders in every base as a 
 digits of its magnitude, not as its two's-complement bits: `{:b}` of `-5` is `-101` and `{:#x}` of `-255` is
 `-0xff`. That keeps the text of a value independent of the width of the type it happens to be stored in.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Spec.rux#L35)
 
 **Cases**
 
@@ -393,7 +392,7 @@ digits of its magnitude, not as its two's-complement bits: `{:b}` of `-5` is `-1
 <h3 id="parse-format-spec"><code>ParseFormatSpec</code></h3>
 
 ```rux
-pub func ParseFormatSpec(text: char8[..]) -> FormatSpec throws FormatError
+pub func ParseFormatSpec(text: char8[..]) -> FormatSpec ! FormatError
 ```
 
 Parses the text between `{:` and `}`.
@@ -425,7 +424,7 @@ specification escapes.
 <h3 id="reject-style"><code>RejectStyle</code></h3>
 
 ```rux
-pub func RejectStyle(spec: FormatSpec) throws FormatError
+pub func RejectStyle(spec: FormatSpec) -> !FormatError
 ```
 
 Refuses a specification that names any style.
@@ -447,7 +446,7 @@ Reports `UnsupportedRequest` when a style was written.
 <h3 id="reject-non-base-style"><code>RejectNonBaseStyle</code></h3>
 
 ```rux
-pub func RejectNonBaseStyle(spec: FormatSpec) throws FormatError
+pub func RejectNonBaseStyle(spec: FormatSpec) -> !FormatError
 ```
 
 Refuses a specification whose style is not one of the integer bases.

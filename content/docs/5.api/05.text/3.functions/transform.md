@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Transform.rux
-  line: 22
+  line: 23
 seo:
   title: "Transforming text — Text API"
   description: "New strings made from old: concatenation, repetition, replacement and ASCII case."
@@ -34,7 +34,7 @@ pub func Join(
 The text of every part of `parts` in order, with `separator` between each two.
 No parts give empty text and one part gives that part, so the separator count is always one less than the parts.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L23)
 
 **Parameters**
 
@@ -52,13 +52,13 @@ No parts give empty text and one part gives that part, so the separator count is
 pub func ToUpper(
     allocator: Allocator,
     view: StringView
-) -> String throws TextError
+) -> String ! TextError
 ```
 
 The text of `view` in upper case by Unicode's full, unconditional mappings, so `ß` becomes `SS` and `ŉ` becomes
 `ʼN`. The length may change.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L78)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L79)
 
 **Parameters**
 
@@ -75,13 +75,13 @@ The text of `view` in upper case by Unicode's full, unconditional mappings, so `
 pub func ToLower(
     allocator: Allocator,
     view: StringView
-) -> String throws TextError
+) -> String ! TextError
 ```
 
 The text of `view` in lower case by Unicode's full, unconditional mappings. A capital sigma always becomes `σ`,
 never the final `ς`, since which one is right depends on the letters around it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L89)
 
 **Parameters**
 
@@ -98,13 +98,13 @@ never the final `ς`, since which one is right depends on the letters around it.
 pub func FoldCase(
     allocator: Allocator,
     view: StringView
-) -> String throws TextError
+) -> String ! TextError
 ```
 
 The text of `view` case-folded by Unicode's full folding, the form for comparing text without regard to case:
 two texts that differ only in case fold to the same bytes, `Straße` and `STRASSE` included.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L99)
 
 **Parameters**
 
@@ -127,7 +127,7 @@ pub func Concat(
 
 The text of `left` followed by the text of `right`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L109)
 
 **Parameters**
 
@@ -153,7 +153,7 @@ The text of `view` written `count` times.
 A `count` of zero gives empty text, which is what makes repeating agree with joining: repeating twice is the
 same as joining a thing to itself.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L124)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L125)
 
 **Parameters**
 
@@ -181,7 +181,7 @@ Occurrences are found left to right and never overlap, and what is put in their 
 so replacing `a` with `aa` terminates rather than growing forever. An empty `needle` matches nothing, since the
 alternative is a replacement between every pair of characters and before and after every one of them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L150)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L151)
 
 **Parameters**
 
@@ -202,7 +202,7 @@ pub func IsAsciiLetter(byte: char8) -> bool
 
 Whether `byte` is an ASCII letter.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L180)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L181)
 
 **Parameters**
 
@@ -225,7 +225,7 @@ The text of `view` with every ASCII lower-case letter raised, and everything els
 ASCII only: every byte above 0x7F passes through untouched, which is why this cannot change the length and
 cannot produce anything that is not UTF-8.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L192)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L193)
 
 **Parameters**
 
@@ -247,7 +247,7 @@ pub func ToAsciiLower(
 
 The text of `view` with every ASCII upper-case letter lowered.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L201)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Text/Src/Transform.rux#L202)
 
 **Parameters**
 

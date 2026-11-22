@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Scripts.rux
-  line: 10
+  line: 11
 seo:
   title: "Scripts — Unicode API"
   description: The script each code point belongs to.
@@ -30,10 +30,10 @@ pub struct Script {
 ```
 
 A script. `Copy`.
-Scripts are named by their long names in the database, such as `Latin` or `Old_Italic`, and found by name loosely:
-case, spaces, hyphens and underscores are ignored, so `old italic` names `Old_Italic`.
+Scripts are named by their long names in the database, such as `Latin` or `Old_Italic`, and found by name
+loosely: case, spaces, hyphens and underscores are ignored, so `old italic` names `Old_Italic`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L11)
 
 **Associated functions**
 
@@ -51,7 +51,7 @@ The script whose long name is `name`, matched loosely.
 
 **Returns**: the script, or `none` when no script has that name
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L49)
 
 <h3 id="unknown"><code>Unknown</code></h3>
 
@@ -63,7 +63,7 @@ The script of points the database assigns to none.
 
 **Returns**: the Unknown script
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L61)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L62)
 
 **Methods**
 
@@ -81,7 +81,7 @@ Whether `other` is the same script.
 
 **Returns**: whether they are one script
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L70)
 
 <h3 id="number"><code>Number</code></h3>
 
@@ -93,7 +93,7 @@ The script's number: a stable small integer, less than [`ScriptCount()`](/docs/a
 
 **Returns**: the number
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L77)
 
 <h3 id="write-name"><code>WriteName</code></h3>
 
@@ -109,7 +109,7 @@ Writes the script's long name, such as `Old_Italic`, into `into`.
 
 **Returns**: how many bytes were written, which is fewer than the name's length when `into` is too short
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L84)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L85)
 
 <h2 id="script-of"><code>ScriptOf</code></h2>
 
@@ -119,7 +119,7 @@ pub func ScriptOf(scalar: char32) -> Script
 
 The script `scalar` belongs to.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L100)
 
 **Parameters**
 
@@ -137,6 +137,6 @@ pub func ScriptCount() -> uint
 
 How many scripts there are, Unknown among them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L106)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Unicode/Src/Scripts.rux#L107)
 
 **Returns**: the count

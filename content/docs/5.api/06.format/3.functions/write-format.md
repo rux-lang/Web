@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Format.rux
-  line: 119
+  line: 120
 seo:
   title: "WriteFormat — Format API"
   description: "Writes format into writer, with each {} replaced by the next argument."
@@ -26,7 +26,7 @@ pub func WriteFormat(
     writer: &var TextWriter,
     #Format format: char8[..],
     ...
-) throws FormatError
+) -> !FormatError
 ```
 
 A placeholder is `{}`, or `{:spec}` carrying fill, alignment, sign, width, precision and style — see
