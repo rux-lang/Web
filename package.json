@@ -39,24 +39,24 @@
     "supply-chain:test": "node --test scripts/*.test.mjs"
   },
   "devDependencies": {
-    "@iconify-json/logos": "^1.2.18",
-    "@iconify-json/lucide": "^1.2.150",
-    "@iconify-json/simple-icons": "^1.2.101",
-    "@iconify-json/vscode-icons": "^1.2.95",
-    "@lhci/cli": "^0.16.0",
+    "@iconify-json/logos": "^1.2.20",
+    "@iconify-json/lucide": "^1.2.158",
+    "@iconify-json/simple-icons": "^1.2.103",
+    "@iconify-json/vscode-icons": "^1.2.100",
+    "@lhci/cli": "^0.16.1",
     "@nuxt/eslint": "^1.17.0",
-    "@nuxt/test-utils": "^4.3.4",
+    "@nuxt/test-utils": "^4.4.0",
     "@types/node": "26.6.6",
-    "@vitejs/plugin-vue": "^6.0.10",
-    "@vue/test-utils": "^2.5.1",
+    "@vitejs/plugin-vue": "^6.0.11",
+    "@vue/test-utils": "^2.6.0",
     "devalue": "^6.0.3",
-    "eslint": "^10.14.0",
+    "eslint": "^10.15.0",
     "eslint-config-prettier": "^10.1.8",
     "happy-dom": "^21.0.4",
-    "prettier": "^3.9.10",
+    "prettier": "^3.10.1",
     "selfsigned": "^5.5.0",
     "typescript": "^6.0.3",
-    "vitest": "^5.1.0",
+    "vitest": "^5.1.1",
     "vue-tsc": "3.3.13"
   },
   "dependencies": {
@@ -65,15 +65,15 @@
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.43.15",
     "@lezer/highlight": "^1.2.5",
-    "@nuxt/content": "^3.16.2",
-    "@nuxt/ui": "^4.12.0",
+    "@nuxt/content": "^3.17.0",
+    "@nuxt/ui": "^4.13.0",
     "@nuxtjs/sitemap": "^9.1.0",
     "@shikijs/langs": "^4.6.0",
     "@shikijs/themes": "^4.6.0",
-    "mermaid": "^12.2.0",
-    "motion-v": "^2.11.0",
+    "mermaid": "^12.3.0",
+    "motion-v": "^2.13.0",
     "nuxt": "^4.6.4",
-    "nuxt-llms": "^0.3.1",
+    "nuxt-llms": "^0.3.2",
     "rehype-sanitize": "^6.0.0",
     "remark-gfm": "^4.0.1",
     "remark-parse": "^11.0.0",
@@ -87,6 +87,7 @@
     "vue-demi": true
   },
   "overrides": {
-    "basic-ftp": "^6.2.5"
+    "basic-ftp": "^6.2.5",
+    "zod": "^4.6.6"
   }
 }
