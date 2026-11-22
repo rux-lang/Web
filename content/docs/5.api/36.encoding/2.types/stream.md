@@ -58,10 +58,10 @@ The text is complete only once [`Finish`](/docs/api/encoding/stream#encoding-wri
 
 **Constructors**
 
-<h3 id="encoding-writer-new"><code>EncodingWriter</code></h3>
+<h3 id="encoding-writer-new"><code>New</code></h3>
 
 ```rux
-pub func EncodingWriter(
+pub func New(
     sink: Writer,
     codec: StreamCodec
 ) -> EncodingWriter
@@ -83,7 +83,7 @@ A writer encoding with `codec` onto `sink`.
 <h3 id="encoding-writer-finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(&var self) throws IoError
+pub func Finish(&var self) -> !IoError
 ```
 
 Ends the text: encodes the bytes of an incomplete last group, with padding where the form uses it, and
@@ -103,7 +103,7 @@ flushes the writer underneath. Nothing more may be written afterwards.
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Encodes `bytes`, writing every complete group and holding back the rest of an incomplete one.
@@ -119,7 +119,7 @@ Encodes `bytes`, writing every complete group and holding back the rest of an in
 <h3 id="encoding-writer-flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Flushes the writer underneath. An incomplete group stays held back, since its characters depend on bytes
@@ -145,10 +145,10 @@ The text is held to the same rules as the slice decoders, so text that would not
 
 **Constructors**
 
-<h3 id="decoding-reader-new"><code>DecodingReader</code></h3>
+<h3 id="decoding-reader-new"><code>New</code></h3>
 
 ```rux
-pub func DecodingReader(
+pub func New(
     source: Reader,
     codec: StreamCodec
 ) -> DecodingReader
@@ -175,7 +175,7 @@ A reader decoding `codec` text from `source`.
 pub func Read(
     &var self,
     into: var char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Decodes into `into` as many bytes as are ready, reading more text when none are.

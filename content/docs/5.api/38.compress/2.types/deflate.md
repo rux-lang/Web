@@ -38,15 +38,15 @@ stream. Not copied.
 
 **Constructors**
 
-<h3 id="new"><code>CompressWriter</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func CompressWriter(
+pub func New(
     allocator: Allocator,
     sink: Writer,
     format: Format,
     level: Level
-) -> CompressWriter throws IoError
+) -> CompressWriter ! IoError
 ```
 
 A writer that compresses into `sink` in `format`, at `level`.
@@ -67,7 +67,7 @@ A writer that compresses into `sink` in `format`, at `level`.
 <h3 id="finish"><code>Finish</code></h3>
 
 ```rux
-pub func Finish(&var self) throws IoError
+pub func Finish(&var self) -> !IoError
 ```
 
 Compresses everything written so far, writes the end of the stream and the container's trailer, and flushes
@@ -87,7 +87,7 @@ the sink. Writing after finishing fails; finishing twice does nothing.
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Takes `bytes` to compress. They are encoded as enough of them gather, and all of them by [`Flush`](/docs/api/compress/deflate#flush) or [`Finish`](/docs/api/compress/deflate#finish).
@@ -98,12 +98,12 @@ Takes `bytes` to compress. They are encoded as enough of them gather, and all of
 
 **Returns**: how many bytes were taken, which is all of them, or fails after [`Finish`](/docs/api/compress/deflate#finish) or with the sink's error
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Deflate.rux#L581)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Deflate.rux#L577)
 
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Encodes everything written so far and ends it with an empty stored block, so a decompressor can read all of it,
@@ -111,14 +111,14 @@ then flushes the sink. The stream continues afterwards.
 
 **Returns**: nothing, or fails with the sink's error
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Deflate.rux#L619)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Deflate.rux#L615)
 
 **Destructor**
 
-<h3 id="compress-writer-destructor"><code>~CompressWriter</code></h3>
+<h3 id="compress-writer-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~CompressWriter(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Deflate.rux#L564)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Deflate.rux#L562)

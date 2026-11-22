@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Executable.rux
-  line: 34
+  line: 38
 seo:
   title: "Executable — Process API"
   description: The path of the file the process is running.
@@ -24,7 +24,7 @@ The path of the file the process is running.
 <h2 id="current-executable"><code>CurrentExecutable</code></h2>
 
 ```rux
-pub func CurrentExecutable(allocator: Allocator) -> PathBuffer throws IoError
+pub func CurrentExecutable(allocator: Allocator) -> PathBuffer ! IoError
 ```
 
 The path of the executable file the process is running, as the system loaded it.
@@ -34,7 +34,7 @@ with symbolic links resolved; macOS gives the path the executable was loaded by,
 directory the process started in or pass through links. Fails with `NotFound` when the system cannot say, as when
 Linux has no `/proc` mounted, and with `LimitExceeded` when the path cannot be stored.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Executable.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Executable.rux#L38)
 
 **Parameters**
 

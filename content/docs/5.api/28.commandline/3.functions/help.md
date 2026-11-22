@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Help.rux
-  line: 98
+  line: 99
 seo:
   title: "Help — CommandLine API"
   description: "Writing the help, usage and version text generated from a specification."
@@ -28,14 +28,14 @@ pub func WriteUsage(
     spec: &CommandSpec,
     writer: &var TextWriter,
     parent: char8[..]
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the usage line, such as `Usage: tool [options] <input> [output]`.
 `parent` names the command a subcommand belongs to, so that its usage reads `tool build ...`; it is empty for the
 program itself. Reports whatever the writer reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Help.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Help.rux#L99)
 
 **Parameters**
 
@@ -54,14 +54,14 @@ pub func WriteHelp(
     spec: &CommandSpec,
     writer: &var TextWriter,
     parent: char8[..]
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the full help text: the summary, the usage line, and the arguments, options and subcommands with their
 descriptions aligned.
 Reports whatever the writer reported. Allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Help.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Help.rux#L126)
 
 **Parameters**
 
@@ -79,13 +79,13 @@ Reports whatever the writer reported. Allocates nothing.
 pub func WriteVersion(
     spec: &CommandSpec,
     writer: &var TextWriter
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the version line, such as `tool 1.4.2`.
 Reports whatever the writer reported.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Help.rux#L207)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Help.rux#L208)
 
 **Parameters**
 

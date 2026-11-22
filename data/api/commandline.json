@@ -51,7 +51,7 @@
       "displayName": "CommandLineError",
       "module": "Error",
       "source": "Src/Error.rux",
-      "line": 15,
+      "line": 16,
       "signature": "pub variant CommandLineError",
       "typeParams": [],
       "doc": {
@@ -71,7 +71,7 @@
           "name": "UnknownOption",
           "value": null,
           "payload": "(OsStringView)",
-          "line": 17,
+          "line": 18,
           "doc": "An argument that looks like an option names none the command has. Carries the argument as typed.",
           "targets": [
             "windows-x86_64",
@@ -88,7 +88,7 @@
           "name": "MissingValue",
           "value": null,
           "payload": "(char8[..])",
-          "line": 20,
+          "line": 21,
           "doc": "An option that takes a value was the last argument, or ended a cluster of short options. Carries the option's\nlong name.",
           "targets": [
             "windows-x86_64",
@@ -105,7 +105,7 @@
           "name": "UnexpectedValue",
           "value": null,
           "payload": "(char8[..])",
-          "line": 22,
+          "line": 23,
           "doc": "A flag was given a value with `=`. Carries the option's long name.",
           "targets": [
             "windows-x86_64",
@@ -122,7 +122,7 @@
           "name": "UnknownCommand",
           "value": null,
           "payload": "(OsStringView)",
-          "line": 24,
+          "line": 25,
           "doc": "The command has subcommands and the word naming one is not among them. Carries the word as typed.",
           "targets": [
             "windows-x86_64",
@@ -139,7 +139,7 @@
           "name": "MissingCommand",
           "value": null,
           "payload": null,
-          "line": 26,
+          "line": 27,
           "doc": "The command has subcommands and none was named.",
           "targets": [
             "windows-x86_64",
@@ -156,7 +156,7 @@
           "name": "MissingPositional",
           "value": null,
           "payload": "(char8[..])",
-          "line": 28,
+          "line": 29,
           "doc": "A required positional argument was not given. Carries its name.",
           "targets": [
             "windows-x86_64",
@@ -173,7 +173,7 @@
           "name": "UnexpectedArgument",
           "value": null,
           "payload": "(OsStringView)",
-          "line": 30,
+          "line": 31,
           "doc": "A positional argument beyond every one the command accepts. Carries the argument as typed.",
           "targets": [
             "windows-x86_64",
@@ -190,7 +190,7 @@
           "name": "InvalidValue",
           "value": null,
           "payload": "(char8[..], OsStringView)",
-          "line": 33,
+          "line": 34,
           "doc": "A value that could not be read as what was asked of it, such as a number. Carries the option or positional's\nname, then the value as typed.",
           "targets": [
             "windows-x86_64",
@@ -208,8 +208,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 108,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 109,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -246,8 +246,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 163,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 164,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -300,8 +300,8 @@
       "displayName": "WriteUsage",
       "module": "Help",
       "source": "Src/Help.rux",
-      "line": 98,
-      "signature": "pub func WriteUsage(spec: &CommandSpec, writer: &var TextWriter, parent: char8[..]) throws FormatError",
+      "line": 99,
+      "signature": "pub func WriteUsage(spec: &CommandSpec, writer: &var TextWriter, parent: char8[..]) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the usage line, such as `Usage: tool [options] <input> [output]`.",
@@ -339,8 +339,8 @@
       "displayName": "WriteHelp",
       "module": "Help",
       "source": "Src/Help.rux",
-      "line": 125,
-      "signature": "pub func WriteHelp(spec: &CommandSpec, writer: &var TextWriter, parent: char8[..]) throws FormatError",
+      "line": 126,
+      "signature": "pub func WriteHelp(spec: &CommandSpec, writer: &var TextWriter, parent: char8[..]) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the full help text: the summary, the usage line, and the arguments, options and subcommands with their\ndescriptions aligned.",
@@ -378,8 +378,8 @@
       "displayName": "WriteVersion",
       "module": "Help",
       "source": "Src/Help.rux",
-      "line": 207,
-      "signature": "pub func WriteVersion(spec: &CommandSpec, writer: &var TextWriter) throws FormatError",
+      "line": 208,
+      "signature": "pub func WriteVersion(spec: &CommandSpec, writer: &var TextWriter) -> !FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the version line, such as `tool 1.4.2`.",
@@ -590,8 +590,8 @@
         {
           "kind": "method",
           "name": "WriteHelp",
-          "line": 224,
-          "signature": "pub func WriteHelp(&self, writer: &var TextWriter) throws FormatError",
+          "line": 225,
+          "signature": "pub func WriteHelp(&self, writer: &var TextWriter) -> !FormatError",
           "typeParams": [],
           "params": [{ "name": "writer", "type": "&var TextWriter" }],
           "receiver": "&Parsed",
@@ -943,7 +943,7 @@
           "kind": "method",
           "name": "Integer",
           "line": 324,
-          "signature": "pub func Integer(&self, name: char8[..]) -> int64? throws CommandLineError",
+          "signature": "pub func Integer(&self, name: char8[..]) -> int64? ! CommandLineError",
           "typeParams": [],
           "params": [{ "name": "name", "type": "char8[..]" }],
           "receiver": "&Parsed",
@@ -991,7 +991,7 @@
       "module": "Parsed",
       "source": "Src/Parsed.rux",
       "line": 95,
-      "signature": "pub func Parse(spec: *CommandSpec, arguments: OsStringView[..]) -> Parsed throws CommandLineError",
+      "signature": "pub func Parse(spec: *CommandSpec, arguments: OsStringView[..]) -> Parsed ! CommandLineError",
       "typeParams": [],
       "doc": {
         "summary": "Checks `arguments` against `spec`.",
@@ -1029,7 +1029,7 @@
       "module": "Parsed",
       "source": "Src/Parsed.rux",
       "line": 105,
-      "signature": "pub func ParseProcess(spec: *CommandSpec) -> Parsed throws CommandLineError",
+      "signature": "pub func ParseProcess(spec: *CommandSpec) -> Parsed ! CommandLineError",
       "typeParams": [],
       "doc": {
         "summary": "Checks the process's own arguments against `spec`.",

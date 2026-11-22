@@ -10,7 +10,7 @@ rux add Rux/Encoding
 
 ## What it provides
 
-| Module    | Covers                                                                                                             |
+| File      | Covers                                                                                                             |
 | --------- | ------------------------------------------------------------------------------------------------------------------ |
 | `Hex`     | `HexEncode`, `HexDecode`, their length functions, `HexCase`, and the `ViewHex` display adapter                     |
 | `Base64`  | `Base64Encode`, `Base64Decode`, their length functions, the four `Base64Variant`s, and `ViewBase64`                |
@@ -20,7 +20,7 @@ rux add Rux/Encoding
 | `Stream`  | `EncodingWriter` and `DecodingReader`, which encode and decode hexadecimal, Base64 and Base32 through `Io` streams |
 | `Error`   | `DecodeError`, shared by every decoder                                                                             |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+The files above only organize the source: the package has no modules, so every declaration is imported from its root, as in `import Encoding::Base64Decode;`.
 
 ## Example
 
@@ -30,9 +30,9 @@ import Encoding::{ Base64Decode, Base64DecodedLength, Base64Encode, Base64Encode
 func RoundTrip() -> bool {
     let message = "Many hands make light work.";
     var text: char8[64];
-    let written = try Base64Encode(message, text[..], Base64Variant::UrlUnpadded) catch { _ => 0 };
+    let written = Base64Encode(message, text[..], Base64Variant::UrlUnpadded) catch { _ => 0 };
     var bytes: byte[64];
-    let read = try Base64Decode(text[..written], bytes[..], Base64Variant::UrlUnpadded) catch { _ => 0 };
+    let read = Base64Decode(text[..written], bytes[..], Base64Variant::UrlUnpadded) catch { _ => 0 };
     return read == message.length && written == Base64EncodedLength(message.length, Base64Variant::UrlUnpadded);
 }
 ```

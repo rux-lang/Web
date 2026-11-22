@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Child.rux
-  line: 58
+  line: 73
 seo:
   title: "Child processes — Process API"
   description: "A started program: waiting for it, killing it, and its standard streams."
@@ -31,7 +31,7 @@ pub struct ExitStatus {
 
 How a child process finished. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L73)
 
 **Methods**
 
@@ -45,7 +45,7 @@ Whether the child exited with code zero.
 
 **Returns**: true for a clean exit
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L82)
 
 <h3 id="code"><code>Code</code></h3>
 
@@ -57,7 +57,7 @@ The code the child exited with, or none when a signal ended it.
 
 **Returns**: the exit code
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L89)
 
 <h3 id="signal"><code>Signal</code></h3>
 
@@ -69,7 +69,7 @@ The signal that ended the child on a Unix system, or none when it exited. Never 
 
 **Returns**: the signal number
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L97)
 
 <h2 id="pipe-writer"><code>PipeWriter</code></h2>
 
@@ -82,7 +82,7 @@ pub struct PipeWriter {
 The writing end of a pipe into a child's standard input. Closing it, by dropping it, ends the child's input.
 A pipe end is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L113)
 
 **Methods**
 
@@ -94,7 +94,7 @@ pub func Close(&var self)
 
 Closes the pipe now rather than when the writer is dropped. Closing it twice does nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L127)
 
 **Implements Writer**
 
@@ -106,7 +106,7 @@ Closes the pipe now rather than when the writer is dropped. Closing it twice doe
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Writes some of `bytes` into the pipe, waiting while it is full.
@@ -117,29 +117,29 @@ Writes some of `bytes` into the pipe, waiting while it is full.
 
 **Returns**: how many were written, or fails, with a broken pipe once the child closed its end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L142)
 
 <h3 id="pipe-writer-flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Does nothing: a pipe keeps no buffer of its own.
 
 **Returns**: nothing
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L166)
 
 **Destructor**
 
-<h3 id="pipe-writer-destructor"><code>~PipeWriter</code></h3>
+<h3 id="pipe-writer-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~PipeWriter(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L132)
 
 <h2 id="pipe-reader"><code>PipeReader</code></h2>
 
@@ -152,7 +152,7 @@ pub struct PipeReader {
 The reading end of a pipe from a child's standard output or error. A read past what the child wrote, once it has
 closed its end, fails with `EndOfStream`. A pipe end is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L105)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L120)
 
 **Methods**
 
@@ -164,7 +164,7 @@ pub func Close(&var self)
 
 Closes the pipe now rather than when the reader is dropped. Closing it twice does nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L159)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L174)
 
 **Implements Reader**
 
@@ -176,7 +176,7 @@ Closes the pipe now rather than when the reader is dropped. Closing it twice doe
 pub func Read(
     &var self,
     into: var char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Reads what the child has written so far into `into`, waiting while it has written nothing.
@@ -187,17 +187,17 @@ Reads what the child has written so far into `into`, waiting while it has writte
 
 **Returns**: how many were read, or fails with `EndOfStream` once the child closed its end and all was read
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L174)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L189)
 
 **Destructor**
 
-<h3 id="pipe-reader-destructor"><code>~PipeReader</code></h3>
+<h3 id="pipe-reader-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~PipeReader(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L164)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L179)
 
 <h2 id="child"><code>Child</code></h2>
 
@@ -211,7 +211,7 @@ A child process this one started.
 Wait for it to learn how it finished. Dropping a child that was not waited for neither waits for nor stops it; on
 the Unix systems its exit status then stays with the system until this process ends. A child is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L205)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L220)
 
 **Methods**
 
@@ -225,7 +225,7 @@ The child's process identifier.
 
 **Returns**: the identifier
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L220)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L235)
 
 <h3 id="take-input"><code>TakeInput</code></h3>
 
@@ -238,7 +238,7 @@ taken before.
 
 **Returns**: the writer, which the caller now owns
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L228)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L243)
 
 <h3 id="take-output"><code>TakeOutput</code></h3>
 
@@ -251,7 +251,7 @@ taken before.
 
 **Returns**: the reader, which the caller now owns
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L239)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L254)
 
 <h3 id="take-error"><code>TakeError</code></h3>
 
@@ -264,12 +264,12 @@ taken before.
 
 **Returns**: the reader, which the caller now owns
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L250)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L265)
 
 <h3 id="wait"><code>Wait</code></h3>
 
 ```rux
-pub func Wait(&var self) -> ExitStatus throws IoError
+pub func Wait(&var self) -> ExitStatus ! IoError
 ```
 
 Waits for the child to finish and returns how it did. The pipe into its input, if still held, is closed first,
@@ -277,24 +277,24 @@ so a child reading its input to the end is not left waiting for more. Waiting ag
 
 **Returns**: how the child finished
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L276)
 
 <h3 id="try-wait"><code>TryWait</code></h3>
 
 ```rux
-pub func TryWait(&var self) -> ExitStatus? throws IoError
+pub func TryWait(&var self) -> ExitStatus? ! IoError
 ```
 
 How the child finished, or none while it still runs, without waiting.
 
 **Returns**: the status once the child has finished
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L286)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L301)
 
 <h3 id="kill"><code>Kill</code></h3>
 
 ```rux
-pub func Kill(&var self) throws IoError
+pub func Kill(&var self) -> !IoError
 ```
 
 Ends the child at once: with `SIGKILL` on the Unix systems, and with exit code 1 on Windows. Killing a child
@@ -302,14 +302,14 @@ that has already finished does nothing. Wait for it afterwards to learn its stat
 
 **Returns**: nothing, or fails when the system refused
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L309)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L324)
 
 **Destructor**
 
-<h3 id="child-destructor"><code>~Child</code></h3>
+<h3 id="child-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~Child(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L339)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Child.rux#L354)

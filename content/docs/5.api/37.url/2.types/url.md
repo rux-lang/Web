@@ -68,7 +68,7 @@ A URL owns its text, so it is move-only, and [`Clone`](/docs/api/url/url#clone) 
 pub func Parse(
     allocator: Allocator,
     text: char8[..]
-) -> Url throws UrlError
+) -> Url ! UrlError
 ```
 
 Reads `text` as an absolute URL and puts it in normalized form.
@@ -92,7 +92,7 @@ such as a space or a non-ASCII byte, is percent-encoded; a host is not, and refu
 pub func Resolve(
     &self,
     reference: char8[..]
-) -> Url throws UrlError
+) -> Url ! UrlError
 ```
 
 Resolves `reference` against this URL, as a browser resolves a link on a page, following section 5 of
@@ -268,7 +268,7 @@ The fragment after `#`, percent-encoded, or none when there is no `#`.
 <h3 id="set-path"><code>SetPath</code></h3>
 
 ```rux
-pub func SetPath(&var self, path: char8[..]) throws UrlError
+pub func SetPath(&var self, path: char8[..]) -> !UrlError
 ```
 
 Replaces the path. A relative path is made absolute when the URL has an authority.
@@ -284,10 +284,7 @@ Replaces the path. A relative path is made absolute when the URL has an authorit
 <h3 id="set-query"><code>SetQuery</code></h3>
 
 ```rux
-pub func SetQuery(
-    &var self,
-    query: char8[..]?
-) throws UrlError
+pub func SetQuery(&var self, query: char8[..]?) -> !UrlError
 ```
 
 Replaces the query, or removes it with none.
@@ -306,7 +303,7 @@ Replaces the query, or removes it with none.
 pub func SetFragment(
     &var self,
     fragment: char8[..]?
-) throws UrlError
+) -> !UrlError
 ```
 
 Replaces the fragment, or removes it with none.
@@ -360,7 +357,7 @@ pub struct SegmentIterator {
 
 A walk over a path's segments, between its `/`s. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L473)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L471)
 
 **Methods**
 
@@ -374,7 +371,7 @@ The walk itself, so that `for segment in url.PathSegments()` reads every segment
 
 **Returns**: a copy of this walk
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L482)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L480)
 
 **Implements Iterator**
 
@@ -390,4 +387,4 @@ The next segment, still percent-encoded, or none after the last.
 
 **Returns**: the segment
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L491)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Url/Src/Url.rux#L489)

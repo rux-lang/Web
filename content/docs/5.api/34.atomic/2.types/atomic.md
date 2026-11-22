@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Atomic.rux
-  line: 20
+  line: 21
 seo:
   title: "Atomic<T> — Atomic API"
   description: One value that threads read and change without a lock.
@@ -22,7 +22,7 @@ seo:
 One value that threads read and change without a lock.
 
 ```rux
-pub struct Atomic<T> {
+pub struct Atomic<T: Copyable> {
     // private fields
 }
 ```
@@ -33,16 +33,16 @@ Copying an `Atomic` copies its current value into a new, unrelated one.
 
 ## Type parameters
 
-| Name | Description                                                        |
-| ---- | ------------------------------------------------------------------ |
-| `T`  | the value's type: an integer of 8 to 64 bits, `bool`, or a pointer |
+| Name          | Description                                                        |
+| ------------- | ------------------------------------------------------------------ |
+| `T: Copyable` | the value's type: an integer of 8 to 64 bits, `bool`, or a pointer |
 
 ## Constructors
 
-<h3 id="new"><code>Atomic</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Atomic(value: T) -> Atomic<T>
+pub func New(value: T) -> Atomic<T>
 ```
 
 An atomic value holding `value`.
@@ -54,7 +54,7 @@ Making one is not itself atomic: it must be finished before another thread can r
 
 **Returns**: an atomic holding `value`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L31)
 
 ## Methods
 
@@ -68,7 +68,7 @@ The current value, read with sequential consistency.
 
 **Returns**: the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L47)
 
 <h3 id="load-with"><code>LoadWith</code></h3>
 
@@ -86,7 +86,7 @@ load can have.
 
 **Returns**: the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L59)
 
 <h3 id="store"><code>Store</code></h3>
 
@@ -100,7 +100,7 @@ Replaces the value, with sequential consistency.
 | ------- | ---- | ------------- |
 | `value` | `T`  | the new value |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L75)
 
 <h3 id="store-with"><code>StoreWith</code></h3>
 
@@ -117,7 +117,7 @@ a store can have.
 | `value` | `T`           | the new value                                   |
 | `order` | `MemoryOrder` | which other operations may move across this one |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L86)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L87)
 
 <h3 id="exchange"><code>Exchange</code></h3>
 
@@ -133,7 +133,7 @@ Replaces the value and returns the one replaced, as one step, with sequential co
 
 **Returns**: the value before
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L102)
 
 <h3 id="compare-exchange"><code>CompareExchange</code></h3>
 
@@ -142,21 +142,21 @@ pub func CompareExchange(
     &self,
     expected: T,
     desired: T
-) -> T throws T
+) -> !T
 ```
 
 Replaces the value with `desired` if it is `expected`, as one step, with sequential consistency.
-Succeeds with the value before, which is `expected`, when it replaced it, and fails with the value it found
-otherwise, so a loop can retry from what is really there. Never fails spuriously.
+Succeeds with nothing when it replaced it, since the value before was `expected`, and fails with the value it
+found otherwise, so a loop can retry from what is really there. Never fails spuriously.
 
 | Name       | Type | Description                  |
 | ---------- | ---- | ---------------------------- |
 | `expected` | `T`  | the value that must be there |
 | `desired`  | `T`  | the value to put there       |
 
-**Returns**: the value before, as success when it was replaced and as failure when it was not
+**Returns**: nothing when the value was replaced, or throws the value found when it was not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L115)
 
 <h3 id="compare-exchange-with"><code>CompareExchangeWith</code></h3>
 
@@ -167,7 +167,7 @@ pub func CompareExchangeWith(
     desired: T,
     success: MemoryOrder,
     failure: MemoryOrder
-) -> T throws T
+) -> !T
 ```
 
 Replaces the value with `desired` if it is `expected`, with `success` when it does and `failure` when it does
@@ -183,9 +183,9 @@ acquire part.
 | `success`  | `MemoryOrder` | the order when the value is replaced |
 | `failure`  | `MemoryOrder` | the order when it is not             |
 
-**Returns**: the value before, as success when it was replaced and as failure when it was not
+**Returns**: nothing when the value was replaced, or throws the value found when it was not
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L138)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L137)
 
 <h3 id="fetch-add"><code>FetchAdd</code></h3>
 
@@ -202,7 +202,7 @@ Only for integer `T`.
 
 **Returns**: the value before the addition
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L177)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L176)
 
 <h3 id="fetch-sub"><code>FetchSub</code></h3>
 
@@ -220,7 +220,7 @@ Only for integer `T`.
 
 **Returns**: the value before the subtraction
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L189)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L188)
 
 <h3 id="fetch-add-with"><code>FetchAddWith</code></h3>
 
@@ -242,7 +242,7 @@ The relaxed form is what a counter whose value nothing else depends on needs. On
 
 **Returns**: the value before the addition
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L201)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L200)
 
 <h3 id="fetch-sub-with"><code>FetchSubWith</code></h3>
 
@@ -265,7 +265,7 @@ the others made. Only for integer `T`.
 
 **Returns**: the value before the subtraction
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L222)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L221)
 
 <h3 id="fetch-and"><code>FetchAnd</code></h3>
 
@@ -282,7 +282,7 @@ Only for integer or `bool` `T`.
 
 **Returns**: the value before
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L241)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L240)
 
 <h3 id="fetch-or"><code>FetchOr</code></h3>
 
@@ -299,7 +299,7 @@ Only for integer or `bool` `T`.
 
 **Returns**: the value before
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L252)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L251)
 
 <h3 id="fetch-xor"><code>FetchXor</code></h3>
 
@@ -317,7 +317,7 @@ Only for integer or `bool` `T`.
 
 **Returns**: the value before
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L264)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L263)
 
 ## Constants
 
@@ -330,7 +330,7 @@ pub const Zero: Atomic<int8> = Self { value: 0i8 };
 An atomic `int8` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<int8>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L279)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L278)
 
 <h3 id="zero-int16"><code>Zero</code></h3>
 
@@ -341,7 +341,7 @@ pub const Zero: Atomic<int16> = Self { value: 0i16 };
 An atomic `int16` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<int16>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L286)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L285)
 
 <h3 id="zero-int32"><code>Zero</code></h3>
 
@@ -352,7 +352,7 @@ pub const Zero: Atomic<int32> = Self { value: 0i32 };
 An atomic `int32` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<int32>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L293)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L292)
 
 <h3 id="zero-int64"><code>Zero</code></h3>
 
@@ -363,7 +363,7 @@ pub const Zero: Atomic<int64> = Self { value: 0i64 };
 An atomic `int64` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<int64>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L300)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L299)
 
 <h3 id="zero-int"><code>Zero</code></h3>
 
@@ -374,7 +374,7 @@ pub const Zero: Atomic<int> = Self { value: 0 };
 An atomic `int` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<int>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L307)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L306)
 
 <h3 id="zero-uint8"><code>Zero</code></h3>
 
@@ -385,7 +385,7 @@ pub const Zero: Atomic<uint8> = Self { value: 0u8 };
 An atomic `uint8` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<uint8>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L314)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L313)
 
 <h3 id="zero-uint16"><code>Zero</code></h3>
 
@@ -396,7 +396,7 @@ pub const Zero: Atomic<uint16> = Self { value: 0u16 };
 An atomic `uint16` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<uint16>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L321)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L320)
 
 <h3 id="zero-uint32"><code>Zero</code></h3>
 
@@ -407,7 +407,7 @@ pub const Zero: Atomic<uint32> = Self { value: 0u32 };
 An atomic `uint32` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<uint32>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L328)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L327)
 
 <h3 id="zero-uint64"><code>Zero</code></h3>
 
@@ -418,7 +418,7 @@ pub const Zero: Atomic<uint64> = Self { value: 0u64 };
 An atomic `uint64` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<uint64>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L335)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L334)
 
 <h3 id="zero-uint"><code>Zero</code></h3>
 
@@ -429,7 +429,7 @@ pub const Zero: Atomic<uint> = Self { value: 0u };
 An atomic `uint` holding zero, as a constant, so a module variable can start as one through an alias of
 [`Atomic<uint>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L342)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L341)
 
 <h3 id="false"><code>False</code></h3>
 
@@ -440,4 +440,4 @@ pub const False: Atomic<bool> = Self { value: false };
 An atomic `bool` holding false, as a constant, so a module variable can start as one through an alias of
 [`Atomic<bool>`](/docs/api/atomic/atomic).
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L349)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Atomic/Src/Atomic.rux#L348)

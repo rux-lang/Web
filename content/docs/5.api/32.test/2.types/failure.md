@@ -30,7 +30,7 @@ pub struct TestFailure {
 ```
 
 Why a test did not pass. `Copy`.
-A test fails with it through `throw` or a check marked with `try`, and is counted as skipped rather than failed
+A test fails with it through `throw` or a check passed on with `!`, and is counted as skipped rather than failed
 when it was made with [`Skip`](/docs/api/test/failure#skip).
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Failure.rux#L14)

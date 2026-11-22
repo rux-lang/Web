@@ -108,7 +108,7 @@ pub func Decode(
     allocator: Allocator,
     encoded: char8[..],
     form: bool
-) -> String throws UrlError
+) -> String ! UrlError
 ```
 
 Decodes a percent-encoded component into text. With `form`, a `+` is read as a space, as in a query.
@@ -140,10 +140,10 @@ Not copied.
 
 **Constructors**
 
-<h3 id="query-builder-new"><code>QueryBuilder</code></h3>
+<h3 id="query-builder-new"><code>New</code></h3>
 
 ```rux
-pub func QueryBuilder(allocator: Allocator) -> QueryBuilder
+pub func New(allocator: Allocator) -> QueryBuilder
 ```
 
 An empty query.

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Base64.rux
-  line: 17
+  line: 18
 seo:
   title: "Base64 — Encoding API"
   description: "Base64 in its standard and URL-safe alphabets, with or without padding, and a view that prints it."
@@ -35,7 +35,7 @@ pub enum Base64Variant {
 Which Base64 alphabet a text uses, and whether it is padded.
 Copy, carrying no payload.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L18)
 
 **Cases**
 
@@ -59,7 +59,7 @@ How many characters the Base64 form of `length` bytes occupies in `form`.
 Four characters for every three bytes, with a final partial group taking two or three characters, or four with
 padding. Cannot fail for any length a slice in memory can have; runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L47)
 
 **Parameters**
 
@@ -77,13 +77,13 @@ pub func Base64Encode(
     bytes: byte[..],
     into: var char8[..],
     form: Base64Variant
-) -> uint throws FormatError
+) -> uint ! FormatError
 
 pub func Base64Encode(
     text: char8[..],
     into: var char8[..],
     form: Base64Variant
-) -> uint throws FormatError
+) -> uint ! FormatError
 ```
 
 Writes `bytes` as Base64 into `into`.
@@ -91,12 +91,12 @@ Runs in time that depends only on the length of `bytes`. Reports `InsufficientCa
 than `Base64EncodedLength(bytes.length, form)`, leaving it exactly as it was; room past the encoded form is
 not touched.
 
-| Overload                                                                                                      | Summary                                           |
-| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| `pub func Base64Encode(bytes: byte[..], into: var char8[..], form: Base64Variant) -> uint throws FormatError` | Writes `bytes` as Base64 into `into`.             |
-| `pub func Base64Encode(text: char8[..], into: var char8[..], form: Base64Variant) -> uint throws FormatError` | Writes the bytes of `text` as Base64 into `into`. |
+| Overload                                                                                                 | Summary                                           |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `pub func Base64Encode(bytes: byte[..], into: var char8[..], form: Base64Variant) -> uint ! FormatError` | Writes `bytes` as Base64 into `into`.             |
+| `pub func Base64Encode(text: char8[..], into: var char8[..], form: Base64Variant) -> uint ! FormatError` | Writes the bytes of `text` as Base64 into `into`. |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L64)
 
 **Parameters**
 
@@ -115,7 +115,7 @@ not touched.
 pub func Base64DecodedLength(
     text: char8[..],
     form: Base64Variant
-) -> uint throws DecodeError
+) -> uint ! DecodeError
 ```
 
 How many bytes the Base64 text decodes to, after checking its length and the placement of its padding.
@@ -124,7 +124,7 @@ characters with at most two `=` at the end; an unpadded one any length except on
 and no `=` at all. Reports `InvalidLength` at the end of the text, or `InvalidPadding` at the first `=` that is
 out of place. Runs in time linear in the length and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L145)
 
 **Parameters**
 
@@ -142,7 +142,7 @@ pub func Base64Decode(
     text: char8[..],
     into: var byte[..],
     form: Base64Variant
-) -> uint throws DecodeError
+) -> uint ! DecodeError
 ```
 
 Reads Base64 text in `form` into `into`.
@@ -152,7 +152,7 @@ character outside the variant's alphabet, `NonCanonical` at a last character who
 `InsufficientCapacity` with the length needed when `into` is too short. Every refusal leaves `into` untouched,
 because the whole text is checked before anything is written.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L172)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L173)
 
 **Parameters**
 
@@ -176,7 +176,7 @@ A borrowed byte sequence that renders as Base64 under a format placeholder.
 Lets a caller write `Render("{}", ViewBase64(key))` instead of sizing a buffer first. The view borrows the bytes
 and must not outlive them. Copy, owning nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L235)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L236)
 
 **Implements Display**
 
@@ -189,7 +189,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the bytes as Base64, padded to the placeholder's width.
@@ -203,7 +203,7 @@ writer reported, and `UnsupportedRequest` for a precision or a style.
 
 **Returns**: success when the whole rendering was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L258)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L259)
 
 <h2 id="view-base64"><code>ViewBase64</code></h2>
 
@@ -217,7 +217,7 @@ pub func ViewBase64(
 Borrows `bytes` for rendering as Base64.
 Cannot fail and allocates nothing; the view reads `bytes` each time it is rendered, so it must not outlive them.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L246)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Base64.rux#L247)
 
 **Parameters**
 

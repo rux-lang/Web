@@ -38,10 +38,10 @@ ones to share between threads.
 
 **Constructors**
 
-<h3 id="new"><code>Logger</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Logger(
+pub func New(
     allocator: Allocator,
     sink: Writer,
     format: LogFormat
@@ -175,7 +175,7 @@ pub func Flush(&var self)
 
 Asks the stream to deliver what it holds.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L106)
 
 <h3 id="trace"><code>Trace</code></h3>
 
@@ -201,7 +201,7 @@ Writes a `Trace` record with no fields.
 | `message` | `char8[..]` | what happened              |
 | `fields`  | `Field[..]` | the values that go with it |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L119)
 
 <h3 id="debug"><code>Debug</code></h3>
 
@@ -227,7 +227,7 @@ Writes a `Debug` record with no fields.
 | `message` | `char8[..]` | what happened              |
 | `fields`  | `Field[..]` | the values that go with it |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L136)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L134)
 
 <h3 id="info"><code>Info</code></h3>
 
@@ -253,7 +253,7 @@ Writes an `Info` record with no fields.
 | `message` | `char8[..]` | what happened              |
 | `fields`  | `Field[..]` | the values that go with it |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L149)
 
 <h3 id="warn"><code>Warn</code></h3>
 
@@ -279,7 +279,7 @@ Writes a `Warn` record with no fields.
 | `message` | `char8[..]` | what happened              |
 | `fields`  | `Field[..]` | the values that go with it |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L164)
 
 <h3 id="error"><code>Error</code></h3>
 
@@ -305,4 +305,4 @@ Writes an `Error` record with no fields.
 | `message` | `char8[..]` | what happened              |
 | `fields`  | `Field[..]` | the values that go with it |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L181)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Log/Src/Logger.rux#L179)

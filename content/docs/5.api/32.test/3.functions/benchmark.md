@@ -102,10 +102,10 @@ Which benchmarks a run chooses and how long each is measured. `Copy`.
 
 **Constructors**
 
-<h3 id="benchmark-options-new"><code>BenchmarkOptions</code></h3>
+<h3 id="benchmark-options-new"><code>New</code></h3>
 
 ```rux
-pub func BenchmarkOptions() -> BenchmarkOptions
+pub func New() -> BenchmarkOptions
 ```
 
 Options that measure every benchmark for at least 200 milliseconds and at most a billion iterations.

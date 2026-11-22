@@ -29,23 +29,23 @@ pub func Compress(
     data: byte[..],
     format: Format,
     level: Level
-) -> Vector<byte> throws IoError
+) -> Vector<byte> ! IoError
 
 pub func Compress(
     allocator: Allocator,
     data: char8[..],
     format: Format,
     level: Level
-) -> Vector<byte> throws IoError
+) -> Vector<byte> ! IoError
 ```
 
 Compresses text in `format` at `level`: its UTF-8 bytes, as the Io streams carry them, so text needs no cast to
 bytes first.
 
-| Overload                                                                                                                | Summary                                                                                                                      |
-| ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `pub func Compress(allocator: Allocator, data: byte[..], format: Format, level: Level) -> Vector<byte> throws IoError`  | Compresses `data` in `format` at `level`.                                                                                    |
-| `pub func Compress(allocator: Allocator, data: char8[..], format: Format, level: Level) -> Vector<byte> throws IoError` | Compresses text in `format` at `level`: its UTF-8 bytes, as the Io streams carry them, so text needs no cast to bytes first. |
+| Overload                                                                                                           | Summary                                                                                                                      |
+| ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| `pub func Compress(allocator: Allocator, data: byte[..], format: Format, level: Level) -> Vector<byte> ! IoError`  | Compresses `data` in `format` at `level`.                                                                                    |
+| `pub func Compress(allocator: Allocator, data: char8[..], format: Format, level: Level) -> Vector<byte> ! IoError` | Compresses text in `format` at `level`: its UTF-8 bytes, as the Io streams carry them, so text needs no cast to bytes first. |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Buffers.rux#L108)
 
@@ -67,21 +67,21 @@ pub func Decompress(
     allocator: Allocator,
     data: byte[..],
     format: Format
-) -> Vector<byte> throws IoError
+) -> Vector<byte> ! IoError
 
 pub func Decompress(
     allocator: Allocator,
     data: char8[..],
     format: Format
-) -> Vector<byte> throws IoError
+) -> Vector<byte> ! IoError
 ```
 
 Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream.
 
-| Overload                                                                                                    | Summary                                                                                                      |
-| ----------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| `pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> throws IoError`  | Decompresses `data`, a whole stream in `format`.                                                             |
-| `pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> throws IoError` | Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream. |
+| Overload                                                                                               | Summary                                                                                                      |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| `pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> ! IoError`  | Decompresses `data`, a whole stream in `format`.                                                             |
+| `pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> ! IoError` | Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream. |
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Compress/Src/Buffers.rux#L145)
 

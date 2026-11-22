@@ -58,7 +58,7 @@ A UDP socket. Not copied.
 <h3 id="bind"><code>Bind</code></h3>
 
 ```rux
-pub func Bind(address: SocketAddress) -> UdpSocket throws IoError
+pub func Bind(address: SocketAddress) -> UdpSocket ! IoError
 ```
 
 A socket bound to `address`. Port zero lets the system choose a free port, which [`LocalAddress`](/docs/api/net/udp#local-address) then gives.
@@ -80,7 +80,7 @@ pub func SendTo(
     &self,
     bytes: char8[..],
     target: SocketAddress
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Sends `bytes` as one datagram to `target`.
@@ -100,7 +100,7 @@ Sends `bytes` as one datagram to `target`.
 pub func ReceiveFrom(
     &self,
     into: var char8[..]
-) -> Datagram throws IoError
+) -> Datagram ! IoError
 ```
 
 Waits for a datagram and puts it in `into`.
@@ -116,7 +116,7 @@ Waits for a datagram and puts it in `into`.
 <h3 id="connect"><code>Connect</code></h3>
 
 ```rux
-pub func Connect(&self, peer: SocketAddress) throws IoError
+pub func Connect(&self, peer: SocketAddress) -> !IoError
 ```
 
 Sends to and receives from `peer` only, so [`Send`](/docs/api/net/udp#send) and [`Receive`](/docs/api/net/udp#receive) need no address.
@@ -132,10 +132,7 @@ Sends to and receives from `peer` only, so [`Send`](/docs/api/net/udp#send) and 
 <h3 id="send"><code>Send</code></h3>
 
 ```rux
-pub func Send(
-    &self,
-    bytes: char8[..]
-) -> uint throws IoError
+pub func Send(&self, bytes: char8[..]) -> uint ! IoError
 ```
 
 Sends `bytes` as one datagram to the connected peer.
@@ -154,7 +151,7 @@ Sends `bytes` as one datagram to the connected peer.
 pub func Receive(
     &self,
     into: var char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Waits for a datagram from the connected peer and puts it in `into`.
@@ -170,7 +167,7 @@ Waits for a datagram from the connected peer and puts it in `into`.
 <h3 id="local-address"><code>LocalAddress</code></h3>
 
 ```rux
-pub func LocalAddress(&self) -> SocketAddress throws IoError
+pub func LocalAddress(&self) -> SocketAddress ! IoError
 ```
 
 The address the socket is bound to.
@@ -185,7 +182,7 @@ The address the socket is bound to.
 pub func SetReadTimeout(
     &self,
     timeout: Duration?
-) throws IoError
+) -> !IoError
 ```
 
 How long a receive may wait before failing with `TimedOut`, or none to wait without a limit.
@@ -201,7 +198,7 @@ How long a receive may wait before failing with `TimedOut`, or none to wait with
 <h3 id="set-non-blocking"><code>SetNonBlocking</code></h3>
 
 ```rux
-pub func SetNonBlocking(&self, enabled: bool) throws IoError
+pub func SetNonBlocking(&self, enabled: bool) -> !IoError
 ```
 
 Makes calls on the socket fail with `WouldBlock` when they would wait, or wait again.
@@ -229,10 +226,10 @@ The socket as a [`Poller`](/docs/api/net/poller) watches it, valid while the soc
 
 **Destructor**
 
-<h3 id="udp-socket-destructor"><code>~UdpSocket</code></h3>
+<h3 id="udp-socket-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~UdpSocket(&var self)
+destructor
 ```
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Udp.rux#L113)

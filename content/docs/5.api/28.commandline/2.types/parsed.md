@@ -37,7 +37,7 @@ pub struct Parsed {
 pub func WriteHelp(
     &self,
     writer: &var TextWriter
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the help text of the command this parse is for, naming its parent in the usage line when it is a
@@ -50,7 +50,7 @@ Reports whatever the writer reported.
 
 **Returns**: success when the whole text was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L224)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Parsed.rux#L225)
 
 <h3 id="help-requested"><code>HelpRequested</code></h3>
 
@@ -213,7 +213,7 @@ Those arguments were validated with this parse, so this cannot fail.
 pub func Integer(
     &self,
     name: char8[..]
-) -> int64? throws CommandLineError
+) -> int64? ! CommandLineError
 ```
 
 The value of the option or positional named `name` read as a decimal integer, or none when it was not given.
@@ -236,7 +236,7 @@ An optional leading `-` or `+` is accepted, then one or more decimal digits and 
 pub func Parse(
     spec: *CommandSpec,
     arguments: OsStringView[..]
-) -> Parsed throws CommandLineError
+) -> Parsed ! CommandLineError
 ```
 
 Checks `arguments` against `spec`.
@@ -260,7 +260,7 @@ must outlive the result.
 <h3 id="parse-process"><code>ParseProcess</code></h3>
 
 ```rux
-pub func ParseProcess(spec: *CommandSpec) -> Parsed throws CommandLineError
+pub func ParseProcess(spec: *CommandSpec) -> Parsed ! CommandLineError
 ```
 
 Checks the process's own arguments against `spec`.

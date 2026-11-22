@@ -10,13 +10,13 @@ rux add Rux/TimeZone
 
 ## What it provides
 
-| Module   | Covers                                                                                                                     |
+| File     | Covers                                                                                                                     |
 | -------- | -------------------------------------------------------------------------------------------------------------------------- |
 | `Zone`   | `TimeZone` with `FromTzif`, `FromRule`, `Utc`, `StateAt`, `OffsetAt`, `ToLocal` and `Resolve`; `ZoneState` and `LocalTime` |
 | `System` | `TimeZone::Load` by tz database name, and `TimeZone::Local`                                                                |
 | `Error`  | `TimeZoneError`                                                                                                            |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+The files above only organize the source: the package has no modules, so every declaration is imported from its root, as in `import TimeZone::TimeZone;`.
 
 ## Example
 
@@ -25,8 +25,8 @@ import Allocator::SystemAllocator;
 import Time::Timestamp;
 import TimeZone::{ TimeZone, TimeZoneError };
 
-func KyivOffset() -> int32 throws TimeZoneError {
-    let zone = try TimeZone::Load(SystemAllocator(), "Europe/Kyiv");
+func KyivOffset() -> int32 ! TimeZoneError {
+    let zone = TimeZone::Load(SystemAllocator::New(), "Europe/Kyiv")!;
     return zone.OffsetAt(Timestamp::Now()).seconds;
 }
 ```

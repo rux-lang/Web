@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Environment.rux
-  line: 23
+  line: 25
 seo:
   title: "Environment — Process API"
   description: "Reading, setting and removing environment variables."
@@ -33,7 +33,7 @@ pub struct EnvironmentVariable {
 One environment variable: its name and its value.
 `Copy`. Both views borrow storage the process owns for its whole life.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L25)
 
 **Fields**
 
@@ -54,7 +54,7 @@ A walk over the environment variables: those the process started with, in the or
 those set since.
 `Copy`, holding only a position, so it allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L104)
 
 **Methods**
 
@@ -68,7 +68,7 @@ The walk itself, so that `for variable in Environment()` reads every variable.
 
 **Returns**: a copy of this walk from its current position
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L120)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L122)
 
 **Implements Iterator**
 
@@ -84,7 +84,7 @@ The next variable, or none after the last.
 
 **Returns**: the variable's name and value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L129)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L131)
 
 <h2 id="environment"><code>Environment</code></h2>
 
@@ -95,7 +95,7 @@ pub func Environment() -> EnvironmentIterator
 Every environment variable of the process.
 Cannot fail and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L114)
 
 **Returns**: a walk over the environment
 
@@ -113,7 +113,7 @@ library's `getenv` returns it. A variable set to the empty string is present, wi
 storage the process owns for its whole life. Runs in time linear in the size of the environment and allocates
 nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L249)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L251)
 
 **Parameters**
 
@@ -129,14 +129,14 @@ nothing.
 pub func SetVariable(
     name: char8[..],
     value: char8[..]
-) throws IoError
+) -> !IoError
 ```
 
 Sets the environment variable `name` to `value`, for this process and every process it starts from now on.
 Both are UTF-8 text. The change is seen by [`Variable`](/docs/api/process/environment#variable) and [`Environment`](/docs/api/process/environment#environment), by [`Command`](/docs/api/process/command#command), and on Windows by the system;
 the C library's own environment on the Unix systems is not changed. Views handed out before stay valid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L381)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L379)
 
 **Parameters**
 
@@ -150,13 +150,13 @@ the C library's own environment on the Unix systems is not changed. Views handed
 <h2 id="remove-variable"><code>RemoveVariable</code></h2>
 
 ```rux
-pub func RemoveVariable(name: char8[..]) throws IoError
+pub func RemoveVariable(name: char8[..]) -> !IoError
 ```
 
 Removes the environment variable `name`, for this process and every process it starts from now on.
 Removing a variable that is not set does nothing. Views of its value handed out before stay valid.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L397)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Environment.rux#L395)
 
 **Parameters**
 

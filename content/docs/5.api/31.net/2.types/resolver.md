@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Dns.rux
-  line: 33
+  line: 34
 seo:
   title: "Resolver — Net API"
   description: "Asks name servers for a host's addresses."
@@ -52,7 +52,7 @@ A resolver that asks `servers`, waiting five seconds for each answer and going r
 
 **Returns**: the resolver
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L154)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L155)
 
 <h3 id="from-system"><code>FromSystem</code></h3>
 
@@ -69,7 +69,7 @@ options, of `/etc/resolv.conf` on Linux. With no servers to read, the one on thi
 
 **Returns**: the resolver
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L167)
 
 ## Methods
 
@@ -85,7 +85,7 @@ How long a query waits for its answer.
 | --------- | ---------- | ------------------------ |
 | `timeout` | `Duration` | the wait for each answer |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L174)
 
 <h3 id="set-attempts"><code>SetAttempts</code></h3>
 
@@ -99,7 +99,7 @@ How many times the servers are gone round before a lookup gives up.
 | ---------- | ------ | ---------------------------------- |
 | `attempts` | `uint` | the number of rounds, at least one |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L180)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L181)
 
 <h3 id="lookup"><code>Lookup</code></h3>
 
@@ -109,7 +109,7 @@ pub func Lookup(
     allocator: Allocator,
     host: char8[..],
     port: uint16
-) -> Vector<SocketAddress> throws IoError
+) -> Vector<SocketAddress> ! IoError
 ```
 
 Asks the servers for `host`'s addresses: its IPv4 addresses first, then its IPv6 ones, each with `port`.
@@ -123,4 +123,4 @@ The hosts file is not read; [`Resolve`](/docs/api/net/resolve#resolve) reads it 
 
 **Returns**: the addresses; `NotFound` when the name has none or does not exist, `TimedOut` when no server answered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L191)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Dns.rux#L192)

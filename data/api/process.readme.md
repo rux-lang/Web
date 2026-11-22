@@ -10,7 +10,7 @@ rux add Rux/Process
 
 ## What it provides
 
-| Module        | Covers                                                                                                                          |
+| File          | Covers                                                                                                                          |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `Arguments`   | `ArgumentCount`, `Argument`, and `Arguments` for walking them in order                                                          |
 | `Environment` | `Variable` for one value by name, `Environment` for walking every `EnvironmentVariable`, and `SetVariable` and `RemoveVariable` |
@@ -20,7 +20,7 @@ rux add Rux/Process
 | `Child`       | `Child` with `Wait`, `TryWait` and `Kill`, its `ExitStatus`, and the `PipeReader` and `PipeWriter` streams                      |
 | `Capture`     | `Command::Capture`, which runs a program and keeps its output, error and status                                                 |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+The files above only organize the source: the package has no modules, so every declaration is imported from its root, as in `import Process::ArgumentCount;`.
 
 ## Example
 
@@ -41,7 +41,7 @@ func CountFlags() -> uint {
 }
 
 func HasHome() -> bool {
-    let home = Variable("HOME") ?? OsStringView();
+    let home = Variable("HOME") ?? OsStringView::New();
     return !home.IsEmpty() && ArgumentCount() > 0;
 }
 ```
@@ -51,10 +51,10 @@ import Allocator::SystemAllocator;
 import Io::IoError;
 import Process::Command;
 
-func Version() -> bool throws IoError {
-    var command = Command(SystemAllocator(), "git");
+func Version() -> bool ! IoError {
+    var command = Command::New(SystemAllocator::New(), "git");
     command.Argument("--version");
-    let captured = try command.Capture(SystemAllocator());
+    let captured = command.Capture(SystemAllocator::New())!;
     return captured.Status().Success() && captured.Output().length > 0;
 }
 ```
@@ -63,7 +63,7 @@ func Version() -> bool throws IoError {
 
 Arguments and environment values are native text, `Path::OsStringView`: bytes on the Unix systems and UTF-16 code units on Windows, exactly as the system handed them over. Nothing obliges either to be valid UTF-8 or UTF-16, so a program that needs text converts with `ToText` and decides what an unconvertible argument means. The first argument is the program as it was invoked, a name or a path the parent chose.
 
-Every view of an argument or variable borrows storage the process owns for its whole life, so reading them allocates nothing and a view can be kept anywhere. Linux and FreeBSD keep the vectors on the stack the kernel built, which the entry stub records for `Core::ProcessStartFrame`; macOS has dyld record them in libSystem; Windows hands over one command line, which is split once with `CommandLineToArgvW` so that the arguments are the ones the C runtime would give, and one environment block, which is read once. The first read happens on first use and is kept, so a program that starts threads should read what it needs before it does.
+Every view of an argument or variable borrows storage the process owns for its whole life, so reading them allocates nothing and a view can be kept anywhere. Linux and FreeBSD keep the vectors on the stack the kernel built, which the entry stub records for `Core::Machine::ProcessStartFrame`; macOS has dyld record them in libSystem; Windows hands over one command line, which is split once with `CommandLineToArgvW` so that the arguments are the ones the C runtime would give, and one environment block, which is read once. The first read happens on first use and is kept, so a program that starts threads should read what it needs before it does.
 
 Names are matched the way each system matches them: exactly on the Unix systems and without regard to ASCII case on Windows. `SetVariable` and `RemoveVariable` keep their changes in a table beside the environment the process started with, which `Variable`, `Environment` and every child this package starts consult first. Their text is never freed, so every view handed out stays valid. Windows is told of each change as well; the C library's own environment on the Unix systems is not, so code outside Rux that reads it there does not see the change.
 

@@ -10,13 +10,13 @@ rux add Rux/Thread
 
 ## What it provides
 
-| Module    | Covers                                                                                                |
+| File      | Covers                                                                                                |
 | --------- | ----------------------------------------------------------------------------------------------------- |
 | `Spawn`   | `Spawn`, `SpawnWith`, `ThreadOptions` with a stack size, and `JoinHandle<R>` with `Join` and `Detach` |
 | `Current` | `CurrentId`, `Yield` and `AvailableParallelism`                                                       |
 | `Error`   | `ThreadError`, why a thread could not be started                                                      |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+The files above only organize the source: the package has no modules, so every declaration is imported from its root, as in `import Thread::Spawn;`.
 
 ## Example
 
@@ -28,14 +28,14 @@ func Square(value: uint64) -> uint64 {
 }
 
 func Main() -> int {
-    var handle = try Spawn(Square, 12u64) catch { _ => return 1 };
+    var handle = Spawn(Square, 12u64) catch { _ => return 1 };
     return if handle.Join() == 144u64 { 0 } else { 2 };
 }
 ```
 
 ## Design
 
-Rux has no closures, so a thread runs a function on a context value the caller moves to it, and leaves the function's result for whoever joins it. `Spawn(entry, context)` returns a `JoinHandle<R>`; `Join` waits for the thread and returns the result. The context and the result must be `Core::Sendable`, so neither can be a reference or hold an `Rc`. Dropping the handle, or calling `Detach`, lets the thread run on and release itself when it finishes, destroying a result nobody took.
+Rux has no closures, so a thread runs a function on a context value the caller moves to it, and leaves the function's result for whoever joins it. `Spawn(entry, context)` returns a `JoinHandle<R>`; `Join` waits for the thread and returns the result. The context and the result must be `Core::Ownership::Sendable`, so neither can be a reference or hold an `Rc`. Dropping the handle, or calling `Detach`, lets the thread run on and release itself when it finishes, destroying a result nobody took.
 
 On Linux, FreeBSD and macOS threads are started with the C library's `pthread_create`, which gives each one its stack and its thread-local block, so a program that starts threads is linked against the C library. On Windows they are started with `CreateThread`. Each thread has its own copy of every `thread var`, starting at its initial value.
 

@@ -10,12 +10,12 @@ rux add Rux/Regex
 
 ## What it provides
 
-| Module  | Covers                                                                                                                                                                                        |
+| File    | Covers                                                                                                                                                                                        |
 | ------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Regex` | `Regex` with `New`, `IsMatch`, `Find`, `FindAt`, `Capture`, `CaptureAt`, `FindAll`, `Split`, `Replace` and `ReplaceFirst`; `Match`, `Captures`, `MatchIterator`, `SplitIterator` and `Escape` |
 | `Error` | `RegexError` and `RegexErrorKind`, with the offset in the pattern where it went wrong                                                                                                         |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+The files above only organize the source: the package has no modules, so every declaration is imported from its root, as in `import Regex::Regex;`.
 
 ## Example
 
@@ -23,10 +23,10 @@ The module names describe where each declaration comes from; they are not part o
 import Allocator::SystemAllocator;
 import Regex::{ Regex, RegexError };
 
-func Year(text: char8[..]) -> uint throws RegexError {
-    let date = try Regex(SystemAllocator(), "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})");
+func Year(text: char8[..]) -> uint ! RegexError {
+    let date = Regex::New(SystemAllocator::New(), "(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})")!;
     match date.Capture(text) {
-        .Some(groups) => return (groups.Named("year") ?? return 0).start,
+        groups? => return (groups.Named("year") ?? return 0).start,
         none => return 0
     }
 }

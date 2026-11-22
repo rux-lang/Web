@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Channel.rux
-  line: 32
+  line: 33
 seo:
   title: "Channels — Sync API"
   description: Bounded queues that carry values from thread to thread.
@@ -33,7 +33,7 @@ A bounded queue of values passed between threads, any number of which may send a
 Values arrive in the order they were sent. [`Clone`](/docs/api/sync/channel#clone) gives another handle to the same channel; the values still in
 it are destroyed when the last handle is gone. A handle is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L33)
 
 **Type parameters**
 
@@ -43,10 +43,10 @@ it are destroyed when the last handle is gone. A handle is not copied.
 
 **Constructors**
 
-<h3 id="channel-new"><code>Channel</code></h3>
+<h3 id="channel-new"><code>New</code></h3>
 
 ```rux
-pub func Channel(capacity: uint) -> Channel<T>
+pub func New(capacity: uint) -> Channel<T>
 ```
 
 A channel with room for `capacity` values. Zero capacity is a program error, as is running out of memory.
@@ -57,7 +57,7 @@ A channel with room for `capacity` values. Zero capacity is a program error, as 
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L42)
 
 **Methods**
 
@@ -71,12 +71,12 @@ Another handle to the same channel.
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L59)
 
 <h3 id="send"><code>Send</code></h3>
 
 ```rux
-pub func Send(&self, value: T) throws T
+pub func Send(&self, value: T) -> !T
 ```
 
 Sends `value`, waiting while the channel is full.
@@ -87,12 +87,12 @@ Sends `value`, waiting while the channel is full.
 
 **Returns**: nothing, or fails with the value when the channel is closed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L69)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L70)
 
 <h3 id="try-send"><code>TrySend</code></h3>
 
 ```rux
-pub func TrySend(&self, value: T) throws T
+pub func TrySend(&self, value: T) -> !T
 ```
 
 Sends `value` if there is room, without waiting.
@@ -103,7 +103,7 @@ Sends `value` if there is room, without waiting.
 
 **Returns**: nothing, or fails with the value when the channel is full or closed
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L100)
 
 <h3 id="receive"><code>Receive</code></h3>
 
@@ -115,7 +115,7 @@ Receives the oldest value, waiting while the channel is empty.
 
 **Returns**: the value, or none once the channel is closed and empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L118)
 
 <h3 id="try-receive"><code>TryReceive</code></h3>
 
@@ -127,7 +127,7 @@ Receives the oldest value if there is one, without waiting.
 
 **Returns**: the value, or none when the channel is empty
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L148)
 
 <h3 id="close"><code>Close</code></h3>
 
@@ -138,7 +138,7 @@ pub func Close(&self)
 Closes the channel: sends fail from now on, and receivers take what is left and then get none. Closing a
 closed channel does nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L166)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L167)
 
 <h3 id="is-closed"><code>IsClosed</code></h3>
 
@@ -150,7 +150,7 @@ Whether the channel was closed.
 
 **Returns**: true once [`Close`](/docs/api/sync/channel#close) was called on any handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L186)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L185)
 
 <h3 id="length"><code>Length</code></h3>
 
@@ -162,14 +162,14 @@ How many values wait in the channel right now, which other threads may change at
 
 **Returns**: the number of values
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L201)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L200)
 
 **Destructor**
 
-<h3 id="channel-destructor"><code>~Channel</code></h3>
+<h3 id="channel-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~Channel(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L237)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Channel.rux#L236)

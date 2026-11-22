@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Exit.rux
-  line: 44
+  line: 46
 seo:
   title: "Exit — Process API"
   description: "Ending the process, and its identifier."
@@ -32,7 +32,7 @@ Every thread stops. Nothing is flushed, unwound or destroyed: the system reclaim
 still buffered in the process is lost, so flush what must be written first. On the Unix systems the parent sees
 only the low eight bits of `code`; on Windows it sees all thirty-two. Does not return.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Exit.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Exit.rux#L46)
 
 **Parameters**
 
@@ -50,6 +50,6 @@ The identifier the system gave this process.
 Stable for the life of the process and unique among running processes, but reused once the process has exited.
 Cannot fail and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Exit.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Process/Src/Exit.rux#L61)
 
 **Returns**: the process identifier

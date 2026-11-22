@@ -9,7 +9,7 @@ api:
   kind: variant
   version: 0.1.0
   source: Src/Error.rux
-  line: 16
+  line: 17
 seo:
   title: "DecodeError — Encoding API"
   description: Why text could not be decoded.
@@ -60,7 +60,7 @@ Borrows the error and leaves it untouched. Cannot fail; runs in constant time an
 
 **Returns**: the zero-based byte offset into the text, or none for `InsufficientCapacity`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Error.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Error.rux#L41)
 
 ## Implements Display
 
@@ -73,7 +73,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes a short lower-case description, followed by the offset or the length needed.
@@ -88,7 +88,7 @@ a style.
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Error.rux#L73)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Error.rux#L74)
 
 ## Implements Debug
 
@@ -101,7 +101,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`: the description already names the case and its count.
@@ -114,4 +114,4 @@ The failures [`WriteDisplay`](/docs/api/encoding/decode-error#write-display) rep
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Error.rux#L117)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Encoding/Src/Error.rux#L118)

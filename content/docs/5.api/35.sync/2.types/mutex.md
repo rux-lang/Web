@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Mutex.rux
-  line: 24
+  line: 25
 seo:
   title: "Mutexes — Sync API"
   description: "A value one thread at a time may reach, and the conditions threads wait on while holding it."
@@ -33,7 +33,7 @@ A value guarded by a lock, shared between the threads that hold a handle to it.
 [`Clone`](/docs/api/sync/mutex#clone) gives another handle to the same value, to move to another thread. The value is destroyed when the last
 handle and the last guard are gone. A handle is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L25)
 
 **Type parameters**
 
@@ -43,10 +43,10 @@ handle and the last guard are gone. A handle is not copied.
 
 **Constructors**
 
-<h3 id="mutex-new"><code>Mutex</code></h3>
+<h3 id="mutex-new"><code>New</code></h3>
 
 ```rux
-pub func Mutex(value: T) -> Mutex<T>
+pub func New(value: T) -> Mutex<T>
 ```
 
 A new lock guarding `value`. Running out of memory for it is a program error.
@@ -57,7 +57,7 @@ A new lock guarding `value`. Running out of memory for it is a program error.
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L42)
 
 **Methods**
 
@@ -71,7 +71,7 @@ Another handle to the same value.
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L48)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L49)
 
 <h3 id="lock"><code>Lock</code></h3>
 
@@ -84,7 +84,7 @@ Not reentrant: locking again on the thread that holds the lock waits forever.
 
 **Returns**: the guard
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L60)
 
 <h3 id="try-lock"><code>TryLock</code></h3>
 
@@ -96,17 +96,17 @@ Takes the lock if nobody holds it, without waiting.
 
 **Returns**: the guard, or none when another thread holds the lock
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L71)
 
 **Destructor**
 
-<h3 id="mutex-destructor"><code>~Mutex</code></h3>
+<h3 id="mutex-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~Mutex(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L82)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L81)
 
 <h2 id="mutex-guard"><code>MutexGuard&lt;T&gt;</code></h2>
 
@@ -119,7 +119,7 @@ pub struct MutexGuard<T> {
 The lock on a [`Mutex<T>`](/docs/api/sync/mutex#mutex), held for as long as the guard lives, and the way to reach the value.
 Dropping the guard, or calling [`Unlock`](/docs/api/sync/mutex#unlock), releases the lock. A guard is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L33)
 
 **Type parameters**
 
@@ -141,7 +141,7 @@ this on a guard that was unlocked is a program error.
 
 **Returns**: a reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L99)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L96)
 
 <h3 id="get-mutable"><code>GetMutable</code></h3>
 
@@ -155,7 +155,7 @@ is a program error.
 
 **Returns**: a writable reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L111)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L108)
 
 <h3 id="is-locked"><code>IsLocked</code></h3>
 
@@ -167,7 +167,7 @@ Whether the guard still holds the lock.
 
 **Returns**: false once [`Unlock`](/docs/api/sync/mutex#unlock) was called
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L121)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L118)
 
 <h3 id="unlock"><code>Unlock</code></h3>
 
@@ -177,17 +177,17 @@ pub func Unlock(&var self)
 
 Releases the lock before the guard is dropped. Unlocking a guard twice does nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L127)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L124)
 
 **Destructor**
 
-<h3 id="mutex-guard-destructor"><code>~MutexGuard</code></h3>
+<h3 id="mutex-guard-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~MutexGuard(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L141)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L136)
 
 <h2 id="condition"><code>Condition</code></h2>
 
@@ -202,21 +202,21 @@ A wait releases the lock while it sleeps and takes it again before it returns, s
 condition under the lock. A wait may also return when nothing notified it, which is why it is always called in a
 loop that checks the condition. [`Clone`](/docs/api/sync/mutex#clone-condition) gives another handle to the same condition. A handle is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L156)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L151)
 
 **Constructors**
 
-<h3 id="condition-new"><code>Condition</code></h3>
+<h3 id="condition-new"><code>New</code></h3>
 
 ```rux
-pub func Condition() -> Condition
+pub func New() -> Condition
 ```
 
 A new condition. Running out of memory for it is a program error.
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L164)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L159)
 
 **Methods**
 
@@ -230,7 +230,7 @@ Another handle to the same condition.
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L171)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L166)
 
 <h3 id="wait"><code>Wait</code></h3>
 
@@ -248,7 +248,7 @@ Releases the guard's lock, sleeps until notified, and takes the lock again.
 | ------- | -------------------- | --------------------------- |
 | `guard` | `&var MutexGuard<T>` | a guard that holds its lock |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L182)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L177)
 
 <h3 id="wait-for"><code>WaitFor</code></h3>
 
@@ -273,7 +273,7 @@ Releases the guard's lock, sleeps until notified or until `timeout` has passed, 
 
 **Returns**: false when the time ran out without a notification
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L192)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L187)
 
 <h3 id="notify-one"><code>NotifyOne</code></h3>
 
@@ -283,7 +283,7 @@ pub func NotifyOne(&self)
 
 Wakes one thread waiting on the condition, if any.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L200)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L195)
 
 <h3 id="notify-all"><code>NotifyAll</code></h3>
 
@@ -293,14 +293,14 @@ pub func NotifyAll(&self)
 
 Wakes every thread waiting on the condition.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L211)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L204)
 
 **Destructor**
 
-<h3 id="condition-destructor"><code>~Condition</code></h3>
+<h3 id="condition-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~Condition(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L239)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Mutex.rux#L230)

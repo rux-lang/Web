@@ -38,10 +38,10 @@ For data that a lock protects, [`Mutex<T>`](/docs/api/sync/mutex#mutex) keeps th
 
 **Constructors**
 
-<h3 id="lock-new"><code>Lock</code></h3>
+<h3 id="lock-new"><code>New</code></h3>
 
 ```rux
-pub func Lock() -> Lock
+pub func New() -> Lock
 ```
 
 A lock nobody holds.
@@ -112,10 +112,10 @@ its own. Everything the function wrote is visible to every thread [`Call`](/docs
 
 **Constructors**
 
-<h3 id="once-new"><code>Once</code></h3>
+<h3 id="once-new"><code>New</code></h3>
 
 ```rux
-pub func Once() -> Once
+pub func New() -> Once
 ```
 
 An initialization that has not run.
@@ -151,7 +151,7 @@ Whether an initialization has finished.
 
 **Returns**: true once a [`Call`](/docs/api/sync/lock#call) has run its function to the end
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Lock.rux#L116)
 
 **Constants**
 

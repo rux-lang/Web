@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Counters.rux
-  line: 18
+  line: 19
 seo:
   title: "Counters — Sync API"
   description: "Semaphores, barriers and wait groups."
@@ -32,14 +32,14 @@ pub struct Semaphore {
 A count of permits that threads take and give back, waiting while none is left.
 [`Clone`](/docs/api/sync/counters#clone-semaphore) gives another handle to the same permits. A handle is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L19)
 
 **Constructors**
 
-<h3 id="semaphore-new"><code>Semaphore</code></h3>
+<h3 id="semaphore-new"><code>New</code></h3>
 
 ```rux
-pub func Semaphore(permits: uint32) -> Semaphore
+pub func New(permits: uint32) -> Semaphore
 ```
 
 A semaphore holding `permits` permits. Running out of memory for it is a program error.
@@ -50,7 +50,7 @@ A semaphore holding `permits` permits. Running out of memory for it is a program
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L28)
 
 **Methods**
 
@@ -64,7 +64,7 @@ Another handle to the same permits.
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L34)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L35)
 
 <h3 id="acquire"><code>Acquire</code></h3>
 
@@ -74,7 +74,7 @@ pub func Acquire(&self)
 
 Takes a permit, waiting while none is left.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L43)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L44)
 
 <h3 id="try-acquire"><code>TryAcquire</code></h3>
 
@@ -86,7 +86,7 @@ Takes a permit if one is left, without waiting.
 
 **Returns**: whether a permit was taken
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L59)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L58)
 
 <h3 id="release"><code>Release</code></h3>
 
@@ -100,7 +100,7 @@ Gives back `count` permits, waking threads waiting for them.
 | ------- | -------- | ----------------------------- |
 | `count` | `uint32` | how many permits to give back |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L79)
 
 <h3 id="available"><code>Available</code></h3>
 
@@ -112,17 +112,17 @@ The permits left right now, which other threads may change at any moment.
 
 **Returns**: the number of permits
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L94)
 
 **Destructor**
 
-<h3 id="semaphore-destructor"><code>~Semaphore</code></h3>
+<h3 id="semaphore-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~Semaphore(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L103)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L100)
 
 <h2 id="barrier"><code>Barrier</code></h2>
 
@@ -136,14 +136,14 @@ A meeting point a fixed number of threads wait at until all of them have arrived
 The barrier is reusable: once all have passed, the next [`Wait`](/docs/api/sync/counters#wait-barrier)s start a new round. [`Clone`](/docs/api/sync/counters#clone-barrier) gives another handle to
 the same barrier. A handle is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L120)
 
 **Constructors**
 
-<h3 id="barrier-new"><code>Barrier</code></h3>
+<h3 id="barrier-new"><code>New</code></h3>
 
 ```rux
-pub func Barrier(parties: uint32) -> Barrier
+pub func New(parties: uint32) -> Barrier
 ```
 
 A barrier for `parties` threads. Zero parties is a program error. Running out of memory is one too.
@@ -154,7 +154,7 @@ A barrier for `parties` threads. Zero parties is a program error. Running out of
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L129)
 
 **Methods**
 
@@ -168,7 +168,7 @@ Another handle to the same barrier.
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L144)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L139)
 
 <h3 id="wait-barrier"><code>Wait</code></h3>
 
@@ -180,17 +180,17 @@ Waits until every party of this round has arrived.
 
 **Returns**: true on exactly one of the round's threads, the last to arrive, for work done once per round
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L154)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L149)
 
 **Destructor**
 
-<h3 id="barrier-destructor"><code>~Barrier</code></h3>
+<h3 id="barrier-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~Barrier(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L185)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L178)
 
 <h2 id="wait-group"><code>WaitGroup</code></h2>
 
@@ -203,21 +203,21 @@ pub struct WaitGroup {
 A count of unfinished work that threads add to and mark done, and that others wait to see reach zero.
 [`Clone`](/docs/api/sync/counters#clone-wait-group) gives another handle to the same count. A handle is not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L204)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L195)
 
 **Constructors**
 
-<h3 id="wait-group-new"><code>WaitGroup</code></h3>
+<h3 id="wait-group-new"><code>New</code></h3>
 
 ```rux
-pub func WaitGroup() -> WaitGroup
+pub func New() -> WaitGroup
 ```
 
 A wait group with nothing pending. Running out of memory for it is a program error.
 
 **Returns**: the first handle to it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L212)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L203)
 
 **Methods**
 
@@ -231,7 +231,7 @@ Another handle to the same count.
 
 **Returns**: the handle
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L219)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L210)
 
 <h3 id="add"><code>Add</code></h3>
 
@@ -245,7 +245,7 @@ Adds `count` pieces of pending work, before the work is started.
 | ------- | -------- | --------------- |
 | `count` | `uint32` | how many to add |
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L229)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L220)
 
 <h3 id="done"><code>Done</code></h3>
 
@@ -256,7 +256,7 @@ pub func Done(&self)
 Marks one piece of work done, waking the waiters when it was the last. Marking more done than were added is a
 program error.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L238)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L229)
 
 <h3 id="wait-wait-group"><code>Wait</code></h3>
 
@@ -266,14 +266,14 @@ pub func Wait(&self)
 
 Waits until no work is pending.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L249)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L240)
 
 **Destructor**
 
-<h3 id="wait-group-destructor"><code>~WaitGroup</code></h3>
+<h3 id="wait-group-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~WaitGroup(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L261)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/Counters.rux#L252)

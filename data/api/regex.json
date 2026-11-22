@@ -820,10 +820,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Regex",
+          "kind": "associated",
+          "name": "New",
           "line": 243,
-          "signature": "pub func Regex(allocator: Allocator, pattern: char8[..]) -> Regex throws RegexError",
+          "signature": "pub func New(allocator: Allocator, pattern: char8[..]) -> Regex ! RegexError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },

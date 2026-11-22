@@ -26,9 +26,9 @@
       "displayName": "Atomic<T>",
       "module": "Atomic",
       "source": "Src/Atomic.rux",
-      "line": 20,
-      "signature": "pub struct Atomic<T>",
-      "typeParams": [{ "name": "T", "bounds": [] }],
+      "line": 21,
+      "signature": "pub struct Atomic<T: Copyable>",
+      "typeParams": [{ "name": "T", "bounds": ["Copyable"] }],
       "doc": {
         "summary": "One value that threads read and change without a lock.",
         "markdown": "One value that threads read and change without a lock.\n`T` must be an integer of 8 to 64 bits, `bool` or a pointer; any other type is refused where the methods are used.\nShared by reference between threads; the value lives inside, so it must outlive every thread that reaches it.\nCopying an `Atomic` copies its current value into a new, unrelated one.",
@@ -46,7 +46,7 @@
           "name": "value",
           "type": "T",
           "public": false,
-          "line": 21,
+          "line": 22,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -64,10 +64,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Atomic",
-          "line": 30,
-          "signature": "pub func Atomic(value: T) -> Atomic<T>",
+          "kind": "associated",
+          "name": "New",
+          "line": 31,
+          "signature": "pub func New(value: T) -> Atomic<T>",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": null,
@@ -98,7 +98,7 @@
         {
           "kind": "method",
           "name": "Load",
-          "line": 46,
+          "line": 47,
           "signature": "pub func Load(&self) -> T",
           "typeParams": [],
           "params": [],
@@ -130,7 +130,7 @@
         {
           "kind": "method",
           "name": "LoadWith",
-          "line": 58,
+          "line": 59,
           "signature": "pub func LoadWith(&self, order: MemoryOrder) -> T",
           "typeParams": [],
           "params": [{ "name": "order", "type": "MemoryOrder" }],
@@ -162,7 +162,7 @@
         {
           "kind": "method",
           "name": "Store",
-          "line": 74,
+          "line": 75,
           "signature": "pub func Store(&self, value: T)",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -194,7 +194,7 @@
         {
           "kind": "method",
           "name": "StoreWith",
-          "line": 86,
+          "line": 87,
           "signature": "pub func StoreWith(&self, value: T, order: MemoryOrder)",
           "typeParams": [],
           "params": [
@@ -232,7 +232,7 @@
         {
           "kind": "method",
           "name": "Exchange",
-          "line": 103,
+          "line": 102,
           "signature": "pub func Exchange(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -264,27 +264,27 @@
         {
           "kind": "method",
           "name": "CompareExchange",
-          "line": 116,
-          "signature": "pub func CompareExchange(&self, expected: T, desired: T) -> T throws T",
+          "line": 115,
+          "signature": "pub func CompareExchange(&self, expected: T, desired: T) -> !T",
           "typeParams": [],
           "params": [
             { "name": "expected", "type": "T" },
             { "name": "desired", "type": "T" }
           ],
           "receiver": "&Atomic<T>",
-          "returnType": "T ! T",
+          "returnType": "! T",
           "value": null,
           "conformance": null,
           "public": true,
           "doc": {
             "summary": "Replaces the value with `desired` if it is `expected`, as one step, with sequential consistency.",
-            "markdown": "Replaces the value with `desired` if it is `expected`, as one step, with sequential consistency.\nSucceeds with the value before, which is `expected`, when it replaced it, and fails with the value it found\notherwise, so a loop can retry from what is really there. Never fails spuriously.",
+            "markdown": "Replaces the value with `desired` if it is `expected`, as one step, with sequential consistency.\nSucceeds with nothing when it replaced it, since the value before was `expected`, and fails with the value it\nfound otherwise, so a loop can retry from what is really there. Never fails spuriously.",
             "typeParams": [],
             "params": [
               { "name": "expected", "markdown": "the value that must be there" },
               { "name": "desired", "markdown": "the value to put there" }
             ],
-            "returns": "the value before, as success when it was replaced and as failure when it was not",
+            "returns": "nothing when the value was replaced, or throws the value found when it was not",
             "see": ["https://rux-lang.dev/docs/api/atomic/atomic#compare-exchange"],
             "deprecated": null
           },
@@ -302,8 +302,8 @@
         {
           "kind": "method",
           "name": "CompareExchangeWith",
-          "line": 138,
-          "signature": "pub func CompareExchangeWith(&self, expected: T, desired: T, success: MemoryOrder, failure: MemoryOrder) -> T throws T",
+          "line": 137,
+          "signature": "pub func CompareExchangeWith(&self, expected: T, desired: T, success: MemoryOrder, failure: MemoryOrder) -> !T",
           "typeParams": [],
           "params": [
             { "name": "expected", "type": "T" },
@@ -312,7 +312,7 @@
             { "name": "failure", "type": "MemoryOrder" }
           ],
           "receiver": "&Atomic<T>",
-          "returnType": "T ! T",
+          "returnType": "! T",
           "value": null,
           "conformance": null,
           "public": true,
@@ -326,7 +326,7 @@
               { "name": "success", "markdown": "the order when the value is replaced" },
               { "name": "failure", "markdown": "the order when it is not" }
             ],
-            "returns": "the value before, as success when it was replaced and as failure when it was not",
+            "returns": "nothing when the value was replaced, or throws the value found when it was not",
             "see": ["https://rux-lang.dev/docs/api/atomic/atomic#compare-exchange-with"],
             "deprecated": null
           },
@@ -344,7 +344,7 @@
         {
           "kind": "method",
           "name": "FetchAdd",
-          "line": 177,
+          "line": 176,
           "signature": "pub func FetchAdd(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -376,7 +376,7 @@
         {
           "kind": "method",
           "name": "FetchSub",
-          "line": 189,
+          "line": 188,
           "signature": "pub func FetchSub(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -408,7 +408,7 @@
         {
           "kind": "method",
           "name": "FetchAddWith",
-          "line": 201,
+          "line": 200,
           "signature": "pub func FetchAddWith(&self, value: T, order: MemoryOrder) -> T",
           "typeParams": [],
           "params": [
@@ -446,7 +446,7 @@
         {
           "kind": "method",
           "name": "FetchSubWith",
-          "line": 222,
+          "line": 221,
           "signature": "pub func FetchSubWith(&self, value: T, order: MemoryOrder) -> T",
           "typeParams": [],
           "params": [
@@ -484,7 +484,7 @@
         {
           "kind": "method",
           "name": "FetchAnd",
-          "line": 241,
+          "line": 240,
           "signature": "pub func FetchAnd(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -516,7 +516,7 @@
         {
           "kind": "method",
           "name": "FetchOr",
-          "line": 252,
+          "line": 251,
           "signature": "pub func FetchOr(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -548,7 +548,7 @@
         {
           "kind": "method",
           "name": "FetchXor",
-          "line": 264,
+          "line": 263,
           "signature": "pub func FetchXor(&self, value: T) -> T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
@@ -580,7 +580,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 279,
+          "line": 278,
           "signature": "pub const Zero: Atomic<int8>",
           "typeParams": [],
           "params": [],
@@ -612,7 +612,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 286,
+          "line": 285,
           "signature": "pub const Zero: Atomic<int16>",
           "typeParams": [],
           "params": [],
@@ -644,7 +644,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 293,
+          "line": 292,
           "signature": "pub const Zero: Atomic<int32>",
           "typeParams": [],
           "params": [],
@@ -676,7 +676,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 300,
+          "line": 299,
           "signature": "pub const Zero: Atomic<int64>",
           "typeParams": [],
           "params": [],
@@ -708,7 +708,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 307,
+          "line": 306,
           "signature": "pub const Zero: Atomic<int>",
           "typeParams": [],
           "params": [],
@@ -740,7 +740,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 314,
+          "line": 313,
           "signature": "pub const Zero: Atomic<uint8>",
           "typeParams": [],
           "params": [],
@@ -772,7 +772,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 321,
+          "line": 320,
           "signature": "pub const Zero: Atomic<uint16>",
           "typeParams": [],
           "params": [],
@@ -804,7 +804,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 328,
+          "line": 327,
           "signature": "pub const Zero: Atomic<uint32>",
           "typeParams": [],
           "params": [],
@@ -836,7 +836,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 335,
+          "line": 334,
           "signature": "pub const Zero: Atomic<uint64>",
           "typeParams": [],
           "params": [],
@@ -868,7 +868,7 @@
         {
           "kind": "constant",
           "name": "Zero",
-          "line": 342,
+          "line": 341,
           "signature": "pub const Zero: Atomic<uint>",
           "typeParams": [],
           "params": [],
@@ -900,7 +900,7 @@
         {
           "kind": "constant",
           "name": "False",
-          "line": 349,
+          "line": 348,
           "signature": "pub const False: Atomic<bool>",
           "typeParams": [],
           "params": [],

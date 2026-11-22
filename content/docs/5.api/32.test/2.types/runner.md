@@ -26,7 +26,7 @@ Running a table of tests with filters, as the generated test runner does.
 ```rux
 pub struct TestCase {
     pub name: char8[..];
-    pub run: func() throws TestFailure;
+    pub run: func() -> !TestFailure;
 }
 ```
 
@@ -36,10 +36,10 @@ A test: its name, which the runner reports and filters on, and the function that
 
 **Fields**
 
-| Name   | Type                        | Description                                      |
-| ------ | --------------------------- | ------------------------------------------------ |
-| `name` | `char8[..]`                 | The test's name, such as `Parser::ReadsNumbers`. |
-| `run`  | `func() throws TestFailure` | What runs it.                                    |
+| Name   | Type                     | Description                                      |
+| ------ | ------------------------ | ------------------------------------------------ |
+| `name` | `char8[..]`              | The test's name, such as `Parser::ReadsNumbers`. |
+| `run`  | `func() -> !TestFailure` | What runs it.                                    |
 
 <h2 id="test-options"><code>TestOptions</code></h2>
 
@@ -71,10 +71,10 @@ Which tests a run chooses and how it reports them. `Copy`.
 
 **Constructors**
 
-<h3 id="test-options-new"><code>TestOptions</code></h3>
+<h3 id="test-options-new"><code>New</code></h3>
 
 ```rux
-pub func TestOptions() -> TestOptions
+pub func New() -> TestOptions
 ```
 
 Options that run every test and report each one.

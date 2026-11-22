@@ -9,7 +9,7 @@ api:
   kind: variant
   version: 0.1.0
   source: Src/Error.rux
-  line: 15
+  line: 16
 seo:
   title: "CommandLineError — CommandLine API"
   description: Why the arguments did not match the command.
@@ -61,7 +61,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes what went wrong, naming the argument, option or positional involved.
@@ -76,7 +76,7 @@ The text is lower case without a final full stop, such as `unknown option '--fro
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Error.rux#L108)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Error.rux#L109)
 
 ## Implements Debug
 
@@ -89,7 +89,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`: the description already names everything involved.
@@ -102,4 +102,4 @@ The failures [`WriteDisplay`](/docs/api/commandline/command-line-error#write-dis
 
 **Returns**: success when the whole description was accepted
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Error.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/CommandLine/Src/Error.rux#L164)

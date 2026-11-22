@@ -64,7 +64,7 @@
       "displayName": "Channel<T>",
       "module": "Channel",
       "source": "Src/Channel.rux",
-      "line": 32,
+      "line": 33,
       "signature": "pub struct Channel<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -82,7 +82,7 @@
           "name": "block",
           "type": "*var ChannelBlock<T>",
           "public": false,
-          "line": 33,
+          "line": 34,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -100,10 +100,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Channel",
-          "line": 41,
-          "signature": "pub func Channel(capacity: uint) -> Channel<T>",
+          "kind": "associated",
+          "name": "New",
+          "line": 42,
+          "signature": "pub func New(capacity: uint) -> Channel<T>",
           "typeParams": [],
           "params": [{ "name": "capacity", "type": "uint" }],
           "receiver": null,
@@ -134,7 +134,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 58,
+          "line": 59,
           "signature": "pub func Clone(&self) -> Channel<T>",
           "typeParams": [],
           "params": [],
@@ -166,8 +166,8 @@
         {
           "kind": "method",
           "name": "Send",
-          "line": 69,
-          "signature": "pub func Send(&self, value: T) throws T",
+          "line": 70,
+          "signature": "pub func Send(&self, value: T) -> !T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&Channel<T>",
@@ -198,8 +198,8 @@
         {
           "kind": "method",
           "name": "TrySend",
-          "line": 99,
-          "signature": "pub func TrySend(&self, value: T) throws T",
+          "line": 100,
+          "signature": "pub func TrySend(&self, value: T) -> !T",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": "&Channel<T>",
@@ -230,7 +230,7 @@
         {
           "kind": "method",
           "name": "Receive",
-          "line": 117,
+          "line": 118,
           "signature": "pub func Receive(&self) -> T?",
           "typeParams": [],
           "params": [],
@@ -262,7 +262,7 @@
         {
           "kind": "method",
           "name": "TryReceive",
-          "line": 147,
+          "line": 148,
           "signature": "pub func TryReceive(&self) -> T?",
           "typeParams": [],
           "params": [],
@@ -294,7 +294,7 @@
         {
           "kind": "method",
           "name": "Close",
-          "line": 166,
+          "line": 167,
           "signature": "pub func Close(&self)",
           "typeParams": [],
           "params": [],
@@ -326,7 +326,7 @@
         {
           "kind": "method",
           "name": "IsClosed",
-          "line": 186,
+          "line": 185,
           "signature": "pub func IsClosed(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -358,7 +358,7 @@
         {
           "kind": "method",
           "name": "Length",
-          "line": 201,
+          "line": 200,
           "signature": "pub func Length(&self) -> uint",
           "typeParams": [],
           "params": [],
@@ -389,9 +389,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Channel",
-          "line": 237,
-          "signature": "func ~Channel(&var self)",
+          "name": "~",
+          "line": 236,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Channel<T>",
@@ -438,7 +438,7 @@
       "displayName": "Semaphore",
       "module": "Counters",
       "source": "Src/Counters.rux",
-      "line": 18,
+      "line": 19,
       "signature": "pub struct Semaphore",
       "typeParams": [],
       "doc": {
@@ -456,7 +456,7 @@
           "name": "block",
           "type": "*var SemaphoreBlock",
           "public": false,
-          "line": 19,
+          "line": 20,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -474,10 +474,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Semaphore",
-          "line": 27,
-          "signature": "pub func Semaphore(permits: uint32) -> Semaphore",
+          "kind": "associated",
+          "name": "New",
+          "line": 28,
+          "signature": "pub func New(permits: uint32) -> Semaphore",
           "typeParams": [],
           "params": [{ "name": "permits", "type": "uint32" }],
           "receiver": null,
@@ -508,7 +508,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 34,
+          "line": 35,
           "signature": "pub func Clone(&self) -> Semaphore",
           "typeParams": [],
           "params": [],
@@ -540,7 +540,7 @@
         {
           "kind": "method",
           "name": "Acquire",
-          "line": 43,
+          "line": 44,
           "signature": "pub func Acquire(&self)",
           "typeParams": [],
           "params": [],
@@ -572,7 +572,7 @@
         {
           "kind": "method",
           "name": "TryAcquire",
-          "line": 59,
+          "line": 58,
           "signature": "pub func TryAcquire(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -604,7 +604,7 @@
         {
           "kind": "method",
           "name": "Release",
-          "line": 80,
+          "line": 79,
           "signature": "pub func Release(&self, count: uint32)",
           "typeParams": [],
           "params": [{ "name": "count", "type": "uint32" }],
@@ -636,7 +636,7 @@
         {
           "kind": "method",
           "name": "Available",
-          "line": 97,
+          "line": 94,
           "signature": "pub func Available(&self) -> uint32",
           "typeParams": [],
           "params": [],
@@ -667,9 +667,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Semaphore",
-          "line": 103,
-          "signature": "func ~Semaphore(&var self)",
+          "name": "~",
+          "line": 100,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Semaphore",
@@ -716,7 +716,7 @@
       "displayName": "Barrier",
       "module": "Counters",
       "source": "Src/Counters.rux",
-      "line": 125,
+      "line": 120,
       "signature": "pub struct Barrier",
       "typeParams": [],
       "doc": {
@@ -734,7 +734,7 @@
           "name": "block",
           "type": "*var BarrierBlock",
           "public": false,
-          "line": 126,
+          "line": 121,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -752,10 +752,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Barrier",
-          "line": 134,
-          "signature": "pub func Barrier(parties: uint32) -> Barrier",
+          "kind": "associated",
+          "name": "New",
+          "line": 129,
+          "signature": "pub func New(parties: uint32) -> Barrier",
           "typeParams": [],
           "params": [{ "name": "parties", "type": "uint32" }],
           "receiver": null,
@@ -786,7 +786,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 144,
+          "line": 139,
           "signature": "pub func Clone(&self) -> Barrier",
           "typeParams": [],
           "params": [],
@@ -818,7 +818,7 @@
         {
           "kind": "method",
           "name": "Wait",
-          "line": 154,
+          "line": 149,
           "signature": "pub func Wait(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -849,9 +849,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Barrier",
-          "line": 185,
-          "signature": "func ~Barrier(&var self)",
+          "name": "~",
+          "line": 178,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Barrier",
@@ -898,7 +898,7 @@
       "displayName": "WaitGroup",
       "module": "Counters",
       "source": "Src/Counters.rux",
-      "line": 204,
+      "line": 195,
       "signature": "pub struct WaitGroup",
       "typeParams": [],
       "doc": {
@@ -916,7 +916,7 @@
           "name": "block",
           "type": "*var WaitGroupBlock",
           "public": false,
-          "line": 205,
+          "line": 196,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -934,10 +934,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "WaitGroup",
-          "line": 212,
-          "signature": "pub func WaitGroup() -> WaitGroup",
+          "kind": "associated",
+          "name": "New",
+          "line": 203,
+          "signature": "pub func New() -> WaitGroup",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -968,7 +968,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 219,
+          "line": 210,
           "signature": "pub func Clone(&self) -> WaitGroup",
           "typeParams": [],
           "params": [],
@@ -1000,7 +1000,7 @@
         {
           "kind": "method",
           "name": "Add",
-          "line": 229,
+          "line": 220,
           "signature": "pub func Add(&self, count: uint32)",
           "typeParams": [],
           "params": [{ "name": "count", "type": "uint32" }],
@@ -1032,7 +1032,7 @@
         {
           "kind": "method",
           "name": "Done",
-          "line": 238,
+          "line": 229,
           "signature": "pub func Done(&self)",
           "typeParams": [],
           "params": [],
@@ -1064,7 +1064,7 @@
         {
           "kind": "method",
           "name": "Wait",
-          "line": 249,
+          "line": 240,
           "signature": "pub func Wait(&self)",
           "typeParams": [],
           "params": [],
@@ -1095,9 +1095,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~WaitGroup",
-          "line": 261,
-          "signature": "func ~WaitGroup(&var self)",
+          "name": "~",
+          "line": 252,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var WaitGroup",
@@ -1212,10 +1212,10 @@
           ]
         },
         {
-          "kind": "constructor",
-          "name": "Lock",
+          "kind": "associated",
+          "name": "New",
           "line": 27,
-          "signature": "pub func Lock() -> Lock",
+          "signature": "pub func New() -> Lock",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -1426,10 +1426,10 @@
           ]
         },
         {
-          "kind": "constructor",
-          "name": "Once",
+          "kind": "associated",
+          "name": "New",
           "line": 79,
-          "signature": "pub func Once() -> Once",
+          "signature": "pub func New() -> Once",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -1492,7 +1492,7 @@
         {
           "kind": "method",
           "name": "IsCompleted",
-          "line": 118,
+          "line": 116,
           "signature": "pub func IsCompleted(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -1540,7 +1540,7 @@
       "displayName": "Mutex<T>",
       "module": "Mutex",
       "source": "Src/Mutex.rux",
-      "line": 24,
+      "line": 25,
       "signature": "pub struct Mutex<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1558,7 +1558,7 @@
           "name": "block",
           "type": "*var MutexBlock<T>",
           "public": false,
-          "line": 25,
+          "line": 26,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1576,10 +1576,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Mutex",
-          "line": 41,
-          "signature": "pub func Mutex(value: T) -> Mutex<T>",
+          "kind": "associated",
+          "name": "New",
+          "line": 42,
+          "signature": "pub func New(value: T) -> Mutex<T>",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": null,
@@ -1610,7 +1610,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 48,
+          "line": 49,
           "signature": "pub func Clone(&self) -> Mutex<T>",
           "typeParams": [],
           "params": [],
@@ -1642,7 +1642,7 @@
         {
           "kind": "method",
           "name": "Lock",
-          "line": 59,
+          "line": 60,
           "signature": "pub func Lock(&self) -> MutexGuard<T>",
           "typeParams": [],
           "params": [],
@@ -1674,7 +1674,7 @@
         {
           "kind": "method",
           "name": "TryLock",
-          "line": 72,
+          "line": 71,
           "signature": "pub func TryLock(&self) -> MutexGuard<T>?",
           "typeParams": [],
           "params": [],
@@ -1705,9 +1705,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Mutex",
-          "line": 82,
-          "signature": "func ~Mutex(&var self)",
+          "name": "~",
+          "line": 81,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Mutex<T>",
@@ -1754,7 +1754,7 @@
       "displayName": "MutexGuard<T>",
       "module": "Mutex",
       "source": "Src/Mutex.rux",
-      "line": 32,
+      "line": 33,
       "signature": "pub struct MutexGuard<T>",
       "typeParams": [{ "name": "T", "bounds": [] }],
       "doc": {
@@ -1772,7 +1772,7 @@
           "name": "block",
           "type": "*var MutexBlock<T>",
           "public": false,
-          "line": 33,
+          "line": 34,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1792,7 +1792,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 99,
+          "line": 96,
           "signature": "pub func Get(&self) -> &T",
           "typeParams": [],
           "params": [],
@@ -1824,7 +1824,7 @@
         {
           "kind": "method",
           "name": "GetMutable",
-          "line": 111,
+          "line": 108,
           "signature": "pub func GetMutable(&var self) -> &var T",
           "typeParams": [],
           "params": [],
@@ -1856,7 +1856,7 @@
         {
           "kind": "method",
           "name": "IsLocked",
-          "line": 121,
+          "line": 118,
           "signature": "pub func IsLocked(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -1888,7 +1888,7 @@
         {
           "kind": "method",
           "name": "Unlock",
-          "line": 127,
+          "line": 124,
           "signature": "pub func Unlock(&var self)",
           "typeParams": [],
           "params": [],
@@ -1919,9 +1919,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~MutexGuard",
-          "line": 141,
-          "signature": "func ~MutexGuard(&var self)",
+          "name": "~",
+          "line": 136,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var MutexGuard<T>",
@@ -1968,7 +1968,7 @@
       "displayName": "Condition",
       "module": "Mutex",
       "source": "Src/Mutex.rux",
-      "line": 156,
+      "line": 151,
       "signature": "pub struct Condition",
       "typeParams": [],
       "doc": {
@@ -1986,7 +1986,7 @@
           "name": "block",
           "type": "*var ConditionBlock",
           "public": false,
-          "line": 157,
+          "line": 152,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -2004,10 +2004,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Condition",
-          "line": 164,
-          "signature": "pub func Condition() -> Condition",
+          "kind": "associated",
+          "name": "New",
+          "line": 159,
+          "signature": "pub func New() -> Condition",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -2038,7 +2038,7 @@
         {
           "kind": "method",
           "name": "Clone",
-          "line": 171,
+          "line": 166,
           "signature": "pub func Clone(&self) -> Condition",
           "typeParams": [],
           "params": [],
@@ -2070,7 +2070,7 @@
         {
           "kind": "method",
           "name": "Wait",
-          "line": 182,
+          "line": 177,
           "signature": "pub func Wait<T>(&self, guard: &var MutexGuard<T>)",
           "typeParams": [{ "name": "T", "bounds": [] }],
           "params": [{ "name": "guard", "type": "&var MutexGuard<T>" }],
@@ -2102,7 +2102,7 @@
         {
           "kind": "method",
           "name": "WaitFor",
-          "line": 192,
+          "line": 187,
           "signature": "pub func WaitFor<T>(&self, guard: &var MutexGuard<T>, timeout: Duration) -> bool",
           "typeParams": [{ "name": "T", "bounds": [] }],
           "params": [
@@ -2140,7 +2140,7 @@
         {
           "kind": "method",
           "name": "NotifyOne",
-          "line": 200,
+          "line": 195,
           "signature": "pub func NotifyOne(&self)",
           "typeParams": [],
           "params": [],
@@ -2172,7 +2172,7 @@
         {
           "kind": "method",
           "name": "NotifyAll",
-          "line": 211,
+          "line": 204,
           "signature": "pub func NotifyAll(&self)",
           "typeParams": [],
           "params": [],
@@ -2203,9 +2203,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Condition",
-          "line": 239,
-          "signature": "func ~Condition(&var self)",
+          "name": "~",
+          "line": 230,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Condition",
@@ -2288,10 +2288,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "RwLock",
+          "kind": "associated",
+          "name": "New",
           "line": 48,
-          "signature": "pub func RwLock(value: T) -> RwLock<T>",
+          "signature": "pub func New(value: T) -> RwLock<T>",
           "typeParams": [],
           "params": [{ "name": "value", "type": "T" }],
           "receiver": null,
@@ -2417,9 +2417,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~RwLock",
+          "name": "~",
           "line": 119,
-          "signature": "func ~RwLock(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var RwLock<T>",
@@ -2504,7 +2504,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 135,
+          "line": 133,
           "signature": "pub func Get(&self) -> &T",
           "typeParams": [],
           "params": [],
@@ -2535,9 +2535,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~ReadGuard",
-          "line": 140,
-          "signature": "func ~ReadGuard(&var self)",
+          "name": "~",
+          "line": 138,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var ReadGuard<T>",
@@ -2622,7 +2622,7 @@
         {
           "kind": "method",
           "name": "Get",
-          "line": 163,
+          "line": 159,
           "signature": "pub func Get(&self) -> &T",
           "typeParams": [],
           "params": [],
@@ -2654,7 +2654,7 @@
         {
           "kind": "method",
           "name": "GetMutable",
-          "line": 172,
+          "line": 168,
           "signature": "pub func GetMutable(&var self) -> &var T",
           "typeParams": [],
           "params": [],
@@ -2685,9 +2685,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~WriteGuard",
-          "line": 177,
-          "signature": "func ~WriteGuard(&var self)",
+          "name": "~",
+          "line": 173,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var WriteGuard<T>",

@@ -34,7 +34,7 @@ Copy, holding its text inline and owning nothing. Equality and ordering compare 
 <h3 id="generate"><code>Generate</code></h3>
 
 ```rux
-pub func Generate() -> NanoId throws EntropyError
+pub func Generate() -> NanoId ! EntropyError
 ```
 
 A new identifier from the operating system's generator.
@@ -48,7 +48,7 @@ supply random bytes, and produces no identifier in that case.
 <h3 id="parse"><code>Parse</code></h3>
 
 ```rux
-pub func Parse(text: char8[..]) -> NanoId throws NanoIdParseError
+pub func Parse(text: char8[..]) -> NanoId ! NanoIdParseError
 ```
 
 Reads a standard identifier from its text.
@@ -127,7 +127,7 @@ pub func WriteDisplay(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 Writes the identifier's twenty-one characters.
@@ -153,7 +153,7 @@ pub func WriteDebug(
     &self,
     writer: &var TextWriter,
     spec: FormatSpec
-) throws FormatError
+) -> !FormatError
 ```
 
 The same text as `Display`: an identifier has one reading.

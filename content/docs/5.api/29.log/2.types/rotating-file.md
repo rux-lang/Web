@@ -44,7 +44,7 @@ pub func Open(
     path: Path,
     limit: uint64,
     keep: uint
-) -> RotatingFile throws IoError
+) -> RotatingFile ! IoError
 ```
 
 Opens `path` for appending, creating it if missing, to be moved aside before it grows past `limit` bytes.
@@ -77,7 +77,7 @@ How many bytes the current file holds.
 <h3 id="rotate"><code>Rotate</code></h3>
 
 ```rux
-pub func Rotate(&var self) throws IoError
+pub func Rotate(&var self) -> !IoError
 ```
 
 Moves the current file aside now and starts an empty one, whatever its size.
@@ -91,7 +91,7 @@ and every later write fails with `InvalidHandle` until a rotation succeeds.
 <h3 id="close"><code>Close</code></h3>
 
 ```rux
-pub func Close(&var self) throws IoError
+pub func Close(&var self) -> !IoError
 ```
 
 Closes the current file, reporting what closing it said.
@@ -110,7 +110,7 @@ Closes the current file, reporting what closing it said.
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Writes `bytes`, moving the current file aside first when they would take it past the limit.
@@ -127,7 +127,7 @@ An empty current file is never moved aside, so a write larger than the limit lan
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Flushes the current file, which holds nothing back.

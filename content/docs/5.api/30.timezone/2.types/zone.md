@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Zone.rux
-  line: 16
+  line: 17
 seo:
   title: "Time zones — TimeZone API"
   description: "A place's rules: loading them, and converting between UTC and local time."
@@ -34,7 +34,7 @@ pub struct ZoneState {
 The local time a zone keeps at a moment: its offset, whether it is daylight time, and its abbreviation.
 `Copy`. The abbreviation is a view of the zone's own text, valid while the zone lives.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L17)
 
 **Fields**
 
@@ -56,7 +56,7 @@ pub enum LocalTimeKind: uint8 {
 
 What a local date and time is in a zone. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L28)
 
 **Cases**
 
@@ -81,7 +81,7 @@ For a unique time both moments are the same. For an ambiguous one they are its f
 skipped one they are what it would mean under the offset after the change and before it; `Later` is the one
 most programs want, as it keeps the wall-clock distance from the hour before.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L42)
 
 **Fields**
 
@@ -101,7 +101,7 @@ pub struct TimeZone {
 
 A time zone, built from a TZif file, a POSIX rule, or the system's settings. Not copied.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L53)
 
 **Associated functions**
 
@@ -111,7 +111,7 @@ A time zone, built from a TZif file, a POSIX rule, or the system's settings. Not
 pub func Load(
     allocator: Allocator,
     name: char8[..]
-) -> TimeZone throws TimeZoneError
+) -> TimeZone ! TimeZoneError
 ```
 
 Loads the zone named `name` from the tz database: from the directory `TZDIR` names, or else, on the Unix
@@ -124,12 +124,12 @@ systems, from the directories the database is kept in.
 
 **Returns**: the zone, or fails with `NotFound`, `InvalidName` or `InvalidData`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L102)
 
 <h3 id="local"><code>Local</code></h3>
 
 ```rux
-pub func Local(allocator: Allocator) -> TimeZone throws TimeZoneError
+pub func Local(allocator: Allocator) -> TimeZone ! TimeZoneError
 ```
 
 The zone the system is set to.
@@ -143,7 +143,7 @@ which describe the current year's practice and so not the zone's history.
 
 **Returns**: the zone, or fails when the system's setting cannot be read
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L149)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L150)
 
 <h3 id="utc"><code>Utc</code></h3>
 
@@ -160,7 +160,7 @@ Cannot fail: its rule is a constant every reader accepts, and running out of mem
 
 **Returns**: the zone
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L93)
 
 <h3 id="from-rule"><code>FromRule</code></h3>
 
@@ -169,7 +169,7 @@ pub func FromRule(
     allocator: Allocator,
     name: char8[..],
     rule: char8[..]
-) -> TimeZone throws TimeZoneError
+) -> TimeZone ! TimeZoneError
 ```
 
 A zone kept by the POSIX `TZ` rule `rule`, such as `EST5EDT,M3.2.0,M11.1.0`.
@@ -182,7 +182,7 @@ A zone kept by the POSIX `TZ` rule `rule`, such as `EST5EDT,M3.2.0,M11.1.0`.
 
 **Returns**: the zone, or fails with `InvalidRule`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L105)
 
 <h3 id="from-tzif"><code>FromTzif</code></h3>
 
@@ -191,7 +191,7 @@ pub func FromTzif(
     allocator: Allocator,
     name: char8[..],
     data: byte[..]
-) -> TimeZone throws TimeZoneError
+) -> TimeZone ! TimeZoneError
 ```
 
 A zone read from TZif data, the format of the files in a time-zone directory.
@@ -206,7 +206,7 @@ records are skipped, so a zone from the `right/` directories reads as its `posix
 
 **Returns**: the zone, or fails with `InvalidData`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L118)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L119)
 
 **Methods**
 
@@ -220,7 +220,7 @@ The zone's name.
 
 **Returns**: the name it was given or loaded under
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L194)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L195)
 
 <h3 id="state-at"><code>StateAt</code></h3>
 
@@ -236,7 +236,7 @@ The local time the zone keeps at `moment`.
 
 **Returns**: its offset, whether it is daylight time, and its abbreviation
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L202)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L203)
 
 <h3 id="offset-at"><code>OffsetAt</code></h3>
 
@@ -252,7 +252,7 @@ The zone's offset from UTC at `moment`.
 
 **Returns**: the offset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L215)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L216)
 
 <h3 id="to-local"><code>ToLocal</code></h3>
 
@@ -268,7 +268,7 @@ The local date and time `moment` is in the zone, with its offset.
 
 **Returns**: the local date, time and offset
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L223)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L224)
 
 <h3 id="resolve"><code>Resolve</code></h3>
 
@@ -284,4 +284,4 @@ The moments the local date and time `local` stands for in the zone.
 
 **Returns**: whether it happened once, twice or never, and the candidate moments
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L232)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/TimeZone/Src/Zone.rux#L233)

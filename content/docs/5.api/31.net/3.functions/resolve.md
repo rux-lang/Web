@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Resolve.rux
-  line: 29
+  line: 30
 seo:
   title: "Name resolution — Net API"
   description: The addresses a host name resolves to.
@@ -28,13 +28,13 @@ pub func Resolve(
     allocator: Allocator,
     host: char8[..],
     port: uint16
-) -> Vector<SocketAddress> throws IoError
+) -> Vector<SocketAddress> ! IoError
 ```
 
 The addresses of `host`, each with `port`, in the order the resolver prefers them, without repeats.
 A host that is a numeric IPv4 or IPv6 address gives just that address.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Resolve.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Resolve.rux#L30)
 
 **Parameters**
 

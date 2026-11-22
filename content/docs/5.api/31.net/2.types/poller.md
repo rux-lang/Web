@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Poll.rux
-  line: 105
+  line: 115
 seo:
   title: "Poller — Net API"
   description: Waits on many sockets at once.
@@ -31,10 +31,10 @@ Not copied.
 
 ## Constructors
 
-<h3 id="new"><code>Poller</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Poller(allocator: Allocator) -> Poller throws IoError
+pub func New(allocator: Allocator) -> Poller ! IoError
 ```
 
 A poller with no sockets registered.
@@ -45,7 +45,7 @@ A poller with no sockets registered.
 
 **Returns**: the poller, or why the system would not make one
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L132)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L142)
 
 ## Methods
 
@@ -57,7 +57,7 @@ pub func Register(
     source: PollSource,
     token: uint64,
     interest: Interest
-) throws IoError
+) -> !IoError
 ```
 
 Watches `source` for `interest`, reporting it with `token`.
@@ -70,7 +70,7 @@ Watches `source` for `interest`, reporting it with `token`.
 
 **Returns**: success, or `AlreadyExists` when the socket is registered already
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L158)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L168)
 
 <h3 id="modify"><code>Modify</code></h3>
 
@@ -80,7 +80,7 @@ pub func Modify(
     source: PollSource,
     token: uint64,
     interest: Interest
-) throws IoError
+) -> !IoError
 ```
 
 Changes what a registered socket is watched for, and the token it is reported with.
@@ -93,7 +93,7 @@ Changes what a registered socket is watched for, and the token it is reported wi
 
 **Returns**: success, or `NotFound` when the socket is not registered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L168)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L178)
 
 <h3 id="deregister"><code>Deregister</code></h3>
 
@@ -101,7 +101,7 @@ Changes what a registered socket is watched for, and the token it is reported wi
 pub func Deregister(
     &var self,
     source: PollSource
-) throws IoError
+) -> !IoError
 ```
 
 Stops watching a socket.
@@ -112,7 +112,7 @@ Stops watching a socket.
 
 **Returns**: success, or `NotFound` when the socket is not registered
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L176)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L186)
 
 <h3 id="wait"><code>Wait</code></h3>
 
@@ -121,7 +121,7 @@ pub func Wait(
     &var self,
     events: var PollEvent[..],
     timeout: Duration?
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Waits until a registered socket is ready or `timeout` passes, and reports the ready sockets into `events`.
@@ -133,15 +133,15 @@ Waits until a registered socket is ready or `timeout` passes, and reports the re
 
 **Returns**: how many events were filled; zero after the timeout or when a signal ended the wait early
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L201)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L211)
 
 ## Destructor
 
 ```rux
-func ~Poller(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L403)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L413)
 
 ## Related
 
@@ -156,7 +156,7 @@ pub struct Interest {
 
 The readiness a registration waits for. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L35)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L45)
 
 **Fields**
 
@@ -177,7 +177,7 @@ Waiting for something to read, or a connection to accept.
 
 **Returns**: the interest
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L46)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L56)
 
 <h4 id="interest-writable"><code>Writable</code></h4>
 
@@ -189,7 +189,7 @@ Waiting for room to write.
 
 **Returns**: the interest
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L63)
 
 <h4 id="interest-both"><code>Both</code></h4>
 
@@ -201,7 +201,7 @@ Waiting for either.
 
 **Returns**: the interest
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L60)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L70)
 
 <h3 id="poll-source"><code>PollSource</code></h3>
 
@@ -214,7 +214,7 @@ pub struct PollSource {
 A socket as a [`Poller`](/docs/api/net/poller) watches it, from the socket's `PollSource`. It does not keep the socket open, so it is
 deregistered before the socket is dropped. `Copy`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L68)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L78)
 
 <h3 id="poll-event"><code>PollEvent</code></h3>
 
@@ -230,7 +230,7 @@ pub struct PollEvent {
 One socket a wait found ready. `Copy`.
 A socket ready both to read and to write may be reported once with both, or once for each.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L85)
 
 **Fields**
 
@@ -243,14 +243,14 @@ A socket ready both to read and to write may be reported once with both, or once
 
 **Constructors**
 
-<h4 id="poll-event-new"><code>PollEvent</code></h4>
+<h4 id="poll-event-new"><code>New</code></h4>
 
 ```rux
-pub func PollEvent() -> PollEvent
+pub func New() -> PollEvent
 ```
 
 An event for nothing, to fill the room a wait reports into.
 
 **Returns**: the event
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Poll.rux#L100)

@@ -190,7 +190,7 @@
       "module": "Base32",
       "source": "Src/Base32.rux",
       "line": 122,
-      "signature": "pub func Base32Encode(bytes: byte[..], into: var char8[..], form: Base32Variant) -> uint throws FormatError",
+      "signature": "pub func Base32Encode(bytes: byte[..], into: var char8[..], form: Base32Variant) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `bytes` as Base32 into `into`.",
@@ -232,7 +232,7 @@
       "module": "Base32",
       "source": "Src/Base32.rux",
       "line": 160,
-      "signature": "pub func Base32Encode(text: char8[..], into: var char8[..], form: Base32Variant) -> uint throws FormatError",
+      "signature": "pub func Base32Encode(text: char8[..], into: var char8[..], form: Base32Variant) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the bytes of `text` as Base32 into `into`.",
@@ -274,7 +274,7 @@
       "module": "Base32",
       "source": "Src/Base32.rux",
       "line": 219,
-      "signature": "pub func Base32DecodedLength(text: char8[..], form: Base32Variant) -> uint throws DecodeError",
+      "signature": "pub func Base32DecodedLength(text: char8[..], form: Base32Variant) -> uint ! DecodeError",
       "typeParams": [],
       "doc": {
         "summary": "How many bytes the Base32 text decodes to, after checking its length and the placement of its padding.",
@@ -312,7 +312,7 @@
       "module": "Base32",
       "source": "Src/Base32.rux",
       "line": 236,
-      "signature": "pub func Base32Decode(text: char8[..], into: var byte[..], form: Base32Variant) -> uint throws DecodeError",
+      "signature": "pub func Base32Decode(text: char8[..], into: var byte[..], form: Base32Variant) -> uint ! DecodeError",
       "typeParams": [],
       "doc": {
         "summary": "Reads Base32 text in `form` into `into`.",
@@ -386,7 +386,7 @@
       "module": "Base58",
       "source": "Src/Base58.rux",
       "line": 64,
-      "signature": "pub func Base58Encode(bytes: byte[..], into: var char8[..]) -> uint throws FormatError",
+      "signature": "pub func Base58Encode(bytes: byte[..], into: var char8[..]) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `bytes` as Base58 into the front of `into`.",
@@ -424,7 +424,7 @@
       "module": "Base58",
       "source": "Src/Base58.rux",
       "line": 127,
-      "signature": "pub func Base58Encode(text: char8[..], into: var char8[..]) -> uint throws FormatError",
+      "signature": "pub func Base58Encode(text: char8[..], into: var char8[..]) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the bytes of `text` as Base58 into the front of `into`.",
@@ -462,7 +462,7 @@
       "module": "Base58",
       "source": "Src/Base58.rux",
       "line": 141,
-      "signature": "pub func Base58Decode(text: char8[..], into: var byte[..]) -> uint throws DecodeError",
+      "signature": "pub func Base58Decode(text: char8[..], into: var byte[..]) -> uint ! DecodeError",
       "typeParams": [],
       "doc": {
         "summary": "Reads Base58 text in the Bitcoin alphabet into the front of `into`.",
@@ -499,7 +499,7 @@
       "displayName": "Base64Variant",
       "module": "Base64",
       "source": "Src/Base64.rux",
-      "line": 17,
+      "line": 18,
       "signature": "pub enum Base64Variant",
       "typeParams": [],
       "doc": {
@@ -519,7 +519,7 @@
           "name": "Standard",
           "value": null,
           "payload": null,
-          "line": 20,
+          "line": 21,
           "doc": "The standard alphabet ending in `+` and `/`, padded with `=` to a multiple of four characters. RFC 4648\nsection 4, and what MIME, PEM and most protocols mean by Base64.",
           "targets": [
             "windows-x86_64",
@@ -536,7 +536,7 @@
           "name": "StandardUnpadded",
           "value": null,
           "payload": null,
-          "line": 22,
+          "line": 23,
           "doc": "The standard alphabet without padding.",
           "targets": [
             "windows-x86_64",
@@ -553,7 +553,7 @@
           "name": "Url",
           "value": null,
           "payload": null,
-          "line": 24,
+          "line": 25,
           "doc": "The URL- and file-name-safe alphabet ending in `-` and `_`, padded. RFC 4648 section 5.",
           "targets": [
             "windows-x86_64",
@@ -570,7 +570,7 @@
           "name": "UrlUnpadded",
           "value": null,
           "payload": null,
-          "line": 26,
+          "line": 27,
           "doc": "The URL-safe alphabet without padding, which is what JSON Web Tokens and most URL parameters use.",
           "targets": [
             "windows-x86_64",
@@ -603,7 +603,7 @@
       "displayName": "Base64EncodedLength",
       "module": "Base64",
       "source": "Src/Base64.rux",
-      "line": 46,
+      "line": 47,
       "signature": "pub func Base64EncodedLength(length: uint, form: Base64Variant) -> uint",
       "typeParams": [],
       "doc": {
@@ -641,8 +641,8 @@
       "displayName": "Base64Encode",
       "module": "Base64",
       "source": "Src/Base64.rux",
-      "line": 63,
-      "signature": "pub func Base64Encode(bytes: byte[..], into: var char8[..], form: Base64Variant) -> uint throws FormatError",
+      "line": 64,
+      "signature": "pub func Base64Encode(bytes: byte[..], into: var char8[..], form: Base64Variant) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `bytes` as Base64 into `into`.",
@@ -683,8 +683,8 @@
       "displayName": "Base64Encode",
       "module": "Base64",
       "source": "Src/Base64.rux",
-      "line": 110,
-      "signature": "pub func Base64Encode(text: char8[..], into: var char8[..], form: Base64Variant) -> uint throws FormatError",
+      "line": 111,
+      "signature": "pub func Base64Encode(text: char8[..], into: var char8[..], form: Base64Variant) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the bytes of `text` as Base64 into `into`.",
@@ -725,8 +725,8 @@
       "displayName": "Base64DecodedLength",
       "module": "Base64",
       "source": "Src/Base64.rux",
-      "line": 144,
-      "signature": "pub func Base64DecodedLength(text: char8[..], form: Base64Variant) -> uint throws DecodeError",
+      "line": 145,
+      "signature": "pub func Base64DecodedLength(text: char8[..], form: Base64Variant) -> uint ! DecodeError",
       "typeParams": [],
       "doc": {
         "summary": "How many bytes the Base64 text decodes to, after checking its length and the placement of its padding.",
@@ -763,8 +763,8 @@
       "displayName": "Base64Decode",
       "module": "Base64",
       "source": "Src/Base64.rux",
-      "line": 172,
-      "signature": "pub func Base64Decode(text: char8[..], into: var byte[..], form: Base64Variant) -> uint throws DecodeError",
+      "line": 173,
+      "signature": "pub func Base64Decode(text: char8[..], into: var byte[..], form: Base64Variant) -> uint ! DecodeError",
       "typeParams": [],
       "doc": {
         "summary": "Reads Base64 text in `form` into `into`.",
@@ -802,7 +802,7 @@
       "displayName": "Base64View",
       "module": "Base64",
       "source": "Src/Base64.rux",
-      "line": 235,
+      "line": 236,
       "signature": "pub struct Base64View",
       "typeParams": [],
       "doc": {
@@ -820,7 +820,7 @@
           "name": "bytes",
           "type": "byte[..]",
           "public": false,
-          "line": 236,
+          "line": 237,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -837,7 +837,7 @@
           "name": "form",
           "type": "Base64Variant",
           "public": false,
-          "line": 237,
+          "line": 238,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -857,8 +857,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 258,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 259,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -911,7 +911,7 @@
       "displayName": "ViewBase64",
       "module": "Base64",
       "source": "Src/Base64.rux",
-      "line": 246,
+      "line": 247,
       "signature": "pub func ViewBase64(bytes: byte[..], form: Base64Variant) -> Base64View",
       "typeParams": [],
       "doc": {
@@ -949,7 +949,7 @@
       "displayName": "DecodeError",
       "module": "Error",
       "source": "Src/Error.rux",
-      "line": 16,
+      "line": 17,
       "signature": "pub variant DecodeError",
       "typeParams": [],
       "doc": {
@@ -969,7 +969,7 @@
           "name": "InvalidCharacter",
           "value": null,
           "payload": "(uint)",
-          "line": 18,
+          "line": 19,
           "doc": "A character that is not in the scheme's alphabet. The offset is that character.",
           "targets": [
             "windows-x86_64",
@@ -986,7 +986,7 @@
           "name": "InvalidLength",
           "value": null,
           "payload": "(uint)",
-          "line": 21,
+          "line": 22,
           "doc": "The text has a length no encoder of this scheme produces, such as an odd number of hexadecimal digits. The\noffset is the text's length, where the missing character would have gone.",
           "targets": [
             "windows-x86_64",
@@ -1003,7 +1003,7 @@
           "name": "InvalidPadding",
           "value": null,
           "payload": "(uint)",
-          "line": 24,
+          "line": 25,
           "doc": "A padding character where padding is not allowed: in the middle of the text, too much of it, or any of it in\na scheme without padding. The offset is the first padding character that is out of place.",
           "targets": [
             "windows-x86_64",
@@ -1020,7 +1020,7 @@
           "name": "NonCanonical",
           "value": null,
           "payload": "(uint)",
-          "line": 28,
+          "line": 29,
           "doc": "The last character carries bits the encoder would have left zero, so two different texts would decode to the\nsame bytes. The offset is that character. Refusing it keeps decoding one-to-one, which is what makes an\nencoded value safe to compare as text.",
           "targets": [
             "windows-x86_64",
@@ -1037,7 +1037,7 @@
           "name": "InvalidEscape",
           "value": null,
           "payload": "(uint)",
-          "line": 30,
+          "line": 31,
           "doc": "A percent sign that is not followed by two hexadecimal digits. The offset is the percent sign.",
           "targets": [
             "windows-x86_64",
@@ -1054,7 +1054,7 @@
           "name": "InsufficientCapacity",
           "value": null,
           "payload": "(uint)",
-          "line": 32,
+          "line": 33,
           "doc": "The destination is shorter than the decoded value. The count is the length it needed, in bytes.",
           "targets": [
             "windows-x86_64",
@@ -1072,7 +1072,7 @@
         {
           "kind": "method",
           "name": "Offset",
-          "line": 40,
+          "line": 41,
           "signature": "pub func Offset(&self) -> uint?",
           "typeParams": [],
           "params": [],
@@ -1104,8 +1104,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 73,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 74,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1142,8 +1142,8 @@
         {
           "kind": "method",
           "name": "WriteDebug",
-          "line": 117,
-          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 118,
+          "signature": "pub func WriteDebug(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1196,7 +1196,7 @@
       "displayName": "HexCase",
       "module": "Hex",
       "source": "Src/Hex.rux",
-      "line": 15,
+      "line": 16,
       "signature": "pub enum HexCase",
       "typeParams": [],
       "doc": {
@@ -1216,7 +1216,7 @@
           "name": "Lower",
           "value": null,
           "payload": null,
-          "line": 17,
+          "line": 18,
           "doc": "`a` through `f`, the form most text formats and every cryptographic test vector use.",
           "targets": [
             "windows-x86_64",
@@ -1233,7 +1233,7 @@
           "name": "Upper",
           "value": null,
           "payload": null,
-          "line": 19,
+          "line": 20,
           "doc": "`A` through `F`, the form RFC 4648 prints its alphabet in.",
           "targets": [
             "windows-x86_64",
@@ -1266,7 +1266,7 @@
       "displayName": "HexEncodedLength",
       "module": "Hex",
       "source": "Src/Hex.rux",
-      "line": 27,
+      "line": 28,
       "signature": "pub func HexEncodedLength(length: uint) -> uint",
       "typeParams": [],
       "doc": {
@@ -1301,8 +1301,8 @@
       "displayName": "HexEncode",
       "module": "Hex",
       "source": "Src/Hex.rux",
-      "line": 39,
-      "signature": "pub func HexEncode(bytes: byte[..], into: var char8[..], letterCase: HexCase) -> uint throws FormatError",
+      "line": 40,
+      "signature": "pub func HexEncode(bytes: byte[..], into: var char8[..], letterCase: HexCase) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `bytes` as hexadecimal digits into `into`, two per byte, high nibble first.",
@@ -1340,8 +1340,8 @@
       "displayName": "HexEncode",
       "module": "Hex",
       "source": "Src/Hex.rux",
-      "line": 62,
-      "signature": "pub func HexEncode(text: char8[..], into: var char8[..], letterCase: HexCase) -> uint throws FormatError",
+      "line": 63,
+      "signature": "pub func HexEncode(text: char8[..], into: var char8[..], letterCase: HexCase) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the bytes of `text` as hexadecimal digits into `into`, two per byte.",
@@ -1379,8 +1379,8 @@
       "displayName": "HexDecodedLength",
       "module": "Hex",
       "source": "Src/Hex.rux",
-      "line": 73,
-      "signature": "pub func HexDecodedLength(text: char8[..]) -> uint throws DecodeError",
+      "line": 74,
+      "signature": "pub func HexDecodedLength(text: char8[..]) -> uint ! DecodeError",
       "typeParams": [],
       "doc": {
         "summary": "How many bytes the hexadecimal text decodes to, after checking that its length is even.",
@@ -1414,8 +1414,8 @@
       "displayName": "HexDecode",
       "module": "Hex",
       "source": "Src/Hex.rux",
-      "line": 87,
-      "signature": "pub func HexDecode(text: char8[..], into: var byte[..]) -> uint throws DecodeError",
+      "line": 88,
+      "signature": "pub func HexDecode(text: char8[..], into: var byte[..]) -> uint ! DecodeError",
       "typeParams": [],
       "doc": {
         "summary": "Reads hexadecimal digits of either case from `text` into `into`, one byte per pair.",
@@ -1452,7 +1452,7 @@
       "displayName": "HexView",
       "module": "Hex",
       "source": "Src/Hex.rux",
-      "line": 128,
+      "line": 129,
       "signature": "pub struct HexView",
       "typeParams": [],
       "doc": {
@@ -1470,7 +1470,7 @@
           "name": "bytes",
           "type": "byte[..]",
           "public": false,
-          "line": 129,
+          "line": 130,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1487,7 +1487,7 @@
           "name": "letterCase",
           "type": "HexCase",
           "public": false,
-          "line": 130,
+          "line": 131,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1507,8 +1507,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 152,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 153,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1561,7 +1561,7 @@
       "displayName": "ViewHex",
       "module": "Hex",
       "source": "Src/Hex.rux",
-      "line": 139,
+      "line": 140,
       "signature": "pub func ViewHex(bytes: byte[..], letterCase: HexCase) -> HexView",
       "typeParams": [],
       "doc": {
@@ -1763,7 +1763,7 @@
       "module": "Percent",
       "source": "Src/Percent.rux",
       "line": 89,
-      "signature": "pub func PercentEncode(bytes: byte[..], into: var char8[..], set: PercentSet) -> uint throws FormatError",
+      "signature": "pub func PercentEncode(bytes: byte[..], into: var char8[..], set: PercentSet) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes `bytes` percent-encoded for `set` into `into`.",
@@ -1802,7 +1802,7 @@
       "module": "Percent",
       "source": "Src/Percent.rux",
       "line": 125,
-      "signature": "pub func PercentEncode(text: char8[..], into: var char8[..], set: PercentSet) -> uint throws FormatError",
+      "signature": "pub func PercentEncode(text: char8[..], into: var char8[..], set: PercentSet) -> uint ! FormatError",
       "typeParams": [],
       "doc": {
         "summary": "Writes the bytes of `text` percent-encoded for `set` into `into`.",
@@ -1841,7 +1841,7 @@
       "module": "Percent",
       "source": "Src/Percent.rux",
       "line": 137,
-      "signature": "pub func PercentDecodedLength(text: char8[..]) -> uint throws DecodeError",
+      "signature": "pub func PercentDecodedLength(text: char8[..]) -> uint ! DecodeError",
       "typeParams": [],
       "doc": {
         "summary": "How many bytes percent-encoded text decodes to, after checking that every escape is well formed.",
@@ -1876,7 +1876,7 @@
       "module": "Percent",
       "source": "Src/Percent.rux",
       "line": 166,
-      "signature": "pub func PercentDecode(text: char8[..], into: var byte[..], set: PercentSet) -> uint throws DecodeError",
+      "signature": "pub func PercentDecode(text: char8[..], into: var byte[..], set: PercentSet) -> uint ! DecodeError",
       "typeParams": [],
       "doc": {
         "summary": "Reads percent-encoded text into `into`, turning each escape back into its byte.",
@@ -2105,10 +2105,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "EncodingWriter",
+          "kind": "associated",
+          "name": "New",
           "line": 90,
-          "signature": "pub func EncodingWriter(sink: Writer, codec: StreamCodec) -> EncodingWriter",
+          "signature": "pub func New(sink: Writer, codec: StreamCodec) -> EncodingWriter",
           "typeParams": [],
           "params": [
             { "name": "sink", "type": "Writer" },
@@ -2146,7 +2146,7 @@
           "kind": "method",
           "name": "Finish",
           "line": 105,
-          "signature": "pub func Finish(&var self) throws IoError",
+          "signature": "pub func Finish(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var EncodingWriter",
@@ -2178,7 +2178,7 @@
           "kind": "method",
           "name": "Write",
           "line": 123,
-          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var EncodingWriter",
@@ -2210,7 +2210,7 @@
           "kind": "method",
           "name": "Flush",
           "line": 163,
-          "signature": "pub func Flush(&var self) throws IoError",
+          "signature": "pub func Flush(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var EncodingWriter",
@@ -2412,10 +2412,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "DecodingReader",
+          "kind": "associated",
+          "name": "New",
           "line": 190,
-          "signature": "pub func DecodingReader(source: Reader, codec: StreamCodec) -> DecodingReader",
+          "signature": "pub func New(source: Reader, codec: StreamCodec) -> DecodingReader",
           "typeParams": [],
           "params": [
             { "name": "source", "type": "Reader" },
@@ -2453,7 +2453,7 @@
           "kind": "method",
           "name": "Read",
           "line": 255,
-          "signature": "pub func Read(&var self, into: var char8[..]) -> uint throws IoError",
+          "signature": "pub func Read(&var self, into: var char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var DecodingReader",

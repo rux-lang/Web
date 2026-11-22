@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Expect.rux
-  line: 15
+  line: 13
 seo:
   title: "Checks — Test API"
   description: "Checks that return a readable failure: equality, nearness, text, optionals and outcomes."
@@ -27,12 +27,12 @@ Checks that return a readable failure: equality, nearness, text, optionals and o
 pub func Expect(
     condition: bool,
     message: char8[..]
-) throws TestFailure
+) -> !TestFailure
 ```
 
 Fails unless `condition` holds.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L13)
 
 **Parameters**
 
@@ -49,12 +49,12 @@ Fails unless `condition` holds.
 pub func ExpectEqual<T: Display>(
     actual: T,
     expected: T
-) throws TestFailure
+) -> !TestFailure
 ```
 
 Fails unless `actual` equals `expected`, saying both.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L23)
 
 **Type parameters**
 
@@ -77,12 +77,12 @@ Fails unless `actual` equals `expected`, saying both.
 pub func ExpectNotEqual<T: Display>(
     actual: T,
     unexpected: T
-) throws TestFailure
+) -> !TestFailure
 ```
 
 Fails if `actual` equals `unexpected`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L38)
 
 **Type parameters**
 
@@ -106,12 +106,12 @@ pub func ExpectNear(
     actual: float64,
     expected: float64,
     tolerance: float64
-) throws TestFailure
+) -> !TestFailure
 ```
 
 Fails unless `actual` is within `tolerance` of `expected`.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L53)
 
 **Parameters**
 
@@ -129,12 +129,12 @@ Fails unless `actual` is within `tolerance` of `expected`.
 pub func ExpectText(
     actual: char8[..],
     expected: char8[..]
-) throws TestFailure
+) -> !TestFailure
 ```
 
 Fails unless `actual` is the same text as `expected`, saying at which byte they part and showing each around it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L88)
 
 **Parameters**
 
@@ -151,12 +151,12 @@ Fails unless `actual` is the same text as `expected`, saying at which byte they 
 pub func ExpectSome<T>(
     value: T?,
     message: char8[..]
-) -> T throws TestFailure
+) -> T ! TestFailure
 ```
 
 The value of `value`, failing when there is none.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L112)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L110)
 
 **Type parameters**
 
@@ -179,12 +179,12 @@ The value of `value`, failing when there is none.
 pub func ExpectNone<T>(
     value: T?,
     message: char8[..]
-) throws TestFailure
+) -> !TestFailure
 ```
 
 Fails when `value` is present.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L123)
 
 **Type parameters**
 
@@ -205,14 +205,14 @@ Fails when `value` is present.
 
 ```rux
 pub func ExpectSuccess<T, E>(
-    outcome: Result<T, E>,
+    outcome: T ! E,
     message: char8[..]
-) -> T throws TestFailure
+) -> T ! TestFailure
 ```
 
 The success an outcome holds, failing when it holds a failure.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L139)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L137)
 
 **Type parameters**
 
@@ -223,10 +223,10 @@ The success an outcome holds, failing when it holds a failure.
 
 **Parameters**
 
-| Name      | Type           | Description                                    |
-| --------- | -------------- | ---------------------------------------------- |
-| `outcome` | `Result<T, E>` | what the code gave, kept as a `Result`         |
-| `message` | `char8[..]`    | what its failure means, for the test's failure |
+| Name      | Type        | Description                                    |
+| --------- | ----------- | ---------------------------------------------- |
+| `outcome` | `T ! E`     | what the code gave, kept as a fallible value   |
+| `message` | `char8[..]` | what its failure means, for the test's failure |
 
 **Returns**: the success, or the failure
 
@@ -234,14 +234,14 @@ The success an outcome holds, failing when it holds a failure.
 
 ```rux
 pub func ExpectFailure<T, E>(
-    outcome: Result<T, E>,
+    outcome: T ! E,
     message: char8[..]
-) -> E throws TestFailure
+) -> E ! TestFailure
 ```
 
 The failure an outcome holds, failing the test when it holds a success.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L153)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Test/Src/Expect.rux#L148)
 
 **Type parameters**
 
@@ -252,9 +252,9 @@ The failure an outcome holds, failing the test when it holds a success.
 
 **Parameters**
 
-| Name      | Type           | Description                                    |
-| --------- | -------------- | ---------------------------------------------- |
-| `outcome` | `Result<T, E>` | what the code gave, kept as a `Result`         |
-| `message` | `char8[..]`    | what its success means, for the test's failure |
+| Name      | Type        | Description                                    |
+| --------- | ----------- | ---------------------------------------------- |
+| `outcome` | `T ! E`     | what the code gave, kept as a fallible value   |
+| `message` | `char8[..]` | what its success means, for the test's failure |
 
 **Returns**: the failure the code gave, or the test's failure

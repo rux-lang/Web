@@ -38,7 +38,7 @@ A socket listening for TCP connections. Not copied.
 <h3 id="bind"><code>Bind</code></h3>
 
 ```rux
-pub func Bind(address: SocketAddress) -> TcpListener throws IoError
+pub func Bind(address: SocketAddress) -> TcpListener ! IoError
 ```
 
 Listens at `address`. Port zero lets the system choose a free port, which [`LocalAddress`](/docs/api/net/tcp#listener-local-address) then gives.
@@ -56,7 +56,7 @@ Listens at `address`. Port zero lets the system choose a free port, which [`Loca
 <h3 id="accept"><code>Accept</code></h3>
 
 ```rux
-pub func Accept(&self) -> TcpStream throws IoError
+pub func Accept(&self) -> TcpStream ! IoError
 ```
 
 Waits for a connection and accepts it.
@@ -68,7 +68,7 @@ Waits for a connection and accepts it.
 <h3 id="listener-local-address"><code>LocalAddress</code></h3>
 
 ```rux
-pub func LocalAddress(&self) -> SocketAddress throws IoError
+pub func LocalAddress(&self) -> SocketAddress ! IoError
 ```
 
 The address the listener is bound to, with the port the system chose for port zero.
@@ -80,7 +80,7 @@ The address the listener is bound to, with the port the system chose for port ze
 <h3 id="listener-set-non-blocking"><code>SetNonBlocking</code></h3>
 
 ```rux
-pub func SetNonBlocking(&self, enabled: bool) throws IoError
+pub func SetNonBlocking(&self, enabled: bool) -> !IoError
 ```
 
 Makes calls on the listener fail with `WouldBlock` when they would wait, or wait again.
@@ -109,10 +109,10 @@ The listener as a [`Poller`](/docs/api/net/poller) watches it, valid while the l
 
 **Destructor**
 
-<h3 id="tcp-listener-destructor"><code>~TcpListener</code></h3>
+<h3 id="tcp-listener-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~TcpListener(&var self)
+destructor
 ```
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L83)
@@ -134,7 +134,7 @@ A connected TCP stream: an `Io::Reader` of what the peer sends and an `Io::Write
 <h3 id="connect"><code>Connect</code></h3>
 
 ```rux
-pub func Connect(address: SocketAddress) -> TcpStream throws IoError
+pub func Connect(address: SocketAddress) -> TcpStream ! IoError
 ```
 
 Connects to `address`, waiting until the connection is made or refused.
@@ -152,7 +152,7 @@ Connects to `address`, waiting until the connection is made or refused.
 <h3 id="local-address"><code>LocalAddress</code></h3>
 
 ```rux
-pub func LocalAddress(&self) -> SocketAddress throws IoError
+pub func LocalAddress(&self) -> SocketAddress ! IoError
 ```
 
 The address of this end of the connection.
@@ -164,7 +164,7 @@ The address of this end of the connection.
 <h3 id="peer-address"><code>PeerAddress</code></h3>
 
 ```rux
-pub func PeerAddress(&self) -> SocketAddress throws IoError
+pub func PeerAddress(&self) -> SocketAddress ! IoError
 ```
 
 The address of the other end.
@@ -179,7 +179,7 @@ The address of the other end.
 pub func Shutdown(
     &self,
     direction: ShutdownDirection
-) throws IoError
+) -> !IoError
 ```
 
 Ends one or both directions of the connection while the socket stays open.
@@ -195,7 +195,7 @@ Ends one or both directions of the connection while the socket stays open.
 <h3 id="set-no-delay"><code>SetNoDelay</code></h3>
 
 ```rux
-pub func SetNoDelay(&self, enabled: bool) throws IoError
+pub func SetNoDelay(&self, enabled: bool) -> !IoError
 ```
 
 Sends small writes at once rather than gathering them, which suits request and response exchanges.
@@ -214,7 +214,7 @@ Sends small writes at once rather than gathering them, which suits request and r
 pub func SetReadTimeout(
     &self,
     timeout: Duration?
-) throws IoError
+) -> !IoError
 ```
 
 How long a read may wait before failing with `TimedOut`, or none to wait without a limit.
@@ -233,7 +233,7 @@ How long a read may wait before failing with `TimedOut`, or none to wait without
 pub func SetWriteTimeout(
     &self,
     timeout: Duration?
-) throws IoError
+) -> !IoError
 ```
 
 How long a write may wait before failing with `TimedOut`, or none to wait without a limit.
@@ -249,7 +249,7 @@ How long a write may wait before failing with `TimedOut`, or none to wait withou
 <h3 id="set-non-blocking"><code>SetNonBlocking</code></h3>
 
 ```rux
-pub func SetNonBlocking(&self, enabled: bool) throws IoError
+pub func SetNonBlocking(&self, enabled: bool) -> !IoError
 ```
 
 Makes calls on the stream fail with `WouldBlock` when they would wait, or wait again.
@@ -285,7 +285,7 @@ The stream as a [`Poller`](/docs/api/net/poller) watches it, valid while the str
 pub func Read(
     &var self,
     into: var char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Reads what the peer has sent, waiting while it has sent nothing.
@@ -308,7 +308,7 @@ Reads what the peer has sent, waiting while it has sent nothing.
 pub func Write(
     &var self,
     bytes: char8[..]
-) -> uint throws IoError
+) -> uint ! IoError
 ```
 
 Sends some of `bytes`, waiting while the connection's buffer is full.
@@ -324,7 +324,7 @@ Sends some of `bytes`, waiting while the connection's buffer is full.
 <h3 id="flush"><code>Flush</code></h3>
 
 ```rux
-pub func Flush(&var self) throws IoError
+pub func Flush(&var self) -> !IoError
 ```
 
 Does nothing: a stream sends what is written to it without holding any back.
@@ -335,10 +335,10 @@ Does nothing: a stream sends what is written to it without holding any back.
 
 **Destructor**
 
-<h3 id="tcp-stream-destructor"><code>~TcpStream</code></h3>
+<h3 id="tcp-stream-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~TcpStream(&var self)
+destructor
 ```
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Net/Src/Tcp.rux#L163)

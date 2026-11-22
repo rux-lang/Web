@@ -90,13 +90,13 @@ Backreferences and lookaround are refused: without them every search takes time 
 
 **Constructors**
 
-<h3 id="new"><code>Regex</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func Regex(
+pub func New(
     allocator: Allocator,
     pattern: char8[..]
-) -> Regex throws RegexError
+) -> Regex ! RegexError
 ```
 
 Compiles `pattern`.

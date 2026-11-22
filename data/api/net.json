@@ -67,7 +67,7 @@
       "displayName": "Ipv4Address",
       "module": "Address",
       "source": "Src/Address.rux",
-      "line": 13,
+      "line": 14,
       "signature": "pub struct Ipv4Address",
       "typeParams": [],
       "doc": {
@@ -85,7 +85,7 @@
           "name": "octets",
           "type": "uint8[N]",
           "public": true,
-          "line": 15,
+          "line": 16,
           "doc": "The four octets, most significant first.",
           "targets": [
             "windows-x86_64",
@@ -103,10 +103,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Ipv4Address",
-          "line": 88,
-          "signature": "pub func Ipv4Address(a: uint8, b: uint8, c: uint8, d: uint8) -> Ipv4Address",
+          "kind": "associated",
+          "name": "New",
+          "line": 89,
+          "signature": "pub func New(a: uint8, b: uint8, c: uint8, d: uint8) -> Ipv4Address",
           "typeParams": [],
           "params": [
             { "name": "a", "type": "uint8" },
@@ -147,7 +147,7 @@
         {
           "kind": "associated",
           "name": "Localhost",
-          "line": 95,
+          "line": 96,
           "signature": "pub func Localhost() -> Ipv4Address",
           "typeParams": [],
           "params": [],
@@ -179,7 +179,7 @@
         {
           "kind": "associated",
           "name": "Unspecified",
-          "line": 102,
+          "line": 103,
           "signature": "pub func Unspecified() -> Ipv4Address",
           "typeParams": [],
           "params": [],
@@ -211,7 +211,7 @@
         {
           "kind": "associated",
           "name": "Parse",
-          "line": 110,
+          "line": 111,
           "signature": "pub func Parse(text: char8[..]) -> Ipv4Address?",
           "typeParams": [],
           "params": [{ "name": "text", "type": "char8[..]" }],
@@ -243,7 +243,7 @@
         {
           "kind": "method",
           "name": "IsLoopback",
-          "line": 138,
+          "line": 139,
           "signature": "pub func IsLoopback(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -275,7 +275,7 @@
         {
           "kind": "method",
           "name": "IsUnspecified",
-          "line": 145,
+          "line": 146,
           "signature": "pub func IsUnspecified(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -307,7 +307,7 @@
         {
           "kind": "method",
           "name": "IsPrivate",
-          "line": 152,
+          "line": 153,
           "signature": "pub func IsPrivate(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -339,7 +339,7 @@
         {
           "kind": "method",
           "name": "IsLinkLocal",
-          "line": 160,
+          "line": 161,
           "signature": "pub func IsLinkLocal(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -371,7 +371,7 @@
         {
           "kind": "method",
           "name": "IsMulticast",
-          "line": 167,
+          "line": 168,
           "signature": "pub func IsMulticast(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -403,7 +403,7 @@
         {
           "kind": "method",
           "name": "WriteText",
-          "line": 175,
+          "line": 176,
           "signature": "pub func WriteText(&self, into: var char8[..]) -> uint",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
@@ -435,7 +435,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 190,
+          "line": 191,
           "signature": "pub func Equals(&self, other: Ipv4Address) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Ipv4Address" }],
@@ -467,8 +467,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 640,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 641,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -521,7 +521,7 @@
       "displayName": "Ipv6Address",
       "module": "Address",
       "source": "Src/Address.rux",
-      "line": 20,
+      "line": 21,
       "signature": "pub struct Ipv6Address",
       "typeParams": [],
       "doc": {
@@ -539,7 +539,7 @@
           "name": "octets",
           "type": "uint8[N]",
           "public": true,
-          "line": 22,
+          "line": 23,
           "doc": "The sixteen octets, most significant first.",
           "targets": [
             "windows-x86_64",
@@ -559,7 +559,7 @@
         {
           "kind": "associated",
           "name": "Localhost",
-          "line": 200,
+          "line": 201,
           "signature": "pub func Localhost() -> Ipv6Address",
           "typeParams": [],
           "params": [],
@@ -591,7 +591,7 @@
         {
           "kind": "associated",
           "name": "Unspecified",
-          "line": 209,
+          "line": 210,
           "signature": "pub func Unspecified() -> Ipv6Address",
           "typeParams": [],
           "params": [],
@@ -623,7 +623,7 @@
         {
           "kind": "associated",
           "name": "Parse",
-          "line": 217,
+          "line": 218,
           "signature": "pub func Parse(text: char8[..]) -> Ipv6Address?",
           "typeParams": [],
           "params": [{ "name": "text", "type": "char8[..]" }],
@@ -655,7 +655,7 @@
         {
           "kind": "method",
           "name": "IsLoopback",
-          "line": 300,
+          "line": 301,
           "signature": "pub func IsLoopback(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -687,7 +687,7 @@
         {
           "kind": "method",
           "name": "IsUnspecified",
-          "line": 312,
+          "line": 313,
           "signature": "pub func IsUnspecified(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -719,7 +719,7 @@
         {
           "kind": "method",
           "name": "IsPrivate",
-          "line": 325,
+          "line": 326,
           "signature": "pub func IsPrivate(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -751,7 +751,7 @@
         {
           "kind": "method",
           "name": "IsLinkLocal",
-          "line": 332,
+          "line": 333,
           "signature": "pub func IsLinkLocal(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -783,7 +783,7 @@
         {
           "kind": "method",
           "name": "IsMulticast",
-          "line": 339,
+          "line": 340,
           "signature": "pub func IsMulticast(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -815,7 +815,7 @@
         {
           "kind": "method",
           "name": "AsMappedIpv4",
-          "line": 346,
+          "line": 347,
           "signature": "pub func AsMappedIpv4(&self) -> Ipv4Address?",
           "typeParams": [],
           "params": [],
@@ -847,7 +847,7 @@
         {
           "kind": "method",
           "name": "WriteText",
-          "line": 361,
+          "line": 362,
           "signature": "pub func WriteText(&self, into: var char8[..]) -> uint",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
@@ -879,7 +879,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 423,
+          "line": 424,
           "signature": "pub func Equals(&self, other: Ipv6Address) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "Ipv6Address" }],
@@ -911,8 +911,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 655,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 656,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -965,7 +965,7 @@
       "displayName": "IpAddress",
       "module": "Address",
       "source": "Src/Address.rux",
-      "line": 27,
+      "line": 28,
       "signature": "pub struct IpAddress",
       "typeParams": [],
       "doc": {
@@ -983,7 +983,7 @@
           "name": "version6",
           "type": "bool",
           "public": false,
-          "line": 28,
+          "line": 29,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1000,7 +1000,7 @@
           "name": "v4",
           "type": "Ipv4Address",
           "public": false,
-          "line": 29,
+          "line": 30,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1017,7 +1017,7 @@
           "name": "v6",
           "type": "Ipv6Address",
           "public": false,
-          "line": 30,
+          "line": 31,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1037,7 +1037,7 @@
         {
           "kind": "associated",
           "name": "FromIpv4",
-          "line": 438,
+          "line": 439,
           "signature": "pub func FromIpv4(address: Ipv4Address) -> IpAddress",
           "typeParams": [],
           "params": [{ "name": "address", "type": "Ipv4Address" }],
@@ -1069,7 +1069,7 @@
         {
           "kind": "associated",
           "name": "FromIpv6",
-          "line": 446,
+          "line": 447,
           "signature": "pub func FromIpv6(address: Ipv6Address) -> IpAddress",
           "typeParams": [],
           "params": [{ "name": "address", "type": "Ipv6Address" }],
@@ -1101,7 +1101,7 @@
         {
           "kind": "associated",
           "name": "Parse",
-          "line": 454,
+          "line": 455,
           "signature": "pub func Parse(text: char8[..]) -> IpAddress?",
           "typeParams": [],
           "params": [{ "name": "text", "type": "char8[..]" }],
@@ -1133,7 +1133,7 @@
         {
           "kind": "method",
           "name": "IsIpv6",
-          "line": 468,
+          "line": 469,
           "signature": "pub func IsIpv6(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -1165,7 +1165,7 @@
         {
           "kind": "method",
           "name": "AsIpv4",
-          "line": 475,
+          "line": 476,
           "signature": "pub func AsIpv4(&self) -> Ipv4Address?",
           "typeParams": [],
           "params": [],
@@ -1197,7 +1197,7 @@
         {
           "kind": "method",
           "name": "AsIpv6",
-          "line": 483,
+          "line": 484,
           "signature": "pub func AsIpv6(&self) -> Ipv6Address?",
           "typeParams": [],
           "params": [],
@@ -1229,7 +1229,7 @@
         {
           "kind": "method",
           "name": "IsLoopback",
-          "line": 491,
+          "line": 492,
           "signature": "pub func IsLoopback(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -1261,7 +1261,7 @@
         {
           "kind": "method",
           "name": "IsUnspecified",
-          "line": 498,
+          "line": 499,
           "signature": "pub func IsUnspecified(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -1293,7 +1293,7 @@
         {
           "kind": "method",
           "name": "IsPrivate",
-          "line": 505,
+          "line": 506,
           "signature": "pub func IsPrivate(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -1325,7 +1325,7 @@
         {
           "kind": "method",
           "name": "IsLinkLocal",
-          "line": 512,
+          "line": 513,
           "signature": "pub func IsLinkLocal(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -1357,7 +1357,7 @@
         {
           "kind": "method",
           "name": "IsMulticast",
-          "line": 519,
+          "line": 520,
           "signature": "pub func IsMulticast(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -1389,7 +1389,7 @@
         {
           "kind": "method",
           "name": "WriteText",
-          "line": 527,
+          "line": 528,
           "signature": "pub func WriteText(&self, into: var char8[..]) -> uint",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
@@ -1421,7 +1421,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 535,
+          "line": 536,
           "signature": "pub func Equals(&self, other: IpAddress) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "IpAddress" }],
@@ -1453,8 +1453,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 670,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 671,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1507,7 +1507,7 @@
       "displayName": "SocketAddress",
       "module": "Address",
       "source": "Src/Address.rux",
-      "line": 35,
+      "line": 36,
       "signature": "pub struct SocketAddress",
       "typeParams": [],
       "doc": {
@@ -1525,7 +1525,7 @@
           "name": "ip",
           "type": "IpAddress",
           "public": true,
-          "line": 37,
+          "line": 38,
           "doc": "The address.",
           "targets": [
             "windows-x86_64",
@@ -1542,7 +1542,7 @@
           "name": "port",
           "type": "uint16",
           "public": true,
-          "line": 39,
+          "line": 40,
           "doc": "The port.",
           "targets": [
             "windows-x86_64",
@@ -1560,10 +1560,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "SocketAddress",
-          "line": 547,
-          "signature": "pub func SocketAddress(ip: IpAddress, port: uint16) -> SocketAddress",
+          "kind": "associated",
+          "name": "New",
+          "line": 548,
+          "signature": "pub func New(ip: IpAddress, port: uint16) -> SocketAddress",
           "typeParams": [],
           "params": [
             { "name": "ip", "type": "IpAddress" },
@@ -1600,7 +1600,7 @@
         {
           "kind": "associated",
           "name": "Parse",
-          "line": 555,
+          "line": 556,
           "signature": "pub func Parse(text: char8[..]) -> SocketAddress?",
           "typeParams": [],
           "params": [{ "name": "text", "type": "char8[..]" }],
@@ -1632,7 +1632,7 @@
         {
           "kind": "method",
           "name": "WriteText",
-          "line": 598,
+          "line": 599,
           "signature": "pub func WriteText(&self, into: var char8[..]) -> uint",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
@@ -1664,8 +1664,8 @@
         {
           "kind": "method",
           "name": "ToString",
-          "line": 616,
-          "signature": "pub func ToString(&self, allocator: Allocator) -> String throws TextError",
+          "line": 617,
+          "signature": "pub func ToString(&self, allocator: Allocator) -> String ! TextError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": "&SocketAddress",
@@ -1696,7 +1696,7 @@
         {
           "kind": "method",
           "name": "Equals",
-          "line": 626,
+          "line": 627,
           "signature": "pub func Equals(&self, other: SocketAddress) -> bool",
           "typeParams": [],
           "params": [{ "name": "other", "type": "SocketAddress" }],
@@ -1728,8 +1728,8 @@
         {
           "kind": "method",
           "name": "WriteDisplay",
-          "line": 685,
-          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) throws FormatError",
+          "line": 686,
+          "signature": "pub func WriteDisplay(&self, writer: &var TextWriter, spec: FormatSpec) -> !FormatError",
           "typeParams": [],
           "params": [
             { "name": "writer", "type": "&var TextWriter" },
@@ -1782,7 +1782,7 @@
       "displayName": "Resolver",
       "module": "Dns",
       "source": "Src/Dns.rux",
-      "line": 33,
+      "line": 34,
       "signature": "pub struct Resolver",
       "typeParams": [],
       "doc": {
@@ -1800,7 +1800,7 @@
           "name": "servers",
           "type": "Vector<SocketAddress>",
           "public": false,
-          "line": 34,
+          "line": 35,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1817,7 +1817,7 @@
           "name": "timeout",
           "type": "Duration",
           "public": false,
-          "line": 35,
+          "line": 36,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1834,7 +1834,7 @@
           "name": "attempts",
           "type": "uint",
           "public": false,
-          "line": 36,
+          "line": 37,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1854,7 +1854,7 @@
         {
           "kind": "associated",
           "name": "WithServers",
-          "line": 154,
+          "line": 155,
           "signature": "pub func WithServers(allocator: Allocator, servers: SocketAddress[..]) -> Resolver",
           "typeParams": [],
           "params": [
@@ -1892,7 +1892,7 @@
         {
           "kind": "associated",
           "name": "FromSystem",
-          "line": 166,
+          "line": 167,
           "signature": "pub func FromSystem(allocator: Allocator) -> Resolver",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
@@ -1926,7 +1926,7 @@
         {
           "kind": "method",
           "name": "SetTimeout",
-          "line": 173,
+          "line": 174,
           "signature": "pub func SetTimeout(&var self, timeout: Duration)",
           "typeParams": [],
           "params": [{ "name": "timeout", "type": "Duration" }],
@@ -1958,7 +1958,7 @@
         {
           "kind": "method",
           "name": "SetAttempts",
-          "line": 180,
+          "line": 181,
           "signature": "pub func SetAttempts(&var self, attempts: uint)",
           "typeParams": [],
           "params": [{ "name": "attempts", "type": "uint" }],
@@ -1990,8 +1990,8 @@
         {
           "kind": "method",
           "name": "Lookup",
-          "line": 191,
-          "signature": "pub func Lookup(&self, allocator: Allocator, host: char8[..], port: uint16) -> Vector<SocketAddress> throws IoError",
+          "line": 192,
+          "signature": "pub func Lookup(&self, allocator: Allocator, host: char8[..], port: uint16) -> Vector<SocketAddress> ! IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -2046,7 +2046,7 @@
       "displayName": "Interest",
       "module": "Poll",
       "source": "Src/Poll.rux",
-      "line": 35,
+      "line": 45,
       "signature": "pub struct Interest",
       "typeParams": [],
       "doc": {
@@ -2064,7 +2064,7 @@
           "name": "readable",
           "type": "bool",
           "public": true,
-          "line": 37,
+          "line": 47,
           "doc": "Something to read, or a connection to accept.",
           "targets": [
             "windows-x86_64",
@@ -2081,7 +2081,7 @@
           "name": "writable",
           "type": "bool",
           "public": true,
-          "line": 39,
+          "line": 49,
           "doc": "Room to write.",
           "targets": [
             "windows-x86_64",
@@ -2101,7 +2101,7 @@
         {
           "kind": "associated",
           "name": "Readable",
-          "line": 46,
+          "line": 56,
           "signature": "pub func Readable() -> Interest",
           "typeParams": [],
           "params": [],
@@ -2133,7 +2133,7 @@
         {
           "kind": "associated",
           "name": "Writable",
-          "line": 53,
+          "line": 63,
           "signature": "pub func Writable() -> Interest",
           "typeParams": [],
           "params": [],
@@ -2165,7 +2165,7 @@
         {
           "kind": "associated",
           "name": "Both",
-          "line": 60,
+          "line": 70,
           "signature": "pub func Both() -> Interest",
           "typeParams": [],
           "params": [],
@@ -2213,7 +2213,7 @@
       "displayName": "PollSource",
       "module": "Poll",
       "source": "Src/Poll.rux",
-      "line": 68,
+      "line": 78,
       "signature": "pub struct PollSource",
       "typeParams": [],
       "doc": {
@@ -2231,7 +2231,7 @@
           "name": "handle",
           "type": "uint64",
           "public": false,
-          "line": 69,
+          "line": 79,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -2266,7 +2266,7 @@
       "displayName": "PollEvent",
       "module": "Poll",
       "source": "Src/Poll.rux",
-      "line": 75,
+      "line": 85,
       "signature": "pub struct PollEvent",
       "typeParams": [],
       "doc": {
@@ -2284,7 +2284,7 @@
           "name": "token",
           "type": "uint64",
           "public": true,
-          "line": 77,
+          "line": 87,
           "doc": "The token the socket was registered with.",
           "targets": [
             "windows-x86_64",
@@ -2301,7 +2301,7 @@
           "name": "readable",
           "type": "bool",
           "public": true,
-          "line": 79,
+          "line": 89,
           "doc": "A read would not wait, or a listener has a connection to accept.",
           "targets": [
             "windows-x86_64",
@@ -2318,7 +2318,7 @@
           "name": "writable",
           "type": "bool",
           "public": true,
-          "line": 81,
+          "line": 91,
           "doc": "A write would not wait.",
           "targets": [
             "windows-x86_64",
@@ -2335,7 +2335,7 @@
           "name": "closed",
           "type": "bool",
           "public": true,
-          "line": 83,
+          "line": 93,
           "doc": "The peer has closed the connection or an error is pending; the next read or write says which.",
           "targets": [
             "windows-x86_64",
@@ -2353,10 +2353,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "PollEvent",
-          "line": 90,
-          "signature": "pub func PollEvent() -> PollEvent",
+          "kind": "associated",
+          "name": "New",
+          "line": 100,
+          "signature": "pub func New() -> PollEvent",
           "typeParams": [],
           "params": [],
           "receiver": null,
@@ -2403,7 +2403,7 @@
       "displayName": "Poller",
       "module": "Poll",
       "source": "Src/Poll.rux",
-      "line": 105,
+      "line": 115,
       "signature": "pub struct Poller",
       "typeParams": [],
       "doc": {
@@ -2421,7 +2421,7 @@
           "name": "handle",
           "type": "uint64",
           "public": false,
-          "line": 107,
+          "line": 117,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -2438,7 +2438,7 @@
           "name": "registrations",
           "type": "Vector<Registration>",
           "public": false,
-          "line": 109,
+          "line": 119,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -2455,7 +2455,7 @@
           "name": "buffer",
           "type": "Vector<uint64>",
           "public": false,
-          "line": 111,
+          "line": 121,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -2473,10 +2473,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Poller",
-          "line": 132,
-          "signature": "pub func Poller(allocator: Allocator) -> Poller throws IoError",
+          "kind": "associated",
+          "name": "New",
+          "line": 142,
+          "signature": "pub func New(allocator: Allocator) -> Poller ! IoError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": null,
@@ -2509,8 +2509,8 @@
         {
           "kind": "method",
           "name": "Register",
-          "line": 158,
-          "signature": "pub func Register(&var self, source: PollSource, token: uint64, interest: Interest) throws IoError",
+          "line": 168,
+          "signature": "pub func Register(&var self, source: PollSource, token: uint64, interest: Interest) -> !IoError",
           "typeParams": [],
           "params": [
             { "name": "source", "type": "PollSource" },
@@ -2549,8 +2549,8 @@
         {
           "kind": "method",
           "name": "Modify",
-          "line": 168,
-          "signature": "pub func Modify(&var self, source: PollSource, token: uint64, interest: Interest) throws IoError",
+          "line": 178,
+          "signature": "pub func Modify(&var self, source: PollSource, token: uint64, interest: Interest) -> !IoError",
           "typeParams": [],
           "params": [
             { "name": "source", "type": "PollSource" },
@@ -2589,8 +2589,8 @@
         {
           "kind": "method",
           "name": "Deregister",
-          "line": 176,
-          "signature": "pub func Deregister(&var self, source: PollSource) throws IoError",
+          "line": 186,
+          "signature": "pub func Deregister(&var self, source: PollSource) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "source", "type": "PollSource" }],
           "receiver": "&var Poller",
@@ -2621,8 +2621,8 @@
         {
           "kind": "method",
           "name": "Wait",
-          "line": 201,
-          "signature": "pub func Wait(&var self, events: var PollEvent[..], timeout: Duration?) -> uint throws IoError",
+          "line": 211,
+          "signature": "pub func Wait(&var self, events: var PollEvent[..], timeout: Duration?) -> uint ! IoError",
           "typeParams": [],
           "params": [
             { "name": "events", "type": "var PollEvent[..]" },
@@ -2661,9 +2661,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Poller",
-          "line": 403,
-          "signature": "func ~Poller(&var self)",
+          "name": "~",
+          "line": 413,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Poller",
@@ -2710,8 +2710,8 @@
       "displayName": "Resolve",
       "module": "Resolve",
       "source": "Src/Resolve.rux",
-      "line": 29,
-      "signature": "pub func Resolve(allocator: Allocator, host: char8[..], port: uint16) -> Vector<SocketAddress> throws IoError",
+      "line": 30,
+      "signature": "pub func Resolve(allocator: Allocator, host: char8[..], port: uint16) -> Vector<SocketAddress> ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "The addresses of `host`, each with `port`, in the order the resolver prefers them, without repeats.",
@@ -2788,7 +2788,7 @@
           "kind": "associated",
           "name": "Bind",
           "line": 42,
-          "signature": "pub func Bind(address: SocketAddress) -> TcpListener throws IoError",
+          "signature": "pub func Bind(address: SocketAddress) -> TcpListener ! IoError",
           "typeParams": [],
           "params": [{ "name": "address", "type": "SocketAddress" }],
           "receiver": null,
@@ -2825,7 +2825,7 @@
           "kind": "method",
           "name": "Accept",
           "line": 53,
-          "signature": "pub func Accept(&self) -> TcpStream throws IoError",
+          "signature": "pub func Accept(&self) -> TcpStream ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&TcpListener",
@@ -2857,7 +2857,7 @@
           "kind": "method",
           "name": "LocalAddress",
           "line": 62,
-          "signature": "pub func LocalAddress(&self) -> SocketAddress throws IoError",
+          "signature": "pub func LocalAddress(&self) -> SocketAddress ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&TcpListener",
@@ -2889,7 +2889,7 @@
           "kind": "method",
           "name": "SetNonBlocking",
           "line": 72,
-          "signature": "pub func SetNonBlocking(&self, enabled: bool) throws IoError",
+          "signature": "pub func SetNonBlocking(&self, enabled: bool) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "enabled", "type": "bool" }],
           "receiver": "&TcpListener",
@@ -2951,9 +2951,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~TcpListener",
+          "name": "~",
           "line": 83,
-          "signature": "func ~TcpListener(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var TcpListener",
@@ -3039,7 +3039,7 @@
           "kind": "associated",
           "name": "Connect",
           "line": 94,
-          "signature": "pub func Connect(address: SocketAddress) -> TcpStream throws IoError",
+          "signature": "pub func Connect(address: SocketAddress) -> TcpStream ! IoError",
           "typeParams": [],
           "params": [{ "name": "address", "type": "SocketAddress" }],
           "receiver": null,
@@ -3071,7 +3071,7 @@
           "kind": "method",
           "name": "LocalAddress",
           "line": 104,
-          "signature": "pub func LocalAddress(&self) -> SocketAddress throws IoError",
+          "signature": "pub func LocalAddress(&self) -> SocketAddress ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&TcpStream",
@@ -3103,7 +3103,7 @@
           "kind": "method",
           "name": "PeerAddress",
           "line": 111,
-          "signature": "pub func PeerAddress(&self) -> SocketAddress throws IoError",
+          "signature": "pub func PeerAddress(&self) -> SocketAddress ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&TcpStream",
@@ -3135,7 +3135,7 @@
           "kind": "method",
           "name": "Shutdown",
           "line": 119,
-          "signature": "pub func Shutdown(&self, direction: ShutdownDirection) throws IoError",
+          "signature": "pub func Shutdown(&self, direction: ShutdownDirection) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "direction", "type": "ShutdownDirection" }],
           "receiver": "&TcpStream",
@@ -3167,7 +3167,7 @@
           "kind": "method",
           "name": "SetNoDelay",
           "line": 127,
-          "signature": "pub func SetNoDelay(&self, enabled: bool) throws IoError",
+          "signature": "pub func SetNoDelay(&self, enabled: bool) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "enabled", "type": "bool" }],
           "receiver": "&TcpStream",
@@ -3199,7 +3199,7 @@
           "kind": "method",
           "name": "SetReadTimeout",
           "line": 135,
-          "signature": "pub func SetReadTimeout(&self, timeout: Duration?) throws IoError",
+          "signature": "pub func SetReadTimeout(&self, timeout: Duration?) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "timeout", "type": "Duration?" }],
           "receiver": "&TcpStream",
@@ -3231,7 +3231,7 @@
           "kind": "method",
           "name": "SetWriteTimeout",
           "line": 143,
-          "signature": "pub func SetWriteTimeout(&self, timeout: Duration?) throws IoError",
+          "signature": "pub func SetWriteTimeout(&self, timeout: Duration?) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "timeout", "type": "Duration?" }],
           "receiver": "&TcpStream",
@@ -3263,7 +3263,7 @@
           "kind": "method",
           "name": "SetNonBlocking",
           "line": 152,
-          "signature": "pub func SetNonBlocking(&self, enabled: bool) throws IoError",
+          "signature": "pub func SetNonBlocking(&self, enabled: bool) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "enabled", "type": "bool" }],
           "receiver": "&TcpStream",
@@ -3325,9 +3325,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~TcpStream",
+          "name": "~",
           "line": 163,
-          "signature": "func ~TcpStream(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var TcpStream",
@@ -3359,7 +3359,7 @@
           "kind": "method",
           "name": "Read",
           "line": 185,
-          "signature": "pub func Read(&var self, into: var char8[..]) -> uint throws IoError",
+          "signature": "pub func Read(&var self, into: var char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var TcpStream",
@@ -3391,7 +3391,7 @@
           "kind": "method",
           "name": "Write",
           "line": 198,
-          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var TcpStream",
@@ -3423,7 +3423,7 @@
           "kind": "method",
           "name": "Flush",
           "line": 206,
-          "signature": "pub func Flush(&var self) throws IoError",
+          "signature": "pub func Flush(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var TcpStream",
@@ -3666,7 +3666,7 @@
           "kind": "associated",
           "name": "Bind",
           "line": 32,
-          "signature": "pub func Bind(address: SocketAddress) -> UdpSocket throws IoError",
+          "signature": "pub func Bind(address: SocketAddress) -> UdpSocket ! IoError",
           "typeParams": [],
           "params": [{ "name": "address", "type": "SocketAddress" }],
           "receiver": null,
@@ -3698,7 +3698,7 @@
           "kind": "method",
           "name": "SendTo",
           "line": 44,
-          "signature": "pub func SendTo(&self, bytes: char8[..], target: SocketAddress) -> uint throws IoError",
+          "signature": "pub func SendTo(&self, bytes: char8[..], target: SocketAddress) -> uint ! IoError",
           "typeParams": [],
           "params": [
             { "name": "bytes", "type": "char8[..]" },
@@ -3736,7 +3736,7 @@
           "kind": "method",
           "name": "ReceiveFrom",
           "line": 52,
-          "signature": "pub func ReceiveFrom(&self, into: var char8[..]) -> Datagram throws IoError",
+          "signature": "pub func ReceiveFrom(&self, into: var char8[..]) -> Datagram ! IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&UdpSocket",
@@ -3768,7 +3768,7 @@
           "kind": "method",
           "name": "Connect",
           "line": 62,
-          "signature": "pub func Connect(&self, peer: SocketAddress) throws IoError",
+          "signature": "pub func Connect(&self, peer: SocketAddress) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "peer", "type": "SocketAddress" }],
           "receiver": "&UdpSocket",
@@ -3800,7 +3800,7 @@
           "kind": "method",
           "name": "Send",
           "line": 70,
-          "signature": "pub func Send(&self, bytes: char8[..]) -> uint throws IoError",
+          "signature": "pub func Send(&self, bytes: char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&UdpSocket",
@@ -3832,7 +3832,7 @@
           "kind": "method",
           "name": "Receive",
           "line": 78,
-          "signature": "pub func Receive(&self, into: var char8[..]) -> uint throws IoError",
+          "signature": "pub func Receive(&self, into: var char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&UdpSocket",
@@ -3864,7 +3864,7 @@
           "kind": "method",
           "name": "LocalAddress",
           "line": 85,
-          "signature": "pub func LocalAddress(&self) -> SocketAddress throws IoError",
+          "signature": "pub func LocalAddress(&self) -> SocketAddress ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&UdpSocket",
@@ -3896,7 +3896,7 @@
           "kind": "method",
           "name": "SetReadTimeout",
           "line": 93,
-          "signature": "pub func SetReadTimeout(&self, timeout: Duration?) throws IoError",
+          "signature": "pub func SetReadTimeout(&self, timeout: Duration?) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "timeout", "type": "Duration?" }],
           "receiver": "&UdpSocket",
@@ -3928,7 +3928,7 @@
           "kind": "method",
           "name": "SetNonBlocking",
           "line": 102,
-          "signature": "pub func SetNonBlocking(&self, enabled: bool) throws IoError",
+          "signature": "pub func SetNonBlocking(&self, enabled: bool) -> !IoError",
           "typeParams": [],
           "params": [{ "name": "enabled", "type": "bool" }],
           "receiver": "&UdpSocket",
@@ -3990,9 +3990,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~UdpSocket",
+          "name": "~",
           "line": 113,
-          "signature": "func ~UdpSocket(&var self)",
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var UdpSocket",

@@ -43,10 +43,10 @@ gone. A handle is not copied.
 
 **Constructors**
 
-<h3 id="rw-lock-new"><code>RwLock</code></h3>
+<h3 id="rw-lock-new"><code>New</code></h3>
 
 ```rux
-pub func RwLock(value: T) -> RwLock<T>
+pub func New(value: T) -> RwLock<T>
 ```
 
 A new lock guarding `value`. Running out of memory for it is a program error.
@@ -99,10 +99,10 @@ Takes the exclusive hold, waiting while any reader or writer holds the lock.
 
 **Destructor**
 
-<h3 id="rw-lock-destructor"><code>~RwLock</code></h3>
+<h3 id="rw-lock-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~RwLock(&var self)
+destructor
 ```
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L119)
@@ -138,17 +138,17 @@ The guard stays borrowed while the reference is in use, so it cannot be dropped 
 
 **Returns**: a reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L135)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L133)
 
 **Destructor**
 
-<h3 id="read-guard-destructor"><code>~ReadGuard</code></h3>
+<h3 id="read-guard-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~ReadGuard(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L140)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L138)
 
 <h2 id="write-guard"><code>WriteGuard&lt;T&gt;</code></h2>
 
@@ -181,7 +181,7 @@ The guard stays borrowed while the reference is in use, so it cannot be dropped 
 
 **Returns**: a reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L163)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L159)
 
 <h3 id="write-guard-get-mutable"><code>GetMutable</code></h3>
 
@@ -194,14 +194,14 @@ The guard stays borrowed exclusively while the reference is in use.
 
 **Returns**: a writable reference to the value
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L172)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L168)
 
 **Destructor**
 
-<h3 id="write-guard-destructor"><code>~WriteGuard</code></h3>
+<h3 id="write-guard-destructor"><code>destructor</code></h3>
 
 ```rux
-func ~WriteGuard(&var self)
+destructor
 ```
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L177)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Sync/Src/RwLock.rux#L173)

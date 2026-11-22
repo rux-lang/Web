@@ -54,7 +54,7 @@
       "module": "Buffers",
       "source": "Src/Buffers.rux",
       "line": 108,
-      "signature": "pub func Compress(allocator: Allocator, data: byte[..], format: Format, level: Level) -> Vector<byte> throws IoError",
+      "signature": "pub func Compress(allocator: Allocator, data: byte[..], format: Format, level: Level) -> Vector<byte> ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "Compresses `data` in `format` at `level`.",
@@ -94,7 +94,7 @@
       "module": "Buffers",
       "source": "Src/Buffers.rux",
       "line": 133,
-      "signature": "pub func Compress(allocator: Allocator, data: char8[..], format: Format, level: Level) -> Vector<byte> throws IoError",
+      "signature": "pub func Compress(allocator: Allocator, data: char8[..], format: Format, level: Level) -> Vector<byte> ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "Compresses text in `format` at `level`: its UTF-8 bytes, as the Io streams carry them, so text needs no cast to\nbytes first.",
@@ -134,7 +134,7 @@
       "module": "Buffers",
       "source": "Src/Buffers.rux",
       "line": 145,
-      "signature": "pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> throws IoError",
+      "signature": "pub func Decompress(allocator: Allocator, data: byte[..], format: Format) -> Vector<byte> ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "Decompresses `data`, a whole stream in `format`.",
@@ -172,8 +172,8 @@
       "displayName": "Decompress",
       "module": "Buffers",
       "source": "Src/Buffers.rux",
-      "line": 183,
-      "signature": "pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> throws IoError",
+      "line": 181,
+      "signature": "pub func Decompress(allocator: Allocator, data: char8[..], format: Format) -> Vector<byte> ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "Decompresses `data`, a whole stream in `format` held as `char8` units, such as bytes read from an Io stream.",
@@ -570,10 +570,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "CompressWriter",
+          "kind": "associated",
+          "name": "New",
           "line": 83,
-          "signature": "pub func CompressWriter(allocator: Allocator, sink: Writer, format: Format, level: Level) -> CompressWriter throws IoError",
+          "signature": "pub func New(allocator: Allocator, sink: Writer, format: Format, level: Level) -> CompressWriter ! IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -615,7 +615,7 @@
           "kind": "method",
           "name": "Finish",
           "line": 114,
-          "signature": "pub func Finish(&var self) throws IoError",
+          "signature": "pub func Finish(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var CompressWriter",
@@ -645,9 +645,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~CompressWriter",
-          "line": 564,
-          "signature": "func ~CompressWriter(&var self)",
+          "name": "~",
+          "line": 562,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var CompressWriter",
@@ -678,8 +678,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 581,
-          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
+          "line": 577,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var CompressWriter",
@@ -710,8 +710,8 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 619,
-          "signature": "pub func Flush(&var self) throws IoError",
+          "line": 615,
+          "signature": "pub func Flush(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var CompressWriter",
@@ -1342,10 +1342,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "DecompressReader",
+          "kind": "associated",
+          "name": "New",
           "line": 65,
-          "signature": "pub func DecompressReader(allocator: Allocator, source: Reader, format: Format) -> DecompressReader throws IoError",
+          "signature": "pub func New(allocator: Allocator, source: Reader, format: Format) -> DecompressReader ! IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -1383,9 +1383,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~DecompressReader",
-          "line": 419,
-          "signature": "func ~DecompressReader(&var self)",
+          "name": "~",
+          "line": 417,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var DecompressReader",
@@ -1416,8 +1416,8 @@
         {
           "kind": "method",
           "name": "Read",
-          "line": 438,
-          "signature": "pub func Read(&var self, into: var char8[..]) -> uint throws IoError",
+          "line": 436,
+          "signature": "pub func Read(&var self, into: var char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var DecompressReader",

@@ -10,7 +10,7 @@ rux add Rux/Sync
 
 ## What it provides
 
-| Module     | Covers                                                                                    |
+| File       | Covers                                                                                    |
 | ---------- | ----------------------------------------------------------------------------------------- |
 | `Lock`     | `Lock`, a bare lock, and `Once`, a once-only initialization; both can be module variables |
 | `Mutex`    | `Mutex<T>` with its `MutexGuard<T>`, and `Condition` to wait on while holding one         |
@@ -18,7 +18,7 @@ rux add Rux/Sync
 | `Counters` | `Semaphore`, `Barrier` and `WaitGroup`                                                    |
 | `Channel`  | `Channel<T>`, a bounded queue any number of threads send to and receive from              |
 
-The module names describe where each declaration comes from; they are not part of an import path.
+The files above only organize the source: the package has no modules, so every declaration is imported from its root, as in `import Sync::Mutex;`.
 
 ## Example
 
@@ -33,9 +33,9 @@ func AddOne(total: Mutex<uint64>) -> () {
 }
 
 func Main() -> int {
-    let total = Mutex<uint64>(0u64);
-    var first = try Spawn(AddOne, total.Clone()) catch { _ => return 1 };
-    var second = try Spawn(AddOne, total.Clone()) catch { _ => return 1 };
+    let total = Mutex<uint64>::New(0u64);
+    var first = Spawn(AddOne, total.Clone()) catch { _ => return 1 };
+    var second = Spawn(AddOne, total.Clone()) catch { _ => return 1 };
     first.Join();
     second.Join();
     let guard = total.Lock();

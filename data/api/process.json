@@ -521,7 +521,7 @@
       "displayName": "ExitStatus",
       "module": "Child",
       "source": "Src/Child.rux",
-      "line": 58,
+      "line": 73,
       "signature": "pub struct ExitStatus",
       "typeParams": [],
       "doc": {
@@ -539,7 +539,7 @@
           "name": "code",
           "type": "int32",
           "public": false,
-          "line": 59,
+          "line": 74,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -556,7 +556,7 @@
           "name": "signal",
           "type": "int32",
           "public": false,
-          "line": 60,
+          "line": 75,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -576,7 +576,7 @@
         {
           "kind": "method",
           "name": "Success",
-          "line": 67,
+          "line": 82,
           "signature": "pub func Success(&self) -> bool",
           "typeParams": [],
           "params": [],
@@ -608,7 +608,7 @@
         {
           "kind": "method",
           "name": "Code",
-          "line": 74,
+          "line": 89,
           "signature": "pub func Code(&self) -> int32?",
           "typeParams": [],
           "params": [],
@@ -640,7 +640,7 @@
         {
           "kind": "method",
           "name": "Signal",
-          "line": 82,
+          "line": 97,
           "signature": "pub func Signal(&self) -> int32?",
           "typeParams": [],
           "params": [],
@@ -688,7 +688,7 @@
       "displayName": "PipeWriter",
       "module": "Child",
       "source": "Src/Child.rux",
-      "line": 98,
+      "line": 113,
       "signature": "pub struct PipeWriter",
       "typeParams": [],
       "doc": {
@@ -706,7 +706,7 @@
           "name": "pipe",
           "type": "uint64",
           "public": false,
-          "line": 99,
+          "line": 114,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -726,7 +726,7 @@
         {
           "kind": "method",
           "name": "Close",
-          "line": 112,
+          "line": 127,
           "signature": "pub func Close(&var self)",
           "typeParams": [],
           "params": [],
@@ -757,9 +757,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~PipeWriter",
-          "line": 117,
-          "signature": "func ~PipeWriter(&var self)",
+          "name": "~",
+          "line": 132,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var PipeWriter",
@@ -790,8 +790,8 @@
         {
           "kind": "method",
           "name": "Write",
-          "line": 127,
-          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
+          "line": 142,
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var PipeWriter",
@@ -822,8 +822,8 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 151,
-          "signature": "pub func Flush(&var self) throws IoError",
+          "line": 166,
+          "signature": "pub func Flush(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var PipeWriter",
@@ -870,7 +870,7 @@
       "displayName": "PipeReader",
       "module": "Child",
       "source": "Src/Child.rux",
-      "line": 105,
+      "line": 120,
       "signature": "pub struct PipeReader",
       "typeParams": [],
       "doc": {
@@ -888,7 +888,7 @@
           "name": "pipe",
           "type": "uint64",
           "public": false,
-          "line": 106,
+          "line": 121,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -908,7 +908,7 @@
         {
           "kind": "method",
           "name": "Close",
-          "line": 159,
+          "line": 174,
           "signature": "pub func Close(&var self)",
           "typeParams": [],
           "params": [],
@@ -939,9 +939,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~PipeReader",
-          "line": 164,
-          "signature": "func ~PipeReader(&var self)",
+          "name": "~",
+          "line": 179,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var PipeReader",
@@ -972,8 +972,8 @@
         {
           "kind": "method",
           "name": "Read",
-          "line": 174,
-          "signature": "pub func Read(&var self, into: var char8[..]) -> uint throws IoError",
+          "line": 189,
+          "signature": "pub func Read(&var self, into: var char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "into", "type": "var char8[..]" }],
           "receiver": "&var PipeReader",
@@ -1020,7 +1020,7 @@
       "displayName": "Child",
       "module": "Child",
       "source": "Src/Child.rux",
-      "line": 205,
+      "line": 220,
       "signature": "pub struct Child",
       "typeParams": [],
       "doc": {
@@ -1038,7 +1038,7 @@
           "name": "id",
           "type": "uint32",
           "public": false,
-          "line": 206,
+          "line": 221,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1055,7 +1055,7 @@
           "name": "process",
           "type": "uint64",
           "public": false,
-          "line": 208,
+          "line": 223,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1072,7 +1072,7 @@
           "name": "input",
           "type": "uint64",
           "public": false,
-          "line": 209,
+          "line": 224,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1089,7 +1089,7 @@
           "name": "output",
           "type": "uint64",
           "public": false,
-          "line": 210,
+          "line": 225,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1106,7 +1106,7 @@
           "name": "error",
           "type": "uint64",
           "public": false,
-          "line": 211,
+          "line": 226,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1123,7 +1123,7 @@
           "name": "finished",
           "type": "bool",
           "public": false,
-          "line": 212,
+          "line": 227,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1140,7 +1140,7 @@
           "name": "status",
           "type": "ExitStatus",
           "public": false,
-          "line": 213,
+          "line": 228,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1160,7 +1160,7 @@
         {
           "kind": "method",
           "name": "Id",
-          "line": 220,
+          "line": 235,
           "signature": "pub func Id(&self) -> uint32",
           "typeParams": [],
           "params": [],
@@ -1192,7 +1192,7 @@
         {
           "kind": "method",
           "name": "TakeInput",
-          "line": 228,
+          "line": 243,
           "signature": "pub func TakeInput(&var self) -> PipeWriter?",
           "typeParams": [],
           "params": [],
@@ -1224,7 +1224,7 @@
         {
           "kind": "method",
           "name": "TakeOutput",
-          "line": 239,
+          "line": 254,
           "signature": "pub func TakeOutput(&var self) -> PipeReader?",
           "typeParams": [],
           "params": [],
@@ -1256,7 +1256,7 @@
         {
           "kind": "method",
           "name": "TakeError",
-          "line": 250,
+          "line": 265,
           "signature": "pub func TakeError(&var self) -> PipeReader?",
           "typeParams": [],
           "params": [],
@@ -1288,8 +1288,8 @@
         {
           "kind": "method",
           "name": "Wait",
-          "line": 261,
-          "signature": "pub func Wait(&var self) -> ExitStatus throws IoError",
+          "line": 276,
+          "signature": "pub func Wait(&var self) -> ExitStatus ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var Child",
@@ -1320,8 +1320,8 @@
         {
           "kind": "method",
           "name": "TryWait",
-          "line": 286,
-          "signature": "pub func TryWait(&var self) -> ExitStatus? throws IoError",
+          "line": 301,
+          "signature": "pub func TryWait(&var self) -> ExitStatus? ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var Child",
@@ -1352,8 +1352,8 @@
         {
           "kind": "method",
           "name": "Kill",
-          "line": 309,
-          "signature": "pub func Kill(&var self) throws IoError",
+          "line": 324,
+          "signature": "pub func Kill(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var Child",
@@ -1383,9 +1383,9 @@
         },
         {
           "kind": "destructor",
-          "name": "~Child",
-          "line": 339,
-          "signature": "func ~Child(&var self)",
+          "name": "~",
+          "line": 354,
+          "signature": "destructor",
           "typeParams": [],
           "params": [],
           "receiver": "&var Child",
@@ -1432,7 +1432,7 @@
       "displayName": "Stdio",
       "module": "Command",
       "source": "Src/Command.rux",
-      "line": 46,
+      "line": 52,
       "signature": "pub enum Stdio",
       "typeParams": [],
       "doc": {
@@ -1452,7 +1452,7 @@
           "name": "Inherit",
           "value": "0",
           "payload": null,
-          "line": 48,
+          "line": 54,
           "doc": "The stream this process has, which the child shares.",
           "targets": [
             "windows-x86_64",
@@ -1469,7 +1469,7 @@
           "name": "Null",
           "value": "1",
           "payload": null,
-          "line": 50,
+          "line": 56,
           "doc": "Nothing: reads find the end at once and writes are discarded.",
           "targets": [
             "windows-x86_64",
@@ -1486,7 +1486,7 @@
           "name": "Pipe",
           "value": "2",
           "payload": null,
-          "line": 52,
+          "line": 58,
           "doc": "A new pipe, whose other end the parent takes from the `Child`.",
           "targets": [
             "windows-x86_64",
@@ -1519,7 +1519,7 @@
       "displayName": "Command",
       "module": "Command",
       "source": "Src/Command.rux",
-      "line": 59,
+      "line": 65,
       "signature": "pub struct Command",
       "typeParams": [],
       "doc": {
@@ -1537,7 +1537,7 @@
           "name": "allocator",
           "type": "Allocator",
           "public": false,
-          "line": 60,
+          "line": 66,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1554,7 +1554,7 @@
           "name": "words",
           "type": "Buffer<OsUnit>",
           "public": false,
-          "line": 62,
+          "line": 68,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1571,7 +1571,7 @@
           "name": "wordCount",
           "type": "uint",
           "public": false,
-          "line": 63,
+          "line": 69,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1588,7 +1588,7 @@
           "name": "directory",
           "type": "Buffer<OsUnit>",
           "public": false,
-          "line": 65,
+          "line": 71,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1605,7 +1605,7 @@
           "name": "changes",
           "type": "Buffer<OsUnit>",
           "public": false,
-          "line": 67,
+          "line": 73,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1622,7 +1622,7 @@
           "name": "clearEnvironment",
           "type": "bool",
           "public": false,
-          "line": 68,
+          "line": 74,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1639,7 +1639,7 @@
           "name": "input",
           "type": "Stdio",
           "public": false,
-          "line": 69,
+          "line": 75,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1656,7 +1656,7 @@
           "name": "output",
           "type": "Stdio",
           "public": false,
-          "line": 70,
+          "line": 76,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1673,7 +1673,7 @@
           "name": "error",
           "type": "Stdio",
           "public": false,
-          "line": 71,
+          "line": 77,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1690,7 +1690,7 @@
           "name": "failure",
           "type": "IoError?",
           "public": false,
-          "line": 72,
+          "line": 78,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -1711,7 +1711,7 @@
           "kind": "method",
           "name": "Capture",
           "line": 79,
-          "signature": "pub func Capture(&self, allocator: Allocator) -> CapturedOutput throws IoError",
+          "signature": "pub func Capture(&self, allocator: Allocator) -> CapturedOutput ! IoError",
           "typeParams": [],
           "params": [{ "name": "allocator", "type": "Allocator" }],
           "receiver": "&Command",
@@ -1740,10 +1740,10 @@
           ]
         },
         {
-          "kind": "constructor",
-          "name": "Command",
-          "line": 82,
-          "signature": "pub func Command(allocator: Allocator, program: char8[..]) -> Command",
+          "kind": "associated",
+          "name": "New",
+          "line": 88,
+          "signature": "pub func New(allocator: Allocator, program: char8[..]) -> Command",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -1780,7 +1780,7 @@
         {
           "kind": "associated",
           "name": "FromNative",
-          "line": 98,
+          "line": 104,
           "signature": "pub func FromNative(allocator: Allocator, program: OsStringView) -> Command",
           "typeParams": [],
           "params": [
@@ -1818,7 +1818,7 @@
         {
           "kind": "method",
           "name": "Argument",
-          "line": 110,
+          "line": 116,
           "signature": "pub func Argument(&var self, value: char8[..])",
           "typeParams": [],
           "params": [{ "name": "value", "type": "char8[..]" }],
@@ -1850,7 +1850,7 @@
         {
           "kind": "method",
           "name": "NativeArgument",
-          "line": 119,
+          "line": 125,
           "signature": "pub func NativeArgument(&var self, value: OsStringView)",
           "typeParams": [],
           "params": [{ "name": "value", "type": "OsStringView" }],
@@ -1882,7 +1882,7 @@
         {
           "kind": "method",
           "name": "Directory",
-          "line": 128,
+          "line": 134,
           "signature": "pub func Directory(&var self, path: char8[..])",
           "typeParams": [],
           "params": [{ "name": "path", "type": "char8[..]" }],
@@ -1914,7 +1914,7 @@
         {
           "kind": "method",
           "name": "SetVariable",
-          "line": 138,
+          "line": 144,
           "signature": "pub func SetVariable(&var self, name: char8[..], value: char8[..])",
           "typeParams": [],
           "params": [
@@ -1952,7 +1952,7 @@
         {
           "kind": "method",
           "name": "RemoveVariable",
-          "line": 150,
+          "line": 156,
           "signature": "pub func RemoveVariable(&var self, name: char8[..])",
           "typeParams": [],
           "params": [{ "name": "name", "type": "char8[..]" }],
@@ -1984,7 +1984,7 @@
         {
           "kind": "method",
           "name": "ClearEnvironment",
-          "line": 159,
+          "line": 165,
           "signature": "pub func ClearEnvironment(&var self)",
           "typeParams": [],
           "params": [],
@@ -2016,7 +2016,7 @@
         {
           "kind": "method",
           "name": "StandardInput",
-          "line": 167,
+          "line": 173,
           "signature": "pub func StandardInput(&var self, stdio: Stdio)",
           "typeParams": [],
           "params": [{ "name": "stdio", "type": "Stdio" }],
@@ -2048,7 +2048,7 @@
         {
           "kind": "method",
           "name": "StandardOutput",
-          "line": 174,
+          "line": 180,
           "signature": "pub func StandardOutput(&var self, stdio: Stdio)",
           "typeParams": [],
           "params": [{ "name": "stdio", "type": "Stdio" }],
@@ -2080,7 +2080,7 @@
         {
           "kind": "method",
           "name": "StandardError",
-          "line": 181,
+          "line": 187,
           "signature": "pub func StandardError(&var self, stdio: Stdio)",
           "typeParams": [],
           "params": [{ "name": "stdio", "type": "Stdio" }],
@@ -2112,8 +2112,8 @@
         {
           "kind": "method",
           "name": "Spawn",
-          "line": 189,
-          "signature": "pub func Spawn(&self) -> Child throws IoError",
+          "line": 195,
+          "signature": "pub func Spawn(&self) -> Child ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&Command",
@@ -2144,8 +2144,8 @@
         {
           "kind": "method",
           "name": "Run",
-          "line": 197,
-          "signature": "pub func Run(&self) -> ExitStatus throws IoError",
+          "line": 203,
+          "signature": "pub func Run(&self) -> ExitStatus ! IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&Command",
@@ -2192,7 +2192,7 @@
       "displayName": "EnvironmentVariable",
       "module": "Environment",
       "source": "Src/Environment.rux",
-      "line": 23,
+      "line": 25,
       "signature": "pub struct EnvironmentVariable",
       "typeParams": [],
       "doc": {
@@ -2210,7 +2210,7 @@
           "name": "name",
           "type": "OsStringView",
           "public": true,
-          "line": 25,
+          "line": 27,
           "doc": "The name, the units before the first `=`.",
           "targets": [
             "windows-x86_64",
@@ -2227,7 +2227,7 @@
           "name": "value",
           "type": "OsStringView",
           "public": true,
-          "line": 27,
+          "line": 29,
           "doc": "The value, every unit after the first `=`, which may itself contain `=` and may be empty.",
           "targets": [
             "windows-x86_64",
@@ -2262,7 +2262,7 @@
       "displayName": "EnvironmentIterator",
       "module": "Environment",
       "source": "Src/Environment.rux",
-      "line": 102,
+      "line": 104,
       "signature": "pub struct EnvironmentIterator",
       "typeParams": [],
       "doc": {
@@ -2280,7 +2280,7 @@
           "name": "next",
           "type": "uint",
           "public": false,
-          "line": 103,
+          "line": 105,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -2297,7 +2297,7 @@
           "name": "changes",
           "type": "bool",
           "public": false,
-          "line": 105,
+          "line": 107,
           "doc": null,
           "targets": [
             "windows-x86_64",
@@ -2317,7 +2317,7 @@
         {
           "kind": "method",
           "name": "Iterate",
-          "line": 120,
+          "line": 122,
           "signature": "pub func Iterate(&self) -> EnvironmentIterator",
           "typeParams": [],
           "params": [],
@@ -2349,7 +2349,7 @@
         {
           "kind": "method",
           "name": "Next",
-          "line": 129,
+          "line": 131,
           "signature": "pub func Next(&var self) -> EnvironmentVariable?",
           "typeParams": [],
           "params": [],
@@ -2397,7 +2397,7 @@
       "displayName": "Environment",
       "module": "Environment",
       "source": "Src/Environment.rux",
-      "line": 112,
+      "line": 114,
       "signature": "pub func Environment() -> EnvironmentIterator",
       "typeParams": [],
       "doc": {
@@ -2432,7 +2432,7 @@
       "displayName": "Variable",
       "module": "Environment",
       "source": "Src/Environment.rux",
-      "line": 249,
+      "line": 251,
       "signature": "pub func Variable(name: char8[..]) -> OsStringView?",
       "typeParams": [],
       "doc": {
@@ -2467,8 +2467,8 @@
       "displayName": "SetVariable",
       "module": "Environment",
       "source": "Src/Environment.rux",
-      "line": 381,
-      "signature": "pub func SetVariable(name: char8[..], value: char8[..]) throws IoError",
+      "line": 379,
+      "signature": "pub func SetVariable(name: char8[..], value: char8[..]) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Sets the environment variable `name` to `value`, for this process and every process it starts from now on.",
@@ -2505,8 +2505,8 @@
       "displayName": "RemoveVariable",
       "module": "Environment",
       "source": "Src/Environment.rux",
-      "line": 397,
-      "signature": "pub func RemoveVariable(name: char8[..]) throws IoError",
+      "line": 395,
+      "signature": "pub func RemoveVariable(name: char8[..]) -> !IoError",
       "typeParams": [],
       "doc": {
         "summary": "Removes the environment variable `name`, for this process and every process it starts from now on.",
@@ -2540,8 +2540,8 @@
       "displayName": "CurrentExecutable",
       "module": "Executable",
       "source": "Src/Executable.rux",
-      "line": 34,
-      "signature": "pub func CurrentExecutable(allocator: Allocator) -> PathBuffer throws IoError",
+      "line": 38,
+      "signature": "pub func CurrentExecutable(allocator: Allocator) -> PathBuffer ! IoError",
       "typeParams": [],
       "doc": {
         "summary": "The path of the executable file the process is running, as the system loaded it.",
@@ -2575,7 +2575,7 @@
       "displayName": "Exit",
       "module": "Exit",
       "source": "Src/Exit.rux",
-      "line": 44,
+      "line": 46,
       "signature": "pub func Exit(code: int32)",
       "typeParams": [],
       "doc": {
@@ -2610,7 +2610,7 @@
       "displayName": "CurrentId",
       "module": "Exit",
       "source": "Src/Exit.rux",
-      "line": 59,
+      "line": 61,
       "signature": "pub func CurrentId() -> uint32",
       "typeParams": [],
       "doc": {

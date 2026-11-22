@@ -47,7 +47,7 @@
     {
       "name": "Rotation",
       "source": "Src/Rotation.rux",
-      "header": "A log file that is moved aside for a fresh one before it grows past a size, keeping a few of the older files.\nThe file is a `Writer`, so a `Logger` writes to it like any other destination, through a handle made from its\naddress with `unsafe { @file as Writer }`, as for a plain file."
+      "header": "A log file that is moved aside for a fresh one before it grows past a size, keeping a few of the older files.\nThe file is a `Writer`, so a `Logger` writes to it like any other destination, through a handle made from its\naddress with `@file as Writer`, as for a plain file."
     }
   ],
   "items": [
@@ -1374,10 +1374,10 @@
       "cases": [],
       "members": [
         {
-          "kind": "constructor",
-          "name": "Logger",
+          "kind": "associated",
+          "name": "New",
           "line": 30,
-          "signature": "pub func Logger(allocator: Allocator, sink: Writer, format: LogFormat) -> Logger",
+          "signature": "pub func New(allocator: Allocator, sink: Writer, format: LogFormat) -> Logger",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -1648,7 +1648,7 @@
         {
           "kind": "method",
           "name": "Flush",
-          "line": 107,
+          "line": 106,
           "signature": "pub func Flush(&var self)",
           "typeParams": [],
           "params": [],
@@ -1680,7 +1680,7 @@
         {
           "kind": "method",
           "name": "Trace",
-          "line": 121,
+          "line": 119,
           "signature": "pub func Trace(&var self, message: char8[..], fields: Field[..])",
           "typeParams": [],
           "params": [
@@ -1718,7 +1718,7 @@
         {
           "kind": "method",
           "name": "Trace",
-          "line": 128,
+          "line": 126,
           "signature": "pub func Trace(&var self, message: char8[..])",
           "typeParams": [],
           "params": [{ "name": "message", "type": "char8[..]" }],
@@ -1750,7 +1750,7 @@
         {
           "kind": "method",
           "name": "Debug",
-          "line": 136,
+          "line": 134,
           "signature": "pub func Debug(&var self, message: char8[..], fields: Field[..])",
           "typeParams": [],
           "params": [
@@ -1788,7 +1788,7 @@
         {
           "kind": "method",
           "name": "Debug",
-          "line": 143,
+          "line": 141,
           "signature": "pub func Debug(&var self, message: char8[..])",
           "typeParams": [],
           "params": [{ "name": "message", "type": "char8[..]" }],
@@ -1820,7 +1820,7 @@
         {
           "kind": "method",
           "name": "Info",
-          "line": 151,
+          "line": 149,
           "signature": "pub func Info(&var self, message: char8[..], fields: Field[..])",
           "typeParams": [],
           "params": [
@@ -1858,7 +1858,7 @@
         {
           "kind": "method",
           "name": "Info",
-          "line": 158,
+          "line": 156,
           "signature": "pub func Info(&var self, message: char8[..])",
           "typeParams": [],
           "params": [{ "name": "message", "type": "char8[..]" }],
@@ -1890,7 +1890,7 @@
         {
           "kind": "method",
           "name": "Warn",
-          "line": 166,
+          "line": 164,
           "signature": "pub func Warn(&var self, message: char8[..], fields: Field[..])",
           "typeParams": [],
           "params": [
@@ -1928,7 +1928,7 @@
         {
           "kind": "method",
           "name": "Warn",
-          "line": 173,
+          "line": 171,
           "signature": "pub func Warn(&var self, message: char8[..])",
           "typeParams": [],
           "params": [{ "name": "message", "type": "char8[..]" }],
@@ -1960,7 +1960,7 @@
         {
           "kind": "method",
           "name": "Error",
-          "line": 181,
+          "line": 179,
           "signature": "pub func Error(&var self, message: char8[..], fields: Field[..])",
           "typeParams": [],
           "params": [
@@ -1998,7 +1998,7 @@
         {
           "kind": "method",
           "name": "Error",
-          "line": 188,
+          "line": 186,
           "signature": "pub func Error(&var self, message: char8[..])",
           "typeParams": [],
           "params": [{ "name": "message", "type": "char8[..]" }],
@@ -2240,7 +2240,7 @@
           "kind": "associated",
           "name": "Open",
           "line": 45,
-          "signature": "pub func Open(allocator: Allocator, path: Path, limit: uint64, keep: uint) -> RotatingFile throws IoError",
+          "signature": "pub func Open(allocator: Allocator, path: Path, limit: uint64, keep: uint) -> RotatingFile ! IoError",
           "typeParams": [],
           "params": [
             { "name": "allocator", "type": "Allocator" },
@@ -2317,7 +2317,7 @@
           "kind": "method",
           "name": "Rotate",
           "line": 67,
-          "signature": "pub func Rotate(&var self) throws IoError",
+          "signature": "pub func Rotate(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var RotatingFile",
@@ -2349,7 +2349,7 @@
           "kind": "method",
           "name": "Close",
           "line": 85,
-          "signature": "pub func Close(&var self) throws IoError",
+          "signature": "pub func Close(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var RotatingFile",
@@ -2381,7 +2381,7 @@
           "kind": "method",
           "name": "Write",
           "line": 96,
-          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint throws IoError",
+          "signature": "pub func Write(&var self, bytes: char8[..]) -> uint ! IoError",
           "typeParams": [],
           "params": [{ "name": "bytes", "type": "char8[..]" }],
           "receiver": "&var RotatingFile",
@@ -2413,7 +2413,7 @@
           "kind": "method",
           "name": "Flush",
           "line": 108,
-          "signature": "pub func Flush(&var self) throws IoError",
+          "signature": "pub func Flush(&var self) -> !IoError",
           "typeParams": [],
           "params": [],
           "receiver": "&var RotatingFile",
