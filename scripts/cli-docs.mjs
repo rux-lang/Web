@@ -86,7 +86,7 @@ The option is repeatable and accepts comma-separated values, so \`--emit ast --e
   },
   lint: {
     behavior:
-      "Runs fast source-level lint rules for the package or every workspace member without building an artifact. Use `rux check` when full semantic validation is required.",
+      "Analyses the package or every workspace member and runs the lint rules over it — naming, documentation and the conventions of the language design — without building an artifact. An error the analysis finds is reported beside the lint warnings, and fails the run.",
     related: ["check", "fmt"],
   },
   list: {
