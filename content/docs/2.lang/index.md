@@ -23,17 +23,17 @@ It is written for looking things up. To learn the language from the beginning, f
 :u-page-card{title="Introduction" description="Design goals, a first program, and how to read this reference." icon="i-lucide-book-open" to="/docs/lang/introduction" variant="subtle"}
 :u-page-card{title="Lexical structure" description="Source files, comments, identifiers, keywords, literals and operator tokens." icon="i-lucide-text" to="/docs/lang/lexical/source-files" variant="subtle"}
 :u-page-card{title="Types" description="Integers, floating point, booleans, characters, text and type aliases." icon="i-lucide-shapes" to="/docs/lang/types/overview" variant="subtle"}
-:u-page-card{title="Bindings" description="let, var and const, initialisation and destructuring." icon="i-lucide-tag" to="/docs/lang/bindings/overview" variant="subtle"}
-:u-page-card{title="Expressions" description="Every operator, its precedence, and casts with as." icon="i-lucide-plus" to="/docs/lang/expressions/overview" variant="subtle"}
-:u-page-card{title="Statements" description="if, the four loops, labelled break and continue, and return." icon="i-lucide-git-branch" to="/docs/lang/statements/overview" variant="subtle"}
+:u-page-card{title="Bindings" description="let, var and const, empty storage and initialisation, destructuring." icon="i-lucide-tag" to="/docs/lang/bindings/overview" variant="subtle"}
+:u-page-card{title="Expressions" description="Every operator, its precedence, value blocks, and casts with as." icon="i-lucide-plus" to="/docs/lang/expressions/overview" variant="subtle"}
+:u-page-card{title="Statements" description="if and if let, the four loops, labelled break and continue, and return." icon="i-lucide-git-branch" to="/docs/lang/statements/overview" variant="subtle"}
 :u-page-card{title="Patterns" description="match, exhaustiveness, and every pattern form." icon="i-lucide-scan-search" to="/docs/lang/patterns/match" variant="subtle"}
 ::
 
 ## Functions and data
 
 ::u-page-grid
-:u-page-card{title="Functions" description="Declarations, parameters, overloading, function types and Main." icon="i-lucide-square-function" to="/docs/lang/functions/declaration" variant="subtle"}
-:u-page-card{title="Structures" description="Structs, methods with &self and &var self receivers, constructors and extensions." icon="i-lucide-box" to="/docs/lang/structs/overview" variant="subtle"}
+:u-page-card{title="Functions" description="Declarations, parameters and written loans, overloading, function types and Main." icon="i-lucide-square-function" to="/docs/lang/functions/declaration" variant="subtle"}
+:u-page-card{title="Structures" description="Structs, methods and their receivers, named constructors and extensions." icon="i-lucide-box" to="/docs/lang/structs/overview" variant="subtle"}
 :u-page-card{title="Enumerations" description="Scalar enums with a backing type and explicit values." icon="i-lucide-list-ordered" to="/docs/lang/enums/overview" variant="subtle"}
 :u-page-card{title="Variants" description="Tagged unions whose cases carry their own data." icon="i-lucide-split" to="/docs/lang/variants/overview" variant="subtle"}
 :u-page-card{title="Unions" description="Untagged overlays of several types in one place." icon="i-lucide-layers" to="/docs/lang/unions/overview" variant="subtle"}
@@ -47,16 +47,16 @@ It is written for looking things up. To learn the language from the beginning, f
 
 ::u-page-grid
 :u-page-card{title="Optionals" description="T? and none, ?? fallbacks and ? propagation." icon="i-lucide-circle-dashed" to="/docs/lang/optionals/overview" variant="subtle"}
-:u-page-card{title="Errors" description="throws E, throw, marking calls with try, catch arms and panics." icon="i-lucide-triangle-alert" to="/docs/lang/errors/overview" variant="subtle"}
+:u-page-card{title="Errors" description="-> T ! E and throw, the error forms !, !! and catch, fallible values and panics." icon="i-lucide-triangle-alert" to="/docs/lang/errors/overview" variant="subtle"}
 :u-page-card{title="Sum types" description="A | B values, typed patterns and the is test." icon="i-lucide-combine" to="/docs/lang/sums/overview" variant="subtle"}
 ::
 
 ## Memory and ownership
 
 ::u-page-grid
-:u-page-card{title="References" description="Borrowing with &T and &var T, and the exclusivity rule." icon="i-lucide-link" to="/docs/lang/references/overview" variant="subtle"}
-:u-page-card{title="Pointers" description="*T and *var T, @ and *, null, arithmetic, slicing and unsafe." icon="i-lucide-mouse-pointer-2" to="/docs/lang/pointers/overview" variant="subtle"}
-:u-page-card{title="Ownership" description="Copies and moves, destructors and defer." icon="i-lucide-key-round" to="/docs/lang/ownership/overview" variant="subtle"}
+:u-page-card{title="References" description="Written loans &x and &var x, &T and &var T, and the exclusivity rule." icon="i-lucide-link" to="/docs/lang/references/overview" variant="subtle"}
+:u-page-card{title="Pointers" description="*T and *var T, @ and *, null, arithmetic, slicing and raw operations." icon="i-lucide-mouse-pointer-2" to="/docs/lang/pointers/overview" variant="subtle"}
+:u-page-card{title="Ownership" description="Copies and moves, destructors, ending a value with destroy and ~self, and defer." icon="i-lucide-key-round" to="/docs/lang/ownership/overview" variant="subtle"}
 :u-page-card{title="Memory layout" description="sizeof, alignof, padding and the layout of native forms." icon="i-lucide-ruler" to="/docs/lang/memory/layout" variant="subtle"}
 ::
 
