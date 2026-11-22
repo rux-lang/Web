@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Sendable.rux
-  line: 10
+  line: 11
 seo:
   title: "Sendable — Core API"
   description: "A type whose values may move to another thread: the bound a thread's context and result are written with."

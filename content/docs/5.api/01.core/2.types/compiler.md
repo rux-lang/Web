@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Compiler.rux
-  line: 154
+  line: 155
 seo:
   title: "Compiler — Core API"
   description: Properties of the compiler performing the build.
@@ -45,9 +45,9 @@ pub func HasFeature(&self, feature: char8[..]) -> bool
 
 Whether this compiler provides the named language or library feature.
 `self` is borrowed and `feature` must be a string literal, since this is answered while compiling. Prefer it
-to comparing `version`: a feature name says what the code needs, and stays right when the feature arrives in a
-release the comparison did not anticipate.
-Cannot fail: an unknown name is absent rather than an error. Costs nothing in the built program.
+to comparing `version`: a feature name says what the code needs, and stays right when the feature arrives in
+a release the comparison did not anticipate. Cannot fail: an unknown name is absent rather than an error.
+Costs nothing in the built program.
 
 | Name      | Type        | Description        |
 | --------- | ----------- | ------------------ |
@@ -55,7 +55,7 @@ Cannot fail: an unknown name is absent rather than an error. Costs nothing in th
 
 **Returns**: whether this compiler reports that feature
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L168)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L169)
 
 ## Related
 
@@ -67,4 +67,4 @@ pub const #compiler: Compiler;
 
 The compiler performing the build, as a compile-time value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L173)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L174)

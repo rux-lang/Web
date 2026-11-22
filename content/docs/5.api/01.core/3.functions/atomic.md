@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Atomic.rux
-  line: 15
+  line: 16
 seo:
   title: "Atomic intrinsics — Core API"
   description: "The atomic loads, stores, exchanges and read-modify-write operations, memory orders and fences that the Atomic package builds on."
@@ -34,10 +34,10 @@ pub enum MemoryOrder: uint8 {
 ```
 
 Which other memory operations may be reordered across an atomic one.
-The weakest ordering that makes a program correct is also the fastest, and a stronger one is never wrong. When in
-doubt, `SequentiallyConsistent` gives every thread one agreed order of all such operations.
+The weakest ordering that makes a program correct is also the fastest, and a stronger one is never wrong. When
+in doubt, `SequentiallyConsistent` gives every thread one agreed order of all such operations.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L16)
 
 **Cases**
 
@@ -52,20 +52,16 @@ doubt, `SequentiallyConsistent` gives every thread one agreed order of all such 
 <h2 id="atomic-load"><code>AtomicLoad&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func AtomicLoad<T>(
-    address: *T,
-    order: MemoryOrder
-) -> T
+pub func AtomicLoad<T>(address: *T, order: MemoryOrder) -> T
 ```
 
 Reads the value at `address` atomically.
-`order` must be `Relaxed`, `Acquire` or `SequentiallyConsistent`, written at the call. `address` must be aligned to
-the size of `T` and point at memory every thread that touches it reaches only through atomic operations. Runs in
-constant time and allocates nothing.
-Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through atomic
-operations while any of them may write it.
+`order` must be `Relaxed`, `Acquire` or `SequentiallyConsistent`, written at the call. `address` must be aligned
+to the size of `T` and point at memory every thread that touches it reaches only through atomic operations. Runs
+in constant time and allocates nothing. Safety: `address` must point at a live `T`, aligned to its size, that
+every thread reaches only through atomic operations while any of them may write it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L42)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L43)
 
 **Type parameters**
 
@@ -85,7 +81,7 @@ operations while any of them may write it.
 <h2 id="atomic-store"><code>AtomicStore&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func AtomicStore<T>(
+pub func AtomicStore<T>(
     address: *var T,
     value: T,
     order: MemoryOrder
@@ -93,10 +89,9 @@ pub unsafe func AtomicStore<T>(
 ```
 
 Writes `value` to `address` atomically.
-`order` must be `Relaxed`, `Release` or `SequentiallyConsistent`, written at the call. `address` must be aligned to
-the size of `T`. Runs in constant time and allocates nothing.
-Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through atomic
-operations while any of them may write it.
+`order` must be `Relaxed`, `Release` or `SequentiallyConsistent`, written at the call. `address` must be aligned
+to the size of `T`. Runs in constant time and allocates nothing. Safety: `address` must point at a live `T`,
+aligned to its size, that every thread reaches only through atomic operations while any of them may write it.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L54)
 
@@ -117,7 +112,7 @@ operations while any of them may write it.
 <h2 id="atomic-exchange"><code>AtomicExchange&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func AtomicExchange<T>(
+pub func AtomicExchange<T>(
     address: *var T,
     value: T,
     order: MemoryOrder
@@ -125,9 +120,9 @@ pub unsafe func AtomicExchange<T>(
 ```
 
 Writes `value` to `address` and returns what was there, as one atomic step.
-Any ordering is allowed. `address` must be aligned to the size of `T`. Runs in constant time and allocates nothing.
-Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through atomic
-operations while any of them may write it.
+Any ordering is allowed. `address` must be aligned to the size of `T`. Runs in constant time and allocates
+nothing. Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through
+atomic operations while any of them may write it.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L66)
 
@@ -150,7 +145,7 @@ operations while any of them may write it.
 <h2 id="atomic-compare-exchange"><code>AtomicCompareExchange&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func AtomicCompareExchange<T>(
+pub func AtomicCompareExchange<T>(
     address: *var T,
     expected: T,
     desired: T,
@@ -160,14 +155,13 @@ pub unsafe func AtomicCompareExchange<T>(
 ```
 
 Writes `desired` to `address` if it holds `expected`, and returns what it held, as one atomic step.
-The write happened exactly when the returned value equals `expected`. `success` orders the operation when it writes,
-and `failure` when it only reads; `failure` may not be `Release` or `AcquireRelease`, nor acquire more than
-`success` does. `address` must be aligned to the size of `T`. Never fails spuriously. Runs in constant time apart
-from contention and allocates nothing.
-Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through atomic
-operations while any of them may write it.
+The write happened exactly when the returned value equals `expected`. `success` orders the operation when it
+writes, and `failure` when it only reads; `failure` may not be `Release` or `AcquireRelease`, nor acquire more
+than `success` does. `address` must be aligned to the size of `T`. Never fails spuriously. Runs in constant time
+apart from contention and allocates nothing. Safety: `address` must point at a live `T`, aligned to its size,
+that every thread reaches only through atomic operations while any of them may write it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L82)
 
 **Type parameters**
 
@@ -190,7 +184,7 @@ operations while any of them may write it.
 <h2 id="atomic-fetch-add"><code>AtomicFetchAdd&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func AtomicFetchAdd<T>(
+pub func AtomicFetchAdd<T>(
     address: *var T,
     value: T,
     order: MemoryOrder
@@ -198,12 +192,11 @@ pub unsafe func AtomicFetchAdd<T>(
 ```
 
 Adds `value` to the integer at `address` and returns what was there, as one atomic step.
-The sum wraps on overflow, as two's complement arithmetic does. Any ordering is allowed. Runs in constant time apart
-from contention and allocates nothing.
-Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through atomic
-operations while any of them may write it.
+The sum wraps on overflow, as two's complement arithmetic does. Any ordering is allowed. Runs in constant time
+apart from contention and allocates nothing. Safety: `address` must point at a live `T`, aligned to its size,
+that every thread reaches only through atomic operations while any of them may write it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L97)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L95)
 
 **Type parameters**
 
@@ -224,7 +217,7 @@ operations while any of them may write it.
 <h2 id="atomic-fetch-sub"><code>AtomicFetchSub&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func AtomicFetchSub<T>(
+pub func AtomicFetchSub<T>(
     address: *var T,
     value: T,
     order: MemoryOrder
@@ -237,7 +230,7 @@ allocates nothing.
 Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through atomic
 operations while any of them may write it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L108)
 
 **Type parameters**
 
@@ -258,7 +251,7 @@ operations while any of them may write it.
 <h2 id="atomic-fetch-and"><code>AtomicFetchAnd&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func AtomicFetchAnd<T>(
+pub func AtomicFetchAnd<T>(
     address: *var T,
     value: T,
     order: MemoryOrder
@@ -270,7 +263,7 @@ Any ordering is allowed. Runs in constant time apart from contention and allocat
 Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through atomic
 operations while any of them may write it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L122)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L120)
 
 **Type parameters**
 
@@ -291,7 +284,7 @@ operations while any of them may write it.
 <h2 id="atomic-fetch-or"><code>AtomicFetchOr&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func AtomicFetchOr<T>(
+pub func AtomicFetchOr<T>(
     address: *var T,
     value: T,
     order: MemoryOrder
@@ -303,7 +296,7 @@ Any ordering is allowed. Runs in constant time apart from contention and allocat
 Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through atomic
 operations while any of them may write it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L134)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L132)
 
 **Type parameters**
 
@@ -324,7 +317,7 @@ operations while any of them may write it.
 <h2 id="atomic-fetch-xor"><code>AtomicFetchXor&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func AtomicFetchXor<T>(
+pub func AtomicFetchXor<T>(
     address: *var T,
     value: T,
     order: MemoryOrder
@@ -337,7 +330,7 @@ Any ordering is allowed. Runs in constant time apart from contention and allocat
 Safety: `address` must point at a live `T`, aligned to its size, that every thread reaches only through atomic
 operations while any of them may write it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L147)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L145)
 
 **Type parameters**
 
@@ -362,11 +355,12 @@ pub func Fence(order: MemoryOrder)
 ```
 
 Orders this thread's memory operations without touching memory.
-`order` must not be `Relaxed`, which would order nothing. An `Acquire` fence keeps later operations after earlier
-loads, a `Release` fence keeps earlier operations before later stores, and `SequentiallyConsistent` does both and
-takes part in the single order of sequentially consistent operations. Runs in constant time and allocates nothing.
+`order` must not be `Relaxed`, which would order nothing. An `Acquire` fence keeps later operations after
+earlier loads, a `Release` fence keeps earlier operations before later stores, and `SequentiallyConsistent` does
+both and takes part in the single order of sequentially consistent operations. Runs in constant time and
+allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L155)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L154)
 
 **Parameters**
 
@@ -381,7 +375,7 @@ pub func SpinHint()
 ```
 
 Tells the processor that the thread is waiting in a loop for another thread.
-It saves power and lets a sibling hardware thread run, and has no effect on memory. A loop that waits long should
-sleep instead. Runs in constant time and allocates nothing.
+It saves power and lets a sibling hardware thread run, and has no effect on memory. A loop that waits long
+should sleep instead. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L161)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Atomic.rux#L160)

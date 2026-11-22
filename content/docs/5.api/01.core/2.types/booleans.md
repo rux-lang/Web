@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Primitives/Bool8.rux
-  line: 7
+  line: 8
 seo:
   title: "Booleans — Core API"
   description: "The boolean types bool8 to bool512, with their width constants. The built-in bool is bool8 and shares its constants."
@@ -29,7 +29,7 @@ extend bool8
 
 One of two values, stored in 8 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool8.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool8.rux#L8)
 
 **Constants**
 
@@ -41,7 +41,7 @@ pub const Bits: uint = 8;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool8.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool8.rux#L11)
 
 <h3 id="bool8-bytes"><code>Bytes</code></h3>
 
@@ -51,7 +51,7 @@ pub const Bytes: uint = 1;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool8.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool8.rux#L14)
 
 <h2 id="bool16"><code>bool16</code></h2>
 
@@ -61,7 +61,7 @@ extend bool16
 
 One of two values, stored in 16 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool16.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool16.rux#L8)
 
 **Constants**
 
@@ -73,7 +73,7 @@ pub const Bits: uint = 16;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool16.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool16.rux#L11)
 
 <h3 id="bool16-bytes"><code>Bytes</code></h3>
 
@@ -83,7 +83,7 @@ pub const Bytes: uint = 2;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool16.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool16.rux#L14)
 
 <h2 id="bool32"><code>bool32</code></h2>
 
@@ -93,7 +93,7 @@ extend bool32
 
 One of two values, stored in 32 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool32.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool32.rux#L8)
 
 **Constants**
 
@@ -105,7 +105,7 @@ pub const Bits: uint = 32;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool32.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool32.rux#L11)
 
 <h3 id="bool32-bytes"><code>Bytes</code></h3>
 
@@ -115,7 +115,7 @@ pub const Bytes: uint = 4;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool32.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool32.rux#L14)
 
 <h2 id="bool64"><code>bool64</code></h2>
 
@@ -125,7 +125,7 @@ extend bool64
 
 One of two values, stored in 64 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool64.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool64.rux#L8)
 
 **Constants**
 
@@ -137,7 +137,7 @@ pub const Bits: uint = 64;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool64.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool64.rux#L11)
 
 <h3 id="bool64-bytes"><code>Bytes</code></h3>
 
@@ -147,7 +147,7 @@ pub const Bytes: uint = 8;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool64.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool64.rux#L14)
 
 <h2 id="bool128"><code>bool128</code></h2>
 
@@ -157,7 +157,7 @@ extend bool128
 
 One of two values, stored in 128 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool128.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool128.rux#L8)
 
 **Constants**
 
@@ -169,7 +169,7 @@ pub const Bits: uint = 128;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool128.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool128.rux#L11)
 
 <h3 id="bool128-bytes"><code>Bytes</code></h3>
 
@@ -179,7 +179,7 @@ pub const Bytes: uint = 16;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool128.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool128.rux#L14)
 
 <h2 id="bool256"><code>bool256</code></h2>
 
@@ -189,7 +189,7 @@ extend bool256
 
 One of two values, stored in 256 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool256.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool256.rux#L8)
 
 **Constants**
 
@@ -201,7 +201,7 @@ pub const Bits: uint = 256;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool256.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool256.rux#L11)
 
 <h3 id="bool256-bytes"><code>Bytes</code></h3>
 
@@ -211,7 +211,7 @@ pub const Bytes: uint = 32;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool256.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool256.rux#L14)
 
 <h2 id="bool512"><code>bool512</code></h2>
 
@@ -221,7 +221,7 @@ extend bool512
 
 One of two values, stored in 512 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool512.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool512.rux#L8)
 
 **Constants**
 
@@ -233,7 +233,7 @@ pub const Bits: uint = 512;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool512.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool512.rux#L11)
 
 <h3 id="bool512-bytes"><code>Bytes</code></h3>
 
@@ -243,4 +243,4 @@ pub const Bytes: uint = 64;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool512.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Bool512.rux#L14)

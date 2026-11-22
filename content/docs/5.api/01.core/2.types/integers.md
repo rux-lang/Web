@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Primitives/Int.rux
-  line: 7
+  line: 10
 seo:
   title: "Integers — Core API"
   description: "The signed and unsigned integer types from 8 to 512 bits and the pointer-sized int and uint, with their width and limit constants. The built-in byte is uint8 and shares its constants."
@@ -29,7 +29,7 @@ extend int
 
 A target pointer-sized signed integer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L10)
 
 **Methods**
 
@@ -48,7 +48,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`int`](/docs/api/core/integers#int)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L32)
 
 <h3 id="int-checked-sub"><code>CheckedSub</code></h3>
 
@@ -65,7 +65,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`int`](/docs/api/core/integers#int)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L43)
 
 <h3 id="int-checked-mul"><code>CheckedMul</code></h3>
 
@@ -83,7 +83,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`int`](/docs/api/core/integers#int)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L55)
 
 <h3 id="int-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -100,7 +100,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`int`](/docs/api/core/integers#int) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L66)
 
 <h3 id="int-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -117,7 +117,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`int`](/docs/api/core/integers#int) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L75)
 
 <h3 id="int-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -134,7 +134,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`int`](/docs/api/core/integers#int) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L84)
 
 <h3 id="int-truncate"><code>Truncate</code></h3>
 
@@ -143,8 +143,8 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`int`](/docs/api/core/integers#int), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`int`](/docs/api/core/integers#int), as `as` does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -152,7 +152,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L94)
 
 **Constants**
 
@@ -164,7 +164,7 @@ pub const Bits: uint = sizeof(int) * 8u;
 
 The target representation width in bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L13)
 
 <h3 id="int-bytes"><code>Bytes</code></h3>
 
@@ -174,7 +174,7 @@ pub const Bytes: uint = sizeof(int);
 
 The target representation size in bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L16)
 
 <h3 id="int-min"><code>Min</code></h3>
 
@@ -184,7 +184,7 @@ pub const Min: int = -(((~0u) >> 1u) as int) - 1;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L19)
 
 <h3 id="int-max"><code>Max</code></h3>
 
@@ -194,7 +194,7 @@ pub const Max: int = ((~0u) >> 1u) as int;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int.rux#L22)
 
 <h2 id="int8"><code>int8</code></h2>
 
@@ -204,7 +204,7 @@ extend int8
 
 A signed integer in 8 bits, two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L10)
 
 **Methods**
 
@@ -223,7 +223,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`int8`](/docs/api/core/integers#int8)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L32)
 
 <h3 id="int8-checked-sub"><code>CheckedSub</code></h3>
 
@@ -240,7 +240,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`int8`](/docs/api/core/integers#int8)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L43)
 
 <h3 id="int8-checked-mul"><code>CheckedMul</code></h3>
 
@@ -258,7 +258,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`int8`](/docs/api/core/integers#int8)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L55)
 
 <h3 id="int8-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -275,7 +275,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`int8`](/docs/api/core/integers#int8) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L66)
 
 <h3 id="int8-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -292,7 +292,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`int8`](/docs/api/core/integers#int8) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L75)
 
 <h3 id="int8-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -309,7 +309,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`int8`](/docs/api/core/integers#int8) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L84)
 
 <h3 id="int8-truncate"><code>Truncate</code></h3>
 
@@ -318,8 +318,8 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`int8`](/docs/api/core/integers#int8), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`int8`](/docs/api/core/integers#int8), as `as` does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -327,7 +327,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L94)
 
 **Constants**
 
@@ -339,7 +339,7 @@ pub const Bits: uint = 8;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L13)
 
 <h3 id="int8-bytes"><code>Bytes</code></h3>
 
@@ -349,7 +349,7 @@ pub const Bytes: uint = 1;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L16)
 
 <h3 id="int8-min"><code>Min</code></h3>
 
@@ -359,7 +359,7 @@ pub const Min: int8 = -128;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L19)
 
 <h3 id="int8-max"><code>Max</code></h3>
 
@@ -369,7 +369,7 @@ pub const Max: int8 = 127;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int8.rux#L22)
 
 <h2 id="int16"><code>int16</code></h2>
 
@@ -379,7 +379,7 @@ extend int16
 
 A signed integer in 16 bits, two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L10)
 
 **Methods**
 
@@ -398,7 +398,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`int16`](/docs/api/core/integers#int16)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L32)
 
 <h3 id="int16-checked-sub"><code>CheckedSub</code></h3>
 
@@ -415,7 +415,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`int16`](/docs/api/core/integers#int16)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L43)
 
 <h3 id="int16-checked-mul"><code>CheckedMul</code></h3>
 
@@ -433,7 +433,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`int16`](/docs/api/core/integers#int16)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L55)
 
 <h3 id="int16-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -450,7 +450,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`int16`](/docs/api/core/integers#int16) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L66)
 
 <h3 id="int16-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -467,7 +467,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`int16`](/docs/api/core/integers#int16) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L75)
 
 <h3 id="int16-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -484,7 +484,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`int16`](/docs/api/core/integers#int16) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L84)
 
 <h3 id="int16-truncate"><code>Truncate</code></h3>
 
@@ -493,8 +493,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`int16`](/docs/api/core/integers#int16), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`int16`](/docs/api/core/integers#int16), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -502,7 +503,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L95)
 
 **Constants**
 
@@ -514,7 +515,7 @@ pub const Bits: uint = 16;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L13)
 
 <h3 id="int16-bytes"><code>Bytes</code></h3>
 
@@ -524,7 +525,7 @@ pub const Bytes: uint = 2;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L16)
 
 <h3 id="int16-min"><code>Min</code></h3>
 
@@ -534,7 +535,7 @@ pub const Min: int16 = -32768;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L19)
 
 <h3 id="int16-max"><code>Max</code></h3>
 
@@ -544,7 +545,7 @@ pub const Max: int16 = 32767;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int16.rux#L22)
 
 <h2 id="int32"><code>int32</code></h2>
 
@@ -554,7 +555,7 @@ extend int32
 
 A signed integer in 32 bits, two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L10)
 
 **Methods**
 
@@ -573,7 +574,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`int32`](/docs/api/core/integers#int32)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L32)
 
 <h3 id="int32-checked-sub"><code>CheckedSub</code></h3>
 
@@ -590,7 +591,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`int32`](/docs/api/core/integers#int32)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L43)
 
 <h3 id="int32-checked-mul"><code>CheckedMul</code></h3>
 
@@ -608,7 +609,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`int32`](/docs/api/core/integers#int32)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L55)
 
 <h3 id="int32-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -625,7 +626,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`int32`](/docs/api/core/integers#int32) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L66)
 
 <h3 id="int32-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -642,7 +643,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`int32`](/docs/api/core/integers#int32) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L75)
 
 <h3 id="int32-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -659,7 +660,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`int32`](/docs/api/core/integers#int32) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L84)
 
 <h3 id="int32-truncate"><code>Truncate</code></h3>
 
@@ -668,8 +669,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`int32`](/docs/api/core/integers#int32), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`int32`](/docs/api/core/integers#int32), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -677,7 +679,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L95)
 
 **Constants**
 
@@ -689,7 +691,7 @@ pub const Bits: uint = 32;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L13)
 
 <h3 id="int32-bytes"><code>Bytes</code></h3>
 
@@ -699,7 +701,7 @@ pub const Bytes: uint = 4;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L16)
 
 <h3 id="int32-min"><code>Min</code></h3>
 
@@ -709,7 +711,7 @@ pub const Min: int32 = -2147483648;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L19)
 
 <h3 id="int32-max"><code>Max</code></h3>
 
@@ -719,7 +721,7 @@ pub const Max: int32 = 2147483647;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int32.rux#L22)
 
 <h2 id="int64"><code>int64</code></h2>
 
@@ -729,7 +731,7 @@ extend int64
 
 A signed integer in 64 bits, two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L10)
 
 **Methods**
 
@@ -748,7 +750,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`int64`](/docs/api/core/integers#int64)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L32)
 
 <h3 id="int64-checked-sub"><code>CheckedSub</code></h3>
 
@@ -765,7 +767,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`int64`](/docs/api/core/integers#int64)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L43)
 
 <h3 id="int64-checked-mul"><code>CheckedMul</code></h3>
 
@@ -783,7 +785,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`int64`](/docs/api/core/integers#int64)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L55)
 
 <h3 id="int64-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -800,7 +802,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`int64`](/docs/api/core/integers#int64) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L66)
 
 <h3 id="int64-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -817,7 +819,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`int64`](/docs/api/core/integers#int64) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L75)
 
 <h3 id="int64-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -834,7 +836,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`int64`](/docs/api/core/integers#int64) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L84)
 
 <h3 id="int64-truncate"><code>Truncate</code></h3>
 
@@ -843,8 +845,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`int64`](/docs/api/core/integers#int64), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`int64`](/docs/api/core/integers#int64), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -852,7 +855,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L95)
 
 **Constants**
 
@@ -864,7 +867,7 @@ pub const Bits: uint = 64;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L13)
 
 <h3 id="int64-bytes"><code>Bytes</code></h3>
 
@@ -874,7 +877,7 @@ pub const Bytes: uint = 8;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L16)
 
 <h3 id="int64-min"><code>Min</code></h3>
 
@@ -884,7 +887,7 @@ pub const Min: int64 = -9223372036854775808;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L19)
 
 <h3 id="int64-max"><code>Max</code></h3>
 
@@ -894,7 +897,7 @@ pub const Max: int64 = 9223372036854775807;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int64.rux#L22)
 
 <h2 id="int128"><code>int128</code></h2>
 
@@ -904,7 +907,7 @@ extend int128
 
 A signed integer in 128 bits, two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L10)
 
 **Methods**
 
@@ -923,7 +926,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`int128`](/docs/api/core/integers#int128)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L32)
 
 <h3 id="int128-checked-sub"><code>CheckedSub</code></h3>
 
@@ -940,7 +943,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`int128`](/docs/api/core/integers#int128)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L43)
 
 <h3 id="int128-checked-mul"><code>CheckedMul</code></h3>
 
@@ -958,7 +961,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`int128`](/docs/api/core/integers#int128)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L55)
 
 <h3 id="int128-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -975,7 +978,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`int128`](/docs/api/core/integers#int128) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L66)
 
 <h3 id="int128-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -992,7 +995,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`int128`](/docs/api/core/integers#int128) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L75)
 
 <h3 id="int128-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -1009,7 +1012,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`int128`](/docs/api/core/integers#int128) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L84)
 
 <h3 id="int128-truncate"><code>Truncate</code></h3>
 
@@ -1018,8 +1021,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`int128`](/docs/api/core/integers#int128), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`int128`](/docs/api/core/integers#int128), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -1027,7 +1031,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L95)
 
 **Constants**
 
@@ -1039,7 +1043,7 @@ pub const Bits: uint = 128u;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L13)
 
 <h3 id="int128-bytes"><code>Bytes</code></h3>
 
@@ -1049,7 +1053,7 @@ pub const Bytes: uint = 16u;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L16)
 
 <h3 id="int128-min"><code>Min</code></h3>
 
@@ -1059,7 +1063,7 @@ pub const Min: int128 = -170141183460469231731687303715884105728i128;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L19)
 
 <h3 id="int128-max"><code>Max</code></h3>
 
@@ -1069,7 +1073,7 @@ pub const Max: int128 = 170141183460469231731687303715884105727i128;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int128.rux#L22)
 
 <h2 id="int256"><code>int256</code></h2>
 
@@ -1079,7 +1083,7 @@ extend int256
 
 A signed integer in 256 bits, two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L10)
 
 **Methods**
 
@@ -1098,7 +1102,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`int256`](/docs/api/core/integers#int256)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L32)
 
 <h3 id="int256-checked-sub"><code>CheckedSub</code></h3>
 
@@ -1115,7 +1119,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`int256`](/docs/api/core/integers#int256)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L43)
 
 <h3 id="int256-checked-mul"><code>CheckedMul</code></h3>
 
@@ -1133,7 +1137,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`int256`](/docs/api/core/integers#int256)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L55)
 
 <h3 id="int256-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -1150,7 +1154,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`int256`](/docs/api/core/integers#int256) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L66)
 
 <h3 id="int256-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -1167,7 +1171,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`int256`](/docs/api/core/integers#int256) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L75)
 
 <h3 id="int256-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -1184,7 +1188,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`int256`](/docs/api/core/integers#int256) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L84)
 
 <h3 id="int256-truncate"><code>Truncate</code></h3>
 
@@ -1193,8 +1197,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`int256`](/docs/api/core/integers#int256), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`int256`](/docs/api/core/integers#int256), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -1202,7 +1207,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L95)
 
 **Constants**
 
@@ -1214,7 +1219,7 @@ pub const Bits: uint = 256u;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L13)
 
 <h3 id="int256-bytes"><code>Bytes</code></h3>
 
@@ -1224,7 +1229,7 @@ pub const Bytes: uint = 32u;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L16)
 
 <h3 id="int256-min"><code>Min</code></h3>
 
@@ -1234,7 +1239,7 @@ pub const Min: int256 = -5789604461865809771178549250434395392663499233282028201
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L19)
 
 <h3 id="int256-max"><code>Max</code></h3>
 
@@ -1244,7 +1249,7 @@ pub const Max: int256 = 57896044618658097711785492504343953926634992332820282019
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int256.rux#L22)
 
 <h2 id="int512"><code>int512</code></h2>
 
@@ -1254,7 +1259,7 @@ extend int512
 
 A signed integer in 512 bits, two's complement.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L10)
 
 **Methods**
 
@@ -1273,7 +1278,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`int512`](/docs/api/core/integers#int512)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L32)
 
 <h3 id="int512-checked-sub"><code>CheckedSub</code></h3>
 
@@ -1290,7 +1295,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`int512`](/docs/api/core/integers#int512)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L43)
 
 <h3 id="int512-checked-mul"><code>CheckedMul</code></h3>
 
@@ -1308,7 +1313,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`int512`](/docs/api/core/integers#int512)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L55)
 
 <h3 id="int512-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -1325,7 +1330,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`int512`](/docs/api/core/integers#int512) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L66)
 
 <h3 id="int512-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -1342,7 +1347,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`int512`](/docs/api/core/integers#int512) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L75)
 
 <h3 id="int512-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -1359,7 +1364,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`int512`](/docs/api/core/integers#int512) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L84)
 
 <h3 id="int512-truncate"><code>Truncate</code></h3>
 
@@ -1368,8 +1373,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`int512`](/docs/api/core/integers#int512), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`int512`](/docs/api/core/integers#int512), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -1377,7 +1383,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L95)
 
 **Constants**
 
@@ -1389,7 +1395,7 @@ pub const Bits: uint = 512u;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L13)
 
 <h3 id="int512-bytes"><code>Bytes</code></h3>
 
@@ -1399,7 +1405,7 @@ pub const Bytes: uint = 64u;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L16)
 
 <h3 id="int512-min"><code>Min</code></h3>
 
@@ -1409,7 +1415,7 @@ pub const Min: int512 = …;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L19)
 
 <h3 id="int512-max"><code>Max</code></h3>
 
@@ -1419,7 +1425,7 @@ pub const Max: int512 = …;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Int512.rux#L22)
 
 <h2 id="uint"><code>uint</code></h2>
 
@@ -1429,7 +1435,7 @@ extend uint
 
 A target pointer-sized unsigned integer.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L6)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L9)
 
 **Methods**
 
@@ -1448,7 +1454,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`uint`](/docs/api/core/integers#uint)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L31)
 
 <h3 id="uint-checked-sub"><code>CheckedSub</code></h3>
 
@@ -1465,7 +1471,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`uint`](/docs/api/core/integers#uint)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L39)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L42)
 
 <h3 id="uint-checked-mul"><code>CheckedMul</code></h3>
 
@@ -1483,7 +1489,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`uint`](/docs/api/core/integers#uint)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L51)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L54)
 
 <h3 id="uint-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -1500,7 +1506,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`uint`](/docs/api/core/integers#uint) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L62)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L65)
 
 <h3 id="uint-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -1517,7 +1523,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`uint`](/docs/api/core/integers#uint) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L71)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L74)
 
 <h3 id="uint-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -1534,7 +1540,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`uint`](/docs/api/core/integers#uint) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L80)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L83)
 
 <h3 id="uint-truncate"><code>Truncate</code></h3>
 
@@ -1543,8 +1549,8 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`uint`](/docs/api/core/integers#uint), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`uint`](/docs/api/core/integers#uint), as `as` does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -1552,7 +1558,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L90)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L93)
 
 **Constants**
 
@@ -1564,7 +1570,7 @@ pub const Bits: uint = sizeof(uint) * 8u;
 
 The target representation width in bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L9)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L12)
 
 <h3 id="uint-bytes"><code>Bytes</code></h3>
 
@@ -1574,7 +1580,7 @@ pub const Bytes: uint = sizeof(uint);
 
 The target representation size in bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L15)
 
 <h3 id="uint-min"><code>Min</code></h3>
 
@@ -1584,7 +1590,7 @@ pub const Min: uint = 0u;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L18)
 
 <h3 id="uint-max"><code>Max</code></h3>
 
@@ -1594,7 +1600,7 @@ pub const Max: uint = ~0u;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint.rux#L21)
 
 <h2 id="uint8"><code>uint8</code></h2>
 
@@ -1604,7 +1610,7 @@ extend uint8
 
 An unsigned integer in 8 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L10)
 
 **Methods**
 
@@ -1623,7 +1629,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`uint8`](/docs/api/core/integers#uint8)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L32)
 
 <h3 id="uint8-checked-sub"><code>CheckedSub</code></h3>
 
@@ -1640,7 +1646,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`uint8`](/docs/api/core/integers#uint8)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L43)
 
 <h3 id="uint8-checked-mul"><code>CheckedMul</code></h3>
 
@@ -1658,7 +1664,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`uint8`](/docs/api/core/integers#uint8)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L55)
 
 <h3 id="uint8-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -1675,7 +1681,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`uint8`](/docs/api/core/integers#uint8) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L66)
 
 <h3 id="uint8-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -1692,7 +1698,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`uint8`](/docs/api/core/integers#uint8) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L75)
 
 <h3 id="uint8-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -1709,7 +1715,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`uint8`](/docs/api/core/integers#uint8) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L84)
 
 <h3 id="uint8-truncate"><code>Truncate</code></h3>
 
@@ -1718,8 +1724,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`uint8`](/docs/api/core/integers#uint8), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`uint8`](/docs/api/core/integers#uint8), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -1727,7 +1734,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L95)
 
 **Constants**
 
@@ -1739,7 +1746,7 @@ pub const Bits: uint = 8;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L13)
 
 <h3 id="uint8-bytes"><code>Bytes</code></h3>
 
@@ -1749,7 +1756,7 @@ pub const Bytes: uint = 1;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L16)
 
 <h3 id="uint8-min"><code>Min</code></h3>
 
@@ -1759,7 +1766,7 @@ pub const Min: uint8 = 0;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L19)
 
 <h3 id="uint8-max"><code>Max</code></h3>
 
@@ -1769,7 +1776,7 @@ pub const Max: uint8 = 255;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint8.rux#L22)
 
 <h2 id="uint16"><code>uint16</code></h2>
 
@@ -1779,7 +1786,7 @@ extend uint16
 
 An unsigned integer in 16 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L10)
 
 **Methods**
 
@@ -1798,7 +1805,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`uint16`](/docs/api/core/integers#uint16)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L32)
 
 <h3 id="uint16-checked-sub"><code>CheckedSub</code></h3>
 
@@ -1815,7 +1822,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`uint16`](/docs/api/core/integers#uint16)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L43)
 
 <h3 id="uint16-checked-mul"><code>CheckedMul</code></h3>
 
@@ -1833,7 +1840,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`uint16`](/docs/api/core/integers#uint16)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L55)
 
 <h3 id="uint16-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -1850,7 +1857,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`uint16`](/docs/api/core/integers#uint16) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L66)
 
 <h3 id="uint16-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -1867,7 +1874,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`uint16`](/docs/api/core/integers#uint16) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L75)
 
 <h3 id="uint16-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -1884,7 +1891,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`uint16`](/docs/api/core/integers#uint16) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L84)
 
 <h3 id="uint16-truncate"><code>Truncate</code></h3>
 
@@ -1893,8 +1900,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`uint16`](/docs/api/core/integers#uint16), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`uint16`](/docs/api/core/integers#uint16), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -1902,7 +1910,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L95)
 
 **Constants**
 
@@ -1914,7 +1922,7 @@ pub const Bits: uint = 16;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L13)
 
 <h3 id="uint16-bytes"><code>Bytes</code></h3>
 
@@ -1924,7 +1932,7 @@ pub const Bytes: uint = 2;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L16)
 
 <h3 id="uint16-min"><code>Min</code></h3>
 
@@ -1934,7 +1942,7 @@ pub const Min: uint16 = 0;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L19)
 
 <h3 id="uint16-max"><code>Max</code></h3>
 
@@ -1944,7 +1952,7 @@ pub const Max: uint16 = 65535;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint16.rux#L22)
 
 <h2 id="uint32"><code>uint32</code></h2>
 
@@ -1954,7 +1962,7 @@ extend uint32
 
 An unsigned integer in 32 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L10)
 
 **Methods**
 
@@ -1973,7 +1981,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`uint32`](/docs/api/core/integers#uint32)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L32)
 
 <h3 id="uint32-checked-sub"><code>CheckedSub</code></h3>
 
@@ -1990,7 +1998,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`uint32`](/docs/api/core/integers#uint32)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L43)
 
 <h3 id="uint32-checked-mul"><code>CheckedMul</code></h3>
 
@@ -2008,7 +2016,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`uint32`](/docs/api/core/integers#uint32)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L55)
 
 <h3 id="uint32-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -2025,7 +2033,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`uint32`](/docs/api/core/integers#uint32) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L66)
 
 <h3 id="uint32-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -2042,7 +2050,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`uint32`](/docs/api/core/integers#uint32) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L75)
 
 <h3 id="uint32-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -2059,7 +2067,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`uint32`](/docs/api/core/integers#uint32) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L84)
 
 <h3 id="uint32-truncate"><code>Truncate</code></h3>
 
@@ -2068,8 +2076,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`uint32`](/docs/api/core/integers#uint32), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`uint32`](/docs/api/core/integers#uint32), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -2077,7 +2086,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L95)
 
 **Constants**
 
@@ -2089,7 +2098,7 @@ pub const Bits: uint = 32;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L13)
 
 <h3 id="uint32-bytes"><code>Bytes</code></h3>
 
@@ -2099,7 +2108,7 @@ pub const Bytes: uint = 4;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L16)
 
 <h3 id="uint32-min"><code>Min</code></h3>
 
@@ -2109,7 +2118,7 @@ pub const Min: uint32 = 0;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L19)
 
 <h3 id="uint32-max"><code>Max</code></h3>
 
@@ -2119,7 +2128,7 @@ pub const Max: uint32 = 4294967295;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint32.rux#L22)
 
 <h2 id="uint64"><code>uint64</code></h2>
 
@@ -2129,7 +2138,7 @@ extend uint64
 
 An unsigned integer in 64 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L10)
 
 **Methods**
 
@@ -2148,7 +2157,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`uint64`](/docs/api/core/integers#uint64)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L32)
 
 <h3 id="uint64-checked-sub"><code>CheckedSub</code></h3>
 
@@ -2165,7 +2174,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`uint64`](/docs/api/core/integers#uint64)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L43)
 
 <h3 id="uint64-checked-mul"><code>CheckedMul</code></h3>
 
@@ -2183,7 +2192,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`uint64`](/docs/api/core/integers#uint64)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L55)
 
 <h3 id="uint64-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -2200,7 +2209,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`uint64`](/docs/api/core/integers#uint64) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L66)
 
 <h3 id="uint64-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -2217,7 +2226,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`uint64`](/docs/api/core/integers#uint64) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L75)
 
 <h3 id="uint64-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -2234,7 +2243,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`uint64`](/docs/api/core/integers#uint64) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L84)
 
 <h3 id="uint64-truncate"><code>Truncate</code></h3>
 
@@ -2243,8 +2252,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`uint64`](/docs/api/core/integers#uint64), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`uint64`](/docs/api/core/integers#uint64), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -2252,7 +2262,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L95)
 
 **Constants**
 
@@ -2264,7 +2274,7 @@ pub const Bits: uint = 64;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L13)
 
 <h3 id="uint64-bytes"><code>Bytes</code></h3>
 
@@ -2274,7 +2284,7 @@ pub const Bytes: uint = 8;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L16)
 
 <h3 id="uint64-min"><code>Min</code></h3>
 
@@ -2284,7 +2294,7 @@ pub const Min: uint64 = 0;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L19)
 
 <h3 id="uint64-max"><code>Max</code></h3>
 
@@ -2294,7 +2304,7 @@ pub const Max: uint64 = 18446744073709551615;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint64.rux#L22)
 
 <h2 id="uint128"><code>uint128</code></h2>
 
@@ -2304,7 +2314,7 @@ extend uint128
 
 An unsigned integer in 128 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L10)
 
 **Methods**
 
@@ -2323,7 +2333,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`uint128`](/docs/api/core/integers#uint128)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L32)
 
 <h3 id="uint128-checked-sub"><code>CheckedSub</code></h3>
 
@@ -2340,7 +2350,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`uint128`](/docs/api/core/integers#uint128)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L43)
 
 <h3 id="uint128-checked-mul"><code>CheckedMul</code></h3>
 
@@ -2358,7 +2368,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`uint128`](/docs/api/core/integers#uint128)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L55)
 
 <h3 id="uint128-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -2375,7 +2385,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`uint128`](/docs/api/core/integers#uint128) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L66)
 
 <h3 id="uint128-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -2392,7 +2402,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`uint128`](/docs/api/core/integers#uint128) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L75)
 
 <h3 id="uint128-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -2409,7 +2419,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`uint128`](/docs/api/core/integers#uint128) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L84)
 
 <h3 id="uint128-truncate"><code>Truncate</code></h3>
 
@@ -2418,8 +2428,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`uint128`](/docs/api/core/integers#uint128), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`uint128`](/docs/api/core/integers#uint128), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -2427,7 +2438,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L95)
 
 **Constants**
 
@@ -2439,7 +2450,7 @@ pub const Bits: uint = 128u;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L13)
 
 <h3 id="uint128-bytes"><code>Bytes</code></h3>
 
@@ -2449,7 +2460,7 @@ pub const Bytes: uint = 16u;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L16)
 
 <h3 id="uint128-min"><code>Min</code></h3>
 
@@ -2459,7 +2470,7 @@ pub const Min: uint128 = 0u128;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L19)
 
 <h3 id="uint128-max"><code>Max</code></h3>
 
@@ -2469,7 +2480,7 @@ pub const Max: uint128 = 340282366920938463463374607431768211455u128;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint128.rux#L22)
 
 <h2 id="uint256"><code>uint256</code></h2>
 
@@ -2479,7 +2490,7 @@ extend uint256
 
 An unsigned integer in 256 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L10)
 
 **Methods**
 
@@ -2498,7 +2509,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`uint256`](/docs/api/core/integers#uint256)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L32)
 
 <h3 id="uint256-checked-sub"><code>CheckedSub</code></h3>
 
@@ -2515,7 +2526,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`uint256`](/docs/api/core/integers#uint256)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L43)
 
 <h3 id="uint256-checked-mul"><code>CheckedMul</code></h3>
 
@@ -2533,7 +2544,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`uint256`](/docs/api/core/integers#uint256)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L55)
 
 <h3 id="uint256-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -2550,7 +2561,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`uint256`](/docs/api/core/integers#uint256) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L66)
 
 <h3 id="uint256-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -2567,7 +2578,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`uint256`](/docs/api/core/integers#uint256) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L75)
 
 <h3 id="uint256-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -2584,7 +2595,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`uint256`](/docs/api/core/integers#uint256) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L84)
 
 <h3 id="uint256-truncate"><code>Truncate</code></h3>
 
@@ -2593,8 +2604,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`uint256`](/docs/api/core/integers#uint256), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`uint256`](/docs/api/core/integers#uint256), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -2602,7 +2614,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L95)
 
 **Constants**
 
@@ -2614,7 +2626,7 @@ pub const Bits: uint = 256u;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L13)
 
 <h3 id="uint256-bytes"><code>Bytes</code></h3>
 
@@ -2624,7 +2636,7 @@ pub const Bytes: uint = 32u;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L16)
 
 <h3 id="uint256-min"><code>Min</code></h3>
 
@@ -2634,7 +2646,7 @@ pub const Min: uint256 = 0u256;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L19)
 
 <h3 id="uint256-max"><code>Max</code></h3>
 
@@ -2644,7 +2656,7 @@ pub const Max: uint256 = 1157920892373161954235709850086879078532699846656405640
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint256.rux#L22)
 
 <h2 id="uint512"><code>uint512</code></h2>
 
@@ -2654,7 +2666,7 @@ extend uint512
 
 An unsigned integer in 512 bits.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L10)
 
 **Methods**
 
@@ -2673,7 +2685,7 @@ Never stops the program: where `+` would, this returns none and the caller decid
 
 **Returns**: the sum, or none when it lies outside the range of [`uint512`](/docs/api/core/integers#uint512)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L32)
 
 <h3 id="uint512-checked-sub"><code>CheckedSub</code></h3>
 
@@ -2690,7 +2702,7 @@ Never stops the program: where `-` would, this returns none.
 
 **Returns**: the difference, or none when it lies outside the range of [`uint512`](/docs/api/core/integers#uint512)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L40)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L43)
 
 <h3 id="uint512-checked-mul"><code>CheckedMul</code></h3>
 
@@ -2708,7 +2720,7 @@ checked before it is used.
 
 **Returns**: the product, or none when it lies outside the range of [`uint512`](/docs/api/core/integers#uint512)
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L52)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L55)
 
 <h3 id="uint512-saturating-add"><code>SaturatingAdd</code></h3>
 
@@ -2725,7 +2737,7 @@ Never stops the program.
 
 **Returns**: the sum, or the limit of [`uint512`](/docs/api/core/integers#uint512) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L66)
 
 <h3 id="uint512-saturating-sub"><code>SaturatingSub</code></h3>
 
@@ -2742,7 +2754,7 @@ Never stops the program.
 
 **Returns**: the difference, or the limit of [`uint512`](/docs/api/core/integers#uint512) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L72)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L75)
 
 <h3 id="uint512-saturating-mul"><code>SaturatingMul</code></h3>
 
@@ -2759,7 +2771,7 @@ Never stops the program.
 
 **Returns**: the product, or the limit of [`uint512`](/docs/api/core/integers#uint512) it ran past
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L84)
 
 <h3 id="uint512-truncate"><code>Truncate</code></h3>
 
@@ -2768,8 +2780,9 @@ pub func Truncate<T>(&self) -> T
 ```
 
 The low bits of this value at the width of `T`, in two's complement, whether or not the value fits.
-Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder taking
-the low byte of a word does. A wider `T` extends the value by the signedness of [`uint512`](/docs/api/core/integers#uint512), as `as` does.
+Where `as` keeps the value or stops the program, this keeps the bits on purpose, as a hash or an encoder
+taking the low byte of a word does. A wider `T` extends the value by the signedness of [`uint512`](/docs/api/core/integers#uint512), as `as`
+does.
 
 | Type parameter | Description                    |
 | -------------- | ------------------------------ |
@@ -2777,7 +2790,7 @@ the low byte of a word does. A wider `T` extends the value by the signedness of 
 
 **Returns**: the low bits of this value as a `T`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L95)
 
 **Constants**
 
@@ -2789,7 +2802,7 @@ pub const Bits: uint = 512u;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L13)
 
 <h3 id="uint512-bytes"><code>Bytes</code></h3>
 
@@ -2799,7 +2812,7 @@ pub const Bytes: uint = 64u;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L16)
 
 <h3 id="uint512-min"><code>Min</code></h3>
 
@@ -2809,7 +2822,7 @@ pub const Min: uint512 = 0u512;
 
 The smallest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L19)
 
 <h3 id="uint512-max"><code>Max</code></h3>
 
@@ -2819,4 +2832,4 @@ pub const Max: uint512 = …;
 
 The largest representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Uint512.rux#L22)

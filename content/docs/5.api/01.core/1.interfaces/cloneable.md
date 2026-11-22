@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Cloneable.rux
-  line: 12
+  line: 13
 seo:
   title: "Cloneable — Core API"
   description: "A type whose values can be duplicated by calling Clone: the bound generic code writes before it duplicates an owning value of its type parameter."
@@ -45,4 +45,4 @@ allocation fails, because the duplicate it promises cannot be made.
 
 **Returns**: a value equal to this one that owns its own resources
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Cloneable.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Cloneable.rux#L19)

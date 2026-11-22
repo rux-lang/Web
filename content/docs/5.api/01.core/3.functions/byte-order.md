@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Endian.rux
-  line: 17
+  line: 21
 seo:
   title: "Byte order — Core API"
   description: "Converting integers between the target's byte order and little- or big-endian, in a register or through raw bytes at any alignment."
@@ -28,33 +28,33 @@ pub func TargetIsLittleEndian() -> bool
 ```
 
 Whether this target stores an integer's least significant byte first.
-Takes nothing and returns the answer by copy. It is established by writing a value whose bytes differ and reading
-back the first one, so it is right on any target rather than on a list of known ones.
-Cannot fail. Runs in constant time and allocates nothing.
+Takes nothing and returns the answer by copy. It is established by writing a value whose bytes differ and
+reading back the first one, so it is right on any target rather than on a list of known ones. Cannot fail. Runs
+in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L21)
 
 **Returns**: whether the target stores the least significant byte first
 
 <h2 id="to-little-endian"><code>ToLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func ToLittleEndian<T>(value: T) -> T
+pub func ToLittleEndian<T: Integer>(value: T) -> T
 ```
 
 The value's bytes as a little-endian value would hold them.
 `value` is read by value; the result is returned by copy. On a little-endian target this is the identity; on a
 big-endian one it is a byte reversal. The result is a bit pattern to be stored, not a number to compute with.
-Cannot fail. Costs nothing on a little-endian target and one byte reversal on a big-endian one, so it runs in time
-linear in the type's width at worst and allocates nothing.
+Cannot fail. Costs nothing on a little-endian target and one byte reversal on a big-endian one, so it runs in
+time linear in the type's width at worst and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L37)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -67,7 +67,7 @@ linear in the type's width at worst and allocates nothing.
 <h2 id="from-little-endian"><code>FromLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func FromLittleEndian<T>(value: T) -> T
+pub func FromLittleEndian<T: Integer>(value: T) -> T
 ```
 
 The value a little-endian bit pattern stands for on this target.
@@ -75,13 +75,13 @@ The value a little-endian bit pattern stands for on this target.
 operation — a byte reversal is its own inverse.
 Cannot fail. Costs exactly what [`ToLittleEndian`](/docs/api/core/byte-order#to-little-endian) costs and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L45)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L49)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -94,22 +94,22 @@ Cannot fail. Costs exactly what [`ToLittleEndian`](/docs/api/core/byte-order#to-
 <h2 id="to-big-endian"><code>ToBigEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func ToBigEndian<T>(value: T) -> T
+pub func ToBigEndian<T: Integer>(value: T) -> T
 ```
 
 The value's bytes as a big-endian value would hold them.
 `value` is read by value; the result is returned by copy. On a big-endian target this is the identity; on a
-little-endian one it is a byte reversal. This is network byte order.
-Cannot fail. Costs nothing on a big-endian target and one byte reversal on a little-endian one, so it runs in time
-linear in the type's width at worst and allocates nothing.
+little-endian one it is a byte reversal. This is network byte order. Cannot fail. Costs nothing on a big-endian
+target and one byte reversal on a little-endian one, so it runs in time linear in the type's width at worst and
+allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L58)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L62)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -122,7 +122,7 @@ linear in the type's width at worst and allocates nothing.
 <h2 id="from-big-endian"><code>FromBigEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub func FromBigEndian<T>(value: T) -> T
+pub func FromBigEndian<T: Integer>(value: T) -> T
 ```
 
 The value a big-endian bit pattern stands for on this target.
@@ -130,13 +130,13 @@ The value a big-endian bit pattern stands for on this target.
 operation.
 Cannot fail. Costs exactly what [`ToBigEndian`](/docs/api/core/byte-order#to-big-endian) costs and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L74)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -149,7 +149,7 @@ Cannot fail. Costs exactly what [`ToBigEndian`](/docs/api/core/byte-order#to-big
 <h2 id="store-little-endian"><code>StoreLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func StoreLittleEndian<T>(
+pub func StoreLittleEndian<T: Integer>(
     value: T,
     destination: *var byte
 )
@@ -161,13 +161,13 @@ never read. The bytes need no alignment, so a value may be written straight into
 Cannot fail: every value has a representation. Runs in time linear in the type's width and allocates nothing.
 Safety: `destination` must be non-null and must have room for `sizeof(T)` bytes. Neither is checked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L87)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -179,7 +179,7 @@ Safety: `destination` must be non-null and must have room for `sizeof(T)` bytes.
 <h2 id="store-big-endian"><code>StoreBigEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func StoreBigEndian<T>(
+pub func StoreBigEndian<T: Integer>(
     value: T,
     destination: *var byte
 )
@@ -191,13 +191,13 @@ never read. This is the order a network protocol asks for.
 Cannot fail. Runs in time linear in the type's width and allocates nothing.
 Safety: `destination` must be non-null and must have room for `sizeof(T)` bytes. Neither is checked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L104)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L108)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -209,27 +209,26 @@ Safety: `destination` must be non-null and must have room for `sizeof(T)` bytes.
 <h2 id="load-little-endian"><code>LoadLittleEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func LoadLittleEndian<T>(
+pub func LoadLittleEndian<T: Integer>(
     source: *byte,
     destination: *var T
 )
 ```
 
 Reads an integer from raw bytes holding it least significant byte first.
-`source` is borrowed for the call and `sizeof(T)` bytes are read from it. `destination` names the type being read
-and receives the value; whatever it held is overwritten. The bytes need no alignment.
-Cannot fail: every byte sequence of the right length is a value. Runs in time linear in the type's width and
-allocates nothing.
-Safety: `source` must be non-null and readable for `sizeof(T)` bytes, and `destination` must be non-null. Neither is
-checked.
+`source` is borrowed for the call and `sizeof(T)` bytes are read from it. `destination` names the type being
+read and receives the value; whatever it held is overwritten. The bytes need no alignment. Cannot fail: every
+byte sequence of the right length is a value. Runs in time linear in the type's width and allocates nothing.
+Safety: `source` must be non-null and readable for `sizeof(T)` bytes, and `destination` must be non-null.
+Neither is checked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L125)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L128)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -241,26 +240,25 @@ checked.
 <h2 id="load-big-endian"><code>LoadBigEndian&lt;T&gt;</code></h2>
 
 ```rux
-pub unsafe func LoadBigEndian<T>(
+pub func LoadBigEndian<T: Integer>(
     source: *byte,
     destination: *var T
 )
 ```
 
 Reads an integer from raw bytes holding it most significant byte first.
-`source` is borrowed for the call and `sizeof(T)` bytes are read from it. `destination` names the type being read
-and receives the value; whatever it held is overwritten.
-Cannot fail. Runs in time linear in the type's width and allocates nothing.
-Safety: `source` must be non-null and readable for `sizeof(T)` bytes, and `destination` must be non-null. Neither is
-checked.
+`source` is borrowed for the call and `sizeof(T)` bytes are read from it. `destination` names the type being
+read and receives the value; whatever it held is overwritten. Cannot fail. Runs in time linear in the type's
+width and allocates nothing. Safety: `source` must be non-null and readable for `sizeof(T)` bytes, and
+`destination` must be non-null. Neither is checked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Endian.rux#L147)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 

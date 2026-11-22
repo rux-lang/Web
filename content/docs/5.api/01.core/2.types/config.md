@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Config.rux
-  line: 12
+  line: 13
 seo:
   title: "Config — Core API"
   description: The set of user-defined build values.
@@ -25,8 +25,8 @@ The set of user-defined build values.
 pub struct Config {}
 ```
 
-Carries no fields: the values live in the build rather than in the value, and are reached through the two queries
-below. [`#config`](/docs/api/core/config#config-constant) is the only instance.
+Carries no fields: the values live in the build rather than in the value, and are reached through the two
+queries below. [`#config`](/docs/api/core/config#config-constant) is the only instance.
 
 ## Methods
 
@@ -48,7 +48,7 @@ Cannot fail. Costs nothing in the built program.
 
 **Returns**: its value, or an empty slice when the build defines none
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Config.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Config.rux#L24)
 
 <h3 id="has"><code>Has</code></h3>
 
@@ -66,7 +66,7 @@ Cannot fail. Costs nothing in the built program.
 
 **Returns**: whether the build defines it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Config.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Config.rux#L32)
 
 ## Related
 
@@ -78,4 +78,4 @@ pub const #config: Config;
 
 The build's user-defined values, as a compile-time value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Config.rux#L36)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Config.rux#L37)

@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Compiler.rux
-  line: 11
+  line: 12
 seo:
   title: "SemanticVersion — Core API"
   description: "A semantic version, as its three numeric core components."
@@ -43,10 +43,10 @@ Ordered by precedence, major component first, as semantic versioning defines it.
 
 ## Constructors
 
-<h3 id="new"><code>SemanticVersion</code></h3>
+<h3 id="new"><code>New</code></h3>
 
 ```rux
-pub func SemanticVersion(
+pub func New(
     major: uint,
     minor: uint,
     patch: uint
@@ -65,7 +65,7 @@ Cannot fail: every triple of components is a version. Runs in constant time and 
 
 **Returns**: the version
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L30)
 
 ## Methods
 
@@ -87,7 +87,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: how this value orders against `other`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L42)
 
 <h3 id="is-equal-to"><code>IsEqualTo</code></h3>
 
@@ -104,7 +104,7 @@ Whether the two versions have the same precedence.
 
 **Returns**: whether the two versions are the same
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L57)
 
 <h3 id="is-less-than"><code>IsLessThan</code></h3>
 
@@ -121,7 +121,7 @@ Whether this version precedes `other`.
 
 **Returns**: whether this version is older
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L65)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L66)
 
 <h3 id="is-at-most"><code>IsAtMost</code></h3>
 
@@ -138,7 +138,7 @@ Whether this version precedes `other` or matches it.
 
 **Returns**: whether this version is the same or older
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L74)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L75)
 
 <h3 id="is-greater-than"><code>IsGreaterThan</code></h3>
 
@@ -158,7 +158,7 @@ Whether this version follows `other`.
 
 **Returns**: whether this version is newer
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L84)
 
 <h3 id="is-at-least"><code>IsAtLeast</code></h3>
 
@@ -175,7 +175,7 @@ Whether this version follows `other` or matches it, which is how a minimum requi
 
 **Returns**: whether this version is the same or newer
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L92)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L93)
 
 ## Operators
 
@@ -194,7 +194,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether the two are equal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L101)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L102)
 
 <h3 id="not-equals"><code>!=</code></h3>
 
@@ -211,7 +211,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether the two differ
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L110)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L111)
 
 <h3 id="less"><code>&lt;</code></h3>
 
@@ -228,7 +228,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether this one is less
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L119)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L120)
 
 <h3 id="less-or-equal"><code>&lt;=</code></h3>
 
@@ -245,7 +245,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether this one is less or equal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L128)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L129)
 
 <h3 id="greater"><code>&gt;</code></h3>
 
@@ -262,7 +262,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether this one is greater
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L137)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L138)
 
 <h3 id="greater-or-equal"><code>&gt;=</code></h3>
 
@@ -279,4 +279,4 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether this one is greater or equal
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L146)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Compiler.rux#L147)

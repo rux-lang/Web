@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Floating.rux
-  line: 21
+  line: 24
 seo:
   title: "Float classification — Core API"
   description: "Asking whether a floating-point value is NaN, infinite, finite or zero, and reading its sign, at every float width."
@@ -24,7 +24,7 @@ Asking whether a floating-point value is NaN, infinite, finite or zero, and read
 <h2 id="is-nan"><code>IsNaN&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsNaN<T>(value: T) -> bool
+pub func IsNaN<T: Float>(value: T) -> bool
 ```
 
 Whether the value is not a number.
@@ -32,13 +32,13 @@ Whether the value is not a number.
 including both infinities, which are outside the finite range but are still ordered against it.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L24)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name       | Description                                                    |
+| ---------- | -------------------------------------------------------------- |
+| `T: Float` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -51,7 +51,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="is-zero"><code>IsZero&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsZero<T>(value: T) -> bool
+pub func IsZero<T: Float>(value: T) -> bool
 ```
 
 Whether the value is either zero.
@@ -59,13 +59,13 @@ Whether the value is either zero.
 separates them. A NaN and an infinity report `false`, because subtracting either from itself gives a NaN.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L36)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name       | Description                                                    |
+| ---------- | -------------------------------------------------------------- |
+| `T: Float` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -78,20 +78,20 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="is-infinite"><code>IsInfinite&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsInfinite<T>(value: T) -> bool
+pub func IsInfinite<T: Float>(value: T) -> bool
 ```
 
 Whether the value is an infinity, of either sign.
 `value` is read by value. A zero is excluded explicitly: it is the other value that doubles to itself.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L47)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name       | Description                                                    |
+| ---------- | -------------------------------------------------------------- |
+| `T: Float` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -104,20 +104,20 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="is-finite"><code>IsFinite&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsFinite<T>(value: T) -> bool
+pub func IsFinite<T: Float>(value: T) -> bool
 ```
 
 Whether the value is an ordinary number: neither a NaN nor an infinity.
 `value` is read by value. Every zero and every subnormal is finite.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L55)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L58)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name       | Description                                                    |
+| ---------- | -------------------------------------------------------------- |
+| `T: Float` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -130,7 +130,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="is-negative-zero"><code>IsNegativeZero&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsNegativeZero<T>(value: T) -> bool
+pub func IsNegativeZero<T: Float>(value: T) -> bool
 ```
 
 Whether the value is the zero that carries a minus sign.
@@ -141,13 +141,13 @@ is negative infinity and `1 / +0.0` is positive infinity. The division is exact 
 dividing by zero is a defined floating-point operation rather than an error.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L70)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L73)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name       | Description                                                    |
+| ---------- | -------------------------------------------------------------- |
+| `T: Float` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -160,7 +160,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="is-sign-negative"><code>IsSignNegative&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsSignNegative<T>(value: T) -> bool
+pub func IsSignNegative<T: Float>(value: T) -> bool
 ```
 
 Whether the value carries a minus sign.
@@ -169,13 +169,13 @@ for the sign rather than for the comparison: `-0.0 < 0` is false. A NaN reports 
 encoding carries, since a NaN is outside the ordering and its sign has no arithmetic meaning.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L83)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L86)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name       | Description                                                    |
+| ---------- | -------------------------------------------------------------- |
+| `T: Float` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -188,21 +188,21 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="is-sign-positive"><code>IsSignPositive&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsSignPositive<T>(value: T) -> bool
+pub func IsSignPositive<T: Float>(value: T) -> bool
 ```
 
 Whether the value carries a plus sign.
-`value` is read by value. Every positive number reports `true`, and so does `+0.0`. A NaN reports `false`, so this
-is not the negation of [`IsSignNegative`](/docs/api/core/float-classification#is-sign-negative): a NaN carries neither sign for these purposes.
-Cannot fail. Runs in constant time and allocates nothing.
+`value` is read by value. Every positive number reports `true`, and so does `+0.0`. A NaN reports `false`, so
+this is not the negation of [`IsSignNegative`](/docs/api/core/float-classification#is-sign-negative): a NaN carries neither sign for these purposes. Cannot fail. Runs
+in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L95)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L98)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name       | Description                                                    |
+| ---------- | -------------------------------------------------------------- |
+| `T: Float` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -215,7 +215,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="sign-of"><code>SignOf&lt;T&gt;</code></h2>
 
 ```rux
-pub func SignOf<T>(value: T) -> T
+pub func SignOf<T: Float>(value: T) -> T
 ```
 
 The value's sign as one of `-1`, `+1`, or the zero it started from.
@@ -223,13 +223,13 @@ The value's sign as one of `-1`, `+1`, or the zero it started from.
 returns `-0.0` and its sign is not lost. A NaN returns itself, since it has no sign to report.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L107)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Floating.rux#L110)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name       | Description                                                    |
+| ---------- | -------------------------------------------------------------- |
+| `T: Float` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 

@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Bits.rux
-  line: 19
+  line: 22
 seo:
   title: "Bit operations — Core API"
   description: "Counting, rotating, reversing and testing the bits of an integer of any width, and a right shift that brings in zeros whatever the sign."
@@ -24,20 +24,20 @@ Counting, rotating, reversing and testing the bits of an integer of any width, a
 <h2 id="bit-width-of"><code>BitWidthOf&lt;T&gt;</code></h2>
 
 ```rux
-pub func BitWidthOf<T>(sample: T) -> uint64
+pub func BitWidthOf<T: Integer>(sample: T) -> uint64
 ```
 
 The number of bits in the integer type of `sample`.
 `sample` is read by value and only its type matters; its value is never used. Returns the width by copy.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L22)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -50,7 +50,10 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="shift-right-logical"><code>ShiftRightLogical&lt;T&gt;</code></h2>
 
 ```rux
-pub func ShiftRightLogical<T>(value: T, amount: uint64) -> T
+pub func ShiftRightLogical<T: Integer>(
+    value: T,
+    amount: uint64
+) -> T
 ```
 
 Shifts an integer right, bringing zeros in at the top whatever its signedness.
@@ -59,13 +62,13 @@ type and what it deliberately does not do for a signed one, where `>>` replicate
 `amount` at or beyond the type's width yields zero rather than being left undefined.
 Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L36)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -79,20 +82,20 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="bit-at"><code>BitAt&lt;T&gt;</code></h2>
 
 ```rux
-pub func BitAt<T>(value: T, index: uint64) -> bool
+pub func BitAt<T: Integer>(value: T, index: uint64) -> bool
 ```
 
 Whether the bit at `index` is set, counting from the least significant bit.
-`value` and `index` are read by value. An `index` at or beyond the type's width reads no bit and reports `false`.
-Cannot fail. Runs in constant time and allocates nothing.
+`value` and `index` are read by value. An `index` at or beyond the type's width reads no bit and reports
+`false`. Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L53)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L57)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -106,20 +109,20 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="count-ones"><code>CountOnes&lt;T&gt;</code></h2>
 
 ```rux
-pub func CountOnes<T>(value: T) -> uint32
+pub func CountOnes<T: Integer>(value: T) -> uint32
 ```
 
 The number of set bits.
 `value` is read by value. Returns a count between zero and the type's width.
 Cannot fail. Runs in time linear in the type's width and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L72)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -132,20 +135,20 @@ Cannot fail. Runs in time linear in the type's width and allocates nothing.
 <h2 id="count-zeros"><code>CountZeros&lt;T&gt;</code></h2>
 
 ```rux
-pub func CountZeros<T>(value: T) -> uint32
+pub func CountZeros<T: Integer>(value: T) -> uint32
 ```
 
 The number of clear bits.
-`value` is read by value. Returns a count between zero and the type's width: the exact complement of [`CountOnes`](/docs/api/core/bits#count-ones).
-Cannot fail. Runs in time linear in the type's width and allocates nothing.
+`value` is read by value. Returns a count between zero and the type's width: the exact complement of
+[`CountOnes`](/docs/api/core/bits#count-ones). Cannot fail. Runs in time linear in the type's width and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L87)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L92)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -158,20 +161,20 @@ Cannot fail. Runs in time linear in the type's width and allocates nothing.
 <h2 id="leading-zeros"><code>LeadingZeros&lt;T&gt;</code></h2>
 
 ```rux
-pub func LeadingZeros<T>(value: T) -> uint32
+pub func LeadingZeros<T: Integer>(value: T) -> uint32
 ```
 
 The number of clear bits above the highest set bit.
 `value` is read by value. A zero value has no set bit, so every bit counts and the answer is the type's width.
 Cannot fail. Runs in time linear in the type's width and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L98)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L103)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -184,20 +187,20 @@ Cannot fail. Runs in time linear in the type's width and allocates nothing.
 <h2 id="trailing-zeros"><code>TrailingZeros&lt;T&gt;</code></h2>
 
 ```rux
-pub func TrailingZeros<T>(value: T) -> uint32
+pub func TrailingZeros<T: Integer>(value: T) -> uint32
 ```
 
 The number of clear bits below the lowest set bit.
 `value` is read by value. A zero value has no set bit, so the answer is the type's width.
 Cannot fail. Runs in time linear in the type's width and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L116)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L121)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -210,20 +213,20 @@ Cannot fail. Runs in time linear in the type's width and allocates nothing.
 <h2 id="leading-ones"><code>LeadingOnes&lt;T&gt;</code></h2>
 
 ```rux
-pub func LeadingOnes<T>(value: T) -> uint32
+pub func LeadingOnes<T: Integer>(value: T) -> uint32
 ```
 
 The number of set bits above the highest clear bit.
 `value` is read by value. An all-ones value has no clear bit, so the answer is the type's width.
 Cannot fail. Runs in time linear in the type's width and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L133)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L138)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -236,20 +239,20 @@ Cannot fail. Runs in time linear in the type's width and allocates nothing.
 <h2 id="trailing-ones"><code>TrailingOnes&lt;T&gt;</code></h2>
 
 ```rux
-pub func TrailingOnes<T>(value: T) -> uint32
+pub func TrailingOnes<T: Integer>(value: T) -> uint32
 ```
 
 The number of set bits below the lowest clear bit.
 `value` is read by value. An all-ones value has no clear bit, so the answer is the type's width.
 Cannot fail. Runs in time linear in the type's width and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L151)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L156)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -262,21 +265,24 @@ Cannot fail. Runs in time linear in the type's width and allocates nothing.
 <h2 id="rotate-left"><code>RotateLeft&lt;T&gt;</code></h2>
 
 ```rux
-pub func RotateLeft<T>(value: T, amount: uint64) -> T
+pub func RotateLeft<T: Integer>(
+    value: T,
+    amount: uint64
+) -> T
 ```
 
 Rotates an integer's bits toward the most significant end, wrapping the ones that run off.
-`value` and `amount` are read by value; the result is returned by copy. `amount` is taken modulo the type's width,
-so no rotation is out of range and rotating by the width is the identity.
-Cannot fail: no bit is lost, unlike a shift. Runs in constant time and allocates nothing.
+`value` and `amount` are read by value; the result is returned by copy. `amount` is taken modulo the type's
+width, so no rotation is out of range and rotating by the width is the identity. Cannot fail: no bit is lost,
+unlike a shift. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L170)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L175)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -290,20 +296,23 @@ Cannot fail: no bit is lost, unlike a shift. Runs in constant time and allocates
 <h2 id="rotate-right"><code>RotateRight&lt;T&gt;</code></h2>
 
 ```rux
-pub func RotateRight<T>(value: T, amount: uint64) -> T
+pub func RotateRight<T: Integer>(
+    value: T,
+    amount: uint64
+) -> T
 ```
 
 Rotates an integer's bits toward the least significant end, wrapping the ones that run off.
-`value` and `amount` are read by value; the result is returned by copy. `amount` is taken modulo the type's width.
-Cannot fail. Runs in constant time and allocates nothing.
+`value` and `amount` are read by value; the result is returned by copy. `amount` is taken modulo the type's
+width. Cannot fail. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L186)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L191)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -317,20 +326,20 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="reverse-bits"><code>ReverseBits&lt;T&gt;</code></h2>
 
 ```rux
-pub func ReverseBits<T>(value: T) -> T
+pub func ReverseBits<T: Integer>(value: T) -> T
 ```
 
 The value with its bits in the opposite order: bit zero becomes the highest bit and back again.
 `value` is read by value; the result is returned by copy.
 Cannot fail. Runs in time linear in the type's width and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L200)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L205)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -343,7 +352,7 @@ Cannot fail. Runs in time linear in the type's width and allocates nothing.
 <h2 id="reverse-bytes"><code>ReverseBytes&lt;T&gt;</code></h2>
 
 ```rux
-pub func ReverseBytes<T>(value: T) -> T
+pub func ReverseBytes<T: Integer>(value: T) -> T
 ```
 
 The value with its bytes in the opposite order, leaving the bits within each byte where they were.
@@ -351,13 +360,13 @@ The value with its bytes in the opposite order, leaving the bits within each byt
 into the big-endian one with the same bytes, and is what the endian conversions are built from.
 Cannot fail. Runs in time linear in the type's width and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L223)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L228)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -370,7 +379,7 @@ Cannot fail. Runs in time linear in the type's width and allocates nothing.
 <h2 id="is-power-of-two"><code>IsPowerOfTwo&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsPowerOfTwo<T>(value: T) -> bool
+pub func IsPowerOfTwo<T: Integer>(value: T) -> bool
 ```
 
 Whether the value has exactly one bit set.
@@ -378,13 +387,13 @@ Whether the value has exactly one bit set.
 value has exactly one bit set and is reported as one, because this asks about bits rather than about magnitude.
 Cannot fail. Runs in time linear in the type's width and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L249)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Bits.rux#L255)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name         | Description                                                    |
+| ------------ | -------------------------------------------------------------- |
+| `T: Integer` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 

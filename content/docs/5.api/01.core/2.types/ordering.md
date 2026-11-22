@@ -9,7 +9,7 @@ api:
   kind: enum
   version: 0.1.0
   source: Src/Ordering.rux
-  line: 11
+  line: 12
 seo:
   title: "Ordering — Core API"
   description: "The answer a three-way comparison gives: which side is smaller, or that neither is."
@@ -56,7 +56,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether this ordering is `Less`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L27)
 
 <h3 id="is-equal"><code>IsEqual</code></h3>
 
@@ -70,7 +70,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether this ordering is `Equal`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L38)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L39)
 
 <h3 id="is-greater"><code>IsGreater</code></h3>
 
@@ -84,7 +84,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether this ordering is `Greater`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L50)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L51)
 
 <h3 id="is-less-or-equal"><code>IsLessOrEqual</code></h3>
 
@@ -93,13 +93,13 @@ pub func IsLessOrEqual(&self) -> bool
 ```
 
 Reports whether the left side was smaller than or equal to the right.
-Borrows the ordering through `self` and leaves it untouched. This is the negation of [`IsGreater`](/docs/api/core/ordering#is-greater), spelled out
-so a caller testing a bound does not have to negate one.
-Cannot fail. Runs in constant time and allocates nothing.
+Borrows the ordering through `self` and leaves it untouched. This is the negation of [`IsGreater`](/docs/api/core/ordering#is-greater), spelled
+out so a caller testing a bound does not have to negate one. Cannot fail. Runs in constant time and
+allocates nothing.
 
 **Returns**: whether this ordering is `Less` or `Equal`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L63)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L64)
 
 <h3 id="is-greater-or-equal"><code>IsGreaterOrEqual</code></h3>
 
@@ -113,7 +113,7 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: whether this ordering is `Greater` or `Equal`
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L75)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L76)
 
 <h3 id="reverse"><code>Reverse</code></h3>
 
@@ -128,4 +128,4 @@ Cannot fail. Runs in constant time and allocates nothing.
 
 **Returns**: the opposite ordering, with `Equal` unchanged
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L88)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Ordering.rux#L89)

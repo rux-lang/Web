@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Convert.rux
-  line: 23
+  line: 27
 seo:
   title: "Checked conversion — Core API"
   description: "Converting between primitive types with a report of whether the value survived, with wrapping on purpose, or clamped to the destination's range."
@@ -24,22 +24,22 @@ Converting between primitive types with a report of whether the value survived, 
 <h2 id="is-signed-type"><code>IsSignedType&lt;T&gt;</code></h2>
 
 ```rux
-pub func IsSignedType<T>(sample: T) -> bool
+pub func IsSignedType<T: Copyable>(sample: T) -> bool
 ```
 
 Whether the integer type of `sample` has values below zero.
-`sample` is read by value and only its type matters; its value is never used. Returns the answer by copy.
-A type's own all-ones pattern is what answers this: read as a signed type it is `-1`, and read as an unsigned one
-it is the maximum. Nothing has to be told which it has.
-Cannot fail. Runs in constant time and allocates nothing.
+`sample` is read by value and only its type matters; its value is never used. Returns the answer by copy. A
+type's own all-ones pattern is what answers this: read as a signed type it is `-1`, and read as an unsigned one
+it is the maximum. Nothing has to be told which it has. Cannot fail. Runs in constant time and allocates
+nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L27)
 
 **Type parameters**
 
-| Name | Description                                                    |
-| ---- | -------------------------------------------------------------- |
-| `T`  | the integer or floating-point type, deduced from the arguments |
+| Name          | Description                                                    |
+| ------------- | -------------------------------------------------------------- |
+| `T: Copyable` | the integer or floating-point type, deduced from the arguments |
 
 **Parameters**
 
@@ -52,31 +52,30 @@ Cannot fail. Runs in constant time and allocates nothing.
 <h2 id="convert-checked"><code>ConvertChecked&lt;From, To&gt;</code></h2>
 
 ```rux
-pub func ConvertChecked<From, To>(
+pub func ConvertChecked<From: Copyable, To: Copyable>(
     value: From,
     result: *var To
 ) -> bool
 ```
 
 Converts a primitive value to another primitive type and reports whether the true value was representable.
-`value` is read by value. `result` receives the conversion the machine produced, which is the true value when this
-returns `false` and the wrapped, truncated or rounded one when it returns `true`; it is written in both cases, so
-a caller who wants the lossy answer does not have to convert again.
-Returns `true` when the conversion lost the value: a magnitude too large for the destination, a negative value
-converted to an unsigned type, a value above the signed range converted to a signed type of the same width, a
-float with a fractional part converted to an integer, or a float narrowed past its precision. A NaN and an
-infinity are both reported, since neither survives a round trip.
-Runs in constant time and allocates nothing. Never traps, so the caller decides what a lost value means.
-`result` must be non-null. This is not checked.
+`value` is read by value. `result` receives the conversion the machine produced, which is the true value when
+this returns `false` and the wrapped, truncated or rounded one when it returns `true`; it is written in both
+cases, so a caller who wants the lossy answer does not have to convert again. Returns `true` when the conversion
+lost the value: a magnitude too large for the destination, a negative value converted to an unsigned type, a
+value above the signed range converted to a signed type of the same width, a float with a fractional part
+converted to an integer, or a float narrowed past its precision. A NaN and an infinity are both reported, since
+neither survives a round trip. Runs in constant time and allocates nothing. Never traps, so the caller decides
+what a lost value means. `result` must be non-null. This is not checked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L44)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L47)
 
 **Type parameters**
 
-| Name   | Description          |
-| ------ | -------------------- |
-| `From` | the source type      |
-| `To`   | the destination type |
+| Name             | Description          |
+| ---------------- | -------------------- |
+| `From: Copyable` | the source type      |
+| `To: Copyable`   | the destination type |
 
 **Parameters**
 
@@ -90,7 +89,7 @@ Runs in constant time and allocates nothing. Never traps, so the caller decides 
 <h2 id="convert-wrapping"><code>ConvertWrapping&lt;From, To&gt;</code></h2>
 
 ```rux
-pub func ConvertWrapping<From, To>(
+pub func ConvertWrapping<From: Copyable, To: Copyable>(
     value: From,
     result: *var To
 )
@@ -98,19 +97,19 @@ pub func ConvertWrapping<From, To>(
 
 Converts a primitive value to another primitive type, keeping whatever fits.
 `value` is read by value; `result` receives the destination type's own answer, wrapping an integer around its
-range, truncating a float toward zero, and rounding a narrowed float. Where an integer `as` stops the program on a
-value the destination cannot hold, this keeps the low bits, as `Truncate` does for one integer type.
-Cannot fail: every value has a wrapped conversion. Runs in constant time and allocates nothing.
-`result` must be non-null. This is not checked.
+range, truncating a float toward zero, and rounding a narrowed float. Where an integer `as` stops the program on
+a value the destination cannot hold, this keeps the low bits, as `Truncate` does for one integer type. Cannot
+fail: every value has a wrapped conversion. Runs in constant time and allocates nothing. `result` must be
+non-null. This is not checked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L67)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L70)
 
 **Type parameters**
 
-| Name   | Description          |
-| ------ | -------------------- |
-| `From` | the source type      |
-| `To`   | the destination type |
+| Name             | Description          |
+| ---------------- | -------------------- |
+| `From: Copyable` | the source type      |
+| `To: Copyable`   | the destination type |
 
 **Parameters**
 
@@ -122,29 +121,28 @@ Cannot fail: every value has a wrapped conversion. Runs in constant time and all
 <h2 id="convert-saturating"><code>ConvertSaturating&lt;From, To&gt;</code></h2>
 
 ```rux
-pub func ConvertSaturating<From, To>(
+pub func ConvertSaturating<From: Copyable, To: Copyable>(
     value: From,
     result: *var To
 )
 ```
 
 Converts a primitive value to an integer type, clamping to that type's range instead of wrapping.
-`value` is read by value; `result` receives the nearest representable value: the destination's maximum for a value
-too large, its minimum for one too small, and the exact conversion for one that fits. A NaN has no nearest value
-and yields zero.
-`To` must be an integer type. A floating destination has no limits to clamp against and is not supported; use
-[`ConvertChecked`](/docs/api/core/conversion#convert-checked) and decide what to do with the report.
-Cannot fail: the answer is always the nearest representable value. Runs in constant time and allocates nothing.
-`result` must be non-null. This is not checked.
+`value` is read by value; `result` receives the nearest representable value: the destination's maximum for a
+value too large, its minimum for one too small, and the exact conversion for one that fits. A NaN has no nearest
+value and yields zero. `To` must be an integer type. A floating destination has no limits to clamp against and
+is not supported; use [`ConvertChecked`](/docs/api/core/conversion#convert-checked) and decide what to do with the report. Cannot fail: the answer is always
+the nearest representable value. Runs in constant time and allocates nothing. `result` must be non-null. This is
+not checked.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L89)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Convert.rux#L91)
 
 **Type parameters**
 
-| Name   | Description          |
-| ------ | -------------------- |
-| `From` | the source type      |
-| `To`   | the destination type |
+| Name             | Description          |
+| ---------------- | -------------------- |
+| `From: Copyable` | the source type      |
+| `To: Copyable`   | the destination type |
 
 **Parameters**
 

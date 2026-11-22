@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Primitives/Float8.rux
-  line: 9
+  line: 10
 seo:
   title: "Floating-point types — Core API"
   description: "The floating-point types float8 to float512, with their width, limit and special-value constants. The built-in float is float64 and shares its constants."
@@ -29,7 +29,7 @@ extend float8
 
 An eight-bit E4M3 floating-point number with IEEE 754 infinities and NaNs.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L9)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L10)
 
 **Constants**
 
@@ -41,7 +41,7 @@ pub const Bits: uint = 8;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L13)
 
 <h3 id="float8-bytes"><code>Bytes</code></h3>
 
@@ -51,7 +51,7 @@ pub const Bytes: uint = 1;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L16)
 
 <h3 id="float8-lowest"><code>Lowest</code></h3>
 
@@ -61,7 +61,7 @@ pub const Lowest: float8 = -240.0f8;
 
 The lowest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L19)
 
 <h3 id="float8-max"><code>Max</code></h3>
 
@@ -71,7 +71,7 @@ pub const Max: float8 = 240.0f8;
 
 The highest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L22)
 
 <h3 id="float8-min-positive"><code>MinPositive</code></h3>
 
@@ -81,7 +81,7 @@ pub const MinPositive: float8 = 0.015625f8;
 
 The smallest positive normal value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L25)
 
 <h3 id="float8-epsilon"><code>Epsilon</code></h3>
 
@@ -91,7 +91,7 @@ pub const Epsilon: float8 = 0.125f8;
 
 The difference between one and the next representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L28)
 
 <h3 id="float8-infinity"><code>Infinity</code></h3>
 
@@ -101,7 +101,7 @@ pub const Infinity: float8;
 
 Positive infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L31)
 
 <h3 id="float8-nan"><code>NaN</code></h3>
 
@@ -111,7 +111,7 @@ pub const NaN: float8;
 
 A quiet not-a-number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L33)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float8.rux#L34)
 
 <h2 id="float16"><code>float16</code></h2>
 
@@ -121,7 +121,7 @@ extend float16
 
 An IEEE 754 binary16 floating-point number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L6)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L7)
 
 **Constants**
 
@@ -133,7 +133,7 @@ pub const Bits: uint = 16;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L9)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L10)
 
 <h3 id="float16-bytes"><code>Bytes</code></h3>
 
@@ -143,7 +143,7 @@ pub const Bytes: uint = 2;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L13)
 
 <h3 id="float16-lowest"><code>Lowest</code></h3>
 
@@ -153,7 +153,7 @@ pub const Lowest: float16 = -65504.0f16;
 
 The lowest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L16)
 
 <h3 id="float16-max"><code>Max</code></h3>
 
@@ -163,7 +163,7 @@ pub const Max: float16 = 65504.0f16;
 
 The highest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L19)
 
 <h3 id="float16-min-positive"><code>MinPositive</code></h3>
 
@@ -173,7 +173,7 @@ pub const MinPositive: float16 = 6.103515625e-05f16;
 
 The smallest positive normal value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L22)
 
 <h3 id="float16-epsilon"><code>Epsilon</code></h3>
 
@@ -183,7 +183,7 @@ pub const Epsilon: float16 = 0.0009765625f16;
 
 The difference between one and the next representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L25)
 
 <h3 id="float16-infinity"><code>Infinity</code></h3>
 
@@ -193,7 +193,7 @@ pub const Infinity: float16;
 
 Positive infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L28)
 
 <h3 id="float16-nan"><code>NaN</code></h3>
 
@@ -203,7 +203,7 @@ pub const NaN: float16;
 
 A quiet not-a-number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float16.rux#L31)
 
 <h2 id="float32"><code>float32</code></h2>
 
@@ -213,7 +213,7 @@ extend float32
 
 An IEEE 754 binary32 floating-point number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L8)
 
 **Constants**
 
@@ -225,7 +225,7 @@ pub const Bits: uint = 32;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L11)
 
 <h3 id="float32-bytes"><code>Bytes</code></h3>
 
@@ -235,7 +235,7 @@ pub const Bytes: uint = 4;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L14)
 
 <h3 id="float32-lowest"><code>Lowest</code></h3>
 
@@ -245,7 +245,7 @@ pub const Lowest: float32 = -3.4028234663852886e+38f32;
 
 The lowest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L17)
 
 <h3 id="float32-max"><code>Max</code></h3>
 
@@ -255,7 +255,7 @@ pub const Max: float32 = 3.4028234663852886e+38f32;
 
 The highest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L20)
 
 <h3 id="float32-min-positive"><code>MinPositive</code></h3>
 
@@ -265,7 +265,7 @@ pub const MinPositive: float32 = 1.1754943508222875e-38f32;
 
 The smallest positive normal value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L23)
 
 <h3 id="float32-epsilon"><code>Epsilon</code></h3>
 
@@ -275,7 +275,7 @@ pub const Epsilon: float32 = 1.1920928955078125e-7f32;
 
 The difference between one and the next representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L26)
 
 <h3 id="float32-infinity"><code>Infinity</code></h3>
 
@@ -285,7 +285,7 @@ pub const Infinity: float32;
 
 Positive infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L29)
 
 <h3 id="float32-nan"><code>NaN</code></h3>
 
@@ -295,7 +295,7 @@ pub const NaN: float32;
 
 A quiet not-a-number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float32.rux#L32)
 
 <h2 id="float64"><code>float64</code></h2>
 
@@ -305,7 +305,7 @@ extend float64
 
 An IEEE 754 binary64 floating-point number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L6)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L7)
 
 **Constants**
 
@@ -317,7 +317,7 @@ pub const Bits: uint = 64;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L9)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L10)
 
 <h3 id="float64-bytes"><code>Bytes</code></h3>
 
@@ -327,7 +327,7 @@ pub const Bytes: uint = 8;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L13)
 
 <h3 id="float64-lowest"><code>Lowest</code></h3>
 
@@ -337,7 +337,7 @@ pub const Lowest: float64 = -1.7976931348623157e+308f64;
 
 The lowest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L16)
 
 <h3 id="float64-max"><code>Max</code></h3>
 
@@ -347,7 +347,7 @@ pub const Max: float64 = 1.7976931348623157e+308f64;
 
 The highest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L18)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L19)
 
 <h3 id="float64-min-positive"><code>MinPositive</code></h3>
 
@@ -357,7 +357,7 @@ pub const MinPositive: float64 = 2.2250738585072014e-308f64;
 
 The smallest positive normal value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L22)
 
 <h3 id="float64-epsilon"><code>Epsilon</code></h3>
 
@@ -367,7 +367,7 @@ pub const Epsilon: float64 = 2.2204460492503131e-16f64;
 
 The difference between one and the next representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L24)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L25)
 
 <h3 id="float64-infinity"><code>Infinity</code></h3>
 
@@ -377,7 +377,7 @@ pub const Infinity: float64;
 
 Positive infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L27)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L28)
 
 <h3 id="float64-nan"><code>NaN</code></h3>
 
@@ -387,7 +387,7 @@ pub const NaN: float64;
 
 A quiet not-a-number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L30)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float64.rux#L31)
 
 <h2 id="float80"><code>float80</code></h2>
 
@@ -397,7 +397,7 @@ extend float80
 
 An x87 extended-precision floating-point number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L9)
 
 **Constants**
 
@@ -409,7 +409,7 @@ pub const Bits: uint = 80;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L12)
 
 <h3 id="float80-bytes"><code>Bytes</code></h3>
 
@@ -419,7 +419,7 @@ pub const Bytes: uint = 16;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L15)
 
 <h3 id="float80-lowest"><code>Lowest</code></h3>
 
@@ -429,7 +429,7 @@ pub const Lowest: float80;
 
 The lowest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L18)
 
 <h3 id="float80-max"><code>Max</code></h3>
 
@@ -439,7 +439,7 @@ pub const Max: float80;
 
 The highest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L21)
 
 <h3 id="float80-min-positive"><code>MinPositive</code></h3>
 
@@ -449,7 +449,7 @@ pub const MinPositive: float80;
 
 The smallest positive normal value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L24)
 
 <h3 id="float80-epsilon"><code>Epsilon</code></h3>
 
@@ -459,7 +459,7 @@ pub const Epsilon: float80;
 
 The difference between one and the next representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L27)
 
 <h3 id="float80-infinity"><code>Infinity</code></h3>
 
@@ -469,7 +469,7 @@ pub const Infinity: float80;
 
 Positive infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L30)
 
 <h3 id="float80-nan"><code>NaN</code></h3>
 
@@ -479,7 +479,7 @@ pub const NaN: float80;
 
 A quiet not-a-number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float80.rux#L33)
 
 <h2 id="float128"><code>float128</code></h2>
 
@@ -489,7 +489,7 @@ extend float128
 
 An IEEE 754 binary128 floating-point number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L8)
 
 **Constants**
 
@@ -501,7 +501,7 @@ pub const Bits: uint = 128;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L11)
 
 <h3 id="float128-bytes"><code>Bytes</code></h3>
 
@@ -511,7 +511,7 @@ pub const Bytes: uint = 16;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L14)
 
 <h3 id="float128-lowest"><code>Lowest</code></h3>
 
@@ -521,7 +521,7 @@ pub const Lowest: float128;
 
 The lowest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L17)
 
 <h3 id="float128-max"><code>Max</code></h3>
 
@@ -531,7 +531,7 @@ pub const Max: float128;
 
 The highest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L20)
 
 <h3 id="float128-min-positive"><code>MinPositive</code></h3>
 
@@ -541,7 +541,7 @@ pub const MinPositive: float128;
 
 The smallest positive normal value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L22)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L23)
 
 <h3 id="float128-epsilon"><code>Epsilon</code></h3>
 
@@ -551,7 +551,7 @@ pub const Epsilon: float128;
 
 The difference between one and the next representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L25)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L26)
 
 <h3 id="float128-infinity"><code>Infinity</code></h3>
 
@@ -561,7 +561,7 @@ pub const Infinity: float128;
 
 Positive infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L29)
 
 <h3 id="float128-nan"><code>NaN</code></h3>
 
@@ -571,7 +571,7 @@ pub const NaN: float128;
 
 A quiet not-a-number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float128.rux#L32)
 
 <h2 id="float256"><code>float256</code></h2>
 
@@ -581,7 +581,7 @@ extend float256
 
 An IEEE 754 binary256 floating-point number.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L9)
 
 **Constants**
 
@@ -593,7 +593,7 @@ pub const Bits: uint = 256;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L12)
 
 <h3 id="float256-bytes"><code>Bytes</code></h3>
 
@@ -603,7 +603,7 @@ pub const Bytes: uint = 32;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L15)
 
 <h3 id="float256-lowest"><code>Lowest</code></h3>
 
@@ -613,7 +613,7 @@ pub const Lowest: float256;
 
 The lowest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L18)
 
 <h3 id="float256-max"><code>Max</code></h3>
 
@@ -623,7 +623,7 @@ pub const Max: float256;
 
 The highest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L21)
 
 <h3 id="float256-min-positive"><code>MinPositive</code></h3>
 
@@ -633,7 +633,7 @@ pub const MinPositive: float256;
 
 The smallest positive normal value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L24)
 
 <h3 id="float256-epsilon"><code>Epsilon</code></h3>
 
@@ -643,7 +643,7 @@ pub const Epsilon: float256;
 
 The difference between one and the next representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L27)
 
 <h3 id="float256-infinity"><code>Infinity</code></h3>
 
@@ -653,7 +653,7 @@ pub const Infinity: float256;
 
 Positive infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L30)
 
 <h3 id="float256-nan"><code>NaN</code></h3>
 
@@ -663,7 +663,7 @@ pub const NaN: float256;
 
 A quiet not-a-number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float256.rux#L33)
 
 <h2 id="float512"><code>float512</code></h2>
 
@@ -673,7 +673,7 @@ extend float512
 
 A binary512 floating-point number in the IEEE 754 interchange-format progression.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L9)
 
 **Constants**
 
@@ -685,7 +685,7 @@ pub const Bits: uint = 512;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L12)
 
 <h3 id="float512-bytes"><code>Bytes</code></h3>
 
@@ -695,7 +695,7 @@ pub const Bytes: uint = 64;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L15)
 
 <h3 id="float512-lowest"><code>Lowest</code></h3>
 
@@ -705,7 +705,7 @@ pub const Lowest: float512;
 
 The lowest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L18)
 
 <h3 id="float512-max"><code>Max</code></h3>
 
@@ -715,7 +715,7 @@ pub const Max: float512;
 
 The highest finite value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L21)
 
 <h3 id="float512-min-positive"><code>MinPositive</code></h3>
 
@@ -725,7 +725,7 @@ pub const MinPositive: float512;
 
 The smallest positive normal value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L23)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L24)
 
 <h3 id="float512-epsilon"><code>Epsilon</code></h3>
 
@@ -735,7 +735,7 @@ pub const Epsilon: float512;
 
 The difference between one and the next representable value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L26)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L27)
 
 <h3 id="float512-infinity"><code>Infinity</code></h3>
 
@@ -745,7 +745,7 @@ pub const Infinity: float512;
 
 Positive infinity.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L29)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L30)
 
 <h3 id="float512-nan"><code>NaN</code></h3>
 
@@ -755,4 +755,4 @@ pub const NaN: float512;
 
 A quiet not-a-number value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Float512.rux#L33)

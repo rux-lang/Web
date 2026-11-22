@@ -29,11 +29,10 @@ pub func Assert(condition: bool, message: char8[..])
 
 Terminates the program unless `condition` holds.
 `condition` and `message` are read by value; nothing is returned and nothing is taken ownership of. `message`
-should say what was expected rather than what was found, since the value that failed is not printed.
-Reports the message, the enclosing function, and the file, line and column of the call, then terminates. Does not
-unwind: no destructor runs, and no caller observes the failure. Present in every build, so it is the right check
-for a contract that must hold in a released program.
-Runs in constant time and allocates nothing.
+should say what was expected rather than what was found, since the value that failed is not printed. Reports the
+message, the enclosing function, and the file, line and column of the call, then terminates. Does not unwind: no
+destructor runs, and no caller observes the failure. Present in every build, so it is the right check for a
+contract that must hold in a released program. Runs in constant time and allocates nothing.
 
 [Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Diagnostics.rux#L20)
 
@@ -51,13 +50,12 @@ pub func DebugAssert(condition: bool, message: char8[..])
 ```
 
 Terminates the program unless `condition` holds, in builds that keep debug assertions.
-`condition` and `message` are read by value. Identical to [`Assert`](/docs/api/core/diagnostics#assert) where it is kept, and removed entirely where it
-is not: a release build does not evaluate `condition`, so an argument with a side effect will not have it, and an
-expensive check costs nothing.
-Reports and terminates exactly as [`Assert`](/docs/api/core/diagnostics#assert) does. Does not unwind.
-Runs in constant time and allocates nothing.
+`condition` and `message` are read by value. Identical to [`Assert`](/docs/api/core/diagnostics#assert) where it is kept, and removed entirely where
+it is not: a release build does not evaluate `condition`, so an argument with a side effect will not have it,
+and an expensive check costs nothing. Reports and terminates exactly as [`Assert`](/docs/api/core/diagnostics#assert) does. Does not unwind. Runs in
+constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Diagnostics.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Diagnostics.rux#L30)
 
 **Parameters**
 
@@ -74,12 +72,11 @@ pub func Panic(message: char8[..])
 
 Terminates the program, reporting `message`.
 `message` is read by value; this never returns. Use it where a case is unreachable by construction rather than
-unlikely — a caller who could have handled the failure should have been given a function that `throws E` instead.
-Reports the message, the enclosing function, and the file, line and column of the call, then terminates. Does not
-unwind: no destructor runs.
-Runs in constant time and allocates nothing.
+unlikely — a caller who could have handled the failure should have been given a function returning `T ! E`
+instead. Reports the message, the enclosing function, and the file, line and column of the call, then
+terminates. Does not unwind: no destructor runs. Runs in constant time and allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Diagnostics.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Diagnostics.rux#L39)
 
 **Parameters**
 
@@ -98,7 +95,7 @@ Rejects the build where it is written, reporting `message`.
 returns a value. A directive inside a `when` branch that was not taken never fires.
 Cannot fail at run time, because it does not reach run time. Costs nothing in the built program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Diagnostics.rux#L49)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Diagnostics.rux#L47)
 
 **Parameters**
 
@@ -117,7 +114,7 @@ Reports `message` as a compilation warning where it is written, without rejectin
 taken never fires, so a warning about one target does not appear when building for another.
 Cannot fail. Costs nothing in the built program.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Diagnostics.rux#L57)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Diagnostics.rux#L55)
 
 **Parameters**
 

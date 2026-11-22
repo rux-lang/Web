@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Iteration.rux
-  line: 21
+  line: 22
 seo:
   title: "Iterator — Core API"
   description: A cursor that yields a sequence of items one at a time.
@@ -27,14 +27,14 @@ pub interface Iterator {}
 
 The compiler drives iteration by shape rather than through this interface: a `for` loop accepts any type with a
 `func Next(&var self) -> Item?`, which advances the cursor and reports either the next item or, with `none`,
-that the sequence has ended. The item type is whatever that optional carries, and it differs per iterator, so the
-method is not written here; the generic [`Cursor<T>`](/docs/api/core/adaptors#cursor) names it for bounds, which is how the adaptors take an iterator.
-What this interface adds is the name. `extend MyCursor : Iterator` records that a type means to be an iterator
-and documents which of its methods carry the protocol, and a bound written `<T: Iterator>` says what a generic
-expects of its argument. Neither is required to iterate, and a bound on it grants no operations, so a generic that
-needs to advance a cursor itself should take the concrete iterator type.
-An iterator is consumed as it is read: `Next` mutates it, and an iterator that has reported `none` keeps
-reporting `none`. Nothing here promises an iterator can be restarted or copied.
-An iterator borrows whatever it walks over. Modifying that container while an iterator over it is alive — growing
-a vector, rehashing a map, freeing the storage — leaves the iterator pointing at storage that has moved or gone,
-and reading it afterwards is undefined. Finish with the iterator before touching the container.
+that the sequence has ended. The item type is whatever that optional carries, and it differs per iterator, so
+the method is not written here; the generic `Cursor<T>` names it for bounds, which is how the adaptors take an
+iterator. What this interface adds is the name. `extend MyCursor : Iterator` records that a type means to be an
+iterator and documents which of its methods carry the protocol, and a bound written `<T: Iterator>` says what a
+generic expects of its argument. Neither is required to iterate, and a bound on it grants no operations, so a
+generic that needs to advance a cursor itself should take the concrete iterator type. An iterator is consumed as
+it is read: `Next` mutates it, and an iterator that has reported `none` keeps reporting `none`. Nothing here
+promises an iterator can be restarted or copied. An iterator borrows whatever it walks over. Modifying that
+container while an iterator over it is alive — growing a vector, rehashing a map, freeing the storage — leaves
+the iterator pointing at storage that has moved or gone, and reading it afterwards is undefined. Finish with the
+iterator before touching the container.

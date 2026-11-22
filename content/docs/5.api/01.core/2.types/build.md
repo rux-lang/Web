@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Build.rux
-  line: 47
+  line: 48
 seo:
   title: "Build — Core API"
   description: Properties of the active build profile and its output.
@@ -66,10 +66,10 @@ pub enum BuildMode: uint8 {
 ```
 
 The high-level mode of the active build profile.
-A profile is a name, and more than one profile may share a mode; this is the part a package can branch on without
-knowing which profiles a project defined.
+A profile is a name, and more than one profile may share a mode; this is the part a package can branch on
+without knowing which profiles a project defined.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Build.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Build.rux#L13)
 
 **Cases**
 
@@ -90,7 +90,7 @@ pub enum OptimizationMode: uint8 {
 
 What the active build asked the optimizer to favor.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Build.rux#L21)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Build.rux#L22)
 
 **Cases**
 
@@ -113,7 +113,7 @@ pub enum OutputKind: uint8 {
 
 The kind of artifact the active build produces.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Build.rux#L32)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Build.rux#L33)
 
 **Cases**
 
@@ -131,7 +131,7 @@ pub const #build: Build;
 ```
 
 The active build, as a compile-time value.
-Reading a field produces no runtime code. A `when` on one keeps only the branch that applies, so the untaken side
-is never resolved or type-checked and may name things this build does not have.
+Reading a field produces no runtime code. A `when` on one keeps only the branch that applies, so the untaken
+side is never resolved or type-checked and may name things this build does not have.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Build.rux#L76)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Build.rux#L77)

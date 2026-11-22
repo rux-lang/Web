@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Primitives/Char8.rux
-  line: 8
+  line: 9
 seo:
   title: "Characters — Core API"
   description: "The character types char8 to char512, with their width and limit constants. The built-in char is char32 and shares its constants."
@@ -29,7 +29,7 @@ extend char8
 
 One UTF-8 code unit.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L9)
 
 **Constants**
 
@@ -41,7 +41,7 @@ pub const Bits: uint = 8;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L12)
 
 <h3 id="char8-bytes"><code>Bytes</code></h3>
 
@@ -51,7 +51,7 @@ pub const Bytes: uint = 1;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L15)
 
 <h3 id="char8-min"><code>Min</code></h3>
 
@@ -61,7 +61,7 @@ pub const Min: char8 = 0u32 as char8;
 
 The first code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L18)
 
 <h3 id="char8-max"><code>Max</code></h3>
 
@@ -71,7 +71,7 @@ pub const Max: char8 = 255u32 as char8;
 
 The last code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char8.rux#L21)
 
 <h2 id="char16"><code>char16</code></h2>
 
@@ -81,7 +81,7 @@ extend char16
 
 One UTF-16 code unit.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L8)
 
 **Constants**
 
@@ -93,7 +93,7 @@ pub const Bits: uint = 16;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L11)
 
 <h3 id="char16-bytes"><code>Bytes</code></h3>
 
@@ -103,7 +103,7 @@ pub const Bytes: uint = 2;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L14)
 
 <h3 id="char16-min"><code>Min</code></h3>
 
@@ -113,7 +113,7 @@ pub const Min: char16 = 0u32 as char16;
 
 The first code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L17)
 
 <h3 id="char16-max"><code>Max</code></h3>
 
@@ -123,7 +123,7 @@ pub const Max: char16 = 65535u32 as char16;
 
 The last code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char16.rux#L20)
 
 <h2 id="char32"><code>char32</code></h2>
 
@@ -133,7 +133,7 @@ extend char32
 
 One Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L7)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L8)
 
 **Constants**
 
@@ -145,7 +145,7 @@ pub const Bits: uint = 32;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L10)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L11)
 
 <h3 id="char32-bytes"><code>Bytes</code></h3>
 
@@ -155,7 +155,7 @@ pub const Bytes: uint = 4;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L13)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L14)
 
 <h3 id="char32-min"><code>Min</code></h3>
 
@@ -165,7 +165,7 @@ pub const Min: char32 = 0u32 as char32;
 
 The first code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L16)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L17)
 
 <h3 id="char32-max"><code>Max</code></h3>
 
@@ -175,7 +175,7 @@ pub const Max: char32 = 1114111u32 as char32;
 
 The last code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L19)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char32.rux#L20)
 
 <h2 id="char64"><code>char64</code></h2>
 
@@ -185,7 +185,7 @@ extend char64
 
 One Unicode scalar value, in eight bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L9)
 
 **Constants**
 
@@ -197,7 +197,7 @@ pub const Bits: uint = 64;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L12)
 
 <h3 id="char64-bytes"><code>Bytes</code></h3>
 
@@ -207,7 +207,7 @@ pub const Bytes: uint = 8;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L15)
 
 <h3 id="char64-min"><code>Min</code></h3>
 
@@ -217,7 +217,7 @@ pub const Min: char64 = 0u32 as char64;
 
 The first code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L18)
 
 <h3 id="char64-max"><code>Max</code></h3>
 
@@ -227,7 +227,7 @@ pub const Max: char64 = 1114111u32 as char64;
 
 The last code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char64.rux#L21)
 
 <h2 id="char128"><code>char128</code></h2>
 
@@ -237,7 +237,7 @@ extend char128
 
 One Unicode scalar value, in sixteen bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L9)
 
 **Constants**
 
@@ -249,7 +249,7 @@ pub const Bits: uint = 128;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L12)
 
 <h3 id="char128-bytes"><code>Bytes</code></h3>
 
@@ -259,7 +259,7 @@ pub const Bytes: uint = 16;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L15)
 
 <h3 id="char128-min"><code>Min</code></h3>
 
@@ -269,7 +269,7 @@ pub const Min: char128 = 0u32 as char128;
 
 The first code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L18)
 
 <h3 id="char128-max"><code>Max</code></h3>
 
@@ -279,7 +279,7 @@ pub const Max: char128 = 1114111u32 as char128;
 
 The last code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char128.rux#L21)
 
 <h2 id="char256"><code>char256</code></h2>
 
@@ -289,7 +289,7 @@ extend char256
 
 One Unicode scalar value, in thirty-two bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L9)
 
 **Constants**
 
@@ -301,7 +301,7 @@ pub const Bits: uint = 256;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L12)
 
 <h3 id="char256-bytes"><code>Bytes</code></h3>
 
@@ -311,7 +311,7 @@ pub const Bytes: uint = 32;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L15)
 
 <h3 id="char256-min"><code>Min</code></h3>
 
@@ -321,7 +321,7 @@ pub const Min: char256 = 0u32 as char256;
 
 The first code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L18)
 
 <h3 id="char256-max"><code>Max</code></h3>
 
@@ -331,7 +331,7 @@ pub const Max: char256 = 1114111u32 as char256;
 
 The last code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char256.rux#L21)
 
 <h2 id="char512"><code>char512</code></h2>
 
@@ -341,7 +341,7 @@ extend char512
 
 One Unicode scalar value, in sixty-four bytes.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L8)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L9)
 
 **Constants**
 
@@ -353,7 +353,7 @@ pub const Bits: uint = 512;
 
 The number of bits in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L11)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L12)
 
 <h3 id="char512-bytes"><code>Bytes</code></h3>
 
@@ -363,7 +363,7 @@ pub const Bytes: uint = 64;
 
 The number of bytes in the representation.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L14)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L15)
 
 <h3 id="char512-min"><code>Min</code></h3>
 
@@ -373,7 +373,7 @@ pub const Min: char512 = 0u32 as char512;
 
 The first code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L17)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L18)
 
 <h3 id="char512-max"><code>Max</code></h3>
 
@@ -383,4 +383,4 @@ pub const Max: char512 = 1114111u32 as char512;
 
 The last code unit or Unicode scalar value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L20)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Primitives/Char512.rux#L21)

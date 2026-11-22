@@ -9,7 +9,7 @@ api:
   kind: interface
   version: 0.1.0
   source: Src/Copyable.rux
-  line: 11
+  line: 12
 seo:
   title: "Copyable — Core API"
   description: "A type whose values = may copy: the bound generic code writes before it copies a value of its type parameter."

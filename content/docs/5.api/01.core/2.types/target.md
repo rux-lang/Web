@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Target.rux
-  line: 117
+  line: 118
 seo:
   title: "Target — Core API"
   description: Properties of the machine the build targets.
@@ -59,8 +59,8 @@ pub func HasFeature(&self, feature: TargetFeature) -> bool
 ```
 
 Whether the build enables `feature` on this target.
-`self` is borrowed and `feature` is read by value. Answered while compiling, so a branch on it emits only the
-side that applies and a body using an instruction the feature provides is never emitted without it.
+`self` is borrowed and `feature` is read by value. Answered while compiling, so a branch on it emits only
+the side that applies and a body using an instruction the feature provides is never emitted without it.
 Cannot fail: a feature the target does not have is absent rather than an error. Costs nothing in the built
 program.
 
@@ -70,7 +70,7 @@ program.
 
 **Returns**: whether the target being built for has it
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L145)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L146)
 
 ## Related
 
@@ -89,7 +89,7 @@ pub enum OperatingSystem: uint8 {
 An operating system a build can target.
 Named per system rather than per family, so a package can tell FreeBSD from Linux where their interfaces differ.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L12)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L13)
 
 **Cases**
 
@@ -113,7 +113,7 @@ pub enum Architecture: uint8 {
 
 A processor architecture a build can target.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L28)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L29)
 
 **Cases**
 
@@ -135,10 +135,10 @@ pub enum ApplicationBinaryInterface: uint8 {
 ```
 
 The calling and layout conventions a target's code follows.
-This is what decides how arguments are passed and how aggregates are laid out, so a declaration that has to match
-a foreign interface branches on it rather than on the operating system.
+This is what decides how arguments are passed and how aggregates are laid out, so a declaration that has to
+match a foreign interface branches on it rather than on the operating system.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L41)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L42)
 
 **Cases**
 
@@ -170,7 +170,7 @@ A processor feature a target may be built with.
 Presence is asked about with [`Target::HasFeature`](/docs/api/core/target#has-feature) rather than read as a field, because a build enables a set
 rather than a single one.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L56)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L57)
 
 **Cases**
 
@@ -198,7 +198,7 @@ pub enum Endianness: uint8 {
 
 The order a target stores a multi-byte value's bytes in.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L81)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L82)
 
 **Cases**
 
@@ -220,7 +220,7 @@ pub enum DataModel: uint8 {
 The widths a target's C environment assigns to `long` and to a pointer.
 This is what a raw C declaration needs to get `long` right, since the two models disagree about it.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L91)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L92)
 
 **Cases**
 
@@ -243,7 +243,7 @@ pub enum ObjectFormat: uint8 {
 
 The object-file format a target's compiled code is emitted in.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L102)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L103)
 
 **Cases**
 
@@ -261,7 +261,7 @@ pub const #target: Target;
 ```
 
 The machine being compiled for, as a compile-time value.
-Reading a field produces no runtime code. A `when` on one keeps only the branch that applies, so the untaken side
-is never resolved or type-checked and may name declarations this target does not have.
+Reading a field produces no runtime code. A `when` on one keeps only the branch that applies, so the untaken
+side is never resolved or type-checked and may name declarations this target does not have.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L152)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Target.rux#L153)

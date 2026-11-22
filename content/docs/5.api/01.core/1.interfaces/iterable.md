@@ -25,10 +25,9 @@ A value that can hand out an [`Iterator`](/docs/api/core/iterator) over its cont
 pub interface Iterable {}
 ```
 
-As with [`Iterator`](/docs/api/core/iterator), the compiler matches this by shape: a `for` loop accepts any type with a `func Iterate()` that
-returns an iterator, and calls it once at the top of the loop. The returned type differs per container, so the
-method cannot be written here either.
-`extend MyContainer : Iterable` records the intent and names the protocol; iterating does not require it. Arrays,
-slices and ranges are iterated directly by the compiler and implement nothing.
-The iterator handed out borrows the container, so the container must outlive it and must not be modified while it
-is alive. See [`Iterator`](/docs/api/core/iterator).
+As with [`Iterator`](/docs/api/core/iterator), the compiler matches this by shape: a `for` loop accepts any type with a `func Iterate()`
+that returns an iterator, and calls it once at the top of the loop. The returned type differs per container, so
+the method cannot be written here either. `extend MyContainer : Iterable` records the intent and names the
+protocol; iterating does not require it. Arrays, slices and ranges are iterated directly by the compiler and
+implement nothing. The iterator handed out borrows the container, so the container must outlive it and must not
+be modified while it is alive. See [`Iterator`](/docs/api/core/iterator).

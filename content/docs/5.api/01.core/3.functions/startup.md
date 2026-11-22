@@ -9,7 +9,7 @@ api:
   kind: topic
   version: 0.1.0
   source: Src/Startup.rux
-  line: 15
+  line: 16
 seo:
   title: "Process start — Core API"
   description: The frame the operating system hands a program when it starts.
@@ -29,11 +29,11 @@ pub func ProcessStartFrame() -> *uint
 
 The address the kernel started the program at, on targets where that is where the arguments are.
 On Linux and FreeBSD it points at the argument count, followed by the argument pointers, a null, the environment
-pointers, a null and the auxiliary vector, all one word wide. It is null on Windows and macOS, whose command line
-and environment are read through system calls, and in a shared library, which the kernel never starts. The words
-belong to the process for its whole life and must not be written.
-Cannot fail; runs in constant time and allocates nothing.
+pointers, a null and the auxiliary vector, all one word wide. It is null on Windows and macOS, whose command
+line and environment are read through system calls, and in a shared library, which the kernel never starts. The
+words belong to the process for its whole life and must not be written. Cannot fail; runs in constant time and
+allocates nothing.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Startup.rux#L15)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Startup.rux#L16)
 
 **Returns**: the initial stack address, or null where the platform supplies the arguments another way

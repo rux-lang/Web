@@ -9,7 +9,7 @@ api:
   kind: function
   version: 0.1.0
   source: Src/Zeroize.rux
-  line: 19
+  line: 20
 seo:
   title: "Zeroize — Core API"
   description: "Overwrites a byte range with zeros, and is never removed however unread those bytes are afterwards."
@@ -22,16 +22,16 @@ seo:
 Overwrites a byte range with zeros, and is never removed however unread those bytes are afterwards.
 
 ```rux
-pub unsafe func Zeroize(memory: *var uint8, length: uint64)
+pub func Zeroize(memory: *var uint8, length: uint64)
 ```
 
 Safety: `memory` is borrowed for the call and must address at least `length` writable bytes; passing fewer, or a
 null pointer with a non-zero length, is undefined. `length` of zero writes nothing. Nothing is returned.
-Clearing a secret is a write nothing reads back, which is exactly what dead-store elimination is entitled to delete.
-Ordinary source cannot say "and mean it", so this is a compiler guarantee rather than a library one: every write the
-call lowers to is marked as one that must happen.
-Runs in time proportional to `length` and allocates nothing. It clears the storage it is given and nothing else --
-a value copied elsewhere beforehand, or spilled to a register or the stack by the caller, is not reached.
+Clearing a secret is a write nothing reads back, which is exactly what dead-store elimination is entitled to
+delete. Ordinary source cannot say "and mean it", so this is a compiler guarantee rather than a library one:
+every write the call lowers to is marked as one that must happen. Runs in time proportional to `length` and
+allocates nothing. It clears the storage it is given and nothing else — a value copied elsewhere beforehand, or
+spilled to a register or the stack by the caller, is not reached.
 
 ## Parameters
 

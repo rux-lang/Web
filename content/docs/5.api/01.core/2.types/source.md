@@ -9,7 +9,7 @@ api:
   kind: struct
   version: 0.1.0
   source: Src/Source.rux
-  line: 11
+  line: 12
 seo:
   title: "Source — Core API"
   description: The location of the expression that reads it.
@@ -58,4 +58,4 @@ pub const #source: Source;
 
 The reading expression's own location, as a compile-time value.
 
-[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Source.rux#L31)
+[Source](https://github.com/rux-lang/Rux/blob/main/Packages/Core/Src/Source.rux#L32)

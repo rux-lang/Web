@@ -29,12 +29,11 @@ pub interface Equatable {
 
 The bound a generic writes when it needs to compare its element type — a search, a deduplication, a hash table's
 key. `Self` in the signature is the implementing type, so an `Equatable` value is only ever compared against
-another of its own type and never against an unrelated one.
-An implementation must be an equivalence: a value equals itself, equality reads the same in either order, and two
-values each equal to a third are equal to each other. A type that cannot promise all three — one with a value that
-does not equal itself, the way a floating-point NaN does not — should not implement this, and callers relying on
-it are entitled to assume it holds.
-A type that also implements [`Hashable`](/docs/api/core/hashable) must keep the two agreeable: equal values hash the same.
+another of its own type and never against an unrelated one. An implementation must be an equivalence: a value
+equals itself, equality reads the same in either order, and two values each equal to a third are equal to each
+other. A type that cannot promise all three — one with a value that does not equal itself, the way a
+floating-point NaN does not — should not implement this, and callers relying on it are entitled to assume it
+holds. A type that also implements [`Hashable`](/docs/api/core/hashable) must keep the two agreeable: equal values hash the same.
 
 ## Requirements
 
