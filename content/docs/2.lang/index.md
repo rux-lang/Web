@@ -56,7 +56,7 @@ It is written for looking things up. To learn the language from the beginning, f
 ::u-page-grid
 :u-page-card{title="References" description="Written loans &x and &var x, &T and &var T, and the exclusivity rule." icon="i-lucide-link" to="/docs/lang/references/overview" variant="subtle"}
 :u-page-card{title="Pointers" description="*T and *var T, @ and *, null, arithmetic, slicing and raw operations." icon="i-lucide-mouse-pointer-2" to="/docs/lang/pointers/overview" variant="subtle"}
-:u-page-card{title="Ownership" description="Copies and moves, destructors, ending a value with destroy and ~self, and defer." icon="i-lucide-key-round" to="/docs/lang/ownership/overview" variant="subtle"}
+:u-page-card{title="Ownership" description="Copying and giving values away, destructors, ending a value with destroy and ~self, and defer." icon="i-lucide-key-round" to="/docs/lang/ownership/overview" variant="subtle"}
 :u-page-card{title="Memory layout" description="sizeof, alignof, padding and the layout of native forms." icon="i-lucide-ruler" to="/docs/lang/memory/layout" variant="subtle"}
 ::
 
