@@ -145,39 +145,51 @@ func Main() -> int {
     icon: "i-lucide-brackets",
     description: "Allocate, index, and free memory.",
     stdin: "",
-    source: String.raw`import Memory::{ Alloc, Free, Zero };
-import Io::{ Print, PrintLine };
+    source: String.raw`import Io::{ Print, PrintLine };
+import Memory::Block::Zero;
+import Memory::Heap::{ Alloc, Free };
 
 func Main() -> int {
-    PrintLine("Dynamic array");
-    let count: uint = 16;
+    // A count decided at run time, and the size of one element in bytes.
+    let count: uint = 8;
     let size = count * sizeof(uint);
-    var ptr = Alloc(size) as *uint;
-    if (ptr == null) {
-        PrintLine("Failed to allocate memory");
+    PrintLine("asking for {} elements, {} bytes", count, size);
+
+    // Safety: Alloc returns memory aligned for any scalar, so its block may hold uints.
+    var values = Alloc(size) as *var uint;
+
+    // Allocation can fail, and the only sign is null. Check before the first use.
+    if values == null {
+        PrintLine("out of memory");
         return 1;
     }
-    PrintLine("Allocated memory {} bytes at address {}", size, ptr as uint);
-    Zero(ptr, size);
+
+    // Safety: values came from Alloc, and this is the only place it is freed.
+    defer Free(values);
+
+    // Safety: values is not null, checked above, and holds size bytes.
+    Zero(values, size);
+    Print("after Zero:");
     for i in 0..count {
-        Print("{}; ", ptr[i]);
+        // Safety: i is below count, the number of elements the block holds.
+        Print(" {}", values[i]);
     }
     PrintLine();
+
     for i in 0..count {
-        ptr[i] = i as uint;
+        // Safety: as above, i is below count.
+        values[i] = i * i;
     }
-    PrintLine("Initialized array with values:");
+    Print("squares:   ");
+    var total: uint = 0;
     for i in 0..count {
-        Print("{}; ", ptr[i]);
+        // Safety: as above, i is below count.
+        let value = values[i];
+        Print(" {}", value);
+        total += value;
     }
     PrintLine();
-    var sum: uint = 0;
-    for i in 0..count {
-        sum += ptr[i];
-    }
-    PrintLine("Sum of array values: {}", sum);
-    Free(ptr);
-    PrintLine("Freed memory at address {}", ptr as uint);
+    PrintLine("total:      {}", total);
     return 0;
 }
 `,
@@ -188,24 +200,73 @@ func Main() -> int {
     icon: "i-lucide-circle-dashed",
     description: "Reads a radius from standard input.",
     stdin: "2.5\n",
-    source: String.raw`import Format::ParseFloat64;
-import Io::{ Print, PrintLine, ReadLine };
-import Math::Pi;
+    source: String.raw`import Allocator::SystemAllocator;
+import Core::Convert::IsFinite;
+import Format::Parsing::ParseFloat64;
+import Io::{ IoErrorKind, Print, PrintLine, ReadLine };
+import Math::Constants::Pi;
+import Text::StringBuilder;
+
+// Every way the input can be unusable, as one error variant.
+variant RadiusError {
+    Ended,
+    Unreadable,
+    NotANumber,
+    Negative(float64),
+    NotFinite
+}
+
+func ReadRadius(builder: &var StringBuilder) -> float64 ! RadiusError {
+    ReadLine(builder) catch {
+        error if error.kind == IoErrorKind::EndOfStream => throw RadiusError::Ended,
+        _ => throw RadiusError::Unreadable
+    };
+
+    // The parser reads "Inf" and "NaN", so a parsed number still has to be checked.
+    let radius = ParseFloat64(builder.View().Trim()) catch {
+        .Overflow(_) => throw RadiusError::NotFinite,
+        _ => throw RadiusError::NotANumber
+    };
+    if !IsFinite(radius) {
+        throw RadiusError::NotFinite;
+    }
+    if radius < 0.0 {
+        throw RadiusError::Negative(radius);
+    }
+    return radius + 0.0;
+}
 
 func Main() -> int {
+    let allocator = SystemAllocator::New();
+
+    // The builder's destructor gives its memory back whichever return Main leaves by.
+    var builder = StringBuilder::New(allocator);
+
     Print("Circle radius: ");
-    let input = ReadLine();
-    let result = ParseFloat64(input);
-    match result {
-        .Success(radius) => {
-            PrintLine("Circumference: {}", 2.0 * Pi * radius);
-            PrintLine("Area: {}", Pi * radius * radius);
-        },
-        .Error(_) => {
-            PrintLine("Invalid radius");
+    let radius = ReadRadius(&var builder) catch {
+        error => {
+            PrintLine();
+            match error {
+                .Ended => PrintLine("The input ended before a radius was entered"),
+                .Unreadable => PrintLine("The input could not be read"),
+                .NotANumber => PrintLine("That is not a number"),
+                .Negative(radius) => PrintLine("A radius cannot be negative, and {} is", radius),
+                .NotFinite => PrintLine("A radius must be a finite number")
+            }
             return 1;
         }
+    };
+
+    let circumference = 2.0 * Pi * radius;
+    let area = Pi * radius * radius;
+    PrintLine();
+    if !IsFinite(area) {
+        PrintLine("A radius of {} is too large: the area is past float64", radius);
+        return 1;
     }
+    PrintLine("Radius:        {}", radius);
+    PrintLine("Circumference: {:.4}", circumference);
+    PrintLine("Area:          {:.4}", area);
     return 0;
 }
 `,

@@ -21,8 +21,8 @@ Rux is experimental and under active development. The current release is **v0.4.
 
 Version 0.4.0 is the release where the language took its present shape:
 
-- **Native outcome types** — optionals `T?`, fallibles `T ! E` and sums `A | B`, with `none`, `fail`, `?`, `??` and `catch` built into the language.
-- **Ownership** — explicit moves with `<-`, references `&T` and `&var T`, destructors and deterministic cleanup, and `defer`.
+- **Native outcome types** — optionals `T?`, fallibles `T ! E` and sums `A | B`, with `none`, `throw`, `!`, `!!`, `?`, `??` and `catch` built into the language.
+- **Ownership** — values given away or lent with `&x` and `&var x`, destructors, `destroy` and deterministic cleanup, and `defer`.
 - **Separate `enum` and `variant` declarations** — scalar enumerations and tagged unions with data.
 - **Compile-time programming** — `when` conditional compilation, `intrinsic` declarations, and the `#target`, `#build`, `#compiler`, `#config` and `#source` context.
 - **Tooling** — cross-target builds for every supported platform, a versioned `Rux.toml` manifest, registry install and publish, and HTML documentation from `rux doc`.
@@ -107,7 +107,7 @@ The compiler does not depend on LLVM, an assembler, a C compiler or an external 
 
 ## What is the entry point of an executable?
 
-An executable package must define a function named `Main`. The usual signature takes no parameters and returns `int`, which becomes the process exit status:
+An executable package must define a function named `Main` with exactly one signature: it takes no parameters and returns `int`, which becomes the process exit status:
 
 ```rux
 func Main() -> int {
@@ -115,7 +115,7 @@ func Main() -> int {
 }
 ```
 
-`Main` may also be fallible — `func Main() -> ! E` or `func Main() -> int ! E` — and a failure ends the program with exit status 1. See [The Main function](/docs/lang/functions/main). Library packages have no entry point; a Windows DLL may optionally define `DllMain`.
+`Main` cannot fail. Steps that can fail go in a function of their own, and `Main` turns its outcome into an exit status — `Run() !! return 1;` exits with status 1 when `Run` fails. See [The Main function](/docs/lang/functions/main). Library packages have no entry point; a Windows DLL may optionally define `DllMain`.
 
 ## What is the difference between `let` and `var`?
 
@@ -132,11 +132,43 @@ Reassigning a `let` binding is a compile-time error. See [Bindings](/docs/lang/b
 
 ## Does Rux have a garbage collector?
 
-No. Generated programs include no garbage collector and no virtual machine. Memory and other resources are managed by ownership: a value is copied with `=` or moved with `<-`, borrowed through references `&T` and `&var T`, and destroyed deterministically when its owner goes out of scope, running its destructor. `defer` schedules cleanup at the end of a function. Heap memory comes from allocators in the `Allocator` package, and raw pointers remain available for low-level work. See [Ownership](/docs/lang/ownership/overview).
+No. Generated programs include no garbage collector and no virtual machine. Memory and other resources are managed by ownership: plain data is copied, a value that owns resources is given away when it is passed, returned or assigned, and either can be lent instead — `&x` for reading, `&var x` for writing. Each value is destroyed exactly once, by its last owner, when that owner goes out of scope, running its `destructor`; `destroy x;` ends a value early. `defer` schedules cleanup at the end of a scope. Heap memory comes from allocators in the `Allocator` package, and raw pointers remain available for low-level work. See [Ownership](/docs/lang/ownership/overview).
 
 ## Does Rux have exceptions?
 
-No. Errors are values. A function that can fail returns a fallible type `T ! E`, fails with `fail`, and its caller must deal with the outcome — by matching it, recovering with `catch`, or passing the failure on with `?`. Ignoring a fallible result is a compile-time error. A value that may simply be absent is an optional `T?` instead.
+No. Errors are values. A function that can fail writes its error after `!` in its return type — `-> T ! E`, or `-> !E` when it returns no value — and leaves with `throw`. Its caller deals with the outcome where it calls: a postfix `!` passes the error on, `!!` replaces it with a fallback, and `catch` handles it with match arms. Ignoring a fallible result is a compile-time error, and nothing unwinds the stack — an error costs what a return costs:
+
+```rux
+import Io::PrintLine;
+
+variant DigitError { Blank, NotADigit(char) }
+
+func ReadDigit(c: char) -> int ! DigitError {
+    if c == ' ' { throw .Blank; }
+    if c < '0' || c > '9' { throw .NotADigit(c); }
+    return (c as int) - ('0' as int);
+}
+
+// `!` passes an error on to this function's caller
+func Sum(a: char, b: char) -> int ! DigitError {
+    return ReadDigit(a)! + ReadDigit(b)!;
+}
+
+func Main() -> int {
+    let first = ReadDigit('x') !! 0;     // `!!` replaces an error with a fallback
+    let total = Sum('4', '2') catch {    // `catch` handles each error
+        .Blank => 0,
+        .NotADigit(c) => {
+            PrintLine("'{}' is not a digit", c);
+            return 1;
+        }
+    };
+    PrintLine("{} {}", first, total);
+    return 0;
+}
+```
+
+A value that may simply be absent is an optional `T?` instead.
 
 Bugs that should never happen stop the program with `Panic` or a failed `Assert`; there is no stack unwinding. See [Errors](/docs/lang/errors/overview) and [Optionals](/docs/lang/optionals/overview).
 
@@ -200,7 +232,7 @@ Published versions are immutable — a mistake is fixed by publishing a new vers
 
 ## What other commands does the CLI provide?
 
-The CLI includes commands for creating, initialising, building, checking, running, testing, cleaning, formatting, linting, documenting and packing packages. [`rux doc`](/docs/cli/doc) generates self-contained HTML API documentation from `///` comments, or a JSON snapshot of the API with `--format json`, and [`rux test`](/docs/cli/test) runs the functions marked [`#Test()`](/docs/lang/attributes/test). Use:
+The CLI includes commands for creating, initialising, building, checking, running, testing, cleaning, formatting, linting, documenting and packing packages. [`rux doc`](/docs/cli/doc) generates self-contained HTML API documentation from `///` comments, or a JSON snapshot of the API with `--format json`, and [`rux test`](/docs/cli/test) runs the functions marked [`#Test`](/docs/lang/attributes/test). Use:
 
 ```sh
 rux help

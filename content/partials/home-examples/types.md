@@ -69,48 +69,63 @@ Type = "Executable"
 Description = "Interface implementation"
 
 [Dependencies]
-Format = { Namespace = "Rux", Version = "*" }
 Io = { Namespace = "Rux", Version = "*" }
 Math = { Namespace = "Rux", Version = "*" }
-Text = { Namespace = "Rux", Version = "*" }
 ```
 
 ```rux [Interface/Src/Circle.rux]
-import Format::Format;
-import Math::Pi;
-import Text::String;
+import Math::Constants::Pi;
 
 struct Circle {
     radius: float64;
 }
 
-extend Circle {
-    func Area(self) -> float64 {
+extend Circle: Shape {
+    func Area(&self) -> float64 {
         return Pi * self.radius * self.radius;
     }
-}
 
-extend Circle: Display {
-    func ToString(self) -> String {
-        return Format("Circle: radius = {}", self.radius);
+    func Name(&self) -> char8[..] {
+        return "circle";
     }
 }
 ```
 
-```rux [Interface/Src/Display.rux]
-import Text::String;
+```rux [Interface/Src/Square.rux]
+struct Square {
+    side: float64;
+}
 
-interface Display {
-    func ToString() -> String;
+extend Square: Shape {
+    func Area(&self) -> float64 {
+        return self.side * self.side;
+    }
+
+    func Name(&self) -> char8[..] {
+        return "square";
+    }
+}
+```
+
+```rux [Interface/Src/Shape.rux]
+// Each implementation supplies its own receiver
+interface Shape {
+    func Area() -> float64;
+    func Name() -> char8[..];
 }
 ```
 
 ```rux [Interface/Src/Main.rux]
 import Io::PrintLine;
 
+// Dispatched at run time to Circle's or Square's methods
+func Describe(shape: &Shape) {
+    PrintLine("{}: area = {}", shape.Name(), shape.Area());
+}
+
 func Main() -> int {
-    let circle = Circle { radius: 2.0 };
-    PrintLine("{}; area = {}", circle.ToString(), circle.Area());
+    Describe(Circle { radius: 2.0 });
+    Describe(Square { side: 3.0 });
     return 0;
 }
 ```

@@ -11,29 +11,27 @@ Type = "Executable"
 Description = "Package import"
 
 [Dependencies]
+Io = { Namespace = "Rux", Version = "*" }
 Math = { Namespace = "Rux", Version = "*" }
 ```
 
 ```rux [Imports/Src/Main.rux]
-// Import package
-import Math;
+// Import one item from a package
+import Io::PrintLine;
 
-// Import a package with an alias
-import Math as Calc;
-
-// Import all items from a package
-import Math::*;
-
-// Import specific items from a package
-import Math::Sin;
-
-// Import multiple specific items from a package
+// Import several items from a package
 import Math::{ Sin, Cos };
 
-// Import specific item from a package with an alias
-import Math::Cos as Cosine;
+// Import a module, then name its items through it
+import Math::Constants;
+
+// Import every public item of a module
+import Math::Constants::*;
 
 func Main() -> int {
+    let angle = Constants::Pi / 6.0;
+    PrintLine("sin = {}, cos = {}", Sin(angle), Cos(angle));
+    PrintLine("tau = {}", Tau);
     return 0;
 }
 ```
