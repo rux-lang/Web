@@ -1,8 +1,17 @@
 # Rux Website
 
 [![CI](https://github.com/rux-lang/Web/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/rux-lang/Web/actions/workflows/ci.yml)
+[![Deploy](https://github.com/rux-lang/Web/actions/workflows/deploy.yml/badge.svg?branch=main)](https://github.com/rux-lang/Web/actions/workflows/deploy.yml)
+[![rux-lang.dev](https://img.shields.io/website?url=https%3A%2F%2Frux-lang.dev&label=rux-lang.dev)](https://rux-lang.dev)
 [![License: MIT](https://img.shields.io/github/license/rux-lang/Web)](LICENSE.md)
-[![Website](https://img.shields.io/badge/website-rux--lang.dev-blue)](https://rux-lang.dev)
+
+[![Nuxt 4](https://img.shields.io/badge/Nuxt-4-00dc82?logo=nuxt&logoColor=white)](https://nuxt.com)
+[![Nuxt Content 3](https://img.shields.io/badge/Nuxt_Content-3-00dc82?logo=nuxt&logoColor=white)](https://content.nuxt.com)
+[![Nuxt UI 4](https://img.shields.io/badge/Nuxt_UI-4-00dc82?logo=nuxt&logoColor=white)](https://ui.nuxt.com)
+[![Vue 3](https://img.shields.io/badge/Vue-3-4fc08d?logo=vuedotjs&logoColor=white)](https://vuejs.org)
+[![TypeScript 6](https://img.shields.io/badge/TypeScript-6-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Node.js 24](https://img.shields.io/badge/Node.js-24-5fa04e?logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![Cloudflare Pages](https://img.shields.io/badge/Cloudflare-Pages-f38020?logo=cloudflarepages&logoColor=white)](https://pages.cloudflare.com)
 
 The official website for the [Rux programming language](https://rux-lang.dev), built with Nuxt 4, Nuxt Content 3, and Nuxt UI 4.
 
@@ -102,7 +111,7 @@ CI runs linting, type checking, unit tests, static generation, generated-site ve
 
 ## Deployment
 
-GitHub Actions builds the site and deploys `main` to Cloudflare Pages as a fully static site. The `web` job in `.github/workflows/ci.yml` runs `npm run generate:hosting` with `NITRO_PRESET=cloudflare-pages-static`, verifies the result, and on `main` hands `dist` to the `deploy` job, which uploads it with `wrangler pages deploy`. Cloudflare itself builds nothing.
+Only `main` is deployed. On every push to `main` (or a manual run), `.github/workflows/deploy.yml` runs `npm run generate:hosting` with `NITRO_PRESET=cloudflare-pages-static`, verifies the result, and uploads `dist` to Cloudflare Pages with `wrangler pages deploy`. Cloudflare itself builds nothing, and `dev` and pull requests are only checked by CI.
 
 The deploy needs a Direct Upload Pages project and three repository settings:
 
