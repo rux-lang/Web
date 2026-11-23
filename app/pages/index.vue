@@ -230,6 +230,13 @@ function getExamplePage(value: TabsItem["value"]) {
 // nuxt.com; every other page damps it down.
 definePageMeta({ heroBackground: "" });
 
+// Kept out of the template: vue-tsc 3.3.14 miscompiles any template whose
+// attributes contain `//` (it then reads the plain `features` and `stats`
+// arrays as refs and fails with TS2551 "Property 'value' does not exist").
+// Bound as expressions, the URLs never reach its attribute scanner.
+const installCommand = "curl -fsSL https://rux-lang.dev/install.sh | sh";
+const githubOrgUrl = "https://github.com/rux-lang";
+
 useSeoMeta({
   title: "Rux Programming Language",
   titleTemplate: "%s",
@@ -285,7 +292,7 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
               label="Reference"
             />
           </div>
-          <InputCopy value="curl -fsSL https://rux-lang.dev/install.sh | sh" size="xl" />
+          <InputCopy :value="installCommand" size="xl" />
         </div>
       </template>
 
@@ -450,7 +457,7 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
             :transition="{ delay: 0.3 }"
             :in-view-options="{ once: true }"
           >
-            <UPageCard class="h-full" variant="subtle" to="https://github.com/rux-lang" target="_blank">
+            <UPageCard class="h-full" variant="subtle" :to="githubOrgUrl" target="_blank">
               <div class="flex h-full flex-col items-center justify-around gap-4 text-center">
                 <span class="text-xl font-semibold">Missing your editor?</span>
                 <p class="text-muted">
@@ -465,7 +472,7 @@ useHead({ link: [{ rel: "canonical", href: "https://rux-lang.dev/" }] });
                   label="Contribute support"
                   icon="i-simple-icons-github"
                   color="neutral"
-                  to="https://github.com/rux-lang"
+                  :to="githubOrgUrl"
                   target="_blank"
                 />
               </div>
