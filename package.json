@@ -89,6 +89,9 @@
     "vue-demi": true
   },
   "overrides": {
+    "@nuxt/icon": {
+      "@nuxt/devtools-kit": "^3.4.4"
+    },
     "basic-ftp": "^6.2.5",
     "zod": "^4.6.6"
   }
