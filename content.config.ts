@@ -73,11 +73,16 @@ export default defineContentConfig({
         // course ("3.6"), `source` the package folder ("ControlFlow/DoWhile"),
         // and `requires` the slugs of the lessons it builds on. Read by
         // LearnPageActions.vue and scripts/verify-learn.mjs.
+        // `goal` is the README's one-line summary with its `code` spans kept,
+        // written only when it has some: `description` must stay plain text for
+        // meta tags, share cards and search, so the lesson header renders the
+        // code in the mono face from `goal` instead.
         lesson: z
           .object({
             number: z.string(),
             source: z.string(),
             requires: z.array(z.string()).optional(),
+            goal: z.string().optional(),
           })
           .optional(),
         // Generated API Reference pages (/docs/api/<package>/*), written by

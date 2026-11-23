@@ -73,6 +73,16 @@ const isApiPage = computed(() => /^\/docs\/api(\/|$)/.test(path.value));
 // Like API pages they promote their H1 into UPageHeader, which adds the part
 // and lesson number, the Examples source and the "ask an assistant" menu.
 const lesson = computed(() => page.value?.lesson);
+// The lesson's summary as text and code segments: `goal` keeps the README's
+// backtick spans, which `description` (plain text for meta tags and search)
+// drops. Odd segments of a backtick split are code. Lessons whose summary has
+// no code have no `goal`, and the header shows `description` as before.
+const lessonGoal = computed(() =>
+  lesson.value?.goal
+    ?.split("`")
+    .map((text, index) => ({ text, code: index % 2 === 1 }))
+    .filter((segment) => segment.text),
+);
 // Generated API pages (scripts/api-docs.mjs) carry an `api` block naming their
 // package, declaration kind, version and source line; only the /docs/api hub
 // has none.
@@ -292,6 +302,17 @@ useHead({
         >
           <template #headline>
             <span>{{ lessonPart ? `${lessonPart} · ` : "" }}Lesson {{ lesson.number }}</span>
+          </template>
+
+          <template v-if="lessonGoal" #description>
+            <template v-for="(segment, index) in lessonGoal" :key="index">
+              <code
+                v-if="segment.code"
+                class="rounded-md border border-muted bg-muted px-1.5 py-0.5 font-mono text-[0.85em] font-medium text-highlighted"
+                >{{ segment.text }}</code
+              >
+              <template v-else>{{ segment.text }}</template>
+            </template>
           </template>
 
           <template #links>

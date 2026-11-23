@@ -137,6 +137,9 @@ function packageFiles(dir) {
 
 const yamlString = (s) => JSON.stringify(s);
 const plain = (s) => s.replace(/`/g, "");
+// `lesson.goal`: the summary with its code spans, kept only when it has any. The
+// lesson header renders those spans as code; `description` stays plain text.
+const goalLine = (goal) => (goal.includes("`") ? `  goal: ${yamlString(goal)}\n` : "");
 const tableCell = (s) => s.replace(/\|/g, "\\|");
 
 const fence = ({ file, text }) => "```" + `${file.endsWith(".rux") ? "rux" : "toml"} [${file}]\n${text}\n` + "```";
@@ -200,7 +203,7 @@ navigation:
 lesson:
   number: ${yamlString(lesson.number)}
   source: ${lesson.source}
----
+${goalLine(lesson.goal)}---
 
 # ${lesson.title}
 
@@ -262,12 +265,12 @@ function syncRegions(text, regions) {
   return out;
 }
 
-/** The `lesson.requires` frontmatter list, from the README's lesson links. */
+/** The `lesson.requires` list and `lesson.goal`, from the README's lesson links and summary. */
 function syncRequires(text, lesson) {
   const requires = [...(lesson.needs ?? "").matchAll(/\/docs\/learn\/([a-z0-9-]+)/g)].map((m) => m[1]);
   const block = requires.length ? `  requires: [${requires.join(", ")}]\n` : "";
   return text
-    .replace(/(\n {2}source: .*\n)(?: {2}requires: .*\n)?/, `$1${block}`)
+    .replace(/(\n {2}source: .*\n)(?: {2}requires: .*\n)?(?: {2}goal: .*\n)?/, `$1${block}${goalLine(lesson.goal)}`)
     .replace(/^description: .*$/m, `description: ${yamlString(plain(lesson.goal))}`);
 }
 
