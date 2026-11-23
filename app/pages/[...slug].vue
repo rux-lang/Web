@@ -161,7 +161,7 @@ const lessonPart = computed(
 const lessonSourceUrl = computed(() => `https://github.com/rux-lang/Examples/tree/main/${lesson.value?.source}`);
 
 // The page as clean Markdown, written next to its HTML by
-// scripts/generate-llms.mjs — so it exists in a generated build, not in dev.
+// scripts/generate-llms.mjs, and served by scripts/llms-dev.mjs under `npm run dev`.
 const markdownUrl = computed(() => `https://rux-lang.dev${path.value}.md`);
 
 const lessonPrompt = computed(

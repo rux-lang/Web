@@ -11,6 +11,10 @@ const props = withDefaults(
   { prompt: undefined },
 );
 
+// The absolute URL is for links and prompts; reading and viewing the file use
+// the page's own origin — no CORS, and the dev server's copy under `npm run dev`.
+const sameOrigin = computed(() => new URL(props.markdownUrl).pathname);
+
 const toast = useToast();
 const copied = ref(false);
 const isCopying = ref(false);
@@ -42,8 +46,7 @@ async function copyPage() {
   isCopying.value = true;
 
   try {
-    // Same origin as the page, so no CORS: the absolute URL is for links and prompts.
-    const markdown = await $fetch<string>(new URL(props.markdownUrl).pathname, { responseType: "text" });
+    const markdown = await $fetch<string>(sameOrigin.value, { responseType: "text" });
     await writeClipboard(markdown, "Page Markdown");
   } catch {
     toast.add({
@@ -69,8 +72,9 @@ const items = computed<DropdownMenuItem[][]>(() => [
     {
       label: "View as Markdown",
       icon: "i-simple-icons-markdown",
-      to: props.markdownUrl,
+      to: sameOrigin.value,
       target: "_blank",
+      external: true,
     },
     {
       label: "Open in ChatGPT",

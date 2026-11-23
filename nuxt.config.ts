@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { AREAS, PACKAGES } from "./scripts/api-packages.mjs";
 import { PARTS } from "./scripts/learn-course.mjs";
+import { llmsDevHandler } from "./scripts/llms-dev.mjs";
 import { contentRoutes } from "./scripts/routes.mjs";
 
 // MDC registers object grammars by `lang.name` ONLY and ignores
@@ -25,6 +26,10 @@ export default defineNuxtConfig({
   // written after the build by scripts/generate-llms.mjs (package.json
   // `generate`), from the content database the build fills.
   modules: ["@nuxt/ui", "@nuxt/content", "@nuxtjs/sitemap", "@nuxt/eslint", "motion-v/nuxt"],
+  // ...which `npm run dev` never runs, so the dev server answers those URLs
+  // itself, rendered by the generator's own code from the database it keeps
+  // current. Only the dev server reads this list; a build never registers it.
+  devServerHandlers: [{ handler: llmsDevHandler }],
   css: ["~/assets/css/main.css"],
   compatibilityDate: "2025-01-01",
 
