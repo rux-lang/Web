@@ -38,7 +38,16 @@ const failed = ref(false);
 // The rendered diagram's own width in px, from its viewBox. The wrapper never
 // gets narrower than MIN_SCALE of it; past that the figure scrolls sideways.
 const naturalWidth = ref(0);
-const minWidth = computed(() => `${Math.round(naturalWidth.value * MIN_SCALE)}px`);
+// The width of the column the figure sits in, kept current by the observer in
+// onMounted, so a phone turned sideways decides again.
+const column = ref(0);
+// Whether the diagram still reads at MIN_SCALE in this column. One that does not
+// is not scrolled sideways inside the page — awkward on a phone, where most of
+// it is out of sight — but shown whole, scaled down to the column as a preview,
+// with a button that opens it at full size in a full-screen view.
+const fits = computed(() => !naturalWidth.value || !column.value || naturalWidth.value * MIN_SCALE <= column.value);
+const minWidth = computed(() => (fits.value ? `${Math.round(naturalWidth.value * MIN_SCALE)}px` : undefined));
+const enlarged = ref(false);
 // Mermaid uses the id for an element and as a CSS selector prefix, so it has
 // to be a plain identifier — useId() can contain characters that are not.
 const id = `mermaid-${useId().replace(/[^\w-]/g, "")}`;
@@ -118,6 +127,11 @@ const isHorizontal = computed(() => horizontal.test(source.value));
 // drawing it again.
 const vertical = ref(false);
 let horizontalWidth = 0;
+// Whether a diagram drawn as written is packed tighter because Mermaid's 50px
+// spacing does not fit the column — what `vertical` does for a turned diagram,
+// for one that is already top-down. Its spacious width is kept for a resize.
+const compact = ref(false);
+let spaciousWidth = 0;
 
 // Mermaid measures every label while it lays the diagram out. If the web fonts
 // have not arrived yet it measures a fallback face and the boxes come out the
@@ -158,9 +172,28 @@ async function draw() {
     fontFamily: font,
     themeVariables: { ...palettes[dark ? "dark" : "light"], fontFamily: font, fontSize: "14px", darkMode: dark },
     themeCSS: `code { font-family: ${mono}; font-size: 0.93em; }`,
-    // Drawn top-down only for a narrow column, so it packs tighter than
-    // Mermaid's 50px defaults to fit beside the edges that loop back.
-    flowchart: { curve: "basis", padding: 12, ...(vertical.value && { nodeSpacing: 24, rankSpacing: 36 }) },
+    // Turned top-down, or too wide as written, only for a narrow column, so it
+    // packs tighter than Mermaid's 50px defaults — and drops Mermaid 12's
+    // `minNodeWidth`, which widens every short label to a 120px box. Four `int`
+    // boxes side by side came to 760px; their own text needs a third of that.
+    flowchart: {
+      curve: "basis",
+      padding: 12,
+      ...((vertical.value || compact.value) && { nodeSpacing: 24, rankSpacing: 36, minNodeWidth: 0 }),
+    },
+    // A sequence diagram too wide for the column narrows its participant
+    // columns and wraps long messages instead: 700–1000px down to about 340.
+    ...(compact.value && {
+      sequence: {
+        actorMargin: 12,
+        width: 112,
+        wrap: true,
+        messageMargin: 30,
+        noteMargin: 6,
+        boxMargin: 6,
+        diagramMarginX: 8,
+      },
+    }),
   });
 
   const turned = verticalHint.exec(source.value)?.[1] ?? "TD";
@@ -179,9 +212,16 @@ async function draw() {
         vertical.value = true;
         return draw();
       }
+    } else if (!isHorizontal.value && !compact.value) {
+      spaciousWidth = width;
+      if (columnWidth() < width * MIN_SCALE) {
+        compact.value = true;
+        return draw();
+      }
     }
     svg.value = result.svg;
     naturalWidth.value = width;
+    column.value = columnWidth();
     failed.value = false;
   } catch (error) {
     if (ticket !== renders) return;
@@ -197,12 +237,21 @@ onMounted(() => {
   draw();
   watch(() => colorMode.value, draw);
 
-  // A phone turned sideways, or a window resized across the point where the
-  // horizontal layout stops fitting: pick the direction again.
-  if (isHorizontal.value && figure.value) {
+  // A phone turned sideways, or a window resized: measure the column again, and
+  // for a horizontal diagram that crossed the point where its horizontal layout
+  // stops fitting, pick the direction again.
+  if (figure.value) {
     observer = new ResizeObserver(() => {
       clearTimeout(resizeTimer);
       resizeTimer = setTimeout(() => {
+        column.value = columnWidth();
+        if (!isHorizontal.value) {
+          const crowded = spaciousWidth > 0 && column.value < spaciousWidth * MIN_SCALE;
+          if (!spaciousWidth || crowded === compact.value) return;
+          compact.value = crowded;
+          draw();
+          return;
+        }
         if (!horizontalWidth || tooNarrow() === vertical.value) return;
         vertical.value = !vertical.value;
         draw();
@@ -221,16 +270,42 @@ onBeforeUnmount(() => {
 <template>
   <figure
     ref="figure"
-    class="mermaid-diagram my-5 overflow-x-auto rounded-md border border-muted bg-default p-2 sm:p-4"
+    class="mermaid-diagram relative my-5 overflow-x-auto rounded-md border border-muted bg-default p-2 sm:p-4"
   >
     <!-- eslint-disable vue/no-v-html -- SVG produced by Mermaid with securityLevel "strict" from our own Markdown -->
     <div
       v-if="svg && !failed"
       class="flex justify-center [&>svg]:h-auto [&>svg]:max-w-full"
+      :class="fits ? undefined : 'pt-9'"
       :style="{ minWidth }"
       v-html="svg"
     />
     <!-- eslint-enable vue/no-v-html -->
     <pre v-else class="m-0 font-mono text-sm whitespace-pre text-muted">{{ code.trim() }}</pre>
+
+    <template v-if="svg && !failed && !fits">
+      <UButton
+        icon="i-lucide-maximize-2"
+        label="Enlarge"
+        color="neutral"
+        variant="subtle"
+        size="xs"
+        class="absolute end-2 top-2"
+        @click="enlarged = true"
+      />
+      <UModal v-model:open="enlarged" fullscreen title="Diagram" :ui="{ body: 'p-0 sm:p-0' }">
+        <template #body>
+          <div class="h-full overflow-auto p-4">
+            <!-- eslint-disable vue/no-v-html -- the same Mermaid SVG as above, at full size -->
+            <div
+              class="mx-auto [&>svg]:h-auto [&>svg]:max-w-none"
+              :style="{ width: `${naturalWidth}px` }"
+              v-html="svg"
+            />
+            <!-- eslint-enable vue/no-v-html -->
+          </div>
+        </template>
+      </UModal>
+    </template>
   </figure>
 </template>

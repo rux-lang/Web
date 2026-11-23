@@ -225,6 +225,10 @@ export default defineNuxtConfig({
       icons: [
         "lucide:file-code",
         "lucide:arrow-up-right",
+        // ui.icons.close, the close button of the full-screen diagram view in
+        // MermaidDiagram.vue's UModal. Like arrow-up-right, it is a component
+        // default that never appears in source.
+        "lucide:x",
         // UCodeIcon assembles `i-vscode-icons-file-type-<ext>` from a fence's
         // filename when neither the filename nor the extension is in the
         // codeIcon map, so the name exists nowhere in source for the scanner to
