@@ -56,18 +56,16 @@ jobs:
         with:
           node-version: 24
           cache: npm
-      # Cloudflare Pages installs with its own npm 10.9.2, while this runner has
-      # npm 11. The two resolve optional peers differently, so a lock written by
-      # a newer npm can pass every step here and still kill the deploy at
-      # `npm clean-install`. A package flagged "extraneous" loses its "optional"
-      # flag, which turns a foreign-platform binary into a required install.
-      - name: Check lock against Cloudflare's npm
+      # npm writes "extraneous" instead of "optional" for a package left in
+      # node_modules but unreachable from the graph, which turns a
+      # foreign-platform binary into a required install: `npm ci` on this
+      # Linux runner, and in deploy.yml, then dies with EBADPLATFORM.
+      - name: Check lock for extraneous entries
         run: |
           if grep -q '"extraneous": true' package-lock.json; then
-            echo "::error file=package-lock.json::The lock contains extraneous entries; regenerate it with npm 10.9.2."
+            echo "::error file=package-lock.json::The lock contains extraneous entries; regenerate it from a clean tree."
             exit 1
           fi
-          npx -y npm@10.9.2 ci --dry-run --ignore-scripts
       - name: Install
         run: npm ci
       - name: Audit dependencies
