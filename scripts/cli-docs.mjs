@@ -3,7 +3,7 @@ import { format } from "prettier";
 const commandDetails = {
   add: {
     behavior:
-      "Registry dependencies require a namespaced identity such as `Rux/Io`; an optional `@requirement` constrains the resolved version. `--path` adds a local dependency instead. A requirement an installed package already satisfies, as the standard `Rux/*` packages installed with the compiler do, is added without contacting the registry; any other is checked against the registry first. The command updates `Rux.toml` only once the package is found.",
+      "Registry dependencies require a namespaced identity such as `Rux/Io`; an optional `@requirement` constrains the resolved version. `--path` adds a local dependency instead. A requirement an already-installed package satisfies is added without contacting the registry; any other is checked against the registry first. The command updates `Rux.toml` only once the package is found.",
     environment: ["`RUX_REGISTRY_URL` sets the default registry when `--registry` is absent."],
     related: ["install", "remove", "update"],
   },

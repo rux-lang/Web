@@ -13,7 +13,7 @@ seo:
 
 # API Reference
 
-This reference documents the packages that ship with Rux: every public type, interface, function and constant, what it does and where it lives in the source. It is for looking things up rather than learning — if you are new to the language, start with [Learn Rux](/docs/learn) or the [Rux Language Reference](/docs/lang).
+This reference documents Rux's standard packages, published under the `Rux` namespace in the [package registry](/packages): every public type, interface, function and constant, what it does and where it lives in the source. It is for looking things up rather than learning — if you are new to the language, start with [Learn Rux](/docs/learn) or the [Rux Language Reference](/docs/lang).
 
 Rux has no monolithic runtime. Each package below is a dependency a project declares in its [manifest](/docs/packaging/manifest), and a program depends only on what it asks for.
 
