@@ -77,6 +77,7 @@ try {
   };
   const commands = [
     [resolve(webDirectory, "node_modules/nuxt/bin/nuxt.mjs"), "generate"],
+    [resolve(webDirectory, "scripts/generate-llms.mjs")],
     [resolve(webDirectory, "scripts/generate-sitemap.mjs")],
   ];
 
@@ -93,14 +94,26 @@ try {
     if (status !== 0) throw new Error(`hosting build exited with status ${status}`);
   }
 
-  const [index, fallback, notFound, robots, sitemapIndex, sitemapPart] = await Promise.all([
+  const [index, fallback, notFound, robots, sitemapIndex, sitemapPart, llms, lessonMarkdown] = await Promise.all([
     readFile(resolve(outputDirectory, "index.html"), "utf8"),
     readFile(resolve(outputDirectory, "200.html"), "utf8"),
     readFile(resolve(outputDirectory, "404.html"), "utf8"),
     readFile(resolve(outputDirectory, "robots.txt"), "utf8"),
     readFile(resolve(outputDirectory, "sitemap.xml"), "utf8"),
     readFile(resolve(outputDirectory, "sitemap-1.xml"), "utf8"),
+    readFile(resolve(outputDirectory, "llms.txt"), "utf8"),
+    readFile(resolve(outputDirectory, "docs/learn/hello.md"), "utf8"),
   ]);
+
+  if (
+    !llms.includes("https://rux-lang.dev/llms-small.txt") ||
+    !llms.includes("https://rux-lang.dev/docs/learn/hello.md")
+  ) {
+    throw new Error("llms.txt does not list the document sets and page Markdown");
+  }
+  if (!lessonMarkdown.startsWith("# Hello, World\n\nSource: https://rux-lang.dev/docs/learn/hello")) {
+    throw new Error("page Markdown does not open with its title and source URL");
+  }
 
   for (const shell of [index, fallback, notFound]) {
     if (!shell.includes("<html")) throw new Error("generated Nuxt shell is not HTML");

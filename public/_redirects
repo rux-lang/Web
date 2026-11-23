@@ -16,3 +16,8 @@
 # rux 0.4.0 prints this URL with every manifest error; the page lives in the
 # Packaging book.
 /docs/manifest        /docs/packaging/manifest   301
+
+# Page Markdown moved from nuxt-llms' /raw/<path>.md to <path>.md, the URL
+# llmstxt.org proposes (scripts/generate-llms.mjs writes it).
+/raw/docs.md          /docs.md                   301
+/raw/docs/*           /docs/:splat               301
