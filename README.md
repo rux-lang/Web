@@ -102,15 +102,17 @@ CI runs linting, type checking, unit tests, static generation, generated-site ve
 
 ## Deployment
 
-Cloudflare Pages deploys `main` as a fully static site:
+GitHub Actions builds the site and deploys `main` to Cloudflare Pages as a fully static site. The `web` job in `.github/workflows/ci.yml` runs `npm run generate:hosting` with `NITRO_PRESET=cloudflare-pages-static`, verifies the result, and on `main` hands `dist` to the `deploy` job, which uploads it with `wrangler pages deploy`. Cloudflare itself builds nothing.
 
-| Setting          | Value                      |
-| :--------------- | :------------------------- |
-| Build command    | `npm run generate:hosting` |
-| Output directory | `dist`                     |
-| Node.js version  | `24`                       |
+The deploy needs a Direct Upload Pages project and three repository settings:
 
-The output directory is `dist`, not the `.output/public` a local build produces: on Cloudflare, nitro selects the `cloudflare-pages-static` preset, which writes the site to `dist` instead. Locally Nuxt symlinks `dist` to `.output/public`, so either path works on a developer machine.
+| Setting                    | Kind     | Value                                                     |
+| :------------------------- | :------- | :-------------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`     | Secret   | API token with the Account › Cloudflare Pages › Edit role |
+| `CLOUDFLARE_ACCOUNT_ID`    | Secret   | The Cloudflare account ID                                 |
+| `CLOUDFLARE_PAGES_PROJECT` | Variable | The Pages project name                                    |
+
+The output directory is `dist`, not the `.output/public` a local build produces: the `cloudflare-pages-static` preset writes the site there. Locally Nuxt symlinks `dist` to `.output/public`, so either path works on a developer machine.
 
 Production builds use `NUXT_PUBLIC_API_BASE_URL`, `RUX_SITEMAP_API_BASE_URL`, and `RUX_SITE_ORIGIN` to point the client and generated sitemap at the deployed services. The registry sitemap is best-effort: if the API is unreachable, the build logs a warning and publishes a sitemap of content routes alone rather than failing.
 
