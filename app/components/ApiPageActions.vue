@@ -42,7 +42,8 @@ async function copyPage() {
   isCopying.value = true;
 
   try {
-    const markdown = await $fetch<string>(props.markdownUrl);
+    // Same origin as the page, so no CORS: the absolute URL is for links and prompts.
+    const markdown = await $fetch<string>(new URL(props.markdownUrl).pathname, { responseType: "text" });
     await writeClipboard(markdown, "Page Markdown");
   } catch {
     toast.add({

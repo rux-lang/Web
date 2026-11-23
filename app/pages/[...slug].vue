@@ -160,9 +160,9 @@ const lessonPart = computed(
 );
 const lessonSourceUrl = computed(() => `https://github.com/rux-lang/Examples/tree/main/${lesson.value?.source}`);
 
-const markdownUrl = computed(
-  () => `https://raw.githubusercontent.com/rux-lang/Web/dev/content/${page.value?.stem}.${page.value?.extension}`,
-);
+// The page as clean Markdown, written next to its HTML by
+// scripts/generate-llms.mjs — so it exists in a generated build, not in dev.
+const markdownUrl = computed(() => `https://rux-lang.dev${path.value}.md`);
 
 const lessonPrompt = computed(
   () =>
@@ -170,7 +170,7 @@ const lessonPrompt = computed(
     `Read lesson ${lesson.value?.number} at ${markdownUrl.value} and its program at ` +
     `https://raw.githubusercontent.com/rux-lang/Examples/main/${lesson.value?.source}/Src/Main.rux. ` +
     `Rux is a new language, so rely on these files rather than on what similar languages do; ` +
-    `https://rux-lang.dev/llms-full.txt has the whole course and language reference if you need more. ` +
+    `https://rux-lang.dev/llms-small.txt has the cheat sheet and the whole language reference if you need more. ` +
     `Explain the lesson step by step, then check my understanding with one short question at a time.`,
 );
 
