@@ -63,7 +63,8 @@ function readCourse() {
       parts.push(part);
       continue;
     }
-    const item = line.match(/^- (\d+\.\d+) \*\*\[(.+?)\]\((.+?)\/?\)\*\* — (.*)$/);
+    // The phrase follows a colon; the em dash is the separator the outline used before November 2026.
+    const item = line.match(/^- (\d+\.\d+) \*\*\[(.+?)\]\((.+?)\/?\)\*\*(?::| —) (.*)$/);
     if (item && part) {
       part.lessons.push(readLesson(part, item[1], item[2], item[3].replace(/\/$/, ""), item[4]));
       continue;

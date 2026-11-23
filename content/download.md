@@ -12,7 +12,7 @@ seo:
 # Download Rux
 
 <p class="status-lead">
-Get the latest Rux compiler for your platform. Prebuilt, tested binaries ship for FreeBSD, Linux, macOS, and Windows — each on both x86-64 and AArch64. Download an archive, unpack it, and put <code>rux</code> on your <code>PATH</code>.
+Get the latest Rux compiler for your platform. Prebuilt, tested binaries ship for FreeBSD, Linux, macOS, and Windows, each on both x86-64 and AArch64. Download an archive, unpack it, and put <code>rux</code> on your <code>PATH</code>.
 </p>
 
 ::tip
@@ -44,7 +44,7 @@ Built on macOS 26. The binaries are unsigned, so the first run needs a trip thro
 
 ::u-page-grid
 :link-card{name="x86-64" handle="rux-macos-x86_64.tar.gz" description="Intel Macs." icon="i-simple-icons-apple" color="text-highlighted" note="tar.gz archive" to="https://github.com/rux-lang/Rux/releases/latest/download/rux-macos-x86_64.tar.gz"}
-:link-card{name="AArch64" handle="rux-macos-aarch64.tar.gz" description="Apple silicon — every M-series Mac." icon="i-simple-icons-apple" color="text-highlighted" note="tar.gz archive" to="https://github.com/rux-lang/Rux/releases/latest/download/rux-macos-aarch64.tar.gz"}
+:link-card{name="AArch64" handle="rux-macos-aarch64.tar.gz" description="Apple silicon: every M-series Mac." icon="i-simple-icons-apple" color="text-highlighted" note="tar.gz archive" to="https://github.com/rux-lang/Rux/releases/latest/download/rux-macos-aarch64.tar.gz"}
 ::
 
 ## Windows

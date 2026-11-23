@@ -37,10 +37,10 @@ definePageMeta({ heroBackground: "opacity-30" });
 useSeoMeta({
   title: "Playground",
   description:
-    "Write, compile, and run Rux code directly in your browser — no installation required. Experiment with the language using the live Rux Playground.",
+    "Write, compile, and run Rux code directly in your browser, no installation required. Experiment with the language using the live Rux Playground.",
   ogTitle: "Rux Playground",
   ogDescription:
-    "Write, compile, and run Rux code directly in your browser — no installation required. Experiment with the language using the live Rux Playground.",
+    "Write, compile, and run Rux code directly in your browser, no installation required. Experiment with the language using the live Rux Playground.",
   ogType: "website",
   ogUrl: "https://rux-lang.dev/play",
   ogImage: "https://rux-lang.dev/images/og-playground.png",

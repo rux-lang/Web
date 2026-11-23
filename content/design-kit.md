@@ -17,7 +17,7 @@ Everything you need to present Rux correctly — the logo in every variant, the 
 
 ## Logo
 
-The logo is made of two elements: the `R` mark and the `Rux` wordmark. The mark is a single letterform — a violet bowl over an amber checkerboard leg, the two halves of the same `R`. In most places the mark and the wordmark appear together. The mark works on its own as an icon, an avatar, or a badge — but the wordmark should never appear without the mark beside it.
+The logo is made of two elements: the `R` mark and the `Rux` wordmark. The mark is a single letterform: a violet bowl over an amber checkerboard leg, the two halves of the same `R`. In most places the mark and the wordmark appear together. The mark works on its own as an icon, an avatar, or a badge — but the wordmark should never appear without the mark beside it.
 
 Pick the variant with the most contrast against your background. On a colored or photographic background, use the solid white or solid black version rather than the full-color one.
 
@@ -44,7 +44,7 @@ The mark alone, drawn to the edges of a square so it drops into a favicon, a til
 
 Profile pictures are usually cropped to a circle or a rounded square, and most
 platforms flatten transparency onto a background you do not control. These three
-inset the mark inside a fixed 512 × 512 square so the crop never bites into it —
+inset the mark inside a fixed 512 × 512 square so the crop never bites into it:
 two with the backdrop baked in, one left transparent for platforms that let you
 set your own.
 
@@ -60,7 +60,7 @@ set your own.
 Do not redraw, recolor, rotate, stretch, or add effects to the mark, and do not set the wordmark in a different typeface. Leave clear space around the logo of at least the height of the `R` in the wordmark, and never render it below 24 px tall.
 ::
 
-The Rux name and logo identify the language and the official project. Feel free to use them to link to Rux, to say your project is written in Rux, or to talk about it — but not in a way that suggests the Rux project endorses, sponsors, or maintains what you are building.
+The Rux name and logo identify the language and the official project. Feel free to use them to link to Rux, to say your project is written in Rux, or to talk about it, but not in a way that suggests the Rux project endorses, sponsors, or maintains what you are building.
 
 ## Color Palette
 
@@ -74,7 +74,7 @@ The palette is built around two accents — violet and amber — kept deliberate
 :design-kit-color-card{background="#D97706" name="Amber Deep"}
 ::
 
-Violet is the primary accent — links, active states, the bowl of the mark. Amber is the secondary, and appears only in the mark's checkerboard leg; it is never a link or a button color.
+Violet is the primary accent: links, active states, the bowl of the mark. Amber is the secondary, and appears only in the mark's checkerboard leg; it is never a link or a button color.
 
 ::u-page-grid
 :design-kit-color-card{background="#22292B" name="Mist"}
@@ -96,4 +96,4 @@ redistribute with your own materials.
 
 ## Getting the Files
 
-Every logo above downloads as both SVG and PNG — take the SVG unless you need a raster file, since it stays sharp at any size. If you need a format, a size, or a lockup that is not here, [open an issue](https://github.com/rux-lang/Web/issues) and we will add it.
+Every logo above downloads as both SVG and PNG. Take the SVG unless you need a raster file, since it stays sharp at any size. If you need a format, a size, or a lockup that is not here, [open an issue](https://github.com/rux-lang/Web/issues) and we will add it.

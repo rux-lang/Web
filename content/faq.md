@@ -1,9 +1,9 @@
 ---
 title: Frequently Asked Questions
-description: Answers to common questions about Rux — what it is, supported platforms, installation, projects, the compiler, error handling, memory, FFI, the standard packages, the package manager, and more.
+description: "Answers to common questions about Rux: what it is, supported platforms, installation, projects, the compiler, error handling, memory, FFI, the standard packages, the package manager, and more."
 seo:
   title: FAQ
-  description: Answers to common questions about Rux — what it is, supported platforms, installation, projects, the compiler, error handling, memory, FFI, the standard packages, the package manager, and more.
+  description: "Answers to common questions about Rux: what it is, supported platforms, installation, projects, the compiler, error handling, memory, FFI, the standard packages, the package manager, and more."
   ogImage: https://rux-lang.dev/images/og-faq.png
   ogType: website
   ogUrl: https://rux-lang.dev/faq
@@ -21,11 +21,11 @@ Rux is experimental and under active development. The current release is **v0.4.
 
 Version 0.4.0 is the release where the language took its present shape:
 
-- **Native outcome types** — optionals `T?`, fallibles `T ! E` and sums `A | B`, with `none`, `throw`, `!`, `!!`, `?`, `??` and `catch` built into the language.
-- **Ownership** — values given away or lent with `&x` and `&var x`, destructors, `destroy` and deterministic cleanup, and `defer`.
-- **Separate `enum` and `variant` declarations** — scalar enumerations and tagged unions with data.
-- **Compile-time programming** — `when` conditional compilation, `intrinsic` declarations, and the `#target`, `#build`, `#compiler`, `#config` and `#source` context.
-- **Tooling** — cross-target builds for every supported platform, a versioned `Rux.toml` manifest, registry install and publish, and HTML documentation from `rux doc`.
+- **Native outcome types**: optionals `T?`, fallibles `T ! E` and sums `A | B`, with `none`, `throw`, `!`, `!!`, `?`, `??` and `catch` built into the language.
+- **Ownership**: values given away or lent with `&x` and `&var x`, destructors, `destroy` and deterministic cleanup, and `defer`.
+- **Separate `enum` and `variant` declarations**: scalar enumerations and tagged unions with data.
+- **Compile-time programming**: `when` conditional compilation, `intrinsic` declarations, and the `#target`, `#build`, `#compiler`, `#config` and `#source` context.
+- **Tooling**: cross-target builds for every supported platform, a versioned `Rux.toml` manifest, registry install and publish, and HTML documentation from `rux doc`.
 
 Language features and tooling may still change between releases. See the [release history](https://github.com/rux-lang/Rux/blob/dev/CHANGELOG.md) and [GitHub releases](https://github.com/rux-lang/Rux/releases) for details.
 
@@ -52,7 +52,7 @@ rux build --all
 
 ## How do I install Rux?
 
-FreeBSD, Linux, macOS and Windows ship prebuilt binaries for x86-64 and AArch64 — see the [Download](/download) page for the archives, the Windows installer, and the `SHA256SUMS` checksums.
+FreeBSD, Linux, macOS and Windows ship prebuilt binaries for x86-64 and AArch64; see the [Download](/download) page for the archives, the Windows installer, and the `SHA256SUMS` checksums.
 
 On Windows, the PowerShell installer picks the right architecture:
 
@@ -67,7 +67,7 @@ scoop bucket add rux-lang https://github.com/rux-lang/Scoop
 scoop install rux
 ```
 
-On Linux, install with the one-line script or the prebuilt tarball — see the [Linux install guide](/docs/learn/install/linux):
+On Linux, install with the one-line script or the prebuilt tarball; see the [Linux install guide](/docs/learn/install/linux):
 
 ```sh
 curl -fsSL https://rux-lang.dev/install.sh | sh
@@ -115,7 +115,7 @@ func Main() -> int {
 }
 ```
 
-`Main` cannot fail. Steps that can fail go in a function of their own, and `Main` turns its outcome into an exit status — `Run() !! return 1;` exits with status 1 when `Run` fails. See [The Main function](/docs/lang/functions/main). Library packages have no entry point; a Windows DLL may optionally define `DllMain`.
+`Main` cannot fail. Steps that can fail go in a function of their own, and `Main` turns its outcome into an exit status: `Run() !! return 1;` exits with status 1 when `Run` fails. See [The Main function](/docs/lang/functions/main). Library packages have no entry point; a Windows DLL may optionally define `DllMain`.
 
 ## What is the difference between `let` and `var`?
 
@@ -136,7 +136,7 @@ No. Generated programs include no garbage collector and no virtual machine. Memo
 
 ## Does Rux have exceptions?
 
-No. Errors are values. A function that can fail writes its error after `!` in its return type — `-> T ! E`, or `-> !E` when it returns no value — and leaves with `throw`. Its caller deals with the outcome where it calls: a postfix `!` passes the error on, `!!` replaces it with a fallback, and `catch` handles it with match arms. Ignoring a fallible result is a compile-time error, and nothing unwinds the stack — an error costs what a return costs:
+No. Errors are values. A function that can fail writes its error after `!` in its return type — `-> T ! E`, or `-> !E` when it returns no value — and leaves with `throw`. Its caller deals with the outcome where it calls: a postfix `!` passes the error on, `!!` replaces it with a fallback, and `catch` handles it with match arms. Ignoring a fallible result is a compile-time error, and nothing unwinds the stack. An error costs what a return costs:
 
 ```rux
 import Io::PrintLine;
@@ -198,11 +198,11 @@ rux new Json --source
 
 ## Is there a standard library?
 
-Not a monolithic one. Rux has no built-in runtime — the standard library is a set of packages, and a program depends only on the ones it lists in `Rux.toml`.
+Not a monolithic one. Rux has no built-in runtime: the standard library is a set of packages, and a program depends only on the ones it lists in `Rux.toml`.
 
 The portable layer is what you should reach for first: [`Core`](/docs/api/core), [`C`](/docs/api/c), [`Format`](/docs/api/format), [`Io`](/docs/api/io), [`Math`](/docs/api/math), [`Memory`](/docs/api/memory) and [`Text`](/docs/api/text), together with `Algorithms`, `Allocator`, `Collections`, `Crypto`, `Entropy`, `FileSystem`, `Hash`, `Json`, `Path`, `Random`, `Time`, `Toml`, `Unicode` and `Uuid`. Below it, the platform layer declares one operating system's own entry points: [`FreeBSD`](/docs/api/freebsd), [`Linux`](/docs/api/linux), [`macOS`](/docs/api/macos) and [`Windows`](/docs/api/windows).
 
-These packages are developed alongside the compiler in the [`rux-lang/Rux`](https://github.com/rux-lang/Rux/tree/dev/Packages) repository. None of them has a stable API yet — names, signatures and behaviour may change between releases. See the [API Reference](/docs/api), and the course's [standard-library parts](/docs/learn/algorithms) for guided tours.
+These packages are developed alongside the compiler in the [`rux-lang/Rux`](https://github.com/rux-lang/Rux/tree/dev/Packages) repository. None of them has a stable API yet: names, signatures and behaviour may change between releases. See the [API Reference](/docs/api), and the course's [standard-library parts](/docs/learn/algorithms) for guided tours.
 
 ## Does Rux include a package manager?
 
@@ -217,7 +217,7 @@ rux remove Package
 rux uninstall
 ```
 
-Registry packages are indexed by the official registry at [`rux-lang.dev/packages`](/packages), and local path dependencies are also supported. A manifest declares a single `[Dependencies]` table — platform selection belongs in source, with [conditional compilation](/docs/lang/comptime/conditional). The standard packages are declared by hand, for example `Io = { Namespace = "Rux", Version = "*" }`. See [Packaging](/docs/packaging) for the whole subject.
+Registry packages are indexed by the official registry at [`rux-lang.dev/packages`](/packages), and local path dependencies are also supported. A manifest declares a single `[Dependencies]` table; platform selection belongs in source, with [conditional compilation](/docs/lang/comptime/conditional). The standard packages are declared by hand, for example `Io = { Namespace = "Rux", Version = "*" }`. See [Packaging](/docs/packaging) for the whole subject.
 
 ## How do I publish a package?
 
@@ -228,7 +228,7 @@ rux publish --dry-run
 rux publish
 ```
 
-Published versions are immutable — a mistake is fixed by publishing a new version and [yanking](/docs/packaging/yanking) the old one. See [Publishing](/docs/packaging/publishing) for the full walkthrough.
+Published versions are immutable: a mistake is fixed by publishing a new version and [yanking](/docs/packaging/yanking) the old one. See [Publishing](/docs/packaging/publishing) for the full walkthrough.
 
 ## What other commands does the CLI provide?
 
@@ -269,7 +269,7 @@ Read the [contribution guide](https://github.com/rux-lang/Rux/blob/dev/CONTRIBUT
 
 Bugs go to the [issue tracker](https://github.com/rux-lang/Rux/issues/new?template=bug_report.yml) with a minimal reproducer. Feature ideas start in [Discussions](https://github.com/rux-lang/Rux/discussions).
 
-Security vulnerabilities are reported **privately** — follow the [security policy](/security) rather than opening a public issue. The [support page](/support) lists all three routes.
+Security vulnerabilities are reported **privately**: follow the [security policy](/security) rather than opening a public issue. The [support page](/support) lists all three routes.
 
 ## What data does the website collect?
 

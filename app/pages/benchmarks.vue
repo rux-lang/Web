@@ -739,10 +739,10 @@ const benchmarks = [
             <h3>The compile benchmark</h3>
             <p>
               The projects are generated from one specification, so every language compiles the same modules, types and
-              functions and prints the same result. Each module is one of ten kinds — a struct with methods, an enum
+              functions and prints the same result. Each module is one of ten kinds (a struct with methods, an enum
               state machine, dynamic dispatch, a hash map, sorting, a ring buffer, a CRC table, text formatting, small
-              matrices, union-find — and calls a few of the modules before it. C++ builds with CMake and Ninja, Rust
-              with Cargo, C# with dotnet publish, Java with javac and then native-image or jar and jlink.
+              matrices, union-find) and calls a few of the modules before it. C++ builds with CMake and Ninja, Rust with
+              Cargo, C# with dotnet publish, Java with javac and then native-image or jar and jlink.
             </p>
             <p>
               A clean build removes the build output first: Ninja's object files, Cargo's target folder, the Go build

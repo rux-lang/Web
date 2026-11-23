@@ -99,11 +99,11 @@ const rows = computed(() =>
     <p class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs text-muted">
       <span class="inline-flex items-center gap-1.5">
         <span class="inline-block size-3 rounded-sm bg-(--bench-ahead)/40" aria-hidden="true" />
-        Above 1.00× — Rux is lower
+        Above 1.00×: Rux is lower
       </span>
       <span class="inline-flex items-center gap-1.5">
         <span class="inline-block size-3 rounded-sm bg-(--bench-behind)/40" aria-hidden="true" />
-        Below 1.00× — Rux is higher
+        Below 1.00×: Rux is higher
       </span>
       <span>Every metric is lower-is-better. — not ranked: a JIT program file needs its runtime.</span>
       <span>Select a metric to see it per app.</span>

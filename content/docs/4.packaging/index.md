@@ -1,11 +1,11 @@
 ---
 title: Packaging
-description: How Rux packages are built, described, published, and consumed — package types, the Rux.toml manifest, dependencies, namespaces, API tokens, publishing to the registry, versioning, and yanking.
+description: "How Rux packages are built, described, published, and consumed: package types, the Rux.toml manifest, dependencies, namespaces, API tokens, publishing to the registry, versioning, and yanking."
 navigation:
   title: Overview
 seo:
   title: Packaging
-  description: How Rux packages are built, described, published, and consumed — package types, the Rux.toml manifest, dependencies, namespaces, API tokens, publishing to the registry, versioning, and yanking.
+  description: "How Rux packages are built, described, published, and consumed: package types, the Rux.toml manifest, dependencies, namespaces, API tokens, publishing to the registry, versioning, and yanking."
   ogType: website
   ogUrl: https://rux-lang.dev/docs/packaging
 ---

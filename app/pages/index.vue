@@ -26,7 +26,7 @@ const features = [
   {
     icon: "i-lucide-timer",
     title: "Instant Toolchain",
-    description: "Compiler, linter, package manager, formatter, and test runner — one small binary, zero dependencies.",
+    description: "Compiler, linter, package manager, formatter, and test runner: one small binary, zero dependencies.",
   },
   {
     icon: "i-lucide-blocks",
@@ -37,12 +37,12 @@ const features = [
     icon: "i-lucide-lock",
     title: "Explicit Mutability",
     description:
-      "Bindings are immutable until you write var. That choice runs deep — through struct fields and pointers.",
+      "Bindings are immutable until you write var. That choice runs deep, through struct fields and pointers.",
   },
   {
     icon: "i-lucide-dna",
     title: "Multi-Paradigm",
-    description: "Imperative, functional, or data-oriented — pick what fits the problem, no forced style.",
+    description: "Imperative, functional, or data-oriented: pick what fits the problem, no forced style.",
   },
   {
     icon: "i-lucide-binary",

@@ -1,11 +1,11 @@
 ---
 title: Rux Language Reference
-description: The complete reference for the Rux language as implemented by rux 0.4.0 — lexical structure, types, expressions, functions, data types, optionals, errors, ownership, interfaces, generics, modules, compile-time programming and FFI.
+description: "The complete reference for the Rux language as implemented by rux 0.4.0: lexical structure, types, expressions, functions, data types, optionals, errors, ownership, interfaces, generics, modules, compile-time programming and FFI."
 navigation:
   title: Overview
 seo:
   title: Rux Reference
-  description: The complete reference for the Rux language as implemented by rux 0.4.0 — lexical structure, types, expressions, functions, data types, optionals, errors, ownership, interfaces, generics, modules, compile-time programming and FFI.
+  description: "The complete reference for the Rux language as implemented by rux 0.4.0: lexical structure, types, expressions, functions, data types, optionals, errors, ownership, interfaces, generics, modules, compile-time programming and FFI."
   ogImage: https://rux-lang.dev/images/og-docs.png
   ogType: website
   ogUrl: https://rux-lang.dev/docs/lang
@@ -78,8 +78,8 @@ It is written for looking things up. To learn the language from the beginning, f
 
 ## Appendix
 
-- [Primitive types](/docs/lang/appendix/primitives) — every primitive type and alias in one table.
-- [Tokens](/docs/lang/appendix/tokens) — every token the lexer produces.
-- [Rux Compiled Unit](/docs/lang/appendix/rcu) — the compiler's native object format.
+- [Primitive types](/docs/lang/appendix/primitives): every primitive type and alias in one table.
+- [Tokens](/docs/lang/appendix/tokens): every token the lexer produces.
+- [Rux Compiled Unit](/docs/lang/appendix/rcu): the compiler's native object format.
 
 Package manifests, dependencies and publishing are covered in [Packaging](/docs/packaging), and the standard packages in the [API Reference](/docs/api).
